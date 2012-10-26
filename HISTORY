@@ -1,5 +1,7 @@
 History
 
+2012/10/26: Version 5.9.3
+
 2012/10/15: remove warnings "test: =: unary operator expected" in ./configure.
             (thanks t_okazaki)
 2012/10/15: fix print_tree ENCLOSE_OPTION bug. (thanks Suraj N. Kurapati)

@@ -15,6 +15,9 @@ libtool
 *~
 .libs/
 .deps/
+testc
+testcu
+testp
 sample/crnl
 sample/encode
 sample/listcap
