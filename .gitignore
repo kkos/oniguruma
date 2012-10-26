@@ -3,6 +3,7 @@ autom4te.cache/
 m4/
 ltmain.sh
 stamp-h1
+configure
 config.status
 config.log
 config.h
