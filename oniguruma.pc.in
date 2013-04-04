@@ -10,5 +10,5 @@ Description: Regular expression library
 Version: @PACKAGE_VERSION@
 Requires:
 Libs: -L${libdir} -lonig
-Cflags:
+Cflags: -I${includedir}
 
