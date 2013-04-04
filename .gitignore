@@ -13,6 +13,7 @@ libtool
 *.so
 *.lo
 *.la
+*.pc
 *~
 .libs/
 .deps/
