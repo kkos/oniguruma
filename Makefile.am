@@ -45,6 +45,21 @@ bin_SCRIPTS = onig-config
 
 onig-config: onig-config.in
 
+do_subst = sed                                          \
+      -e 's,[@]datadir[@],$(datadir),g'                 \
+      -e 's,[@]datarootdir[@],$(datarootdir),g'         \
+      -e 's,[@]PACKAGE_VERSION[@],$(PACKAGE_VERSION),g' \
+      -e 's,[@]prefix[@],$(prefix),g'                   \
+      -e 's,[@]exec_prefix[@],$(exec_prefix),g'         \
+      -e 's,[@]libdir[@],$(libdir),g'                   \
+      -e 's,[@]includedir[@],$(includedir),g'
+
+oniguruma.pc: $(srcdir)/oniguruma.pc.in Makefile
+	$(do_subst) < $(<) > $(@)
+
+pkgconfigdir   = $(libdir)/pkgconfig
+pkgconfig_DATA = onig.pc
+
 dll:
 	$(CXX) -shared -Wl,--output-def,libonig.def -o libonig.dll *.o \
 	$(LIBS)
