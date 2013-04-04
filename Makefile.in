@@ -326,7 +326,7 @@ libonig_la_SOURCES = regint.h regparse.h regenc.h st.h \
 	$(encdir)/gb18030.c $(encdir)/koi8_r.c $(encdir)/cp1251.c
 
 libonig_la_LDFLAGS = -version-info $(LTVERSION)
-EXTRA_DIST = HISTORY README.ja index.html index_ja.html \
+EXTRA_DIST = oniguruma.pc.in HISTORY README.ja index.html index_ja.html \
 	doc/API doc/API.ja doc/RE doc/RE.ja doc/FAQ doc/FAQ.ja \
 	win32/Makefile win32/config.h win32/testc.c \
 	$(encdir)/koi8.c $(encdir)/mktable.c \
@@ -345,7 +345,7 @@ do_subst = sed                                          \
       -e 's,[@]includedir[@],$(includedir),g'
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = onig.pc
+pkgconfig_DATA = oniguruma.pc
 testc_SOURCES = testc.c
 testc_LDADD = libonig.la
 testp_SOURCES = testc.c

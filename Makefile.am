@@ -33,7 +33,7 @@ libonig_la_SOURCES = regint.h regparse.h regenc.h st.h \
 
 libonig_la_LDFLAGS = -version-info $(LTVERSION)
 
-EXTRA_DIST = HISTORY README.ja index.html index_ja.html \
+EXTRA_DIST = oniguruma.pc.in HISTORY README.ja index.html index_ja.html \
 	doc/API doc/API.ja doc/RE doc/RE.ja doc/FAQ doc/FAQ.ja \
 	win32/Makefile win32/config.h win32/testc.c \
 	$(encdir)/koi8.c $(encdir)/mktable.c \
@@ -58,7 +58,7 @@ oniguruma.pc: $(srcdir)/oniguruma.pc.in Makefile
 	$(do_subst) < $(<) > $(@)
 
 pkgconfigdir   = $(libdir)/pkgconfig
-pkgconfig_DATA = onig.pc
+pkgconfig_DATA = oniguruma.pc
 
 dll:
 	$(CXX) -shared -Wl,--output-def,libonig.def -o libonig.dll *.o \
