@@ -2399,7 +2399,7 @@ is_not_included(Node* x, Node* y, regex_t* reg)
 {
   int i, len;
   OnigCodePoint code;
-  UChar *p, c;
+  UChar *p;
   int ytype;
 
  retry:
@@ -2513,51 +2513,51 @@ is_not_included(Node* x, Node* y, regex_t* reg)
       if (NSTRING_LEN(x) == 0)
 	break;
 
-      c = *(xs->s);
+      //c = *(xs->s);
       switch (ytype) {
       case NT_CTYPE:
-	switch (NCTYPE(y)->ctype) {
-	case ONIGENC_CTYPE_WORD:
-	  if (ONIGENC_IS_MBC_WORD(reg->enc, xs->s, xs->end))
-	    return NCTYPE(y)->not;
-	  else
-	    return !(NCTYPE(y)->not);
-	  break;
-	default:
-	  break;
-	}
-	break;
+        switch (NCTYPE(y)->ctype) {
+        case ONIGENC_CTYPE_WORD:
+          if (ONIGENC_IS_MBC_WORD(reg->enc, xs->s, xs->end))
+            return NCTYPE(y)->not;
+          else
+            return !(NCTYPE(y)->not);
+          break;
+        default:
+          break;
+        }
+        break;
 
       case NT_CCLASS:
-	{
-	  CClassNode* cc = NCCLASS(y);
+        {
+          CClassNode* cc = NCCLASS(y);
 
-	  code = ONIGENC_MBC_TO_CODE(reg->enc, xs->s,
-				     xs->s + ONIGENC_MBC_MAXLEN(reg->enc));
-	  return (onig_is_code_in_cc(reg->enc, code, cc) != 0 ? 0 : 1);
-	}
-	break;
+          code = ONIGENC_MBC_TO_CODE(reg->enc, xs->s,
+                                     xs->s + ONIGENC_MBC_MAXLEN(reg->enc));
+          return (onig_is_code_in_cc(reg->enc, code, cc) != 0 ? 0 : 1);
+        }
+        break;
 
       case NT_STR:
-	{
-	  UChar *q;
-	  StrNode* ys = NSTR(y);
-	  len = NSTRING_LEN(x);
-	  if (len > NSTRING_LEN(y)) len = NSTRING_LEN(y);
-	  if (NSTRING_IS_AMBIG(x) || NSTRING_IS_AMBIG(y)) {
+        {
+          UChar *q;
+          StrNode* ys = NSTR(y);
+          len = NSTRING_LEN(x);
+          if (len > NSTRING_LEN(y)) len = NSTRING_LEN(y);
+          if (NSTRING_IS_AMBIG(x) || NSTRING_IS_AMBIG(y)) {
             /* tiny version */
             return 0;
-	  }
-	  else {
-	    for (i = 0, p = ys->s, q = xs->s; i < len; i++, p++, q++) {
-	      if (*p != *q) return 1;
-	    }
-	  }
-	}
-	break;
+          }
+          else {
+            for (i = 0, p = ys->s, q = xs->s; i < len; i++, p++, q++) {
+              if (*p != *q) return 1;
+            }
+          }
+        }
+        break;
 	
       default:
-	break;
+        break;
       }
     }
     break;
