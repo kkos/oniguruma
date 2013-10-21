@@ -3189,7 +3189,7 @@ next_setup(Node* node, Node* next_node, regex_t* reg)
 static int
 update_string_node_case_fold(regex_t* reg, Node *node)
 {
-  UChar *p, *q, *end, buf[ONIGENC_MBC_CASE_FOLD_MAXLEN];
+  UChar *p, *end, buf[ONIGENC_MBC_CASE_FOLD_MAXLEN];
   UChar *sbuf, *ebuf, *sp;
   int r, i, len, sbuf_size;
   StrNode* sn = NSTR(node);
@@ -3204,14 +3204,13 @@ update_string_node_case_fold(regex_t* reg, Node *node)
   p = sn->s;
   while (p < end) {
     len = ONIGENC_MBC_CASE_FOLD(reg->enc, reg->case_fold_flag, &p, end, buf);
-    q = buf;
     for (i = 0; i < len; i++) {
       if (sp >= ebuf) {
-	sbuf = (UChar* )xrealloc(sbuf, sbuf_size * 2);
-	CHECK_NULL_RETURN_MEMERR(sbuf);
-	sp = sbuf + sbuf_size;
-	sbuf_size *= 2;
-	ebuf = sbuf + sbuf_size;
+        sbuf = (UChar* )xrealloc(sbuf, sbuf_size * 2);
+        CHECK_NULL_RETURN_MEMERR(sbuf);
+        sp = sbuf + sbuf_size;
+        sbuf_size *= 2;
+        ebuf = sbuf + sbuf_size;
       }
 
       *sp++ = buf[i];
@@ -3316,29 +3315,29 @@ expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[],
       UChar *q = p + items[i].byte_len;
 
       if (q < end) {
-	r = expand_case_fold_make_rem_string(&rem, q, end, reg);
-	if (r != 0) {
-	  onig_node_free(an);
-	  goto mem_err2;
-	}
+        r = expand_case_fold_make_rem_string(&rem, q, end, reg);
+        if (r != 0) {
+          onig_node_free(an);
+          goto mem_err2;
+        }
 
-	xnode = onig_node_list_add(NULL_NODE, snode);
-	if (IS_NULL(xnode)) {
-	  onig_node_free(an);
-	  onig_node_free(rem);
-	  goto mem_err2;
-	}
-	if (IS_NULL(onig_node_list_add(xnode, rem))) {
-	  onig_node_free(an);
-	  onig_node_free(xnode);
-	  onig_node_free(rem);
-	  goto mem_err;
-	}
+        xnode = onig_node_list_add(NULL_NODE, snode);
+        if (IS_NULL(xnode)) {
+          onig_node_free(an);
+          onig_node_free(rem);
+          goto mem_err2;
+        }
+        if (IS_NULL(onig_node_list_add(xnode, rem))) {
+          onig_node_free(an);
+          onig_node_free(xnode);
+          onig_node_free(rem);
+          goto mem_err;
+        }
 
-	NCAR(an) = xnode;
+        NCAR(an) = xnode;
       }
       else {
-	NCAR(an) = snode;
+        NCAR(an) = snode;
       }
 
       NCDR(var_anode) = an;
