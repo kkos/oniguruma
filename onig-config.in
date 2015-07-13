@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (C) 2006  K.Kosako (sndgk393 AT ybb DOT ne DOT jp)
+# Copyright (C) 2006  K.Kosako
 
 ONIG_VERSION=@PACKAGE_VERSION@
 
