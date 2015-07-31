@@ -38,6 +38,8 @@ check_include_files("stdlib.h;stdarg.h;string.h;float.h" STDC_HEADERS)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/oniguruma.pc.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/oniguruma.pc @ONLY)
+
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -63,3 +65,6 @@ install_header(oniguruma.h onigposix.h oniggnu.h)
 
 install_doc(doc)
 install_data(AUTHORS COPYING HISTORY README)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/oniguruma.pc
+  DESTINATION lib/pkgconfig)
