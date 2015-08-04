@@ -1,8 +1,8 @@
-README.ja  2007/05/31
+README.ja  2015/08/04
 
 鬼車  ----   (C) K.Kosako <kkosako0@gmail.com>
 
-http://www.geocities.jp/kosako3/oniguruma/
+https://github.com/kkos/oniguruma
 
 鬼車は正規表現ライブラリである。
 このライブラリの特長は、それぞれの正規表現オブジェクトごとに

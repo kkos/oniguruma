@@ -1,8 +1,8 @@
-README  2007/05/31
+README  2015/08/04
 
 Oniguruma  ----   (C) K.Kosako <kkosako0@gmail.com>
 
-http://www.geocities.jp/kosako3/oniguruma/
+https://github.com/kkos/oniguruma
 
 Oniguruma is a regular expressions library.
 The characteristics of this library is that different character encoding
