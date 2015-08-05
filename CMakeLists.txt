@@ -10,8 +10,21 @@ set(USE_COMBINATION_EXPLOSION_CHECK 0)
 set(USE_CRNL_AS_LINE_TERMINATOR 0)
 set(VERSION ${PACKAGE_VERSION})
 
-include(cmake/dist.cmake)
+if(MSVC)
+  # Force to always compile with W4
+  if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
+    string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+  endif()
+elseif(CMAKE_COMPILER_IS_GNUCXX)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+elseif(CMAKE_COMPILER_IS_GNUCC)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+endif()
 
+
+include(cmake/dist.cmake)
 include(CheckCSourceCompiles)
 include(CheckIncludeFiles)
 include(CheckFunctionExists)
