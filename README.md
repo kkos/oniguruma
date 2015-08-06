@@ -101,6 +101,7 @@ Usage
 Sample Programs
 ---------------
 
+|:------------------|:----------------------------------------|
 |sample/simple.c    |example of the minimum (Oniguruma API)   |
 |sample/names.c     |example of the named group callback.     |
 |sample/encode.c    |example of some encodings.               |
@@ -111,13 +112,16 @@ Sample Programs
 
 Test Programs
 
+|:------------------|:--------------------------------------|
 |sample/syntax.c    |Perl, Java and ASIS syntax test.       |
 |sample/crnl.c      |--enable-crnl-as-line-terminator test  |
+
 
 
 Source Files
 ------------
 
+|:------------------|:-------------------------------------------------------|
 |oniguruma.h        |Oniguruma API header file (public)                      |
 |onig-config.in     |configuration check program template                    |
 |regenc.h           |character encodings framework header file               |
