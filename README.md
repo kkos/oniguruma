@@ -1,5 +1,5 @@
 Oniguruma
----------
+=========
 
 https://github.com/kkos/oniguruma
 
@@ -21,13 +21,13 @@ Supported character encodings:
 
 
 License
-=======
+-------
 
   BSD license.
 
 
 Install
-=======
+-------
 
 ### Case 1: Unix and Cygwin platform
 
@@ -61,20 +61,21 @@ Install
       onig_s.lib:  static link library
       onig.dll:    dynamic link library
 
-  * test (ASCII/Shift_JIS)
+   * test (ASCII/Shift_JIS)
+
    4. copy win32\testc.c testc.c
    5. nmake ctest
 
 
 
 Regular Expressions
-===================
+-------------------
 
-  See doc/RE (or doc/RE.ja for Japanese).
+  See [doc/RE](doc/RE) or [doc/RE.ja](doc/RE.ja) for Japanese.
 
 
 Usage
-=====
+-----
 
   Include oniguruma.h in your program. (Oniguruma API)
   See doc/API for Oniguruma API.
@@ -98,7 +99,7 @@ Usage
 
 
 Sample Programs
-===============
+---------------
 
   * sample/simple.c    example of the minimum (Oniguruma API)
   * sample/names.c     example of the named group callback.
@@ -115,11 +116,10 @@ Sample Programs
 
 
 Source Files
-============
+------------
 
   * oniguruma.h        Oniguruma API header file. (public)
   * onig-config.in     configuration check program template.
-
   * regenc.h           character encodings framework header file.
   * regint.h           internal definitions
   * regparse.h         internal definitions for regparse.c and regcomp.c
@@ -134,14 +134,11 @@ Source Files
   * regversion.c       version info function.
   * st.h               hash table functions header file
   * st.c               hash table functions
-
   * oniggnu.h          GNU regex API header file. (public)
   * reggnu.c           GNU regex API functions
-
   * onigposix.h        POSIX API header file. (public)
   * regposerr.c        POSIX error message function.
   * regposix.c         POSIX API functions.
-
   * enc/mktable.c      character type table generator.
   * enc/ascii.c        ASCII encoding.
   * enc/euc_jp.c       EUC-JP encoding.
@@ -167,14 +164,12 @@ Source Files
   * enc/iso8859_13.c   ISO-8859-13 encoding. (Latin-7 or Baltic Rim)
   * enc/iso8859_14.c   ISO-8859-14 encoding. (Latin-8 or Celtic)
   * enc/iso8859_15.c   ISO-8859-15 encoding. (Latin-9 or West European with Euro)
-  * enc/iso8859_16.c   ISO-8859-16 encoding.
-                       (Latin-10 or South-Eastern European with Euro)
+  * enc/iso8859_16.c   ISO-8859-16 encoding. (Latin-10 or South-Eastern European with Euro)
   * enc/utf8.c         UTF-8    encoding.
   * enc/utf16_be.c     UTF-16BE encoding.
   * enc/utf16_le.c     UTF-16LE encoding.
   * enc/utf32_be.c     UTF-32BE encoding.
   * enc/utf32_le.c     UTF-32LE encoding.
   * enc/unicode.c      Unicode information data.
-
   * win32/Makefile     Makefile for Win32 (VC++)
   * win32/config.h     config.h for Win32
