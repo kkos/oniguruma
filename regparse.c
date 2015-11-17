@@ -5496,6 +5496,7 @@ parse_subexp(Node** top, OnigToken* tok, int term,
   }
   else {
   err:
+    onig_node_free(node);
     if (term == TK_SUBEXP_CLOSE)
       return ONIGERR_END_PATTERN_WITH_UNMATCHED_PARENTHESIS;
     else
