@@ -1,13 +1,9 @@
-Makefile.in
 Makefile
 autom4te.cache/
-m4/
 ltmain.sh
 stamp-h1
-aclocal.m4
 /compile
 /test-driver
-configure
 config.status
 config.log
 config.h
