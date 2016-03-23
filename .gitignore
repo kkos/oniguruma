@@ -18,6 +18,7 @@ libtool
 testc
 testcu
 testp
+m4/*.m4
 sample/crnl
 sample/encode
 sample/listcap
