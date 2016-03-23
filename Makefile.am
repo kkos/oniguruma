@@ -6,7 +6,7 @@ libname = libonig.la
 ACLOCAL_AMFLAGS = -I m4
 #AM_CFLAGS = -DNOT_RUBY
 AM_CFLAGS =
-INCLUDES  = -I$(top_srcdir) -I$(includedir)
+AM_CPPFLAGS = -I$(top_srcdir) -I$(includedir)
 
 SUBDIRS = . sample
 
