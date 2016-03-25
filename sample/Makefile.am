@@ -1,8 +1,9 @@
 noinst_PROGRAMS = encode listcap names posix simple sql syntax crnl
 
-libname = $(top_builddir)/libonig.la
-LDADD   = $(libname)
-AM_CPPFLAGS = -I$(top_srcdir) -I$(includedir)
+lib_onig = ../src/libonig.la
+LDADD   = $(lib_onig)
+
+AM_CPPFLAGS = -I$../src -I$(includedir)
 
 encode_SOURCES  = encode.c
 listcap_SOURCES = listcap.c
@@ -13,7 +14,7 @@ sql_SOURCES     = sql.c
 syntax_SOURCES  = syntax.c
 
 
-sampledir = $(top_builddir)/sample
+sampledir = .
 
 test: encode listcap names posix simple sql syntax
 	@$(sampledir)/encode

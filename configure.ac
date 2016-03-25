@@ -4,15 +4,8 @@ AC_INIT(onig, 5.9.6)
 AC_CONFIG_MACRO_DIR([m4])
 
 AM_INIT_AUTOMAKE([-Wno-portability 1.14])
-AC_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADER(src/config.h)
 
-
-dnl default value for RUBYDIR
-RUBYDIR=".."
-AC_ARG_WITH(rubydir,
-	[  --with-rubydir=RUBYDIR  specify value for RUBYDIR (default ..)], 
-	[ RUBYDIR=$withval ])
-AC_SUBST(RUBYDIR)
 
 dnl default value for STATISTICS
 STATISTICS=""
@@ -91,4 +84,4 @@ if test "$_cv_stdarg" = yes; then
 fi
 
 
-AC_OUTPUT([Makefile onig-config sample/Makefile], [chmod +x onig-config])
+AC_OUTPUT([Makefile src/Makefile test/Makefile sample/Makefile onig-config], [chmod +x onig-config])
