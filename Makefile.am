@@ -7,6 +7,7 @@ SUBDIRS = src test sample
 EXTRA_DIST = oniguruma.pc.in HISTORY README.ja README.md \
 	index.html index_ja.html \
 	CMakeLists.txt dist.info oniguruma.pc.cmake.in cmake/dist.cmake \
+	src/config.h.cmake.in \
 	doc/API doc/API.ja doc/RE doc/RE.ja doc/FAQ doc/FAQ.ja \
 	win32/Makefile win32/config.h win32/testc.c
 
