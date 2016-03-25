@@ -1,8 +1,6 @@
 ## Makefile.am for Oniguruma
 
 ACLOCAL_AMFLAGS = -I m4
-AM_CFLAGS =
-AM_CPPFLAGS = -I$(top_srcdir) -I$(includedir)
 
 SUBDIRS = src test sample
 
