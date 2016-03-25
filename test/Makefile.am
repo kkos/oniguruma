@@ -1,6 +1,7 @@
 ## Makefile.am for Oniguruma
 lib_onig = ../src/libonig.la
 
+AM_LDFLAGS  = -L$(prefix)/lib
 AM_CFLAGS =
 AM_CPPFLAGS = -I../src -I$(includedir)
 
