@@ -6,7 +6,9 @@ AM_CPPFLAGS = -I$(top_srcdir) -I$(includedir)
 
 SUBDIRS = src test sample
 
-EXTRA_DIST = oniguruma.pc.in HISTORY README.ja index.html index_ja.html \
+EXTRA_DIST = oniguruma.pc.in HISTORY README.ja README.md \
+	index.html index_ja.html \
+	CMakeLists.txt dist.info oniguruma.pc.cmake.in cmake/dist.cmake \
 	doc/API doc/API.ja doc/RE doc/RE.ja doc/FAQ doc/FAQ.ja \
 	win32/Makefile win32/config.h win32/testc.c
 
