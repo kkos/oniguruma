@@ -1,9 +1,14 @@
-noinst_PROGRAMS = encode listcap names posix simple sql syntax crnl
+#noinst_PROGRAMS = encode listcap names posix simple sql syntax crnl
 
 lib_onig = ../src/libonig.la
-LDADD   = $(lib_onig)
+LDADD  = $(lib_onig)
 
-AM_CPPFLAGS = -I$../src -I$(includedir)
+AM_LDFLAGS  = -L$(prefix)/lib
+AM_CPPFLAGS = -I../src -I$(includedir)
+
+TESTS = encode listcap names posix simple sql syntax
+
+check_PROGRAMS = encode listcap names posix simple sql syntax
 
 encode_SOURCES  = encode.c
 listcap_SOURCES = listcap.c
