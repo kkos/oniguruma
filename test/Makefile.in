@@ -13,8 +13,6 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
-
-#noinst_PROGRAMS = encode listcap names posix simple sql syntax crnl
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -79,11 +77,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-TESTS = encode$(EXEEXT) listcap$(EXEEXT) names$(EXEEXT) posix$(EXEEXT) \
-	simple$(EXEEXT) sql$(EXEEXT) syntax$(EXEEXT)
-check_PROGRAMS = encode$(EXEEXT) listcap$(EXEEXT) names$(EXEEXT) \
-	posix$(EXEEXT) simple$(EXEEXT) sql$(EXEEXT) syntax$(EXEEXT)
-subdir = sample
+TESTS = testc$(EXEEXT) testp$(EXEEXT) testcu$(EXEEXT)
+check_PROGRAMS = testc$(EXEEXT) testp$(EXEEXT) testcu$(EXEEXT)
+subdir = test
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp $(top_srcdir)/test-driver
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -97,38 +93,22 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am_encode_OBJECTS = encode.$(OBJEXT)
-encode_OBJECTS = $(am_encode_OBJECTS)
-encode_LDADD = $(LDADD)
-encode_DEPENDENCIES = $(lib_onig)
+am_testc_OBJECTS = testc.$(OBJEXT)
+testc_OBJECTS = $(am_testc_OBJECTS)
+testc_DEPENDENCIES = $(lib_onig)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-am_listcap_OBJECTS = listcap.$(OBJEXT)
-listcap_OBJECTS = $(am_listcap_OBJECTS)
-listcap_LDADD = $(LDADD)
-listcap_DEPENDENCIES = $(lib_onig)
-am_names_OBJECTS = names.$(OBJEXT)
-names_OBJECTS = $(am_names_OBJECTS)
-names_LDADD = $(LDADD)
-names_DEPENDENCIES = $(lib_onig)
-am_posix_OBJECTS = posix.$(OBJEXT)
-posix_OBJECTS = $(am_posix_OBJECTS)
-posix_LDADD = $(LDADD)
-posix_DEPENDENCIES = $(lib_onig)
-am_simple_OBJECTS = simple.$(OBJEXT)
-simple_OBJECTS = $(am_simple_OBJECTS)
-simple_LDADD = $(LDADD)
-simple_DEPENDENCIES = $(lib_onig)
-am_sql_OBJECTS = sql.$(OBJEXT)
-sql_OBJECTS = $(am_sql_OBJECTS)
-sql_LDADD = $(LDADD)
-sql_DEPENDENCIES = $(lib_onig)
-am_syntax_OBJECTS = syntax.$(OBJEXT)
-syntax_OBJECTS = $(am_syntax_OBJECTS)
-syntax_LDADD = $(LDADD)
-syntax_DEPENDENCIES = $(lib_onig)
+am_testcu_OBJECTS = testu.$(OBJEXT)
+testcu_OBJECTS = $(am_testcu_OBJECTS)
+testcu_DEPENDENCIES = $(lib_onig)
+am_testp_OBJECTS = testp-testc.$(OBJEXT)
+testp_OBJECTS = $(am_testp_OBJECTS)
+testp_DEPENDENCIES = $(lib_onig)
+testp_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(testp_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -163,12 +143,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(encode_SOURCES) $(listcap_SOURCES) $(names_SOURCES) \
-	$(posix_SOURCES) $(simple_SOURCES) $(sql_SOURCES) \
-	$(syntax_SOURCES)
-DIST_SOURCES = $(encode_SOURCES) $(listcap_SOURCES) $(names_SOURCES) \
-	$(posix_SOURCES) $(simple_SOURCES) $(sql_SOURCES) \
-	$(syntax_SOURCES)
+SOURCES = $(testc_SOURCES) $(testcu_SOURCES) $(testp_SOURCES)
+DIST_SOURCES = $(testc_SOURCES) $(testcu_SOURCES) $(testp_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -516,17 +492,16 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_onig = ../src/libonig.la
-LDADD = $(lib_onig)
 AM_LDFLAGS = -L$(prefix)/lib
+AM_CFLAGS = 
 AM_CPPFLAGS = -I../src -I$(includedir)
-encode_SOURCES = encode.c
-listcap_SOURCES = listcap.c
-names_SOURCES = names.c
-posix_SOURCES = posix.c
-simple_SOURCES = simple.c
-sql_SOURCES = sql.c
-syntax_SOURCES = syntax.c
-sampledir = .
+testc_SOURCES = testc.c
+testc_LDADD = $(lib_onig)
+testp_SOURCES = testc.c
+testp_LDADD = $(lib_onig)
+testp_CFLAGS = -DPOSIX_TEST
+testcu_SOURCES = testu.c
+testcu_LDADD = $(lib_onig)
 all: all-am
 
 .SUFFIXES:
@@ -540,9 +515,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu sample/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu test/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu sample/Makefile
+	  $(AUTOMAKE) --gnu test/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -571,33 +546,17 @@ clean-checkPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
-encode$(EXEEXT): $(encode_OBJECTS) $(encode_DEPENDENCIES) $(EXTRA_encode_DEPENDENCIES) 
-	@rm -f encode$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(encode_OBJECTS) $(encode_LDADD) $(LIBS)
+testc$(EXEEXT): $(testc_OBJECTS) $(testc_DEPENDENCIES) $(EXTRA_testc_DEPENDENCIES) 
+	@rm -f testc$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(testc_OBJECTS) $(testc_LDADD) $(LIBS)
 
-listcap$(EXEEXT): $(listcap_OBJECTS) $(listcap_DEPENDENCIES) $(EXTRA_listcap_DEPENDENCIES) 
-	@rm -f listcap$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(listcap_OBJECTS) $(listcap_LDADD) $(LIBS)
+testcu$(EXEEXT): $(testcu_OBJECTS) $(testcu_DEPENDENCIES) $(EXTRA_testcu_DEPENDENCIES) 
+	@rm -f testcu$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(testcu_OBJECTS) $(testcu_LDADD) $(LIBS)
 
-names$(EXEEXT): $(names_OBJECTS) $(names_DEPENDENCIES) $(EXTRA_names_DEPENDENCIES) 
-	@rm -f names$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(names_OBJECTS) $(names_LDADD) $(LIBS)
-
-posix$(EXEEXT): $(posix_OBJECTS) $(posix_DEPENDENCIES) $(EXTRA_posix_DEPENDENCIES) 
-	@rm -f posix$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(posix_OBJECTS) $(posix_LDADD) $(LIBS)
-
-simple$(EXEEXT): $(simple_OBJECTS) $(simple_DEPENDENCIES) $(EXTRA_simple_DEPENDENCIES) 
-	@rm -f simple$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(simple_OBJECTS) $(simple_LDADD) $(LIBS)
-
-sql$(EXEEXT): $(sql_OBJECTS) $(sql_DEPENDENCIES) $(EXTRA_sql_DEPENDENCIES) 
-	@rm -f sql$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(sql_OBJECTS) $(sql_LDADD) $(LIBS)
-
-syntax$(EXEEXT): $(syntax_OBJECTS) $(syntax_DEPENDENCIES) $(EXTRA_syntax_DEPENDENCIES) 
-	@rm -f syntax$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(syntax_OBJECTS) $(syntax_LDADD) $(LIBS)
+testp$(EXEEXT): $(testp_OBJECTS) $(testp_DEPENDENCIES) $(EXTRA_testp_DEPENDENCIES) 
+	@rm -f testp$(EXEEXT)
+	$(AM_V_CCLD)$(testp_LINK) $(testp_OBJECTS) $(testp_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -605,13 +564,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/encode.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/listcap.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/names.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/posix.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simple.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sql.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/syntax.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testp-testc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testu.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -633,6 +588,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+testp-testc.o: testc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testp_CFLAGS) $(CFLAGS) -MT testp-testc.o -MD -MP -MF $(DEPDIR)/testp-testc.Tpo -c -o testp-testc.o `test -f 'testc.c' || echo '$(srcdir)/'`testc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testp-testc.Tpo $(DEPDIR)/testp-testc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='testc.c' object='testp-testc.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testp_CFLAGS) $(CFLAGS) -c -o testp-testc.o `test -f 'testc.c' || echo '$(srcdir)/'`testc.c
+
+testp-testc.obj: testc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testp_CFLAGS) $(CFLAGS) -MT testp-testc.obj -MD -MP -MF $(DEPDIR)/testp-testc.Tpo -c -o testp-testc.obj `if test -f 'testc.c'; then $(CYGPATH_W) 'testc.c'; else $(CYGPATH_W) '$(srcdir)/testc.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testp-testc.Tpo $(DEPDIR)/testp-testc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='testc.c' object='testp-testc.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testp_CFLAGS) $(CFLAGS) -c -o testp-testc.obj `if test -f 'testc.c'; then $(CYGPATH_W) 'testc.c'; else $(CYGPATH_W) '$(srcdir)/testc.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -833,51 +802,23 @@ recheck: all $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-encode.log: encode$(EXEEXT)
-	@p='encode$(EXEEXT)'; \
-	b='encode'; \
+testc.log: testc$(EXEEXT)
+	@p='testc$(EXEEXT)'; \
+	b='testc'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-listcap.log: listcap$(EXEEXT)
-	@p='listcap$(EXEEXT)'; \
-	b='listcap'; \
+testp.log: testp$(EXEEXT)
+	@p='testp$(EXEEXT)'; \
+	b='testp'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-names.log: names$(EXEEXT)
-	@p='names$(EXEEXT)'; \
-	b='names'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-posix.log: posix$(EXEEXT)
-	@p='posix$(EXEEXT)'; \
-	b='posix'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-simple.log: simple$(EXEEXT)
-	@p='simple$(EXEEXT)'; \
-	b='simple'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-sql.log: sql$(EXEEXT)
-	@p='sql$(EXEEXT)'; \
-	b='sql'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-syntax.log: syntax$(EXEEXT)
-	@p='syntax$(EXEEXT)'; \
-	b='syntax'; \
+testcu.log: testcu$(EXEEXT)
+	@p='testcu$(EXEEXT)'; \
+	b='testcu'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -1054,14 +995,13 @@ uninstall-am:
 	recheck tags tags-am uninstall uninstall-am
 
 
-test: encode listcap names posix simple sql syntax
-	@$(sampledir)/encode
-	@$(sampledir)/listcap
-	@$(sampledir)/names
-	@$(sampledir)/posix
-	@$(sampledir)/simple
-	@$(sampledir)/sql
-	@$(sampledir)/syntax
+all_test: testc testp testcu
+	@echo "[Oniguruma API, ASCII/EUC-JP check]"
+	@./testc  | grep RESULT
+	@echo "[POSIX API, ASCII/EUC-JP check]"
+	@./testp  | grep RESULT
+	@echo "[Oniguruma API, UTF-16 check]"
+	@./testcu | grep RESULT
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

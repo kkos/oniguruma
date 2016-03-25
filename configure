@@ -682,7 +682,6 @@ LDFLAGS
 CFLAGS
 CC
 STATISTICS
-RUBYDIR
 AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
@@ -752,7 +751,6 @@ ac_subst_files=''
 ac_user_opts='
 enable_option_checking
 enable_silent_rules
-with_rubydir
 with_statistics
 enable_combination_explosion_check
 enable_crnl_as_line_terminator
@@ -1409,7 +1407,6 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-rubydir=RUBYDIR  specify value for RUBYDIR (default ..)
   --with-statistics       take matching time statistical data
   --with-pic[=PKGS]       try to use only PIC/non-PIC objects [default=use
                           both]
@@ -3053,16 +3050,7 @@ END
     as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
   fi
 fi
-ac_config_headers="$ac_config_headers config.h"
-
-
-
-RUBYDIR=".."
-
-# Check whether --with-rubydir was given.
-if test "${with_rubydir+set}" = set; then :
-  withval=$with_rubydir;  RUBYDIR=$withval
-fi
+ac_config_headers="$ac_config_headers src/config.h"
 
 
 
@@ -8186,6 +8174,10 @@ _lt_linker_boilerplate=`cat conftest.err`
 $RM -r conftest*
 
 
+## CAVEAT EMPTOR:
+## There is no encapsulation within the following macros, do not change
+## the running order or otherwise move them around unless you know exactly
+## what you are doing...
 if test -n "$compiler"; then
 
 lt_prog_compiler_no_builtin_flag=
@@ -12442,7 +12434,7 @@ $as_echo "#define HAVE_STDARG_PROTOTYPES 1" >>confdefs.h
 fi
 
 
-ac_config_files="$ac_config_files Makefile onig-config sample/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile test/Makefile sample/Makefile onig-config"
 
 ac_config_commands="$ac_config_commands default"
 
@@ -13448,12 +13440,14 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
-    "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
+    "src/config.h") CONFIG_HEADERS="$CONFIG_HEADERS src/config.h" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "onig-config") CONFIG_FILES="$CONFIG_FILES onig-config" ;;
+    "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
+    "test/Makefile") CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
     "sample/Makefile") CONFIG_FILES="$CONFIG_FILES sample/Makefile" ;;
+    "onig-config") CONFIG_FILES="$CONFIG_FILES onig-config" ;;
     "default") CONFIG_COMMANDS="$CONFIG_COMMANDS default" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
