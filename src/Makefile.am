@@ -1,7 +1,7 @@
 ## Makefile.am for Oniguruma
 libname = libonig.la
 
-AM_CFLAGS =
+AM_CFLAGS = -Wall
 AM_CPPFLAGS = -I$(top_srcdir) -I$(includedir)
 
 include_HEADERS = oniguruma.h oniggnu.h onigposix.h
