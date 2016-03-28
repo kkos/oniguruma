@@ -1,4 +1,4 @@
-README.ja  2015/08/04
+README.ja  2016/03/28
 
 鬼車  ----   (C) K.Kosako <kkosako0@gmail.com>
 
@@ -142,39 +142,39 @@ https://github.com/kkos/oniguruma
   regposerr.c        POSIX APIエラーメッセージ関数
   regposix.c         POSIX API関数
 
-  enc/mktable.c      文字タイプテーブル生成プログラム
-  enc/ascii.c        ASCII エンコーディング
-  enc/euc_jp.c       EUC-JP エンコーディング
-  enc/euc_tw.c       EUC-TW エンコーディング
-  enc/euc_kr.c       EUC-KR, EUC-CN エンコーディング
-  enc/sjis.c         Shift_JIS エンコーディング
-  enc/big5.c         Big5 エンコーディング
-  enc/gb18030.c      GB18030 エンコーディング
-  enc/koi8.c         KOI8 エンコーディング
-  enc/koi8_r.c       KOI8-R エンコーディング
-  enc/cp1251.c       CP1251 エンコーディング
-  enc/iso8859_1.c    ISO-8859-1  (Latin-1)
-  enc/iso8859_2.c    ISO-8859-2  (Latin-2)
-  enc/iso8859_3.c    ISO-8859-3  (Latin-3)
-  enc/iso8859_4.c    ISO-8859-4  (Latin-4)
-  enc/iso8859_5.c    ISO-8859-5  (Cyrillic)
-  enc/iso8859_6.c    ISO-8859-6  (Arabic)
-  enc/iso8859_7.c    ISO-8859-7  (Greek)
-  enc/iso8859_8.c    ISO-8859-8  (Hebrew)
-  enc/iso8859_9.c    ISO-8859-9  (Latin-5 または Turkish)
-  enc/iso8859_10.c   ISO-8859-10 (Latin-6 または Nordic)
-  enc/iso8859_11.c   ISO-8859-11 (Thai)
-  enc/iso8859_13.c   ISO-8859-13 (Latin-7 または Baltic Rim)
-  enc/iso8859_14.c   ISO-8859-14 (Latin-8 または Celtic)
-  enc/iso8859_15.c   ISO-8859-15 (Latin-9 または West European with Euro)
-  enc/iso8859_16.c   ISO-8859-16
+  mktable.c          文字タイプテーブル生成プログラム
+  ascii.c            ASCII エンコーディング
+  euc_jp.c           EUC-JP エンコーディング
+  euc_tw.c           EUC-TW エンコーディング
+  euc_kr.c           EUC-KR, EUC-CN エンコーディング
+  sjis.c             Shift_JIS エンコーディング
+  big5.c             Big5 エンコーディング
+  gb18030.c          GB18030 エンコーディング
+  koi8.c             KOI8 エンコーディング
+  koi8_r.c           KOI8-R エンコーディング
+  cp1251.c           CP1251 エンコーディング
+  iso8859_1.c        ISO-8859-1  (Latin-1)
+  iso8859_2.c        ISO-8859-2  (Latin-2)
+  iso8859_3.c        ISO-8859-3  (Latin-3)
+  iso8859_4.c        ISO-8859-4  (Latin-4)
+  iso8859_5.c        ISO-8859-5  (Cyrillic)
+  iso8859_6.c        ISO-8859-6  (Arabic)
+  iso8859_7.c        ISO-8859-7  (Greek)
+  iso8859_8.c        ISO-8859-8  (Hebrew)
+  iso8859_9.c        ISO-8859-9  (Latin-5 または Turkish)
+  iso8859_10.c       ISO-8859-10 (Latin-6 または Nordic)
+  iso8859_11.c       ISO-8859-11 (Thai)
+  iso8859_13.c       ISO-8859-13 (Latin-7 または Baltic Rim)
+  iso8859_14.c       ISO-8859-14 (Latin-8 または Celtic)
+  iso8859_15.c       ISO-8859-15 (Latin-9 または West European with Euro)
+  iso8859_16.c       ISO-8859-16
                      (Latin-10 または South-Eastern European with Euro)
-  enc/utf8.c         UTF-8    エンコーディング
-  enc/utf16_be.c     UTF-16BE エンコーディング
-  enc/utf16_le.c     UTF-16LE エンコーディング
-  enc/utf32_be.c     UTF-32BE エンコーディング
-  enc/utf32_le.c     UTF-32LE エンコーディング
-  enc/unicode.c      Unicode情報
+  utf8.c             UTF-8    エンコーディング
+  utf16_be.c         UTF-16BE エンコーディング
+  utf16_le.c         UTF-16LE エンコーディング
+  utf32_be.c         UTF-32BE エンコーディング
+  utf32_le.c         UTF-32LE エンコーディング
+  unicode.c          Unicode情報
 
   win32/Makefile     Win32用 Makefile (for VC++)
   win32/config.h     Win32用 config.h

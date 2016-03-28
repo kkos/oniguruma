@@ -146,37 +146,37 @@ Source Files
 |onigposix.h        |POSIX API header file (public)                          |
 |regposerr.c        |POSIX error message function                            |
 |regposix.c         |POSIX API functions                                     |
-|enc/mktable.c      |character type table generator                          |
-|enc/ascii.c        |ASCII encoding                                          |
-|enc/euc_jp.c       |EUC-JP encoding                                         |
-|enc/euc_tw.c       |EUC-TW encoding                                         |
-|enc/euc_kr.c       |EUC-KR, EUC-CN encoding                                 |
-|enc/sjis.c         |Shift_JIS encoding                                      |
-|enc/big5.c         |Big5      encoding                                      |
-|enc/gb18030.c      |GB18030   encoding                                      |
-|enc/koi8.c         |KOI8      encoding                                      |
-|enc/koi8_r.c       |KOI8-R    encoding                                      |
-|enc/cp1251.c       |CP1251    encoding                                      |
-|enc/iso8859_1.c    |ISO-8859-1 (Latin-1)                                    |
-|enc/iso8859_2.c    |ISO-8859-2 (Latin-2)                                    |
-|enc/iso8859_3.c    |ISO-8859-3 (Latin-3)                                    |
-|enc/iso8859_4.c    |ISO-8859-4 (Latin-4)                                    |
-|enc/iso8859_5.c    |ISO-8859-5 (Cyrillic)                                   |
-|enc/iso8859_6.c    |ISO-8859-6 (Arabic)                                     |
-|enc/iso8859_7.c    |ISO-8859-7 (Greek)                                      |
-|enc/iso8859_8.c    |ISO-8859-8 (Hebrew)                                     |
-|enc/iso8859_9.c    |ISO-8859-9 (Latin-5 or Turkish)                         |
-|enc/iso8859_10.c   |ISO-8859-10 (Latin-6 or Nordic)                         |
-|enc/iso8859_11.c   |ISO-8859-11 (Thai)                                      |
-|enc/iso8859_13.c   |ISO-8859-13 (Latin-7 or Baltic Rim)                     |
-|enc/iso8859_14.c   |ISO-8859-14 (Latin-8 or Celtic)                         |
-|enc/iso8859_15.c   |ISO-8859-15 (Latin-9 or West European with Euro)        |
-|enc/iso8859_16.c   |ISO-8859-16 (Latin-10)                                  |
-|enc/utf8.c         |UTF-8    encoding                                       |
-|enc/utf16_be.c     |UTF-16BE encoding                                       |
-|enc/utf16_le.c     |UTF-16LE encoding                                       |
-|enc/utf32_be.c     |UTF-32BE encoding                                       |
-|enc/utf32_le.c     |UTF-32LE encoding                                       |
-|enc/unicode.c      |Unicode information data                                |
+|mktable.c          |character type table generator                          |
+|ascii.c            |ASCII encoding                                          |
+|euc_jp.c           |EUC-JP encoding                                         |
+|euc_tw.c           |EUC-TW encoding                                         |
+|euc_kr.c           |EUC-KR, EUC-CN encoding                                 |
+|sjis.c             |Shift_JIS encoding                                      |
+|big5.c             |Big5      encoding                                      |
+|gb18030.c          |GB18030   encoding                                      |
+|koi8.c             |KOI8      encoding                                      |
+|koi8_r.c           |KOI8-R    encoding                                      |
+|cp1251.c           |CP1251    encoding                                      |
+|iso8859_1.c        |ISO-8859-1 (Latin-1)                                    |
+|iso8859_2.c        |ISO-8859-2 (Latin-2)                                    |
+|iso8859_3.c        |ISO-8859-3 (Latin-3)                                    |
+|iso8859_4.c        |ISO-8859-4 (Latin-4)                                    |
+|iso8859_5.c        |ISO-8859-5 (Cyrillic)                                   |
+|iso8859_6.c        |ISO-8859-6 (Arabic)                                     |
+|iso8859_7.c        |ISO-8859-7 (Greek)                                      |
+|iso8859_8.c        |ISO-8859-8 (Hebrew)                                     |
+|iso8859_9.c        |ISO-8859-9 (Latin-5 or Turkish)                         |
+|iso8859_10.c       |ISO-8859-10 (Latin-6 or Nordic)                         |
+|iso8859_11.c       |ISO-8859-11 (Thai)                                      |
+|iso8859_13.c       |ISO-8859-13 (Latin-7 or Baltic Rim)                     |
+|iso8859_14.c       |ISO-8859-14 (Latin-8 or Celtic)                         |
+|iso8859_15.c       |ISO-8859-15 (Latin-9 or West European with Euro)        |
+|iso8859_16.c       |ISO-8859-16 (Latin-10)                                  |
+|utf8.c             |UTF-8    encoding                                       |
+|utf16_be.c         |UTF-16BE encoding                                       |
+|utf16_le.c         |UTF-16LE encoding                                       |
+|utf32_be.c         |UTF-32BE encoding                                       |
+|utf32_le.c         |UTF-32LE encoding                                       |
+|unicode.c          |Unicode information data                                |
 |win32/Makefile     |Makefile for Win32 (VC++)                               |
 |win32/config.h     |config.h for Win32                                      |
