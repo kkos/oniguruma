@@ -5446,26 +5446,6 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   return r;
 }
 
-#ifdef USE_RECOMPILE_API
-extern int
-onig_recompile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
-	    OnigOptionType option, OnigEncoding enc, OnigSyntaxType* syntax,
-	    OnigErrorInfo* einfo)
-{
-  int r;
-  regex_t *new_reg;
-
-  r = onig_new(&new_reg, pattern, pattern_end, option, enc, syntax, einfo);
-  if (r) return r;
-  if (ONIG_STATE(reg) == ONIG_STATE_NORMAL) {
-    onig_transfer(reg, new_reg);
-  }
-  else {
-    onig_chain_link_add(reg, new_reg);
-  }
-  return 0;
-}
-#endif
 
 static int onig_inited = 0;
 
