@@ -144,11 +144,6 @@
 #endif
 
 
-#define ONIG_STATE_INC(reg)         /* Nothing */
-#define ONIG_STATE_DEC(reg)         /* Nothing */
-#define ONIG_STATE_INC_THREAD(reg)  /* Nothing */
-#define ONIG_STATE_DEC_THREAD(reg)  /* Nothing */
-
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif

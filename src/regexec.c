@@ -3081,7 +3081,6 @@ onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at, On
   }
 
   MATCH_ARG_FREE(msa);
-  ONIG_STATE_DEC_THREAD(reg);
   return r;
 }
 
@@ -3664,7 +3663,6 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 
  finish:
   MATCH_ARG_FREE(msa);
-  ONIG_STATE_DEC_THREAD(reg);
 
   /* If result is mismatch and no FIND_NOT_EMPTY option,
      then the region is not setted in match_at(). */
@@ -3685,7 +3683,6 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
  mismatch_no_msa:
   r = ONIG_MISMATCH;
  finish_no_msa:
-  ONIG_STATE_DEC_THREAD(reg);
 #ifdef ONIG_DEBUG
   if (r != ONIG_MISMATCH)
     fprintf(stderr, "onig_search: error %d\n", r);
@@ -3693,7 +3690,6 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
   return r;
 
  match:
-  ONIG_STATE_DEC_THREAD(reg);
   MATCH_ARG_FREE(msa);
   return s - str;
 }

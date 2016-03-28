@@ -650,9 +650,6 @@ extern void onig_null_warn P_((const char* s));
 #define ONIG_STATE_COMPILING          -1
 #define ONIG_STATE_MODIFY             -2
 
-#define ONIG_STATE(reg) \
-  ((reg)->state > 0 ? ONIG_STATE_SEARCHING : (reg)->state)
-
 typedef struct re_pattern_buffer {
   /* common members of BBuf(bytes-buffer) */
   unsigned char* p;         /* compiled pattern */
