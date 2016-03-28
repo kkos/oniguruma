@@ -644,19 +644,12 @@ extern void onig_null_warn P_((const char* s));
 
 #define ONIG_CHAR_TABLE_SIZE   256
 
-/* regex_t state */
-#define ONIG_STATE_NORMAL              0
-#define ONIG_STATE_SEARCHING           1
-#define ONIG_STATE_COMPILING          -1
-#define ONIG_STATE_MODIFY             -2
-
 typedef struct re_pattern_buffer {
   /* common members of BBuf(bytes-buffer) */
   unsigned char* p;         /* compiled pattern */
   unsigned int used;        /* used space for p */
   unsigned int alloc;       /* allocated space for p */
 
-  int state;                     /* normal, searching, compiling */
   int num_mem;                   /* used memory(...) num counted from 1 */
   int num_repeat;                /* OP_REPEAT/OP_REPEAT_NG id-counter */
   int num_null_check;            /* OP_NULL_CHECK_START/END id counter */
