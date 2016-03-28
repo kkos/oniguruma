@@ -53,16 +53,18 @@ Install
 
  Case 2: Win32 platform (VC++)
 
-   1. copy win32\Makefile Makefile
-   2. copy win32\config.h config.h
-   3. nmake
+   1. copy win32\Makefile src\Makefile
+   2. copy win32\config.h src\config.h
+   3. cd src
+   4. nmake
 
       onig_s.lib:  static link library
       onig.dll:    dynamic link library
 
   * test (ASCII/Shift_JIS)
-   4. copy win32\testc.c testc.c
-   5. nmake ctest
+   1. copy win32\testc.c src\testc.c
+   2. cd src
+   3. nmake ctest
 
 
 

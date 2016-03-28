@@ -35,25 +35,25 @@ onigobjs     = reggnu.obj regerror.obj regparse.obj regext.obj regcomp.obj \
 posixobjs    = regposix.obj regposerr.obj
 libobjs      = $(onigobjs) $(posixobjs)
 
-jp_objs      =  $(encdir)\euc_jp.obj $(encdir)\sjis.obj
-iso8859_objs =  $(encdir)\iso8859_1.obj  $(encdir)\iso8859_2.obj \
-		$(encdir)\iso8859_3.obj  $(encdir)\iso8859_4.obj \
-		$(encdir)\iso8859_5.obj  $(encdir)\iso8859_6.obj \
-		$(encdir)\iso8859_7.obj  $(encdir)\iso8859_8.obj \
-		$(encdir)\iso8859_9.obj  $(encdir)\iso8859_10.obj \
-		$(encdir)\iso8859_11.obj $(encdir)\iso8859_13.obj \
-		$(encdir)\iso8859_14.obj $(encdir)\iso8859_15.obj \
-		$(encdir)\iso8859_16.obj
+jp_objs      =  euc_jp.obj sjis.obj
+iso8859_objs =  iso8859_1.obj  iso8859_2.obj \
+		iso8859_3.obj  iso8859_4.obj \
+		iso8859_5.obj  iso8859_6.obj \
+		iso8859_7.obj  iso8859_8.obj \
+		iso8859_9.obj  iso8859_10.obj \
+		iso8859_11.obj iso8859_13.obj \
+		iso8859_14.obj iso8859_15.obj \
+		iso8859_16.obj
 
-encobjs      =  $(encdir)\ascii.obj $(encdir)\utf8.obj \
-		$(encdir)\unicode.obj \
-		$(encdir)\utf16_be.obj $(encdir)\utf16_le.obj \
-		$(encdir)\utf32_be.obj $(encdir)\utf32_le.obj \
+encobjs = ascii.obj utf8.obj \
+		unicode.obj \
+		utf16_be.obj utf16_le.obj \
+		utf32_be.obj utf32_le.obj \
 		$(jp_objs) $(iso8859_objs) \
-		$(encdir)\euc_tw.obj $(encdir)\euc_kr.obj $(encdir)\big5.obj \
-		$(encdir)\gb18030.obj \
-		$(encdir)\koi8_r.obj  \
-		$(encdir)\cp1251.obj # $(encdir)\koi8.obj
+		euc_tw.obj euc_kr.obj big5.obj \
+		gb18030.obj \
+		koi8_r.obj  \
+		cp1251.obj # koi8.obj
 
 onigsources  = regerror.c regparse.c regext.c regcomp.c regexec.c regenc.c \
 	       regsyntax.c regtrav.c regversion.c reggnu.c st.c
@@ -61,7 +61,6 @@ posixsources = regposix.c regposerr.c
 libsources   = $(posixsources) $(onigsources)
 rubysources  = $(onigsources)
 
-encdir       = enc
 patchfiles   = re.c.168.patch re.c.181.patch
 distfiles    = README COPYING HISTORY \
 		Makefile.in configure.in config.h.in configure \
@@ -82,8 +81,8 @@ makeargs = $(MFLAGS) CPPFLAGS='$(CPPFLAGS)' CFLAGS='$(CFLAGS)' CC='$(CC)'
 default: all
 
 setup:
-	$(CP) win32\config.h config.h
-	$(CP) win32\testc.c  testc.c
+	$(CP) ..\win32\config.h config.h
+	$(CP) ..\win32\testc.c  testc.c
 
 
 all: $(libname) $(dllname) 
@@ -108,37 +107,37 @@ regposix.obj:  regposix.c $(posixheaders) oniguruma.h config.h
 regposerr.obj: regposerr.c $(posixheaders) config.h
 st.obj:        st.c regint.h oniguruma.h config.h st.h
 
-$(encdir)\ascii.obj:      $(encdir)\ascii.c regenc.h config.h
-$(encdir)\unicode.obj:    $(encdir)\unicode.c regenc.h config.h
-$(encdir)\utf8.obj:       $(encdir)\utf8.c regenc.h config.h
-$(encdir)\utf16_be.obj:   $(encdir)\utf16_be.c regenc.h config.h
-$(encdir)\utf16_le.obj:   $(encdir)\utf16_le.c regenc.h config.h
-$(encdir)\utf32_be.obj:   $(encdir)\utf32_be.c regenc.h config.h
-$(encdir)\utf32_le.obj:   $(encdir)\utf32_le.c regenc.h config.h
-$(encdir)\euc_jp.obj:     $(encdir)\euc_jp.c regenc.h config.h
-$(encdir)\euc_tw.obj:     $(encdir)\euc_tw.c regenc.h config.h
-$(encdir)\euc_kr.obj:     $(encdir)\euc_kr.c regenc.h config.h
-$(encdir)\sjis.obj:       $(encdir)\sjis.c regenc.h config.h
-$(encdir)\iso8859_1.obj:  $(encdir)\iso8859_1.c regenc.h config.h
-$(encdir)\iso8859_2.obj:  $(encdir)\iso8859_2.c regenc.h config.h
-$(encdir)\iso8859_3.obj:  $(encdir)\iso8859_3.c regenc.h config.h
-$(encdir)\iso8859_4.obj:  $(encdir)\iso8859_4.c regenc.h config.h
-$(encdir)\iso8859_5.obj:  $(encdir)\iso8859_5.c regenc.h config.h
-$(encdir)\iso8859_6.obj:  $(encdir)\iso8859_6.c regenc.h config.h
-$(encdir)\iso8859_7.obj:  $(encdir)\iso8859_7.c regenc.h config.h
-$(encdir)\iso8859_8.obj:  $(encdir)\iso8859_8.c regenc.h config.h
-$(encdir)\iso8859_9.obj:  $(encdir)\iso8859_9.c regenc.h config.h
-$(encdir)\iso8859_10.obj: $(encdir)\iso8859_10.c regenc.h config.h
-$(encdir)\iso8859_11.obj: $(encdir)\iso8859_11.c regenc.h config.h
-$(encdir)\iso8859_13.obj: $(encdir)\iso8859_13.c regenc.h config.h
-$(encdir)\iso8859_14.obj: $(encdir)\iso8859_14.c regenc.h config.h
-$(encdir)\iso8859_15.obj: $(encdir)\iso8859_15.c regenc.h config.h
-$(encdir)\iso8859_16.obj: $(encdir)\iso8859_16.c regenc.h config.h
-$(encdir)\koi8.obj:       $(encdir)\koi8.c   regenc.h config.h
-$(encdir)\koi8_r.obj:     $(encdir)\koi8_r.c regenc.h config.h
-$(encdir)\cp1251.obj:     $(encdir)\cp1251.c regenc.h config.h
-$(encdir)\big5.obj:       $(encdir)\big5.c   regenc.h config.h
-$(encdir)\gb18030.obj:    $(encdir)\gb18030.c   regenc.h config.h
+ascii.obj:      ascii.c regenc.h config.h
+unicode.obj:    unicode.c regenc.h config.h
+utf8.obj:       utf8.c regenc.h config.h
+utf16_be.obj:   utf16_be.c regenc.h config.h
+utf16_le.obj:   utf16_le.c regenc.h config.h
+utf32_be.obj:   utf32_be.c regenc.h config.h
+utf32_le.obj:   utf32_le.c regenc.h config.h
+euc_jp.obj:     euc_jp.c regenc.h config.h
+euc_tw.obj:     euc_tw.c regenc.h config.h
+euc_kr.obj:     euc_kr.c regenc.h config.h
+sjis.obj:       sjis.c regenc.h config.h
+iso8859_1.obj:  iso8859_1.c regenc.h config.h
+iso8859_2.obj:  iso8859_2.c regenc.h config.h
+iso8859_3.obj:  iso8859_3.c regenc.h config.h
+iso8859_4.obj:  iso8859_4.c regenc.h config.h
+iso8859_5.obj:  iso8859_5.c regenc.h config.h
+iso8859_6.obj:  iso8859_6.c regenc.h config.h
+iso8859_7.obj:  iso8859_7.c regenc.h config.h
+iso8859_8.obj:  iso8859_8.c regenc.h config.h
+iso8859_9.obj:  iso8859_9.c regenc.h config.h
+iso8859_10.obj: iso8859_10.c regenc.h config.h
+iso8859_11.obj: iso8859_11.c regenc.h config.h
+iso8859_13.obj: iso8859_13.c regenc.h config.h
+iso8859_14.obj: iso8859_14.c regenc.h config.h
+iso8859_15.obj: iso8859_15.c regenc.h config.h
+iso8859_16.obj: iso8859_16.c regenc.h config.h
+koi8.obj:       koi8.c   regenc.h config.h
+koi8_r.obj:     koi8_r.c regenc.h config.h
+cp1251.obj:     cp1251.c regenc.h config.h
+big5.obj:       big5.c   regenc.h config.h
+gb18030.obj:    gb18030.c regenc.h config.h
 
 
 # Ruby test
@@ -166,28 +165,7 @@ $(testc)u: $(testc)u.c $(libname)
 	$(CC) -nologo -o $(testc)u -DONIG_EXTERN=extern $(testc)u.c $(libname)
 
 clean:
-	del *.obj $(encdir)\*.obj *.lib *.exp *.dll $(testp).exe $(testc).exe $(testc).obj
-
-
-# backup file suffix
-SORIG = ruby_orig
-
-# ruby 1.9 source update
-19:
-	$(CP) regerror.c    $(RUBYDIR)
-	$(CP) regparse.c    $(RUBYDIR)
-	$(CP) regcomp.c     $(RUBYDIR)
-	$(CP) regexec.c     $(RUBYDIR)
-	$(CP) regenc.c      $(RUBYDIR)
-	$(CP) regint.h      $(RUBYDIR)
-	$(CP) regparse.h    $(RUBYDIR)
-	$(CP) regenc.h      $(RUBYDIR)
-	$(CP) oniguruma.h   $(RUBYDIR)
-	$(CP) enc\ascii.c   $(RUBYDIR)
-	$(CP) enc\utf8.c    $(RUBYDIR)
-	$(CP) enc\euc_jp.c  $(RUBYDIR)
-	$(CP) enc\sjis.c    $(RUBYDIR)
-	$(CP) enc\unicode.c $(RUBYDIR)
+	del *.obj *.lib *.exp *.dll $(testp).exe $(testc).exe $(testc).obj
 
 
 samples: all
