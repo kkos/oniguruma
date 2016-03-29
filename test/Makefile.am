@@ -9,7 +9,7 @@ TESTS = testc testp testcu
 
 check_PROGRAMS = testc testp testcu
 
-all_test: testc testp testcu
+test: testc testp testcu
 	@echo "[Oniguruma API, ASCII/EUC-JP check]"
 	@./testc  | grep RESULT
 	@echo "[POSIX API, ASCII/EUC-JP check]"
