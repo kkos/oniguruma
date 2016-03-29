@@ -99,7 +99,6 @@
 #define THREAD_SYSTEM_END       /* depend on thread system */
 #define THREAD_ATOMIC_START     /* depend on thread system */
 #define THREAD_ATOMIC_END       /* depend on thread system */
-#define THREAD_PASS             /* depend on thread system */
 #define xmalloc     malloc
 #define xrealloc    realloc
 #define xcalloc     calloc
