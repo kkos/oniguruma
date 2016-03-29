@@ -5594,10 +5594,6 @@ onig_end(void)
   onig_free_shared_cclass_table();
 #endif
 
-#ifdef USE_PARSE_TREE_NODE_RECYCLE
-  onig_free_node_list();
-#endif
-
   onig_inited = 0;
 
   THREAD_ATOMIC_END;
