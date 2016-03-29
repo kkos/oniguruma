@@ -5212,9 +5212,7 @@ onig_free(regex_t* reg)
 extern void
 onig_transfer(regex_t* to, regex_t* from)
 {
-  THREAD_ATOMIC_START;
   REGEX_TRANSFER(to, from);
-  THREAD_ATOMIC_END;
 }
 
 #define REGEX_CHAIN_HEAD(reg) do {\
