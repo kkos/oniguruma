@@ -1086,56 +1086,6 @@ node_new_cclass(void)
 }
 
 static Node*
-node_new_cclass_by_codepoint_range(int not, OnigCodePoint sb_out,
-				   const OnigCodePoint ranges[])
-{
-  int n, i;
-  CClassNode* cc;
-  OnigCodePoint j;
-
-  Node* node = node_new_cclass();
-  CHECK_NULL_RETURN(node);
-
-  cc = NCCLASS(node);
-  if (not != 0) NCCLASS_SET_NOT(cc);
-
-  BITSET_CLEAR(cc->bs);
-  if (sb_out > 0 && IS_NOT_NULL(ranges)) {
-    n = ONIGENC_CODE_RANGE_NUM(ranges);
-    for (i = 0; i < n; i++) {
-      for (j  = ONIGENC_CODE_RANGE_FROM(ranges, i);
-           j <= (OnigCodePoint )ONIGENC_CODE_RANGE_TO(ranges, i); j++) {
-        if (j >= sb_out) goto sb_end;
-
-        BITSET_SET_BIT(cc->bs, j);
-      }
-    }
-  }
-
- sb_end:
-  if (IS_NULL(ranges)) {
-  is_null:
-    cc->mbuf = NULL;
-  }
-  else {
-    BBuf* bbuf;
-
-    n = ONIGENC_CODE_RANGE_NUM(ranges);
-    if (n == 0) goto is_null;
-
-    bbuf = (BBuf* )xmalloc(sizeof(BBuf));
-    CHECK_NULL_RETURN(bbuf);
-    bbuf->alloc = n + 1;
-    bbuf->used  = n + 1;
-    bbuf->p     = (UChar* )((void* )ranges);
-
-    cc->mbuf = bbuf;
-  }
-
-  return node;
-}
-
-static Node*
 node_new_ctype(int type, int not)
 {
   Node* node = node_new();
@@ -4787,83 +4737,6 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
 }
 
 
-#ifdef USE_SHARED_CCLASS_TABLE
-
-#define THRESHOLD_RANGE_NUM_FOR_SHARE_CCLASS     8
-
-/* for ctype node hash table */
-
-typedef struct {
-  OnigEncoding enc;
-  int not;
-  int type;
-} type_cclass_key;
-
-static int type_cclass_cmp(type_cclass_key* x, type_cclass_key* y)
-{
-  if (x->type != y->type) return 1;
-  if (x->enc  != y->enc)  return 1;
-  if (x->not  != y->not)  return 1;
-  return 0;
-}
-
-static int type_cclass_hash(type_cclass_key* key)
-{
-  int i, val;
-  UChar *p;
-
-  val = 0;
-
-  p = (UChar* )&(key->enc);
-  for (i = 0; i < (int )sizeof(key->enc); i++) {
-    val = val * 997 + (int )*p++;
-  }
-
-  p = (UChar* )(&key->type);
-  for (i = 0; i < (int )sizeof(key->type); i++) {
-    val = val * 997 + (int )*p++;
-  }
-
-  val += key->not;
-  return val + (val >> 5);
-}
-
-static struct st_hash_type type_type_cclass_hash = {
-    type_cclass_cmp,
-    type_cclass_hash,
-};
-
-static st_table* OnigTypeCClassTable;
-
-
-static int
-i_free_shared_class(type_cclass_key* key, Node* node, void* arg ARG_UNUSED)
-{
-  if (IS_NOT_NULL(node)) {
-    CClassNode* cc = NCCLASS(node);
-    if (IS_NOT_NULL(cc->mbuf)) xfree(cc->mbuf);
-    xfree(node);
-  }
-
-  if (IS_NOT_NULL(key)) xfree(key);
-  return ST_DELETE;
-}
-
-extern int
-onig_free_shared_cclass_table(void)
-{
-  if (IS_NOT_NULL(OnigTypeCClassTable)) {
-    onig_st_foreach(OnigTypeCClassTable, i_free_shared_class, 0);
-    onig_st_free_table(OnigTypeCClassTable);
-    OnigTypeCClassTable = NULL;
-  }
-
-  return 0;
-}
-
-#endif /* USE_SHARED_CCLASS_TABLE */
-
-
 #ifndef CASE_FOLD_IS_APPLIED_INSIDE_NEGATIVE_CCLASS
 static int
 clear_not_flag_cclass(CClassNode* cc, OnigEncoding enc)
@@ -5131,66 +5004,11 @@ parse_exp(Node** np, OnigToken* tok, int term,
         {
           CClassNode* cc;
 
-#ifdef USE_SHARED_CCLASS_TABLE
-          const OnigCodePoint *mbr;
-          OnigCodePoint sb_out;
-
-          r = ONIGENC_GET_CTYPE_CODE_RANGE(env->enc, tok->u.prop.ctype,
-                                           &sb_out, &mbr);
-          if (r == 0 &&
-              ONIGENC_CODE_RANGE_NUM(mbr)
-              >= THRESHOLD_RANGE_NUM_FOR_SHARE_CCLASS) {
-            type_cclass_key  key;
-            type_cclass_key* new_key;
-
-            key.enc  = env->enc;
-            key.not  = tok->u.prop.not;
-            key.type = tok->u.prop.ctype;
-
-            THREAD_ATOMIC_START;
-
-            if (IS_NULL(OnigTypeCClassTable)) {
-              OnigTypeCClassTable
-                = onig_st_init_table_with_size(&type_type_cclass_hash, 10);
-              if (IS_NULL(OnigTypeCClassTable)) {
-                THREAD_ATOMIC_END;
-                return ONIGERR_MEMORY;
-              }
-            }
-            else {
-              if (onig_st_lookup(OnigTypeCClassTable, (st_data_t )&key,
-                                 (st_data_t* )np)) {
-                THREAD_ATOMIC_END;
-                break;
-              }
-            }
-
-            *np = node_new_cclass_by_codepoint_range(tok->u.prop.not,
-                                                     sb_out, mbr);
-            if (IS_NULL(*np)) {
-              THREAD_ATOMIC_END;
-              return ONIGERR_MEMORY;
-            }
-
-            cc = NCCLASS(*np);
-            NCCLASS_SET_SHARE(cc);
-            new_key = (type_cclass_key* )xmalloc(sizeof(type_cclass_key));
-            xmemcpy(new_key, &key, sizeof(type_cclass_key));
-            onig_st_add_direct(OnigTypeCClassTable, (st_data_t )new_key,
-                               (st_data_t )*np);
-
-            THREAD_ATOMIC_END;
-          }
-          else {
-#endif
-            *np = node_new_cclass();
-            CHECK_NULL_RETURN_MEMERR(*np);
-            cc = NCCLASS(*np);
-            add_ctype_to_cc(cc, tok->u.prop.ctype, 0, env);
-            if (tok->u.prop.not != 0) NCCLASS_SET_NOT(cc);
-#ifdef USE_SHARED_CCLASS_TABLE
-          }
-#endif
+          *np = node_new_cclass();
+          CHECK_NULL_RETURN_MEMERR(*np);
+          cc = NCCLASS(*np);
+          add_ctype_to_cc(cc, tok->u.prop.ctype, 0, env);
+          if (tok->u.prop.not != 0) NCCLASS_SET_NOT(cc);
         }
         break;
 

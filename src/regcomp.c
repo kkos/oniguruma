@@ -5557,10 +5557,6 @@ onig_end(void)
   onig_print_statistics(stderr);
 #endif
 
-#ifdef USE_SHARED_CCLASS_TABLE
-  onig_free_shared_cclass_table();
-#endif
-
   onig_inited = 0;
 
   THREAD_ATOMIC_END;
