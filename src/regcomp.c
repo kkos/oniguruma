@@ -5499,14 +5499,12 @@ onig_init(void)
     return 0;
 
   THREAD_SYSTEM_INIT;
-  THREAD_ATOMIC_START;
 
   onig_inited = 1;
 
   onigenc_init();
   /* onigenc_set_default_caseconv_table((UChar* )0); */
 
-  THREAD_ATOMIC_END;
   return 0;
 }
 
@@ -5545,13 +5543,10 @@ exec_end_call_list(void)
 extern int
 onig_end(void)
 {
-  THREAD_ATOMIC_START;
-
   exec_end_call_list();
 
   onig_inited = 0;
 
-  THREAD_ATOMIC_END;
   THREAD_SYSTEM_END;
   return 0;
 }
