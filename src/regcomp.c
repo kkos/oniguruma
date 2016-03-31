@@ -5506,10 +5506,6 @@ onig_init(void)
   onigenc_init();
   /* onigenc_set_default_caseconv_table((UChar* )0); */
 
-#ifdef ONIG_DEBUG_STATISTICS
-  onig_statistics_init();
-#endif
-
   THREAD_ATOMIC_END;
   return 0;
 }
@@ -5552,10 +5548,6 @@ onig_end(void)
   THREAD_ATOMIC_START;
 
   exec_end_call_list();
-
-#ifdef ONIG_DEBUG_STATISTICS
-  onig_print_statistics(stderr);
-#endif
 
   onig_inited = 0;
 
