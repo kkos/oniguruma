@@ -92,9 +92,6 @@
 #define USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
 /* #define USE_COMBINATION_EXPLOSION_CHECK */     /* (X*)* */
 
-/* #define USE_MULTI_THREAD_SYSTEM */
-#define THREAD_SYSTEM_INIT      /* depend on thread system */
-#define THREAD_SYSTEM_END       /* depend on thread system */
 #define THREAD_ATOMIC_START     /* depend on thread system */
 #define THREAD_ATOMIC_END       /* depend on thread system */
 #define xmalloc     malloc

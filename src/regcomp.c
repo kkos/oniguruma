@@ -5498,8 +5498,6 @@ onig_init(void)
   if (onig_inited != 0)
     return 0;
 
-  THREAD_SYSTEM_INIT;
-
   onig_inited = 1;
 
   onigenc_init();
@@ -5547,7 +5545,6 @@ onig_end(void)
 
   onig_inited = 0;
 
-  THREAD_SYSTEM_END;
   return 0;
 }
 
