@@ -5512,20 +5512,6 @@ onig_initialize(OnigEncoding encodings[], int n)
   return 0;
 }
 
-/* onig_init(): deprecated function */
-extern int
-onig_init(void)
-{
-  OnigEncoding encs[] = {
-    ONIG_ENCODING_UTF8,
-    ONIG_ENCODING_EUC_JP,
-    ONIG_ENCODING_SJIS
-  };
-
-  return onig_initialize(encs, sizeof(encs)/sizeof(encs[0]));
-}
-
-
 static OnigEndCallListItemType* EndCallTop;
 
 extern void onig_add_end_call(void (*func)(void))
