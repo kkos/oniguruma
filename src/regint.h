@@ -777,16 +777,8 @@ extern int onig_st_insert_strend P_((hash_table_type* table, const UChar* str_ke
 	      &PropertyListSize);\
   if (r != 0) goto end
 
-#define PROPERTY_LIST_INIT_CHECK \
-  if (PropertyInited == 0) {\
-    int r = onigenc_property_list_init(init_property_list);\
-    if (r != 0) return r;\
-  }
-
 extern int onigenc_property_list_add_property P_((UChar* name, const OnigCodePoint* prop, hash_table_type **table, const OnigCodePoint*** plist, int *pnum, int *psize));
 
 typedef int (*ONIGENC_INIT_PROPERTY_LIST_FUNC_TYPE)(void);
-
-extern int onigenc_property_list_init P_((ONIGENC_INIT_PROPERTY_LIST_FUNC_TYPE));
 
 #endif /* REGINT_H */

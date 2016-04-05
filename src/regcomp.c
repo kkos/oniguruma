@@ -5491,19 +5491,41 @@ onig_new(regex_t** reg, const UChar* pattern, const UChar* pattern_end,
   return r;
 }
 
-
 extern int
-onig_init(void)
+onig_initialize(OnigEncoding encodings[], int n)
 {
+  int i;
+  int r;
+
   if (onig_inited != 0)
     return 0;
 
-  onig_inited = 1;
-
   onigenc_init();
-  /* onigenc_set_default_caseconv_table((UChar* )0); */
 
+  for (i = 0; i < n; i++) {
+    OnigEncoding enc = encodings[i];
+    if (enc->init != 0) {
+      r = (enc->init)();
+      if (r != 0)
+        return r;
+    }
+  }
+
+  onig_inited = 1;
   return 0;
+}
+
+/* onig_init(): deprecated function */
+extern int
+onig_init(void)
+{
+  OnigEncoding encs[] = {
+    ONIG_ENCODING_UTF8,
+    ONIG_ENCODING_EUC_JP,
+    ONIG_ENCODING_SJIS
+  };
+
+  return onig_initialize(encs, sizeof(encs)/sizeof(encs[0]));
 }
 
 

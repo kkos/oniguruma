@@ -2,7 +2,7 @@
   euc_kr.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2007  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -154,5 +154,6 @@ OnigEncodingType OnigEncodingEUC_CN = {
   euckr_is_code_ctype,
   onigenc_not_support_get_ctype_code_range,
   euckr_left_adjust_char_head,
-  euckr_is_allowed_reverse_match
+  euckr_is_allowed_reverse_match,
+  NULL /* init */
 };

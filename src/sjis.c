@@ -2,7 +2,7 @@
   sjis.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2008  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -206,7 +206,6 @@ is_allowed_reverse_match(const UChar* s, const UChar* end ARG_UNUSED)
 }
 
 
-static int PropertyInited = 0;
 static const OnigCodePoint** PropertyList;
 static int PropertyListNum;
 static int PropertyListSize;
@@ -232,18 +231,25 @@ init_property_list(void)
 
   PROPERTY_LIST_ADD_PROP("Hiragana", CR_Hiragana);
   PROPERTY_LIST_ADD_PROP("Katakana", CR_Katakana);
-  PropertyInited = 1;
 
  end:
   return r;
 }
 
+static int initialize(void)
+{
+  int r;
+
+  /* fprintf(stderr, "sjis: initialize called.\n"); */
+  r = init_property_list();
+  return r;
+}
+
+
 static int
 property_name_to_ctype(OnigEncoding enc, UChar* p, UChar* end)
 {
   hash_data_type ctype;
-
-  PROPERTY_LIST_INIT_CHECK;
 
   if (onig_st_lookup_strend(PropertyNameTable, p, end, &ctype) == 0) {
     return onigenc_minimum_property_name_to_ctype(enc, p, end);
@@ -265,8 +271,6 @@ is_code_ctype(OnigCodePoint code, unsigned int ctype)
     }
   }
   else {
-    PROPERTY_LIST_INIT_CHECK;
-
     ctype -= (ONIGENC_MAX_STD_CTYPE + 1);
     if (ctype >= (unsigned int )PropertyListNum)
       return ONIGERR_TYPE_BUG;
@@ -286,8 +290,6 @@ get_ctype_code_range(OnigCtype ctype, OnigCodePoint* sb_out,
   }
   else {
     *sb_out = 0x80;
-
-    PROPERTY_LIST_INIT_CHECK;
 
     ctype -= (ONIGENC_MAX_STD_CTYPE + 1);
     if (ctype >= (OnigCtype )PropertyListNum)
@@ -314,5 +316,6 @@ OnigEncodingType OnigEncodingSJIS = {
   is_code_ctype,
   get_ctype_code_range,
   left_adjust_char_head,
-  is_allowed_reverse_match
+  is_allowed_reverse_match,
+  initialize /* init */
 };
