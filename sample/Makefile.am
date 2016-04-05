@@ -22,10 +22,10 @@ syntax_SOURCES  = syntax.c
 sampledir = .
 
 test: encode listcap names posix simple sql syntax
-	@$(sampledir)/encode
-	@$(sampledir)/listcap
-	@$(sampledir)/names
-	@$(sampledir)/posix
-	@$(sampledir)/simple
-	@$(sampledir)/sql
-	@$(sampledir)/syntax
+	$(sampledir)/encode
+	$(sampledir)/listcap
+	$(sampledir)/names
+	$(sampledir)/posix
+	$(sampledir)/simple
+	$(sampledir)/sql
+	$(sampledir)/syntax
