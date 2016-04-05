@@ -705,6 +705,10 @@ typedef struct {
 } OnigCompileInfo;
 
 /* Oniguruma Native API */
+
+ONIG_EXTERN
+int onig_initialize P_((OnigEncoding encodings[], int n));
+/* onig_init(): deprecated function. Use onig_initialize(). */
 ONIG_EXTERN
 int onig_init P_((void));
 ONIG_EXTERN

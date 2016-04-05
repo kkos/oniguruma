@@ -257,6 +257,8 @@ reg_set_encoding(int mb_code)
     break;
   }
 
+  onig_initialize(&enc, 1);
+
   onigenc_set_default_encoding(enc);
 }
 

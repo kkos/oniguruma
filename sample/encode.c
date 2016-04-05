@@ -52,6 +52,8 @@ exec(OnigEncoding enc, OnigOptionType options,
   UChar* pattern = (UChar* )apattern;
   UChar* str     = (UChar* )astr;
 
+  onig_initialize(&enc, 1);
+
   r = onig_new(&reg, pattern,
                pattern + onigenc_str_bytelen_null(enc, pattern),
                options, enc, ONIG_SYNTAX_DEFAULT, &einfo);
@@ -91,6 +93,8 @@ exec_deluxe(OnigEncoding pattern_enc, OnigEncoding str_enc,
   OnigErrorInfo einfo;
   UChar* pattern = (UChar* )apattern;
   UChar* str     = (UChar* )astr;
+
+  onig_initialize(&str_enc, 1);
 
   ci.num_of_elements = 5;
   ci.pattern_enc = pattern_enc;

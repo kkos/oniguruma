@@ -93,6 +93,9 @@ extern int main(int argc, char* argv[])
   static UChar* str3     = (UChar* )"0123";
   static UChar* pattern3 = (UChar* )"(?@.)(?@.)(?@.)(?@.)";
 
+  OnigEncoding use_encs[] = { ONIG_ENCODING_ASCII };
+  onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
+
  /* enable capture hostory */
   onig_copy_syntax(&syn, ONIG_SYNTAX_DEFAULT);
   onig_set_syntax_op2(&syn, 
