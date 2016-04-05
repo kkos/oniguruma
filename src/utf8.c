@@ -285,6 +285,15 @@ get_case_fold_codes_by_str(OnigCaseFoldType flag,
 						    flag, p, end, items);
 }
 
+static int
+initialize(void)
+{
+  int r;
+
+  r = onigenc_unicode_initialize();
+  return r;
+}
+
 OnigEncodingType OnigEncodingUTF8 = {
   mbc_enc_len,
   "UTF-8",     /* name */
@@ -302,5 +311,5 @@ OnigEncodingType OnigEncodingUTF8 = {
   get_ctype_code_range,
   left_adjust_char_head,
   onigenc_always_true_is_allowed_reverse_match,
-  NULL /* init */
+  initialize /* init */
 };

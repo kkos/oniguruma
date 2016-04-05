@@ -10615,12 +10615,11 @@ static PosixBracketEntryType HashEntryData[] = {
 #define CODE_RANGES_NUM      15
 #endif
 
+static int unicode_inited = 0;
 static const OnigCodePoint* CodeRanges[CODE_RANGES_NUM];
-static int CodeRangeTableInited = 0;
 
-static void init_code_range_array(void) {
-  THREAD_ATOMIC_START;
-
+static void init_code_range_array(void)
+{
   CodeRanges[0] = CR_NEWLINE;
   CodeRanges[1] = CR_Alpha;
   CodeRanges[2] = CR_Blank;
@@ -10739,9 +10738,6 @@ static void init_code_range_array(void) {
   CodeRanges[113] = CR_Ugaritic;
   CodeRanges[114] = CR_Yi;
 #endif /* USE_UNICODE_PROPERTIES */
-
-  CodeRangeTableInited = 1;
-  THREAD_ATOMIC_END;
 }
 
 extern int
@@ -10759,8 +10755,6 @@ onigenc_unicode_is_code_ctype(OnigCodePoint code, unsigned int ctype)
     return ONIGERR_TYPE_BUG;
   }
 
-  if (CodeRangeTableInited == 0) init_code_range_array();
-
   return onig_is_in_code_range((UChar* )CodeRanges[ctype], code);
 }
 
@@ -10771,8 +10765,6 @@ onigenc_unicode_ctype_code_range(int ctype, const OnigCodePoint* ranges[])
   if (ctype >= CODE_RANGES_NUM) {
     return ONIGERR_TYPE_BUG;
   }
-
-  if (CodeRangeTableInited == 0) init_code_range_array();
 
   *ranges = CodeRanges[ctype];
 
@@ -10792,13 +10784,11 @@ onigenc_utf16_32_get_ctype_code_range(OnigCtype ctype, OnigCodePoint* sb_out,
 #define PROPERTY_NAME_MAX_SIZE    20
 
 static st_table* NameCtypeTable;
-static int NameTableInited = 0;
 
-static int init_name_ctype_table(void)
+static int
+init_name_ctype_table(void)
 {
   PosixBracketEntryType *pb;
-
-  THREAD_ATOMIC_START;
 
   NameCtypeTable = onig_st_init_strend_table_with_size(100);
   if (ONIG_IS_NULL(NameCtypeTable)) return ONIGERR_MEMORY;
@@ -10808,8 +10798,6 @@ static int init_name_ctype_table(void)
 			  (st_data_t )pb->ctype);
   }
 
-  NameTableInited = 1;
-  THREAD_ATOMIC_END;
   return 0;
 }
 
@@ -10837,8 +10825,6 @@ onigenc_unicode_property_name_to_ctype(OnigEncoding enc, UChar* name, UChar* end
   }
 
   buf[len] = 0;
-
-  if (NameTableInited == 0)  init_name_ctype_table();
 
   if (onig_st_lookup_strend(NameCtypeTable, buf, buf + len, &ctype) == 0) {
     return ONIGERR_INVALID_CHAR_PROPERTY_NAME;
@@ -10889,32 +10875,29 @@ static st_table* FoldTable;    /* fold-1, fold-2, fold-3 */
 static st_table* Unfold1Table;
 static st_table* Unfold2Table;
 static st_table* Unfold3Table;
-static int CaseFoldInited = 0;
 
 
-extern void onigenc_end_unicode(void)
+extern void
+onigenc_end_unicode(void)
 {
-  THREAD_ATOMIC_START;
+  if (NameCtypeTable != 0) st_free_table(NameCtypeTable);
 
   if (FoldTable    != 0) st_free_table(FoldTable);
   if (Unfold1Table != 0) st_free_table(Unfold1Table);
   if (Unfold2Table != 0) st_free_table(Unfold2Table);
   if (Unfold3Table != 0) st_free_table(Unfold3Table);
 
-  CaseFoldInited = 0;
-
-  THREAD_ATOMIC_END;
+  unicode_inited = 0;
 }
 
-static int init_case_fold_table(void)
+static int
+init_case_fold_table(void)
 {
   const CaseFold_11_Type   *p;
   const CaseUnfold_11_Type *p1;
   const CaseUnfold_12_Type *p2;
   const CaseUnfold_13_Type *p3;
   int i;
-
-  THREAD_ATOMIC_START;
 
   FoldTable = st_init_numtable_with_size(1200);
   if (ONIG_IS_NULL(FoldTable)) return ONIGERR_MEMORY;
@@ -10967,11 +10950,6 @@ static int init_case_fold_table(void)
     st_add_direct(Unfold3Table, (st_data_t )p3->from, (st_data_t )(&p3->to));
   }
 
-
-  onig_add_end_call(onigenc_end_unicode);
-
-  CaseFoldInited = 1;
-  THREAD_ATOMIC_END;
   return 0;
 }
 
@@ -10984,8 +10962,6 @@ onigenc_unicode_mbc_case_fold(OnigEncoding enc,
   OnigCodePoint code;
   int i, len, rlen;
   const UChar *p = *pp;
-
-  if (CaseFoldInited == 0) init_case_fold_table();
 
   code = ONIGENC_MBC_TO_CODE(enc, p, end);
   len = enclen(enc, p);
@@ -11035,8 +11011,6 @@ onigenc_unicode_apply_all_case_fold(OnigCaseFoldType flag,
   const CaseUnfold_11_Type* p11;
   OnigCodePoint code;
   int i, j, k, r;
-
-  /* if (CaseFoldInited == 0) init_case_fold_table(); */
 
   for (i = 0; i < (int )(sizeof(CaseUnfold_11)/sizeof(CaseUnfold_11_Type));
        i++) {
@@ -11179,8 +11153,6 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
   OnigCodePoint code, codes[3];
   CodePointList3 *to, *z3;
   CodePointList2 *z2;
-
-  if (CaseFoldInited == 0) init_case_fold_table();
 
   n = 0;
 
@@ -11371,4 +11343,29 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
   }
 
   return n;
+}
+
+extern int
+onigenc_unicode_initialize(void)
+{
+  int r;
+
+  if (unicode_inited != 0)
+    return 0;
+
+  /* fprintf(stderr, "onigenc_unicode_initialize() called.\n"); */
+
+  init_code_range_array();
+  r = init_name_ctype_table();
+  if (r != 0)
+    return r;
+
+  r = init_case_fold_table();
+  if (r != 0)
+    return r;
+
+  onig_add_end_call(onigenc_end_unicode);
+
+  unicode_inited = 1;
+  return r;
 }
