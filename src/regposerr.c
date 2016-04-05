@@ -61,8 +61,7 @@ static char* ESTRING[] = {
   /* Extended errors */
   "internal error",                          /* REG_EONIG_INTERNAL */
   "invalid wide char value",                 /* REG_EONIG_BADWC    */
-  "invalid argument",                        /* REG_EONIG_BADARG   */
-  "multi-thread error"                       /* REG_EONIG_THREAD   */
+  "invalid argument"                         /* REG_EONIG_BADARG   */
 };
 
 #include <stdio.h>

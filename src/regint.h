@@ -122,7 +122,6 @@
 #define STATE_CHECK_STRING_THRESHOLD_LEN             7
 #define STATE_CHECK_BUFF_MAX_SIZE               0x4000
 
-#define THREAD_PASS_LIMIT_COUNT     8
 #define xmemset     memset
 #define xmemcpy     memcpy
 #define xmemmove    memmove
