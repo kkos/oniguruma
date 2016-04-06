@@ -5416,6 +5416,9 @@ onig_reg_init(regex_t* reg, OnigOptionType option,
 	      OnigCaseFoldType case_fold_flag,
 	      OnigEncoding enc, OnigSyntaxType* syntax)
 {
+  if (onig_inited == 0)
+    return ONIGERR_LIBRARY_IS_NOT_INITIALIZED;
+
   if (IS_NULL(reg))
     return ONIGERR_INVALID_ARGUMENT;
 

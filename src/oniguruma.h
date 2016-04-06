@@ -588,6 +588,7 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIGERR_TOO_BIG_WIDE_CHAR_VALUE                      -401
 #define ONIGERR_NOT_SUPPORTED_ENCODING_COMBINATION           -402
 #define ONIGERR_INVALID_COMBINATION_OF_OPTIONS               -403
+#define ONIGERR_LIBRARY_IS_NOT_INITIALIZED                   -500
 
 /* errors related to thread */
 /* #define ONIGERR_OVER_THREAD_PASS_LIMIT_COUNT                -1001 */

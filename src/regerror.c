@@ -172,6 +172,8 @@ onig_error_code_to_format(int code)
     p = "not supported encoding combination"; break;
   case ONIGERR_INVALID_COMBINATION_OF_OPTIONS:
     p = "invalid combination of options"; break;
+  case ONIGERR_LIBRARY_IS_NOT_INITIALIZED:
+    p = "library is not initialized"; break;
 
   default:
     p = "undefined error code"; break;
