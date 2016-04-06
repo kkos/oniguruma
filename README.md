@@ -31,17 +31,15 @@ Install
 
 ### Case 1: Unix and Cygwin platform
 
-   1. ./configure
-   2. make
-   3. make install
+   1. autoreconf -vfi   (* case: configure script is not found.)
+
+   2. ./configure
+   3. make
+   4. make install
 
    * uninstall
 
      make uninstall
-
-   * test (ASCII/EUC-JP)
-
-     make atest
 
    * configuration check
 
