@@ -38,6 +38,8 @@ extern int main(int argc, char* argv[])
   regex_t reg;
   UChar* pattern;
 
+  reg_set_encoding(REG_POSIX_ENCODING_ASCII);
+
   /* default syntax (ONIG_SYNTAX_RUBY) */
   pattern = (UChar* )"^a+b{2,7}[c-f]?$|uuu";
   r = regcomp(&reg, (char* )pattern, REG_EXTENDED);
@@ -89,5 +91,6 @@ extern int main(int argc, char* argv[])
   x(&reg, pattern, (UChar* )"a\nb\n");
 
   regfree(&reg);
+  onig_end();
   return 0;
 }
