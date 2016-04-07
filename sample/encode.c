@@ -128,6 +128,12 @@ extern int main(int argc, char* argv[])
   static unsigned char str[] = { 0xc7, 0xd6, 0xfe, 0xea, 0xe0, 0xe2, 0x00 };
   static unsigned char pattern[] = { 0xe7, 0xf6, 0xde, '\\', 'w', '+', 0x00 };
 
+  r = exec(ONIG_ENCODING_SJIS, ONIG_OPTION_NONE,
+	   "^a\\p{Hiragana}c$", "a\202\274c");
+
+  r = exec(ONIG_ENCODING_EUC_JP, ONIG_OPTION_NONE,
+	   "^a\\p{Hiragana}c$", "a\244\276c");
+
   r = exec(ONIG_ENCODING_CP1251, ONIG_OPTION_IGNORECASE,
 	   "aBc", " AbC");
 
