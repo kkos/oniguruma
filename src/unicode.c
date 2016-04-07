@@ -2,7 +2,7 @@
   unicode.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2013  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -10616,129 +10616,126 @@ static PosixBracketEntryType HashEntryData[] = {
 #endif
 
 static int unicode_inited = 0;
-static const OnigCodePoint* CodeRanges[CODE_RANGES_NUM];
-
-static void init_code_range_array(void)
-{
-  CodeRanges[0] = CR_NEWLINE;
-  CodeRanges[1] = CR_Alpha;
-  CodeRanges[2] = CR_Blank;
-  CodeRanges[3] = CR_Cntrl;
-  CodeRanges[4] = CR_Digit;
-  CodeRanges[5] = CR_Graph;
-  CodeRanges[6] = CR_Lower;
-  CodeRanges[7] = CR_Print;
-  CodeRanges[8] = CR_Punct;
-  CodeRanges[9] = CR_Space;
-  CodeRanges[10] = CR_Upper;
-  CodeRanges[11] = CR_XDigit;
-  CodeRanges[12] = CR_Word;
-  CodeRanges[13] = CR_Alnum;
-  CodeRanges[14] = CR_ASCII;
+static const OnigCodePoint* CodeRanges[CODE_RANGES_NUM] = {
+  CR_NEWLINE, /*   0 */
+  CR_Alpha,   /*   1 */
+  CR_Blank,   /*   2 */
+  CR_Cntrl,   /*   3 */
+  CR_Digit,   /*   4 */
+  CR_Graph,   /*   5 */
+  CR_Lower,   /*   6 */
+  CR_Print,   /*   7 */
+  CR_Punct,   /*   8 */
+  CR_Space,   /*   9 */
+  CR_Upper,   /*  10 */
+  CR_XDigit,  /*  11 */
+  CR_Word,    /*  12 */
+  CR_Alnum,   /*  13 */
+  CR_ASCII,   /*  14 */
 
 #ifdef USE_UNICODE_PROPERTIES
-  CodeRanges[15] = CR_Any;
-  CodeRanges[16] = CR_Assigned;
-  CodeRanges[17] = CR_C;
-  CodeRanges[18] = CR_Cc;
-  CodeRanges[19] = CR_Cf;
-  CodeRanges[20] = CR_Cn;
-  CodeRanges[21] = CR_Co;
-  CodeRanges[22] = CR_Cs;
-  CodeRanges[23] = CR_L;
-  CodeRanges[24] = CR_Ll;
-  CodeRanges[25] = CR_Lm;
-  CodeRanges[26] = CR_Lo;
-  CodeRanges[27] = CR_Lt;
-  CodeRanges[28] = CR_Lu;
-  CodeRanges[29] = CR_M;
-  CodeRanges[30] = CR_Mc;
-  CodeRanges[31] = CR_Me;
-  CodeRanges[32] = CR_Mn;
-  CodeRanges[33] = CR_N;
-  CodeRanges[34] = CR_Nd;
-  CodeRanges[35] = CR_Nl;
-  CodeRanges[36] = CR_No;
-  CodeRanges[37] = CR_P;
-  CodeRanges[38] = CR_Pc;
-  CodeRanges[39] = CR_Pd;
-  CodeRanges[40] = CR_Pe;
-  CodeRanges[41] = CR_Pf;
-  CodeRanges[42] = CR_Pi;
-  CodeRanges[43] = CR_Po;
-  CodeRanges[44] = CR_Ps;
-  CodeRanges[45] = CR_S;
-  CodeRanges[46] = CR_Sc;
-  CodeRanges[47] = CR_Sk;
-  CodeRanges[48] = CR_Sm;
-  CodeRanges[49] = CR_So;
-  CodeRanges[50] = CR_Z;
-  CodeRanges[51] = CR_Zl;
-  CodeRanges[52] = CR_Zp;
-  CodeRanges[53] = CR_Zs;
-  CodeRanges[54] = CR_Arabic;
-  CodeRanges[55] = CR_Armenian;
-  CodeRanges[56] = CR_Bengali;
-  CodeRanges[57] = CR_Bopomofo;
-  CodeRanges[58] = CR_Braille;
-  CodeRanges[59] = CR_Buginese;
-  CodeRanges[60] = CR_Buhid;
-  CodeRanges[61] = CR_Canadian_Aboriginal;
-  CodeRanges[62] = CR_Cherokee;
-  CodeRanges[63] = CR_Common;
-  CodeRanges[64] = CR_Coptic;
-  CodeRanges[65] = CR_Cypriot;
-  CodeRanges[66] = CR_Cyrillic;
-  CodeRanges[67] = CR_Deseret;
-  CodeRanges[68] = CR_Devanagari;
-  CodeRanges[69] = CR_Ethiopic;
-  CodeRanges[70] = CR_Georgian;
-  CodeRanges[71] = CR_Glagolitic;
-  CodeRanges[72] = CR_Gothic;
-  CodeRanges[73] = CR_Greek;
-  CodeRanges[74] = CR_Gujarati;
-  CodeRanges[75] = CR_Gurmukhi;
-  CodeRanges[76] = CR_Han;
-  CodeRanges[77] = CR_Hangul;
-  CodeRanges[78] = CR_Hanunoo;
-  CodeRanges[79] = CR_Hebrew;
-  CodeRanges[80] = CR_Hiragana;
-  CodeRanges[81] = CR_Inherited;
-  CodeRanges[82] = CR_Kannada;
-  CodeRanges[83] = CR_Katakana;
-  CodeRanges[84] = CR_Kharoshthi;
-  CodeRanges[85] = CR_Khmer;
-  CodeRanges[86] = CR_Lao;
-  CodeRanges[87] = CR_Latin;
-  CodeRanges[88] = CR_Limbu;
-  CodeRanges[89] = CR_Linear_B;
-  CodeRanges[90] = CR_Malayalam;
-  CodeRanges[91] = CR_Mongolian;
-  CodeRanges[92] = CR_Myanmar;
-  CodeRanges[93] = CR_New_Tai_Lue;
-  CodeRanges[94] = CR_Ogham;
-  CodeRanges[95] = CR_Old_Italic;
-  CodeRanges[96] = CR_Old_Persian;
-  CodeRanges[97] = CR_Oriya;
-  CodeRanges[98] = CR_Osmanya;
-  CodeRanges[99] = CR_Runic;
-  CodeRanges[100] = CR_Shavian;
-  CodeRanges[101] = CR_Sinhala;
-  CodeRanges[102] = CR_Syloti_Nagri;
-  CodeRanges[103] = CR_Syriac;
-  CodeRanges[104] = CR_Tagalog;
-  CodeRanges[105] = CR_Tagbanwa;
-  CodeRanges[106] = CR_Tai_Le;
-  CodeRanges[107] = CR_Tamil;
-  CodeRanges[108] = CR_Telugu;
-  CodeRanges[109] = CR_Thaana;
-  CodeRanges[110] = CR_Thai;
-  CodeRanges[111] = CR_Tibetan;
-  CodeRanges[112] = CR_Tifinagh;
-  CodeRanges[113] = CR_Ugaritic;
-  CodeRanges[114] = CR_Yi;
+  CR_Any,          /*  15 */
+  CR_Assigned,     /*  16 */
+  CR_C,            /*  17 */
+  CR_Cc,           /*  18 */
+  CR_Cf,           /*  19 */
+  CR_Cn,           /*  20 */
+  CR_Co,           /*  21 */
+  CR_Cs,           /*  22 */
+  CR_L,            /*  23 */
+  CR_Ll,           /*  24 */
+  CR_Lm,           /*  25 */
+  CR_Lo,           /*  26 */
+  CR_Lt,           /*  27 */
+  CR_Lu,           /*  28 */
+  CR_M,            /*  29 */
+  CR_Mc,           /*  30 */
+  CR_Me,           /*  31 */
+  CR_Mn,           /*  32 */
+  CR_N,            /*  33 */
+  CR_Nd,           /*  34 */
+  CR_Nl,           /*  35 */
+  CR_No,           /*  36 */
+  CR_P,            /*  37 */
+  CR_Pc,           /*  38 */
+  CR_Pd,           /*  39 */
+  CR_Pe,           /*  40 */
+  CR_Pf,           /*  41 */
+  CR_Pi,           /*  42 */
+  CR_Po,           /*  43 */
+  CR_Ps,           /*  44 */
+  CR_S,            /*  45 */
+  CR_Sc,           /*  46 */
+  CR_Sk,           /*  47 */
+  CR_Sm,           /*  48 */
+  CR_So,           /*  49 */
+  CR_Z,            /*  50 */
+  CR_Zl,           /*  51 */
+  CR_Zp,           /*  52 */
+  CR_Zs,           /*  53 */
+  CR_Arabic,       /*  54 */
+  CR_Armenian,     /*  55 */
+  CR_Bengali,      /*  56 */
+  CR_Bopomofo,     /*  57 */
+  CR_Braille,      /*  58 */
+  CR_Buginese,     /*  59 */
+  CR_Buhid,        /*  60 */
+  CR_Canadian_Aboriginal, /*  61 */
+  CR_Cherokee,     /*  62 */
+  CR_Common,       /*  63 */
+  CR_Coptic,       /*  64 */
+  CR_Cypriot,      /*  65 */
+  CR_Cyrillic,     /*  66 */
+  CR_Deseret,      /*  67 */
+  CR_Devanagari,   /*  68 */
+  CR_Ethiopic,     /*  69 */
+  CR_Georgian,     /*  70 */
+  CR_Glagolitic,   /*  71 */
+  CR_Gothic,       /*  72 */
+  CR_Greek,        /*  73 */
+  CR_Gujarati,     /*  74 */
+  CR_Gurmukhi,     /*  75 */
+  CR_Han,          /*  76 */
+  CR_Hangul,       /*  77 */
+  CR_Hanunoo,      /*  78 */
+  CR_Hebrew,       /*  79 */
+  CR_Hiragana,     /*  80 */
+  CR_Inherited,    /*  81 */
+  CR_Kannada,      /*  82 */
+  CR_Katakana,     /*  83 */
+  CR_Kharoshthi,   /*  84 */
+  CR_Khmer,        /*  85 */
+  CR_Lao,          /*  86 */
+  CR_Latin,        /*  87 */
+  CR_Limbu,        /*  88 */
+  CR_Linear_B,     /*  89 */
+  CR_Malayalam,    /*  90 */
+  CR_Mongolian,    /*  91 */
+  CR_Myanmar,      /*  92 */
+  CR_New_Tai_Lue,  /*  93 */
+  CR_Ogham,        /*  94 */
+  CR_Old_Italic,   /*  95 */
+  CR_Old_Persian,  /*  96 */
+  CR_Oriya,        /*  97 */
+  CR_Osmanya,      /*  98 */
+  CR_Runic,        /*  99 */
+  CR_Shavian,      /* 100 */
+  CR_Sinhala,      /* 101 */
+  CR_Syloti_Nagri, /* 102 */
+  CR_Syriac,       /* 103 */
+  CR_Tagalog,      /* 104 */
+  CR_Tagbanwa,     /* 105 */
+  CR_Tai_Le,       /* 106 */
+  CR_Tamil,        /* 107 */
+  CR_Telugu,       /* 108 */
+  CR_Thaana,       /* 109 */
+  CR_Thai,         /* 110 */
+  CR_Tibetan,      /* 111 */
+  CR_Tifinagh,     /* 112 */
+  CR_Ugaritic,     /* 113 */
+  CR_Yi,           /* 114 */
 #endif /* USE_UNICODE_PROPERTIES */
-}
+};
 
 extern int
 onigenc_unicode_is_code_ctype(OnigCodePoint code, unsigned int ctype)
@@ -11353,9 +11350,6 @@ onigenc_unicode_initialize(void)
   if (unicode_inited != 0)
     return 0;
 
-  /* fprintf(stderr, "onigenc_unicode_initialize() called.\n"); */
-
-  init_code_range_array();
   r = init_name_ctype_table();
   if (r != 0)
     return r;
