@@ -11,7 +11,8 @@ libonig_la_SOURCES = regint.h regparse.h regenc.h st.h \
 	regerror.c regparse.c regext.c regcomp.c regexec.c reggnu.c \
 	regenc.c regsyntax.c regtrav.c regversion.c st.c \
 	regposix.c regposerr.c \
-	unicode.c ascii.c utf8.c \
+	unicode.c unicode_prop.c \
+	ascii.c utf8.c \
 	utf16_be.c utf16_le.c \
 	utf32_be.c utf32_le.c \
 	euc_jp.c euc_jp_prop.c \
