@@ -856,6 +856,11 @@ extern int main(int argc, char* argv[])
   n("[^[^a-zあいう]&&[^bcdefgうえお]g-w]", "2");
   x2("a<b>バージョンのダウンロード<\\/b>", "a<b>バージョンのダウンロード</b>", 0, 32);
   x2(".<b>バージョンのダウンロード<\\/b>", "a<b>バージョンのダウンロード</b>", 0, 32);
+#ifndef POSIX_TEST
+  x2("\\p{Hiragana}", "ぴ", 0, 2);
+  n("\\P{Hiragana}", "ぴ");
+#endif
+
   fprintf(stdout,
        "\nRESULT   SUCC: %d,  FAIL: %d,  ERROR: %d      (by Oniguruma %s)\n",
        nsucc, nfail, nerror, onig_version());
