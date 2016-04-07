@@ -127,12 +127,12 @@ am_libonig_la_OBJECTS = regerror.lo regparse.lo regext.lo regcomp.lo \
 	regexec.lo reggnu.lo regenc.lo regsyntax.lo regtrav.lo \
 	regversion.lo st.lo regposix.lo regposerr.lo unicode.lo \
 	ascii.lo utf8.lo utf16_be.lo utf16_le.lo utf32_be.lo \
-	utf32_le.lo euc_jp.lo sjis.lo iso8859_1.lo iso8859_2.lo \
-	iso8859_3.lo iso8859_4.lo iso8859_5.lo iso8859_6.lo \
-	iso8859_7.lo iso8859_8.lo iso8859_9.lo iso8859_10.lo \
-	iso8859_11.lo iso8859_13.lo iso8859_14.lo iso8859_15.lo \
-	iso8859_16.lo euc_tw.lo euc_kr.lo big5.lo gb18030.lo koi8_r.lo \
-	cp1251.lo onig_init.lo
+	utf32_le.lo euc_jp.lo euc_jp_prop.lo sjis.lo sjis_prop.lo \
+	iso8859_1.lo iso8859_2.lo iso8859_3.lo iso8859_4.lo \
+	iso8859_5.lo iso8859_6.lo iso8859_7.lo iso8859_8.lo \
+	iso8859_9.lo iso8859_10.lo iso8859_11.lo iso8859_13.lo \
+	iso8859_14.lo iso8859_15.lo iso8859_16.lo euc_tw.lo euc_kr.lo \
+	big5.lo gb18030.lo koi8_r.lo cp1251.lo onig_init.lo
 libonig_la_OBJECTS = $(am_libonig_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -333,7 +333,9 @@ libonig_la_SOURCES = regint.h regparse.h regenc.h st.h \
 	unicode.c ascii.c utf8.c \
 	utf16_be.c utf16_le.c \
 	utf32_be.c utf32_le.c \
-	euc_jp.c sjis.c iso8859_1.c \
+	euc_jp.c euc_jp_prop.c \
+	sjis.c sjis_prop.c \
+	iso8859_1.c \
 	iso8859_2.c  iso8859_3.c \
 	iso8859_4.c  iso8859_5.c \
 	iso8859_6.c  iso8859_7.c \
@@ -446,6 +448,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/big5.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cp1251.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/euc_jp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/euc_jp_prop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/euc_kr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/euc_tw.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gb18030.Plo@am__quote@
@@ -479,6 +482,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/regtrav.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/regversion.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sjis.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sjis_prop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/st.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicode.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utf16_be.Plo@am__quote@

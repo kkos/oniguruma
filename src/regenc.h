@@ -4,7 +4,7 @@
   regenc.h -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2008  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -102,6 +102,10 @@ typedef struct {
   short int len;
 } PosixBracketEntryType;
 
+struct PropertyNameCtype {
+  char *name;
+  int ctype;
+};
 
 /* #define USE_CRNL_AS_LINE_TERMINATOR */
 #define USE_UNICODE_PROPERTIES
@@ -141,7 +145,8 @@ ONIG_EXTERN int onigenc_mb2_is_code_ctype P_((OnigEncoding enc, OnigCodePoint co
 ONIG_EXTERN int onigenc_mb4_code_to_mbclen P_((OnigCodePoint code));
 ONIG_EXTERN int onigenc_mb4_code_to_mbc P_((OnigEncoding enc, OnigCodePoint code, UChar *buf));
 ONIG_EXTERN int onigenc_mb4_is_code_ctype P_((OnigEncoding enc, OnigCodePoint code, unsigned int ctype));
-
+ONIG_EXTERN struct PropertyNameCtype* euc_jp_lookup_property_name P_((register const char *str, register unsigned int len));
+ONIG_EXTERN struct PropertyNameCtype* sjis_lookup_property_name P_((register const char *str, register unsigned int len));
 
 /* in enc/unicode.c */
 ONIG_EXTERN int onigenc_unicode_is_code_ctype P_((OnigCodePoint code, unsigned int ctype));

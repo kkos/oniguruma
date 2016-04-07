@@ -767,15 +767,6 @@ extern hash_table_type* onig_st_init_strend_table_with_size P_((int size));
 extern int onig_st_lookup_strend P_((hash_table_type* table, const UChar* str_key, const UChar* end_key, hash_data_type *value));
 extern int onig_st_insert_strend P_((hash_table_type* table, const UChar* str_key, const UChar* end_key, hash_data_type value));
 
-/* encoding property management */
-#define PROPERTY_LIST_ADD_PROP(Name, CR) \
-  r = onigenc_property_list_add_property((UChar* )Name, CR,\
-	      &PropertyNameTable, &PropertyList, &PropertyListNum,\
-	      &PropertyListSize);\
-  if (r != 0) goto end
-
-extern int onigenc_property_list_add_property P_((UChar* name, const OnigCodePoint* prop, hash_table_type **table, const OnigCodePoint*** plist, int *pnum, int *psize));
-
 typedef int (*ONIGENC_INIT_PROPERTY_LIST_FUNC_TYPE)(void);
 
 #endif /* REGINT_H */
