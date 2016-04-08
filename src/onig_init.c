@@ -34,9 +34,7 @@ extern int
 onig_init(void)
 {
   OnigEncoding encs[] = {
-    ONIG_ENCODING_UTF8,
-    ONIG_ENCODING_EUC_JP,
-    ONIG_ENCODING_SJIS
+    ONIG_ENCODING_UTF8
   };
 
   return onig_initialize(encs, sizeof(encs)/sizeof(encs[0]));
