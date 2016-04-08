@@ -31,7 +31,7 @@ headers      = $(posixheaders) $(onigheaders)
 
 onigobjs     = reggnu.obj regerror.obj regparse.obj regext.obj regcomp.obj \
 	       regexec.obj regenc.obj regsyntax.obj regtrav.obj \
-	       regversion.obj st.obj
+	       regversion.obj st.obj onig_init.obj
 posixobjs    = regposix.obj regposerr.obj
 libobjs      = $(onigobjs) $(posixobjs)
 
@@ -53,7 +53,8 @@ encobjs = ascii.obj utf8.obj \
 		euc_tw.obj euc_kr.obj big5.obj \
 		gb18030.obj \
 		koi8_r.obj  \
-		cp1251.obj # koi8.obj
+		cp1251.obj \
+		euc_jp_prop.obj sjis_prop.obj unicode_prop.obj # koi8.obj
 
 onigsources  = regerror.c regparse.c regext.c regcomp.c regexec.c regenc.c \
 	       regsyntax.c regtrav.c regversion.c reggnu.c st.c
@@ -106,6 +107,7 @@ regversion.obj: regversion.c oniguruma.h config.h
 regposix.obj:  regposix.c $(posixheaders) oniguruma.h config.h
 regposerr.obj: regposerr.c $(posixheaders) config.h
 st.obj:        st.c regint.h oniguruma.h config.h st.h
+onig_init.obj: onig_init.c oniguruma.h
 
 ascii.obj:      ascii.c regenc.h config.h
 unicode.obj:    unicode.c regenc.h config.h
@@ -138,6 +140,10 @@ koi8_r.obj:     koi8_r.c regenc.h config.h
 cp1251.obj:     cp1251.c regenc.h config.h
 big5.obj:       big5.c   regenc.h config.h
 gb18030.obj:    gb18030.c regenc.h config.h
+euc_jp_prop.obj:  euc_jp_prop.c regenc.h
+sjis_prop.obj:    sjis_prop.c regenc.h
+unicode_prop.obj: unicode_prop.c regenc.h
+
 
 
 # Ruby test
