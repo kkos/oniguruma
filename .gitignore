@@ -22,6 +22,7 @@ Makefile.in
 testc
 testcu
 testp
+/build
 m4/*.m4
 sample/crnl
 sample/encode
