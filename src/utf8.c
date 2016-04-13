@@ -77,11 +77,11 @@ is_mbc_newline(const UChar* p, const UChar* end)
 #endif
     if (p + 1 < end) {
       if (*(p+1) == 0x85 && *p == 0xc2) /* U+0085 */
-	return 1;
+        return 1;
       if (p + 2 < end) {
-	if ((*(p+2) == 0xa8 || *(p+2) == 0xa9)
-	    && *(p+1) == 0x80 && *p == 0xe2)  /* U+2028, U+2029 */
-	  return 1;
+        if ((*(p+2) == 0xa8 || *(p+2) == 0xa9)
+            && *(p+1) == 0x80 && *p == 0xe2)  /* U+2028, U+2029 */
+          return 1;
       }
     }
 #endif
@@ -201,10 +201,10 @@ mbc_case_fold(OnigCaseFoldType flag, const UChar** pp,
 #ifdef USE_UNICODE_CASE_FOLD_TURKISH_AZERI
     if ((flag & ONIGENC_CASE_FOLD_TURKISH_AZERI) != 0) {
       if (*p == 0x49) {
-	*fold++ = 0xc4;
-	*fold   = 0xb1;
-	(*pp)++;
-	return 2;
+        *fold++ = 0xc4;
+        *fold   = 0xb1;
+        (*pp)++;
+        return 2;
       }
     }
 #endif
@@ -235,17 +235,17 @@ is_mbc_ambiguous(OnigCaseFoldType flag, const UChar** pp, const UChar* end)
     if (*p == 0xc3) {
       int c = *(p + 1);
       if (c >= 0x80) {
-	if (c <= (UChar )0x9e) { /* upper */
-	  if (c == (UChar )0x97) return FALSE;
-	  return TRUE;
-	}
-	else if (c >= (UChar )0xa0 && c <= (UChar )0xbe) { /* lower */
-	  if (c == (UChar )'\267') return FALSE;
-	  return TRUE;
-	}
+        if (c <= (UChar )0x9e) { /* upper */
+          if (c == (UChar )0x97) return FALSE;
+          return TRUE;
+        }
+        else if (c >= (UChar )0xa0 && c <= (UChar )0xbe) { /* lower */
+          if (c == (UChar )'\267') return FALSE;
+          return TRUE;
+        }
         else if (c == (UChar )0x9f &&
                  (flag & INTERNAL_ONIGENC_CASE_FOLD_MULTI_CHAR) != 0) {
-	  return TRUE;
+          return TRUE;
         }
       }
     }

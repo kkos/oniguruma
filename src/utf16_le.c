@@ -69,10 +69,11 @@ utf16le_is_mbc_newline(const UChar* p, const UChar* end)
 #ifdef USE_UNICODE_ALL_LINE_TERMINATORS
     if ((
 #ifndef USE_CRNL_AS_LINE_TERMINATOR
-	 *p == 0x0d ||
+         *p == 0x0d ||
 #endif
-	 *p == 0x85) && *(p+1) == 0x00)
+         *p == 0x85) && *(p+1) == 0x00)
       return 1;
+
     if (*(p+1) == 0x20 && (*p == 0x29 || *p == 0x28))
       return 1;
 #endif
@@ -132,10 +133,10 @@ utf16le_mbc_case_fold(OnigCaseFoldType flag,
 #ifdef USE_UNICODE_CASE_FOLD_TURKISH_AZERI
     if ((flag & ONIGENC_CASE_FOLD_TURKISH_AZERI) != 0) {
       if (*p == 0x49) {
-	*fold++ = 0x31;
-	*fold   = 0x01;
-	(*pp) += 2;
-	return 2;
+        *fold++ = 0x31;
+        *fold   = 0x01;
+        (*pp) += 2;
+        return 2;
       }
     }
 #endif
@@ -172,9 +173,9 @@ utf16le_is_mbc_ambiguous(OnigCaseFoldType flag, const UChar** pp,
     if ((v | BIT_CTYPE_LOWER) != 0) {
       /* 0xaa, 0xb5, 0xba are lower case letter, but can't convert. */
       if (c >= 0xaa && c <= 0xba)
-	return FALSE;
+        return FALSE;
       else
-	return TRUE;
+        return TRUE;
     }
     return (v != 0 ? TRUE : FALSE);
   }
