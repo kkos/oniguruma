@@ -11135,7 +11135,7 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
       }
 
       /* multi char folded code is not head of another folded multi char */
-      flag = 0; /* DISABLE_CASE_FOLD_MULTI_CHAR(flag); */
+      return n;
     }
   }
   else {
