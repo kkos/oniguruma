@@ -156,11 +156,53 @@ ONIG_EXTERN int onigenc_unicode_ctype_code_range P_((int ctype, const OnigCodePo
 ONIG_EXTERN int onigenc_unicode_get_case_fold_codes_by_str P_((OnigEncoding enc, OnigCaseFoldType flag, const OnigUChar* p, const OnigUChar* end, OnigCaseFoldCodeItem items[]));
 ONIG_EXTERN int onigenc_unicode_mbc_case_fold P_((OnigEncoding enc, OnigCaseFoldType flag, const UChar** pp, const UChar* end, UChar* fold));
 ONIG_EXTERN int onigenc_unicode_apply_all_case_fold P_((OnigCaseFoldType flag, OnigApplyAllCaseFoldFunc f, void* arg));
-ONIG_EXTERN int onigenc_unicode_initialize P_((void));
 
 
 #define UTF16_IS_SURROGATE_FIRST(c)    (((c) & 0xfc) == 0xd8)
 #define UTF16_IS_SURROGATE_SECOND(c)   (((c) & 0xfc) == 0xdc)
+
+/* from unicode generated codes */
+#define FOLDS1_FOLD(i)         (OnigUnicodeFolds1 + (i))
+#define FOLDS2_FOLD(i)         (OnigUnicodeFolds2 + (i))
+#define FOLDS3_FOLD(i)         (OnigUnicodeFolds3 + (i))
+#define FOLDS1_UNFOLDS_NUM(i)  (OnigUnicodeFolds1[(i)+1])
+#define FOLDS2_UNFOLDS_NUM(i)  (OnigUnicodeFolds2[(i)+2])
+#define FOLDS3_UNFOLDS_NUM(i)  (OnigUnicodeFolds3[(i)+3])
+#define FOLDS1_UNFOLDS(i)      (OnigUnicodeFolds1 + (i) + 2)
+#define FOLDS2_UNFOLDS(i)      (OnigUnicodeFolds2 + (i) + 3)
+#define FOLDS3_UNFOLDS(i)      (OnigUnicodeFolds3 + (i) + 4)
+#define FOLDS1_NEXT_INDEX(i)   ((i) + 2 + OnigUnicodeFolds1[(i)+1])
+#define FOLDS2_NEXT_INDEX(i)   ((i) + 3 + OnigUnicodeFolds2[(i)+2])
+#define FOLDS3_NEXT_INDEX(i)   ((i) + 4 + OnigUnicodeFolds3[(i)+3])
+
+#define FOLDS_FOLD_ADDR_BUK(buk, addr) do {\
+  if ((buk)->fold_len == 1)\
+    addr = OnigUnicodeFolds1 + (buk)->index;\
+  else if ((buk)->fold_len == 2)\
+    addr = OnigUnicodeFolds2 + (buk)->index;\
+  else if ((buk)->fold_len == 3)\
+    addr = OnigUnicodeFolds3 + (buk)->index;\
+} while (0)
+
+extern OnigCodePoint OnigUnicodeFolds1[];
+extern OnigCodePoint OnigUnicodeFolds2[];
+extern OnigCodePoint OnigUnicodeFolds3[];
+
+struct ByUnfoldKey {
+  OnigCodePoint code;
+  int   index;
+  int   fold_len;
+};
+
+extern const struct ByUnfoldKey* unicode_unfold_key(OnigCodePoint code);
+extern int unicode_fold1_key(OnigCodePoint code[]);
+extern int unicode_fold2_key(OnigCodePoint code[]);
+extern int unicode_fold3_key(OnigCodePoint code[]);
+
+extern int onig_codes_cmp(OnigCodePoint a[], OnigCodePoint b[], int n);
+extern int onig_codes_byte_at(OnigCodePoint code[], int at);
+
+
 
 #define ONIGENC_ISO_8859_1_TO_LOWER_CASE(c) \
   OnigEncISO_8859_1_ToLowerCaseTable[c]

@@ -207,15 +207,6 @@ utf16le_get_case_fold_codes_by_str(OnigCaseFoldType flag,
 						    flag, p, end, items);
 }
 
-static int
-initialize(void)
-{
-  int r;
-
-  r = onigenc_unicode_initialize();
-  return r;
-}
-
 OnigEncodingType OnigEncodingUTF16_LE = {
   utf16le_mbc_enc_len,
   "UTF-16LE",   /* name */
@@ -233,5 +224,5 @@ OnigEncodingType OnigEncodingUTF16_LE = {
   onigenc_utf16_32_get_ctype_code_range,
   utf16le_left_adjust_char_head,
   onigenc_always_false_is_allowed_reverse_match,
-  initialize /* init */
+  NULL /* init */
 };

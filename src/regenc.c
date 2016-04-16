@@ -836,3 +836,30 @@ onigenc_with_ascii_strncmp(OnigEncoding enc, const UChar* p, const UChar* end,
   }
   return 0;
 }
+
+extern int
+onig_codes_cmp(OnigCodePoint a[], OnigCodePoint b[], int n)
+{
+  int i;
+
+  for (i = 0; i < n; i++) {
+    if (a[i] != b[i])
+      return -1;
+  }
+
+  return 0;
+}
+
+extern int
+onig_codes_byte_at(OnigCodePoint codes[], int at)
+{
+  int index;
+  int b;
+  OnigCodePoint code;
+
+  index = at / 3;
+  b     = at % 3;
+  code = codes[index];
+
+  return ((code >> ((2 - b) * 8)) & 0xff);
+}
