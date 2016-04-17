@@ -35,7 +35,10 @@ libonig_la_SOURCES = regint.h regparse.h regenc.h st.h \
 
 libonig_la_LDFLAGS = -version-info $(LTVERSION)
 
-EXTRA_DIST = koi8.c mktable.c
+EXTRA_DIST = koi8.c mktable.c \
+	unicode_fold_data.c \
+	make_unicode_fold.sh make_unicode_fold_data.py \
+	gperf_fold_key_conv.py gperf_unfold_key_conv.py
 
 dll:
 	$(CXX) -shared -Wl,--output-def,libonig.def -o libonig.dll *.o \
