@@ -1,4 +1,4 @@
-README  2016/04/06
+README  2016/04/18
 
 Oniguruma  ----   (C) K.Kosako <kkosako0@gmail.com>
 
@@ -49,20 +49,17 @@ Install
 
 
 
- Case 2: Win32 platform (VC++)
+ Case 2: Windows 64/32bit platform (VisualStudio)
 
-   1. copy win32\Makefile src\Makefile
-   2. copy win32\config.h src\config.h
-   3. cd src
-   4. nmake
+   execute make_win64 or make_win32
 
-      onig_s.lib:  static link library
-      onig.dll:    dynamic link library
+      src/onig_s.lib:  static link library
+      src/onig.dll:    dynamic link library
 
   * test (ASCII/Shift_JIS)
-   1. copy win32\testc.c src\testc.c
-   2. cd src
-   3. nmake ctest
+      1. cd src
+      2. copy ..\windows\testc.c .
+      3. nmake -f Makefile.windows ctest
 
 
 
