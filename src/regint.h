@@ -130,12 +130,12 @@
 #define xalloca     _alloca
 #define xvsnprintf(buf,size,fmt,args)  _vsnprintf_s(buf,size,_TRUNCATE,fmt,args)
 #define xsnprintf   sprintf_s
-#define xstrncat(dest,src,n)   strcat_s(dest,n,src)
+#define xstrcat(dest,src,size)   strcat_s(dest,size,src)
 #else
 #define xalloca     alloca
 #define xvsnprintf  vsnprintf
 #define xsnprintf   snprintf
-#define xstrncat(dest,src,n)   strncat(dest,src,n)
+#define xstrcat(dest,src,size)   strcat(dest,src)
 #endif
 
 
