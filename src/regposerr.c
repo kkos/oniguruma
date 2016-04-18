@@ -44,8 +44,10 @@
 
 #if defined(_WIN32) && !defined(__GNUC__)
 #define xsnprintf   sprintf_s
+#define xstrncpy(dest,src,size)   strncpy_s(dest,size,src,_TRUNCATE)
 #else
 #define xsnprintf   snprintf
+#define xstrncpy    strncpy
 #endif
 
 static char* ESTRING[] = {
@@ -96,7 +98,7 @@ regerror(int posix_ecode, const regex_t* reg ARG_UNUSED, char* buf,
   len = strlen(s) + 1; /* use strlen() because s is ascii encoding. */
 
   if (buf != NULL && size > 0) {
-    strncpy(buf, s, size - 1);
+    xstrncpy(buf, s, size - 1);
     buf[size - 1] = '\0';
   }
   return len;
