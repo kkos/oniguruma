@@ -55,9 +55,9 @@ encobjs = ascii.obj utf8.obj \
 		koi8_r.obj  \
 		cp1251.obj \
 		euc_jp_prop.obj sjis_prop.obj \
-		unicode_prop.obj unicode_fold_data.c \
-		unicode_unfold_key.c unicode_fold1_key.c \
-		unicode_fold2_key.c unicode_fold3_key.c	# koi8.obj
+		unicode_prop.obj unicode_fold_data.obj \
+		unicode_unfold_key.obj unicode_fold1_key.obj \
+		unicode_fold2_key.obj unicode_fold3_key.obj	# koi8.obj
 
 onigsources  = regerror.c regparse.c regext.c regcomp.c regexec.c regenc.c \
 	       regsyntax.c regtrav.c regversion.c reggnu.c st.c
