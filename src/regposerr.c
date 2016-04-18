@@ -42,6 +42,12 @@
 #  define ARG_UNUSED
 #endif
 
+#if defined(_WIN32) && !defined(__GNUC__)
+#define xsnprintf   sprintf_s
+#else
+#define xsnprintf   snprintf
+#endif
+
 static char* ESTRING[] = {
   NULL,
   "failed to match",                         /* REG_NOMATCH    */
@@ -83,7 +89,7 @@ regerror(int posix_ecode, const regex_t* reg ARG_UNUSED, char* buf,
     s = "";
   }
   else {
-    sprintf(tbuf, "undefined error code (%d)", posix_ecode);
+    xsnprintf(tbuf, sizeof(tbuf), "undefined error code (%d)", posix_ecode);
     s = tbuf;
   }
 
