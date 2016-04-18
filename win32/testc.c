@@ -158,6 +158,12 @@ static void n(char* pattern, char* str)
 
 extern int main(int argc, char* argv[])
 {
+#ifndef POSIX_TEST
+  static OnigEncoding use_encs[] = { ONIG_ENCODING_SJIS };
+
+  onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
+#endif
+
   err_file = stdout;
 
 #ifdef POSIX_TEST
