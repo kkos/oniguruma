@@ -182,6 +182,8 @@ ONIG_EXTERN int onigenc_unicode_apply_all_case_fold P_((OnigCaseFoldType flag, O
     addr = OnigUnicodeFolds2 + (buk)->index;\
   else if ((buk)->fold_len == 3)\
     addr = OnigUnicodeFolds3 + (buk)->index;\
+  else\
+    addr = 0;\
 } while (0)
 
 extern OnigCodePoint OnigUnicodeFolds1[];
