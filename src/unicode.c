@@ -31,10 +31,6 @@
 
 #define ONIGENC_IS_UNICODE_ISO_8859_1_CTYPE(code,ctype) \
   ((EncUNICODE_ISO_8859_1_CtypeTable[code] & CTYPE_TO_BIT(ctype)) != 0)
-#if 0
-#define ONIGENC_IS_UNICODE_ISO_8859_1_BIT_CTYPE(code,cbit) \
-  ((EncUNICODE_ISO_8859_1_CtypeTable[code] & (cbit)) != 0)
-#endif
 
 static const unsigned short EncUNICODE_ISO_8859_1_CtypeTable[256] = {
   0x4008, 0x4008, 0x4008, 0x4008, 0x4008, 0x4008, 0x4008, 0x4008,
@@ -8773,7 +8769,7 @@ onigenc_unicode_mbc_case_fold(OnigEncoding enc,
       FOLDS_FOLD_ADDR_BUK(buk, addr);
       rlen = 0;
       for (i = 0; i < buk->fold_len; i++) {
-	OnigCodePoint c = addr[i];
+        OnigCodePoint c = addr[i];
         len = ONIGENC_CODE_TO_MBC(enc, c, fold);
         fold += len;
         rlen += len;
