@@ -339,7 +339,7 @@ onig_snprintf_with_pattern(buf, bufsize, enc, pat, pat_end, fmt, va_alist)
   need = (pat_end - pat) * 4 + 4;
 
   if (n + need < bufsize) {
-    strcat((char* )buf, ": /");
+    xstrncat((char* )buf, ": /", bufsize);
     s = buf + onigenc_str_bytelen_null(ONIG_ENCODING_ASCII, buf);
 
     p = pat;
