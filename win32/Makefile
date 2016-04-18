@@ -54,7 +54,10 @@ encobjs = ascii.obj utf8.obj \
 		gb18030.obj \
 		koi8_r.obj  \
 		cp1251.obj \
-		euc_jp_prop.obj sjis_prop.obj unicode_prop.obj # koi8.obj
+		euc_jp_prop.obj sjis_prop.obj \
+		unicode_prop.obj unicode_fold_data.c \
+		unicode_unfold_key.c unicode_fold1_key.c \
+		unicode_fold2_key.c unicode_fold3_key.c	# koi8.obj
 
 onigsources  = regerror.c regparse.c regext.c regcomp.c regexec.c regenc.c \
 	       regsyntax.c regtrav.c regversion.c reggnu.c st.c
@@ -143,12 +146,11 @@ gb18030.obj:    gb18030.c regenc.h config.h
 euc_jp_prop.obj:  euc_jp_prop.c regenc.h
 sjis_prop.obj:    sjis_prop.c regenc.h
 unicode_prop.obj: unicode_prop.c regenc.h
-
-
-
-# Ruby test
-rtest:
-	$(RUBYDIR)\win32\ruby -w -Ke test.rb
+unicode_fold_data.obj: unicode_fold_data.c regenc.h config.h
+unicode_unfold_key.obj: unicode_unfold_key.c regenc.h config.h
+unicode_fold1_key.obj: unicode_fold1_key.c regenc.h config.h
+unicode_fold2_key.obj: unicode_fold2_key.c regenc.h config.h
+unicode_fold3_key.obj: unicode_fold3_key.c regenc.h config.h
 
 # C library test
 ctest: $(testc)
