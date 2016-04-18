@@ -1,4 +1,4 @@
-# Oniguruma Makefile for Win32
+# Oniguruma Makefile for Windows
 
 product_name = oniguruma
 
