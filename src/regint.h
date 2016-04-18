@@ -128,7 +128,7 @@
 
 #if defined(_WIN32) && !defined(__GNUC__)
 #define xalloca     _alloca
-#define xvsnprintf  _vsnprintf
+#define xvsnprintf(buf,size,fmt,args)  _vsnprintf_s(buf,size,_TRUNCATE,fmt,args)
 #define xsnprintf   sprintf_s
 #else
 #define xalloca     alloca
