@@ -24,11 +24,3 @@ testcu
 testp
 /build
 m4/*.m4
-sample/crnl
-sample/encode
-sample/listcap
-sample/names
-sample/posix
-sample/simple
-sample/sql
-sample/syntax
