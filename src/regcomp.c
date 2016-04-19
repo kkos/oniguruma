@@ -5504,16 +5504,15 @@ onig_initialize(OnigEncoding encodings[], int n)
 
   onigenc_init();
 
+  onig_inited = 1;
+
   for (i = 0; i < n; i++) {
     OnigEncoding enc = encodings[i];
-    if (enc->init != 0) {
-      r = (enc->init)();
-      if (r != 0)
-        return r;
-    }
+    r = onig_initialize_encoding(enc);
+    if (r != 0)
+      return r;
   }
 
-  onig_inited = 1;
   return 0;
 }
 

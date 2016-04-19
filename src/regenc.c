@@ -37,6 +37,17 @@ onigenc_init(void)
   return 0;
 }
 
+extern int
+onig_initialize_encoding(OnigEncoding enc)
+{
+  if (enc->init != 0 && (enc->is_initialized() == 0)) {
+    int r = (enc->init)();
+    return r;
+  }
+
+  return 0;
+}
+
 extern OnigEncoding
 onigenc_get_default_encoding(void)
 {

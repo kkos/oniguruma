@@ -340,6 +340,8 @@ OnigUChar* onigenc_step_back P_((OnigEncoding enc, const OnigUChar* start, const
 ONIG_EXTERN
 int onigenc_init P_((void));
 ONIG_EXTERN
+int onig_initialize_encoding P_((OnigEncoding enc));
+ONIG_EXTERN
 int onigenc_set_default_encoding P_((OnigEncoding enc));
 ONIG_EXTERN
 OnigEncoding onigenc_get_default_encoding P_((void));
