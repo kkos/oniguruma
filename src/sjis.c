@@ -302,5 +302,6 @@ OnigEncodingType OnigEncodingSJIS = {
   get_ctype_code_range,
   left_adjust_char_head,
   is_allowed_reverse_match,
-  NULL /* init */
+  NULL, /* init */
+  NULL  /* is_initialized */
 };

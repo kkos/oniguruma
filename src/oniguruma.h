@@ -165,6 +165,7 @@ typedef struct OnigEncodingTypeST {
   OnigUChar* (*left_adjust_char_head)(const OnigUChar* start, const OnigUChar* p);
   int    (*is_allowed_reverse_match)(const OnigUChar* p, const OnigUChar* end);
   int    (*init)(void);
+  int    (*is_initialized)(void);
 } OnigEncodingType;
 
 typedef OnigEncodingType* OnigEncoding;

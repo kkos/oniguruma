@@ -182,5 +182,6 @@ OnigEncodingType OnigEncodingUTF32_LE = {
   onigenc_utf16_32_get_ctype_code_range,
   utf32le_left_adjust_char_head,
   onigenc_always_false_is_allowed_reverse_match,
-  NULL /* init */
+  NULL, /* init */
+  NULL  /* is_initialized */
 };

@@ -236,5 +236,6 @@ OnigEncodingType OnigEncodingISO_8859_10 = {
   onigenc_not_support_get_ctype_code_range,
   onigenc_single_byte_left_adjust_char_head,
   onigenc_always_true_is_allowed_reverse_match,
-  NULL /* init */
+  NULL, /* init */
+  NULL  /* is_initialized */
 };
