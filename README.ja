@@ -1,4 +1,4 @@
-README.ja  2016/04/18
+README.ja  2016/04/19
 
 鬼車  ----   (C) K.Kosako <kkosako0@gmail.com>
 
@@ -49,7 +49,7 @@ https://github.com/kkos/oniguruma
 
 
 
- ケース２: Windows 64/32bit (VisualStudio)環境
+ ケース２: Windows 64/32bit (Visual Studio)環境
 
    make_win64 あるいは make_win32 を実行
 
@@ -61,6 +61,7 @@ https://github.com/kkos/oniguruma
       2. copy ..\windows\testc.c .
       3. nmake -f Makefile.windows ctest
 
+   (Visual Studio Community 2015 で動作確認)
 
 
 

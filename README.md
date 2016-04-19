@@ -50,7 +50,7 @@ Install
 
 
 
-### Case 2: Windows 64/32bit platform (VisualStudio)
+### Case 2: Windows 64/32bit platform (Visual Studio)
 
    execute make_win64 or make_win32
 
@@ -62,6 +62,8 @@ Install
       1. cd src
       2. copy ..\windows\testc.c .
       3. nmake -f Makefile.windows ctest
+
+   (I have checked by Visual Studio Community 2015)
 
 
 
