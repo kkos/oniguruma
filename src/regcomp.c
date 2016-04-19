@@ -5416,10 +5416,23 @@ onig_reg_init(regex_t* reg, OnigOptionType option,
 	      OnigCaseFoldType case_fold_flag,
 	      OnigEncoding enc, OnigSyntaxType* syntax)
 {
+  int r;
+
   xmemset(reg, 0, sizeof(*reg));
 
-  if (onig_inited == 0)
+  if (onig_inited == 0) {
+#if 0
     return ONIGERR_LIBRARY_IS_NOT_INITIALIZED;
+#else
+    r = onig_initialize(NULL, 0);
+    if (r != 0)
+      return ONIGERR_FAIL_TO_INITIALIZE;
+
+    r = onig_initialize_encoding(enc);
+    if (r != 0)
+      return ONIGERR_FAIL_TO_INITIALIZE;
+#endif
+  }
 
   if (IS_NULL(reg))
     return ONIGERR_INVALID_ARGUMENT;
