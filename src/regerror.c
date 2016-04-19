@@ -68,6 +68,8 @@ onig_error_code_to_format(int code)
     p = "default multibyte-encoding is not setted"; break;
   case ONIGERR_SPECIFIED_ENCODING_CANT_CONVERT_TO_WIDE_CHAR:
     p = "can't convert to wide-char on specified multibyte-encoding"; break;
+  case ONIGERR_FAIL_TO_INITIALIZE:
+    p = "fail to initialize"; break;
   case ONIGERR_INVALID_ARGUMENT:
     p = "invalid argument"; break;
   case ONIGERR_END_PATTERN_AT_LEFT_BRACE:

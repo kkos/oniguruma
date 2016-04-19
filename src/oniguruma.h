@@ -539,6 +539,7 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIGERR_MATCH_STACK_LIMIT_OVER                        -15
 #define ONIGERR_DEFAULT_ENCODING_IS_NOT_SETTED                -21
 #define ONIGERR_SPECIFIED_ENCODING_CANT_CONVERT_TO_WIDE_CHAR  -22
+#define ONIGERR_FAIL_TO_INITIALIZE                            -23
 /* general error */
 #define ONIGERR_INVALID_ARGUMENT                              -30 
 /* syntax error */
