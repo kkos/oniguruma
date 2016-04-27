@@ -8,5 +8,6 @@ unicode_unfold_key.gperf
 *.lo
 *.la
 *~
+*.txt
 .libs/
 .deps/
