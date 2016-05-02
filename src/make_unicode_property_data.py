@@ -386,6 +386,15 @@ def set_max_prop_name(name):
     if n > PROPERTY_NAME_MAX_LEN:
         PROPERTY_NAME_MAX_LEN = n
 
+LIST_COUNTER = 1
+def entry_prop_name(name, index):
+    global LIST_COUNTER
+    set_max_prop_name(name)
+    if OUTPUT_LIST and index >= len(POSIX_LIST):
+        print >> UPF, "%3d: %s" % (LIST_COUNTER, name)
+        LIST_COUNTER += 1
+
+
 ### main ###
 argv = sys.argv
 argc = len(argv)
@@ -394,6 +403,8 @@ POSIX_ONLY = False
 if argc >= 2:
     if argv[1] == '-posix':
         POSIX_ONLY = True
+
+OUTPUT_LIST = not(POSIX_ONLY)
 
 with open('UnicodeData.txt', 'r') as f:
     dic, assigned = parse_unicode_data_file(f)
@@ -478,17 +489,23 @@ struct PropertyNameCtype {
 '''
 sys.stdout.write(s)
 
+if OUTPUT_LIST:
+    UPF = open("UNICODE_PROPERTIES", "w")
+    if VERSION_INFO is not None:
+        print >> UPF, "Unicode Properties (from Unicode Version: %s)" % VERSION_INFO
+        print >> UPF, ''
+
 index = -1
 for prop in POSIX_LIST:
   index += 1
-  set_max_prop_name(prop)
+  entry_prop_name(prop, index)
   prop = normalize_prop_name(prop)
   print_prop_and_index(prop, index)
 
 if not(POSIX_ONLY):
     for prop in PROPS:
         index += 1
-        set_max_prop_name(prop)
+        entry_prop_name(prop, index)
         prop = normalize_prop_name(prop)
         print_prop_and_index(prop, index)
 
@@ -504,12 +521,12 @@ if not(POSIX_ONLY):
             #print >> sys.stderr, "ALIASES: value is not exist: %s => %s" % (k, v)
             continue
 
-        set_max_prop_name(k)
+        entry_prop_name(k, index)
         print_prop_and_index(nk, index)
 
     for name in BLOCKS:
         index += 1
-        set_max_prop_name(name)
+        entry_prop_name(name, index)
         name = normalize_prop_name(name)
         print_prop_and_index(name, index)
 
@@ -521,5 +538,8 @@ if VERSION_INFO is not None:
 
 print "#define PROPERTY_NAME_MAX_SIZE  %d" % (PROPERTY_NAME_MAX_LEN + 10)
 print "#define CODE_RANGES_NUM         %d" % (index + 1)
+
+if OUTPUT_LIST:
+    UPF.close()
 
 sys.exit(0)
