@@ -11,7 +11,7 @@ libonig_la_SOURCES = regint.h regparse.h regenc.h st.h \
 	regerror.c regparse.c regext.c regcomp.c regexec.c reggnu.c \
 	regenc.c regsyntax.c regtrav.c regversion.c st.c \
 	regposix.c regposerr.c \
-	unicode.c unicode_prop.c \
+	unicode.c \
 	unicode_unfold_key.c \
 	unicode_fold1_key.c \
 	unicode_fold2_key.c \
@@ -36,8 +36,9 @@ libonig_la_SOURCES = regint.h regparse.h regenc.h st.h \
 libonig_la_LDFLAGS = -version-info $(LTVERSION)
 
 EXTRA_DIST = koi8.c mktable.c \
-	unicode_fold_data.c \
+	unicode_fold_data.c unicode_property_data.c \
 	make_unicode_fold.sh make_unicode_fold_data.py \
+	make_unicode_property.sh make_unicode_property_data.py \
 	gperf_fold_key_conv.py gperf_unfold_key_conv.py
 
 dll:

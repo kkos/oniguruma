@@ -55,7 +55,6 @@ encobjs = ascii.obj utf8.obj \
 		koi8_r.obj  \
 		cp1251.obj \
 		euc_jp_prop.obj sjis_prop.obj \
-		unicode_prop.obj \
 		unicode_unfold_key.obj unicode_fold1_key.obj \
 		unicode_fold2_key.obj unicode_fold3_key.obj	# koi8.obj
 
@@ -113,7 +112,7 @@ st.obj:        st.c regint.h oniguruma.h config.h st.h
 onig_init.obj: onig_init.c oniguruma.h
 
 ascii.obj:      ascii.c regenc.h config.h
-unicode.obj:    unicode.c regenc.h config.h
+unicode.obj:    unicode.c unicode_fold_data.c unicode_property_data.c regenc.h config.h
 utf8.obj:       utf8.c regenc.h config.h
 utf16_be.obj:   utf16_be.c regenc.h config.h
 utf16_le.obj:   utf16_le.c regenc.h config.h

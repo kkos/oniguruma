@@ -147,7 +147,7 @@ ONIG_EXTERN int onigenc_mb4_code_to_mbc P_((OnigEncoding enc, OnigCodePoint code
 ONIG_EXTERN int onigenc_mb4_is_code_ctype P_((OnigEncoding enc, OnigCodePoint code, unsigned int ctype));
 ONIG_EXTERN struct PropertyNameCtype* euc_jp_lookup_property_name P_((register const char *str, register unsigned int len));
 ONIG_EXTERN struct PropertyNameCtype* sjis_lookup_property_name P_((register const char *str, register unsigned int len));
-ONIG_EXTERN struct PropertyNameCtype* unicode_lookup_property_name P_((register const char *str, register unsigned int len));
+//ONIG_EXTERN const struct PropertyNameCtype* unicode_lookup_property_name P_((register const char *str, register unsigned int len));
 
 /* in enc/unicode.c */
 ONIG_EXTERN int onigenc_unicode_is_code_ctype P_((OnigCodePoint code, unsigned int ctype));
