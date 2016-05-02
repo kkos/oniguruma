@@ -100,7 +100,7 @@ extern "C" {
 # include <windows.h>
 typedef ULONG_PTR OnigCodePoint;
 #else
-typedef unsigned long  OnigCodePoint;
+typedef unsigned int   OnigCodePoint;
 #endif
 typedef unsigned char  OnigUChar;
 typedef unsigned int   OnigCtype;
