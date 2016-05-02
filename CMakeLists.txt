@@ -69,7 +69,7 @@ set(_SRCS src/regint.h src/regparse.h src/regenc.h src/st.h
  src/iso8859_15.c src/iso8859_16.c src/euc_tw.c src/euc_kr.c src/big5.c
  src/gb18030.c src/koi8_r.c src/cp1251.c
  src/euc_jp_prop.c src/sjis_prop.c
- src/unicode_prop.c src/unicode_unfold_key.c
+ src/unicode_unfold_key.c
  src/unicode_fold1_key.c src/unicode_fold2_key.c src/unicode_fold3_key.c)
 
 
