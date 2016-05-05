@@ -73,6 +73,44 @@ static const unsigned short EncUNICODE_ISO_8859_1_CtypeTable[256] = {
 #include "unicode_property_data_posix.c"
 #endif
 
+#include "st.h"
+
+#define USER_DEFINED_PROPERTY_MAX_NUM  20
+
+typedef struct {
+  int ctype;
+  OnigCodePoint* ranges;
+} UserDefinedPropertyValue;
+
+static int UserDefinedPropertyNum;
+static UserDefinedPropertyValue
+UserDefinedPropertyRanges[USER_DEFINED_PROPERTY_MAX_NUM];
+static st_table* UserDefinedPropertyTable;
+
+extern int
+onig_unicode_define_user_property(const char* name, OnigCodePoint* ranges)
+{
+  UserDefinedPropertyValue* e;
+
+  if (UserDefinedPropertyTable == 0) {
+    UserDefinedPropertyTable = onig_st_init_strend_table_with_size(10);
+  }
+
+  if (UserDefinedPropertyNum >= USER_DEFINED_PROPERTY_MAX_NUM)
+    return ONIGERR_TOO_MANY_USER_DEFINED_OBJECTS;
+
+  e = UserDefinedPropertyRanges + UserDefinedPropertyNum;
+  e->ctype = CODE_RANGES_NUM + UserDefinedPropertyNum;
+  e->ranges = ranges;
+  onig_st_insert_strend(UserDefinedPropertyTable,
+			(const UChar* )name,
+			(const UChar* )name + strlen(name),
+			(hash_data_type )((void* )e));
+
+  UserDefinedPropertyNum++;
+  return 0;
+}
+
 extern int
 onigenc_unicode_is_code_ctype(OnigCodePoint code, unsigned int ctype)
 {
@@ -85,7 +123,11 @@ onigenc_unicode_is_code_ctype(OnigCodePoint code, unsigned int ctype)
   }
 
   if (ctype >= CODE_RANGES_NUM) {
-    return ONIGERR_TYPE_BUG;
+    int index = ctype - CODE_RANGES_NUM;
+    if (index < UserDefinedPropertyNum)
+      return onig_is_in_code_range((UChar* )UserDefinedPropertyRanges[index].ranges, code);
+    else
+      return ONIGERR_TYPE_BUG;
   }
 
   return onig_is_in_code_range((UChar* )CodeRanges[ctype], code);
@@ -96,11 +138,16 @@ extern int
 onigenc_unicode_ctype_code_range(int ctype, const OnigCodePoint* ranges[])
 {
   if (ctype >= CODE_RANGES_NUM) {
-    return ONIGERR_TYPE_BUG;
+    int index = ctype - CODE_RANGES_NUM;
+    if (index < UserDefinedPropertyNum) {
+      *ranges = UserDefinedPropertyRanges[index].ranges;
+      return 0;
+    }
+    else
+      return ONIGERR_TYPE_BUG;
   }
 
   *ranges = CodeRanges[ctype];
-
   return 0;
 }
 
@@ -139,9 +186,20 @@ onigenc_unicode_property_name_to_ctype(OnigEncoding enc, UChar* name, UChar* end
 
   buf[len] = 0;
 
+  if (UserDefinedPropertyTable != 0) {
+    UserDefinedPropertyValue* e;
+    e = (UserDefinedPropertyValue* )NULL;
+    onig_st_lookup_strend(UserDefinedPropertyTable,
+			  (const UChar* )buf, (const UChar* )buf + len,
+			  (hash_data_type* )((void* )(&e)));
+    if (e != 0) {
+      return e->ctype;
+    }
+  }
+
   pc = unicode_lookup_property_name(buf, len);
   if (pc != 0) {
-    /* fprintf(stderr, "LOOKP: %s: %d\n", buf, pc->ctype); */
+    /* fprintf(stderr, "LOOKUP: %s: %d\n", buf, pc->ctype); */
 #ifndef USE_UNICODE_PROPERTIES
     if (pc->ctype > ONIGENC_MAX_STD_CTYPE)
       return ONIGERR_INVALID_CHAR_PROPERTY_NAME;
