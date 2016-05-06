@@ -79,7 +79,7 @@ install_library(onig)
 
 install_header(src/oniguruma.h src/onigposix.h src/oniggnu.h)
 
-install_doc(doc)
+install_doc(doc/API doc/API.ja doc/RE doc/RE.ja doc/UNICODE_PROPERTIES)
 install_data(AUTHORS COPYING HISTORY README)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/oniguruma.pc
