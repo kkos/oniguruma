@@ -594,6 +594,7 @@ Oniguruma API  Version 6.0.0  2016/05/06
 # int onig_unicode_define_user_property(const char* name, OnigCodePoint* ranges))
 
   Define new Unicode property.
+  (This function is not thread safe.)
 
   arguments
   1 name:    property name (ASCII only. character ' ', '-', '_' are ignored.)
