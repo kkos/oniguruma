@@ -592,6 +592,7 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIGERR_NOT_SUPPORTED_ENCODING_COMBINATION           -402
 #define ONIGERR_INVALID_COMBINATION_OF_OPTIONS               -403
 #define ONIGERR_TOO_MANY_USER_DEFINED_OBJECTS                -404
+#define ONIGERR_TOO_LONG_PROPERTY_NAME                       -405
 #define ONIGERR_LIBRARY_IS_NOT_INITIALIZED                   -500
 
 /* errors related to thread */

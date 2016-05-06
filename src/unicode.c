@@ -91,21 +91,46 @@ extern int
 onig_unicode_define_user_property(const char* name, OnigCodePoint* ranges)
 {
   UserDefinedPropertyValue* e;
+  int i;
+  int n;
+  int len;
+  int c;
+  char* s;
+
+  if (UserDefinedPropertyNum >= USER_DEFINED_PROPERTY_MAX_NUM)
+    return ONIGERR_TOO_MANY_USER_DEFINED_OBJECTS;
+
+  len = strlen(name);
+  if (len >= PROPERTY_NAME_MAX_SIZE)
+    return ONIGERR_TOO_LONG_PROPERTY_NAME;
+
+  s = (char* )xmalloc(len + 1);
+  if (s == 0)
+    return ONIGERR_MEMORY;
+
+  n = 0;
+  for (i = 0; i < len; i++) {
+    c = name[i];
+    if (c <= 0 || c >= 0x80)
+      return ONIGERR_INVALID_CHAR_PROPERTY_NAME;
+
+    if (c != ' ' && c != '-' && c != '_') {
+      s[n] = c;
+      n++;
+    }
+  }
+  s[n] = '\0';
 
   if (UserDefinedPropertyTable == 0) {
     UserDefinedPropertyTable = onig_st_init_strend_table_with_size(10);
   }
 
-  if (UserDefinedPropertyNum >= USER_DEFINED_PROPERTY_MAX_NUM)
-    return ONIGERR_TOO_MANY_USER_DEFINED_OBJECTS;
-
   e = UserDefinedPropertyRanges + UserDefinedPropertyNum;
   e->ctype = CODE_RANGES_NUM + UserDefinedPropertyNum;
   e->ranges = ranges;
   onig_st_insert_strend(UserDefinedPropertyTable,
-			(const UChar* )name,
-			(const UChar* )name + strlen(name),
-			(hash_data_type )((void* )e));
+                        (const UChar* )s, (const UChar* )s + n,
+                        (hash_data_type )((void* )e));
 
   UserDefinedPropertyNum++;
   return 0;
