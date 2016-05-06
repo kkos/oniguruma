@@ -1,4 +1,4 @@
-README  2016/04/19
+README  2016/05/06
 
 Oniguruma  ----   (C) K.Kosako <kkosako0@gmail.com>
 
@@ -102,6 +102,7 @@ Sample Programs
   sample/posix.c     POSIX API sample.
   sample/sql.c       example of the variable meta characters.
                      (SQL-like pattern matching)
+  sample/user_property.c  example of user defined Unicode property.
 
 Test Programs
   sample/syntax.c    Perl, Java and ASIS syntax test.
@@ -167,7 +168,7 @@ Source Files
   utf16_le.c         UTF-16LE encoding.
   utf32_be.c         UTF-32BE encoding.
   utf32_le.c         UTF-32LE encoding.
-  unicode.c          Unicode information data.
+  unicode.c          common codes of Unicode encoding.
 
   win32/Makefile     Makefile for Win32 (VC++)
   win32/config.h     config.h for Win32

@@ -20,6 +20,13 @@ Supported character encodings:
 * CP1251:  contributed by Byte
 
 
+New feature of version 6.0
+--------------------------
+
+* Update Unicode 8.0 Property/Case-folding
+* NEW API: onig_unicode_define_user_property()
+
+
 License
 -------
 
@@ -100,14 +107,15 @@ Usage
 Sample Programs
 ---------------
 
-|File               |Description                              |
-|:------------------|:----------------------------------------|
-|sample/simple.c    |example of the minimum (Oniguruma API)   |
-|sample/names.c     |example of the named group callback.     |
-|sample/encode.c    |example of some encodings.               |
-|sample/listcap.c   |example of the capture history.          |
-|sample/posix.c     |POSIX API sample.                        |
-|sample/sql.c       |example of the variable meta characters. |
+|File                  |Description                               |
+|:---------------------|:-----------------------------------------|
+|sample/simple.c       |example of the minimum (Oniguruma API)    |
+|sample/names.c        |example of the named group callback.      |
+|sample/encode.c       |example of some encodings.                |
+|sample/listcap.c      |example of the capture history.           |
+|sample/posix.c        |POSIX API sample.                         |
+|sample/sql.c          |example of the variable meta characters.  |
+|sample/user_property.c|example of user defined Unicode property. |
 
 
 Test Programs
@@ -176,6 +184,6 @@ Source Files
 |utf16_le.c         |UTF-16LE encoding                                       |
 |utf32_be.c         |UTF-32BE encoding                                       |
 |utf32_le.c         |UTF-32LE encoding                                       |
-|unicode.c          |Unicode information data                                |
+|unicode.c          |common codes of Unicode encoding                        |
 |win32/Makefile     |Makefile for Win32 (VC++)                               |
 |win32/config.h     |config.h for Win32                                      |

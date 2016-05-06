@@ -1,4 +1,4 @@
-README.ja  2016/04/19
+README.ja  2016/05/06
 
 鬼車  ----   (C) K.Kosako <kkosako0@gmail.com>
 
@@ -23,7 +23,7 @@ https://github.com/kkos/oniguruma
 
 ライセンス
 
-  BSDライセンスに従う。
+  BSDライセンス
 
 
 インストール
@@ -107,6 +107,8 @@ https://github.com/kkos/oniguruma
   sample/listcap.c   捕獲履歴機能の使用例
   sample/posix.c     POSIX API使用例
   sample/sql.c       可変メタ文字機能使用例 (SQL-like パターン)
+  sample/user_property.c ユーザ定義Unicodeプロパティの使用例
+
 
 テストプログラム
   sample/syntax.c    Perl、Java、ASIS文法のテスト
@@ -172,7 +174,7 @@ https://github.com/kkos/oniguruma
   utf16_le.c         UTF-16LE エンコーディング
   utf32_be.c         UTF-32BE エンコーディング
   utf32_le.c         UTF-32LE エンコーディング
-  unicode.c          Unicode情報
+  unicode.c          Unicodeエンコーディングの共通処理
 
   win32/Makefile     Win32用 Makefile (for VC++)
   win32/config.h     Win32用 config.h
