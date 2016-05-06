@@ -12,6 +12,7 @@ libtool
 aclocal.m4
 Makefile.in
 *.o
+*.obj
 *.so
 *.lo
 *.la
