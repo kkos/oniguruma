@@ -15,7 +15,7 @@ main(int argc, char* argv[])
   OnigRegion *region;
 
   static OnigCodePoint handakuon_hiragana[] = {
-    5,
+    5, /* number of ranges */
     0x3071, 0x3071, /* PA */
     0x3074, 0x3074, /* PI */
     0x3077, 0x3077, /* PU */
@@ -24,6 +24,8 @@ main(int argc, char* argv[])
   };
 
   static UChar* pattern = (UChar* )"\\A(\\p{HandakuonHiragana}{5})\\p{^HandakuonHiragana}\\z";
+  //static UChar* pattern = (UChar* )"\\p{Handakuon_Hiragana}{5}\\P{Handakuon Hiragana}";
+
   /* "PA PI PU PE PO a" */
   static UChar* str = (UChar* )"\343\201\261\343\201\264\343\201\267\343\201\272\343\201\275a";
 
