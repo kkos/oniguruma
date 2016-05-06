@@ -97,11 +97,10 @@ extern "C" {
 #endif
 
 #ifdef _WIN32
-# include <windows.h>
-typedef ULONG_PTR OnigCodePoint;
-#else
-typedef unsigned int   OnigCodePoint;
+#include <windows.h>
 #endif
+
+typedef unsigned int   OnigCodePoint;
 typedef unsigned char  OnigUChar;
 typedef unsigned int   OnigCtype;
 typedef unsigned int   OnigDistance;
