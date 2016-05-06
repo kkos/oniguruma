@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.0.0   2016/04/06
+鬼車インターフェース Version 6.0.0   2016/05/06
 
 #include <oniguruma.h>
 
@@ -594,6 +594,18 @@
 
   マッチスタックサイズの最大値を指定する。
   (size = 0: 無制限)
+
+  正常終了戻り値: ONIG_NORMAL
+
+
+# int onig_unicode_define_user_property(const char* name, OnigCodePoint* ranges))
+
+  新しいUnicodeプロパティを定義する。
+
+  引数
+  1 name:    プロパティ名 (ASCIIコードのみ。 文字 ' ', '-', '_' は無視される。)
+  2 ranges:  プロパティコードポイント範囲
+             (最初の要素は範囲の数)
 
   正常終了戻り値: ONIG_NORMAL
 

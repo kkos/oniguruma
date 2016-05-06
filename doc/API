@@ -1,4 +1,4 @@
-Oniguruma API  Version 6.0.0  2016/04/05
+Oniguruma API  Version 6.0.0  2016/05/06
 
 #include <oniguruma.h>
 
@@ -587,6 +587,18 @@ Oniguruma API  Version 6.0.0  2016/04/05
 
   Set the maximum number of stack size.
   (size = 0: unlimited)
+
+  normal return: ONIG_NORMAL
+
+
+# int onig_unicode_define_user_property(const char* name, OnigCodePoint* ranges))
+
+  Define new Unicode property.
+
+  arguments
+  1 name:    property name (ASCII only. character ' ', '-', '_' are ignored.)
+  2 ranges:  property code point ranges
+             (first element is number of ranges.)
 
   normal return: ONIG_NORMAL
 
