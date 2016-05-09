@@ -9,7 +9,9 @@ EXTRA_DIST = oniguruma.pc.in HISTORY README.ja README.md \
 	CMakeLists.txt dist.info oniguruma.pc.cmake.in cmake/dist.cmake \
 	src/config.h.cmake.in \
 	doc/API doc/API.ja doc/RE doc/RE.ja doc/FAQ doc/FAQ.ja \
-	win32/Makefile win32/config.h win32/testc.c
+	doc/UNICODE_PROPERTIES \
+	src/Makefile.windows src/config.h.win32 src/config.h.win64 \
+	windows/testc.c
 
 bin_SCRIPTS = onig-config
 

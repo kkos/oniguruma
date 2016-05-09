@@ -37,6 +37,17 @@ onigenc_init(void)
   return 0;
 }
 
+extern int
+onig_initialize_encoding(OnigEncoding enc)
+{
+  if (enc->init != 0 && (enc->is_initialized() == 0)) {
+    int r = (enc->init)();
+    return r;
+  }
+
+  return 0;
+}
+
 extern OnigEncoding
 onigenc_get_default_encoding(void)
 {
@@ -837,66 +848,29 @@ onigenc_with_ascii_strncmp(OnigEncoding enc, const UChar* p, const UChar* end,
   return 0;
 }
 
-/* Property management */
-static int
-resize_property_list(int new_size, const OnigCodePoint*** plist, int* psize)
+extern int
+onig_codes_cmp(OnigCodePoint a[], OnigCodePoint b[], int n)
 {
-  int size;
-  const OnigCodePoint **list = *plist;
+  int i;
 
-  size = sizeof(OnigCodePoint*) * new_size;
-  if (IS_NULL(list)) {
-    list = (const OnigCodePoint** )xmalloc(size);
+  for (i = 0; i < n; i++) {
+    if (a[i] != b[i])
+      return -1;
   }
-  else {
-    list = (const OnigCodePoint** )xrealloc((void* )list, size);
-  }
-
-  if (IS_NULL(list)) return ONIGERR_MEMORY;
-
-  *plist = list;
-  *psize = new_size;
 
   return 0;
 }
 
 extern int
-onigenc_property_list_add_property(UChar* name, const OnigCodePoint* prop,
-     hash_table_type **table, const OnigCodePoint*** plist, int *pnum,
-     int *psize)
+onig_codes_byte_at(OnigCodePoint codes[], int at)
 {
-#define PROP_INIT_SIZE     16
+  int index;
+  int b;
+  OnigCodePoint code;
 
-  int r;
+  index = at / 3;
+  b     = at % 3;
+  code = codes[index];
 
-  if (*psize <= *pnum) {
-    int new_size = (*psize == 0 ? PROP_INIT_SIZE : *psize * 2);
-    r = resize_property_list(new_size, plist, psize);
-    if (r != 0) return r;
-  }
-
-  (*plist)[*pnum] = prop;
-
-  if (ONIG_IS_NULL(*table)) {
-    *table = onig_st_init_strend_table_with_size(PROP_INIT_SIZE);
-    if (ONIG_IS_NULL(*table)) return ONIGERR_MEMORY;
-  }
-
-  *pnum = *pnum + 1;
-  onig_st_insert_strend(*table, name, name + strlen((char* )name),
-			(hash_data_type )(*pnum + ONIGENC_MAX_STD_CTYPE));
-  return 0;
-}
-
-extern int
-onigenc_property_list_init(int (*f)(void))
-{
-  int r;
-
-  THREAD_ATOMIC_START;
-
-  r = f();
-
-  THREAD_ATOMIC_END;
-  return r;
+  return ((code >> ((2 - b) * 8)) & 0xff);
 }

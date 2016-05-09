@@ -4,7 +4,7 @@
   regenc.h -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2008  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -102,6 +102,10 @@ typedef struct {
   short int len;
 } PosixBracketEntryType;
 
+struct PropertyNameCtype {
+  char *name;
+  int ctype;
+};
 
 /* #define USE_CRNL_AS_LINE_TERMINATOR */
 #define USE_UNICODE_PROPERTIES
@@ -141,7 +145,9 @@ ONIG_EXTERN int onigenc_mb2_is_code_ctype P_((OnigEncoding enc, OnigCodePoint co
 ONIG_EXTERN int onigenc_mb4_code_to_mbclen P_((OnigCodePoint code));
 ONIG_EXTERN int onigenc_mb4_code_to_mbc P_((OnigEncoding enc, OnigCodePoint code, UChar *buf));
 ONIG_EXTERN int onigenc_mb4_is_code_ctype P_((OnigEncoding enc, OnigCodePoint code, unsigned int ctype));
-
+ONIG_EXTERN struct PropertyNameCtype* euc_jp_lookup_property_name P_((register const char *str, register unsigned int len));
+ONIG_EXTERN struct PropertyNameCtype* sjis_lookup_property_name P_((register const char *str, register unsigned int len));
+//ONIG_EXTERN const struct PropertyNameCtype* unicode_lookup_property_name P_((register const char *str, register unsigned int len));
 
 /* in enc/unicode.c */
 ONIG_EXTERN int onigenc_unicode_is_code_ctype P_((OnigCodePoint code, unsigned int ctype));
@@ -154,6 +160,51 @@ ONIG_EXTERN int onigenc_unicode_apply_all_case_fold P_((OnigCaseFoldType flag, O
 
 #define UTF16_IS_SURROGATE_FIRST(c)    (((c) & 0xfc) == 0xd8)
 #define UTF16_IS_SURROGATE_SECOND(c)   (((c) & 0xfc) == 0xdc)
+
+/* from unicode generated codes */
+#define FOLDS1_FOLD(i)         (OnigUnicodeFolds1 + (i))
+#define FOLDS2_FOLD(i)         (OnigUnicodeFolds2 + (i))
+#define FOLDS3_FOLD(i)         (OnigUnicodeFolds3 + (i))
+#define FOLDS1_UNFOLDS_NUM(i)  (OnigUnicodeFolds1[(i)+1])
+#define FOLDS2_UNFOLDS_NUM(i)  (OnigUnicodeFolds2[(i)+2])
+#define FOLDS3_UNFOLDS_NUM(i)  (OnigUnicodeFolds3[(i)+3])
+#define FOLDS1_UNFOLDS(i)      (OnigUnicodeFolds1 + (i) + 2)
+#define FOLDS2_UNFOLDS(i)      (OnigUnicodeFolds2 + (i) + 3)
+#define FOLDS3_UNFOLDS(i)      (OnigUnicodeFolds3 + (i) + 4)
+#define FOLDS1_NEXT_INDEX(i)   ((i) + 2 + OnigUnicodeFolds1[(i)+1])
+#define FOLDS2_NEXT_INDEX(i)   ((i) + 3 + OnigUnicodeFolds2[(i)+2])
+#define FOLDS3_NEXT_INDEX(i)   ((i) + 4 + OnigUnicodeFolds3[(i)+3])
+
+#define FOLDS_FOLD_ADDR_BUK(buk, addr) do {\
+  if ((buk)->fold_len == 1)\
+    addr = OnigUnicodeFolds1 + (buk)->index;\
+  else if ((buk)->fold_len == 2)\
+    addr = OnigUnicodeFolds2 + (buk)->index;\
+  else if ((buk)->fold_len == 3)\
+    addr = OnigUnicodeFolds3 + (buk)->index;\
+  else\
+    addr = 0;\
+} while (0)
+
+extern OnigCodePoint OnigUnicodeFolds1[];
+extern OnigCodePoint OnigUnicodeFolds2[];
+extern OnigCodePoint OnigUnicodeFolds3[];
+
+struct ByUnfoldKey {
+  OnigCodePoint code;
+  int   index;
+  int   fold_len;
+};
+
+extern const struct ByUnfoldKey* unicode_unfold_key(OnigCodePoint code);
+extern int unicode_fold1_key(OnigCodePoint code[]);
+extern int unicode_fold2_key(OnigCodePoint code[]);
+extern int unicode_fold3_key(OnigCodePoint code[]);
+
+extern int onig_codes_cmp(OnigCodePoint a[], OnigCodePoint b[], int n);
+extern int onig_codes_byte_at(OnigCodePoint code[], int at);
+
+
 
 #define ONIGENC_ISO_8859_1_TO_LOWER_CASE(c) \
   OnigEncISO_8859_1_ToLowerCaseTable[c]

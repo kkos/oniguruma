@@ -4,7 +4,7 @@
   oniguruma.h - Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2009  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,9 +34,9 @@ extern "C" {
 #endif
 
 #define ONIGURUMA
-#define ONIGURUMA_VERSION_MAJOR   5
-#define ONIGURUMA_VERSION_MINOR   9
-#define ONIGURUMA_VERSION_TEENY   6
+#define ONIGURUMA_VERSION_MAJOR   6
+#define ONIGURUMA_VERSION_MINOR   0
+#define ONIGURUMA_VERSION_TEENY   0
 
 #ifdef __cplusplus
 # ifndef  HAVE_PROTOTYPES
@@ -97,11 +97,10 @@ extern "C" {
 #endif
 
 #ifdef _WIN32
-# include <windows.h>
-typedef ULONG_PTR OnigCodePoint;
-#else
-typedef unsigned long  OnigCodePoint;
+#include <windows.h>
 #endif
+
+typedef unsigned int   OnigCodePoint;
 typedef unsigned char  OnigUChar;
 typedef unsigned int   OnigCtype;
 typedef unsigned int   OnigDistance;
@@ -164,6 +163,8 @@ typedef struct OnigEncodingTypeST {
   int    (*get_ctype_code_range)(OnigCtype ctype, OnigCodePoint* sb_out, const OnigCodePoint* ranges[]);
   OnigUChar* (*left_adjust_char_head)(const OnigUChar* start, const OnigUChar* p);
   int    (*is_allowed_reverse_match)(const OnigUChar* p, const OnigUChar* end);
+  int    (*init)(void);
+  int    (*is_initialized)(void);
 } OnigEncodingType;
 
 typedef OnigEncodingType* OnigEncoding;
@@ -337,6 +338,8 @@ OnigUChar* onigenc_step_back P_((OnigEncoding enc, const OnigUChar* start, const
 /* encoding API */
 ONIG_EXTERN
 int onigenc_init P_((void));
+ONIG_EXTERN
+int onig_initialize_encoding P_((OnigEncoding enc));
 ONIG_EXTERN
 int onigenc_set_default_encoding P_((OnigEncoding enc));
 ONIG_EXTERN
@@ -535,6 +538,7 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIGERR_MATCH_STACK_LIMIT_OVER                        -15
 #define ONIGERR_DEFAULT_ENCODING_IS_NOT_SETTED                -21
 #define ONIGERR_SPECIFIED_ENCODING_CANT_CONVERT_TO_WIDE_CHAR  -22
+#define ONIGERR_FAIL_TO_INITIALIZE                            -23
 /* general error */
 #define ONIGERR_INVALID_ARGUMENT                              -30 
 /* syntax error */
@@ -587,9 +591,12 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIGERR_TOO_BIG_WIDE_CHAR_VALUE                      -401
 #define ONIGERR_NOT_SUPPORTED_ENCODING_COMBINATION           -402
 #define ONIGERR_INVALID_COMBINATION_OF_OPTIONS               -403
+#define ONIGERR_TOO_MANY_USER_DEFINED_OBJECTS                -404
+#define ONIGERR_TOO_LONG_PROPERTY_NAME                       -405
+#define ONIGERR_LIBRARY_IS_NOT_INITIALIZED                   -500
 
 /* errors related to thread */
-#define ONIGERR_OVER_THREAD_PASS_LIMIT_COUNT                -1001
+/* #define ONIGERR_OVER_THREAD_PASS_LIMIT_COUNT                -1001 */
 
 
 /* must be smaller than BIT_STATUS_BITS_NUM (unsigned int * 8) */
@@ -644,22 +651,12 @@ extern void onig_null_warn P_((const char* s));
 
 #define ONIG_CHAR_TABLE_SIZE   256
 
-/* regex_t state */
-#define ONIG_STATE_NORMAL              0
-#define ONIG_STATE_SEARCHING           1
-#define ONIG_STATE_COMPILING          -1
-#define ONIG_STATE_MODIFY             -2
-
-#define ONIG_STATE(reg) \
-  ((reg)->state > 0 ? ONIG_STATE_SEARCHING : (reg)->state)
-
 typedef struct re_pattern_buffer {
   /* common members of BBuf(bytes-buffer) */
   unsigned char* p;         /* compiled pattern */
   unsigned int used;        /* used space for p */
   unsigned int alloc;       /* allocated space for p */
 
-  int state;                     /* normal, searching, compiling */
   int num_mem;                   /* used memory(...) num counted from 1 */
   int num_repeat;                /* OP_REPEAT/OP_REPEAT_NG id-counter */
   int num_null_check;            /* OP_NULL_CHECK_START/END id counter */
@@ -714,6 +711,10 @@ typedef struct {
 } OnigCompileInfo;
 
 /* Oniguruma Native API */
+
+ONIG_EXTERN
+int onig_initialize P_((OnigEncoding encodings[], int n));
+/* onig_init(): deprecated function. Use onig_initialize(). */
 ONIG_EXTERN
 int onig_init P_((void));
 ONIG_EXTERN
@@ -733,10 +734,6 @@ ONIG_EXTERN
 void onig_free P_((OnigRegex));
 ONIG_EXTERN
 void onig_free_body P_((OnigRegex));
-ONIG_EXTERN
-int onig_recompile P_((OnigRegex, const OnigUChar* pattern, const OnigUChar* pattern_end, OnigOptionType option, OnigEncoding enc, OnigSyntaxType* syntax, OnigErrorInfo* einfo));
-ONIG_EXTERN
-int onig_recompile_deluxe P_((OnigRegex reg, const OnigUChar* pattern, const OnigUChar* pattern_end, OnigCompileInfo* ci, OnigErrorInfo* einfo));
 ONIG_EXTERN
 int onig_search P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegion* region, OnigOptionType option));
 ONIG_EXTERN
@@ -813,6 +810,8 @@ ONIG_EXTERN
 unsigned int onig_get_match_stack_limit_size P_((void));
 ONIG_EXTERN
 int onig_set_match_stack_limit_size P_((unsigned int size));
+ONIG_EXTERN
+int onig_unicode_define_user_property P_((const char* name, OnigCodePoint* ranges));
 ONIG_EXTERN
 int onig_end P_((void));
 ONIG_EXTERN

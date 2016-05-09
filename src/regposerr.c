@@ -42,6 +42,14 @@
 #  define ARG_UNUSED
 #endif
 
+#if defined(_WIN32) && !defined(__GNUC__)
+#define xsnprintf   sprintf_s
+#define xstrncpy(dest,src,size)   strncpy_s(dest,size,src,_TRUNCATE)
+#else
+#define xsnprintf   snprintf
+#define xstrncpy    strncpy
+#endif
+
 static char* ESTRING[] = {
   NULL,
   "failed to match",                         /* REG_NOMATCH    */
@@ -61,8 +69,7 @@ static char* ESTRING[] = {
   /* Extended errors */
   "internal error",                          /* REG_EONIG_INTERNAL */
   "invalid wide char value",                 /* REG_EONIG_BADWC    */
-  "invalid argument",                        /* REG_EONIG_BADARG   */
-  "multi-thread error"                       /* REG_EONIG_THREAD   */
+  "invalid argument"                         /* REG_EONIG_BADARG   */
 };
 
 #include <stdio.h>
@@ -84,14 +91,14 @@ regerror(int posix_ecode, const regex_t* reg ARG_UNUSED, char* buf,
     s = "";
   }
   else {
-    sprintf(tbuf, "undefined error code (%d)", posix_ecode);
+    xsnprintf(tbuf, sizeof(tbuf), "undefined error code (%d)", posix_ecode);
     s = tbuf;
   }
 
   len = strlen(s) + 1; /* use strlen() because s is ascii encoding. */
 
   if (buf != NULL && size > 0) {
-    strncpy(buf, s, size - 1);
+    xstrncpy(buf, s, size - 1);
     buf[size - 1] = '\0';
   }
   return len;

@@ -2,7 +2,7 @@
   utf16_be.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2008  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,10 +63,11 @@ utf16be_is_mbc_newline(const UChar* p, const UChar* end)
 #ifdef USE_UNICODE_ALL_LINE_TERMINATORS
     if ((
 #ifndef USE_CRNL_AS_LINE_TERMINATOR
-	 *(p+1) == 0x0d ||
+         *(p+1) == 0x0d ||
 #endif
-	 *(p+1) == 0x85) && *p == 0x00)
+         *(p+1) == 0x85) && *p == 0x00)
       return 1;
+
     if (*p == 0x20 && (*(p+1) == 0x29 || *(p+1) == 0x28))
       return 1;
 #endif
@@ -130,10 +131,10 @@ utf16be_mbc_case_fold(OnigCaseFoldType flag,
 #ifdef USE_UNICODE_CASE_FOLD_TURKISH_AZERI
     if ((flag & ONIGENC_CASE_FOLD_TURKISH_AZERI) != 0) {
       if (*p == 0x49) {
-	*fold++ = 0x01;
-	*fold   = 0x31;
-	(*pp) += 2;
-	return 2;
+        *fold++ = 0x01;
+        *fold   = 0x31;
+        (*pp) += 2;
+        return 2;
       }
     }
 #endif
@@ -171,9 +172,9 @@ utf16be_is_mbc_ambiguous(OnigCaseFoldType flag, const UChar** pp, const UChar* e
     if ((v | BIT_CTYPE_LOWER) != 0) {
       /* 0xaa, 0xb5, 0xba are lower case letter, but can't convert. */
       if (c >= 0xaa && c <= 0xba)
-	return FALSE;
+        return FALSE;
       else
-	return TRUE;
+        return TRUE;
     }
     return (v != 0 ? TRUE : FALSE);
   }
@@ -221,5 +222,7 @@ OnigEncodingType OnigEncodingUTF16_BE = {
   onigenc_unicode_is_code_ctype,
   onigenc_utf16_32_get_ctype_code_range,
   utf16be_left_adjust_char_head,
-  onigenc_always_false_is_allowed_reverse_match
+  onigenc_always_false_is_allowed_reverse_match,
+  NULL, /* init */
+  NULL  /* is_initialized */
 };

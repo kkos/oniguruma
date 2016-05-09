@@ -2,7 +2,7 @@
   utf32_le.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2007  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,13 +44,14 @@ utf32le_is_mbc_newline(const UChar* p, const UChar* end)
 #ifdef USE_UNICODE_ALL_LINE_TERMINATORS
     if ((
 #ifndef USE_CRNL_AS_LINE_TERMINATOR
-	 *p == 0x0d ||
+         *p == 0x0d ||
 #endif
-	 *p == 0x85)
-	&& *(p+1) == 0x00 && (p+2) == 0x00 && *(p+3) == 0x00)
+         *p == 0x85)
+        && *(p+1) == 0x00 && (p+2) == 0x00 && *(p+3) == 0x00)
       return 1;
+
     if (*(p+1) == 0x20 && (*p == 0x29 || *p == 0x28)
-	&& *(p+2) == 0x00 && *(p+3) == 0x00)
+        && *(p+2) == 0x00 && *(p+3) == 0x00)
       return 1;
 #endif
   }
@@ -91,8 +92,8 @@ utf32le_mbc_case_fold(OnigCaseFoldType flag,
 #ifdef USE_UNICODE_CASE_FOLD_TURKISH_AZERI
     if ((flag & ONIGENC_CASE_FOLD_TURKISH_AZERI) != 0) {
       if (*p == 0x49) {
-	*fold++ = 0x31;
-	*fold++ = 0x01;
+        *fold++ = 0x31;
+        *fold++ = 0x01;
       }
     }
     else {
@@ -110,7 +111,7 @@ utf32le_mbc_case_fold(OnigCaseFoldType flag,
   }
   else
     return onigenc_unicode_mbc_case_fold(ONIG_ENCODING_UTF32_LE, flag, pp, end,
-					 fold);
+                                         fold);
 }
 
 #if 0
@@ -134,9 +135,9 @@ utf32le_is_mbc_ambiguous(OnigCaseFoldType flag, const UChar** pp, const UChar* e
     if ((v | BIT_CTYPE_LOWER) != 0) {
       /* 0xaa, 0xb5, 0xba are lower case letter, but can't convert. */
       if (c >= 0xaa && c <= 0xba)
-	return FALSE;
+        return FALSE;
       else
-	return TRUE;
+        return TRUE;
     }
     return (v != 0 ? TRUE : FALSE);
   }
@@ -180,5 +181,7 @@ OnigEncodingType OnigEncodingUTF32_LE = {
   onigenc_unicode_is_code_ctype,
   onigenc_utf16_32_get_ctype_code_range,
   utf32le_left_adjust_char_head,
-  onigenc_always_false_is_allowed_reverse_match
+  onigenc_always_false_is_allowed_reverse_match,
+  NULL, /* init */
+  NULL  /* is_initialized */
 };

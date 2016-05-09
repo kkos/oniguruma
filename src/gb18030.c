@@ -2,7 +2,7 @@
   gb18030.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2005-2007  KUBO Takehiro <kubo AT jiubao DOT org>
+ * Copyright (c) 2005-2016  KUBO Takehiro <kubo AT jiubao DOT org>
  *                          K.Kosako <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
@@ -491,5 +491,7 @@ OnigEncodingType OnigEncodingGB18030 = {
   gb18030_is_code_ctype,
   onigenc_not_support_get_ctype_code_range,
   gb18030_left_adjust_char_head,
-  gb18030_is_allowed_reverse_match
+  gb18030_is_allowed_reverse_match,
+  NULL, /* init */
+  NULL  /* is_initialized */
 };

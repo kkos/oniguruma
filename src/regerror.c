@@ -68,6 +68,8 @@ onig_error_code_to_format(int code)
     p = "default multibyte-encoding is not setted"; break;
   case ONIGERR_SPECIFIED_ENCODING_CANT_CONVERT_TO_WIDE_CHAR:
     p = "can't convert to wide-char on specified multibyte-encoding"; break;
+  case ONIGERR_FAIL_TO_INITIALIZE:
+    p = "fail to initialize"; break;
   case ONIGERR_INVALID_ARGUMENT:
     p = "invalid argument"; break;
   case ONIGERR_END_PATTERN_AT_LEFT_BRACE:
@@ -172,8 +174,8 @@ onig_error_code_to_format(int code)
     p = "not supported encoding combination"; break;
   case ONIGERR_INVALID_COMBINATION_OF_OPTIONS:
     p = "invalid combination of options"; break;
-  case ONIGERR_OVER_THREAD_PASS_LIMIT_COUNT:
-    p = "over thread pass limit count"; break;
+  case ONIGERR_LIBRARY_IS_NOT_INITIALIZED:
+    p = "library is not initialized"; break;
 
   default:
     p = "undefined error code"; break;
@@ -184,12 +186,12 @@ onig_error_code_to_format(int code)
 
 static void sprint_byte(char* s, unsigned int v)
 {
-  sprintf(s, "%02x", (v & 0377));
+  xsnprintf(s, 3, "%02x", (v & 0377));
 }
 
 static void sprint_byte_with_x(char* s, unsigned int v)
 {
-  sprintf(s, "\\x%02x", (v & 0377));
+  xsnprintf(s, 5, "\\x%02x", (v & 0377));
 }
 
 static int to_ascii(OnigEncoding enc, UChar *s, UChar *end,
@@ -339,7 +341,7 @@ onig_snprintf_with_pattern(buf, bufsize, enc, pat, pat_end, fmt, va_alist)
   need = (pat_end - pat) * 4 + 4;
 
   if (n + need < bufsize) {
-    strcat((char* )buf, ": /");
+    xstrcat((char* )buf, ": /", bufsize);
     s = buf + onigenc_str_bytelen_null(ONIG_ENCODING_ASCII, buf);
 
     p = pat;

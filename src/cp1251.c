@@ -2,7 +2,7 @@
   cp1251.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2006-2007  Byte      <byte AT mail DOT kna DOT ru>
+ * Copyright (c) 2006-2016  Byte      <byte AT mail DOT kna DOT ru>
  *                          K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
@@ -196,5 +196,7 @@ OnigEncodingType OnigEncodingCP1251 = {
   cp1251_is_code_ctype,
   onigenc_not_support_get_ctype_code_range,
   onigenc_single_byte_left_adjust_char_head,
-  onigenc_always_true_is_allowed_reverse_match
+  onigenc_always_true_is_allowed_reverse_match,
+  NULL, /* init */
+  NULL  /* is_initialized */
 };

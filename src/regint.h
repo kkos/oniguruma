@@ -62,15 +62,12 @@
 #define USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT  /* /(?:()|())*\2/ */
 #define USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE     /* /\n$/ =~ "\n" */
 #define USE_WARNING_REDUNDANT_NESTED_REPEAT_OPERATOR
-/* #define USE_RECOMPILE_API */
 /* !!! moved to regenc.h. */ /* #define USE_CRNL_AS_LINE_TERMINATOR */
 
 /* internal config */
-#define USE_PARSE_TREE_NODE_RECYCLE
 #define USE_OP_PUSH_OR_JUMP_EXACT
 #define USE_QTFR_PEEK_NEXT
 #define USE_ST_LIBRARY
-#define USE_SHARED_CCLASS_TABLE
 
 #define INIT_MATCH_STACK_SIZE                     160
 #define DEFAULT_MATCH_STACK_LIMIT_SIZE              0 /* unlimited */
@@ -95,12 +92,6 @@
 #define USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
 /* #define USE_COMBINATION_EXPLOSION_CHECK */     /* (X*)* */
 
-/* #define USE_MULTI_THREAD_SYSTEM */
-#define THREAD_SYSTEM_INIT      /* depend on thread system */
-#define THREAD_SYSTEM_END       /* depend on thread system */
-#define THREAD_ATOMIC_START     /* depend on thread system */
-#define THREAD_ATOMIC_END       /* depend on thread system */
-#define THREAD_PASS             /* depend on thread system */
 #define xmalloc     malloc
 #define xrealloc    realloc
 #define xcalloc     calloc
@@ -131,40 +122,22 @@
 #define STATE_CHECK_STRING_THRESHOLD_LEN             7
 #define STATE_CHECK_BUFF_MAX_SIZE               0x4000
 
-#define THREAD_PASS_LIMIT_COUNT     8
 #define xmemset     memset
 #define xmemcpy     memcpy
 #define xmemmove    memmove
 
 #if defined(_WIN32) && !defined(__GNUC__)
 #define xalloca     _alloca
-#define xvsnprintf  _vsnprintf
+#define xvsnprintf(buf,size,fmt,args)  _vsnprintf_s(buf,size,_TRUNCATE,fmt,args)
+#define xsnprintf   sprintf_s
+#define xstrcat(dest,src,size)   strcat_s(dest,size,src)
 #else
 #define xalloca     alloca
 #define xvsnprintf  vsnprintf
+#define xsnprintf   snprintf
+#define xstrcat(dest,src,size)   strcat(dest,src)
 #endif
 
-
-#if defined(USE_RECOMPILE_API) && defined(USE_MULTI_THREAD_SYSTEM)
-#define ONIG_STATE_INC(reg) (reg)->state++
-#define ONIG_STATE_DEC(reg) (reg)->state--
-
-#define ONIG_STATE_INC_THREAD(reg) do {\
-  THREAD_ATOMIC_START;\
-  (reg)->state++;\
-  THREAD_ATOMIC_END;\
-} while(0)
-#define ONIG_STATE_DEC_THREAD(reg) do {\
-  THREAD_ATOMIC_START;\
-  (reg)->state--;\
-  THREAD_ATOMIC_END;\
-} while(0)
-#else
-#define ONIG_STATE_INC(reg)         /* Nothing */
-#define ONIG_STATE_DEC(reg)         /* Nothing */
-#define ONIG_STATE_INC_THREAD(reg)  /* Nothing */
-#define ONIG_STATE_DEC_THREAD(reg)  /* Nothing */
-#endif /* USE_RECOMPILE_API && USE_MULTI_THREAD_SYSTEM */
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -781,8 +754,6 @@ extern UChar* onig_error_code_to_format P_((int code));
 extern void  onig_snprintf_with_pattern PV_((UChar buf[], int bufsize, OnigEncoding enc, UChar* pat, UChar* pat_end, const UChar *fmt, ...));
 extern int  onig_bbuf_init P_((BBuf* buf, int size));
 extern int  onig_compile P_((regex_t* reg, const UChar* pattern, const UChar* pattern_end, OnigErrorInfo* einfo));
-extern void onig_chain_reduce P_((regex_t* reg));
-extern void onig_chain_link_add P_((regex_t* to, regex_t* add));
 extern void onig_transfer P_((regex_t* to, regex_t* from));
 extern int  onig_is_code_in_cc P_((OnigEncoding enc, OnigCodePoint code, CClassNode* cc));
 extern int  onig_is_code_in_cc_len P_((int enclen, OnigCodePoint code, CClassNode* cc));
@@ -800,23 +771,6 @@ extern hash_table_type* onig_st_init_strend_table_with_size P_((int size));
 extern int onig_st_lookup_strend P_((hash_table_type* table, const UChar* str_key, const UChar* end_key, hash_data_type *value));
 extern int onig_st_insert_strend P_((hash_table_type* table, const UChar* str_key, const UChar* end_key, hash_data_type value));
 
-/* encoding property management */
-#define PROPERTY_LIST_ADD_PROP(Name, CR) \
-  r = onigenc_property_list_add_property((UChar* )Name, CR,\
-	      &PropertyNameTable, &PropertyList, &PropertyListNum,\
-	      &PropertyListSize);\
-  if (r != 0) goto end
-
-#define PROPERTY_LIST_INIT_CHECK \
-  if (PropertyInited == 0) {\
-    int r = onigenc_property_list_init(init_property_list);\
-    if (r != 0) return r;\
-  }
-
-extern int onigenc_property_list_add_property P_((UChar* name, const OnigCodePoint* prop, hash_table_type **table, const OnigCodePoint*** plist, int *pnum, int *psize));
-
 typedef int (*ONIGENC_INIT_PROPERTY_LIST_FUNC_TYPE)(void);
-
-extern int onigenc_property_list_init P_((ONIGENC_INIT_PROPERTY_LIST_FUNC_TYPE));
 
 #endif /* REGINT_H */

@@ -28,7 +28,7 @@
  */
 
 #include "config.h"
-#include "oniguruma.h"
+#include "regint.h"
 #include <stdio.h>
 
 extern const char*
@@ -36,10 +36,10 @@ onig_version(void)
 {
   static char s[12];
 
-  sprintf(s, "%d.%d.%d",
-          ONIGURUMA_VERSION_MAJOR,
-          ONIGURUMA_VERSION_MINOR,
-          ONIGURUMA_VERSION_TEENY);
+  xsnprintf(s, sizeof(s), "%d.%d.%d",
+            ONIGURUMA_VERSION_MAJOR,
+            ONIGURUMA_VERSION_MINOR,
+            ONIGURUMA_VERSION_TEENY);
   return s;
 }
 
@@ -48,9 +48,10 @@ onig_copyright(void)
 {
   static char s[58];
 
-  sprintf(s, "Oniguruma %d.%d.%d : Copyright (C) 2002-2008 K.Kosako",
-          ONIGURUMA_VERSION_MAJOR,
-          ONIGURUMA_VERSION_MINOR,
-          ONIGURUMA_VERSION_TEENY);
+  xsnprintf(s, sizeof(s),
+            "Oniguruma %d.%d.%d : Copyright (C) 2002-2016 K.Kosako",
+            ONIGURUMA_VERSION_MAJOR,
+            ONIGURUMA_VERSION_MINOR,
+            ONIGURUMA_VERSION_TEENY);
   return s;
 }

@@ -67,6 +67,7 @@ onig2posix_error_code(int code)
     { ONIGERR_UNEXPECTED_BYTECODE,                        REG_EONIG_INTERNAL },
     { ONIGERR_DEFAULT_ENCODING_IS_NOT_SETTED,             REG_EONIG_BADARG },
     { ONIGERR_SPECIFIED_ENCODING_CANT_CONVERT_TO_WIDE_CHAR, REG_EONIG_BADARG },
+    { ONIGERR_FAIL_TO_INITIALIZE,                         REG_EONIG_INTERNAL },
     { ONIGERR_INVALID_ARGUMENT,                           REG_EONIG_BADARG },
     { ONIGERR_END_PATTERN_AT_LEFT_BRACE,                  REG_EBRACE  },
     { ONIGERR_END_PATTERN_AT_LEFT_BRACKET,                REG_EBRACK  },
@@ -114,8 +115,7 @@ onig2posix_error_code(int code)
     { ONIGERR_GROUP_NUMBER_OVER_FOR_CAPTURE_HISTORY,      REG_BADPAT },
     { ONIGERR_INVALID_CHAR_PROPERTY_NAME,                 REG_BADPAT },
     { ONIGERR_NOT_SUPPORTED_ENCODING_COMBINATION,         REG_EONIG_BADARG },
-    { ONIGERR_OVER_THREAD_PASS_LIMIT_COUNT,               REG_EONIG_THREAD }
-
+    { ONIGERR_LIBRARY_IS_NOT_INITIALIZED,                 REG_EONIG_INTERNAL }
   };
 
   int i;
@@ -256,6 +256,9 @@ reg_set_encoding(int mb_code)
     return ;
     break;
   }
+
+  onig_initialize(0, 0);
+  onig_initialize_encoding(enc);
 
   onigenc_set_default_encoding(enc);
 }

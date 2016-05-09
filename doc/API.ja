@@ -1,13 +1,18 @@
-鬼車インターフェース Version 5.9.2   2008/02/19
+鬼車インターフェース Version 6.0.0   2016/05/06
 
 #include <oniguruma.h>
 
 
-# int onig_init(void)
+# int onig_initialize(OnigEncoding use_encodings[], int num_encodings)
 
   ライブラリの初期化
+  最初に呼び出す必要がある。
 
-  onig_new()の中で呼び出されるので、この関数を明示的に呼び出さなくてもよい。
+  * onig_init() は廃止
+
+  引数
+  1 use_encodings:         使用する文字エンコーディングの配列
+  2 num_encodings:         文字エンコーディングの数
 
 
 # int onig_error_code_to_str(UChar* err_buf, int err_code, ...)
@@ -589,6 +594,19 @@
 
   マッチスタックサイズの最大値を指定する。
   (size = 0: 無制限)
+
+  正常終了戻り値: ONIG_NORMAL
+
+
+# int onig_unicode_define_user_property(const char* name, OnigCodePoint* ranges))
+
+  新しいUnicodeプロパティを定義する。
+  (この関数はスレッドセーフではない)
+
+  引数
+  1 name:    プロパティ名 (ASCIIコードのみ。 文字 ' ', '-', '_' は無視される。)
+  2 ranges:  プロパティコードポイント範囲
+             (最初の要素は範囲の数)
 
   正常終了戻り値: ONIG_NORMAL
 

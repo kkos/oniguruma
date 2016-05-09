@@ -18,6 +18,9 @@ extern int main(int argc, char* argv[])
   static UChar* pattern = (UChar* )"\\_%\\\\__zz";
   static UChar* str = (UChar* )"a_abcabcabc\\ppzz";
 
+  OnigEncoding use_encs[] = { ONIG_ENCODING_ASCII };
+  onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
+
   onig_set_syntax_op      (&SQLSyntax, ONIG_SYN_OP_VARIABLE_META_CHARACTERS);
   onig_set_syntax_op2     (&SQLSyntax, 0);
   onig_set_syntax_behavior(&SQLSyntax, 0);

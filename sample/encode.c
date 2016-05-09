@@ -52,6 +52,8 @@ exec(OnigEncoding enc, OnigOptionType options,
   UChar* pattern = (UChar* )apattern;
   UChar* str     = (UChar* )astr;
 
+  onig_initialize(&enc, 1);
+
   r = onig_new(&reg, pattern,
                pattern + onigenc_str_bytelen_null(enc, pattern),
                options, enc, ONIG_SYNTAX_DEFAULT, &einfo);
@@ -92,6 +94,8 @@ exec_deluxe(OnigEncoding pattern_enc, OnigEncoding str_enc,
   UChar* pattern = (UChar* )apattern;
   UChar* str     = (UChar* )astr;
 
+  onig_initialize(&str_enc, 1);
+
   ci.num_of_elements = 5;
   ci.pattern_enc = pattern_enc;
   ci.target_enc  = str_enc;
@@ -123,6 +127,12 @@ extern int main(int argc, char* argv[])
   /* ISO 8859-1 test */
   static unsigned char str[] = { 0xc7, 0xd6, 0xfe, 0xea, 0xe0, 0xe2, 0x00 };
   static unsigned char pattern[] = { 0xe7, 0xf6, 0xde, '\\', 'w', '+', 0x00 };
+
+  r = exec(ONIG_ENCODING_SJIS, ONIG_OPTION_NONE,
+	   "^a\\p{Hiragana}c$", "a\202\274c");
+
+  r = exec(ONIG_ENCODING_EUC_JP, ONIG_OPTION_NONE,
+	   "^a\\p{Hiragana}c$", "a\244\276c");
 
   r = exec(ONIG_ENCODING_CP1251, ONIG_OPTION_IGNORECASE,
 	   "aBc", " AbC");

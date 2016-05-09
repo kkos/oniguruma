@@ -1,4 +1,4 @@
-README.ja  2016/04/06
+README.ja  2016/05/06
 
 鬼車  ----   (C) K.Kosako <kkosako0@gmail.com>
 
@@ -23,7 +23,7 @@ https://github.com/kkos/oniguruma
 
 ライセンス
 
-  BSDライセンスに従う。
+  BSDライセンス
 
 
 インストール
@@ -49,20 +49,19 @@ https://github.com/kkos/oniguruma
 
 
 
- ケース２: Win32(VC++)環境
+ ケース２: Windows 64/32bit (Visual Studio)環境
 
-   1. copy win32\Makefile src\Makefile
-   2. copy win32\config.h src\config.h
-   3. cd src
-   4. nmake
+   make_win64 あるいは make_win32 を実行
 
       onig_s.lib:  static link library
       onig.dll:    dynamic link library
 
-  * 動作テスト (ASCII/Shift_JIS)
-   1. copy win32\testc.c src\testc.c
-   2. cd src
-   3. nmake ctest
+   * 動作テスト (ASCII/Shift_JIS)
+      1. cd src
+      2. copy ..\windows\testc.c .
+      3. nmake -f Makefile.windows ctest
+
+   (Visual Studio Community 2015 で動作確認)
 
 
 
@@ -108,6 +107,8 @@ https://github.com/kkos/oniguruma
   sample/listcap.c   捕獲履歴機能の使用例
   sample/posix.c     POSIX API使用例
   sample/sql.c       可変メタ文字機能使用例 (SQL-like パターン)
+  sample/user_property.c ユーザ定義Unicodeプロパティの使用例
+
 
 テストプログラム
   sample/syntax.c    Perl、Java、ASIS文法のテスト
@@ -173,7 +174,7 @@ https://github.com/kkos/oniguruma
   utf16_le.c         UTF-16LE エンコーディング
   utf32_be.c         UTF-32BE エンコーディング
   utf32_le.c         UTF-32LE エンコーディング
-  unicode.c          Unicode情報
+  unicode.c          Unicodeエンコーディングの共通処理
 
   win32/Makefile     Win32用 Makefile (for VC++)
   win32/config.h     Win32用 config.h

@@ -1,13 +1,19 @@
-Oniguruma API  Version 5.9.2  2008/02/19
+Oniguruma API  Version 6.0.0  2016/05/06
 
 #include <oniguruma.h>
 
 
-# int onig_init(void)
+# int onig_initialize(OnigEncoding use_encodings[], int num_encodings)
 
   Initialize library.
 
-  You don't have to call it explicitly, because it is called in onig_new().
+  You have to call it explicitly.
+
+  * onig_init() is deprecated.
+
+  arguments
+  1 use_encodings:         array of encodings used in application.
+  2 num_encodings:         number of encodings.
 
 
 # int onig_error_code_to_str(UChar* err_buf, int err_code, ...)
@@ -581,6 +587,19 @@ Oniguruma API  Version 5.9.2  2008/02/19
 
   Set the maximum number of stack size.
   (size = 0: unlimited)
+
+  normal return: ONIG_NORMAL
+
+
+# int onig_unicode_define_user_property(const char* name, OnigCodePoint* ranges))
+
+  Define new Unicode property.
+  (This function is not thread safe.)
+
+  arguments
+  1 name:    property name (ASCII only. character ' ', '-', '_' are ignored.)
+  2 ranges:  property code point ranges
+             (first element is number of ranges.)
 
   normal return: ONIG_NORMAL
 

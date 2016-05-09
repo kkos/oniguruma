@@ -2,7 +2,7 @@
   euc_jp.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2008  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -173,12 +173,6 @@ is_allowed_reverse_match(const UChar* s, const UChar* end ARG_UNUSED)
 }
 
 
-static int PropertyInited = 0;
-static const OnigCodePoint** PropertyList;
-static int PropertyListNum;
-static int PropertyListSize;
-static hash_table_type* PropertyNameTable;
-
 static const OnigCodePoint CR_Hiragana[] = {
   1,
   0xa4a1, 0xa4f3
@@ -191,31 +185,27 @@ static const OnigCodePoint CR_Katakana[] = {
   0xaab1, 0xaadd
 }; /* CR_Katakana */
 
-static int
-init_property_list(void)
-{
-  int r;
-
-  PROPERTY_LIST_ADD_PROP("Hiragana", CR_Hiragana);
-  PROPERTY_LIST_ADD_PROP("Katakana", CR_Katakana);
-  PropertyInited = 1;
-
- end:
-  return r;
-}
+static const OnigCodePoint* PropertyList[] = {
+  CR_Hiragana,
+  CR_Katakana
+};
 
 static int
 property_name_to_ctype(OnigEncoding enc, UChar* p, UChar* end)
 {
-  hash_data_type ctype;
+  struct PropertyNameCtype* pc;
+  int len = end - p;
+  char q[32];
 
-  PROPERTY_LIST_INIT_CHECK;
-
-  if (onig_st_lookup_strend(PropertyNameTable, p, end, &ctype) == 0) {
-    return onigenc_minimum_property_name_to_ctype(enc, p, end);
+  if (len < sizeof(q) - 1) {
+    xmemcpy(q, p, (size_t )len);
+    q[len] = '\0';
+    pc = euc_jp_lookup_property_name(q, len);
+    if (pc != 0)
+      return pc->ctype;
   }
 
-  return (int )ctype;
+  return ONIGERR_INVALID_CHAR_PROPERTY_NAME;
 }
 
 static int
@@ -231,10 +221,8 @@ is_code_ctype(OnigCodePoint code, unsigned int ctype)
     }
   }
   else {
-    PROPERTY_LIST_INIT_CHECK;
-
     ctype -= (ONIGENC_MAX_STD_CTYPE + 1);
-    if (ctype >= (unsigned int )PropertyListNum)
+    if (ctype >= (unsigned int )(sizeof(PropertyList)/sizeof(PropertyList[0])))
       return ONIGERR_TYPE_BUG;
 
     return onig_is_in_code_range((UChar* )PropertyList[ctype], code);
@@ -253,10 +241,8 @@ get_ctype_code_range(OnigCtype ctype, OnigCodePoint* sb_out,
   else {
     *sb_out = 0x80;
 
-    PROPERTY_LIST_INIT_CHECK;
-
     ctype -= (ONIGENC_MAX_STD_CTYPE + 1);
-    if (ctype >= (OnigCtype )PropertyListNum)
+    if (ctype >= (OnigCtype )sizeof(PropertyList)/sizeof(PropertyList[0]))
       return ONIGERR_TYPE_BUG;
 
     *ranges = PropertyList[ctype];
@@ -281,5 +267,7 @@ OnigEncodingType OnigEncodingEUC_JP = {
   is_code_ctype,
   get_ctype_code_range,
   left_adjust_char_head,
-  is_allowed_reverse_match
+  is_allowed_reverse_match,
+  NULL, /* init */
+  NULL  /* is_initialized */
 };
