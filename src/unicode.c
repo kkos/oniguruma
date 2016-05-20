@@ -483,12 +483,13 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
   buk = unicode_unfold_key(code);
   if (buk != 0) {
     if (buk->fold_len == 1) {
+      int un;
       items[0].byte_len = len;
       items[0].code_len = 1;
       items[0].code[0]  = *FOLDS1_FOLD(buk->index);
       n++;
 
-      int un = FOLDS1_UNFOLDS_NUM(buk->index);
+      un = FOLDS1_UNFOLDS_NUM(buk->index);
       for (i = 0; i < un; i++) {
         OnigCodePoint unfold = FOLDS1_UNFOLDS(buk->index)[i];
         if (unfold != code) {
@@ -517,8 +518,9 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
         }
 
         for (fn = 0; fn < 2; fn++) {
+          int index;
           cs[fn][0] = FOLDS2_FOLD(buk->index)[fn];
-          int index = unicode_fold1_key(&cs[fn][0]);
+          index = unicode_fold1_key(&cs[fn][0]);
           if (index >= 0) {
             int m = FOLDS1_UNFOLDS_NUM(index);
             for (i = 0; i < m; i++) {
@@ -553,8 +555,9 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
         }
 
         for (fn = 0; fn < 3; fn++) {
+          int index;
           cs[fn][0] = FOLDS3_FOLD(buk->index)[fn];
-          int index = unicode_fold1_key(&cs[fn][0]);
+          index = unicode_fold1_key(&cs[fn][0]);
           if (index >= 0) {
             int m = FOLDS1_UNFOLDS_NUM(index);
             for (i = 0; i < m; i++) {
@@ -603,6 +606,7 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
   p += len;
   if (p < end) {
     int clen;
+    int index;
 
     codes[0] = code;
     code = ONIGENC_MBC_TO_CODE(enc, p, end);
@@ -617,7 +621,7 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
     clen = enclen(enc, p);
     len += clen;
 
-    int index = unicode_fold2_key(codes);
+    index = unicode_fold2_key(codes);
     if (index >= 0) {
       m = FOLDS2_UNFOLDS_NUM(index);
       for (i = 0; i < m; i++) {
