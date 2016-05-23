@@ -111,8 +111,10 @@ onig_unicode_define_user_property(const char* name, OnigCodePoint* ranges)
   n = 0;
   for (i = 0; i < len; i++) {
     c = name[i];
-    if (c <= 0 || c >= 0x80)
+    if (c <= 0 || c >= 0x80) {
+      xfree(s);
       return ONIGERR_INVALID_CHAR_PROPERTY_NAME;
+    }
 
     if (c != ' ' && c != '-' && c != '_') {
       s[n] = c;
