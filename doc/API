@@ -1,4 +1,4 @@
-Oniguruma API  Version 6.0.0  2016/05/06
+Oniguruma API  Version 6.0.0  2016/05/23
 
 #include <oniguruma.h>
 
@@ -600,6 +600,10 @@ Oniguruma API  Version 6.0.0  2016/05/06
   1 name:    property name (ASCII only. character ' ', '-', '_' are ignored.)
   2 ranges:  property code point ranges
              (first element is number of ranges.)
+
+    [num-of-ranges, 1st-range-start, 1st-range-end, 2nd-range-start... ]
+
+    * Don't destroy the ranges after having called this function.
 
   normal return: ONIG_NORMAL
 

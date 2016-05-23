@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.0.0   2016/05/06
+鬼車インターフェース Version 6.0.0   2016/05/23
 
 #include <oniguruma.h>
 
@@ -607,6 +607,10 @@
   1 name:    プロパティ名 (ASCIIコードのみ。 文字 ' ', '-', '_' は無視される。)
   2 ranges:  プロパティコードポイント範囲
              (最初の要素は範囲の数)
+
+    [num-of-ranges, 1st-range-start, 1st-range-end, 2nd-range-start... ]
+
+    * この関数を呼んだ後で、rangesを変更/破壊しないこと
 
   正常終了戻り値: ONIG_NORMAL
 
