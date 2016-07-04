@@ -3873,9 +3873,9 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
                               ALLOWED_ENCLOSE_IN_LB, ALLOWED_ANCHOR_IN_LB);
           if (r < 0) return r;
           if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
-          r = setup_look_behind(node, reg, env);
-          if (r != 0) return r;
           r = setup_tree(an->target, reg, state, env);
+          if (r != 0) return r;
+          r = setup_look_behind(node, reg, env);
         }
         break;
 
@@ -3885,9 +3885,9 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
                    ALLOWED_ENCLOSE_IN_LB_NOT, ALLOWED_ANCHOR_IN_LB_NOT);
           if (r < 0) return r;
           if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
-          r = setup_look_behind(node, reg, env);
-          if (r != 0) return r;
           r = setup_tree(an->target, reg, (state | IN_NOT), env);
+          if (r != 0) return r;
+          r = setup_look_behind(node, reg, env);
         }
         break;
       }
