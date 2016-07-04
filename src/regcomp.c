@@ -3094,6 +3094,8 @@ divide_look_behind_alternatives(Node* node)
   AnchorNode* an = NANCHOR(node);
   int anc_type = an->type;
 
+  /* fprintf(stderr, "divide_look_behind: %d\n", (int )node); */
+
   head = an->target;
   np = NCAR(head);
   swap_node(node, head);
@@ -3122,6 +3124,8 @@ setup_look_behind(Node* node, regex_t* reg, ScanEnv* env)
 {
   int r, len;
   AnchorNode* an = NANCHOR(node);
+
+  /* fprintf(stderr, "setup_look_behind: %x\n", (int )node); */
 
   r = get_char_length_tree(an->target, reg, &len);
   if (r == 0)
@@ -6141,10 +6145,22 @@ print_indent_tree(FILE* f, Node* node, int indent)
     case ANCHOR_WORD_BEGIN:      fputs("word begin", f);     break;
     case ANCHOR_WORD_END:        fputs("word end", f);       break;
 #endif
-    case ANCHOR_PREC_READ:       fputs("prec read",      f); break;
-    case ANCHOR_PREC_READ_NOT:   fputs("prec read not",  f); break;
-    case ANCHOR_LOOK_BEHIND:     fputs("look_behind",    f); break;
-    case ANCHOR_LOOK_BEHIND_NOT: fputs("look_behind_not",f); break;
+    case ANCHOR_PREC_READ:
+      fprintf(f, "prec read\n");
+      print_indent_tree(f, NANCHOR(node)->target, indent + add);
+      break;
+    case ANCHOR_PREC_READ_NOT:
+      fprintf(f, "prec read not\n");
+      print_indent_tree(f, NANCHOR(node)->target, indent + add);
+      break;
+    case ANCHOR_LOOK_BEHIND:
+      fprintf(f, "look behind\n");
+      print_indent_tree(f, NANCHOR(node)->target, indent + add);
+      break;
+    case ANCHOR_LOOK_BEHIND_NOT:
+      fprintf(f, "look behind not\n");
+      print_indent_tree(f, NANCHOR(node)->target, indent + add);
+      break;
 
     default:
       fprintf(f, "ERROR: undefined anchor type.\n");
