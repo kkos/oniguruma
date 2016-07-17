@@ -2,7 +2,7 @@
   regexec.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2008  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -2965,6 +2965,7 @@ bm_search(regex_t* reg, const UChar* target, const UChar* target_end,
   return (UChar* )NULL;
 }
 
+#ifdef USE_INT_MAP_BACKWARD
 static int
 set_bm_backward_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED,
 		     int** skip)
@@ -3015,6 +3016,7 @@ bm_search_backward(regex_t* reg, const UChar* target, const UChar* target_end,
 
   return (UChar* )NULL;
 }
+#endif
 
 static UChar*
 map_search(OnigEncoding enc, UChar map[],
@@ -3210,8 +3212,6 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
   return 0; /* fail */
 }
 
-static int set_bm_backward_skip P_((UChar* s, UChar* end, OnigEncoding enc,
-				    int** skip));
 
 #define BM_BACKWARD_SEARCH_LENGTH_THRESHOLD   100
 
@@ -3220,7 +3220,6 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
 		      UChar* s, const UChar* range, UChar* adjrange,
 		      UChar** low, UChar** high)
 {
-  int r;
   UChar *p;
 
   range += reg->dmin;
@@ -3242,7 +3241,10 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
 
   case ONIG_OPTIMIZE_EXACT_BM:
   case ONIG_OPTIMIZE_EXACT_BM_NOT_REV:
+#ifdef USE_INT_MAP_BACKWARD
     if (IS_NULL(reg->int_map_backward)) {
+      int r;
+
       if (s - range < BM_BACKWARD_SEARCH_LENGTH_THRESHOLD)
 	goto exact_method;
 
@@ -3252,6 +3254,9 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
     }
     p = bm_search_backward(reg, reg->exact, reg->exact_end, range, adjrange,
 			   end, p);
+#else
+    goto exact_method;
+#endif
     break;
 
   case ONIG_OPTIMIZE_MAP:
