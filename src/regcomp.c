@@ -5435,6 +5435,8 @@ onig_reg_init(regex_t* reg, OnigOptionType option,
     r = onig_initialize_encoding(enc);
     if (r != 0)
       return ONIGERR_FAIL_TO_INITIALIZE;
+
+    onig_warning("You didn't call onig_initialize() explicitly");
 #endif
   }
 
