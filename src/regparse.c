@@ -97,6 +97,14 @@ extern void onig_set_verb_warn_func(OnigWarnFunc f)
   onig_verb_warn = f;
 }
 
+extern void
+onig_warning(const char* s)
+{
+  if (onig_warn == onig_null_warn) return ;
+
+  (*onig_warn)(s);
+}
+
 static void
 bbuf_free(BBuf* bbuf)
 {

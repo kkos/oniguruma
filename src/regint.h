@@ -750,6 +750,7 @@ extern void onig_print_statistics P_((FILE* f));
 #endif
 #endif
 
+extern void onig_warning(const char* s);
 extern UChar* onig_error_code_to_format P_((int code));
 extern void  onig_snprintf_with_pattern PV_((UChar buf[], int bufsize, OnigEncoding enc, UChar* pat, UChar* pat_end, const UChar *fmt, ...));
 extern int  onig_bbuf_init P_((BBuf* buf, int size));
