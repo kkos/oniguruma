@@ -140,6 +140,8 @@ onig_error_code_to_format(int code)
 #endif
   case ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED:
     p = "numbered backref/call is not allowed. (use name)"; break;
+  case ONIGERR_TOO_MANY_CAPTURES:
+    p = "too many captures"; break;
   case ONIGERR_TOO_BIG_WIDE_CHAR_VALUE:
     p = "too big wide-char value"; break;
   case ONIGERR_TOO_LONG_WIDE_CHAR_VALUE:

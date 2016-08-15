@@ -367,6 +367,7 @@ int onigenc_str_bytelen_null P_((OnigEncoding enc, const OnigUChar* p));
 
 /* config parameters */
 #define ONIG_NREGION                          10
+#define ONIG_MAX_CAPTURE_NUM               32767
 #define ONIG_MAX_BACKREF_NUM                1000
 #define ONIG_MAX_REPEAT_NUM               100000
 #define ONIG_MAX_MULTI_BYTE_RANGES_NUM     10000
@@ -575,6 +576,7 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIGERR_TOO_BIG_BACKREF_NUMBER                       -207
 #define ONIGERR_INVALID_BACKREF                              -208
 #define ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED         -209
+#define ONIGERR_TOO_MANY_CAPTURES                            -210
 #define ONIGERR_TOO_LONG_WIDE_CHAR_VALUE                     -212
 #define ONIGERR_EMPTY_GROUP_NAME                             -214
 #define ONIGERR_INVALID_GROUP_NAME                           -215
