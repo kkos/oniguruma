@@ -708,6 +708,7 @@ typedef struct {
   int   stack_n;
   OnigOptionType options;
   OnigRegion*    region;
+  int   ptr_num;
   const UChar* start;   /* search start position (for \G: BEGIN_POSITION) */
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
   int    best_len;      /* for ONIG_OPTION_FIND_LONGEST */

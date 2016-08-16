@@ -327,19 +327,21 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_MASK_MEM_END_OR_MARK   0x8000  /* MEM_END or MEM_END_MARK */
 
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
-#define MATCH_ARG_INIT(msa, arg_option, arg_region, arg_start) do {\
+#define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start) do {\
   (msa).stack_p  = (void* )0;\
   (msa).options  = (arg_option);\
   (msa).region   = (arg_region);\
   (msa).start    = (arg_start);\
   (msa).best_len = ONIG_MISMATCH;\
+  (msa).ptr_num  = (reg)->num_repeat + (reg)->num_mem * 2;\
 } while(0)
 #else
-#define MATCH_ARG_INIT(msa, arg_option, arg_region, arg_start) do {\
+#define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start) do {\
   (msa).stack_p  = (void* )0;\
   (msa).options  = (arg_option);\
   (msa).region   = (arg_region);\
   (msa).start    = (arg_start);\
+  (msa).ptr_num  = (reg)->num_repeat + (reg)->num_mem * 2;\
 } while(0)
 #endif
 
@@ -383,30 +385,57 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #endif
 
 
+#define ALLOCA_PTR_NUM_LIMIT   50
 
-#define STACK_INIT(alloc_addr, ptr_num, stack_num)  do {\
+#define STACK_INIT(stack_num)  do {\
   if (msa->stack_p) {\
-    alloc_addr = (char* )xalloca(sizeof(char*) * (ptr_num));\
-    stk_alloc  = (OnigStackType* )(msa->stack_p);\
-    stk_base   = stk_alloc;\
+    is_alloca  = 0;\
+    alloc_base = msa->stack_p;\
+    stk_base   = (OnigStackType* )(alloc_base\
+		   + (sizeof(OnigStackIndex) * msa->ptr_num));\
     stk        = stk_base;\
     stk_end    = stk_base + msa->stack_n;\
   }\
-  else {\
-    alloc_addr = (char* )xalloca(sizeof(char*) * (ptr_num)\
-		       + sizeof(OnigStackType) * (stack_num));\
-    stk_alloc  = (OnigStackType* )(alloc_addr + sizeof(char*) * (ptr_num));\
-    stk_base   = stk_alloc;\
+  else if (msa->ptr_num > ALLOCA_PTR_NUM_LIMIT) {\
+    is_alloca  = 0;\
+    alloc_base = (char* )xmalloc(sizeof(OnigStackIndex) * msa->ptr_num\
+				 + sizeof(OnigStackType) * (stack_num));\
+    stk_base   = (OnigStackType* )(alloc_base\
+		   + (sizeof(OnigStackIndex) * msa->ptr_num));\
     stk        = stk_base;\
     stk_end    = stk_base + (stack_num);\
   }\
-} while(0)
+  else {\
+    is_alloca  = 1;\
+    alloc_base = (char* )xalloca(sizeof(OnigStackIndex) * msa->ptr_num\
+				 + sizeof(OnigStackType) * (stack_num));\
+    stk_base   = (OnigStackType* )(alloc_base\
+		   + (sizeof(OnigStackIndex) * msa->ptr_num));\
+    stk        = stk_base;\
+    stk_end    = stk_base + (stack_num);\
+  }\
+} while(0);
+
 
 #define STACK_SAVE do{\
-  if (stk_base != stk_alloc) {\
-    msa->stack_p = stk_base;\
-    msa->stack_n = stk_end - stk_base;\
+  msa->stack_n = stk_end - stk_base;\
+  if (is_alloca != 0) {\
+    size_t size = sizeof(OnigStackIndex) * msa->ptr_num \
+                + sizeof(OnigStackType) * msa->stack_n;\
+    msa->stack_p = xmalloc(size);\
+    xmemcpy(msa->stack_p, alloc_base, size);\
+  }\
+  else {\
+    msa->stack_p = alloc_base;\
   };\
+} while(0)
+
+#define UPDATE_FOR_STACK_REALLOC do{\
+  repeat_stk = (OnigStackIndex* )alloc_base;\
+  mem_start_stk = (OnigStackIndex* )(repeat_stk + reg->num_repeat);\
+  mem_end_stk   = mem_start_stk + num_mem;\
+  mem_start_stk--; /* for index start from 1 */\
+  mem_end_stk--;   /* for index start from 1 */\
 } while(0)
 
 static unsigned int MatchStackLimitSize = DEFAULT_MATCH_STACK_LIMIT_SIZE;
@@ -425,50 +454,65 @@ onig_set_match_stack_limit_size(unsigned int size)
 }
 
 static int
-stack_double(OnigStackType** arg_stk_base, OnigStackType** arg_stk_end,
-	     OnigStackType** arg_stk, OnigStackType* stk_alloc, OnigMatchArg* msa)
+stack_double(int is_alloca, char** arg_alloc_base,
+	     OnigStackType** arg_stk_base,
+	     OnigStackType** arg_stk_end, OnigStackType** arg_stk,
+	     OnigMatchArg* msa)
 {
   unsigned int n;
-  OnigStackType *x, *stk_base, *stk_end, *stk;
+  int used;
+  size_t size;
+  char* alloc_base;
+  char* new_alloc_base;
+  OnigStackType *stk_base, *stk_end, *stk;
 
+  alloc_base = *arg_alloc_base;
   stk_base = *arg_stk_base;
   stk_end  = *arg_stk_end;
   stk      = *arg_stk;
 
   n = stk_end - stk_base;
-  if (stk_base == stk_alloc && IS_NULL(msa->stack_p)) {
-    x = (OnigStackType* )xmalloc(sizeof(OnigStackType) * n * 2);
-    if (IS_NULL(x)) {
+  n *= 2;
+  size = sizeof(OnigStackIndex) * msa->ptr_num + sizeof(OnigStackType) * n;
+  if (is_alloca != 0) {
+    new_alloc_base = (char* )xmalloc(size);
+    if (IS_NULL(new_alloc_base)) {
       STACK_SAVE;
       return ONIGERR_MEMORY;
     }
-    xmemcpy(x, stk_base, n * sizeof(OnigStackType));
-    n *= 2;
+    xmemcpy(new_alloc_base, alloc_base, size);
   }
   else {
-    n *= 2;
     if (MatchStackLimitSize != 0 && n > MatchStackLimitSize) {
       if ((unsigned int )(stk_end - stk_base) == MatchStackLimitSize)
         return ONIGERR_MATCH_STACK_LIMIT_OVER;
       else
         n = MatchStackLimitSize;
     }
-    x = (OnigStackType* )xrealloc(stk_base, sizeof(OnigStackType) * n);
-    if (IS_NULL(x)) {
+    new_alloc_base = (char* )xrealloc(alloc_base, size);
+    if (IS_NULL(new_alloc_base)) {
       STACK_SAVE;
       return ONIGERR_MEMORY;
     }
   }
-  *arg_stk      = x + (stk - stk_base);
-  *arg_stk_base = x;
-  *arg_stk_end  = x + n;
+
+  alloc_base = new_alloc_base;
+  used = stk - stk_base;
+  *arg_alloc_base = alloc_base;
+  *arg_stk_base   = (OnigStackType* )(alloc_base
+		       + (sizeof(OnigStackIndex) * msa->ptr_num));
+  *arg_stk      = *arg_stk_base + used;
+  *arg_stk_end  = *arg_stk_base + n;
   return 0;
 }
 
 #define STACK_ENSURE(n)	do {\
   if (stk_end - stk < (n)) {\
-    int r = stack_double(&stk_base, &stk_end, &stk, stk_alloc, msa);\
+    int r = stack_double(is_alloca, &alloc_base, &stk_base, &stk_end, &stk,\
+			 msa);\
     if (r != 0) { STACK_SAVE; return r; } \
+    is_alloca = 0;\
+    UPDATE_FOR_STACK_REALLOC;\
   }\
 } while(0)
 
@@ -1247,13 +1291,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   LengthType tlen, tlen2;
   MemNumType mem;
   RelAddrType addr;
-  OnigOptionType option = reg->options;
-  OnigEncoding encode = reg->enc;
-  OnigCaseFoldType case_fold_flag = reg->case_fold_flag;
   UChar *s, *q, *sbegin;
-  UChar *p = reg->p;
-  char *alloca_base;
-  OnigStackType *stk_alloc, *stk_base, *stk, *stk_end;
+  int is_alloca;
+  char *alloc_base;
+  OnigStackType *stk_base, *stk, *stk_end;
   OnigStackType *stkp; /* used as any purpose. */
   OnigStackIndex si;
   OnigStackIndex *repeat_stk;
@@ -1263,19 +1304,16 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   unsigned char* state_check_buff = msa->state_check_buff;
   int num_comb_exp_check = reg->num_comb_exp_check;
 #endif
-  n = reg->num_repeat + reg->num_mem * 2;
+  UChar *p = reg->p;
+  OnigOptionType option = reg->options;
+  OnigEncoding encode = reg->enc;
+  OnigCaseFoldType case_fold_flag = reg->case_fold_flag;
 
-  STACK_INIT(alloca_base, n, INIT_MATCH_STACK_SIZE);
+  //n = reg->num_repeat + reg->num_mem * 2;
   pop_level = reg->stack_pop_level;
   num_mem = reg->num_mem;
-  repeat_stk = (OnigStackIndex* )alloca_base;
-
-  mem_start_stk = (OnigStackIndex* )(repeat_stk + reg->num_repeat);
-  mem_end_stk   = mem_start_stk + num_mem;
-  mem_start_stk--; /* for index start from 1,
-		      mem_start_stk[1]..mem_start_stk[num_mem] */
-  mem_end_stk--;   /* for index start from 1,
-		      mem_end_stk[1]..mem_end_stk[num_mem] */
+  STACK_INIT(INIT_MATCH_STACK_SIZE);
+  UPDATE_FOR_STACK_REALLOC;
   for (i = 1; i <= num_mem; i++) {
     mem_start_stk[i] = mem_end_stk[i] = INVALID_STACK_INDEX;
   }
@@ -3054,7 +3092,7 @@ onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at, On
   UChar *prev;
   OnigMatchArg msa;
 
-  MATCH_ARG_INIT(msa, option, region, at);
+  MATCH_ARG_INIT(msa, reg, option, region, at);
 #ifdef USE_COMBINATION_EXPLOSION_CHECK
   {
     int offset = at - str;
@@ -3500,7 +3538,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
       s = (UChar* )start;
       prev = (UChar* )NULL;
 
-      MATCH_ARG_INIT(msa, option, region, start);
+      MATCH_ARG_INIT(msa, reg, option, region, start);
 #ifdef USE_COMBINATION_EXPLOSION_CHECK
       msa.state_check_buff = (void* )0;
       msa.state_check_buff_size = 0;   /* NO NEED, for valgrind */
@@ -3516,7 +3554,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 	  (int )(end - str), (int )(start - str), (int )(range - str));
 #endif
 
-  MATCH_ARG_INIT(msa, option, region, orig_start);
+  MATCH_ARG_INIT(msa, reg, option, region, orig_start);
 #ifdef USE_COMBINATION_EXPLOSION_CHECK
   {
     int offset = (MIN(start, range) - str);
