@@ -124,5 +124,8 @@ extern int main(int argc, char* argv[])
 
   exec(ONIG_ENCODING_UTF8, ONIG_OPTION_NONE, "(\2)(\1)", "aa"); /* fail. */
 
+  exec(ONIG_ENCODING_UTF8, ONIG_OPTION_FIND_LONGEST,
+       "a*", "aa aaa aaaa aaaaa "); /* match 12-17 */
+
   return 0;
 }
