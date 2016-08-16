@@ -82,6 +82,36 @@ exec_deluxe(OnigEncoding pattern_enc, OnigEncoding str_enc,
   return 0;
 }
 
+static int
+exec(OnigEncoding enc, OnigOptionType options, char* apattern, char* astr)
+{
+  int r;
+  unsigned char *end;
+  regex_t* reg;
+  OnigErrorInfo einfo;
+  UChar* pattern = (UChar* )apattern;
+  UChar* str     = (UChar* )astr;
+
+  onig_initialize(&enc, 1);
+
+  r = onig_new(&reg, pattern,
+	       pattern + onigenc_str_bytelen_null(enc, pattern),
+	       options, enc, ONIG_SYNTAX_DEFAULT, &einfo);
+  if (r != ONIG_NORMAL) {
+    char s[ONIG_MAX_ERROR_MESSAGE_LEN];
+    onig_error_code_to_str(s, r, &einfo);
+    fprintf(stderr, "ERROR: %s\n", s);
+    return -1;
+  }
+
+  end = str + onigenc_str_bytelen_null(enc, str);
+  r = search(reg, str, end);
+
+  onig_free(reg);
+  onig_end();
+  return 0;
+}
+
 
 
 extern int main(int argc, char* argv[])
@@ -91,6 +121,8 @@ extern int main(int argc, char* argv[])
   exec_deluxe(ONIG_ENCODING_UTF8, ONIG_ENCODING_UTF8,
               ONIG_OPTION_IGNORECASE,
               "(?<=\305\211)a", "\312\274na"); /* \u{0149}a  \u{02bc}na */
+
+  exec(ONIG_ENCODING_UTF8, ONIG_OPTION_NONE, "(\2)(\1)", "aa"); /* fail. */
 
   return 0;
 }
