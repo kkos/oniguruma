@@ -5,7 +5,7 @@ syntax: ONIG_SYNTAX_RUBY (default)
 
 1. Syntax elements
 
-  \       escape (enable or disable meta character meaning)
+  \       escape (enable or disable meta character)
   |       alternation
   (...)   group
   [...]   character class
@@ -13,23 +13,23 @@ syntax: ONIG_SYNTAX_RUBY (default)
 
 2. Characters
 
-  \t           horizontal tab (0x09)
-  \v           vertical tab   (0x0B)
-  \n           newline        (0x0A)
-  \r           return         (0x0D)
-  \b           back space     (0x08)
-  \f           form feed      (0x0C)
-  \a           bell           (0x07)
-  \e           escape         (0x1B)
-  \nnn         octal char            (encoded byte value)
-  \xHH         hexadecimal char      (encoded byte value)
-  \x{7HHHHHHH} wide hexadecimal char (character code point value)
-  \cx          control char          (character code point value)
-  \C-x         control char          (character code point value)
-  \M-x         meta  (x|0x80)        (character code point value)
-  \M-\C-x      meta control char     (character code point value)
+  \t           horizontal tab         (0x09)
+  \v           vertical tab           (0x0B)
+  \n           newline (line feed)    (0x0A)
+  \r           carriage return        (0x0D)
+  \b           backspace              (0x08)
+  \f           form feed              (0x0C)
+  \a           bell                   (0x07)
+  \e           escape                 (0x1B)
+  \nnn         octal char             (encoded byte value)
+  \xHH         hexadecimal char       (encoded byte value)
+  \x{7HHHHHHH} wide hexadecimal char  (character code point value)
+  \cx          control char           (character code point value)
+  \C-x         control char           (character code point value)
+  \M-x         meta  (x|0x80)         (character code point value)
+  \M-\C-x      meta control char      (character code point value)
 
- (* \b is effective in character class [...] only)
+ (* \b as backspace is effective in character class only)
 
 
 3. Character types
@@ -44,7 +44,7 @@ syntax: ONIG_SYNTAX_RUBY (default)
            Unicode:
              General_Category -- (Letter|Mark|Number|Connector_Punctuation)
 
-  \W       non word char
+  \W       non-word char
 
   \s       whitespace char
 
@@ -57,17 +57,17 @@ syntax: ONIG_SYNTAX_RUBY (default)
                               -- Paragraph_Separator
                               -- Space_Separator
 
-  \S       non whitespace char
+  \S       non-whitespace char
 
   \d       decimal digit char
 
            Unicode: General_Category -- Decimal_Number
 
-  \D       non decimal digit char
+  \D       non-decimal-digit char
 
   \h       hexadecimal digit char   [0-9a-fA-F]
 
-  \H       non hexadecimal digit char
+  \H       non-hexdigit char
 
 
   Character Property
@@ -97,9 +97,9 @@ syntax: ONIG_SYNTAX_RUBY (default)
     ?       1 or 0 times
     *       0 or more times
     +       1 or more times
-    {n,m}   at least n but not more than m times
+    {n,m}   at least n but no more than m times
     {n,}    at least n times
-    {,n}    at least 0 but not more than n times ({0,n})
+    {,n}    at least 0 but no more than n times ({0,n})
     {n}     n times
 
   reluctant
@@ -111,7 +111,7 @@ syntax: ONIG_SYNTAX_RUBY (default)
     {n,}?   at least n times
     {,n}?   at least 0 but not more than n times (== {0,n}?)
 
-  possessive (greedy and does not backtrack after repeated)
+  possessive (greedy and does not backtrack once match)
 
     ?+      1 or 0 times
     *+      0 or more times
@@ -127,7 +127,7 @@ syntax: ONIG_SYNTAX_RUBY (default)
   ^       beginning of the line
   $       end of the line
   \b      word boundary
-  \B      not word boundary
+  \B      non-word boundary
   \A      beginning of string
   \Z      end of string, or before newline at the end
   \z      end of string
@@ -136,15 +136,15 @@ syntax: ONIG_SYNTAX_RUBY (default)
 
 6. Character class
 
-  ^...    negative class (lowest precedence operator)
+  ^...    negative class (lowest precedence)
   x-y     range from x to y
   [...]   set (character class in character class)
-  ..&&..  intersection (low precedence at the next of ^)
+  ..&&..  intersection (low precedence, only higher than ^)
 
     ex. [a-w&&[^c-g]z] ==> ([a-w] AND ([^c-g] OR z)) ==> [abh-w]
 
-  * If you want to use '[', '-', ']' as a normal character
-    in a character class, you should escape these characters by '\'.
+  * If you want to use '[', '-', or ']' as a normal character
+    in character class, you should escape them with '\'.
 
 
   POSIX bracket ([:xxxxx:], negate [:^xxxxx:])
@@ -196,37 +196,36 @@ syntax: ONIG_SYNTAX_RUBY (default)
 
   (?imx-imx)         option on/off
                          i: ignore case
-                         m: multi-line (dot(.) match newline)
+                         m: multi-line (dot (.) also matches newline)
                          x: extended form
   (?imx-imx:subexp)  option on/off for subexp
 
-  (?:subexp)         not captured group
-  (subexp)           captured group
+  (?:subexp)         non-capturing group
+  (subexp)           capturing group
 
   (?=subexp)         look-ahead
   (?!subexp)         negative look-ahead
   (?<=subexp)        look-behind
   (?<!subexp)        negative look-behind
 
-                     Subexp of look-behind must be fixed character length.
-                     But different character length is allowed in top level
-                     alternatives only.
+                     Subexp of look-behind must be fixed-width.
+                     But top-level alternatives can be of various lengths.
                      ex. (?<=a|bc) is OK. (?<=aaa(?:b|cd)) is not allowed.
 
-                     In negative-look-behind, captured group isn't allowed,
-                     but shy group(?:) is allowed.
+                     In negative look-behind, capturing group isn't allowed,
+                     but non-capturing group (?:) is allowed.
 
   (?>subexp)         atomic group
-                     don't backtrack in subexp.
+                     no backtracks in subexp.
 
   (?<name>subexp), (?'name'subexp)
                      define named group
-                     (All characters of the name must be a word character.)
+                     (Each character of the name must be a word character.)
 
-                     Not only a name but a number is assigned like a captured
+                     Not only a name but a number is assigned like a capturing
                      group.
 
-                     Assigning the same name as two or more subexps is allowed.
+                     Assigning the same name to two or more subexps is allowed.
                      In this case, a subexp call can not be performed although
                      the back reference is possible.
 
@@ -308,25 +307,25 @@ syntax: ONIG_SYNTAX_RUBY (default)
 
 10. Captured group
 
-  Behavior of the no-named group (...) changes with the following conditions.
+  Behavior of an unnamed group (...) changes with the following conditions.
   (But named group is not changed.)
 
   case 1. /.../     (named group is not used, no option)
 
-     (...) is treated as a captured group.
+     (...) is treated as a capturing group.
 
   case 2. /.../g    (named group is not used, 'g' option)
 
-     (...) is treated as a no-captured group (?:...).
+     (...) is treated as a non-capturing group (?:...).
 
   case 3. /..(?<name>..)../   (named group is used, no option)
 
-     (...) is treated as a no-captured group (?:...).
+     (...) is treated as a non-capturing group.
      numbered-backref/call is not allowed.
 
   case 4. /..(?<name>..)../G  (named group is used, 'G' option)
 
-     (...) is treated as a captured group.
+     (...) is treated as a capturing group.
      numbered-backref/call is allowed.
 
   where
@@ -338,14 +337,14 @@ syntax: ONIG_SYNTAX_RUBY (default)
 
 
 -----------------------------
-A-1. Syntax depend options
+A-1. Syntax-dependent options
 
    + ONIG_SYNTAX_RUBY
-     (?m): dot(.) match newline
+     (?m): dot (.) also matches newline
 
    + ONIG_SYNTAX_PERL and ONIG_SYNTAX_JAVA
-     (?s): dot(.) match newline
-     (?m): ^ match after newline, $ match before newline
+     (?s): dot (.) also matches newline
+     (?m): ^ matches after newline, $ matches before newline
 
 
 A-2. Original extensions
@@ -356,7 +355,7 @@ A-2. Original extensions
    + subexp call                  \g<name>, \g<group-num>
 
 
-A-3. Lacked features compare with perl 5.8.0
+A-3. Missing features compared with perl 5.8.0
 
    + \N{name}
    + \l,\u,\L,\U, \X, \C
@@ -373,7 +372,7 @@ A-4. Differences with Japanized GNU regex(version 0.12) of Ruby 1.8
    + add character property (\p{property}, \P{property})
    + add hexadecimal digit char type (\h, \H)
    + add look-behind
-     (?<=fixed-char-length-pattern), (?<!fixed-char-length-pattern)
+     (?<=fixed-width-pattern), (?<!fixed-width-pattern)
    + add possessive quantifier. ?+, *+, ++
    + add operations in character class. [], &&
      ('[' must be escaped as an usual char in character class.)
@@ -389,29 +388,29 @@ A-4. Differences with Japanized GNU regex(version 0.12) of Ruby 1.8
      ex. (?:(?i)a|b) is interpreted as (?:(?i:a|b)), not (?:(?i:a)|b).
    + isolated option is not transparent to previous pattern.
      ex. a(?i)* is a syntax error pattern.
-   + allowed incomplete left brace as an usual string.
+   + allowed unpaired left brace as a normal character.
      ex. /{/, /({)/, /a{2,3/ etc...
    + negative POSIX bracket [:^xxxx:] is supported.
    + POSIX bracket [:ascii:] is added.
    + repeat of look-ahead is not allowed.
      ex. /(?=a)*/, /(?!b){5}/
-   + Ignore case option is effective to numbered character.
+   + Ignore case option is effective to escape sequence.
      ex. /\x61/i =~ "A"
-   + In the range quantifier, the number of the minimum is omissible.
+   + In the range quantifier, the number of the minimum is optional.
      /a{,n}/ == /a{0,n}/
-     The simultaneous abbreviation of the number of times of the minimum
-     and the maximum is not allowed. (/a{,}/)
-   + /a{n}?/ is not a non-greedy operator.
+     The omission of both minimum and maximum values is not allowed.
+     /a{,}/
+   + /{n}?/ is not a reluctant quantifier.
      /a{n}?/ == /(?:a{n})?/
-   + invalid back reference is checked and cause error.
+   + invalid back reference is checked and raises error.
      /\1/, /(a)\2/
-   + Zero-length match in infinite repeat stops the repeat,
+   + Zero-width match in an infinite loop stops the repeat,
      then changes of the capture group status are checked as stop condition.
      /(?:()|())*\1\2/ =~ ""
      /(?:\1a|())*/ =~ "a"
 
 
-A-5. Disabled functions by default syntax
+A-5. Features disabled in default syntax
 
    + capture history
 
