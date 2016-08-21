@@ -122,7 +122,7 @@ extern int main(int argc, char* argv[])
               ONIG_OPTION_IGNORECASE,
               "(?<=\305\211)a", "\312\274na"); /* \u{0149}a  \u{02bc}na */
 
-  exec(ONIG_ENCODING_UTF8, ONIG_OPTION_NONE, "(\2)(\1)", "aa"); /* fail. */
+  exec(ONIG_ENCODING_UTF8, ONIG_OPTION_NONE, "(\\2)(\\1)", "aa"); /* fail. */
 
   exec(ONIG_ENCODING_UTF8, ONIG_OPTION_FIND_LONGEST,
        "a*", "aa aaa aaaa aaaaa "); /* match 12-17 */
