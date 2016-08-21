@@ -191,8 +191,8 @@ typedef struct {
   struct _Node*  target;
   AbsAddrType    call_addr;
   /* for multiple call reference */
-  OnigDistance min_len; /* min length (byte) */
-  OnigDistance max_len; /* max length (byte) */ 
+  OnigLen min_len; /* min length (byte) */
+  OnigLen max_len; /* max length (byte) */
   int char_len;         /* character length  */
   int opt_count;        /* referenced count in optimize_node_left() */
 } EncloseNode;

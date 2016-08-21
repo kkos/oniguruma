@@ -3470,11 +3470,11 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
       min_semi_end = max_semi_end = (UChar* )end;
 
     end_buf:
-      if ((OnigDistance )(max_semi_end - str) < reg->anchor_dmin)
+      if ((OnigLen )(max_semi_end - str) < reg->anchor_dmin)
 	goto mismatch_no_msa;
 
       if (range > start) {
-        if ((OnigDistance )(min_semi_end - start) > reg->anchor_dmax) {
+        if ((OnigLen )(min_semi_end - start) > reg->anchor_dmax) {
           start = min_semi_end - reg->anchor_dmax;
           if (start < end)
             start = onigenc_get_right_adjust_char_head(reg->enc, str, start);
@@ -3482,17 +3482,17 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
             start = onigenc_get_prev_char_head(reg->enc, str, end);
           }
         }
-        if ((OnigDistance )(max_semi_end - (range - 1)) < reg->anchor_dmin) {
+        if ((OnigLen )(max_semi_end - (range - 1)) < reg->anchor_dmin) {
           range = max_semi_end - reg->anchor_dmin + 1;
         }
 
         if (start >= range) goto mismatch_no_msa;
       }
       else {
-        if ((OnigDistance )(min_semi_end - range) > reg->anchor_dmax) {
+        if ((OnigLen )(min_semi_end - range) > reg->anchor_dmax) {
           range = min_semi_end - reg->anchor_dmax;
         }
-        if ((OnigDistance )(max_semi_end - start) < reg->anchor_dmin) {
+        if ((OnigLen )(max_semi_end - start) < reg->anchor_dmin) {
           start = max_semi_end - reg->anchor_dmin;
           start = ONIGENC_LEFT_ADJUST_CHAR_HEAD(reg->enc, str, start);
         }

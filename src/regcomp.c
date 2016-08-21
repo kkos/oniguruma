@@ -89,8 +89,8 @@ swap_node(Node* a, Node* b)
   }
 }
 
-static OnigDistance
-distance_add(OnigDistance d1, OnigDistance d2)
+static OnigLen
+distance_add(OnigLen d1, OnigLen d2)
 {
   if (d1 == ONIG_INFINITE_DISTANCE || d2 == ONIG_INFINITE_DISTANCE)
     return ONIG_INFINITE_DISTANCE;
@@ -100,8 +100,8 @@ distance_add(OnigDistance d1, OnigDistance d2)
   }
 }
 
-static OnigDistance
-distance_multiply(OnigDistance d, int m)
+static OnigLen
+distance_multiply(OnigLen d, int m)
 {
   if (m == 0) return 0;
 
@@ -2021,245 +2021,6 @@ quantifiers_memory_node_info(Node* node)
 }
 #endif /* USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT */
 
-static int
-get_min_match_length(Node* node, OnigDistance *min, ScanEnv* env)
-{
-  OnigDistance tmin;
-  int r = 0;
-
-  *min = 0;
-  switch (NTYPE(node)) {
-  case NT_BREF:
-    {
-      int i;
-      int* backs;
-      Node** nodes = SCANENV_MEM_NODES(env);
-      BRefNode* br = NBREF(node);
-      if (br->state & NST_RECURSION) break;
-
-      backs = BACKREFS_P(br);
-      if (backs[0] > env->num_mem)  return ONIGERR_INVALID_BACKREF;
-      r = get_min_match_length(nodes[backs[0]], min, env);
-      if (r != 0) break;
-      for (i = 1; i < br->back_num; i++) {
-        if (backs[i] > env->num_mem)  return ONIGERR_INVALID_BACKREF;
-        r = get_min_match_length(nodes[backs[i]], &tmin, env);
-        if (r != 0) break;
-        if (*min > tmin) *min = tmin;
-      }
-    }
-    break;
-
-#ifdef USE_SUBEXP_CALL
-  case NT_CALL:
-    if (IS_CALL_RECURSION(NCALL(node))) {
-      EncloseNode* en = NENCLOSE(NCALL(node)->target);
-      if (IS_ENCLOSE_MIN_FIXED(en))
-        *min = en->min_len;
-    }
-    else
-      r = get_min_match_length(NCALL(node)->target, min, env);
-    break;
-#endif
-
-  case NT_LIST:
-    do {
-      r = get_min_match_length(NCAR(node), &tmin, env);
-      if (r == 0) *min += tmin;
-    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
-    break;
-
-  case NT_ALT:
-    {
-      Node *x, *y;
-      y = node;
-      do {
-        x = NCAR(y);
-        r = get_min_match_length(x, &tmin, env);
-        if (r != 0) break;
-        if (y == node) *min = tmin;
-        else if (*min > tmin) *min = tmin;
-      } while (r == 0 && IS_NOT_NULL(y = NCDR(y)));
-    }
-    break;
-
-  case NT_STR:
-    {
-      StrNode* sn = NSTR(node);
-      *min = sn->end - sn->s;
-    }
-    break;
-
-  case NT_CTYPE:
-    *min = 1;
-    break;
-
-  case NT_CCLASS:
-  case NT_CANY:
-    *min = 1;
-    break;
-
-  case NT_QTFR:
-    {
-      QtfrNode* qn = NQTFR(node);
-
-      if (qn->lower > 0) {
-        r = get_min_match_length(qn->target, min, env);
-        if (r == 0)
-          *min = distance_multiply(*min, qn->lower);
-      }
-    }
-    break;
-
-  case NT_ENCLOSE:
-    {
-      EncloseNode* en = NENCLOSE(node);
-      switch (en->type) {
-      case ENCLOSE_MEMORY:
-#ifdef USE_SUBEXP_CALL
-        if (IS_ENCLOSE_MIN_FIXED(en))
-          *min = en->min_len;
-        else {
-          r = get_min_match_length(en->target, min, env);
-          if (r == 0) {
-            en->min_len = *min;
-            SET_ENCLOSE_STATUS(node, NST_MIN_FIXED);
-          }
-        }
-        break;
-#endif
-      case ENCLOSE_OPTION:
-      case ENCLOSE_STOP_BACKTRACK:
-        r = get_min_match_length(en->target, min, env);
-        break;
-      }
-    }
-    break;
-
-  case NT_ANCHOR:
-  default:
-    break;
-  }
-
-  return r;
-}
-
-static int
-get_max_match_length(Node* node, OnigDistance *max, ScanEnv* env)
-{
-  OnigDistance tmax;
-  int r = 0;
-
-  *max = 0;
-  switch (NTYPE(node)) {
-  case NT_LIST:
-    do {
-      r = get_max_match_length(NCAR(node), &tmax, env);
-      if (r == 0)
-        *max = distance_add(*max, tmax);
-    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
-    break;
-
-  case NT_ALT:
-    do {
-      r = get_max_match_length(NCAR(node), &tmax, env);
-      if (r == 0 && *max < tmax) *max = tmax;
-    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
-    break;
-
-  case NT_STR:
-    {
-      StrNode* sn = NSTR(node);
-      *max = sn->end - sn->s;
-    }
-    break;
-
-  case NT_CTYPE:
-    *max = ONIGENC_MBC_MAXLEN_DIST(env->enc);
-    break;
-
-  case NT_CCLASS:
-  case NT_CANY:
-    *max = ONIGENC_MBC_MAXLEN_DIST(env->enc);
-    break;
-
-  case NT_BREF:
-    {
-      int i;
-      int* backs;
-      Node** nodes = SCANENV_MEM_NODES(env);
-      BRefNode* br = NBREF(node);
-      if (br->state & NST_RECURSION) {
-        *max = ONIG_INFINITE_DISTANCE;
-        break;
-      }
-      backs = BACKREFS_P(br);
-      for (i = 0; i < br->back_num; i++) {
-        if (backs[i] > env->num_mem)  return ONIGERR_INVALID_BACKREF;
-        r = get_max_match_length(nodes[backs[i]], &tmax, env);
-        if (r != 0) break;
-        if (*max < tmax) *max = tmax;
-      }
-    }
-    break;
-
-#ifdef USE_SUBEXP_CALL
-  case NT_CALL:
-    if (! IS_CALL_RECURSION(NCALL(node)))
-      r = get_max_match_length(NCALL(node)->target, max, env);
-    else
-      *max = ONIG_INFINITE_DISTANCE;
-    break;
-#endif
-
-  case NT_QTFR:
-    {
-      QtfrNode* qn = NQTFR(node);
-
-      if (qn->upper != 0) {
-        r = get_max_match_length(qn->target, max, env);
-        if (r == 0 && *max != 0) {
-          if (! IS_REPEAT_INFINITE(qn->upper))
-            *max = distance_multiply(*max, qn->upper);
-          else
-            *max = ONIG_INFINITE_DISTANCE;
-        }
-      }
-    }
-    break;
-
-  case NT_ENCLOSE:
-    {
-      EncloseNode* en = NENCLOSE(node);
-      switch (en->type) {
-      case ENCLOSE_MEMORY:
-#ifdef USE_SUBEXP_CALL
-	if (IS_ENCLOSE_MAX_FIXED(en))
-	  *max = en->max_len;
-	else {
-	  r = get_max_match_length(en->target, max, env);
-	  if (r == 0) {
-	    en->max_len = *max;
-	    SET_ENCLOSE_STATUS(node, NST_MAX_FIXED);
-	  }
-	}
-	break;
-#endif
-      case ENCLOSE_OPTION:
-      case ENCLOSE_STOP_BACKTRACK:
-        r = get_max_match_length(en->target, max, env);
-        break;
-      }
-    }
-    break;
-
-  case NT_ANCHOR:
-  default:
-    break;
-  }
-
-  return r;
-}
 
 #define GET_CHAR_LEN_VARLEN           -1
 #define GET_CHAR_LEN_TOP_ALT_VARLEN   -2
@@ -2706,6 +2467,257 @@ check_type_tree(Node* node, int type_mask, int enclose_mask, int anchor_mask)
   return r;
 }
 
+static int
+get_min_len(Node* node, OnigLen *min, ScanEnv* env)
+{
+  OnigLen tmin;
+  int r = 0;
+
+  *min = 0;
+  switch (NTYPE(node)) {
+  case NT_BREF:
+    {
+      int i;
+      int* backs;
+      Node** nodes = SCANENV_MEM_NODES(env);
+      BRefNode* br = NBREF(node);
+      if (br->state & NST_RECURSION) break;
+
+      backs = BACKREFS_P(br);
+      if (backs[0] > env->num_mem)  return ONIGERR_INVALID_BACKREF;
+      r = get_min_len(nodes[backs[0]], min, env);
+      if (r != 0) break;
+      for (i = 1; i < br->back_num; i++) {
+        if (backs[i] > env->num_mem)  return ONIGERR_INVALID_BACKREF;
+        r = get_min_len(nodes[backs[i]], &tmin, env);
+        if (r != 0) break;
+        if (*min > tmin) *min = tmin;
+      }
+    }
+    break;
+
+#ifdef USE_SUBEXP_CALL
+  case NT_CALL:
+    if (IS_CALL_RECURSION(NCALL(node))) {
+      EncloseNode* en = NENCLOSE(NCALL(node)->target);
+      if (IS_ENCLOSE_MIN_FIXED(en))
+        *min = en->min_len;
+    }
+    else
+      r = get_min_len(NCALL(node)->target, min, env);
+    break;
+#endif
+
+  case NT_LIST:
+    do {
+      r = get_min_len(NCAR(node), &tmin, env);
+      if (r == 0) *min += tmin;
+    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
+    break;
+
+  case NT_ALT:
+    {
+      Node *x, *y;
+      y = node;
+      do {
+        x = NCAR(y);
+        r = get_min_len(x, &tmin, env);
+        if (r != 0) break;
+        if (y == node) *min = tmin;
+        else if (*min > tmin) *min = tmin;
+      } while (r == 0 && IS_NOT_NULL(y = NCDR(y)));
+    }
+    break;
+
+  case NT_STR:
+    {
+      StrNode* sn = NSTR(node);
+      *min = sn->end - sn->s;
+    }
+    break;
+
+  case NT_CTYPE:
+    *min = 1;
+    break;
+
+  case NT_CCLASS:
+  case NT_CANY:
+    *min = 1;
+    break;
+
+  case NT_QTFR:
+    {
+      QtfrNode* qn = NQTFR(node);
+
+      if (qn->lower > 0) {
+        r = get_min_len(qn->target, min, env);
+        if (r == 0)
+          *min = distance_multiply(*min, qn->lower);
+      }
+    }
+    break;
+
+  case NT_ENCLOSE:
+    {
+      EncloseNode* en = NENCLOSE(node);
+      switch (en->type) {
+      case ENCLOSE_MEMORY:
+        if (IS_ENCLOSE_MIN_FIXED(en))
+          *min = en->min_len;
+        else {
+	  if (IS_ENCLOSE_MARK1(NENCLOSE(node)))
+	    *min = 0;  // recursive
+	  else {
+	    SET_ENCLOSE_STATUS(node, NST_MARK1);
+	    r = get_min_len(en->target, min, env);
+	    CLEAR_ENCLOSE_STATUS(node, NST_MARK1);
+	    if (r == 0) {
+	      en->min_len = *min;
+	      SET_ENCLOSE_STATUS(node, NST_MIN_FIXED);
+	    }
+	  }
+        }
+        break;
+
+      case ENCLOSE_OPTION:
+      case ENCLOSE_STOP_BACKTRACK:
+        r = get_min_len(en->target, min, env);
+        break;
+      }
+    }
+    break;
+
+  case NT_ANCHOR:
+  default:
+    break;
+  }
+
+  return r;
+}
+
+static int
+get_max_len(Node* node, OnigLen *max, ScanEnv* env)
+{
+  OnigLen tmax;
+  int r = 0;
+
+  *max = 0;
+  switch (NTYPE(node)) {
+  case NT_LIST:
+    do {
+      r = get_max_len(NCAR(node), &tmax, env);
+      if (r == 0)
+        *max = distance_add(*max, tmax);
+    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
+    break;
+
+  case NT_ALT:
+    do {
+      r = get_max_len(NCAR(node), &tmax, env);
+      if (r == 0 && *max < tmax) *max = tmax;
+    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
+    break;
+
+  case NT_STR:
+    {
+      StrNode* sn = NSTR(node);
+      *max = sn->end - sn->s;
+    }
+    break;
+
+  case NT_CTYPE:
+    *max = ONIGENC_MBC_MAXLEN_DIST(env->enc);
+    break;
+
+  case NT_CCLASS:
+  case NT_CANY:
+    *max = ONIGENC_MBC_MAXLEN_DIST(env->enc);
+    break;
+
+  case NT_BREF:
+    {
+      int i;
+      int* backs;
+      Node** nodes = SCANENV_MEM_NODES(env);
+      BRefNode* br = NBREF(node);
+      if (br->state & NST_RECURSION) {
+        *max = ONIG_INFINITE_DISTANCE;
+        break;
+      }
+      backs = BACKREFS_P(br);
+      for (i = 0; i < br->back_num; i++) {
+        if (backs[i] > env->num_mem)  return ONIGERR_INVALID_BACKREF;
+        r = get_max_len(nodes[backs[i]], &tmax, env);
+        if (r != 0) break;
+        if (*max < tmax) *max = tmax;
+      }
+    }
+    break;
+
+#ifdef USE_SUBEXP_CALL
+  case NT_CALL:
+    if (! IS_CALL_RECURSION(NCALL(node)))
+      r = get_max_len(NCALL(node)->target, max, env);
+    else
+      *max = ONIG_INFINITE_DISTANCE;
+    break;
+#endif
+
+  case NT_QTFR:
+    {
+      QtfrNode* qn = NQTFR(node);
+
+      if (qn->upper != 0) {
+        r = get_max_len(qn->target, max, env);
+        if (r == 0 && *max != 0) {
+          if (! IS_REPEAT_INFINITE(qn->upper))
+            *max = distance_multiply(*max, qn->upper);
+          else
+            *max = ONIG_INFINITE_DISTANCE;
+        }
+      }
+    }
+    break;
+
+  case NT_ENCLOSE:
+    {
+      EncloseNode* en = NENCLOSE(node);
+      switch (en->type) {
+      case ENCLOSE_MEMORY:
+	if (IS_ENCLOSE_MAX_FIXED(en))
+	  *max = en->max_len;
+	else {
+	  if (IS_ENCLOSE_MARK1(NENCLOSE(node)))
+	    *max = ONIG_INFINITE_DISTANCE;
+	  else {
+	    SET_ENCLOSE_STATUS(node, NST_MARK1);
+	    r = get_max_len(en->target, max, env);
+	    CLEAR_ENCLOSE_STATUS(node, NST_MARK1);
+	    if (r == 0) {
+	      en->max_len = *max;
+	      SET_ENCLOSE_STATUS(node, NST_MAX_FIXED);
+	    }
+	  }
+	}
+	break;
+
+      case ENCLOSE_OPTION:
+      case ENCLOSE_STOP_BACKTRACK:
+        r = get_max_len(en->target, max, env);
+        break;
+      }
+    }
+    break;
+
+  case NT_ANCHOR:
+  default:
+    break;
+  }
+
+  return r;
+}
+
+
 #ifdef USE_SUBEXP_CALL
 
 #define RECURSION_EXIST       1
@@ -2722,7 +2734,7 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
   case NT_LIST:
     {
       Node *x;
-      OnigDistance min;
+      OnigLen min;
       int ret;
 
       x = node;
@@ -2731,7 +2743,7 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
         if (ret < 0 || ret == RECURSION_INFINITE) return ret;
         r |= ret;
         if (head) {
-          ret = get_min_match_length(NCAR(x), &min, env);
+          ret = get_min_len(NCAR(x), &min, env);
           if (ret != 0) return ret;
           if (min != 0) head = 0;
         }
@@ -3723,7 +3735,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
   case NT_QTFR:
     {
-      OnigDistance d;
+      OnigLen d;
       QtfrNode* qn = NQTFR(node);
       Node* target = qn->target;
 
@@ -3732,7 +3744,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
       }
 
       if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 1) {
-        r = get_min_match_length(target, &d, env);
+        r = get_min_len(target, &d, env);
         if (r) break;
         if (d == 0) {
           qn->target_empty_info = NQ_TARGET_IS_EMPTY;
@@ -3744,7 +3756,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
           }
 #endif
 #if 0
-          r = get_max_match_length(target, &d, env);
+          r = get_max_len(target, &d, env);
           if (r == 0 && d == 0) {
             /*  ()* ==> ()?, ()+ ==> ()  */
             qn->upper = 1;
@@ -3931,8 +3943,8 @@ set_bm_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED,
 #define OPT_EXACT_MAXLEN   24
 
 typedef struct {
-  OnigDistance min;  /* min byte length */
-  OnigDistance max;  /* max byte length */
+  OnigLen min;  /* min byte length */
+  OnigLen max;  /* max byte length */
 } MinMaxLen;
 
 typedef struct {
@@ -4056,7 +4068,7 @@ is_equal_mml(MinMaxLen* a, MinMaxLen* b)
 
 
 static void
-set_mml(MinMaxLen* mml, OnigDistance min, OnigDistance max)
+set_mml(MinMaxLen* mml, OnigLen min, OnigLen max)
 {
   mml->min = min;
   mml->max = max;
@@ -4084,7 +4096,7 @@ add_mml(MinMaxLen* to, MinMaxLen* from)
 
 #if 0
 static void
-add_len_mml(MinMaxLen* to, OnigDistance len)
+add_len_mml(MinMaxLen* to, OnigLen len)
 {
   to->min = distance_add(to->min, len);
   to->max = distance_add(to->max, len);
@@ -4119,7 +4131,7 @@ copy_opt_anc_info(OptAncInfo* to, OptAncInfo* from)
 
 static void
 concat_opt_anc_info(OptAncInfo* to, OptAncInfo* left, OptAncInfo* right,
-		    OnigDistance left_len, OnigDistance right_len)
+		    OnigLen left_len, OnigLen right_len)
 {
   clear_opt_anc_info(to);
 
@@ -4632,8 +4644,8 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
       /* no need to check ignore case. (setted in setup_tree()) */
 
       if (IS_NOT_NULL(cc->mbuf) || IS_NCCLASS_NOT(cc)) {
-        OnigDistance min = ONIGENC_MBC_MINLEN(env->enc);
-        OnigDistance max = ONIGENC_MBC_MAXLEN_DIST(env->enc);
+        OnigLen min = ONIGENC_MBC_MINLEN(env->enc);
+        OnigLen max = ONIGENC_MBC_MAXLEN_DIST(env->enc);
 
         set_mml(&opt->len, min, max);
       }
@@ -4686,8 +4698,8 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
 
   case NT_CANY:
     {
-      OnigDistance min = ONIGENC_MBC_MINLEN(env->enc);
-      OnigDistance max = ONIGENC_MBC_MAXLEN_DIST(env->enc);
+      OnigLen min = ONIGENC_MBC_MINLEN(env->enc);
+      OnigLen max = ONIGENC_MBC_MAXLEN_DIST(env->enc);
       set_mml(&opt->len, min, max);
     }
     break;
@@ -4733,7 +4745,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     {
       int i;
       int* backs;
-      OnigDistance min, max, tmin, tmax;
+      OnigLen min, max, tmin, tmax;
       Node** nodes = SCANENV_MEM_NODES(env->scan_env);
       BRefNode* br = NBREF(node);
 
@@ -4742,14 +4754,14 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
         break;
       }
       backs = BACKREFS_P(br);
-      r = get_min_match_length(nodes[backs[0]], &min, env->scan_env);
+      r = get_min_len(nodes[backs[0]], &min, env->scan_env);
       if (r != 0) break;
-      r = get_max_match_length(nodes[backs[0]], &max, env->scan_env);
+      r = get_max_len(nodes[backs[0]], &max, env->scan_env);
       if (r != 0) break;
       for (i = 1; i < br->back_num; i++) {
-        r = get_min_match_length(nodes[backs[i]], &tmin, env->scan_env);
+        r = get_min_len(nodes[backs[i]], &tmin, env->scan_env);
         if (r != 0) break;
-        r = get_max_match_length(nodes[backs[i]], &tmax, env->scan_env);
+        r = get_max_len(nodes[backs[i]], &tmax, env->scan_env);
         if (r != 0) break;
         if (min > tmin) min = tmin;
         if (max < tmax) max = tmax;
@@ -4774,7 +4786,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
   case NT_QTFR:
     {
       int i;
-      OnigDistance min, max;
+      OnigLen min, max;
       NodeOptInfo nopt;
       QtfrNode* qn = NQTFR(node);
 
@@ -4843,7 +4855,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
 #ifdef USE_SUBEXP_CALL
         en->opt_count++;
         if (en->opt_count > MAX_NODE_OPT_INFO_REF_COUNT) {
-          OnigDistance min, max;
+          OnigLen min, max;
 
           min = 0;
           max = ONIG_INFINITE_DISTANCE;
@@ -5063,7 +5075,7 @@ static void print_enc_string(FILE* fp, OnigEncoding enc,
 }
 
 static void
-print_distance_range(FILE* f, OnigDistance a, OnigDistance b)
+print_distance_range(FILE* f, OnigLen a, OnigLen b)
 {
   if (a == ONIG_INFINITE_DISTANCE)
     fputs("inf", f);
