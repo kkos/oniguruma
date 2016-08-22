@@ -230,43 +230,42 @@ syntax: ONIG_SYNTAX_RUBY (default)
                      the back reference is possible.
 
 
-8. Back reference
+8. Backreferences
 
-  \n          back reference by group number (n >= 1)
-  \k<n>       back reference by group number (n >= 1)
-  \k'n'       back reference by group number (n >= 1)
-  \k<-n>      back reference by relative group number (n >= 1)
-  \k'-n'      back reference by relative group number (n >= 1)
-  \k<name>    back reference by group name
-  \k'name'    back reference by group name
+  When we say "backreference a group," it actually means, "re-match the same
+  text matched by the subexp in that group."
 
-  In the back reference by the multiplex definition name,
-  a subexp with a large number is referred to preferentially.
-  (When not matched, a group of the small number is referred to.)
+  \n  \k<n>     \k'n'     (n >= 1) backreference the nth group in the regexp
+      \k<-n>    \k'-n'    (n >= 1) backreference the nth group counting
+                          backwards from the referring position
+      \k<name>  \k'name'  backreference a group with the specified name
 
-  * Back reference by group number is forbidden if named group is defined
-    in the pattern and ONIG_OPTION_CAPTURE_GROUP is not set.
+  When backreferencing with a name that is assigned to more than one groups,
+  the last group with the name is checked first, if not matched then the
+  previous one with the name, and so on, until there is a match.
+
+  * Backreference by number is forbidden if any named group is defined and
+    ONIG_OPTION_CAPTURE_GROUP is not set.
 
 
-  back reference with nest level
+  backreference with recursion level
 
-    level: 0, 1, 2, ...
+    (n >= 1, level >= 0)
 
-    \k<n+level>     (n >= 1)
-    \k<n-level>     (n >= 1)
-    \k'n+level'     (n >= 1)
-    \k'n-level'     (n >= 1)
+    \k<n+level> \k'n+level'
+    \k<n-level> \k'n-level'
 
-    \k<name+level>
-    \k<name-level>
-    \k'name+level'
-    \k'name-level'
+    \k<name+level> \k'name+level'
+    \k<name-level> \k'name-level'
 
-    Destine relative nest level from back reference position.
+    Destine a group on the recursion level relative to the referring position.
 
     ex 1.
 
+      /\A(?<a>|.|(?:(?<b>.)\g<a>\k<b>))\z/.match("reee")
       /\A(?<a>|.|(?:(?<b>.)\g<a>\k<b+0>))\z/.match("reer")
+
+      \k<b+0> refers to the (?<b>.) on the same recursion level with it.
 
     ex 2.
 
@@ -279,8 +278,7 @@ syntax: ONIG_SYNTAX_RUBY (default)
       \g<element>
       __REGEXP__
 
-      p r.match('<foo>f<bar>bbb</bar>f</foo>').captures
-
+      p r.match("<foo>f<bar>bbb</bar>f</foo>").captures
 
 
 9. Subexp call ("Tanaka Akira special")
