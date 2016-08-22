@@ -371,7 +371,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
     (msa).state_check_buff = (void* )0;\
     (msa).state_check_buff_size = 0;\
   }\
-  } while(0)
+} while(0)
 
 #define MATCH_ARG_FREE(msa) do {\
   if ((msa).stack_p) xfree((msa).stack_p);\
@@ -392,25 +392,25 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
     is_alloca  = 0;\
     alloc_base = msa->stack_p;\
     stk_base   = (OnigStackType* )(alloc_base\
-		   + (sizeof(OnigStackIndex) * msa->ptr_num));\
+                 + (sizeof(OnigStackIndex) * msa->ptr_num));\
     stk        = stk_base;\
     stk_end    = stk_base + msa->stack_n;\
   }\
   else if (msa->ptr_num > ALLOCA_PTR_NUM_LIMIT) {\
     is_alloca  = 0;\
     alloc_base = (char* )xmalloc(sizeof(OnigStackIndex) * msa->ptr_num\
-				 + sizeof(OnigStackType) * (stack_num));\
+                  + sizeof(OnigStackType) * (stack_num));\
     stk_base   = (OnigStackType* )(alloc_base\
-		   + (sizeof(OnigStackIndex) * msa->ptr_num));\
+                 + (sizeof(OnigStackIndex) * msa->ptr_num));\
     stk        = stk_base;\
     stk_end    = stk_base + (stack_num);\
   }\
   else {\
     is_alloca  = 1;\
     alloc_base = (char* )xalloca(sizeof(OnigStackIndex) * msa->ptr_num\
-				 + sizeof(OnigStackType) * (stack_num));\
+                 + sizeof(OnigStackType) * (stack_num));\
     stk_base   = (OnigStackType* )(alloc_base\
-		   + (sizeof(OnigStackIndex) * msa->ptr_num));\
+                 + (sizeof(OnigStackIndex) * msa->ptr_num));\
     stk        = stk_base;\
     stk_end    = stk_base + (stack_num);\
   }\
@@ -509,7 +509,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_ENSURE(n)	do {\
   if (stk_end - stk < (n)) {\
     int r = stack_double(is_alloca, &alloc_base, &stk_base, &stk_end, &stk,\
-			 msa);\
+                         msa);\
     if (r != 0) { STACK_SAVE; return r; } \
     is_alloca = 0;\
     UPDATE_FOR_STACK_REALLOC;\
@@ -3755,15 +3755,15 @@ onig_scan(regex_t* reg, const UChar* str, const UChar* end,
       rs = scan_callback(n, r, region, callback_arg);
       n++;
       if (rs != 0)
-	return rs;
+        return rs;
 
       if (region->end[0] == start - str)
-	start++;
+        start++;
       else
-	start = str + region->end[0];
+        start = str + region->end[0];
 
       if (start > end)
-	break;
+        break;
     }
     else if (r == ONIG_MISMATCH) {
       break;
