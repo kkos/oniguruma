@@ -114,6 +114,7 @@ Sample Programs
 |sample/encode.c       |example of some encodings.                |
 |sample/listcap.c      |example of the capture history.           |
 |sample/posix.c        |POSIX API sample.                         |
+|sample/scan.c         |example of using onig_scan().             |
 |sample/sql.c          |example of the variable meta characters.  |
 |sample/user_property.c|example of user defined Unicode property. |
 
@@ -185,5 +186,6 @@ Source Files
 |utf32_be.c         |UTF-32BE encoding                                       |
 |utf32_le.c         |UTF-32LE encoding                                       |
 |unicode.c          |common codes of Unicode encoding                        |
+|unicode_fold_data.c|Unicode folding data                                    |
 |win32/Makefile     |Makefile for Win32 (VC++)                               |
 |win32/config.h     |config.h for Win32                                      |
