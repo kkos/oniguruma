@@ -1,4 +1,4 @@
-Oniguruma API  Version 6.0.0  2016/05/23
+Oniguruma API  Version 6.1.0  2016/08/22
 
 #include <oniguruma.h>
 
@@ -254,6 +254,27 @@ Oniguruma API  Version 6.0.0  2016/05/23
     ONIG_OPTION_NOTBOL       string head(str) isn't considered as begin of line
     ONIG_OPTION_NOTEOL       string end (end) isn't considered as end of line
     ONIG_OPTION_POSIX_REGION region argument is regmatch_t[] type of POSIX API.
+
+
+# int onig_scan(regex_t* reg, const UChar* str, const UChar* end,
+                OnigRegion* region, OnigOptionType option,
+                int (*scan_callback)(int, int, OnigRegion*, void*),
+                void* callback_arg)
+
+  Scan string and callback with matching region.
+
+  normal return: number of matching times
+  error:         error code
+  interruption:  return value of callback function (!= 0)
+
+  arguments
+  1 reg:    regex object
+  2 str:    target string
+  3 end:    terminate address of target string
+  4 region: address for return group match range info (NULL is allowed)
+  5 option: search time option
+  6 scan_callback: callback function (defined by user)
+  7 callback_arg:  optional argument passed to callback
 
 
 # OnigRegion* onig_region_new(void)
