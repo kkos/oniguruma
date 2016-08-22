@@ -26,7 +26,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
 #include "regparse.h"
 #include "st.h"
 
@@ -267,7 +266,7 @@ strdup_with_null(OnigEncoding enc, UChar* s, UChar* end)
 #define PFETCH(c)  do { \
   c = ONIGENC_MBC_TO_CODE(enc, p, end); \
   pfetch_prev = p; \
-  p += ONIGENC_MBC_ENC_LEN(enc, p); \
+  p += ONIGENC_MBC_ENC_LEN_END(enc, p, end); \
 } while (0)
 
 #define PINC_S     do { \
@@ -275,7 +274,7 @@ strdup_with_null(OnigEncoding enc, UChar* s, UChar* end)
 } while (0)
 #define PFETCH_S(c) do { \
   c = ONIGENC_MBC_TO_CODE(enc, p, end); \
-  p += ONIGENC_MBC_ENC_LEN(enc, p); \
+  p += ONIGENC_MBC_ENC_LEN_END(enc, p, end); \
 } while (0)
 
 #define PPEEK        (p < end ? ONIGENC_MBC_TO_CODE(enc, p, end) : PEND_VALUE)
@@ -5309,6 +5308,11 @@ onig_parse_make_tree(Node** root, const UChar* pattern, const UChar* end,
   env->pattern        = (UChar* )pattern;
   env->pattern_end    = (UChar* )end;
   env->reg            = reg;
+
+#ifdef DEBUG_OOB
+  fprintf(stderr, "onig_parse_make_tree: %p - %p, %d\n", pattern, end,
+          (int )(end - pattern));
+#endif
 
   *root = NULL;
   p = (UChar* )pattern;

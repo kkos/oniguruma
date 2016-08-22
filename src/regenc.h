@@ -116,6 +116,7 @@ struct PropertyNameCtype {
 #define ONIG_ENCODING_INIT_DEFAULT           ONIG_ENCODING_ASCII
 
 /* for encoding system implementation (internal) */
+ONIG_EXTERN int onigenc_mbc_enc_len_end(OnigEncoding enc, const UChar* p, const UChar* end);
 ONIG_EXTERN int onigenc_ascii_apply_all_case_fold P_((OnigCaseFoldType flag, OnigApplyAllCaseFoldFunc f, void* arg));
 ONIG_EXTERN int onigenc_ascii_get_case_fold_codes_by_str P_((OnigCaseFoldType flag, const OnigUChar* p, const OnigUChar* end, OnigCaseFoldCodeItem items[]));
 ONIG_EXTERN int onigenc_apply_all_case_fold_with_map P_((int map_size, const OnigPairCaseFoldCodes map[], int ess_tsett_flag, OnigCaseFoldType flag, OnigApplyAllCaseFoldFunc f, void* arg));
@@ -226,6 +227,8 @@ ONIG_EXTERN OnigEncoding  OnigEncDefaultCharEncoding;
 ONIG_EXTERN const UChar  OnigEncAsciiToLowerCaseTable[];
 ONIG_EXTERN const UChar  OnigEncAsciiToUpperCaseTable[];
 ONIG_EXTERN const unsigned short OnigEncAsciiCtypeTable[];
+
+#define ONIGENC_MBC_ENC_LEN_END(enc,p,end)   onigenc_mbc_enc_len_end(enc, p, end)
 
 #define ONIGENC_IS_ASCII_CODE(code)  ((code) < 0x80)
 #define ONIGENC_ASCII_CODE_TO_LOWER_CASE(c) OnigEncAsciiToLowerCaseTable[c]
