@@ -226,8 +226,6 @@ syntax: ONIG_SYNTAX_RUBY (default)
                      group.
 
                      Assigning the same name to two or more subexps is allowed.
-                     In this case, a subexp call can not be performed although
-                     the back reference is possible.
 
 
 8. Backreferences
@@ -281,26 +279,30 @@ syntax: ONIG_SYNTAX_RUBY (default)
       p r.match("<foo>f<bar>bbb</bar>f</foo>").captures
 
 
-9. Subexp call ("Tanaka Akira special")
+9. Subexp calls ("Tanaka Akira special")
 
-  \g<name>    call by group name
-  \g'name'    call by group name
-  \g<n>       call by group number (n >= 1)
-  \g'n'       call by group number (n >= 1)
-  \g<-n>      call by relative group number (n >= 1)
-  \g'-n'      call by relative group number (n >= 1)
+  When we say "call a group," it actually means, "re-execute the subexp in
+  that group."
 
-  * left-most recursive call is not allowed.
-     ex. (?<name>a|\g<name>b)   => error
-         (?<name>a|b\g<name>c)  => OK
+  \g<n>     \g'n'     (n >= 1) call the nth group
+  \g<-n>    \g'-n'    (n >= 1) call the nth group counting backwards from
+                      the calling position
+  \g<name>  \g'name'  call the group with the specified name
 
-  * Call by group number is forbidden if named group is defined in the pattern
-    and ONIG_OPTION_CAPTURE_GROUP is not set.
+  * Left-most recursive calls are not allowed.
 
-  * If the option status of called group is different from calling position
-    then the group's option is effective.
+    ex. (?<name>a|\g<name>b)    => error
+        (?<name>a|b\g<name>c)   => OK
 
-    ex. (?-i:\g<name>)(?i:(?<name>a)){0}  match to "A"
+  * Calls with a name that is assigned to more than one groups are not
+    allowed.
+
+  * Call by number is forbidden if any named group is defined and
+    ONIG_OPTION_CAPTURE_GROUP is not set.
+
+  * The option status of the called group is always effective.
+
+    ex. /(?-i:\g<name>)(?i:(?<name>a)){0}/.match("A")
 
 
 10. Captured group
