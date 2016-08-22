@@ -1,5 +1,7 @@
 History
 
+2016/08/22: add onig_scan() into doc/API.
+2016/08/22: fix bug: Out of bounds read in onig_strcpy() #17
 2016/08/21: fix bug: infinite loop of backreference and group.
 2016/08/21: fix out of bounds read in mbc_to_code() #16
 2016/08/18: doc/RE refinements.
