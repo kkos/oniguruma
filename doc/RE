@@ -131,7 +131,7 @@ syntax: ONIG_SYNTAX_RUBY (default)
   \A      beginning of string
   \Z      end of string, or before newline at the end
   \z      end of string
-  \G      matching start position
+  \G      where the current search attempt begins
 
 
 6. Character class
