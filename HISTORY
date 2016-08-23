@@ -1,5 +1,8 @@
 History
 
+2016/08/29: Version 6.1.0
+
+2016/08/23: doc/RE improved.
 2016/08/22: add onig_scan() into doc/API.
 2016/08/22: fix bug: Out of bounds read in onig_strcpy() #17
 2016/08/21: fix bug: infinite loop of backreference and group.
@@ -13,7 +16,7 @@ History
 2016/07/04: fix case of enclosed option in look-behind.
 2016/07/04: fix ignore case in look-behind.
 2016/05/23: fix memory leak in onig_unicode_define_user_property()
-2016/05/20: declare variables at the top of scope.
+2016/05/20: declare variables at the top of scope.  (thanks nmaya)
 
 2016/05/09: Version 6.0.0
 
