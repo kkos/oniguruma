@@ -20,6 +20,12 @@ Supported character encodings:
 * CP1251:  contributed by Byte
 
 
+New feature of version 6.1
+--------------------------
+
+* improved doc/RE
+* NEW API: onig_scan()
+
 New feature of version 6.0
 --------------------------
 
