@@ -91,14 +91,14 @@ is_mbc_newline(const UChar* p, const UChar* end)
 }
 
 static OnigCodePoint
-mbc_to_code(const UChar* p, const UChar* end ARG_UNUSED)
+mbc_to_code(const UChar* p, const UChar* end)
 {
   int c, len;
   OnigCodePoint n;
 
-  len = enclen(ONIG_ENCODING_UTF8, p);
+  len = enclen_end(ONIG_ENCODING_UTF8, p, end);
   c = *p++;
-  if (len > 1 && p < end) {
+  if (len > 1) {
     len--;
     n = c & ((1 << (6 - len)) - 1);
     while (len--) {
