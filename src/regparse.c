@@ -4177,7 +4177,7 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
           goto err;
         }
 
-        len = enclen_end(env->enc, buf, buf + i);
+        len = enclen(env->enc, buf);
         if (i < len) {
           r = ONIGERR_TOO_SHORT_MULTI_BYTE_STRING;
           goto err;
