@@ -29,6 +29,14 @@
 #include "regparse.h"
 #include "st.h"
 
+//#define DEBUG_OOB
+
+#ifdef DEBUG_OOB
+#include <stdio.h>
+static const UChar* PatternStart;
+static const UChar* PatternEnd;
+#endif
+
 #define WARN_BUFSIZE    256
 
 #define CASE_FOLD_IS_APPLIED_INSIDE_NEGATIVE_CCLASS
@@ -229,6 +237,14 @@ onig_strcpy(UChar* dest, const UChar* src, const UChar* end)
   if (len > 0) {
     xmemcpy(dest, src, len);
     dest[len] = (UChar )0;
+
+#ifdef DEBUG_OOB
+    if (end > PatternEnd)
+      fprintf(stderr, "end: %p, END: %p\n", end, PatternEnd);
+
+    if (src < PatternStart)
+      fprintf(stderr, "start: %p, START: %p\n", src, PatternStart);
+#endif
   }
 }
 
@@ -5310,8 +5326,12 @@ onig_parse_make_tree(Node** root, const UChar* pattern, const UChar* end,
   env->reg            = reg;
 
 #ifdef DEBUG_OOB
+  /*
   fprintf(stderr, "onig_parse_make_tree: %p - %p, %d\n", pattern, end,
           (int )(end - pattern));
+  */
+  PatternStart = pattern;
+  PatternEnd   = end;
 #endif
 
   *root = NULL;
