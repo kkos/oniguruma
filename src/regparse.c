@@ -5305,6 +5305,19 @@ parse_regexp(Node** top, UChar** src, UChar* end, ScanEnv* env)
   return 0;
 }
 
+static int
+check_incomplete_multibyte_string(OnigEncoding enc, const UChar* p, const UChar* end)
+{
+  while (p < end) {
+    p += enclen(enc, p);
+  }
+
+  if (p != end)
+    return -1;
+  else
+    return 0;
+}
+
 extern int
 onig_parse_make_tree(Node** root, const UChar* pattern, const UChar* end,
 		     regex_t* reg, ScanEnv* env)
@@ -5335,6 +5348,10 @@ onig_parse_make_tree(Node** root, const UChar* pattern, const UChar* end,
 #endif
 
   *root = NULL;
+
+  if (check_incomplete_multibyte_string(env->enc, pattern, end) != 0)
+    return ONIGERR_TOO_SHORT_MULTI_BYTE_STRING;
+
   p = (UChar* )pattern;
   r = parse_regexp(root, &p, (UChar* )end, env);
   reg->num_mem = env->num_mem;
