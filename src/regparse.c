@@ -33,7 +33,6 @@
 
 #ifdef DEBUG_OOB
 #include <stdio.h>
-static const UChar* PatternStart;
 static const UChar* PatternEnd;
 #endif
 
@@ -241,9 +240,6 @@ onig_strcpy(UChar* dest, const UChar* src, const UChar* end)
 #ifdef DEBUG_OOB
     if (end > PatternEnd)
       fprintf(stderr, "end: %p, END: %p\n", end, PatternEnd);
-
-    if (src < PatternStart)
-      fprintf(stderr, "start: %p, START: %p\n", src, PatternStart);
 #endif
   }
 }
@@ -5343,8 +5339,7 @@ onig_parse_make_tree(Node** root, const UChar* pattern, const UChar* end,
   fprintf(stderr, "onig_parse_make_tree: %p - %p, %d\n", pattern, end,
           (int )(end - pattern));
   */
-  PatternStart = pattern;
-  PatternEnd   = end;
+  PatternEnd = end;
 #endif
 
   *root = NULL;
