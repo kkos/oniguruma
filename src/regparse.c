@@ -2281,7 +2281,7 @@ fetch_range_quantifier(UChar** src, UChar* end, OnigToken* tok, ScanEnv* env)
 
     if (p == prev) {
       if (non_low != 0)
-	goto invalid;
+        goto invalid;
       up = REPEAT_INFINITE;  /* {n,} : {n,infinite} */
     }
   }
@@ -2495,7 +2495,7 @@ fetch_name_with_level(OnigCodePoint start_code, UChar** src, UChar* end,
 
       PFETCH(c);
       if (c == end_code)
-	goto end;
+        goto end;
     }
 
   err:
@@ -3354,7 +3354,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
         if (num < 0) return ONIGERR_TOO_BIG_NUMBER;
         if (p == prev) {  /* can't read nothing. */
           num = 0; /* but, it's not error */
-	}
+        }
         tok->type = TK_RAW_BYTE;
         tok->base = 8;
         tok->u.c  = num;
@@ -3570,10 +3570,10 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       if (r < 0) return r;  /* error */
       if (r == 0) goto greedy_check;
       else if (r == 2) { /* {n} */
-	if (IS_SYNTAX_BV(syn, ONIG_SYN_FIXED_INTERVAL_IS_GREEDY_ONLY))
-	  goto possessive_check;
+        if (IS_SYNTAX_BV(syn, ONIG_SYN_FIXED_INTERVAL_IS_GREEDY_ONLY))
+          goto possessive_check;
 
-	goto greedy_check;
+        goto greedy_check;
       }
       /* r == 1 : normal char */
       break;
@@ -3634,7 +3634,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
     case ']':
       if (*src > env->pattern)   /* /].../ is allowed. */
-	CLOSE_BRACKET_WITHOUT_ESC_WARN(env, (UChar* )"]");
+        CLOSE_BRACKET_WITHOUT_ESC_WARN(env, (UChar* )"]");
       break;
 
     case '#':
@@ -4011,13 +4011,13 @@ next_state_val(CClassNode* cc, OnigCodePoint *vs, OnigCodePoint v,
         if (*vs > 0xff || v > 0xff)
           return ONIGERR_INVALID_CODE_POINT_VALUE;
 
-	if (*vs > v) {
-	  if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_ALLOW_EMPTY_RANGE_IN_CC))
-	    goto ccs_range_end;
-	  else
-	    return ONIGERR_EMPTY_RANGE_IN_CHAR_CLASS;
-	}
-	bitset_set_range(cc->bs, (int )*vs, (int )v);
+        if (*vs > v) {
+          if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_ALLOW_EMPTY_RANGE_IN_CC))
+            goto ccs_range_end;
+          else
+            return ONIGERR_EMPTY_RANGE_IN_CHAR_CLASS;
+        }
+        bitset_set_range(cc->bs, (int )*vs, (int )v);
       }
       else {
         r = add_code_range(&(cc->mbuf), env, *vs, v);
@@ -4028,15 +4028,15 @@ next_state_val(CClassNode* cc, OnigCodePoint *vs, OnigCodePoint v,
 #if 0
       if (intype == CCV_CODE_POINT && *type == CCV_SB) {
 #endif
-	if (*vs > v) {
-	  if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_ALLOW_EMPTY_RANGE_IN_CC))
-	    goto ccs_range_end;
-	  else
-	    return ONIGERR_EMPTY_RANGE_IN_CHAR_CLASS;
-	}
-	bitset_set_range(cc->bs, (int )*vs, (int )(v < 0xff ? v : 0xff));
-	r = add_code_range(&(cc->mbuf), env, (OnigCodePoint )*vs, v);
-	if (r < 0) return r;
+        if (*vs > v) {
+          if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_ALLOW_EMPTY_RANGE_IN_CC))
+            goto ccs_range_end;
+          else
+            return ONIGERR_EMPTY_RANGE_IN_CHAR_CLASS;
+        }
+        bitset_set_range(cc->bs, (int )*vs, (int )(v < 0xff ? v : 0xff));
+        r = add_code_range(&(cc->mbuf), env, (OnigCodePoint )*vs, v);
+        if (r < 0) return r;
 #if 0
       }
       else
