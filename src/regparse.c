@@ -4465,6 +4465,7 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 #endif
 
     case '<':   /* look behind (?<=...), (?<!...) */
+      if (PEND) return ONIGERR_END_PATTERN_WITH_UNMATCHED_PARENTHESIS;
       PFETCH(c);
       if (c == '=')
         *np = onig_node_new_anchor(ANCHOR_LOOK_BEHIND);
