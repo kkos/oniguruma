@@ -3366,7 +3366,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
 #ifdef USE_NAMED_GROUP
     case 'k':
-      if (IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_K_NAMED_BACKREF)) {
+      if (!PEND && IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_K_NAMED_BACKREF)) {
         PFETCH(c);
         if (c == '<' || c == '\'') {
           UChar* name_end;
@@ -3439,7 +3439,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
 #ifdef USE_SUBEXP_CALL
     case 'g':
-      if (IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_G_SUBEXP_CALL)) {
+      if (!PEND && IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_G_SUBEXP_CALL)) {
         PFETCH(c);
         if (c == '<' || c == '\'') {
           int gnum;
@@ -3468,13 +3468,14 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
     case 'p':
     case 'P':
-      if (PPEEK_IS('{') &&
+      if (!PEND && PPEEK_IS('{') &&
           IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CHAR_PROPERTY)) {
         PINC;
         tok->type = TK_CHAR_PROPERTY;
         tok->u.prop.not = (c == 'P' ? 1 : 0);
 
-        if (IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CIRCUMFLEX_NOT)) {
+        if (!PEND &&
+            IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CIRCUMFLEX_NOT)) {
           PFETCH(c);
           if (c == '^') {
             tok->u.prop.not = (tok->u.prop.not == 0 ? 1 : 0);
@@ -3584,10 +3585,10 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       break;
 
     case '(':
-      if (PPEEK_IS('?') &&
+      if (!PEND && PPEEK_IS('?') &&
           IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_QMARK_GROUP_EFFECT)) {
         PINC;
-        if (PPEEK_IS('#')) {
+        if (!PEND && PPEEK_IS('#')) {
           PFETCH(c);
           while (1) {
             if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
