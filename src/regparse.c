@@ -2473,6 +2473,10 @@ fetch_name_with_level(OnigCodePoint start_code, UChar** src, UChar* end,
       int level;
       int flag = (c == '-' ? -1 : 1);
 
+      if (PEND) {
+	r = ONIGERR_INVALID_CHAR_IN_GROUP_NAME;
+	goto end;
+      }
       PFETCH(c);
       if (! ONIGENC_IS_CODE_DIGIT(enc, c)) goto err;
       PUNFETCH;
