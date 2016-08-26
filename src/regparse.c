@@ -3998,8 +3998,9 @@ next_state_val(CClassNode* cc, OnigCodePoint *vs, OnigCodePoint v,
 
   switch (*state) {
   case CCS_VALUE:
-    if (*type == CCV_SB)
+    if (*type == CCV_SB) {
       BITSET_SET_BIT(cc->bs, (int )(*vs));
+    }
     else if (*type == CCV_CODE_POINT) {
       r = add_code_range(&(cc->mbuf), env, *vs, *vs);
       if (r < 0) return r;
@@ -4133,6 +4134,7 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
     fetched = 0;
     switch (r) {
     case TK_CHAR:
+    any_char_in:
       len = ONIGENC_CODE_TO_MBCLEN(env->enc, tok->u.c);
       if (len > 1) {
         in_type = CCV_CODE_POINT;
@@ -4142,7 +4144,7 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
         goto err;
       }
       else {
-      sb_char:
+        /* sb_char: */
         in_type = CCV_SB;
       }
       v = (OnigCodePoint )tok->u.c;
@@ -4288,7 +4290,7 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
       }
       else if (state == CCS_RANGE) {
         CC_ESC_WARN(env, (UChar* )"-");
-        goto sb_char;  /* [!--x] is allowed */
+        goto any_char_in;  /* [!--x] is allowed */
       }
       else { /* CCS_COMPLETE */
         r = fetch_token_in_cc(tok, &p, end, env);
@@ -4302,7 +4304,7 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
 	
         if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_ALLOW_DOUBLE_RANGE_OP_IN_CC)) {
           CC_ESC_WARN(env, (UChar* )"-");
-          goto sb_char;   /* [0-9-a] is allowed as [0-9\-a] */
+          goto any_char_in;   /* [0-9-a] is allowed as [0-9\-a] */
         }
         r = ONIGERR_UNMATCHED_RANGE_SPECIFIER_IN_CHAR_CLASS;
         goto err;
