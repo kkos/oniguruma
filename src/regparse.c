@@ -2301,8 +2301,10 @@ fetch_range_quantifier(UChar** src, UChar* end, OnigToken* tok, ScanEnv* env)
   return r; /* 0: normal {n,m}, 2: fixed {n} */
 
  invalid:
-  if (syn_allow)
+  if (syn_allow) {
+    *src = p;
     return 1;  /* OK */
+  }
   else
     return ONIGERR_INVALID_REPEAT_RANGE_PATTERN;
 }
