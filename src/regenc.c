@@ -2,7 +2,7 @@
   regenc.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2007  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -659,6 +659,27 @@ onigenc_always_false_is_allowed_reverse_match(const UChar* s   ARG_UNUSED,
 					      const UChar* end ARG_UNUSED)
 {
   return FALSE;
+}
+
+extern int
+onigenc_always_true_is_valid_mbc_string(const UChar* s   ARG_UNUSED,
+					const UChar* end ARG_UNUSED)
+{
+  return TRUE;
+}
+
+extern int
+onigenc_length_check_is_valid_mbc_string(OnigEncoding enc,
+					 const UChar* p, const UChar* end)
+{
+  while (p < end) {
+    p += enclen(enc, p);
+  }
+
+  if (p != end)
+    return FALSE;
+  else
+    return TRUE;
 }
 
 extern OnigCodePoint

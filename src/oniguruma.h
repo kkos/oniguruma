@@ -165,6 +165,7 @@ typedef struct OnigEncodingTypeST {
   int    (*is_allowed_reverse_match)(const OnigUChar* p, const OnigUChar* end);
   int    (*init)(void);
   int    (*is_initialized)(void);
+  int    (*is_valid_mbc_string)(const OnigUChar* s, const OnigUChar* end);
 } OnigEncodingType;
 
 typedef OnigEncodingType* OnigEncoding;
@@ -279,6 +280,8 @@ ONIG_EXTERN OnigEncodingType OnigEncodingGB18030;
         (enc)->is_allowed_reverse_match(s,end)
 #define ONIGENC_LEFT_ADJUST_CHAR_HEAD(enc,start,s) \
         (enc)->left_adjust_char_head(start, s)
+#define ONIGENC_IS_VALID_MBC_STRING(enc,s,end) \
+        (enc)->is_valid_mbc_string(s,end)
 #define ONIGENC_APPLY_ALL_CASE_FOLD(enc,case_fold_flag,f,arg) \
         (enc)->apply_all_case_fold(case_fold_flag,f,arg)
 #define ONIGENC_GET_CASE_FOLD_CODES_BY_STR(enc,case_fold_flag,p,end,acs) \

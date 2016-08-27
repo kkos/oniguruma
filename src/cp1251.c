@@ -198,5 +198,6 @@ OnigEncodingType OnigEncodingCP1251 = {
   onigenc_single_byte_left_adjust_char_head,
   onigenc_always_true_is_allowed_reverse_match,
   NULL, /* init */
-  NULL  /* is_initialized */
+  NULL, /* is_initialized */
+  onigenc_always_true_is_valid_mbc_string
 };

@@ -39,6 +39,7 @@
 #endif
 
 #define utf8_islead(c)     ((UChar )((c) & 0xc0) != 0x80)
+#define utf8_istail(c)     ((UChar )((c) & 0xc0) == 0x80)
 
 static const int EncLen_UTF8[] = {
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -63,6 +64,33 @@ static int
 mbc_enc_len(const UChar* p)
 {
   return EncLen_UTF8[*p];
+}
+
+static int
+is_valid_mbc_string(const UChar* p, const UChar* end)
+{
+  int i, len;
+
+  while (p < end) {
+    if (! utf8_islead(*p))
+      return FALSE;
+
+    len = mbc_enc_len(p++);
+    if (len > 1) {
+      for (i = 1; i < len; i++) {
+	if (p == end)
+	  return FALSE;
+
+	if (! utf8_istail(*p++))
+	  return FALSE;
+      }
+    }
+  }
+
+  if (p != end)
+    return FALSE;
+  else
+    return TRUE;
 }
 
 static int
@@ -303,5 +331,6 @@ OnigEncodingType OnigEncodingUTF8 = {
   left_adjust_char_head,
   onigenc_always_true_is_allowed_reverse_match,
   NULL, /* init */
-  NULL  /* is_initialized */
+  NULL, /* is_initialized */
+  is_valid_mbc_string
 };

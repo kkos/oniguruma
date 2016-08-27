@@ -54,6 +54,12 @@ euckr_mbc_enc_len(const UChar* p)
   return EncLen_EUCKR[*p];
 }
 
+static int
+is_valid_mbc_string(const UChar* s, const UChar* end)
+{
+  return onigenc_length_check_is_valid_mbc_string(ONIG_ENCODING_EUC_KR, s, end);
+}
+
 static OnigCodePoint
 euckr_mbc_to_code(const UChar* p, const UChar* end)
 {
@@ -136,7 +142,8 @@ OnigEncodingType OnigEncodingEUC_KR = {
   euckr_left_adjust_char_head,
   euckr_is_allowed_reverse_match,
   NULL, /* init */
-  NULL  /* is_initialized */
+  NULL, /* is_initialized */
+  is_valid_mbc_string
 };
 
 /* Same with OnigEncodingEUC_KR except the name */
@@ -158,5 +165,6 @@ OnigEncodingType OnigEncodingEUC_CN = {
   euckr_left_adjust_char_head,
   euckr_is_allowed_reverse_match,
   NULL, /* init */
-  NULL  /* is_initialized */
+  NULL, /* is_initialized */
+  is_valid_mbc_string
 };

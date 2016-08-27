@@ -56,6 +56,12 @@ mbc_enc_len(const UChar* p)
   return EncLen_EUCJP[*p];
 }
 
+static int
+is_valid_mbc_string(const UChar* s, const UChar* end)
+{
+  return onigenc_length_check_is_valid_mbc_string(ONIG_ENCODING_EUC_JP, s, end);
+}
+
 static OnigCodePoint
 mbc_to_code(const UChar* p, const UChar* end)
 {
@@ -269,5 +275,6 @@ OnigEncodingType OnigEncodingEUC_JP = {
   left_adjust_char_head,
   is_allowed_reverse_match,
   NULL, /* init */
-  NULL  /* is_initialized */
+  NULL, /* is_initialized */
+  is_valid_mbc_string
 };

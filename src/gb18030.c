@@ -75,6 +75,12 @@ gb18030_mbc_enc_len(const UChar* p)
   return 2;
 }
 
+static int
+is_valid_mbc_string(const UChar* s, const UChar* end)
+{
+  return onigenc_length_check_is_valid_mbc_string(ONIG_ENCODING_GB18030, s, end);
+}
+
 static OnigCodePoint
 gb18030_mbc_to_code(const UChar* p, const UChar* end)
 {
@@ -493,5 +499,6 @@ OnigEncodingType OnigEncodingGB18030 = {
   gb18030_left_adjust_char_head,
   gb18030_is_allowed_reverse_match,
   NULL, /* init */
-  NULL  /* is_initialized */
+  NULL, /* is_initialized */
+  is_valid_mbc_string
 };

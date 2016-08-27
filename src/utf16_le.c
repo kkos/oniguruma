@@ -61,6 +61,12 @@ utf16le_mbc_enc_len(const UChar* p)
 }
 
 static int
+is_valid_mbc_string(const UChar* s, const UChar* end)
+{
+  return onigenc_length_check_is_valid_mbc_string(ONIG_ENCODING_UTF16_LE, s, end);
+}
+
+static int
 utf16le_is_mbc_newline(const UChar* p, const UChar* end)
 {
   if (p + 1 < end) {
@@ -225,5 +231,6 @@ OnigEncodingType OnigEncodingUTF16_LE = {
   utf16le_left_adjust_char_head,
   onigenc_always_false_is_allowed_reverse_match,
   NULL, /* init */
-  NULL  /* is_initialized */
+  NULL, /* is_initialized */
+  is_valid_mbc_string
 };
