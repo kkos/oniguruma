@@ -2485,9 +2485,11 @@ fetch_name_with_level(OnigCodePoint start_code, UChar** src, UChar* end,
       *rlevel = (level * flag);
       exist_level = 1;
 
-      PFETCH(c);
-      if (c == end_code)
-        goto end;
+      if (!PEND) {
+	PFETCH(c);
+	if (c == end_code)
+	  goto end;
+      }
     }
 
   err:
