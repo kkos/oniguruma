@@ -61,9 +61,18 @@ utf16le_mbc_enc_len(const UChar* p)
 }
 
 static int
-is_valid_mbc_string(const UChar* s, const UChar* end)
+is_valid_mbc_string(const UChar* p, const UChar* end)
 {
-  return onigenc_length_check_is_valid_mbc_string(ONIG_ENCODING_UTF16_LE, s, end);
+  const UChar* end1 = end - 1;
+
+  while (p < end1) {
+    p += utf16le_mbc_enc_len(p);
+  }
+
+  if (p != end)
+    return FALSE;
+  else
+    return TRUE;
 }
 
 static int
