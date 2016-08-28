@@ -682,6 +682,12 @@ onigenc_length_check_is_valid_mbc_string(OnigEncoding enc,
     return TRUE;
 }
 
+extern int
+onigenc_is_valid_mbc_string(OnigEncoding enc, const UChar* s, const UChar* end)
+{
+  return ONIGENC_IS_VALID_MBC_STRING(enc, s, end);
+}
+
 extern OnigCodePoint
 onigenc_mbn_mbc_to_code(OnigEncoding enc, const UChar* p, const UChar* end)
 {

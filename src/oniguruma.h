@@ -363,6 +363,8 @@ ONIG_EXTERN
 int onigenc_strlen_null P_((OnigEncoding enc, const OnigUChar* p));
 ONIG_EXTERN
 int onigenc_str_bytelen_null P_((OnigEncoding enc, const OnigUChar* p));
+ONIG_EXTERN
+int onigenc_is_valid_mbc_string P_((OnigEncoding enc, const UChar* s, const UChar* end));
 
 
 
