@@ -87,10 +87,7 @@ is_valid_mbc_string(const UChar* p, const UChar* end)
     }
   }
 
-  if (p != end)
-    return FALSE;
-  else
-    return TRUE;
+  return TRUE;
 }
 
 static int
