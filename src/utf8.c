@@ -121,7 +121,9 @@ mbc_to_code(const UChar* p, const UChar* end)
   int c, len;
   OnigCodePoint n;
 
-  len = enclen_end(ONIG_ENCODING_UTF8, p, end);
+  len = mbc_enc_len(p);
+  if (len > end - p) len = end - p;
+
   c = *p++;
   if (len > 1) {
     len--;
