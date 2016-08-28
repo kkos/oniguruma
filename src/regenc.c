@@ -108,6 +108,7 @@ onigenc_step_back(OnigEncoding enc, const UChar* start, const UChar* s, int n)
   return (UChar* )s;
 }
 
+#if 0
 extern int
 onigenc_mbc_enc_len_end(OnigEncoding enc, const UChar* p, const UChar* end)
 {
@@ -119,6 +120,7 @@ onigenc_mbc_enc_len_end(OnigEncoding enc, const UChar* p, const UChar* end)
 
   return (n < len ? n : len);
 }
+#endif
 
 extern UChar*
 onigenc_step(OnigEncoding enc, const UChar* p, const UChar* end, int n)
