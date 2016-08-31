@@ -4031,12 +4031,12 @@ distance_value(MinMaxLen* mm)
       11,   11,   11,   11,   11,   10,   10,   10,   10,   10
   };
 
-  int d;
+  OnigLen d;
 
   if (mm->max == ONIG_INFINITE_DISTANCE) return 0;
 
   d = mm->max - mm->min;
-  if (d < (int )(sizeof(dist_vals)/sizeof(dist_vals[0])))
+  if (d < (OnigLen )(sizeof(dist_vals)/sizeof(dist_vals[0])))
     /* return dist_vals[d] * 16 / (mm->min + 12); */
     return (int )dist_vals[d];
   else
