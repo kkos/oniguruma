@@ -2302,7 +2302,7 @@ fetch_range_quantifier(UChar** src, UChar* end, OnigToken* tok, ScanEnv* env)
 
  invalid:
   if (syn_allow) {
-    *src = p;
+    /* *src = p; */ /* !!! Don't do this line !!! */
     return 1;  /* OK */
   }
   else
