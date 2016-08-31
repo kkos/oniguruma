@@ -1,5 +1,10 @@
 History
 
+2016/09/02: Version 6.1.1
+
+2016/08/31: fix segfault /W.?{888}{888}{888}\x00/ (found by libfuzzer)
+2016/08/31: fix error unmatched close parenthesis for %{(.*?)} #23
+
 2016/08/29: Version 6.1.0
 
 2016/08/28: add contributed/libfuzzer-onig.cpp  (thanks hannob)
