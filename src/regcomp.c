@@ -4712,6 +4712,8 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     case ANCHOR_END_BUF:
     case ANCHOR_SEMI_END_BUF:
     case ANCHOR_END_LINE:
+    case ANCHOR_PREC_READ_NOT:
+    case ANCHOR_LOOK_BEHIND:
       add_opt_anc_info(&opt->anc, NANCHOR(node)->type);
       break;
 
@@ -4734,8 +4736,6 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
       }
       break;
 
-    case ANCHOR_PREC_READ_NOT:
-    case ANCHOR_LOOK_BEHIND: /* Sorry, I can't make use of it. */
     case ANCHOR_LOOK_BEHIND_NOT:
       break;
     }
@@ -4988,6 +4988,9 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
 
   reg->anchor = opt.anc.left_anchor & (ANCHOR_BEGIN_BUF |
         ANCHOR_BEGIN_POSITION | ANCHOR_ANYCHAR_STAR | ANCHOR_ANYCHAR_STAR_ML);
+
+  if ((opt.anc.left_anchor & (ANCHOR_LOOK_BEHIND | ANCHOR_PREC_READ_NOT)) != 0)
+    reg->anchor &= ~ANCHOR_ANYCHAR_STAR_ML;
 
   reg->anchor |= opt.anc.right_anchor & (ANCHOR_END_BUF | ANCHOR_SEMI_END_BUF);
 
