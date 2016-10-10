@@ -29,6 +29,10 @@
 #include "regparse.h"
 #include "st.h"
 
+#ifdef DEBUG_NODE_FREE
+#include <stdio.h>
+#endif
+
 #define WARN_BUFSIZE    256
 
 #define CASE_FOLD_IS_APPLIED_INSIDE_NEGATIVE_CCLASS
@@ -1003,12 +1007,15 @@ scan_env_set_mem_node(ScanEnv* env, int num, Node* node)
   return 0;
 }
 
-
 extern void
 onig_node_free(Node* node)
 {
  start:
   if (IS_NULL(node)) return ;
+
+#ifdef DEBUG_NODE_FREE
+  fprintf(stderr, "onig_node_free: %p\n", node);
+#endif
 
   switch (NTYPE(node)) {
   case NT_STR:
@@ -1071,6 +1078,9 @@ node_new(void)
 
   node = (Node* )xmalloc(sizeof(Node));
   /* xmemset(node, 0, sizeof(Node)); */
+#ifdef DEBUG_NODE_FREE
+  fprintf(stderr, "node_new: %p\n", node);
+#endif
   return node;
 }
 
@@ -4318,7 +4328,10 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
         CClassNode* acc;
 
         r = parse_char_class(&anode, tok, &p, end, env);
-        if (r != 0) goto cc_open_err;
+        if (r != 0) {
+	  onig_node_free(anode);
+	  goto cc_open_err;
+	}
         acc = NCCLASS(anode);
         r = or_cclass(cc, acc, env->enc);
 
@@ -4412,7 +4425,6 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
  err:
   if (cc != NCCLASS(*np))
     bbuf_free(cc->mbuf);
-  onig_node_free(*np);
   return r;
 }
 
@@ -4542,11 +4554,9 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
         CHECK_NULL_RETURN_MEMERR(*np);
         num = scan_env_add_mem_entry(env);
         if (num < 0) {
-          onig_node_free(*np);
           return num;
         }
         else if (num >= (int )BIT_STATUS_BITS_NUM) {
-          onig_node_free(*np);
           return ONIGERR_GROUP_NUMBER_OVER_FOR_CAPTURE_HISTORY;
         }
         NENCLOSE(*np)->regnum = num;
@@ -4614,7 +4624,10 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
             if (r < 0) return r;
             r = parse_subexp(&target, tok, term, &p, end, env);
             env->option = prev;
-            if (r < 0) return r;
+            if (r < 0) {
+	      onig_node_free(target);
+	      return r;
+	    }
             *np = node_new_option(option);
             CHECK_NULL_RETURN_MEMERR(*np);
             NENCLOSE(*np)->target = target;
@@ -4647,7 +4660,10 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
   r = fetch_token(tok, &p, end, env);
   if (r < 0) return r;
   r = parse_subexp(&target, tok, term, &p, end, env);
-  if (r < 0) return r;
+  if (r < 0) {
+    onig_node_free(target);
+    return r;
+  }
 
   if (NTYPE(*np) == NT_ANCHOR)
     NANCHOR(*np)->target = target;
@@ -4908,7 +4924,10 @@ parse_exp(Node** np, OnigToken* tok, int term,
       if (r < 0) return r;
       r = parse_subexp(&target, tok, term, src, end, env);
       env->option = prev;
-      if (r < 0) return r;
+      if (r < 0) {
+	onig_node_free(target);
+	return r;
+      }
       NENCLOSE(*np)->target = target;	
       return tok->type;
     }
@@ -5220,7 +5239,10 @@ parse_branch(Node** top, OnigToken* tok, int term,
 
   *top = NULL;
   r = parse_exp(&node, tok, term, src, end, env);
-  if (r < 0) return r;
+  if (r < 0) {
+    onig_node_free(node);
+    return r;
+  }
 
   if (r == TK_EOT || r == term || r == TK_ALT) {
     *top = node;
@@ -5230,7 +5252,10 @@ parse_branch(Node** top, OnigToken* tok, int term,
     headp = &(NCDR(*top));
     while (r != TK_EOT && r != term && r != TK_ALT) {
       r = parse_exp(&node, tok, term, src, end, env);
-      if (r < 0) return r;
+      if (r < 0) {
+	onig_node_free(node);
+	return r;
+      }
 
       if (NTYPE(node) == NT_LIST) {
         *headp = node;
@@ -5272,8 +5297,10 @@ parse_subexp(Node** top, OnigToken* tok, int term,
       r = fetch_token(tok, src, end, env);
       if (r < 0) return r;
       r = parse_branch(&node, tok, term, src, end, env);
-      if (r < 0) return r;
-
+      if (r < 0) {
+	onig_node_free(node);
+	return r;
+      }
       *headp = onig_node_new_alt(node, NULL);
       headp = &(NCDR(*headp));
     }

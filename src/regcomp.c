@@ -5255,6 +5255,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   UnsetAddrList  uslist;
 #endif
 
+  root = 0;
   if (IS_NOT_NULL(einfo)) einfo->par = (UChar* )NULL;
 
 #ifdef ONIG_DEBUG
