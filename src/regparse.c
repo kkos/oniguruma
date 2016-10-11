@@ -4925,8 +4925,8 @@ parse_exp(Node** np, OnigToken* tok, int term,
       r = parse_subexp(&target, tok, term, src, end, env);
       env->option = prev;
       if (r < 0) {
-	onig_node_free(target);
-	return r;
+        onig_node_free(target);
+        return r;
       }
       NENCLOSE(*np)->target = target;	
       return tok->type;
@@ -5298,8 +5298,8 @@ parse_subexp(Node** top, OnigToken* tok, int term,
       if (r < 0) return r;
       r = parse_branch(&node, tok, term, src, end, env);
       if (r < 0) {
-	onig_node_free(node);
-	return r;
+        onig_node_free(node);
+        return r;
       }
       *headp = onig_node_new_alt(node, NULL);
       headp = &(NCDR(*headp));
@@ -5309,8 +5309,8 @@ parse_subexp(Node** top, OnigToken* tok, int term,
       goto err;
   }
   else {
-  err:
     onig_node_free(node);
+  err:
     if (term == TK_SUBEXP_CLOSE)
       return ONIGERR_END_PATTERN_WITH_UNMATCHED_PARENTHESIS;
     else
