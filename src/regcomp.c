@@ -1795,6 +1795,11 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
     }
     break;
 
+  case NT_ANCHOR:
+    if (NANCHOR(node)->target)
+      r = noname_disable_map(&(NANCHOR(node)->target), map, counter);
+    break;
+
   default:
     break;
   }
@@ -1887,6 +1892,11 @@ numbered_ref_check(Node* node)
   case NT_BREF:
     if (! IS_BACKREF_NAME_REF(NBREF(node)))
       return ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED;
+    break;
+
+  case NT_ANCHOR:
+    if (NANCHOR(node)->target)
+      r = numbered_ref_check(NANCHOR(node)->target);
     break;
 
   default:
