@@ -1853,6 +1853,11 @@ renumber_by_map(Node* node, GroupNumRemap* map)
     r = renumber_node_backref(node, map);
     break;
 
+  case NT_ANCHOR:
+    if (NANCHOR(node)->target)
+      r = renumber_by_map(NANCHOR(node)->target, map);
+    break;
+
   default:
     break;
   }
