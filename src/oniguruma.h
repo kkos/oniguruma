@@ -398,7 +398,8 @@ typedef unsigned int        OnigOptionType;
 #define ONIG_OPTION_NOTBOL               (ONIG_OPTION_CAPTURE_GROUP << 1)
 #define ONIG_OPTION_NOTEOL               (ONIG_OPTION_NOTBOL << 1)
 #define ONIG_OPTION_POSIX_REGION         (ONIG_OPTION_NOTEOL << 1)
-#define ONIG_OPTION_MAXBIT               ONIG_OPTION_POSIX_REGION  /* limit */
+#define ONIG_OPTION_CHECK_VALIDITY_OF_STRING   (ONIG_OPTION_POSIX_REGION << 1)
+#define ONIG_OPTION_MAXBIT               ONIG_OPTION_CHECK_VALIDITY_OF_STRING  /* limit */
 
 #define ONIG_OPTION_ON(options,regopt)      ((options) |= (regopt))
 #define ONIG_OPTION_OFF(options,regopt)     ((options) &= ~(regopt))
