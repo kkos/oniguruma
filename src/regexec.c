@@ -3722,7 +3722,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
   MATCH_ARG_FREE(msa);
 
   /* If result is mismatch and no FIND_NOT_EMPTY option,
-     then the region is not setted in match_at(). */
+     then the region is not set in match_at(). */
   if (IS_FIND_NOT_EMPTY(reg->options) && region
 #ifdef USE_POSIX_API_REGION_OPTION
       && !IS_POSIX_REGION(option)

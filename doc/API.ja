@@ -559,7 +559,7 @@
   2 op, op2, behavior, options: 要素の値
 
 
-# void onig_copy_encoding(OnigEncoding to, OnigOnigEncoding from)
+# void onig_copy_encoding(OnigEncoding to, OnigEncoding from)
 
   文字エンコーディングをコピーする。
 
