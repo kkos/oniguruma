@@ -1,5 +1,13 @@
 History
 
+2016/11/07: Version 6.1.2
+
+2016/10/25: allow word bound, word begin and word end in look-behind.
+2016/10/19: add ONIG_OPTION_CHECK_VALIDITY_OF_STRING option.
+2016/10/16: fix use after free node.
+2016/10/10: fix memory leaks after parsing regexp error.
+2016/09/22: implement many of is_valid_mbc_string().
+
 2016/09/02: Version 6.1.1
 
 2016/08/31: fix segfault /W.?{888}{888}{888}\x00/ (found by libfuzzer)
