@@ -1795,6 +1795,11 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
     }
     break;
 
+  case NT_ANCHOR:
+    if (NANCHOR(node)->target)
+      r = noname_disable_map(&(NANCHOR(node)->target), map, counter);
+    break;
+
   default:
     break;
   }
@@ -1853,6 +1858,11 @@ renumber_by_map(Node* node, GroupNumRemap* map)
     r = renumber_node_backref(node, map);
     break;
 
+  case NT_ANCHOR:
+    if (NANCHOR(node)->target)
+      r = renumber_by_map(NANCHOR(node)->target, map);
+    break;
+
   default:
     break;
   }
@@ -1882,6 +1892,11 @@ numbered_ref_check(Node* node)
   case NT_BREF:
     if (! IS_BACKREF_NAME_REF(NBREF(node)))
       return ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED;
+    break;
+
+  case NT_ANCHOR:
+    if (NANCHOR(node)->target)
+      r = numbered_ref_check(NANCHOR(node)->target);
     break;
 
   default:
@@ -3875,9 +3890,10 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 #define ALLOWED_ENCLOSE_IN_LB_NOT   ENCLOSE_OPTION
 
 #define ALLOWED_ANCHOR_IN_LB \
-( ANCHOR_LOOK_BEHIND | ANCHOR_BEGIN_LINE | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF | ANCHOR_BEGIN_POSITION )
+( ANCHOR_LOOK_BEHIND | ANCHOR_BEGIN_LINE | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUND | ANCHOR_NOT_WORD_BOUND | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END )
+
 #define ALLOWED_ANCHOR_IN_LB_NOT \
-( ANCHOR_LOOK_BEHIND | ANCHOR_LOOK_BEHIND_NOT | ANCHOR_BEGIN_LINE | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF | ANCHOR_BEGIN_POSITION )
+( ANCHOR_LOOK_BEHIND | ANCHOR_LOOK_BEHIND_NOT | ANCHOR_BEGIN_LINE | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUND | ANCHOR_NOT_WORD_BOUND | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END )
 
       case ANCHOR_LOOK_BEHIND:
         {
@@ -4712,6 +4728,8 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     case ANCHOR_END_BUF:
     case ANCHOR_SEMI_END_BUF:
     case ANCHOR_END_LINE:
+    case ANCHOR_PREC_READ_NOT:
+    case ANCHOR_LOOK_BEHIND:
       add_opt_anc_info(&opt->anc, NANCHOR(node)->type);
       break;
 
@@ -4734,8 +4752,6 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
       }
       break;
 
-    case ANCHOR_PREC_READ_NOT:
-    case ANCHOR_LOOK_BEHIND: /* Sorry, I can't make use of it. */
     case ANCHOR_LOOK_BEHIND_NOT:
       break;
     }
@@ -4988,6 +5004,9 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
 
   reg->anchor = opt.anc.left_anchor & (ANCHOR_BEGIN_BUF |
         ANCHOR_BEGIN_POSITION | ANCHOR_ANYCHAR_STAR | ANCHOR_ANYCHAR_STAR_ML);
+
+  if ((opt.anc.left_anchor & (ANCHOR_LOOK_BEHIND | ANCHOR_PREC_READ_NOT)) != 0)
+    reg->anchor &= ~ANCHOR_ANYCHAR_STAR_ML;
 
   reg->anchor |= opt.anc.right_anchor & (ANCHOR_END_BUF | ANCHOR_SEMI_END_BUF);
 
@@ -5252,6 +5271,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   UnsetAddrList  uslist;
 #endif
 
+  root = 0;
   if (IS_NOT_NULL(einfo)) einfo->par = (UChar* )NULL;
 
 #ifdef ONIG_DEBUG

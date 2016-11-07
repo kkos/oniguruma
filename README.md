@@ -20,6 +20,12 @@ Supported character encodings:
 * CP1251:  contributed by Byte
 
 
+New feature of version 6.1.2
+--------------------------
+
+* allow word bound, word begin and word end in look-behind.
+* NEW option: ONIG_OPTION_CHECK_VALIDITY_OF_STRING
+
 New feature of version 6.1
 --------------------------
 

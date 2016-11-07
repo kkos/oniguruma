@@ -55,9 +55,27 @@ euckr_mbc_enc_len(const UChar* p)
 }
 
 static int
-is_valid_mbc_string(const UChar* s, const UChar* end)
+is_valid_mbc_string(const UChar* p, const UChar* end)
 {
-  return onigenc_length_check_is_valid_mbc_string(ONIG_ENCODING_EUC_KR, s, end);
+  while (p < end) {
+    if (*p < 0x80) {
+      p++;
+    }
+    else if (*p < 0xa1) {
+      return FALSE;
+    }
+    else if (*p < 0xff) {
+      p++;
+      if (p >= end) return FALSE;
+      if (*p < 0xa1 || *p == 0xff)
+	return FALSE;
+      p++;
+    }
+    else
+      return FALSE;
+  }
+
+  return TRUE;
 }
 
 static OnigCodePoint

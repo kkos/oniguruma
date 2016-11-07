@@ -36,7 +36,7 @@ extern "C" {
 #define ONIGURUMA
 #define ONIGURUMA_VERSION_MAJOR   6
 #define ONIGURUMA_VERSION_MINOR   1
-#define ONIGURUMA_VERSION_TEENY   1
+#define ONIGURUMA_VERSION_TEENY   2
 
 #ifdef __cplusplus
 # ifndef  HAVE_PROTOTYPES
@@ -364,7 +364,7 @@ int onigenc_strlen_null P_((OnigEncoding enc, const OnigUChar* p));
 ONIG_EXTERN
 int onigenc_str_bytelen_null P_((OnigEncoding enc, const OnigUChar* p));
 ONIG_EXTERN
-int onigenc_is_valid_mbc_string P_((OnigEncoding enc, const UChar* s, const UChar* end));
+int onigenc_is_valid_mbc_string P_((OnigEncoding enc, const OnigUChar* s, const OnigUChar* end));
 
 
 
@@ -398,7 +398,8 @@ typedef unsigned int        OnigOptionType;
 #define ONIG_OPTION_NOTBOL               (ONIG_OPTION_CAPTURE_GROUP << 1)
 #define ONIG_OPTION_NOTEOL               (ONIG_OPTION_NOTBOL << 1)
 #define ONIG_OPTION_POSIX_REGION         (ONIG_OPTION_NOTEOL << 1)
-#define ONIG_OPTION_MAXBIT               ONIG_OPTION_POSIX_REGION  /* limit */
+#define ONIG_OPTION_CHECK_VALIDITY_OF_STRING   (ONIG_OPTION_POSIX_REGION << 1)
+#define ONIG_OPTION_MAXBIT               ONIG_OPTION_CHECK_VALIDITY_OF_STRING  /* limit */
 
 #define ONIG_OPTION_ON(options,regopt)      ((options) |= (regopt))
 #define ONIG_OPTION_OFF(options,regopt)     ((options) &= ~(regopt))
@@ -742,7 +743,7 @@ void onig_free P_((OnigRegex));
 ONIG_EXTERN
 void onig_free_body P_((OnigRegex));
 ONIG_EXTERN
-int onig_scan(regex_t* reg, const UChar* str, const UChar* end, OnigRegion* region, OnigOptionType option, int (*scan_callback)(int, int, OnigRegion*, void*), void* callback_arg);
+int onig_scan(regex_t* reg, const OnigUChar* str, const OnigUChar* end, OnigRegion* region, OnigOptionType option, int (*scan_callback)(int, int, OnigRegion*, void*), void* callback_arg);
 ONIG_EXTERN
 int onig_search P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegion* region, OnigOptionType option));
 ONIG_EXTERN

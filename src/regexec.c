@@ -3111,6 +3111,13 @@ onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at, On
     r = 0;
 
   if (r == 0) {
+    if (ONIG_IS_OPTION_ON(option, ONIG_OPTION_CHECK_VALIDITY_OF_STRING)) {
+      if (! ONIGENC_IS_VALID_MBC_STRING(reg->enc, str, end)) {
+        r = ONIGERR_INVALID_WIDE_CHAR_VALUE;
+        goto end;
+      }
+    }
+
     prev = (UChar* )onigenc_get_prev_char_head(reg->enc, str, at);
     r = match_at(reg, str, end,
 #ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
@@ -3119,6 +3126,7 @@ onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at, On
 		 at, prev, &msa);
   }
 
+ end:
   MATCH_ARG_FREE(msa);
   return r;
 }
@@ -3390,6 +3398,13 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
   }
 
   if (start > end || start < str) goto mismatch_no_msa;
+
+  if (ONIG_IS_OPTION_ON(option, ONIG_OPTION_CHECK_VALIDITY_OF_STRING)) {
+    if (! ONIGENC_IS_VALID_MBC_STRING(reg->enc, str, end)) {
+      r = ONIGERR_INVALID_WIDE_CHAR_VALUE;
+      goto finish_no_msa;
+    }
+  }
 
 
 #ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
@@ -3746,6 +3761,13 @@ onig_scan(regex_t* reg, const UChar* str, const UChar* end,
   int n;
   int rs;
   const UChar* start;
+
+  if (ONIG_IS_OPTION_ON(option, ONIG_OPTION_CHECK_VALIDITY_OF_STRING)) {
+    if (! ONIGENC_IS_VALID_MBC_STRING(reg->enc, str, end))
+      return ONIGERR_INVALID_WIDE_CHAR_VALUE;
+
+    ONIG_OPTION_OFF(option, ONIG_OPTION_CHECK_VALIDITY_OF_STRING);
+  }
 
   n = 0;
   start = str;

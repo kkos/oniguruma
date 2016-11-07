@@ -77,9 +77,36 @@ mbc_enc_len(const UChar* p)
 }
 
 static int
-is_valid_mbc_string(const UChar* s, const UChar* end)
+is_valid_mbc_string(const UChar* p, const UChar* end)
 {
-  return onigenc_length_check_is_valid_mbc_string(ONIG_ENCODING_SJIS, s, end);
+  while (p < end) {
+    if (*p < 0x80) {
+      p++;
+    }
+    else if (*p < 0xa1) {
+      if (*p == 0xa0 || *p == 0x80)
+	return FALSE;
+      p++;
+      if (p >= end) return FALSE;
+      if (*p < 0x40 || *p > 0xfc || *p == 0x7f)
+	return FALSE;
+      p++;
+    }
+    else if (*p < 0xe0) {
+      p++;
+    }
+    else if (*p < 0xfd) {
+      p++;
+      if (p >= end) return FALSE;
+      if (*p < 0x40 || *p > 0xfc || *p == 0x7f)
+	return FALSE;
+      p++;
+    }
+    else
+      return FALSE;
+  }
+
+  return TRUE;
 }
 
 static int
