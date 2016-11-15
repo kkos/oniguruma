@@ -130,11 +130,13 @@ static int collision = 0;
 static int init_st = 0;
 
 static void
-stat_col()
+stat_col(void)
 {
-    FILE *f = fopen("/tmp/col", "w");
-    fprintf(f, "collision: %d\n", collision);
-    fclose(f);
+  FILE *f = fopen("/tmp/col", "w");
+  if (f == 0) return ;
+
+  fprintf(f, "collision: %d\n", collision);
+  fclose(f);
 }
 #endif
 
