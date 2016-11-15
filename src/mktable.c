@@ -31,7 +31,10 @@
 #include <stdio.h>
 #include <locale.h>
 
+#ifndef __USE_ISOC99
 #define __USE_ISOC99
+#endif
+
 #include <ctype.h>
 
 #include "regenc.h"
