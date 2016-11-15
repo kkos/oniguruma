@@ -12,3 +12,4 @@ UNICODE_PROPERTIES
 *.txt
 .libs/
 .deps/
+/mktable
