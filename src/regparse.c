@@ -108,6 +108,26 @@ onig_warning(const char* s)
   (*onig_warn)(s);
 }
 
+
+static unsigned int ParseDepthLimit = DEFAULT_PARSE_DEPTH_LIMIT;
+
+extern unsigned int
+onig_get_parse_depth_limit(void)
+{
+  return ParseDepthLimit;
+}
+
+extern int
+onig_set_parse_depth_limit(unsigned int depth)
+{
+  if (depth == 0)
+    ParseDepthLimit = DEFAULT_PARSE_DEPTH_LIMIT;
+  else
+    ParseDepthLimit = depth;
+  return 0;
+}
+
+
 static void
 bbuf_free(BBuf* bbuf)
 {
@@ -959,6 +979,7 @@ scan_env_clear(ScanEnv* env)
   env->curr_max_regnum     = 0;
   env->has_recursion       = 0;
 #endif
+  env->parse_depth         = 0;
 }
 
 static int
@@ -4113,6 +4134,9 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
   enum CCVALTYPE val_type, in_type;
   int val_israw, in_israw;
 
+  env->parse_depth++;
+  if (env->parse_depth > ParseDepthLimit)
+    return ONIGERR_PARSE_DEPTH_LIMIT_OVER;
   prev_cc = (CClassNode* )NULL;
   *np = NULL_NODE;
   r = fetch_token_in_cc(tok, src, end, env);
@@ -4420,6 +4444,7 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
     }
   }
   *src = p;
+  env->parse_depth--;
   return 0;
 
  err:
@@ -5281,6 +5306,9 @@ parse_subexp(Node** top, OnigToken* tok, int term,
   Node *node, **headp;
 
   *top = NULL;
+  env->parse_depth++;
+  if (env->parse_depth > ParseDepthLimit)
+    return ONIGERR_PARSE_DEPTH_LIMIT_OVER;
   r = parse_branch(&node, tok, term, src, end, env);
   if (r < 0) {
     onig_node_free(node);
@@ -5317,6 +5345,7 @@ parse_subexp(Node** top, OnigToken* tok, int term,
       return ONIGERR_PARSER_BUG;
   }
 
+  env->parse_depth--;
   return r;
 }
 

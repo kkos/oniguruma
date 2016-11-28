@@ -54,6 +54,8 @@ onig_error_code_to_format(int code)
     p = "fail to memory allocation"; break;
   case ONIGERR_MATCH_STACK_LIMIT_OVER:
     p = "match-stack limit over"; break;
+  case ONIGERR_PARSE_DEPTH_LIMIT_OVER:
+    p = "parse depth limit over"; break;
   case ONIGERR_TYPE_BUG:
     p = "undefined type (bug)"; break;
   case ONIGERR_PARSER_BUG:
