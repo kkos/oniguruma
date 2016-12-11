@@ -1,5 +1,9 @@
 History
 
+2016/12/11: Version 6.1.3
+
+2016/12/11: fix: Syntax error: redirection unexpected (expecting word) #35
+
 2016/11/07: Version 6.1.2
 
 2016/10/25: allow word bound, word begin and word end in look-behind.
