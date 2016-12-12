@@ -1,5 +1,9 @@
 History
 
+2016/12/12: Version 5.9.6_p1
+
+2016/12/12: fix: Syntax error: redirection unexpected (expecting word) #35
+
 2014/12/12: Version 5.9.6
 
 2013/11/27: [impl] add onigenc_end_unicode().  (thanks Takenori Imoto)
