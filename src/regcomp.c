@@ -1230,6 +1230,11 @@ compile_length_enclose_node(EncloseNode* node, regex_t* reg)
         len += (IS_ENCLOSE_RECURSION(node)
                 ? SIZE_OP_MEMORY_END_REC : SIZE_OP_MEMORY_END);
     }
+    else if (IS_ENCLOSE_RECURSION(node)) {
+      len = SIZE_OP_MEMORY_START_PUSH;
+      len += tlen + (BIT_STATUS_AT(reg->bt_mem_end, node->regnum)
+                     ? SIZE_OP_MEMORY_END_PUSH_REC : SIZE_OP_MEMORY_END_REC);
+    }
     else
 #endif
     {
@@ -1320,6 +1325,14 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
       r = add_mem_num(reg, node->regnum);
       if (r) return r;
       r = add_opcode(reg, OP_RETURN);
+    }
+    else if (IS_ENCLOSE_RECURSION(node)) {
+      if (BIT_STATUS_AT(reg->bt_mem_end, node->regnum))
+        r = add_opcode(reg, OP_MEMORY_END_PUSH_REC);
+      else
+        r = add_opcode(reg, OP_MEMORY_END_REC);
+      if (r) return r;
+      r = add_mem_num(reg, node->regnum);
     }
     else
 #endif
@@ -3674,6 +3687,8 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
 #define IN_NOT        (1<<1)
 #define IN_REPEAT     (1<<2)
 #define IN_VAR_REPEAT (1<<3)
+#define IN_CALL       (1<<4)
+#define IN_RECCALL    (1<<5)
 
 /* setup_tree does the following work.
  1. check empty loop. (set qn->target_empty_info)
@@ -3844,10 +3859,16 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         break;
 
       case ENCLOSE_MEMORY:
-        if ((state & (IN_ALT | IN_NOT | IN_VAR_REPEAT)) != 0) {
+        if ((state & (IN_ALT | IN_NOT | IN_VAR_REPEAT | IN_CALL)) != 0) {
           BIT_STATUS_ON_AT(env->bt_mem_start, en->regnum);
           /* SET_ENCLOSE_STATUS(node, NST_MEM_IN_ALT_NOT); */
         }
+        if (IS_ENCLOSE_CALLED(en))
+          state |= IN_CALL;
+        if (IS_ENCLOSE_RECURSION(en))
+          state |= IN_RECCALL;
+        else if ((state & IN_RECCALL) != 0)
+          SET_CALL_RECURSION(node);
         r = setup_tree(en->target, reg, state, env);
         break;
 
