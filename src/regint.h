@@ -523,7 +523,7 @@ typedef int RelAddrType;
 typedef int AbsAddrType;
 typedef int LengthType;
 typedef int RepeatNumType;
-typedef short int MemNumType;
+typedef int MemNumType;
 typedef short int StateCheckNumType;
 typedef void* PointerType;
 

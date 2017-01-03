@@ -372,7 +372,7 @@ int onigenc_is_valid_mbc_string P_((OnigEncoding enc, const OnigUChar* s, const 
 
 /* config parameters */
 #define ONIG_NREGION                          10
-#define ONIG_MAX_CAPTURE_NUM               32767
+#define ONIG_MAX_CAPTURE_NUM          2147483647  /* 2**31 - 1 */
 #define ONIG_MAX_BACKREF_NUM                1000
 #define ONIG_MAX_REPEAT_NUM               100000
 #define ONIG_MAX_MULTI_BYTE_RANGES_NUM     10000
