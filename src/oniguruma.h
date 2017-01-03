@@ -824,6 +824,8 @@ int onig_set_match_stack_limit_size P_((unsigned int size));
 ONIG_EXTERN
 unsigned int onig_get_parse_depth_limit P_((void));
 ONIG_EXTERN
+int onig_set_capture_num_limit P_((int num));
+ONIG_EXTERN
 int onig_set_parse_depth_limit P_((unsigned int depth));
 ONIG_EXTERN
 int onig_unicode_define_user_property P_((const char* name, OnigCodePoint* ranges));
