@@ -4147,11 +4147,11 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
   enum CCVALTYPE val_type, in_type;
   int val_israw, in_israw;
 
+  *np = NULL_NODE;
   env->parse_depth++;
   if (env->parse_depth > ParseDepthLimit)
     return ONIGERR_PARSE_DEPTH_LIMIT_OVER;
   prev_cc = (CClassNode* )NULL;
-  *np = NULL_NODE;
   r = fetch_token_in_cc(tok, src, end, env);
   if (r == TK_CHAR && tok->u.c == '^' && tok->escaped == 0) {
     neg = 1;
