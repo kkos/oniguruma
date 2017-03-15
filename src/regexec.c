@@ -474,7 +474,8 @@ stack_double(int is_alloca, char** arg_alloc_base,
 
   n = stk_end - stk_base;
   size = sizeof(OnigStackIndex) * msa->ptr_num + sizeof(OnigStackType) * n;
-  new_size = sizeof(OnigStackIndex) * msa->ptr_num + sizeof(OnigStackType) * n * 2;
+  n *= 2;
+  new_size = sizeof(OnigStackIndex) * msa->ptr_num + sizeof(OnigStackType) * n;
   if (is_alloca != 0) {
     new_alloc_base = (char* )xmalloc(new_size);
     if (IS_NULL(new_alloc_base)) {
