@@ -462,6 +462,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
   unsigned int n;
   int used;
   size_t size;
+  size_t new_size;
   char* alloc_base;
   char* new_alloc_base;
   OnigStackType *stk_base, *stk_end, *stk;
@@ -472,10 +473,10 @@ stack_double(int is_alloca, char** arg_alloc_base,
   stk      = *arg_stk;
 
   n = stk_end - stk_base;
-  n *= 2;
   size = sizeof(OnigStackIndex) * msa->ptr_num + sizeof(OnigStackType) * n;
+  new_size = sizeof(OnigStackIndex) * msa->ptr_num + sizeof(OnigStackType) * n * 2;
   if (is_alloca != 0) {
-    new_alloc_base = (char* )xmalloc(size);
+    new_alloc_base = (char* )xmalloc(new_size);
     if (IS_NULL(new_alloc_base)) {
       STACK_SAVE;
       return ONIGERR_MEMORY;
@@ -489,7 +490,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
       else
         n = MatchStackLimitSize;
     }
-    new_alloc_base = (char* )xrealloc(alloc_base, size);
+    new_alloc_base = (char* )xrealloc(alloc_base, new_size);
     if (IS_NULL(new_alloc_base)) {
       STACK_SAVE;
       return ONIGERR_MEMORY;
