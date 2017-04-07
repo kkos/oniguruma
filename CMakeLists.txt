@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8)
 project(oniguruma C)
 
 set(PACKAGE onig)
-set(PACKAGE_VERSION "6.1.3")
+set(PACKAGE_VERSION "6.2.0")
 
 set(USE_COMBINATION_EXPLOSION_CHECK 0)
 set(USE_CRNL_AS_LINE_TERMINATOR 0)

@@ -523,7 +523,7 @@ typedef int RelAddrType;
 typedef int AbsAddrType;
 typedef int LengthType;
 typedef int RepeatNumType;
-typedef short int MemNumType;
+typedef int MemNumType;
 typedef short int StateCheckNumType;
 typedef void* PointerType;
 
@@ -748,7 +748,7 @@ extern void onig_print_compiled_byte_code P_((FILE* f, UChar* bp, UChar** nextp,
 
 #ifdef ONIG_DEBUG_STATISTICS
 extern void onig_statistics_init P_((void));
-extern void onig_print_statistics P_((FILE* f));
+extern int  onig_print_statistics P_((FILE* f));
 #endif
 #endif
 

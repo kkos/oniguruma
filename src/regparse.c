@@ -108,6 +108,18 @@ onig_warning(const char* s)
   (*onig_warn)(s);
 }
 
+#define DEFAULT_MAX_CAPTURE_NUM   32767
+
+static int MaxCaptureNum = DEFAULT_MAX_CAPTURE_NUM;
+
+extern int
+onig_set_capture_num_limit(int num)
+{
+  if (num < 0) return -1;
+
+  MaxCaptureNum = num;
+  return 0;
+}
 
 static unsigned int ParseDepthLimit = DEFAULT_PARSE_DEPTH_LIMIT;
 
@@ -989,7 +1001,7 @@ scan_env_add_mem_entry(ScanEnv* env)
   Node** p;
 
   need = env->num_mem + 1;
-  if (need > ONIG_MAX_CAPTURE_NUM)
+  if (need > MaxCaptureNum && MaxCaptureNum != 0)
     return ONIGERR_TOO_MANY_CAPTURES;
 
   if (need >= SCANENV_MEMNODES_SIZE) {

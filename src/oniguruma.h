@@ -4,7 +4,7 @@
   oniguruma.h - Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,8 +35,8 @@ extern "C" {
 
 #define ONIGURUMA
 #define ONIGURUMA_VERSION_MAJOR   6
-#define ONIGURUMA_VERSION_MINOR   1
-#define ONIGURUMA_VERSION_TEENY   3
+#define ONIGURUMA_VERSION_MINOR   2
+#define ONIGURUMA_VERSION_TEENY   0
 
 #ifdef __cplusplus
 # ifndef  HAVE_PROTOTYPES
@@ -372,7 +372,7 @@ int onigenc_is_valid_mbc_string P_((OnigEncoding enc, const OnigUChar* s, const 
 
 /* config parameters */
 #define ONIG_NREGION                          10
-#define ONIG_MAX_CAPTURE_NUM               32767
+#define ONIG_MAX_CAPTURE_NUM          2147483647  /* 2**31 - 1 */
 #define ONIG_MAX_BACKREF_NUM                1000
 #define ONIG_MAX_REPEAT_NUM               100000
 #define ONIG_MAX_MULTI_BYTE_RANGES_NUM     10000
@@ -823,6 +823,8 @@ ONIG_EXTERN
 int onig_set_match_stack_limit_size P_((unsigned int size));
 ONIG_EXTERN
 unsigned int onig_get_parse_depth_limit P_((void));
+ONIG_EXTERN
+int onig_set_capture_num_limit P_((int num));
 ONIG_EXTERN
 int onig_set_parse_depth_limit P_((unsigned int depth));
 ONIG_EXTERN
