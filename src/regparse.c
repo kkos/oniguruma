@@ -2945,19 +2945,19 @@ fetch_token_in_cc(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
       c2 = PPEEK;
       if (c2 == '{' &&
-	  IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CHAR_PROPERTY)) {
-	PINC;
-	tok->type = TK_CHAR_PROPERTY;
-	tok->u.prop.not = (c == 'P' ? 1 : 0);
+          IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CHAR_PROPERTY)) {
+        PINC;
+        tok->type = TK_CHAR_PROPERTY;
+        tok->u.prop.not = (c == 'P' ? 1 : 0);
 
-	if (!PEND && IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CIRCUMFLEX_NOT)) {
-	  PFETCH(c2);
-	  if (c2 == '^') {
-	    tok->u.prop.not = (tok->u.prop.not == 0 ? 1 : 0);
-	  }
-	  else
-	    PUNFETCH;
-	}
+        if (!PEND && IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CIRCUMFLEX_NOT)) {
+          PFETCH(c2);
+          if (c2 == '^') {
+            tok->u.prop.not = (tok->u.prop.not == 0 ? 1 : 0);
+          }
+          else
+            PUNFETCH;
+        }
       }
       break;
 
@@ -4369,9 +4369,9 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
 
         r = parse_char_class(&anode, tok, &p, end, env);
         if (r != 0) {
-	  onig_node_free(anode);
-	  goto cc_open_err;
-	}
+          onig_node_free(anode);
+          goto cc_open_err;
+        }
         acc = NCCLASS(anode);
         r = or_cclass(cc, acc, env->enc);
 
@@ -4666,9 +4666,9 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
             r = parse_subexp(&target, tok, term, &p, end, env);
             env->option = prev;
             if (r < 0) {
-	      onig_node_free(target);
-	      return r;
-	    }
+              onig_node_free(target);
+              return r;
+            }
             *np = node_new_option(option);
             CHECK_NULL_RETURN_MEMERR(*np);
             NENCLOSE(*np)->target = target;
@@ -5294,8 +5294,8 @@ parse_branch(Node** top, OnigToken* tok, int term,
     while (r != TK_EOT && r != term && r != TK_ALT) {
       r = parse_exp(&node, tok, term, src, end, env);
       if (r < 0) {
-	onig_node_free(node);
-	return r;
+        onig_node_free(node);
+        return r;
       }
 
       if (NTYPE(node) == NT_LIST) {
