@@ -41,7 +41,8 @@
 OnigSyntaxType OnigSyntaxRuby = {
   (( SYN_GNU_REGEX_OP | ONIG_SYN_OP_QMARK_NON_GREEDY |
      ONIG_SYN_OP_ESC_OCTAL3 | ONIG_SYN_OP_ESC_X_HEX2 |
-     ONIG_SYN_OP_ESC_X_BRACE_HEX8 | ONIG_SYN_OP_ESC_CONTROL_CHARS |
+     ONIG_SYN_OP_ESC_X_BRACE_HEX8 | ONIG_SYN_OP_ESC_O_BRACE_OCTAL |
+     ONIG_SYN_OP_ESC_CONTROL_CHARS |
      ONIG_SYN_OP_ESC_C_CONTROL )
    & ~ONIG_SYN_OP_ESC_LTGT_WORD_BEGIN_END )
   , ( ONIG_SYN_OP2_QMARK_GROUP_EFFECT |
@@ -2961,6 +2962,33 @@ fetch_token_in_cc(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       }
       break;
 
+    case 'o':
+      if (PEND) break;
+
+      prev = p;
+      if (PPEEK_IS('{') && IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_O_BRACE_OCTAL)) {
+        PINC;
+        num = scan_unsigned_octal_number(&p, end, 11, enc);
+        if (num < 0) return ONIGERR_TOO_BIG_WIDE_CHAR_VALUE;
+        if (!PEND) {
+          c2 = PPEEK;
+          if (ONIGENC_IS_CODE_DIGIT(enc, c2))
+            return ONIGERR_TOO_LONG_WIDE_CHAR_VALUE;
+        }
+
+        if (p > prev + enclen(enc, prev) && !PEND && (PPEEK_IS('}'))) {
+          PINC;
+          tok->type   = TK_CODE_POINT;
+          tok->base   = 8;
+          tok->u.code = (OnigCodePoint )num;
+        }
+        else {
+          /* can't read nothing or invalid format */
+          p = prev;
+        }
+      }
+      break;
+
     case 'x':
       if (PEND) break;
 
@@ -3300,6 +3328,31 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case '\'':
       if (! IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_GNU_BUF_ANCHOR)) break;
       goto end_buf;
+      break;
+
+    case 'o':
+      if (PEND) break;
+
+      prev = p;
+      if (PPEEK_IS('{') && IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_O_BRACE_OCTAL)) {
+        PINC;
+        num = scan_unsigned_octal_number(&p, end, 11, enc);
+        if (num < 0) return ONIGERR_TOO_BIG_WIDE_CHAR_VALUE;
+        if (!PEND) {
+          if (ONIGENC_IS_CODE_DIGIT(enc, PPEEK))
+            return ONIGERR_TOO_LONG_WIDE_CHAR_VALUE;
+        }
+
+        if ((p > prev + enclen(enc, prev)) && !PEND && PPEEK_IS('}')) {
+          PINC;
+          tok->type   = TK_CODE_POINT;
+          tok->u.code = (OnigCodePoint )num;
+        }
+        else {
+          /* can't read nothing or invalid format */
+          p = prev;
+        }
+      }
       break;
 
     case 'x':
