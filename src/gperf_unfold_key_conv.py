@@ -36,7 +36,7 @@ def parse_line(s):
     if r != s: return r
     r = re.sub(REG_GET_CODE, 'OnigCodePoint gcode = wordlist[key].code;', s)
     if r != s: return r
-    r = re.sub(REG_CODE_CHECK, 'if (code == gcode)', s)
+    r = re.sub(REG_CODE_CHECK, 'if (code == gcode && wordlist[key].index >= 0)', s)
     if r != s: return r
 
     return s

@@ -2850,7 +2850,7 @@ unicode_unfold_key(OnigCodePoint code)
         {
           OnigCodePoint gcode = wordlist[key].code;
 
-          if (code == gcode)
+          if (code == gcode && wordlist[key].index >= 0)
             return &wordlist[key];
         }
     }
