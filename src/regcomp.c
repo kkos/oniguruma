@@ -2,7 +2,7 @@
   regcomp.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -761,17 +761,17 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
   if (infinite && qn->lower <= 1) {
     if (qn->greedy) {
       if (qn->lower == 1)
-	len = SIZE_OP_JUMP;
+        len = SIZE_OP_JUMP;
       else
-	len = 0;
+        len = 0;
 
       len += SIZE_OP_PUSH + cklen + mod_tlen + SIZE_OP_JUMP;
     }
     else {
       if (qn->lower == 0)
-	len = SIZE_OP_JUMP;
+        len = SIZE_OP_JUMP;
       else
-	len = 0;
+        len = 0;
 
       len += mod_tlen + SIZE_OP_PUSH + cklen;
     }
@@ -785,10 +785,10 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
   else if (qn->upper == 1 && qn->greedy) {
     if (qn->lower == 0) {
       if (CKN_ON) {
-	len = SIZE_OP_STATE_CHECK_PUSH + tlen;
+        len = SIZE_OP_STATE_CHECK_PUSH + tlen;
       }
       else {
-	len = SIZE_OP_PUSH + tlen;
+        len = SIZE_OP_PUSH + tlen;
       }
     }
     else {
@@ -1255,7 +1255,7 @@ compile_length_enclose_node(EncloseNode* node, regex_t* reg)
       if (tlen < 0) return tlen;
 
       len = tlen * qn->lower
-	  + SIZE_OP_PUSH + tlen + SIZE_OP_POP + SIZE_OP_JUMP;
+        + SIZE_OP_PUSH + tlen + SIZE_OP_POP + SIZE_OP_JUMP;
     }
     else {
       len = SIZE_OP_PUSH_STOP_BT + tlen + SIZE_OP_POP_STOP_BT;
@@ -1362,7 +1362,7 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
       r = add_opcode(reg, OP_POP);
       if (r) return r;
       r = add_opcode_rel_addr(reg, OP_JUMP,
-	 -((int )SIZE_OP_PUSH + len + (int )SIZE_OP_POP + (int )SIZE_OP_JUMP));
+             -((int )SIZE_OP_PUSH + len + (int )SIZE_OP_POP + (int )SIZE_OP_JUMP));
     }
     else {
       r = add_opcode(reg, OP_PUSH_STOP_BT);
@@ -2145,16 +2145,16 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
       switch (en->type) {
       case ENCLOSE_MEMORY:
 #ifdef USE_SUBEXP_CALL
-	if (IS_ENCLOSE_CLEN_FIXED(en))
-	  *len = en->char_len;
-	else {
-	  r = get_char_length_tree1(en->target, reg, len, level);
-	  if (r == 0) {
-	    en->char_len = *len;
-	    SET_ENCLOSE_STATUS(node, NST_CLEN_FIXED);
-	  }
-	}
-	break;
+        if (IS_ENCLOSE_CLEN_FIXED(en))
+          *len = en->char_len;
+        else {
+          r = get_char_length_tree1(en->target, reg, len, level);
+          if (r == 0) {
+            en->char_len = *len;
+            SET_ENCLOSE_STATUS(node, NST_CLEN_FIXED);
+          }
+        }
+        break;
 #endif
       case ENCLOSE_OPTION:
       case ENCLOSE_STOP_BACKTRACK:
@@ -2594,17 +2594,17 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
         if (IS_ENCLOSE_MIN_FIXED(en))
           *min = en->min_len;
         else {
-	  if (IS_ENCLOSE_MARK1(NENCLOSE(node)))
-	    *min = 0;  // recursive
-	  else {
-	    SET_ENCLOSE_STATUS(node, NST_MARK1);
-	    r = get_min_len(en->target, min, env);
-	    CLEAR_ENCLOSE_STATUS(node, NST_MARK1);
-	    if (r == 0) {
-	      en->min_len = *min;
-	      SET_ENCLOSE_STATUS(node, NST_MIN_FIXED);
-	    }
-	  }
+          if (IS_ENCLOSE_MARK1(NENCLOSE(node)))
+            *min = 0;  // recursive
+          else {
+            SET_ENCLOSE_STATUS(node, NST_MARK1);
+            r = get_min_len(en->target, min, env);
+            CLEAR_ENCLOSE_STATUS(node, NST_MARK1);
+            if (r == 0) {
+              en->min_len = *min;
+              SET_ENCLOSE_STATUS(node, NST_MIN_FIXED);
+            }
+          }
         }
         break;
 
@@ -2713,22 +2713,22 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
       EncloseNode* en = NENCLOSE(node);
       switch (en->type) {
       case ENCLOSE_MEMORY:
-	if (IS_ENCLOSE_MAX_FIXED(en))
-	  *max = en->max_len;
-	else {
-	  if (IS_ENCLOSE_MARK1(NENCLOSE(node)))
-	    *max = ONIG_INFINITE_DISTANCE;
-	  else {
-	    SET_ENCLOSE_STATUS(node, NST_MARK1);
-	    r = get_max_len(en->target, max, env);
-	    CLEAR_ENCLOSE_STATUS(node, NST_MARK1);
-	    if (r == 0) {
-	      en->max_len = *max;
-	      SET_ENCLOSE_STATUS(node, NST_MAX_FIXED);
-	    }
-	  }
-	}
-	break;
+        if (IS_ENCLOSE_MAX_FIXED(en))
+          *max = en->max_len;
+        else {
+          if (IS_ENCLOSE_MARK1(NENCLOSE(node)))
+            *max = ONIG_INFINITE_DISTANCE;
+          else {
+            SET_ENCLOSE_STATUS(node, NST_MARK1);
+            r = get_max_len(en->target, max, env);
+            CLEAR_ENCLOSE_STATUS(node, NST_MARK1);
+            if (r == 0) {
+              en->max_len = *max;
+              SET_ENCLOSE_STATUS(node, NST_MAX_FIXED);
+            }
+          }
+        }
+        break;
 
       case ENCLOSE_OPTION:
       case ENCLOSE_STOP_BACKTRACK:
@@ -4559,7 +4559,7 @@ concat_left_node_opt_info(OnigEncoding enc, NodeOptInfo* to, NodeOptInfo* add)
   if (to->expr.len > 0) {
     if (add->len.max > 0) {
       if (to->expr.len > (int )add->len.max)
-	to->expr.len = add->len.max;
+        to->expr.len = add->len.max;
 
       if (to->expr.mmd.max == 0)
         select_opt_exact_info(enc, &to->exb, &to->expr);
@@ -4957,7 +4957,7 @@ set_optimize_exact_info(regex_t* reg, OptExactInfo* e)
     reg->exact_end = reg->exact + e->len;
  
     allow_reverse =
-	ONIGENC_IS_ALLOWED_REVERSE_MATCH(reg->enc, reg->exact, reg->exact_end);
+      ONIGENC_IS_ALLOWED_REVERSE_MATCH(reg->enc, reg->exact, reg->exact_end);
 
     if (e->len >= 3 || (e->len >= 2 && allow_reverse)) {
       r = set_bm_skip(reg->exact, reg->exact_end, reg->enc,
@@ -5045,7 +5045,7 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
   if (opt.exb.len > 0 || opt.exm.len > 0) {
     select_opt_exact_info(reg->enc, &opt.exb, &opt.exm);
     if (opt.map.value > 0 &&
-	comp_opt_exact_or_map_info(&opt.exb, &opt.map) > 0) {
+        comp_opt_exact_or_map_info(&opt.exb, &opt.map) > 0) {
       goto set_map;
     }
     else {
