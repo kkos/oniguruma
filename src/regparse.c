@@ -4081,7 +4081,9 @@ next_state_class(CClassNode* cc, OnigCodePoint* vs, enum CCVALTYPE* type,
     }
   }
 
-  *state = CCS_VALUE;
+  if (*state != CCS_START)
+    *state = CCS_VALUE;
+
   *type  = CCV_CLASS;
   return 0;
 }
