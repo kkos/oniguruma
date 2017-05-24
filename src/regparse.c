@@ -2,7 +2,7 @@
   regparse.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -554,8 +554,8 @@ i_names(UChar* key ARG_UNUSED, NameEntry* e, INamesArg* arg)
   int r = (*(arg->func))(e->name,
                          e->name + e->name_len,
                          e->back_num,
-			 (e->back_num > 1 ? e->back_refs : &(e->back_ref1)),
-			 arg->reg, arg->arg);
+                         (e->back_num > 1 ? e->back_refs : &(e->back_ref1)),
+                         arg->reg, arg->arg);
   if (r != 0) {
     arg->ret = r;
     return ST_STOP;
@@ -1054,7 +1054,7 @@ onig_node_free(Node* node)
   switch (NTYPE(node)) {
   case NT_STR:
     if (NSTR(node)->capa != 0 &&
-	IS_NOT_NULL(NSTR(node)->s) && NSTR(node)->s != NSTR(node)->buf) {
+        IS_NOT_NULL(NSTR(node)->s) && NSTR(node)->s != NSTR(node)->buf) {
       xfree(NSTR(node)->s);
     }
     break;
@@ -2520,8 +2520,8 @@ fetch_name_with_level(OnigCodePoint start_code, UChar** src, UChar* end,
       int flag = (c == '-' ? -1 : 1);
 
       if (PEND) {
-	r = ONIGERR_INVALID_CHAR_IN_GROUP_NAME;
-	goto end;
+        r = ONIGERR_INVALID_CHAR_IN_GROUP_NAME;
+        goto end;
       }
       PFETCH(c);
       if (! ONIGENC_IS_CODE_DIGIT(enc, c)) goto err;
@@ -2532,9 +2532,9 @@ fetch_name_with_level(OnigCodePoint start_code, UChar** src, UChar* end,
       exist_level = 1;
 
       if (!PEND) {
-	PFETCH(c);
-	if (c == end_code)
-	  goto end;
+        PFETCH(c);
+        if (c == end_code)
+          goto end;
       }
     }
 
@@ -3160,7 +3160,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       tok->u.repeat.upper = 1;
     greedy_check:
       if (!PEND && PPEEK_IS('?') &&
-	  IS_SYNTAX_OP(syn, ONIG_SYN_OP_QMARK_NON_GREEDY)) {
+          IS_SYNTAX_OP(syn, ONIG_SYN_OP_QMARK_NON_GREEDY)) {
         PFETCH(c);
         tok->u.repeat.greedy     = 0;
         tok->u.repeat.possessive = 0;
@@ -3594,7 +3594,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
         }
         else { /* string */
           p = tok->backp + enclen(enc, tok->backp);
-	}
+        }
       }
       break;
     }
@@ -3806,8 +3806,7 @@ add_ctype_to_cc_by_range(CClassNode* cc, int ctype ARG_UNUSED, int not,
     OnigCodePoint prev = 0;
 
     for (i = 0; i < n; i++) {
-      for (j = prev;
-	   j < ONIGENC_CODE_RANGE_FROM(mbr, i); j++) {
+      for (j = prev; j < ONIGENC_CODE_RANGE_FROM(mbr, i); j++) {
         if (j >= sb_out) {
           goto sb_end2;
         }
