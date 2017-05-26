@@ -1,5 +1,7 @@
 History
 
+2017/05/29: Version 6.3.0
+
 2017/05/24: fix #60 : invalid state(CCS_VALUE) in parse_char_class()
 2017/05/24: fix #59 : access to invalid address by reg->dmax value
 2017/05/23: fix invalid increment of start position in onig_scan()
