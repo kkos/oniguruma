@@ -1,5 +1,14 @@
 History
 
+2017/05/24: fix #60 : invalid state(CCS_VALUE) in parse_char_class()
+2017/05/24: fix #59 : access to invalid address by reg->dmax value
+2017/05/23: fix invalid increment of start position in onig_scan()
+2017/05/23: fix #58 : access to invalid address by reg->dmin value
+2017/05/23: fix #57 : DATA_ENSURE() check must be before data access
+2017/05/22: fix #56 : return invalid result for codepoint 0xFFFFFFFF
+2017/05/19: [new] add \o{17777777777} syntax.
+2017/05/19: fix #55 : Byte value expressed in octal must be smaller than 256
+
 2017/04/08: Version 6.2.0
 
 2017/03/15: fix: size in xmemcpy in stack_double (PR #51)
