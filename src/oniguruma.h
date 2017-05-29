@@ -35,7 +35,7 @@ extern "C" {
 
 #define ONIGURUMA
 #define ONIGURUMA_VERSION_MAJOR   6
-#define ONIGURUMA_VERSION_MINOR   2
+#define ONIGURUMA_VERSION_MINOR   3
 #define ONIGURUMA_VERSION_TEENY   0
 
 #ifdef __cplusplus
@@ -473,6 +473,7 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIG_SYN_OP_ESC_OCTAL3                  (1U<<28)  /* \OOO */
 #define ONIG_SYN_OP_ESC_X_HEX2                  (1U<<29)  /* \xHH */
 #define ONIG_SYN_OP_ESC_X_BRACE_HEX8            (1U<<30)  /* \x{7HHHHHHH} */
+#define ONIG_SYN_OP_ESC_O_BRACE_OCTAL           (1U<<31)  /* \o{1OOOOOOOOOO} */
 
 #define ONIG_SYN_OP2_ESC_CAPITAL_Q_QUOTE        (1U<<0)  /* \Q...\E */
 #define ONIG_SYN_OP2_QMARK_GROUP_EFFECT         (1U<<1)  /* (?...) */

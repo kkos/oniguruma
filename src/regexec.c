@@ -2,7 +2,7 @@
   regexec.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -1346,8 +1346,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       fprintf(stderr, "%4d> \"", (int )(s - str));
       bp = buf;
       for (i = 0, q = s; i < 7 && q < end; i++) {
-	len = enclen(encode, q);
-	while (len-- > 0) *bp++ = *q++;
+        len = enclen(encode, q);
+        while (len-- > 0) *bp++ = *q++;
       }
       if (q < end) { xmemcpy(bp, "...\"", 4); bp += 4; }
       else         { xmemcpy(bp, "\"",    1); bp += 1; }
@@ -1473,14 +1473,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       break;
 
     case OP_EXACT1:  MOP_IN(OP_EXACT1);
-#if 0
       DATA_ENSURE(1);
       if (*p != *s) goto fail;
       p++; s++;
-#endif
-      if (*p != *s++) goto fail;
-      DATA_ENSURE(0);
-      p++;
       MOP_OUT;
       break;
 
@@ -3159,6 +3154,8 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
     }
     else {
       UChar *q = p + reg->dmin;
+
+      if (q >= end) return 0; /* fail */
       while (p < q) p += enclen(reg->enc, p);
     }
   }
@@ -3238,18 +3235,25 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
     }
     else {
       if (reg->dmax != ONIG_INFINITE_DISTANCE) {
-        *low = p - reg->dmax;
-        if (*low > s) {
-          *low = onigenc_get_right_adjust_char_head_with_prev(reg->enc, s,
-                                          *low, (const UChar** )low_prev);
-          if (low_prev && IS_NULL(*low_prev))
-            *low_prev = onigenc_get_prev_char_head(reg->enc,
-                                                   (pprev ? pprev : s), *low);
+        if (p - str < reg->dmax) {
+          *low = (UChar* )str;
+          if (low_prev)
+            *low_prev = onigenc_get_prev_char_head(reg->enc, str, *low);
         }
         else {
-          if (low_prev)
-            *low_prev = onigenc_get_prev_char_head(reg->enc,
-                                                   (pprev ? pprev : str), *low);
+          *low = p - reg->dmax;
+          if (*low > s) {
+            *low = onigenc_get_right_adjust_char_head_with_prev(reg->enc, s,
+                                                 *low, (const UChar** )low_prev);
+            if (low_prev && IS_NULL(*low_prev))
+              *low_prev = onigenc_get_prev_char_head(reg->enc,
+                                                     (pprev ? pprev : s), *low);
+          }
+          else {
+            if (low_prev)
+              *low_prev = onigenc_get_prev_char_head(reg->enc,
+                                                     (pprev ? pprev : str), *low);
+          }
         }
       }
     }
@@ -3790,8 +3794,10 @@ onig_scan(regex_t* reg, const UChar* str, const UChar* end,
       if (rs != 0)
         return rs;
 
-      if (region->end[0] == start - str)
-        start++;
+      if (region->end[0] == start - str) {
+        if (start >= end) break;
+        start += enclen(reg->enc, start);
+      }
       else
         start = str + region->end[0];
 
