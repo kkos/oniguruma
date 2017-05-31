@@ -3865,10 +3865,12 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         }
         if (IS_ENCLOSE_CALLED(en))
           state |= IN_CALL;
+#if 0
         if (IS_ENCLOSE_RECURSION(en))
           state |= IN_RECCALL;
         else if ((state & IN_RECCALL) != 0)
           SET_CALL_RECURSION(node);
+#endif
         r = setup_tree(en->target, reg, state, env);
         break;
 
