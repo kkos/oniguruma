@@ -1353,7 +1353,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       else         { xmemcpy(bp, "\"",    1); bp += 1; }
       *bp = 0;
       fputs((char* )buf, stderr);
+
       for (i = 0; i < 20 - (bp - buf); i++) fputc(' ', stderr);
+      fprintf(stderr, "%4d: ", (int )(p - reg->p));
       onig_print_compiled_byte_code(stderr, p, NULL, reg->p, encode);
       fprintf(stderr, "\n");
     }
