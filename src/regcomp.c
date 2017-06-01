@@ -5280,7 +5280,7 @@ onig_transfer(regex_t* to, regex_t* from)
 }
 
 
-#ifdef ONIG_DEBUG
+#ifdef ONIG_DEBUG_COMPILE
 static void print_compiled_byte_code_list P_((FILE* f, regex_t* reg));
 #endif
 #ifdef ONIG_DEBUG_PARSE_TREE
@@ -6095,7 +6095,9 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
   }
   if (nextp) *nextp = bp;
 }
+#endif /* ONIG_DEBUG */
 
+#ifdef ONIG_DEBUG_COMPILE
 static void
 print_compiled_byte_code_list(FILE* f, regex_t* reg)
 {
@@ -6115,7 +6117,7 @@ print_compiled_byte_code_list(FILE* f, regex_t* reg)
   }
   fprintf(f, "\n");
 }
-#endif /* ONIG_DEBUG */
+#endif
 
 #ifdef ONIG_DEBUG_PARSE_TREE
 
