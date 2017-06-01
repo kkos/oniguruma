@@ -5826,13 +5826,6 @@ op2arg_type(int opcode)
 }
 
 static void
-Indent(FILE* f, int indent)
-{
-  int i;
-  for (i = 0; i < indent; i++) putc(' ', f);
-}
-
-static void
 p_string(FILE* f, int len, UChar* s)
 {
   fputs(":", f);
@@ -6115,6 +6108,16 @@ print_compiled_byte_code_list(FILE* f, regex_t* reg)
 
   fprintf(f, "\n");
 }
+#endif /* ONIG_DEBUG */
+
+#ifdef ONIG_DEBUG_PARSE_TREE
+
+static void
+Indent(FILE* f, int indent)
+{
+  int i;
+  for (i = 0; i < indent; i++) putc(' ', f);
+}
 
 static void
 print_indent_tree(FILE* f, Node* node, int indent)
@@ -6291,9 +6294,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
     fprintf(f, "\n");
   fflush(f);
 }
-#endif /* ONIG_DEBUG */
 
-#ifdef ONIG_DEBUG_PARSE_TREE
 static void
 print_tree(FILE* f, Node* node)
 {
