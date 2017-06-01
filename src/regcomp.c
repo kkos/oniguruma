@@ -6088,24 +6088,20 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp,
 static void
 print_compiled_byte_code_list(FILE* f, regex_t* reg)
 {
-  int ncode;
-  UChar* bp = reg->p;
-  UChar* end = reg->p + reg->used;
+  UChar* bp;
+  UChar* start = reg->p;
+  UChar* end   = reg->p + reg->used;
 
   fprintf(f, "code length: %d\n", reg->used);
 
-  ncode = 0;
+  bp = start;
   while (bp < end) {
-    ncode++;
-    if (bp > reg->p) {
-      if (ncode % 5 == 0)
-        fprintf(f, "\n");
-      else
-        fputs(" ", f);
-    }
-    onig_print_compiled_byte_code(f, bp, &bp, reg->enc);
-  }
+    int pos = bp - start;
 
+    fprintf(f, "%4d: ", pos);
+    onig_print_compiled_byte_code(f, bp, &bp, reg->enc);
+    fprintf(f, "\n");
+  }
   fprintf(f, "\n");
 }
 #endif /* ONIG_DEBUG */
