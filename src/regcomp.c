@@ -5853,7 +5853,7 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp,
   OnigCodePoint code;
   UChar *q;
 
-  fprintf(f, "[%s", op2name(*bp));
+  fprintf(f, "%s", op2name(*bp));
   arg_type = op2arg_type(*bp);
   if (arg_type != ARG_SPECIAL) {
     bp++;
@@ -6081,7 +6081,6 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp,
 	      *--bp);
     }
   }
-  fputs("]", f);
   if (nextp) *nextp = bp;
 }
 
@@ -6092,7 +6091,7 @@ print_compiled_byte_code_list(FILE* f, regex_t* reg)
   UChar* start = reg->p;
   UChar* end   = reg->p + reg->used;
 
-  fprintf(f, "code length: %d\n", reg->used);
+  fprintf(f, "code-length: %d\n", reg->used);
 
   bp = start;
   while (bp < end) {
