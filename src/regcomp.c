@@ -5841,8 +5841,16 @@ p_len_string(FILE* f, LengthType len, int mb_len, UChar* s)
   while (x-- > 0) { fputc(*s++, f); }
 }
 
+static void
+p_rel_addr(FILE* f, RelAddrType rel_addr, UChar* p, UChar* start)
+{
+  RelAddrType curr = (RelAddrType )(p - start);
+
+  fprintf(f, "{%d/%d}", rel_addr, curr + rel_addr);
+}
+
 extern void
-onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp,
+onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
                               OnigEncoding enc)
 {
   int i, n, arg_type;
@@ -5862,11 +5870,12 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp,
       break;
     case ARG_RELADDR:
       GET_RELADDR_INC(addr, bp);
-      fprintf(f, ":(%d)", addr);
+      fputc(':', f);
+      p_rel_addr(f, addr, bp, start);
       break;
     case ARG_ABSADDR:
       GET_ABSADDR_INC(addr, bp);
-      fprintf(f, ":(%d)", addr);
+      fprintf(f, ":{/%d}", addr);
       break;
     case ARG_LENGTH:
       GET_LENGTH_INC(len, bp);
@@ -6051,7 +6060,8 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp,
     case OP_PUSH_IF_PEEK_NEXT:
       addr = *((RelAddrType* )bp);
       bp += SIZE_RELADDR;
-      fprintf(f, ":(%d)", addr);
+      fputc(':', f);
+      p_rel_addr(f, addr, bp, start);
       p_string(f, 1, bp);
       bp += 1;
       break;
@@ -6064,7 +6074,8 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp,
     case OP_PUSH_LOOK_BEHIND_NOT:
       GET_RELADDR_INC(addr, bp);
       GET_LENGTH_INC(len, bp);
-      fprintf(f, ":%d:(%d)", len, addr);
+      fprintf(f, ":%d:", len);
+      p_rel_addr(f, addr, bp, start);
       break;
 
     case OP_STATE_CHECK_PUSH:
@@ -6073,7 +6084,8 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp,
       bp += SIZE_STATE_CHECK_NUM;
       addr = *((RelAddrType* )bp);
       bp += SIZE_RELADDR;
-      fprintf(f, ":%d:(%d)", scn, addr);
+      fprintf(f, ":%d:", scn);
+      p_rel_addr(f, addr, bp, start);
       break;
 
     default:
@@ -6098,7 +6110,7 @@ print_compiled_byte_code_list(FILE* f, regex_t* reg)
     int pos = bp - start;
 
     fprintf(f, "%4d: ", pos);
-    onig_print_compiled_byte_code(f, bp, &bp, reg->enc);
+    onig_print_compiled_byte_code(f, bp, &bp, start, reg->enc);
     fprintf(f, "\n");
   }
   fprintf(f, "\n");
