@@ -907,6 +907,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
                 endp = STACK_AT(k->u.mem.end)->u.mem.pstr;\
               else\
                 endp = (UChar* )k->u.mem.end;\
+              /*fprintf(stderr, "num: %d, pstr: %p, endp: %p\n", k->u.mem.num, STACK_AT(k->u.mem.start)->u.mem.pstr, endp);*/ \
               if (STACK_AT(k->u.mem.start)->u.mem.pstr != endp) {\
                 (isnull) = 0; break;\
               }\
@@ -1345,7 +1346,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
       UChar *q, *bp, buf[50];
       int len;
-      fprintf(stderr, "%7u: %4d> \"", counter, (int )(s - str));
+      fprintf(stderr, "%7u: %7ld: %4d> \"",
+              counter, GET_STACK_INDEX(stk), (int )(s - str));
       counter++;
 
       bp = buf;
