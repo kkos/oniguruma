@@ -6105,6 +6105,8 @@ print_compiled_byte_code_list(FILE* f, regex_t* reg)
   UChar* start = reg->p;
   UChar* end   = reg->p + reg->used;
 
+  fprintf(f, "bt_mem_start: 0x%x, bt_mem_end: 0x%x\n",
+          reg->bt_mem_start, reg->bt_mem_end);
   fprintf(f, "code-length: %d\n", reg->used);
 
   bp = start;
