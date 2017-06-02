@@ -1341,9 +1341,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   while (1) {
 #ifdef ONIG_DEBUG_MATCH
     {
+      static unsigned int counter = 1;
+
       UChar *q, *bp, buf[50];
       int len;
-      fprintf(stderr, "%4d> \"", (int )(s - str));
+      fprintf(stderr, "%7u: %4d> \"", counter, (int )(s - str));
+      counter++;
+
       bp = buf;
       for (i = 0, q = s; i < 7 && q < end; i++) {
         len = enclen(encode, q);
