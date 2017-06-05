@@ -1980,75 +1980,6 @@ unset_addr_list_fix(UnsetAddrList* uslist, regex_t* reg)
 }
 #endif
 
-#ifdef USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT
-static int
-quantifiers_memory_node_info(Node* node)
-{
-  int r = 0;
-
-  switch (NTYPE(node)) {
-  case NT_LIST:
-  case NT_ALT:
-    {
-      int v;
-      do {
-        v = quantifiers_memory_node_info(NCAR(node));
-        if (v > r) r = v;
-      } while (v >= 0 && IS_NOT_NULL(node = NCDR(node)));
-    }
-    break;
-
-#ifdef USE_SUBEXP_CALL
-  case NT_CALL:
-    if (IS_CALL_RECURSION(NCALL(node))) {
-      return NQ_TARGET_IS_EMPTY_REC; /* tiny version */
-    }
-    else
-      r = quantifiers_memory_node_info(NCALL(node)->target);
-    break;
-#endif
-
-  case NT_QTFR:
-    {
-      QtfrNode* qn = NQTFR(node);
-      if (qn->upper != 0) {
-        r = quantifiers_memory_node_info(qn->target);
-      }
-    }
-    break;
-
-  case NT_ENCLOSE:
-    {
-      EncloseNode* en = NENCLOSE(node);
-      switch (en->type) {
-      case ENCLOSE_MEMORY:
-        return NQ_TARGET_IS_EMPTY_MEM;
-        break;
-
-      case ENCLOSE_OPTION:
-      case ENCLOSE_STOP_BACKTRACK:
-        r = quantifiers_memory_node_info(en->target);
-        break;
-      default:
-        break;
-      }
-    }
-    break;
-
-  case NT_BREF:
-  case NT_STR:
-  case NT_CTYPE:
-  case NT_CCLASS:
-  case NT_CANY:
-  case NT_ANCHOR:
-  default:
-    break;
-  }
-
-  return r;
-}
-#endif /* USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT */
-
 
 #define GET_CHAR_LEN_VARLEN           -1
 #define GET_CHAR_LEN_TOP_ALT_VARLEN   -2
@@ -3690,6 +3621,78 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
 #define IN_CALL       (1<<4)
 #define IN_RECCALL    (1<<5)
 
+#ifdef USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT
+static int
+quantifiers_memory_node_info(Node* node, int state)
+{
+  int r = 0;
+
+  switch (NTYPE(node)) {
+  case NT_LIST:
+  case NT_ALT:
+    {
+      int v;
+      do {
+        v = quantifiers_memory_node_info(NCAR(node), state);
+        if (v > r) r = v;
+      } while (v >= 0 && IS_NOT_NULL(node = NCDR(node)));
+    }
+    break;
+
+#ifdef USE_SUBEXP_CALL
+  case NT_CALL:
+    if (IS_CALL_RECURSION(NCALL(node))) {
+      return NQ_TARGET_IS_EMPTY_REC; /* tiny version */
+    }
+    else
+      r = quantifiers_memory_node_info(NCALL(node)->target, state);
+    break;
+#endif
+
+  case NT_QTFR:
+    {
+      QtfrNode* qn = NQTFR(node);
+      if (qn->upper != 0) {
+        r = quantifiers_memory_node_info(qn->target, state);
+      }
+    }
+    break;
+
+  case NT_ENCLOSE:
+    {
+      EncloseNode* en = NENCLOSE(node);
+      switch (en->type) {
+      case ENCLOSE_MEMORY:
+        if (IS_CALL_RECURSION(en) || (state & IN_RECCALL) != 0) {
+          return NQ_TARGET_IS_EMPTY_REC;
+        }
+        return NQ_TARGET_IS_EMPTY_MEM;
+        break;
+
+      case ENCLOSE_OPTION:
+      case ENCLOSE_STOP_BACKTRACK:
+        r = quantifiers_memory_node_info(en->target, state);
+        break;
+      default:
+        break;
+      }
+    }
+    break;
+
+  case NT_BREF:
+  case NT_STR:
+  case NT_CTYPE:
+  case NT_CCLASS:
+  case NT_CANY:
+  case NT_ANCHOR:
+  default:
+    break;
+  }
+
+  return r;
+}
+#endif /* USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT */
+
 /* setup_tree does the following work.
  1. check empty loop. (set qn->target_empty_info)
  2. expand ignore-case in char class.
@@ -3780,7 +3783,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         if (d == 0) {
           qn->target_empty_info = NQ_TARGET_IS_EMPTY;
 #ifdef USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT
-          r = quantifiers_memory_node_info(target);
+          r = quantifiers_memory_node_info(target, state);
           if (r < 0) break;
           if (r > 0) {
             qn->target_empty_info = r;
@@ -3865,7 +3868,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         }
         if (IS_ENCLOSE_CALLED(en))
           state |= IN_CALL;
-#if 0
+#if 1
         if (IS_ENCLOSE_RECURSION(en))
           state |= IN_RECCALL;
         else if ((state & IN_RECCALL) != 0)
