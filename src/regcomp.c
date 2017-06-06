@@ -29,6 +29,81 @@
 
 #include "regparse.h"
 
+typedef struct {
+  int  n;
+  int  alloc;
+  int* v;
+} int_stack;
+
+static int
+make_int_stack(int_stack** rs, int init_size)
+{
+  int_stack* s;
+  int* v;
+
+  *rs = 0;
+
+  s = xmalloc(sizeof(*s));
+  if (s == 0) return ONIGERR_MEMORY;
+
+  v = (int* )xmalloc(sizeof(int) * init_size);
+  if (v == 0) {
+    xfree(s);
+    return ONIGERR_MEMORY;
+  }
+
+  s->n = 0;
+  s->alloc = init_size;
+  s->v = v;
+
+  *rs = s;
+  return ONIG_NORMAL;
+}
+
+static void
+free_int_stack(int_stack* s)
+{
+  if (s != 0) {
+    if (s->v != 0)
+      xfree(s->v);
+    xfree(s);
+  }
+}
+
+static int
+int_stack_push(int_stack* s, int v)
+{
+  if (s->n >= s->alloc) {
+    int new_size = s->alloc * 2;
+    int* nv = (int* )xrealloc(s->v, new_size);
+    if (nv == 0) return ONIGERR_MEMORY;
+
+    s->alloc = new_size;
+    s->v = nv;
+  }
+
+  s->v[s->n] = v;
+  s->n++;
+  return ONIG_NORMAL;
+}
+
+static int
+int_stack_pop(int_stack* s)
+{
+  int v;
+
+#ifdef ONIG_DEBUG
+  if (s->n <= 0) {
+    fprintf(stderr, "int_stack_pop: fail empty. %p\n", s);
+    return 0;
+  }
+#endif
+
+  v = s->v[s->n];
+  s->n--;
+  return v;
+}
+
 OnigCaseFoldType OnigDefaultCaseFoldFlag = ONIGENC_CASE_FOLD_MIN;
 
 extern OnigCaseFoldType
