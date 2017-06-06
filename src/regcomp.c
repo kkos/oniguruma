@@ -1940,7 +1940,7 @@ disable_noname_group_capture(Node** root, regex_t* reg, ScanEnv* env)
 
   for (i = 1, pos = 1; i <= env->num_mem; i++) {
     if (map[i].new_val > 0) {
-      SCANENV_MEM_NODES(env)[pos] = SCANENV_MEM_NODES(env)[i];
+      SCANENV_MEMENV(env)[pos] = SCANENV_MEMENV(env)[i];
       pos++;
     }
   }
@@ -2439,17 +2439,17 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
     {
       int i;
       int* backs;
-      Node** nodes = SCANENV_MEM_NODES(env);
+      MemEnv* mem_env = SCANENV_MEMENV(env);
       BRefNode* br = NBREF(node);
       if (br->state & NST_RECURSION) break;
 
       backs = BACKREFS_P(br);
       if (backs[0] > env->num_mem)  return ONIGERR_INVALID_BACKREF;
-      r = get_min_len(nodes[backs[0]], min, env);
+      r = get_min_len(mem_env[backs[0]].node, min, env);
       if (r != 0) break;
       for (i = 1; i < br->back_num; i++) {
         if (backs[i] > env->num_mem)  return ONIGERR_INVALID_BACKREF;
-        r = get_min_len(nodes[backs[i]], &tmin, env);
+        r = get_min_len(mem_env[backs[i]].node, &tmin, env);
         if (r != 0) break;
         if (*min > tmin) *min = tmin;
       }
@@ -2598,7 +2598,7 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
     {
       int i;
       int* backs;
-      Node** nodes = SCANENV_MEM_NODES(env);
+      MemEnv* mem_env = SCANENV_MEMENV(env);
       BRefNode* br = NBREF(node);
       if (br->state & NST_RECURSION) {
         *max = ONIG_INFINITE_DISTANCE;
@@ -2607,7 +2607,7 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
       backs = BACKREFS_P(br);
       for (i = 0; i < br->back_num; i++) {
         if (backs[i] > env->num_mem)  return ONIGERR_INVALID_BACKREF;
-        r = get_max_len(nodes[backs[i]], &tmax, env);
+        r = get_max_len(mem_env[backs[i]].node, &tmax, env);
         if (r != 0) break;
         if (*max < tmax) *max = tmax;
       }
@@ -2977,7 +2977,7 @@ setup_subexp_call(Node* node, ScanEnv* env)
   case NT_CALL:
     {
       CallNode* cn = NCALL(node);
-      Node** nodes = SCANENV_MEM_NODES(env);
+      MemEnv* mem_env = SCANENV_MEMENV(env);
 
       if (cn->group_num != 0) {
         int gnum = cn->group_num;
@@ -2998,7 +2998,7 @@ setup_subexp_call(Node* node, ScanEnv* env)
 #ifdef USE_NAMED_GROUP
       set_call_attr:
 #endif
-        cn->target = nodes[cn->group_num];
+        cn->target = mem_env[cn->group_num].node;
         if (IS_NULL(cn->target)) {
           onig_scan_env_set_error_string(env,
                    ONIGERR_UNDEFINED_NAME_REFERENCE, cn->name, cn->name_end);
@@ -3751,7 +3751,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     {
       int i;
       int* p;
-      Node** nodes = SCANENV_MEM_NODES(env);
+      MemEnv* mem_env = SCANENV_MEMENV(env);
       BRefNode* br = NBREF(node);
       p = BACKREFS_P(br);
       for (i = 0; i < br->back_num; i++) {
@@ -3763,7 +3763,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
           BIT_STATUS_ON_AT(env->bt_mem_end, p[i]);
         }
 #endif
-        SET_ENCLOSE_STATUS(nodes[p[i]], NST_MEM_BACKREFED);
+        SET_ENCLOSE_STATUS(mem_env[p[i]].node, NST_MEM_BACKREFED);
       }
     }
     break;
@@ -4793,7 +4793,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
       int i;
       int* backs;
       OnigLen min, max, tmin, tmax;
-      Node** nodes = SCANENV_MEM_NODES(env->scan_env);
+      MemEnv* mem_env = SCANENV_MEMENV(env->scan_env);
       BRefNode* br = NBREF(node);
 
       if (br->state & NST_RECURSION) {
@@ -4801,14 +4801,14 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
         break;
       }
       backs = BACKREFS_P(br);
-      r = get_min_len(nodes[backs[0]], &min, env->scan_env);
+      r = get_min_len(mem_env[backs[0]].node, &min, env->scan_env);
       if (r != 0) break;
-      r = get_max_len(nodes[backs[0]], &max, env->scan_env);
+      r = get_max_len(mem_env[backs[0]].node, &max, env->scan_env);
       if (r != 0) break;
       for (i = 1; i < br->back_num; i++) {
-        r = get_min_len(nodes[backs[i]], &tmin, env->scan_env);
+        r = get_min_len(mem_env[backs[i]].node, &tmin, env->scan_env);
         if (r != 0) break;
-        r = get_max_len(nodes[backs[i]], &tmax, env->scan_env);
+        r = get_max_len(mem_env[backs[i]].node, &tmax, env->scan_env);
         if (r != 0) break;
         if (min > tmin) min = tmin;
         if (max < tmax) max = tmax;
@@ -5414,9 +5414,9 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   if (r != 0) goto err_unset;
 #endif
 
-  if (IS_NOT_NULL(scan_env.mem_nodes_dynamic)) {
-    xfree(scan_env.mem_nodes_dynamic);
-    scan_env.mem_nodes_dynamic = (Node** )NULL;
+  if (IS_NOT_NULL(scan_env.mem_env_dynamic)) {
+    xfree(scan_env.mem_env_dynamic);
+    scan_env.mem_env_dynamic = (MemEnv* )NULL;
   }
 
   r = compile_tree(root, reg);
@@ -5472,8 +5472,8 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   }
 
   onig_node_free(root);
-  if (IS_NOT_NULL(scan_env.mem_nodes_dynamic))
-      xfree(scan_env.mem_nodes_dynamic);
+  if (IS_NOT_NULL(scan_env.mem_env_dynamic))
+      xfree(scan_env.mem_env_dynamic);
   return r;
 }
 

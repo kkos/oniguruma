@@ -962,13 +962,11 @@ onig_noname_group_capture_is_active(regex_t* reg)
 }
 
 
-#define INIT_SCANENV_MEMNODES_ALLOC_SIZE   16
+#define INIT_SCANENV_MEMENV_ALLOC_SIZE   16
 
 static void
 scan_env_clear(ScanEnv* env)
 {
-  int i;
-
   BIT_STATUS_CLEAR(env->capture_history);
   BIT_STATUS_CLEAR(env->bt_mem_start);
   BIT_STATUS_CLEAR(env->bt_mem_end);
@@ -980,11 +978,10 @@ scan_env_clear(ScanEnv* env)
 #ifdef USE_NAMED_GROUP
   env->num_named  = 0;
 #endif
-  env->mem_alloc         = 0;
-  env->mem_nodes_dynamic = (Node** )NULL;
+  env->mem_alloc       = 0;
+  env->mem_env_dynamic = (MemEnv* )NULL;
 
-  for (i = 0; i < SCANENV_MEMNODES_SIZE; i++)
-    env->mem_nodes_static[i] = NULL_NODE;
+  xmemset(env->mem_env_static, 0, sizeof(env->mem_env_static));
 
 #ifdef USE_COMBINATION_EXPLOSION_CHECK
   env->num_comb_exp_check  = 0;
@@ -999,30 +996,32 @@ static int
 scan_env_add_mem_entry(ScanEnv* env)
 {
   int i, need, alloc;
-  Node** p;
+  MemEnv* p;
 
   need = env->num_mem + 1;
   if (need > MaxCaptureNum && MaxCaptureNum != 0)
     return ONIGERR_TOO_MANY_CAPTURES;
 
-  if (need >= SCANENV_MEMNODES_SIZE) {
+  if (need >= SCANENV_MEMENV_SIZE) {
     if (env->mem_alloc <= need) {
-      if (IS_NULL(env->mem_nodes_dynamic)) {
-        alloc = INIT_SCANENV_MEMNODES_ALLOC_SIZE;
-        p = (Node** )xmalloc(sizeof(Node*) * alloc);
-        xmemcpy(p, env->mem_nodes_static,
-                sizeof(Node*) * SCANENV_MEMNODES_SIZE);
+      if (IS_NULL(env->mem_env_dynamic)) {
+        alloc = INIT_SCANENV_MEMENV_ALLOC_SIZE;
+        p = (MemEnv* )xmalloc(sizeof(MemEnv) * alloc);
+        xmemcpy(p, env->mem_env_static, sizeof(env->mem_env_static));
       }
       else {
         alloc = env->mem_alloc * 2;
-        p = (Node** )xrealloc(env->mem_nodes_dynamic, sizeof(Node*) * alloc);
+        p = (MemEnv* )xrealloc(env->mem_env_dynamic, sizeof(MemEnv) * alloc);
       }
       CHECK_NULL_RETURN_MEMERR(p);
 
-      for (i = env->num_mem + 1; i < alloc; i++)
-        p[i] = NULL_NODE;
+      for (i = env->num_mem + 1; i < alloc; i++) {
+        p[i].node = NULL_NODE;
+        p[i].in   = 0;
+        p[i].recursion = 0;
+      }
 
-      env->mem_nodes_dynamic = p;
+      env->mem_env_dynamic = p;
       env->mem_alloc = alloc;
     }
   }
@@ -1035,7 +1034,7 @@ static int
 scan_env_set_mem_node(ScanEnv* env, int num, Node* node)
 {
   if (env->num_mem >= num)
-    SCANENV_MEM_NODES(env)[num] = node;
+    SCANENV_MEMENV(env)[num].node = node;
   else
     return ONIGERR_PARSER_BUG;
   return 0;
@@ -1250,7 +1249,7 @@ node_new_backref(int back_num, int* backrefs, int by_name,
 
   for (i = 0; i < back_num; i++) {
     if (backrefs[i] <= env->num_mem &&
-        IS_NULL(SCANENV_MEM_NODES(env)[backrefs[i]])) {
+        IS_NULL(SCANENV_MEMENV(env)[backrefs[i]].node)) {
       NBREF(node)->state |= NST_RECURSION;   /* /...(\1).../ */
       break;
     }
@@ -3418,7 +3417,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       if (IS_SYNTAX_OP(syn, ONIG_SYN_OP_DECIMAL_BACKREF) && 
           (num <= env->num_mem || num <= 9)) { /* This spec. from GNU regex */
         if (IS_SYNTAX_BV(syn, ONIG_SYN_STRICT_CHECK_BACKREF)) {
-          if (num > env->num_mem || IS_NULL(SCANENV_MEM_NODES(env)[num]))
+          if (num > env->num_mem || IS_NULL(SCANENV_MEMENV(env)[num].node))
             return ONIGERR_INVALID_BACKREF;
         }
 
@@ -3489,7 +3488,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
             if (IS_SYNTAX_BV(syn, ONIG_SYN_STRICT_CHECK_BACKREF)) {
               if (back_num > env->num_mem ||
-                  IS_NULL(SCANENV_MEM_NODES(env)[back_num]))
+                  IS_NULL(SCANENV_MEMENV(env)[back_num].node))
                 return ONIGERR_INVALID_BACKREF;
             }
             tok->type = TK_BACKREF;
@@ -3508,7 +3507,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
               int i;
               for (i = 0; i < num; i++) {
                 if (backs[i] > env->num_mem ||
-                    IS_NULL(SCANENV_MEM_NODES(env)[backs[i]]))
+                    IS_NULL(SCANENV_MEMENV(env)[backs[i]].node))
                   return ONIGERR_INVALID_BACKREF;
               }
             }

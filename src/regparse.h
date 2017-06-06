@@ -271,10 +271,16 @@ typedef struct _Node {
 
 #define NULL_NODE  ((Node* )0)
 
-#define SCANENV_MEMNODES_SIZE               8
-#define SCANENV_MEM_NODES(senv)   \
- (IS_NOT_NULL((senv)->mem_nodes_dynamic) ? \
-    (senv)->mem_nodes_dynamic : (senv)->mem_nodes_static)
+#define SCANENV_MEMENV_SIZE               8
+#define SCANENV_MEMENV(senv) \
+ (IS_NOT_NULL((senv)->mem_env_dynamic) ? \
+    (senv)->mem_env_dynamic : (senv)->mem_env_static)
+
+typedef struct {
+  Node* node;
+  int in;
+  int recursion;
+} MemEnv;
 
 typedef struct {
   OnigOptionType   option;
@@ -299,8 +305,8 @@ typedef struct {
   int              num_named;
 #endif
   int              mem_alloc;
-  Node*            mem_nodes_static[SCANENV_MEMNODES_SIZE];
-  Node**           mem_nodes_dynamic;
+  MemEnv            mem_env_static[SCANENV_MEMENV_SIZE];
+  MemEnv*           mem_env_dynamic;
 #ifdef USE_COMBINATION_EXPLOSION_CHECK
   int num_comb_exp_check;
   int comb_exp_max_regnum;
