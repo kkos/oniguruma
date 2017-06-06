@@ -2929,7 +2929,8 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
         if (IS_ENCLOSE_CALLED(en)) {
           SET_ENCLOSE_STATUS(node, NST_MARK1);
           r = subexp_recursive_check(en->target);
-          if (r != 0) SET_ENCLOSE_STATUS(node, NST_RECURSION);
+          if (r != 0)
+            SET_ENCLOSE_RECURSION(node);
           CLEAR_ENCLOSE_STATUS(node, NST_MARK1);
         }
       }

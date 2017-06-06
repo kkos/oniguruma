@@ -4,7 +4,7 @@
   regparse.h -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2007  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -134,6 +134,7 @@
 
 #define SET_ENCLOSE_STATUS(node,f)      (node)->u.enclose.state |=  (f)
 #define CLEAR_ENCLOSE_STATUS(node,f)    (node)->u.enclose.state &= ~(f)
+#define SET_ENCLOSE_RECURSION(node)     (node)->u.enclose.state |= NST_RECURSION
 
 #define IS_ENCLOSE_CALLED(en)          (((en)->state & NST_CALLED)        != 0)
 #define IS_ENCLOSE_ADDR_FIXED(en)      (((en)->state & NST_ADDR_FIXED)    != 0)
