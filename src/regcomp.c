@@ -3863,6 +3863,12 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
           if (r < 0) break;
           if (r > 0) {
             qn->target_empty_info = r;
+            if (r == NQ_TARGET_IS_EMPTY_REC) {
+              if (NTYPE(target) == NT_ENCLOSE &&
+                  NENCLOSE(target)->type == ENCLOSE_MEMORY) {
+                BIT_STATUS_ON_AT(env->bt_mem_end, NENCLOSE(target)->regnum);
+              }
+            }
           }
 #endif
 #if 0
@@ -5455,6 +5461,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
     reg->bt_mem_end  = scan_env.bt_mem_end;
     reg->bt_mem_end |= reg->capture_history;
   }
+  reg->bt_mem_start |= reg->bt_mem_end;
 
 #ifdef USE_COMBINATION_EXPLOSION_CHECK
   if (scan_env.backrefed_mem == 0
