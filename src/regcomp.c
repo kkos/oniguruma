@@ -29,6 +29,7 @@
 
 #include "regparse.h"
 
+#if 0
 typedef struct {
   int  n;
   int  alloc;
@@ -103,6 +104,7 @@ int_stack_pop(int_stack* s)
   s->n--;
   return v;
 }
+#endif
 
 OnigCaseFoldType OnigDefaultCaseFoldFlag = ONIGENC_CASE_FOLD_MIN;
 
