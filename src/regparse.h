@@ -184,7 +184,6 @@ typedef struct {
   int type;
   int regnum;
   OnigOptionType option;
-  struct _Node*  target;
   AbsAddrType    call_addr;
   /* for multiple call reference */
   OnigLen min_len; /* min length (byte) */

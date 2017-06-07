@@ -1086,8 +1086,8 @@ onig_node_free(Node* node)
     break;
 
   case NT_ENCLOSE:
-    if (NENCLOSE(node)->target)
-      onig_node_free(NENCLOSE(node)->target);
+    if (NODE_BODY(node))
+      onig_node_free(NODE_BODY(node));
     break;
 
   case NT_BREF:
@@ -1323,7 +1323,6 @@ node_new_enclose(int type)
   NENCLOSE(node)->type      = type;
   NENCLOSE(node)->regnum    =  0;
   NENCLOSE(node)->option    =  0;
-  NENCLOSE(node)->target    = NULL;
   NENCLOSE(node)->call_addr = -1;
   NENCLOSE(node)->opt_count =  0;
   return node;
@@ -4713,7 +4712,7 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
             }
             *np = node_new_option(option);
             CHECK_NULL_RETURN_MEMERR(*np);
-            NENCLOSE(*np)->target = target;
+            NODE_BODY(*np) = target;
             *src = p;
             return 0;
           }
@@ -4751,7 +4750,7 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
   if (NTYPE(*np) == NT_ANCHOR)
     NANCHOR(*np)->target = target;
   else {
-    NENCLOSE(*np)->target = target;
+    NODE_BODY(*np) = target;
     if (NENCLOSE(*np)->type == ENCLOSE_MEMORY) {
       /* Don't move this to previous of parse_subexp() */
       r = scan_env_set_mem_node(env, NENCLOSE(*np)->regnum, *np);
@@ -5011,7 +5010,7 @@ parse_exp(Node** np, OnigToken* tok, int term,
         onig_node_free(target);
         return r;
       }
-      NENCLOSE(*np)->target = target;	
+      NODE_BODY(*np) = target;
       return tok->type;
     }
     break;
@@ -5281,7 +5280,7 @@ parse_exp(Node** np, OnigToken* tok, int term,
           onig_node_free(qn);
           return ONIGERR_MEMORY;
         }
-        NENCLOSE(en)->target = qn;
+        NODE_BODY(en) = qn;
         qn = en;
       }
 
