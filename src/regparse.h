@@ -151,6 +151,8 @@
 #define NODE_IS_NEST_LEVEL(node)  (((node)->u.base.status & NST_NEST_LEVEL)  != 0)
 #define NODE_IS_NAME_REF(node)    (((node)->u.base.status & NST_NAME_REF)    != 0)
 
+#define NODE_BODY(node)           ((node)->u.base.body)
+
 
 #define CALLNODE_REFNUM_UNDEF  -1
 
@@ -165,7 +167,6 @@ typedef struct {
 
 typedef struct {
   NodeBase base;
-  struct _Node* target;
   int lower;
   int upper;
   int greedy;

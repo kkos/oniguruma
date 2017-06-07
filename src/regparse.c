@@ -1081,8 +1081,8 @@ onig_node_free(Node* node)
     break;
 
   case NT_QTFR:
-    if (NQTFR(node)->target)
-      onig_node_free(NQTFR(node)->target);
+    if (NODE_BODY(node))
+      onig_node_free(NODE_BODY(node));
     break;
 
   case NT_ENCLOSE:
@@ -1296,7 +1296,6 @@ node_new_quantifier(int lower, int upper, int by_number)
   CHECK_NULL_RETURN(node);
 
   SET_NTYPE(node, NT_QTFR);
-  NQTFR(node)->target = NULL;
   NQTFR(node)->lower  = lower;
   NQTFR(node)->upper  = upper;
   NQTFR(node)->greedy = 1;
@@ -2157,36 +2156,36 @@ onig_reduce_nested_quantifier(Node* pnode, Node* cnode)
     *pnode = *cnode;
     break;
   case RQ_A:
-    p->target = c->target;
+    NODE_BODY(pnode) = NODE_BODY(cnode);
     p->lower  = 0;  p->upper = REPEAT_INFINITE;  p->greedy = 1;
     break;
   case RQ_AQ:
-    p->target = c->target;
+    NODE_BODY(pnode) = NODE_BODY(cnode);
     p->lower  = 0;  p->upper = REPEAT_INFINITE;  p->greedy = 0;
     break;
   case RQ_QQ:
-    p->target = c->target;
+    NODE_BODY(pnode) = NODE_BODY(cnode);
     p->lower  = 0;  p->upper = 1;  p->greedy = 0;
     break;
   case RQ_P_QQ:
-    p->target = cnode;
+    NODE_BODY(pnode) = cnode;
     p->lower  = 0;  p->upper = 1;  p->greedy = 0;
     c->lower  = 1;  c->upper = REPEAT_INFINITE;  c->greedy = 1;
     return ;
     break;
   case RQ_PQ_Q:
-    p->target = cnode;
+    NODE_BODY(pnode) = cnode;
     p->lower  = 0;  p->upper = 1;  p->greedy = 1;
     c->lower  = 1;  c->upper = REPEAT_INFINITE;  c->greedy = 0;
     return ;
     break;
   case RQ_ASIS:
-    p->target = cnode;
+    NODE_BODY(pnode) = cnode;
     return ;
     break;
   }
 
-  c->target = NULL_NODE;
+  NODE_BODY(cnode) = NULL_NODE;
   onig_node_free(cnode);
 }
 
@@ -4789,7 +4788,7 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
       if (str_node_can_be_split(sn, env->enc)) {
         Node* n = str_node_split_last_char(sn, env->enc);
         if (IS_NOT_NULL(n)) {
-          qn->target = n;
+          NODE_BODY(qnode) = n;
           return 2;
         }
       }
@@ -4857,7 +4856,7 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
     break;
   }
 
-  qn->target = target;
+  NODE_BODY(qnode) = target;
  q_exit:
   return 0;
 }
@@ -5197,7 +5196,7 @@ parse_exp(Node** np, OnigToken* tok, int term,
     CHECK_NULL_RETURN_MEMERR(*np);
     qn = node_new_quantifier(0, REPEAT_INFINITE, 0);
     CHECK_NULL_RETURN_MEMERR(qn);
-    NQTFR(qn)->target = *np;
+    NODE_BODY(qn) = *np;
     *np = qn;
     break;
 

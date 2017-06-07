@@ -649,9 +649,12 @@ typedef void* PointerType;
 #define IS_NCCLASS_NOT(nd)      IS_NCCLASS_FLAG_ON(nd, FLAG_NCCLASS_NOT)
 #define IS_NCCLASS_SHARE(nd)    IS_NCCLASS_FLAG_ON(nd, FLAG_NCCLASS_SHARE)
 
+struct _Node;
+
 typedef struct {
   int type;
   int status;
+  struct _Node* body;
 } NodeBase;
 
 typedef struct {
