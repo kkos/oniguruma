@@ -917,7 +917,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
             }\
             k++;\
           }\
-  	  break;\
+          break;\
         }\
       }\
     }\
@@ -958,7 +958,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
               }\
               k++;\
             }\
-  	    break;\
+            break;\
           }\
         }\
         else {\
