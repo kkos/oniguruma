@@ -132,29 +132,25 @@
 #define NST_NEST_LEVEL            (1<<13)
 #define NST_BY_NUMBER             (1<<14) /* {n,m} */
 
-#define SET_ENCLOSE_STATUS(node,f)      (node)->u.enclose.state |=  (f)
-#define CLEAR_ENCLOSE_STATUS(node,f)    (node)->u.enclose.state &= ~(f)
-#define SET_ENCLOSE_RECURSION(node)     (node)->u.enclose.state |= NST_RECURSION
+#define NODE_STATUS_SET(node,f)    ((node)->u.base.status |= (f))
+#define NODE_STATUS_CLEAR(node,f)  ((node)->u.base.status &= ~(f))
 
-#define IS_ENCLOSE_CALLED(en)          (((en)->state & NST_CALLED)        != 0)
-#define IS_ENCLOSE_ADDR_FIXED(en)      (((en)->state & NST_ADDR_FIXED)    != 0)
-#define IS_ENCLOSE_RECURSION(en)       (((en)->state & NST_RECURSION)     != 0)
-#define IS_ENCLOSE_MARK1(en)           (((en)->state & NST_MARK1)         != 0)
-#define IS_ENCLOSE_MARK2(en)           (((en)->state & NST_MARK2)         != 0)
-#define IS_ENCLOSE_MIN_FIXED(en)       (((en)->state & NST_MIN_FIXED)     != 0)
-#define IS_ENCLOSE_MAX_FIXED(en)       (((en)->state & NST_MAX_FIXED)     != 0)
-#define IS_ENCLOSE_CLEN_FIXED(en)      (((en)->state & NST_CLEN_FIXED)    != 0)
-#define IS_ENCLOSE_STOP_BT_SIMPLE_REPEAT(en) \
-    (((en)->state & NST_STOP_BT_SIMPLE_REPEAT) != 0)
-#define IS_ENCLOSE_NAMED_GROUP(en)     (((en)->state & NST_NAMED_GROUP)   != 0)
+#define NODE_IS_BY_NUMBER(node)   (((node)->u.base.status & NST_BY_NUMBER) != 0)
+#define NODE_IS_IN_REPEAT(node)   (((node)->u.base.status & NST_IN_REPEAT) != 0)
+#define NODE_IS_CALLED(node)      (((node)->u.base.status & NST_CALLED)    != 0)
+#define NODE_IS_RECURSION(node)   (((node)->u.base.status & NST_RECURSION) != 0)
+#define NODE_IS_STOP_BT_SIMPLE_REPEAT(node) \
+    (((node)->u.base.status & NST_STOP_BT_SIMPLE_REPEAT) != 0)
+#define NODE_IS_NAMED_GROUP(node) (((node)->u.base.status & NST_NAMED_GROUP) != 0)
+#define NODE_IS_ADDR_FIXED(node)  (((node)->u.base.status & NST_ADDR_FIXED)  != 0)
+#define NODE_IS_CLEN_FIXED(node)  (((node)->u.base.status & NST_CLEN_FIXED)  != 0)
+#define NODE_IS_MIN_FIXED(node)   (((node)->u.base.status & NST_MIN_FIXED)   != 0)
+#define NODE_IS_MAX_FIXED(node)   (((node)->u.base.status & NST_MAX_FIXED)   != 0)
+#define NODE_IS_MARK1(node)       (((node)->u.base.status & NST_MARK1)       != 0)
+#define NODE_IS_MARK2(node)       (((node)->u.base.status & NST_MARK2)       != 0)
+#define NODE_IS_NEST_LEVEL(node)  (((node)->u.base.status & NST_NEST_LEVEL)  != 0)
+#define NODE_IS_NAME_REF(node)    (((node)->u.base.status & NST_NAME_REF)    != 0)
 
-#define SET_CALL_RECURSION(node)       (node)->u.call.state |= NST_RECURSION
-#define IS_CALL_RECURSION(cn)          (((cn)->state & NST_RECURSION)  != 0)
-#define IS_CALL_NAME_REF(cn)           (((cn)->state & NST_NAME_REF)   != 0)
-#define IS_BACKREF_NAME_REF(bn)        (((bn)->state & NST_NAME_REF)   != 0)
-#define IS_BACKREF_NEST_LEVEL(bn)      (((bn)->state & NST_NEST_LEVEL) != 0)
-#define IS_QUANTIFIER_IN_REPEAT(qn)    (((qn)->state & NST_IN_REPEAT)  != 0)
-#define IS_QUANTIFIER_BY_NUMBER(qn)    (((qn)->state & NST_BY_NUMBER)  != 0)
 
 #define CALLNODE_REFNUM_UNDEF  -1
 
@@ -169,7 +165,6 @@ typedef struct {
 
 typedef struct {
   NodeBase base;
-  int state;
   struct _Node* target;
   int lower;
   int upper;
@@ -185,7 +180,6 @@ typedef struct {
 
 typedef struct {
   NodeBase base;
-  int state;
   int type;
   int regnum;
   OnigOptionType option;
@@ -213,7 +207,6 @@ typedef struct {
 
 typedef struct {
   NodeBase base;
-  int     state;
   int     group_num;
   UChar*  name;
   UChar*  name_end;
@@ -225,7 +218,6 @@ typedef struct {
 
 typedef struct {
   NodeBase base;
-  int  state;
   int  back_num;
   int  back_static[NODE_BACKREFS_SIZE];
   int* back_dynamic;

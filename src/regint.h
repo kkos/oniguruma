@@ -4,7 +4,7 @@
   regint.h -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2013  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -651,8 +651,7 @@ typedef void* PointerType;
 
 typedef struct {
   int type;
-  /* struct _Node* next; */
-  /* unsigned int flags; */
+  int status;
 } NodeBase;
 
 typedef struct {

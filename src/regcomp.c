@@ -779,7 +779,7 @@ compile_range_repeat_node(QtfrNode* qn, int target_len, int empty_info,
 #ifdef USE_SUBEXP_CALL
       reg->num_call > 0 ||
 #endif
-      IS_QUANTIFIER_IN_REPEAT(qn)) {
+      NODE_IS_IN_REPEAT((Node* )qn)) {
     r = add_opcode(reg, qn->greedy ? OP_REPEAT_INC_SG : OP_REPEAT_INC_NG_SG);
   }
   else {
@@ -1297,17 +1297,17 @@ compile_length_enclose_node(EncloseNode* node, regex_t* reg)
   switch (node->type) {
   case ENCLOSE_MEMORY:
 #ifdef USE_SUBEXP_CALL
-    if (IS_ENCLOSE_CALLED(node)) {
+    if (NODE_IS_CALLED((Node* )node)) {
       len = SIZE_OP_MEMORY_START_PUSH + tlen
         + SIZE_OP_CALL + SIZE_OP_JUMP + SIZE_OP_RETURN;
       if (BIT_STATUS_AT(reg->bt_mem_end, node->regnum))
-        len += (IS_ENCLOSE_RECURSION(node)
+        len += (NODE_IS_RECURSION((Node* )node)
                 ? SIZE_OP_MEMORY_END_PUSH_REC : SIZE_OP_MEMORY_END_PUSH);
       else
-        len += (IS_ENCLOSE_RECURSION(node)
+        len += (NODE_IS_RECURSION((Node* )node)
                 ? SIZE_OP_MEMORY_END_REC : SIZE_OP_MEMORY_END);
     }
-    else if (IS_ENCLOSE_RECURSION(node)) {
+    else if (NODE_IS_RECURSION((Node* )node)) {
       len = SIZE_OP_MEMORY_START_PUSH;
       len += tlen + (BIT_STATUS_AT(reg->bt_mem_end, node->regnum)
                      ? SIZE_OP_MEMORY_END_PUSH_REC : SIZE_OP_MEMORY_END_REC);
@@ -1326,7 +1326,7 @@ compile_length_enclose_node(EncloseNode* node, regex_t* reg)
     break;
 
   case ENCLOSE_STOP_BACKTRACK:
-    if (IS_ENCLOSE_STOP_BT_SIMPLE_REPEAT(node)) {
+    if (NODE_IS_STOP_BT_SIMPLE_REPEAT((Node* )node)) {
       QtfrNode* qn = NQTFR(node->target);
       tlen = compile_length_tree(qn->target, reg);
       if (tlen < 0) return tlen;
@@ -1360,20 +1360,20 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
   switch (node->type) {
   case ENCLOSE_MEMORY:
 #ifdef USE_SUBEXP_CALL
-    if (IS_ENCLOSE_CALLED(node)) {
+    if (NODE_IS_CALLED((Node* )node)) {
       r = add_opcode(reg, OP_CALL);
       if (r) return r;
       node->call_addr = BBUF_GET_OFFSET_POS(reg) + SIZE_ABSADDR + SIZE_OP_JUMP;
-      node->state |= NST_ADDR_FIXED;
+      NODE_STATUS_SET((Node* )node, NST_ADDR_FIXED);
       r = add_abs_addr(reg, (int )node->call_addr);
       if (r) return r;
       len = compile_length_tree(node->target, reg);
       len += (SIZE_OP_MEMORY_START_PUSH + SIZE_OP_RETURN);
       if (BIT_STATUS_AT(reg->bt_mem_end, node->regnum))
-        len += (IS_ENCLOSE_RECURSION(node)
+        len += (NODE_IS_RECURSION((Node* )node)
                 ? SIZE_OP_MEMORY_END_PUSH_REC : SIZE_OP_MEMORY_END_PUSH);
       else
-        len += (IS_ENCLOSE_RECURSION(node)
+        len += (NODE_IS_RECURSION((Node* )node)
                 ? SIZE_OP_MEMORY_END_REC : SIZE_OP_MEMORY_END);
 
       r = add_opcode_rel_addr(reg, OP_JUMP, len);
@@ -1390,12 +1390,12 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
     r = compile_tree(node->target, reg);
     if (r) return r;
 #ifdef USE_SUBEXP_CALL
-    if (IS_ENCLOSE_CALLED(node)) {
+    if (NODE_IS_CALLED((Node* )node)) {
       if (BIT_STATUS_AT(reg->bt_mem_end, node->regnum))
-        r = add_opcode(reg, (IS_ENCLOSE_RECURSION(node)
+        r = add_opcode(reg, (NODE_IS_RECURSION((Node* )node)
                              ? OP_MEMORY_END_PUSH_REC : OP_MEMORY_END_PUSH));
       else
-        r = add_opcode(reg, (IS_ENCLOSE_RECURSION(node)
+        r = add_opcode(reg, (NODE_IS_RECURSION((Node* )node)
                              ? OP_MEMORY_END_REC : OP_MEMORY_END));
 
       if (r) return r;
@@ -1403,7 +1403,7 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
       if (r) return r;
       r = add_opcode(reg, OP_RETURN);
     }
-    else if (IS_ENCLOSE_RECURSION(node)) {
+    else if (NODE_IS_RECURSION((Node* )node)) {
       if (BIT_STATUS_AT(reg->bt_mem_end, node->regnum))
         r = add_opcode(reg, OP_MEMORY_END_PUSH_REC);
       else
@@ -1424,7 +1424,7 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
     break;
 
   case ENCLOSE_STOP_BACKTRACK:
-    if (IS_ENCLOSE_STOP_BT_SIMPLE_REPEAT(node)) {
+    if (NODE_IS_STOP_BT_SIMPLE_REPEAT((Node* )node)) {
       QtfrNode* qn = NQTFR(node->target);
       r = compile_tree_n_times(qn->target, qn->lower, reg);
       if (r) return r;
@@ -1627,7 +1627,7 @@ compile_length_tree(Node* node, regex_t* reg)
       BRefNode* br = NBREF(node);
 
 #ifdef USE_BACKREF_WITH_LEVEL
-      if (IS_BACKREF_NEST_LEVEL(br)) {
+      if (NODE_IS_NEST_LEVEL(node)) {
         r = SIZE_OPCODE + SIZE_OPTION + SIZE_LENGTH +
             SIZE_LENGTH + (SIZE_MEMNUM * br->back_num);
       }
@@ -1751,7 +1751,7 @@ compile_tree(Node* node, regex_t* reg)
       BRefNode* br = NBREF(node);
 
 #ifdef USE_BACKREF_WITH_LEVEL
-      if (IS_BACKREF_NEST_LEVEL(br)) {
+      if (NODE_IS_NEST_LEVEL(node)) {
         r = add_opcode(reg, OP_BACKREF_WITH_LEVEL);
         if (r) return r;
         r = add_option(reg, (reg->options & ONIG_OPTION_IGNORECASE));
@@ -1867,7 +1867,7 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
     {
       EncloseNode* en = NENCLOSE(node);
       if (en->type == ENCLOSE_MEMORY) {
-        if (IS_ENCLOSE_NAMED_GROUP(en)) {
+        if (NODE_IS_NAMED_GROUP(node)) {
           (*counter)++;
           map[en->regnum].new_val = *counter;
           en->regnum = *counter;
@@ -1904,7 +1904,7 @@ renumber_node_backref(Node* node, GroupNumRemap* map)
   int *backs;
   BRefNode* bn = NBREF(node);
 
-  if (! IS_BACKREF_NAME_REF(bn))
+  if (! NODE_IS_NAME_REF(node))
     return ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED;
 
   old_num = bn->back_num;
@@ -1980,7 +1980,7 @@ numbered_ref_check(Node* node)
     break;
 
   case NT_BREF:
-    if (! IS_BACKREF_NAME_REF(NBREF(node)))
+    if (! NODE_IS_NAME_REF(node))
       return ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED;
     break;
 
@@ -2047,7 +2047,7 @@ unset_addr_list_fix(UnsetAddrList* uslist, regex_t* reg)
 
   for (i = 0; i < uslist->num; i++) {
     en = NENCLOSE(uslist->us[i].target);
-    if (! IS_ENCLOSE_ADDR_FIXED(en)) return ONIGERR_PARSER_BUG;
+    if (! NODE_IS_ADDR_FIXED((Node* )en)) return ONIGERR_PARSER_BUG;
     addr = en->call_addr;
     offset = uslist->us[i].offset;
 
@@ -2131,7 +2131,7 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
 
 #ifdef USE_SUBEXP_CALL
   case NT_CALL:
-    if (! IS_CALL_RECURSION(NCALL(node)))
+    if (! NODE_IS_RECURSION(node))
       r = get_char_length_tree1(NCALL(node)->target, reg, len, level);
     else
       r = GET_CHAR_LEN_VARLEN;
@@ -2153,13 +2153,13 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
       switch (en->type) {
       case ENCLOSE_MEMORY:
 #ifdef USE_SUBEXP_CALL
-        if (IS_ENCLOSE_CLEN_FIXED(en))
+        if (NODE_IS_CLEN_FIXED(node))
           *len = en->char_len;
         else {
           r = get_char_length_tree1(en->target, reg, len, level);
           if (r == 0) {
             en->char_len = *len;
-            SET_ENCLOSE_STATUS(node, NST_CLEN_FIXED);
+            NODE_STATUS_SET(node, NST_CLEN_FIXED);
           }
         }
         break;
@@ -2518,7 +2518,7 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
       int* backs;
       MemEnv* mem_env = SCANENV_MEMENV(env);
       BRefNode* br = NBREF(node);
-      if (br->state & NST_RECURSION) break;
+      if (NODE_IS_RECURSION(node)) break;
 
       backs = BACKREFS_P(br);
       if (backs[0] > env->num_mem)  return ONIGERR_INVALID_BACKREF;
@@ -2535,13 +2535,15 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
 
 #ifdef USE_SUBEXP_CALL
   case NT_CALL:
-    if (IS_CALL_RECURSION(NCALL(node))) {
-      EncloseNode* en = NENCLOSE(NCALL(node)->target);
-      if (IS_ENCLOSE_MIN_FIXED(en))
-        *min = en->min_len;
+    {
+      Node* t = NCALL(node)->target;
+      if (NODE_IS_RECURSION(node)) {
+        if (NODE_IS_MIN_FIXED(t))
+          *min = NENCLOSE(t)->min_len;
+      }
+      else
+        r = get_min_len(t, min, env);
     }
-    else
-      r = get_min_len(NCALL(node)->target, min, env);
     break;
 #endif
 
@@ -2599,18 +2601,18 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
       EncloseNode* en = NENCLOSE(node);
       switch (en->type) {
       case ENCLOSE_MEMORY:
-        if (IS_ENCLOSE_MIN_FIXED(en))
+        if (NODE_IS_MIN_FIXED(node))
           *min = en->min_len;
         else {
-          if (IS_ENCLOSE_MARK1(NENCLOSE(node)))
+          if (NODE_IS_MARK1(node))
             *min = 0;  // recursive
           else {
-            SET_ENCLOSE_STATUS(node, NST_MARK1);
+            NODE_STATUS_SET(node, NST_MARK1);
             r = get_min_len(en->target, min, env);
-            CLEAR_ENCLOSE_STATUS(node, NST_MARK1);
+            NODE_STATUS_CLEAR(node, NST_MARK1);
             if (r == 0) {
               en->min_len = *min;
-              SET_ENCLOSE_STATUS(node, NST_MIN_FIXED);
+              NODE_STATUS_SET(node, NST_MIN_FIXED);
             }
           }
         }
@@ -2677,7 +2679,7 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
       int* backs;
       MemEnv* mem_env = SCANENV_MEMENV(env);
       BRefNode* br = NBREF(node);
-      if (br->state & NST_RECURSION) {
+      if (NODE_IS_RECURSION(node)) {
         *max = ONIG_INFINITE_DISTANCE;
         break;
       }
@@ -2693,7 +2695,7 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
 
 #ifdef USE_SUBEXP_CALL
   case NT_CALL:
-    if (! IS_CALL_RECURSION(NCALL(node)))
+    if (! NODE_IS_RECURSION(node))
       r = get_max_len(NCALL(node)->target, max, env);
     else
       *max = ONIG_INFINITE_DISTANCE;
@@ -2721,18 +2723,18 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
       EncloseNode* en = NENCLOSE(node);
       switch (en->type) {
       case ENCLOSE_MEMORY:
-        if (IS_ENCLOSE_MAX_FIXED(en))
+        if (NODE_IS_MAX_FIXED(node))
           *max = en->max_len;
         else {
-          if (IS_ENCLOSE_MARK1(NENCLOSE(node)))
+          if (NODE_IS_MARK1(node))
             *max = ONIG_INFINITE_DISTANCE;
           else {
-            SET_ENCLOSE_STATUS(node, NST_MARK1);
+            NODE_STATUS_SET(node, NST_MARK1);
             r = get_max_len(en->target, max, env);
-            CLEAR_ENCLOSE_STATUS(node, NST_MARK1);
+            NODE_STATUS_CLEAR(node, NST_MARK1);
             if (r == 0) {
               en->max_len = *max;
-              SET_ENCLOSE_STATUS(node, NST_MAX_FIXED);
+              NODE_STATUS_SET(node, NST_MAX_FIXED);
             }
           }
         }
@@ -2826,14 +2828,14 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
     break;
 
   case NT_ENCLOSE:
-    if (IS_ENCLOSE_MARK2(NENCLOSE(node)))
+    if (NODE_IS_MARK2(node))
       return 0;
-    else if (IS_ENCLOSE_MARK1(NENCLOSE(node)))
+    else if (NODE_IS_MARK1(node))
       return (head == 0 ? RECURSION_EXIST : RECURSION_INFINITE);
     else {
-      SET_ENCLOSE_STATUS(node, NST_MARK2);
+      NODE_STATUS_SET(node, NST_MARK2);
       r = subexp_inf_recursive_check(NENCLOSE(node)->target, env, head);
-      CLEAR_ENCLOSE_STATUS(node, NST_MARK2);
+      NODE_STATUS_CLEAR(node, NST_MARK2);
     }
     break;
 
@@ -2881,11 +2883,11 @@ subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
     {
       EncloseNode* en = NENCLOSE(node);
 
-      if (IS_ENCLOSE_RECURSION(en)) {
-        SET_ENCLOSE_STATUS(node, NST_MARK1);
+      if (NODE_IS_RECURSION(node)) {
+        NODE_STATUS_SET(node, NST_MARK1);
         r = subexp_inf_recursive_check(en->target, env, 1);
         if (r > 0) return ONIGERR_NEVER_ENDING_RECURSION;
-        CLEAR_ENCLOSE_STATUS(node, NST_MARK1);
+        NODE_STATUS_CLEAR(node, NST_MARK1);
       }
       r = subexp_inf_recursive_check_trav(en->target, env);
     }
@@ -2931,18 +2933,18 @@ subexp_recursive_check(Node* node)
 
   case NT_CALL:
     r = subexp_recursive_check(NCALL(node)->target);
-    if (r != 0) SET_CALL_RECURSION(node);
+    if (r != 0) NODE_STATUS_SET(node, NST_RECURSION);
     break;
 
   case NT_ENCLOSE:
-    if (IS_ENCLOSE_MARK2(NENCLOSE(node)))
+    if (NODE_IS_MARK2(node))
       return 0;
-    else if (IS_ENCLOSE_MARK1(NENCLOSE(node)))
+    else if (NODE_IS_MARK1(node))
       return 1; /* recursion */
     else {
-      SET_ENCLOSE_STATUS(node, NST_MARK2);
+      NODE_STATUS_SET(node, NST_MARK2);
       r = subexp_recursive_check(NENCLOSE(node)->target);
-      CLEAR_ENCLOSE_STATUS(node, NST_MARK2);
+      NODE_STATUS_CLEAR(node, NST_MARK2);
     }
     break;
 
@@ -3002,17 +3004,17 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
     {
       EncloseNode* en = NENCLOSE(node);
 
-      if (! IS_ENCLOSE_RECURSION(en)) {
-        if (IS_ENCLOSE_CALLED(en)) {
-          SET_ENCLOSE_STATUS(node, NST_MARK1);
+      if (! NODE_IS_RECURSION(node)) {
+        if (NODE_IS_CALLED(node)) {
+          NODE_STATUS_SET(node, NST_MARK1);
           r = subexp_recursive_check(en->target);
           if (r != 0)
-            SET_ENCLOSE_RECURSION(node);
-          CLEAR_ENCLOSE_STATUS(node, NST_MARK1);
+            NODE_STATUS_SET(node, NST_RECURSION);
+          NODE_STATUS_CLEAR(node, NST_MARK1);
         }
       }
       r = subexp_recursive_check_trav(en->target, env);
-      if (IS_ENCLOSE_CALLED(en))
+      if (NODE_IS_CALLED(node))
         r |= FOUND_CALLED_NODE;
     }
     break;
@@ -3081,7 +3083,7 @@ setup_subexp_call(Node* node, ScanEnv* env)
                    ONIGERR_UNDEFINED_NAME_REFERENCE, cn->name, cn->name_end);
           return ONIGERR_UNDEFINED_NAME_REFERENCE;
         }
-        SET_ENCLOSE_STATUS(cn->target, NST_CALLED);
+        NODE_STATUS_SET(cn->target, NST_CALLED);
         BIT_STATUS_ON_AT(env->bt_mem_start, cn->group_num);
         cn->unset_addr_list = env->unset_addr_list;
       }
@@ -3220,7 +3222,7 @@ next_setup(Node* node, Node* next_node, regex_t* reg)
             if (IS_NOT_NULL(y) && is_not_included(x, y, reg)) {
               Node* en = onig_node_new_enclose(ENCLOSE_STOP_BACKTRACK);
               CHECK_NULL_RETURN_MEMERR(en);
-              SET_ENCLOSE_STATUS(en, NST_STOP_BT_SIMPLE_REPEAT);
+              NODE_STATUS_SET(en, NST_STOP_BT_SIMPLE_REPEAT);
               swap_node(node, en);
               NENCLOSE(node)->target = en;
             }
@@ -3719,7 +3721,7 @@ quantifiers_memory_node_info(Node* node, int state)
 
 #ifdef USE_SUBEXP_CALL
   case NT_CALL:
-    if (IS_CALL_RECURSION(NCALL(node))) {
+    if (NODE_IS_RECURSION(node)) {
       return NQ_TARGET_IS_EMPTY_REC; /* tiny version */
     }
     else
@@ -3741,7 +3743,7 @@ quantifiers_memory_node_info(Node* node, int state)
       EncloseNode* en = NENCLOSE(node);
       switch (en->type) {
       case ENCLOSE_MEMORY:
-        if (IS_CALL_RECURSION(en) || (state & IN_RECCALL) != 0) {
+        if (NODE_IS_RECURSION(node) || (state & IN_RECCALL) != 0) {
           return NQ_TARGET_IS_EMPTY_REC;
         }
         return NQ_TARGET_IS_EMPTY_MEM;
@@ -3836,11 +3838,11 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         BIT_STATUS_ON_AT(env->backrefed_mem, p[i]);
         BIT_STATUS_ON_AT(env->bt_mem_start, p[i]);
 #ifdef USE_BACKREF_WITH_LEVEL
-        if (IS_BACKREF_NEST_LEVEL(br)) {
+        if (NODE_IS_NEST_LEVEL(node)) {
           BIT_STATUS_ON_AT(env->bt_mem_end, p[i]);
         }
 #endif
-        SET_ENCLOSE_STATUS(mem_env[p[i]].node, NST_MEM_BACKREFED);
+        NODE_STATUS_SET(mem_env[p[i]].node, NST_MEM_BACKREFED);
       }
     }
     break;
@@ -3852,7 +3854,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
       Node* target = qn->target;
 
       if ((state & IN_REPEAT) != 0) {
-        qn->state |= NST_IN_REPEAT;
+        NODE_STATUS_SET(node, NST_IN_REPEAT);
       }
 
       if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 1) {
@@ -3948,15 +3950,15 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
       case ENCLOSE_MEMORY:
         if ((state & (IN_ALT | IN_NOT | IN_VAR_REPEAT | IN_CALL)) != 0) {
           BIT_STATUS_ON_AT(env->bt_mem_start, en->regnum);
-          /* SET_ENCLOSE_STATUS(node, NST_MEM_IN_ALT_NOT); */
+          /* NODE_STATUS_SET(node, NST_MEM_IN_ALT_NOT); */
         }
-        if (IS_ENCLOSE_CALLED(en))
+        if (NODE_IS_CALLED(node))
           state |= IN_CALL;
 #if 1
-        if (IS_ENCLOSE_RECURSION(en))
+        if (NODE_IS_RECURSION(node))
           state |= IN_RECCALL;
         else if ((state & IN_RECCALL) != 0)
-          SET_ENCLOSE_RECURSION(node);
+          NODE_STATUS_SET(node, NST_RECURSION);
 #endif
         r = setup_tree(en->target, reg, state, env);
         break;
@@ -3971,7 +3973,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
                 tqn->greedy != 0) {  /* (?>a*), a*+ etc... */
               int qtype = NTYPE(tqn->target);
               if (IS_NODE_TYPE_SIMPLE(qtype))
-                SET_ENCLOSE_STATUS(node, NST_STOP_BT_SIMPLE_REPEAT);
+                NODE_STATUS_SET(node, NST_STOP_BT_SIMPLE_REPEAT);
             }
           }
         }
@@ -4879,7 +4881,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
       MemEnv* mem_env = SCANENV_MEMENV(env->scan_env);
       BRefNode* br = NBREF(node);
 
-      if (br->state & NST_RECURSION) {
+      if (NODE_IS_RECURSION(node)) {
         set_mml(&opt->len, 0, ONIG_INFINITE_DISTANCE);
         break;
       }
@@ -4902,7 +4904,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
 
 #ifdef USE_SUBEXP_CALL
   case NT_CALL:
-    if (IS_CALL_RECURSION(NCALL(node)))
+    if (NODE_IS_RECURSION(node))
       set_mml(&opt->len, 0, ONIG_INFINITE_DISTANCE);
     else {
       OnigOptionType save = env->options;
@@ -4989,8 +4991,8 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
 
           min = 0;
           max = ONIG_INFINITE_DISTANCE;
-          if (IS_ENCLOSE_MIN_FIXED(en)) min = en->min_len;
-          if (IS_ENCLOSE_MAX_FIXED(en)) max = en->max_len;
+          if (NODE_IS_MIN_FIXED(node)) min = en->min_len;
+          if (NODE_IS_MAX_FIXED(node)) max = en->max_len;
           set_mml(&opt->len, min, max);
         }
         else

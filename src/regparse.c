@@ -1110,7 +1110,9 @@ node_new(void)
   Node* node;
 
   node = (Node* )xmalloc(sizeof(Node));
-  /* xmemset(node, 0, sizeof(Node)); */
+  //xmemset(node, 0, sizeof(node->u.base));
+  xmemset(node, 0, sizeof(*node));
+
 #ifdef DEBUG_NODE_FREE
   fprintf(stderr, "node_new: %p\n", node);
 #endif
@@ -1234,15 +1236,14 @@ node_new_backref(int back_num, int* backrefs, int by_name,
   CHECK_NULL_RETURN(node);
 
   SET_NTYPE(node, NT_BREF);
-  NBREF(node)->state    = 0;
   NBREF(node)->back_num = back_num;
   NBREF(node)->back_dynamic = (int* )NULL;
   if (by_name != 0)
-    NBREF(node)->state |= NST_NAME_REF;
+    NODE_STATUS_SET(node, NST_NAME_REF);
 
 #ifdef USE_BACKREF_WITH_LEVEL
   if (exist_level != 0) {
-    NBREF(node)->state |= NST_NEST_LEVEL;
+    NODE_STATUS_SET(node, NST_NEST_LEVEL);
     NBREF(node)->nest_level  = nest_level;
   }
 #endif
@@ -1250,7 +1251,7 @@ node_new_backref(int back_num, int* backrefs, int by_name,
   for (i = 0; i < back_num; i++) {
     if (backrefs[i] <= env->num_mem &&
         IS_NULL(SCANENV_MEMENV(env)[backrefs[i]].node)) {
-      NBREF(node)->state |= NST_RECURSION;   /* /...(\1).../ */
+      NODE_STATUS_SET(node, NST_RECURSION);   /* /...(\1).../ */
       break;
     }
   }
@@ -1280,7 +1281,6 @@ node_new_call(UChar* name, UChar* name_end, int gnum)
   CHECK_NULL_RETURN(node);
 
   SET_NTYPE(node, NT_CALL);
-  NCALL(node)->state     = 0;
   NCALL(node)->target    = NULL_NODE;
   NCALL(node)->name      = name;
   NCALL(node)->name_end  = name_end;
@@ -1296,7 +1296,6 @@ node_new_quantifier(int lower, int upper, int by_number)
   CHECK_NULL_RETURN(node);
 
   SET_NTYPE(node, NT_QTFR);
-  NQTFR(node)->state  = 0;
   NQTFR(node)->target = NULL;
   NQTFR(node)->lower  = lower;
   NQTFR(node)->upper  = upper;
@@ -1306,7 +1305,7 @@ node_new_quantifier(int lower, int upper, int by_number)
   NQTFR(node)->next_head_exact   = NULL_NODE;
   NQTFR(node)->is_refered        = 0;
   if (by_number != 0)
-    NQTFR(node)->state |= NST_BY_NUMBER;
+    NODE_STATUS_SET(node, NST_BY_NUMBER);
 
 #ifdef USE_COMBINATION_EXPLOSION_CHECK
   NQTFR(node)->comb_exp_check_num = 0;
@@ -1323,7 +1322,6 @@ node_new_enclose(int type)
 
   SET_NTYPE(node, NT_ENCLOSE);
   NENCLOSE(node)->type      = type;
-  NENCLOSE(node)->state     =  0;
   NENCLOSE(node)->regnum    =  0;
   NENCLOSE(node)->option    =  0;
   NENCLOSE(node)->target    = NULL;
@@ -1344,7 +1342,7 @@ node_new_enclose_memory(OnigOptionType option, int is_named)
   Node* node = node_new_enclose(ENCLOSE_MEMORY);
   CHECK_NULL_RETURN(node);
   if (is_named != 0)
-    SET_ENCLOSE_STATUS(node, NST_NAMED_GROUP);
+    NODE_STATUS_SET(node, NST_NAMED_GROUP);
 
 #ifdef USE_SUBEXP_CALL
   NENCLOSE(node)->option = option;
@@ -4806,7 +4804,7 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
       int targetq_num = popular_quantifier_num(qnt);
 
 #ifdef USE_WARNING_REDUNDANT_NESTED_REPEAT_OPERATOR
-      if (!IS_QUANTIFIER_BY_NUMBER(qn) && !IS_QUANTIFIER_BY_NUMBER(qnt) &&
+      if (! NODE_IS_BY_NUMBER(qnode) && ! NODE_IS_BY_NUMBER(target) &&
           IS_SYNTAX_BV(env->syntax, ONIG_SYN_WARN_REDUNDANT_NESTED_REPEAT)) {
         UChar buf[WARN_BUFSIZE];
 
