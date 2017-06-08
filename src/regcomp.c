@@ -451,11 +451,11 @@ compile_tree_empty_check(Node* node, regex_t* reg, int empty_info)
   if (r) return r;
 
   if (empty_info != 0) {
-    if (empty_info == NQ_TARGET_IS_EMPTY)
+    if (empty_info == NQ_BODY_IS_EMPTY)
       r = add_opcode(reg, OP_NULL_CHECK_END);
-    else if (empty_info == NQ_TARGET_IS_EMPTY_MEM)
+    else if (empty_info == NQ_BODY_IS_EMPTY_MEM)
       r = add_opcode(reg, OP_NULL_CHECK_END_MEMST);
-    else if (empty_info == NQ_TARGET_IS_EMPTY_REC)
+    else if (empty_info == NQ_BODY_IS_EMPTY_REC)
       r = add_opcode(reg, OP_NULL_CHECK_END_MEMST_PUSH);
 
     if (r) return r;
@@ -3712,7 +3712,7 @@ quantifiers_memory_node_info(Node* node, int state)
 #ifdef USE_SUBEXP_CALL
   case NT_CALL:
     if (NODE_IS_RECURSION(node)) {
-      return NQ_TARGET_IS_EMPTY_REC; /* tiny version */
+      return NQ_BODY_IS_EMPTY_REC; /* tiny version */
     }
     else
       r = quantifiers_memory_node_info(NODE_BODY(node), state);
@@ -3734,9 +3734,9 @@ quantifiers_memory_node_info(Node* node, int state)
       switch (en->type) {
       case ENCLOSE_MEMORY:
         if (NODE_IS_RECURSION(node) || (state & IN_RECCALL) != 0) {
-          return NQ_TARGET_IS_EMPTY_REC;
+          return NQ_BODY_IS_EMPTY_REC;
         }
-        return NQ_TARGET_IS_EMPTY_MEM;
+        return NQ_BODY_IS_EMPTY_MEM;
         break;
 
       case ENCLOSE_OPTION:
@@ -3851,13 +3851,13 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         r = get_min_len(target, &d, env);
         if (r) break;
         if (d == 0) {
-          qn->target_empty_info = NQ_TARGET_IS_EMPTY;
+          qn->target_empty_info = NQ_BODY_IS_EMPTY;
 #ifdef USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT
           r = quantifiers_memory_node_info(target, state);
           if (r < 0) break;
           if (r > 0) {
             qn->target_empty_info = r;
-            if (r == NQ_TARGET_IS_EMPTY_REC) {
+            if (r == NQ_BODY_IS_EMPTY_REC) {
               if (NTYPE(target) == NT_ENCLOSE &&
                   NENCLOSE(target)->type == ENCLOSE_MEMORY) {
                 BIT_STATUS_ON_AT(env->bt_mem_end, NENCLOSE(target)->regnum);
