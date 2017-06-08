@@ -652,7 +652,7 @@ typedef void* PointerType;
 struct _Node;
 
 typedef struct {
-  int type;
+  int node_type;
   int status;
   struct _Node* body;
 } NodeBase;

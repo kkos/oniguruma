@@ -63,8 +63,8 @@
   ((NTYPE2BIT(type) & (BIT_NT_STR | BIT_NT_CCLASS | BIT_NT_CTYPE |\
                        BIT_NT_CANY | BIT_NT_BREF)) != 0)
 
-#define NTYPE(node)             ((node)->u.base.type)
-#define SET_NTYPE(node, ntype)   (node)->u.base.type = (ntype)
+#define NTYPE(node)             ((node)->u.base.node_type)
+#define SET_NTYPE(node, ntype)   (node)->u.base.node_type = (ntype)
 
 #define NSTR(node)         (&((node)->u.str))
 #define NCCLASS(node)      (&((node)->u.cclass))
