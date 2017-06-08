@@ -227,7 +227,6 @@ typedef struct {
 typedef struct {
   NodeBase base;
   int type;
-  struct _Node* target;
   int char_len;
 } AnchorNode;
 

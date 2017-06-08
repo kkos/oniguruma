@@ -1464,8 +1464,8 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
   int len;
   int tlen = 0;
 
-  if (node->target) {
-    tlen = compile_length_tree(node->target, reg);
+  if (NODE_BODY((Node* )node) != 0) {
+    tlen = compile_length_tree(NODE_BODY((Node* )node), reg);
     if (tlen < 0) return tlen;
   }
 
@@ -1514,17 +1514,17 @@ compile_anchor_node(AnchorNode* node, regex_t* reg)
   case ANCHOR_PREC_READ:
     r = add_opcode(reg, OP_PUSH_POS);
     if (r) return r;
-    r = compile_tree(node->target, reg);
+    r = compile_tree(NODE_BODY((Node* )node), reg);
     if (r) return r;
     r = add_opcode(reg, OP_POP_POS);
     break;
 
   case ANCHOR_PREC_READ_NOT:
-    len = compile_length_tree(node->target, reg);
+    len = compile_length_tree(NODE_BODY((Node* )node), reg);
     if (len < 0) return len;
     r = add_opcode_rel_addr(reg, OP_PUSH_POS_NOT, len + SIZE_OP_FAIL_POS);
     if (r) return r;
-    r = compile_tree(node->target, reg);
+    r = compile_tree(NODE_BODY((Node* )node), reg);
     if (r) return r;
     r = add_opcode(reg, OP_FAIL_POS);
     break;
@@ -1535,7 +1535,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg)
       r = add_opcode(reg, OP_LOOK_BEHIND);
       if (r) return r;
       if (node->char_len < 0) {
-        r = get_char_length_tree(node->target, reg, &n);
+        r = get_char_length_tree(NODE_BODY((Node* )node), reg, &n);
         if (r) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
       }
       else
@@ -1543,26 +1543,26 @@ compile_anchor_node(AnchorNode* node, regex_t* reg)
 
       r = add_length(reg, n);
       if (r) return r;
-      r = compile_tree(node->target, reg);
+      r = compile_tree(NODE_BODY((Node* )node), reg);
     }
     break;
 
   case ANCHOR_LOOK_BEHIND_NOT:
     {
       int n;
-      len = compile_length_tree(node->target, reg);
+      len = compile_length_tree(NODE_BODY((Node* )node), reg);
       r = add_opcode_rel_addr(reg, OP_PUSH_LOOK_BEHIND_NOT,
 			   len + SIZE_OP_FAIL_LOOK_BEHIND_NOT);
       if (r) return r;
       if (node->char_len < 0) {
-        r = get_char_length_tree(node->target, reg, &n);
+        r = get_char_length_tree(NODE_BODY((Node* )node), reg, &n);
         if (r) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
       }
       else
         n = node->char_len;
       r = add_length(reg, n);
       if (r) return r;
-      r = compile_tree(node->target, reg);
+      r = compile_tree(NODE_BODY((Node* )node), reg);
       if (r) return r;
       r = add_opcode(reg, OP_FAIL_LOOK_BEHIND_NOT);
     }
@@ -1886,8 +1886,8 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
     break;
 
   case NT_ANCHOR:
-    if (NANCHOR(node)->target)
-      r = noname_disable_map(&(NANCHOR(node)->target), map, counter);
+    if (NODE_BODY(node) != 0)
+      r = noname_disable_map(&(NODE_BODY(node)), map, counter);
     break;
 
   default:
@@ -1949,8 +1949,8 @@ renumber_by_map(Node* node, GroupNumRemap* map)
     break;
 
   case NT_ANCHOR:
-    if (NANCHOR(node)->target)
-      r = renumber_by_map(NANCHOR(node)->target, map);
+    if (NODE_BODY(node) != 0)
+      r = renumber_by_map(NODE_BODY(node), map);
     break;
 
   default:
@@ -1985,8 +1985,8 @@ numbered_ref_check(Node* node)
     break;
 
   case NT_ANCHOR:
-    if (NANCHOR(node)->target)
-      r = numbered_ref_check(NANCHOR(node)->target);
+    if (NODE_BODY(node) != 0)
+      r = numbered_ref_check(NODE_BODY(node));
     break;
 
   default:
@@ -2445,7 +2445,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
 
   case NT_ANCHOR:
     if (NANCHOR(node)->type == ANCHOR_PREC_READ)
-      n = get_head_value_node(NANCHOR(node)->target, exact, reg);
+      n = get_head_value_node(NODE_BODY(node), exact, reg);
     break;
 
   default:
@@ -2492,9 +2492,8 @@ check_type_tree(Node* node, int type_mask, int enclose_mask, int anchor_mask)
     if ((type & anchor_mask) == 0)
       return 1;
 
-    if (NANCHOR(node)->target)
-      r = check_type_tree(NANCHOR(node)->target,
-			  type_mask, enclose_mask, anchor_mask);
+    if (NODE_BODY(node) != 0)
+      r = check_type_tree(NODE_BODY(node), type_mask, enclose_mask, anchor_mask);
     break;
 
   default:
@@ -2816,7 +2815,7 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
       case ANCHOR_PREC_READ_NOT:
       case ANCHOR_LOOK_BEHIND:
       case ANCHOR_LOOK_BEHIND_NOT:
-        r = subexp_inf_recursive_check(an->target, env, head);
+        r = subexp_inf_recursive_check(NODE_BODY((Node* )an), env, head);
         break;
       }
     }
@@ -2872,7 +2871,7 @@ subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
       case ANCHOR_PREC_READ_NOT:
       case ANCHOR_LOOK_BEHIND:
       case ANCHOR_LOOK_BEHIND_NOT:
-        r = subexp_inf_recursive_check_trav(an->target, env);
+        r = subexp_inf_recursive_check_trav(NODE_BODY((Node* )an), env);
         break;
       }
     }
@@ -2920,7 +2919,7 @@ subexp_recursive_check(Node* node)
       case ANCHOR_PREC_READ_NOT:
       case ANCHOR_LOOK_BEHIND:
       case ANCHOR_LOOK_BEHIND_NOT:
-        r = subexp_recursive_check(an->target);
+        r = subexp_recursive_check(NODE_BODY((Node* )an));
         break;
       }
     }
@@ -2989,7 +2988,7 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
       case ANCHOR_PREC_READ_NOT:
       case ANCHOR_LOOK_BEHIND:
       case ANCHOR_LOOK_BEHIND_NOT:
-        r = subexp_recursive_check_trav(an->target, env);
+        r = subexp_recursive_check_trav(NODE_BODY((Node* )an), env);
         break;
       }
     }
@@ -3112,7 +3111,7 @@ setup_subexp_call(Node* node, ScanEnv* env)
       case ANCHOR_PREC_READ_NOT:
       case ANCHOR_LOOK_BEHIND:
       case ANCHOR_LOOK_BEHIND_NOT:
-        r = setup_subexp_call(an->target, env);
+        r = setup_subexp_call(NODE_BODY((Node* )an), env);
         break;
       }
     }
@@ -3139,17 +3138,17 @@ divide_look_behind_alternatives(Node* node)
 
   /* fprintf(stderr, "divide_look_behind: %d\n", (int )node); */
 
-  head = an->target;
+  head = NODE_BODY((Node* )an);
   np = NCAR(head);
   swap_node(node, head);
   NCAR(node) = head;
-  NANCHOR(head)->target = np;
+  NODE_BODY(head) = np;
 
   np = node;
   while ((np = NCDR(np)) != NULL_NODE) {
     insert_node = onig_node_new_anchor(anc_type);
     CHECK_NULL_RETURN_MEMERR(insert_node);
-    NANCHOR(insert_node)->target = NCAR(np);
+    NODE_BODY(insert_node) = NCAR(np);
     NCAR(np) = insert_node;
   }
 
@@ -3170,7 +3169,7 @@ setup_look_behind(Node* node, regex_t* reg, ScanEnv* env)
 
   /* fprintf(stderr, "setup_look_behind: %x\n", (int )node); */
 
-  r = get_char_length_tree(an->target, reg, &len);
+  r = get_char_length_tree(NODE_BODY((Node* )an), reg, &len);
   if (r == 0)
     an->char_len = len;
   else if (r == GET_CHAR_LEN_VARLEN)
@@ -3979,10 +3978,10 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
       switch (an->type) {
       case ANCHOR_PREC_READ:
-        r = setup_tree(an->target, reg, state, env);
+        r = setup_tree(NODE_BODY((Node* )an), reg, state, env);
         break;
       case ANCHOR_PREC_READ_NOT:
-        r = setup_tree(an->target, reg, (state | IN_NOT), env);
+        r = setup_tree(NODE_BODY((Node* )an), reg, (state | IN_NOT), env);
         break;
 
 /* allowed node types in look-behind */
@@ -4001,11 +4000,11 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
       case ANCHOR_LOOK_BEHIND:
         {
-          r = check_type_tree(an->target, ALLOWED_TYPE_IN_LB,
+          r = check_type_tree(NODE_BODY((Node* )an), ALLOWED_TYPE_IN_LB,
                               ALLOWED_ENCLOSE_IN_LB, ALLOWED_ANCHOR_IN_LB);
           if (r < 0) return r;
           if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
-          r = setup_tree(an->target, reg, state, env);
+          r = setup_tree(NODE_BODY((Node* )an), reg, state, env);
           if (r != 0) return r;
           r = setup_look_behind(node, reg, env);
         }
@@ -4013,11 +4012,11 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
       case ANCHOR_LOOK_BEHIND_NOT:
         {
-          r = check_type_tree(an->target, ALLOWED_TYPE_IN_LB,
+          r = check_type_tree(NODE_BODY((Node* )an), ALLOWED_TYPE_IN_LB,
                    ALLOWED_ENCLOSE_IN_LB_NOT, ALLOWED_ANCHOR_IN_LB_NOT);
           if (r < 0) return r;
           if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
-          r = setup_tree(an->target, reg, (state | IN_NOT), env);
+          r = setup_tree(NODE_BODY((Node* )an), reg, (state | IN_NOT), env);
           if (r != 0) return r;
           r = setup_look_behind(node, reg, env);
         }
@@ -4844,7 +4843,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
       {
         NodeOptInfo nopt;
 
-        r = optimize_node_left(NANCHOR(node)->target, &nopt, env);
+        r = optimize_node_left(NODE_BODY(node), &nopt, env);
         if (r == 0) {
           if (nopt.exb.len > 0)
             copy_opt_exact_info(&opt->expr, &nopt.exb);

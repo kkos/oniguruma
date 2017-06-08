@@ -1096,8 +1096,8 @@ onig_node_free(Node* node)
     break;
 
   case NT_ANCHOR:
-    if (NANCHOR(node)->target)
-      onig_node_free(NANCHOR(node)->target);
+    if (NODE_BODY(node))
+      onig_node_free(NODE_BODY(node));
     break;
   }
 
@@ -1218,7 +1218,6 @@ onig_node_new_anchor(int type)
 
   SET_NTYPE(node, NT_ANCHOR);
   NANCHOR(node)->type     = type;
-  NANCHOR(node)->target   = NULL;
   NANCHOR(node)->char_len = -1;
   return node;
 }
@@ -4746,10 +4745,8 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
     return r;
   }
 
-  if (NTYPE(*np) == NT_ANCHOR)
-    NANCHOR(*np)->target = target;
-  else {
-    NODE_BODY(*np) = target;
+  NODE_BODY(*np) = target;
+  if (NTYPE(*np) == NT_ENCLOSE) {
     if (NENCLOSE(*np)->type == ENCLOSE_MEMORY) {
       /* Don't move this to previous of parse_subexp() */
       r = scan_env_set_mem_node(env, NENCLOSE(*np)->regnum, *np);
