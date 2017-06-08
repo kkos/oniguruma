@@ -2069,7 +2069,7 @@ is_invalid_quantifier_target(Node* node)
 
   case NT_ENCLOSE:
     /* allow enclosed elements */
-    /* return is_invalid_quantifier_target(NENCLOSE(node)->target); */
+    /* return is_invalid_quantifier_target(NODE_BODY(node)); */
     break;
 
   case NT_LIST:
