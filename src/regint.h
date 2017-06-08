@@ -394,24 +394,27 @@ typedef struct _BBuf {
 #define BBUF_GET_BYTE(buf, pos) (buf)->p[(pos)]
 
 
-#define ANCHOR_BEGIN_BUF        (1<<0)
-#define ANCHOR_BEGIN_LINE       (1<<1)
-#define ANCHOR_BEGIN_POSITION   (1<<2)
-#define ANCHOR_END_BUF          (1<<3)
-#define ANCHOR_SEMI_END_BUF     (1<<4)
-#define ANCHOR_END_LINE         (1<<5)
-
-#define ANCHOR_WORD_BOUND       (1<<6)
-#define ANCHOR_NOT_WORD_BOUND   (1<<7)
-#define ANCHOR_WORD_BEGIN       (1<<8)
-#define ANCHOR_WORD_END         (1<<9)
-#define ANCHOR_PREC_READ        (1<<10)
-#define ANCHOR_PREC_READ_NOT    (1<<11)
-#define ANCHOR_LOOK_BEHIND      (1<<12)
-#define ANCHOR_LOOK_BEHIND_NOT  (1<<13)
-
+/* has body */
+#define ANCHOR_PREC_READ        (1<<0)
+#define ANCHOR_PREC_READ_NOT    (1<<1)
+#define ANCHOR_LOOK_BEHIND      (1<<2)
+#define ANCHOR_LOOK_BEHIND_NOT  (1<<3)
+/* no body */
+#define ANCHOR_BEGIN_BUF        (1<<4)
+#define ANCHOR_BEGIN_LINE       (1<<5)
+#define ANCHOR_BEGIN_POSITION   (1<<6)
+#define ANCHOR_END_BUF          (1<<7)
+#define ANCHOR_SEMI_END_BUF     (1<<8)
+#define ANCHOR_END_LINE         (1<<9)
+#define ANCHOR_WORD_BOUND       (1<<10)
+#define ANCHOR_NOT_WORD_BOUND   (1<<11)
+#define ANCHOR_WORD_BEGIN       (1<<12)
+#define ANCHOR_WORD_END         (1<<13)
 #define ANCHOR_ANYCHAR_STAR     (1<<14)   /* ".*" optimize info */
 #define ANCHOR_ANYCHAR_STAR_ML  (1<<15)   /* ".*" optimize info (multi-line) */
+
+#define ANCHOR_HAS_BODY(a)      ((a)->type < ANCHOR_BEGIN_BUF)
+
 
 /* operation code */
 enum OpCode {

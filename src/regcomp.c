@@ -2810,14 +2810,8 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
   case NT_ANCHOR:
     {
       AnchorNode* an = NANCHOR(node);
-      switch (an->type) {
-      case ANCHOR_PREC_READ:
-      case ANCHOR_PREC_READ_NOT:
-      case ANCHOR_LOOK_BEHIND:
-      case ANCHOR_LOOK_BEHIND_NOT:
+      if (ANCHOR_HAS_BODY(an))
         r = subexp_inf_recursive_check(NODE_ANCHOR_BODY(an), env, head);
-        break;
-      }
     }
     break;
 
@@ -2866,14 +2860,8 @@ subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
   case NT_ANCHOR:
     {
       AnchorNode* an = NANCHOR(node);
-      switch (an->type) {
-      case ANCHOR_PREC_READ:
-      case ANCHOR_PREC_READ_NOT:
-      case ANCHOR_LOOK_BEHIND:
-      case ANCHOR_LOOK_BEHIND_NOT:
+      if (ANCHOR_HAS_BODY(an))
         r = subexp_inf_recursive_check_trav(NODE_ANCHOR_BODY(an), env);
-        break;
-      }
     }
     break;
 
@@ -2914,14 +2902,8 @@ subexp_recursive_check(Node* node)
   case NT_ANCHOR:
     {
       AnchorNode* an = NANCHOR(node);
-      switch (an->type) {
-      case ANCHOR_PREC_READ:
-      case ANCHOR_PREC_READ_NOT:
-      case ANCHOR_LOOK_BEHIND:
-      case ANCHOR_LOOK_BEHIND_NOT:
+      if (ANCHOR_HAS_BODY(an))
         r = subexp_recursive_check(NODE_ANCHOR_BODY(an));
-        break;
-      }
     }
     break;
 
@@ -2983,14 +2965,8 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
   case NT_ANCHOR:
     {
       AnchorNode* an = NANCHOR(node);
-      switch (an->type) {
-      case ANCHOR_PREC_READ:
-      case ANCHOR_PREC_READ_NOT:
-      case ANCHOR_LOOK_BEHIND:
-      case ANCHOR_LOOK_BEHIND_NOT:
+      if (ANCHOR_HAS_BODY(an))
         r = subexp_recursive_check_trav(NODE_ANCHOR_BODY(an), env);
-        break;
-      }
     }
     break;
 
@@ -3105,15 +3081,8 @@ setup_subexp_call(Node* node, ScanEnv* env)
   case NT_ANCHOR:
     {
       AnchorNode* an = NANCHOR(node);
-
-      switch (an->type) {
-      case ANCHOR_PREC_READ:
-      case ANCHOR_PREC_READ_NOT:
-      case ANCHOR_LOOK_BEHIND:
-      case ANCHOR_LOOK_BEHIND_NOT:
+      if (ANCHOR_HAS_BODY(an))
         r = setup_subexp_call(NODE_ANCHOR_BODY(an), env);
-        break;
-      }
     }
     break;
 
