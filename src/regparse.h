@@ -221,12 +221,11 @@ typedef struct {
 typedef struct {
   int node_type;
   int status;
-  struct _Node* body;
+  struct _Node* body; /* to EncloseNode : ENCLOSE_MEMORY */
 
   int     group_num;
   UChar*  name;
   UChar*  name_end;
-  /* struct _Node*  target; EncloseNode : ENCLOSE_MEMORY */
   UnsetAddrList* unset_addr_list;
 } CallNode;
 
