@@ -779,7 +779,7 @@ compile_range_repeat_node(QtfrNode* qn, int target_len, int empty_info,
 #ifdef USE_SUBEXP_CALL
       reg->num_call > 0 ||
 #endif
-      NODE_IS_IN_REPEAT((Node* )qn)) {
+      NODE_IS_IN_REPEAT(qn)) {
     r = add_opcode(reg, qn->greedy ? OP_REPEAT_INC_SG : OP_REPEAT_INC_NG_SG);
   }
   else {
@@ -1297,17 +1297,17 @@ compile_length_enclose_node(EncloseNode* node, regex_t* reg)
   switch (node->type) {
   case ENCLOSE_MEMORY:
 #ifdef USE_SUBEXP_CALL
-    if (NODE_IS_CALLED((Node* )node)) {
+    if (NODE_IS_CALLED(node)) {
       len = SIZE_OP_MEMORY_START_PUSH + tlen
         + SIZE_OP_CALL + SIZE_OP_JUMP + SIZE_OP_RETURN;
       if (BIT_STATUS_AT(reg->bt_mem_end, node->regnum))
-        len += (NODE_IS_RECURSION((Node* )node)
+        len += (NODE_IS_RECURSION(node)
                 ? SIZE_OP_MEMORY_END_PUSH_REC : SIZE_OP_MEMORY_END_PUSH);
       else
-        len += (NODE_IS_RECURSION((Node* )node)
+        len += (NODE_IS_RECURSION(node)
                 ? SIZE_OP_MEMORY_END_REC : SIZE_OP_MEMORY_END);
     }
-    else if (NODE_IS_RECURSION((Node* )node)) {
+    else if (NODE_IS_RECURSION(node)) {
       len = SIZE_OP_MEMORY_START_PUSH;
       len += tlen + (BIT_STATUS_AT(reg->bt_mem_end, node->regnum)
                      ? SIZE_OP_MEMORY_END_PUSH_REC : SIZE_OP_MEMORY_END_REC);
@@ -1326,7 +1326,7 @@ compile_length_enclose_node(EncloseNode* node, regex_t* reg)
     break;
 
   case ENCLOSE_STOP_BACKTRACK:
-    if (NODE_IS_STOP_BT_SIMPLE_REPEAT((Node* )node)) {
+    if (NODE_IS_STOP_BT_SIMPLE_REPEAT(node)) {
       QtfrNode* qn = NQTFR(NODE_ENCLOSE_BODY(node));
       tlen = compile_length_tree(NODE_QTFR_BODY(qn), reg);
       if (tlen < 0) return tlen;
@@ -1360,7 +1360,7 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
   switch (node->type) {
   case ENCLOSE_MEMORY:
 #ifdef USE_SUBEXP_CALL
-    if (NODE_IS_CALLED((Node* )node)) {
+    if (NODE_IS_CALLED(node)) {
       r = add_opcode(reg, OP_CALL);
       if (r) return r;
       node->call_addr = BBUF_GET_OFFSET_POS(reg) + SIZE_ABSADDR + SIZE_OP_JUMP;
@@ -1370,10 +1370,10 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
       len = compile_length_tree(NODE_ENCLOSE_BODY(node), reg);
       len += (SIZE_OP_MEMORY_START_PUSH + SIZE_OP_RETURN);
       if (BIT_STATUS_AT(reg->bt_mem_end, node->regnum))
-        len += (NODE_IS_RECURSION((Node* )node)
+        len += (NODE_IS_RECURSION(node)
                 ? SIZE_OP_MEMORY_END_PUSH_REC : SIZE_OP_MEMORY_END_PUSH);
       else
-        len += (NODE_IS_RECURSION((Node* )node)
+        len += (NODE_IS_RECURSION(node)
                 ? SIZE_OP_MEMORY_END_REC : SIZE_OP_MEMORY_END);
 
       r = add_opcode_rel_addr(reg, OP_JUMP, len);
@@ -1390,12 +1390,12 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
     r = compile_tree(NODE_ENCLOSE_BODY(node), reg);
     if (r) return r;
 #ifdef USE_SUBEXP_CALL
-    if (NODE_IS_CALLED((Node* )node)) {
+    if (NODE_IS_CALLED(node)) {
       if (BIT_STATUS_AT(reg->bt_mem_end, node->regnum))
-        r = add_opcode(reg, (NODE_IS_RECURSION((Node* )node)
+        r = add_opcode(reg, (NODE_IS_RECURSION(node)
                              ? OP_MEMORY_END_PUSH_REC : OP_MEMORY_END_PUSH));
       else
-        r = add_opcode(reg, (NODE_IS_RECURSION((Node* )node)
+        r = add_opcode(reg, (NODE_IS_RECURSION(node)
                              ? OP_MEMORY_END_REC : OP_MEMORY_END));
 
       if (r) return r;
@@ -1403,7 +1403,7 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
       if (r) return r;
       r = add_opcode(reg, OP_RETURN);
     }
-    else if (NODE_IS_RECURSION((Node* )node)) {
+    else if (NODE_IS_RECURSION(node)) {
       if (BIT_STATUS_AT(reg->bt_mem_end, node->regnum))
         r = add_opcode(reg, OP_MEMORY_END_PUSH_REC);
       else
@@ -1424,7 +1424,7 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
     break;
 
   case ENCLOSE_STOP_BACKTRACK:
-    if (NODE_IS_STOP_BT_SIMPLE_REPEAT((Node* )node)) {
+    if (NODE_IS_STOP_BT_SIMPLE_REPEAT(node)) {
       QtfrNode* qn = NQTFR(NODE_ENCLOSE_BODY(node));
       r = compile_tree_n_times(NODE_QTFR_BODY(qn), qn->lower, reg);
       if (r) return r;
@@ -2047,7 +2047,7 @@ unset_addr_list_fix(UnsetAddrList* uslist, regex_t* reg)
 
   for (i = 0; i < uslist->num; i++) {
     en = NENCLOSE(uslist->us[i].target);
-    if (! NODE_IS_ADDR_FIXED((Node* )en)) return ONIGERR_PARSER_BUG;
+    if (! NODE_IS_ADDR_FIXED(en)) return ONIGERR_PARSER_BUG;
     addr = en->call_addr;
     offset = uslist->us[i].offset;
 
