@@ -147,7 +147,7 @@ swap_node(Node* a, Node* b)
   Node c;
   c = *a; *a = *b; *b = c;
 
-  if (NTYPE(a) == NT_STR) {
+  if (NODE_TYPE(a) == NT_STR) {
     StrNode* sn = NSTR(a);
     if (sn->capa == 0) {
       int len = sn->end - sn->s;
@@ -156,7 +156,7 @@ swap_node(Node* a, Node* b)
     }
   }
 
-  if (NTYPE(b) == NT_STR) {
+  if (NODE_TYPE(b) == NT_STR) {
     StrNode* sn = NSTR(b);
     if (sn->capa == 0) {
       int len = sn->end - sn->s;
@@ -794,7 +794,7 @@ static int
 is_anychar_star_quantifier(QtfrNode* qn)
 {
   if (qn->greedy && IS_REPEAT_INFINITE(qn->upper) &&
-      NTYPE(NODE_BODY((Node* )qn)) == NT_CANY)
+      NODE_TYPE(NODE_BODY((Node* )qn)) == NT_CANY)
     return 1;
   else
     return 0;
@@ -821,7 +821,7 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
   cklen = (CKN_ON ? SIZE_STATE_CHECK_NUM: 0);
 
   /* anychar repeat */
-  if (NTYPE(qn->target) == NT_CANY) {
+  if (NODE_TYPE(qn->target) == NT_CANY) {
     if (qn->greedy && infinite) {
       if (IS_NOT_NULL(qn->next_head_exact) && !CKN_ON)
         return SIZE_OP_ANYCHAR_STAR_PEEK_NEXT + tlen * qn->lower + cklen;
@@ -1050,7 +1050,7 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
   if (tlen < 0) return tlen;
 
   /* anychar repeat */
-  if (NTYPE(NODE_BODY((Node* )qn)) == NT_CANY) {
+  if (NODE_TYPE(NODE_BODY((Node* )qn)) == NT_CANY) {
     if (qn->greedy && infinite) {
       if (IS_NOT_NULL(qn->next_head_exact))
         return SIZE_OP_ANYCHAR_STAR_PEEK_NEXT + tlen * qn->lower;
@@ -1581,7 +1581,7 @@ compile_length_tree(Node* node, regex_t* reg)
 {
   int len, type, r;
 
-  type = NTYPE(node);
+  type = NODE_TYPE(node);
   switch (type) {
   case NT_LIST:
     len = 0;
@@ -1674,7 +1674,7 @@ compile_tree(Node* node, regex_t* reg)
 {
   int n, type, len, pos, r = 0;
 
-  type = NTYPE(node);
+  type = NODE_TYPE(node);
   switch (type) {
   case NT_LIST:
     do {
@@ -1828,7 +1828,7 @@ compile_tree(Node* node, regex_t* reg)
 
   default:
 #ifdef ONIG_DEBUG
-    fprintf(stderr, "compile_tree: undefined node type %d\n", NTYPE(node));
+    fprintf(stderr, "compile_tree: undefined node type %d\n", NODE_TYPE(node));
 #endif
     break;
   }
@@ -1844,7 +1844,7 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
   int r = 0;
   Node* node = *plink;
 
-  switch (NTYPE(node)) {
+  switch (NODE_TYPE(node)) {
   case NT_LIST:
   case NT_ALT:
     do {
@@ -1857,7 +1857,7 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
       Node** ptarget = &(NODE_BODY(node));
       Node*  old = *ptarget;
       r = noname_disable_map(ptarget, map, counter);
-      if (*ptarget != old && NTYPE(*ptarget) == NT_QTFR) {
+      if (*ptarget != old && NODE_TYPE(*ptarget) == NT_QTFR) {
         onig_reduce_nested_quantifier(node, *ptarget);
       }
     }
@@ -1930,7 +1930,7 @@ renumber_by_map(Node* node, GroupNumRemap* map)
 {
   int r = 0;
 
-  switch (NTYPE(node)) {
+  switch (NODE_TYPE(node)) {
   case NT_LIST:
   case NT_ALT:
     do {
@@ -1965,7 +1965,7 @@ numbered_ref_check(Node* node)
 {
   int r = 0;
 
-  switch (NTYPE(node)) {
+  switch (NODE_TYPE(node)) {
   case NT_LIST:
   case NT_ALT:
     do {
@@ -2070,7 +2070,7 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
 
   level++;
   *len = 0;
-  switch (NTYPE(node)) {
+  switch (NODE_TYPE(node)) {
   case NT_LIST:
     do {
       r = get_char_length_tree1(NCAR(node), reg, &tlen, level);
@@ -2201,8 +2201,8 @@ is_not_included(Node* x, Node* y, regex_t* reg)
   int ytype;
 
  retry:
-  ytype = NTYPE(y);
-  switch (NTYPE(x)) {
+  ytype = NODE_TYPE(y);
+  switch (NODE_TYPE(x)) {
   case NT_CTYPE:
     {
       switch (ytype) {
@@ -2373,7 +2373,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
 {
   Node* n = NULL_NODE;
 
-  switch (NTYPE(node)) {
+  switch (NODE_TYPE(node)) {
   case NT_BREF:
   case NT_ALT:
   case NT_CANY:
@@ -2460,8 +2460,8 @@ check_type_tree(Node* node, int type_mask, int enclose_mask, int anchor_mask)
 {
   int type, r = 0;
 
-  type = NTYPE(node);
-  if ((NTYPE2BIT(type) & type_mask) == 0)
+  type = NODE_TYPE(node);
+  if ((NODE_TYPE2BIT(type) & type_mask) == 0)
     return 1;
 
   switch (type) {
@@ -2509,7 +2509,7 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
   int r = 0;
 
   *min = 0;
-  switch (NTYPE(node)) {
+  switch (NODE_TYPE(node)) {
   case NT_BREF:
     {
       int i;
@@ -2639,7 +2639,7 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
   int r = 0;
 
   *max = 0;
-  switch (NTYPE(node)) {
+  switch (NODE_TYPE(node)) {
   case NT_LIST:
     do {
       r = get_max_len(NCAR(node), &tmax, env);
@@ -2766,7 +2766,7 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
   int type;
   int r = 0;
 
-  type = NTYPE(node);
+  type = NODE_TYPE(node);
   switch (type) {
   case NT_LIST:
     {
@@ -2850,7 +2850,7 @@ subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
   int type;
   int r = 0;
 
-  type = NTYPE(node);
+  type = NODE_TYPE(node);
   switch (type) {
   case NT_LIST:
   case NT_ALT:
@@ -2899,7 +2899,7 @@ subexp_recursive_check(Node* node)
 {
   int r = 0;
 
-  switch (NTYPE(node)) {
+  switch (NODE_TYPE(node)) {
   case NT_LIST:
   case NT_ALT:
     do {
@@ -2958,7 +2958,7 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
   int type;
   int r = 0;
 
-  type = NTYPE(node);
+  type = NODE_TYPE(node);
   switch (type) {
   case NT_LIST:
   case NT_ALT:
@@ -3022,7 +3022,7 @@ setup_subexp_call(Node* node, ScanEnv* env)
   int type;
   int r = 0;
 
-  type = NTYPE(node);
+  type = NODE_TYPE(node);
   switch (type) {
   case NT_LIST:
     do {
@@ -3155,7 +3155,7 @@ divide_look_behind_alternatives(Node* node)
   if (anc_type == ANCHOR_LOOK_BEHIND_NOT) {
     np = node;
     do {
-      SET_NTYPE(np, NT_LIST);  /* alt -> list */
+      SET_NODE_TYPE(np, NT_LIST);  /* alt -> list */
     } while ((np = NCDR(np)) != NULL_NODE);
   }
   return 0;
@@ -3190,7 +3190,7 @@ next_setup(Node* node, Node* next_node, regex_t* reg)
   int type;
 
  retry:
-  type = NTYPE(node);
+  type = NODE_TYPE(node);
   if (type == NT_QTFR) {
     QtfrNode* qn = NQTFR(node);
     if (qn->greedy && IS_REPEAT_INFINITE(qn->upper)) {
@@ -3203,7 +3203,7 @@ next_setup(Node* node, Node* next_node, regex_t* reg)
 #endif
       /* automatic posseivation a*b ==> (?>a*)b */
       if (qn->lower <= 1) {
-        int ttype = NTYPE(NODE_BODY(node));
+        int ttype = NODE_TYPE(NODE_BODY(node));
         if (IS_NODE_TYPE_SIMPLE(ttype)) {
           Node *x, *y;
           x = get_head_value_node(NODE_BODY(node), 0, reg);
@@ -3559,7 +3559,7 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
   int type;
   int r = state;
 
-  type = NTYPE(node);
+  type = NODE_TYPE(node);
   switch (type) {
   case NT_LIST:
     {
@@ -3596,10 +3596,10 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
 
           /* check (a*){n,m}, (a+){n,m} => (a*){n,n}, (a+){n,n} */
           if (env->backrefed_mem == 0) {
-            if (NTYPE(qn->target) == NT_ENCLOSE) {
+            if (NODE_TYPE(qn->target) == NT_ENCLOSE) {
               EncloseNode* en = NENCLOSE(qn->target);
               if (en->type == ENCLOSE_MEMORY) {
-                if (NTYPE(en->target) == NT_QTFR) {
+                if (NODE_TYPE(en->target) == NT_QTFR) {
                   QtfrNode* q = NQTFR(en->target);
                   if (IS_REPEAT_INFINITE(q->upper)
                       && q->greedy == qn->greedy) {
@@ -3697,7 +3697,7 @@ quantifiers_memory_node_info(Node* node, int state)
 {
   int r = 0;
 
-  switch (NTYPE(node)) {
+  switch (NODE_TYPE(node)) {
   case NT_LIST:
   case NT_ALT:
     {
@@ -3777,7 +3777,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
   int type;
   int r = 0;
 
-  type = NTYPE(node);
+  type = NODE_TYPE(node);
   switch (type) {
   case NT_LIST:
     {
@@ -3858,7 +3858,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
           if (r > 0) {
             qn->body_empty_info = r;
             if (r == NQ_BODY_IS_EMPTY_REC) {
-              if (NTYPE(target) == NT_ENCLOSE &&
+              if (NODE_TYPE(target) == NT_ENCLOSE &&
                   NENCLOSE(target)->type == ENCLOSE_MEMORY) {
                 BIT_STATUS_ON_AT(env->bt_mem_end, NENCLOSE(target)->regnum);
               }
@@ -3871,7 +3871,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
             /*  ()* ==> ()?, ()+ ==> ()  */
             qn->upper = 1;
             if (qn->lower > 1) qn->lower = 1;
-            if (NTYPE(target) == NT_STR) {
+            if (NODE_TYPE(target) == NT_STR) {
               qn->upper = qn->lower = 0;  /* /(?:)+/ ==> // */
             }
           }
@@ -3887,7 +3887,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
       /* expand string */
 #define EXPAND_STRING_MAX_LENGTH  100
-      if (NTYPE(target) == NT_STR) {
+      if (NODE_TYPE(target) == NT_STR) {
         if (!IS_REPEAT_INFINITE(qn->lower) && qn->lower == qn->upper &&
             qn->lower > 1 && qn->lower <= EXPAND_STRING_MAX_LENGTH) {
           int len = NSTRING_LEN(target);
@@ -3908,7 +3908,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
 #ifdef USE_OP_PUSH_OR_JUMP_EXACT
       if (qn->greedy && (qn->body_empty_info != 0)) {
-        if (NTYPE(target) == NT_QTFR) {
+        if (NODE_TYPE(target) == NT_QTFR) {
           QtfrNode* tqn = NQTFR(target);
           if (IS_NOT_NULL(tqn->head_exact)) {
             qn->head_exact  = tqn->head_exact;
@@ -3957,11 +3957,11 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         {
           Node* target = NODE_BODY(node);
           r = setup_tree(target, reg, state, env);
-          if (NTYPE(target) == NT_QTFR) {
+          if (NODE_TYPE(target) == NT_QTFR) {
             QtfrNode* tqn = NQTFR(target);
             if (IS_REPEAT_INFINITE(tqn->upper) && tqn->lower <= 1 &&
                 tqn->greedy != 0) {  /* (?>a*), a*+ etc... */
-              int qtype = NTYPE(NODE_BODY(target));
+              int qtype = NODE_TYPE(NODE_BODY(target));
               if (IS_NODE_TYPE_SIMPLE(qtype))
                 NODE_STATUS_SET(node, NST_STOP_BT_SIMPLE_REPEAT);
             }
@@ -4681,7 +4681,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
   clear_node_opt_info(opt);
   set_bound_node_opt_info(opt, &env->mmd);
 
-  type = NTYPE(node);
+  type = NODE_TYPE(node);
   switch (type) {
   case NT_LIST:
     {
@@ -4917,7 +4917,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
 
       if (qn->lower == 0 && IS_REPEAT_INFINITE(qn->upper)) {
         if (env->mmd.max == 0 &&
-            NTYPE(NODE_BODY(node)) == NT_CANY && qn->greedy) {
+            NODE_TYPE(NODE_BODY(node)) == NT_CANY && qn->greedy) {
           if (IS_MULTILINE(env->options))
             add_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_STAR_ML);
           else
@@ -5007,7 +5007,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
   default:
 #ifdef ONIG_DEBUG
     fprintf(stderr, "optimize_node_left: undefined node type %d\n",
-	    NTYPE(node));
+	    NODE_TYPE(node));
 #endif
     r = ONIGERR_TYPE_BUG;
     break;
@@ -6223,19 +6223,19 @@ print_indent_tree(FILE* f, Node* node, int indent)
     exit (0);
   }
 
-  type = NTYPE(node);
+  type = NODE_TYPE(node);
   switch (type) {
   case NT_LIST:
   case NT_ALT:
-    if (NTYPE(node) == NT_LIST)
+    if (NODE_TYPE(node) == NT_LIST)
       fprintf(f, "<list:%p>\n", node);
     else
       fprintf(f, "<alt:%p>\n", node);
 
     print_indent_tree(f, NCAR(node), indent + add);
     while (IS_NOT_NULL(node = NCDR(node))) {
-      if (NTYPE(node) != type) {
-        fprintf(f, "ERROR: list/alt right is not a cons. %d\n", NTYPE(node));
+      if (NODE_TYPE(node) != type) {
+        fprintf(f, "ERROR: list/alt right is not a cons. %d\n", NODE_TYPE(node));
         exit(0);
       }
       print_indent_tree(f, NCAR(node), indent + add);
@@ -6376,7 +6376,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
     break;
 
   default:
-    fprintf(f, "print_indent_tree: undefined node type %d\n", NTYPE(node));
+    fprintf(f, "print_indent_tree: undefined node type %d\n", NODE_TYPE(node));
     break;
   }
 

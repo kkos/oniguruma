@@ -45,26 +45,26 @@
 #define NT_CALL       10
 
 /* node type bit */
-#define NTYPE2BIT(type)      (1<<(type))
+#define NODE_TYPE2BIT(type)      (1<<(type))
 
-#define BIT_NT_STR        NTYPE2BIT(NT_STR)
-#define BIT_NT_CCLASS     NTYPE2BIT(NT_CCLASS)
-#define BIT_NT_CTYPE      NTYPE2BIT(NT_CTYPE)
-#define BIT_NT_CANY       NTYPE2BIT(NT_CANY)
-#define BIT_NT_BREF       NTYPE2BIT(NT_BREF)
-#define BIT_NT_QTFR       NTYPE2BIT(NT_QTFR)
-#define BIT_NT_ENCLOSE    NTYPE2BIT(NT_ENCLOSE)
-#define BIT_NT_ANCHOR     NTYPE2BIT(NT_ANCHOR)
-#define BIT_NT_LIST       NTYPE2BIT(NT_LIST)
-#define BIT_NT_ALT        NTYPE2BIT(NT_ALT)
-#define BIT_NT_CALL       NTYPE2BIT(NT_CALL)
+#define BIT_NT_STR        NODE_TYPE2BIT(NT_STR)
+#define BIT_NT_CCLASS     NODE_TYPE2BIT(NT_CCLASS)
+#define BIT_NT_CTYPE      NODE_TYPE2BIT(NT_CTYPE)
+#define BIT_NT_CANY       NODE_TYPE2BIT(NT_CANY)
+#define BIT_NT_BREF       NODE_TYPE2BIT(NT_BREF)
+#define BIT_NT_QTFR       NODE_TYPE2BIT(NT_QTFR)
+#define BIT_NT_ENCLOSE    NODE_TYPE2BIT(NT_ENCLOSE)
+#define BIT_NT_ANCHOR     NODE_TYPE2BIT(NT_ANCHOR)
+#define BIT_NT_LIST       NODE_TYPE2BIT(NT_LIST)
+#define BIT_NT_ALT        NODE_TYPE2BIT(NT_ALT)
+#define BIT_NT_CALL       NODE_TYPE2BIT(NT_CALL)
 
 #define IS_NODE_TYPE_SIMPLE(type) \
-  ((NTYPE2BIT(type) & (BIT_NT_STR | BIT_NT_CCLASS | BIT_NT_CTYPE |\
+  ((NODE_TYPE2BIT(type) & (BIT_NT_STR | BIT_NT_CCLASS | BIT_NT_CTYPE |\
                        BIT_NT_CANY | BIT_NT_BREF)) != 0)
 
-#define NTYPE(node)             ((node)->u.base.node_type)
-#define SET_NTYPE(node, ntype)   (node)->u.base.node_type = (ntype)
+#define NODE_TYPE(node)             ((node)->u.base.node_type)
+#define SET_NODE_TYPE(node, ntype)   (node)->u.base.node_type = (ntype)
 
 #define NSTR(node)         (&((node)->u.str))
 #define NCCLASS(node)      (&((node)->u.cclass))

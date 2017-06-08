@@ -1050,7 +1050,7 @@ onig_node_free(Node* node)
   fprintf(stderr, "onig_node_free: %p\n", node);
 #endif
 
-  switch (NTYPE(node)) {
+  switch (NODE_TYPE(node)) {
   case NT_STR:
     if (NSTR(node)->capa != 0 &&
         IS_NOT_NULL(NSTR(node)->s) && NSTR(node)->s != NSTR(node)->buf) {
@@ -1135,7 +1135,7 @@ node_new_cclass(void)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NTYPE(node, NT_CCLASS);
+  SET_NODE_TYPE(node, NT_CCLASS);
   initialize_cclass(NCCLASS(node));
   return node;
 }
@@ -1146,7 +1146,7 @@ node_new_ctype(int type, int not)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NTYPE(node, NT_CTYPE);
+  SET_NODE_TYPE(node, NT_CTYPE);
   NCTYPE(node)->ctype = type;
   NCTYPE(node)->not   = not;
   return node;
@@ -1158,7 +1158,7 @@ node_new_anychar(void)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NTYPE(node, NT_CANY);
+  SET_NODE_TYPE(node, NT_CANY);
   return node;
 }
 
@@ -1168,7 +1168,7 @@ node_new_list(Node* left, Node* right)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NTYPE(node, NT_LIST);
+  SET_NODE_TYPE(node, NT_LIST);
   NCAR(node)  = left;
   NCDR(node) = right;
   return node;
@@ -1204,7 +1204,7 @@ onig_node_new_alt(Node* left, Node* right)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NTYPE(node, NT_ALT);
+  SET_NODE_TYPE(node, NT_ALT);
   NCAR(node)  = left;
   NCDR(node) = right;
   return node;
@@ -1216,7 +1216,7 @@ onig_node_new_anchor(int type)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NTYPE(node, NT_ANCHOR);
+  SET_NODE_TYPE(node, NT_ANCHOR);
   NANCHOR(node)->type     = type;
   NANCHOR(node)->char_len = -1;
   return node;
@@ -1234,7 +1234,7 @@ node_new_backref(int back_num, int* backrefs, int by_name,
 
   CHECK_NULL_RETURN(node);
 
-  SET_NTYPE(node, NT_BREF);
+  SET_NODE_TYPE(node, NT_BREF);
   NBREF(node)->back_num = back_num;
   NBREF(node)->back_dynamic = (int* )NULL;
   if (by_name != 0)
@@ -1279,7 +1279,7 @@ node_new_call(UChar* name, UChar* name_end, int gnum)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NTYPE(node, NT_CALL);
+  SET_NODE_TYPE(node, NT_CALL);
   NCALL(node)->name      = name;
   NCALL(node)->name_end  = name_end;
   NCALL(node)->group_num = gnum;  /* call by number if gnum != 0 */
@@ -1293,7 +1293,7 @@ node_new_quantifier(int lower, int upper, int by_number)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NTYPE(node, NT_QTFR);
+  SET_NODE_TYPE(node, NT_QTFR);
   NQTFR(node)->lower  = lower;
   NQTFR(node)->upper  = upper;
   NQTFR(node)->greedy = 1;
@@ -1317,7 +1317,7 @@ node_new_enclose(int type)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NTYPE(node, NT_ENCLOSE);
+  SET_NODE_TYPE(node, NT_ENCLOSE);
   NENCLOSE(node)->type      = type;
   NENCLOSE(node)->regnum    =  0;
   NENCLOSE(node)->option    =  0;
@@ -1410,7 +1410,7 @@ node_str_cat_char(Node* node, UChar c)
 extern void
 onig_node_conv_to_str_node(Node* node, int flag)
 {
-  SET_NTYPE(node, NT_STR);
+  SET_NODE_TYPE(node, NT_STR);
   NSTR(node)->flag = flag;
   NSTR(node)->capa = 0;
   NSTR(node)->s    = NSTR(node)->buf;
@@ -1437,7 +1437,7 @@ node_new_str(const UChar* s, const UChar* end)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NTYPE(node, NT_STR);
+  SET_NODE_TYPE(node, NT_STR);
   NSTR(node)->capa = 0;
   NSTR(node)->flag = 0;
   NSTR(node)->s    = NSTR(node)->buf;
@@ -2062,7 +2062,7 @@ conv_backslash_value(OnigCodePoint c, ScanEnv* env)
 static int
 is_invalid_quantifier_target(Node* node)
 {
-  switch (NTYPE(node)) {
+  switch (NODE_TYPE(node)) {
   case NT_ANCHOR:
     return 1;
     break;
@@ -4746,7 +4746,7 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
   }
 
   NODE_BODY(*np) = target;
-  if (NTYPE(*np) == NT_ENCLOSE) {
+  if (NODE_TYPE(*np) == NT_ENCLOSE) {
     if (NENCLOSE(*np)->type == ENCLOSE_MEMORY) {
       /* Don't move this to previous of parse_subexp() */
       r = scan_env_set_mem_node(env, NENCLOSE(*np)->regnum, *np);
@@ -4776,7 +4776,7 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
     return 1;
   }
 
-  switch (NTYPE(target)) {
+  switch (NODE_TYPE(target)) {
   case NT_STR:
     if (! group) {
       StrNode* sn = NSTR(target);
@@ -5335,7 +5335,7 @@ parse_branch(Node** top, OnigToken* tok, int term,
         return r;
       }
 
-      if (NTYPE(node) == NT_LIST) {
+      if (NODE_TYPE(node) == NT_LIST) {
         *headp = node;
         while (IS_NOT_NULL(NCDR(node))) node = NCDR(node);
         headp = &(NCDR(node));
