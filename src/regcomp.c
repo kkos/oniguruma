@@ -45,10 +45,10 @@ make_int_stack(int_stack** rs, int init_size)
   *rs = 0;
 
   s = xmalloc(sizeof(*s));
-  if (s == 0) return ONIGERR_MEMORY;
+  if (IS_NULL(s)) return ONIGERR_MEMORY;
 
   v = (int* )xmalloc(sizeof(int) * init_size);
-  if (v == 0) {
+  if (IS_NULL(v)) {
     xfree(s);
     return ONIGERR_MEMORY;
   }
@@ -64,8 +64,8 @@ make_int_stack(int_stack** rs, int init_size)
 static void
 free_int_stack(int_stack* s)
 {
-  if (s != 0) {
-    if (s->v != 0)
+  if (IS_NOT_NULL(s)) {
+    if (IS_NOT_NULL(s->v))
       xfree(s->v);
     xfree(s);
   }
@@ -77,7 +77,7 @@ int_stack_push(int_stack* s, int v)
   if (s->n >= s->alloc) {
     int new_size = s->alloc * 2;
     int* nv = (int* )xrealloc(s->v, new_size);
-    if (nv == 0) return ONIGERR_MEMORY;
+    if (IS_NULL(nv)) return ONIGERR_MEMORY;
 
     s->alloc = new_size;
     s->v = nv;
@@ -1464,7 +1464,7 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
   int len;
   int tlen = 0;
 
-  if (NODE_ANCHOR_BODY(node) != 0) {
+  if (IS_NOT_NULL(NODE_ANCHOR_BODY(node))) {
     tlen = compile_length_tree(NODE_ANCHOR_BODY(node), reg);
     if (tlen < 0) return tlen;
   }
@@ -1688,7 +1688,7 @@ compile_tree(Node* node, regex_t* reg)
       len = 0;
       do {
         len += compile_length_tree(NCAR(x), reg);
-        if (NCDR(x) != NULL) {
+        if (IS_NOT_NULL(NCDR(x))) {
           len += SIZE_OP_PUSH + SIZE_OP_JUMP;
         }
       } while (IS_NOT_NULL(x = NCDR(x)));
@@ -1886,7 +1886,7 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
     break;
 
   case NT_ANCHOR:
-    if (NODE_BODY(node) != 0)
+    if (IS_NOT_NULL(NODE_BODY(node)))
       r = noname_disable_map(&(NODE_BODY(node)), map, counter);
     break;
 
@@ -1949,7 +1949,7 @@ renumber_by_map(Node* node, GroupNumRemap* map)
     break;
 
   case NT_ANCHOR:
-    if (NODE_BODY(node) != 0)
+    if (IS_NOT_NULL(NODE_BODY(node)))
       r = renumber_by_map(NODE_BODY(node), map);
     break;
 
@@ -1985,7 +1985,7 @@ numbered_ref_check(Node* node)
     break;
 
   case NT_ANCHOR:
-    if (NODE_BODY(node) != 0)
+    if (IS_NOT_NULL(NODE_BODY(node)))
       r = numbered_ref_check(NODE_BODY(node));
     break;
 
@@ -2492,7 +2492,7 @@ check_type_tree(Node* node, int type_mask, int enclose_mask, int anchor_mask)
     if ((type & anchor_mask) == 0)
       return 1;
 
-    if (NODE_BODY(node) != 0)
+    if (IS_NOT_NULL(NODE_BODY(node)))
       r = check_type_tree(NODE_BODY(node), type_mask, enclose_mask, anchor_mask);
     break;
 
@@ -3112,7 +3112,7 @@ divide_look_behind_alternatives(Node* node)
   NODE_BODY(head) = np;
 
   np = node;
-  while ((np = NCDR(np)) != NULL_NODE) {
+  while (IS_NOT_NULL(np = NCDR(np))) {
     insert_node = onig_node_new_anchor(anc_type);
     CHECK_NULL_RETURN_MEMERR(insert_node);
     NODE_BODY(insert_node) = NCAR(np);
@@ -3123,7 +3123,7 @@ divide_look_behind_alternatives(Node* node)
     np = node;
     do {
       SET_NODE_TYPE(np, NT_LIST);  /* alt -> list */
-    } while ((np = NCDR(np)) != NULL_NODE);
+    } while (IS_NOT_NULL(np = NCDR(np)));
   }
   return 0;
 }

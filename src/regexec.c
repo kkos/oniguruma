@@ -533,7 +533,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STATE_CHECK_POS(s,snum) \
   (((s) - str) * num_comb_exp_check + ((snum) - 1))
 #define STATE_CHECK_VAL(v,snum) do {\
-  if (state_check_buff != NULL) {\
+  if (IS_NOT_NULL(state_check_buff)) {\
     int x = STATE_CHECK_POS(s,snum);\
     (v) = state_check_buff[x/8] & (1<<(x%8));\
   }\
@@ -570,12 +570,12 @@ stack_double(int is_alloca, char** arg_alloc_base,
   stk->u.state.pcode     = (pat);\
   stk->u.state.pstr      = (s);\
   stk->u.state.pstr_prev = (sprev);\
-  stk->u.state.state_check = ((state_check_buff != NULL) ? (snum) : 0);\
+  stk->u.state.state_check = (IS_NOT_NULL(state_check_buff) ? (snum) : 0);\
   STACK_INC;\
 } while(0)
 
 #define STACK_PUSH_STATE_CHECK(s,snum) do {\
-  if (state_check_buff != NULL) {\
+  if (IS_NOT_NULL(state_check_buff)) {   \
     STACK_ENSURE(1);\
     stk->type = STK_STATE_CHECK_MARK;\
     stk->u.state.pstr = (s);\
@@ -1157,7 +1157,7 @@ static int backref_match_at_nested_level(regex_t* reg
       if (k->type == STK_MEM_START) {
         if (mem_is_in_memp(k->u.mem.num, mem_num, memp)) {
           pstart = k->u.mem.pstr;
-          if (pend != NULL_UCHARP) {
+          if (IS_NOT_NULL(pend)) {
             if (pend - pstart > send - *s) return 0; /* or goto next_mem; */
             p  = pstart;
             ss = *s;
