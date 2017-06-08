@@ -1017,8 +1017,10 @@ scan_env_add_mem_entry(ScanEnv* env)
 
       for (i = env->num_mem + 1; i < alloc; i++) {
         p[i].node = NULL_NODE;
+#if 0
         p[i].in   = 0;
         p[i].recursion = 0;
+#endif
       }
 
       env->mem_env_dynamic = p;

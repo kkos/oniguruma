@@ -293,8 +293,10 @@ typedef struct _Node {
 
 typedef struct {
   Node* node;
+#if 0
   int in;
   int recursion;
+#endif
 } MemEnv;
 
 typedef struct {
