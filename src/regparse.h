@@ -157,7 +157,9 @@
 #define CALLNODE_REFNUM_UNDEF  -1
 
 typedef struct {
-  NodeBase base;
+  int node_type;
+  int status;
+
   UChar* s;
   UChar* end;
   unsigned int flag;
@@ -166,7 +168,10 @@ typedef struct {
 } StrNode;
 
 typedef struct {
-  NodeBase base;
+  int node_type;
+  int status;
+  struct _Node* body;
+
   int lower;
   int upper;
   int greedy;
@@ -180,7 +185,10 @@ typedef struct {
 } QtfrNode;
 
 typedef struct {
-  NodeBase base;
+  int node_type;
+  int status;
+  struct _Node* body;
+
   int type;
   int regnum;
   OnigOptionType option;
@@ -206,7 +214,10 @@ typedef struct {
 } UnsetAddrList;
 
 typedef struct {
-  NodeBase base;
+  int node_type;
+  int status;
+  struct _Node* body;
+
   int     group_num;
   UChar*  name;
   UChar*  name_end;
@@ -217,7 +228,9 @@ typedef struct {
 #endif
 
 typedef struct {
-  NodeBase base;
+  int node_type;
+  int status;
+
   int  back_num;
   int  back_static[NODE_BACKREFS_SIZE];
   int* back_dynamic;
@@ -225,19 +238,26 @@ typedef struct {
 } BRefNode;
 
 typedef struct {
-  NodeBase base;
+  int node_type;
+  int status;
+  struct _Node* body;
+
   int type;
   int char_len;
 } AnchorNode;
 
 typedef struct {
-  NodeBase base;
+  int node_type;
+  int status;
+
   struct _Node* car;
   struct _Node* cdr;
 } ConsAltNode;
 
 typedef struct {
-  NodeBase base;
+  int node_type;
+  int status;
+
   int ctype;
   int not;
 } CtypeNode;

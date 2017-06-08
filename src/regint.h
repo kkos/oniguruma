@@ -658,7 +658,9 @@ typedef struct {
 } NodeBase;
 
 typedef struct {
-  NodeBase base;
+  int node_type;
+  int status;
+
   unsigned int flags;
   BitSet bs;
   BBuf*  mbuf;   /* multi-byte info or NULL */
