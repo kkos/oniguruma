@@ -2607,7 +2607,7 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
           else {
             NODE_STATUS_ADD(node, NST_MARK1);
             r = get_min_len(NODE_BODY(node), min, env);
-            NODE_STATUS_CLEAR(node, NST_MARK1);
+            NODE_STATUS_REMOVE(node, NST_MARK1);
             if (r == 0) {
               en->min_len = *min;
               NODE_STATUS_ADD(node, NST_MIN_FIXED);
@@ -2729,7 +2729,7 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
           else {
             NODE_STATUS_ADD(node, NST_MARK1);
             r = get_max_len(NODE_BODY(node), max, env);
-            NODE_STATUS_CLEAR(node, NST_MARK1);
+            NODE_STATUS_REMOVE(node, NST_MARK1);
             if (r == 0) {
               en->max_len = *max;
               NODE_STATUS_ADD(node, NST_MAX_FIXED);
@@ -2833,7 +2833,7 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
     else {
       NODE_STATUS_ADD(node, NST_MARK2);
       r = subexp_inf_recursive_check(NODE_BODY(node), env, head);
-      NODE_STATUS_CLEAR(node, NST_MARK2);
+      NODE_STATUS_REMOVE(node, NST_MARK2);
     }
     break;
 
@@ -2882,7 +2882,7 @@ subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
       NODE_STATUS_ADD(node, NST_MARK1);
       r = subexp_inf_recursive_check(NODE_BODY(node), env, 1);
       if (r > 0) return ONIGERR_NEVER_ENDING_RECURSION;
-      NODE_STATUS_CLEAR(node, NST_MARK1);
+      NODE_STATUS_REMOVE(node, NST_MARK1);
     }
     r = subexp_inf_recursive_check_trav(NODE_BODY(node), env);
     break;
@@ -2938,7 +2938,7 @@ subexp_recursive_check(Node* node)
     else {
       NODE_STATUS_ADD(node, NST_MARK2);
       r = subexp_recursive_check(NODE_BODY(node));
-      NODE_STATUS_CLEAR(node, NST_MARK2);
+      NODE_STATUS_REMOVE(node, NST_MARK2);
     }
     break;
 
@@ -3001,7 +3001,7 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
         r = subexp_recursive_check(NODE_BODY(node));
         if (r != 0)
           NODE_STATUS_ADD(node, NST_RECURSION);
-        NODE_STATUS_CLEAR(node, NST_MARK1);
+        NODE_STATUS_REMOVE(node, NST_MARK1);
       }
     }
     r = subexp_recursive_check_trav(NODE_BODY(node), env);
