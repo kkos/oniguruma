@@ -133,7 +133,7 @@
 #define NST_BY_NUMBER             (1<<14) /* {n,m} */
 
 #define NODE_STATUS(node)          (((Node* )node)->u.base.status)
-#define NODE_STATUS_SET(node,f)    (NODE_STATUS(node) |= (f))
+#define NODE_STATUS_ADD(node,f)    (NODE_STATUS(node) |= (f))
 #define NODE_STATUS_CLEAR(node,f)  (NODE_STATUS(node) &= ~(f))
 
 #define NODE_IS_BY_NUMBER(node)   ((NODE_STATUS(node) & NST_BY_NUMBER) != 0)
