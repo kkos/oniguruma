@@ -2929,8 +2929,8 @@ bm_search_notrev(regex_t* reg, const UChar* target, const UChar* target_end,
   int skip, tlen1;
 
 #ifdef ONIG_DEBUG_SEARCH
-  fprintf(stderr, "bm_search_notrev: text: %d, text_end: %d, text_range: %d\n",
-	  (int )text, (int )text_end, (int )text_range);
+  fprintf(stderr, "bm_search_notrev: text: %p, text_end: %p, text_range: %p\n",
+          text, text_end, text_range);
 #endif
 
   tail = target_end - 1;
@@ -3149,8 +3149,8 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
   UChar *p, *pprev = (UChar* )NULL;
 
 #ifdef ONIG_DEBUG_SEARCH
-  fprintf(stderr, "forward_search_range: str: %d, end: %d, s: %d, range: %d\n",
-	  (int )str, (int )end, (int )s, (int )range);
+  fprintf(stderr, "forward_search_range: str: %p, end: %p, s: %p, range: %p\n",
+          str, end, s, range);
 #endif
 
   p = s;
@@ -3404,8 +3404,8 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 
 #ifdef ONIG_DEBUG_SEARCH
   fprintf(stderr,
-     "onig_search (entry point): str: %d, end: %d, start: %d, range: %d\n",
-     (int )str, (int )(end - str), (int )(start - str), (int )(range - str));
+     "onig_search (entry point): str: %p, end: %d, start: %d, range: %d\n",
+     str, (int )(end - str), (int )(start - str), (int )(range - str));
 #endif
 
   if (region
