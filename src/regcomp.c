@@ -5085,7 +5085,7 @@ set_sub_anchor(regex_t* reg, OptAncInfo* anc)
   reg->sub_anchor |= anc->right_anchor & ANCHOR_END_LINE;
 }
 
-#ifdef ONIG_DEBUG
+#if defined(ONIG_DEBUG_COMPILE) || defined(ONIG_DEBUG_MATCH)
 static void print_optimize_info(FILE* f, regex_t* reg);
 #endif
 
@@ -5198,6 +5198,10 @@ static void print_enc_string(FILE* fp, OnigEncoding enc,
 
   fprintf(fp, "/\n");
 }
+
+#endif /* ONIG_DEBUG */
+
+#if defined(ONIG_DEBUG_COMPILE) || defined(ONIG_DEBUG_MATCH)
 
 static void
 print_distance_range(FILE* f, OnigLen a, OnigLen b)
@@ -5315,7 +5319,7 @@ print_optimize_info(FILE* f, regex_t* reg)
     }
   }
 }
-#endif /* ONIG_DEBUG */
+#endif
 
 
 extern void
