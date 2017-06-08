@@ -3013,8 +3013,6 @@ setup_subexp_call(Node* node, ScanEnv* env)
     break;
 
   case NT_QTFR:
-    r = setup_subexp_call(NODE_BODY(node), env);
-    break;
   case NT_ENCLOSE:
     r = setup_subexp_call(NODE_BODY(node), env);
     break;
