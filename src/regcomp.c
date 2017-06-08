@@ -473,7 +473,7 @@ compile_call(CallNode* node, regex_t* reg)
   r = add_opcode(reg, OP_CALL);
   if (r) return r;
   r = unset_addr_list_add(node->unset_addr_list, BBUF_GET_OFFSET_POS(reg),
-                          node->target);
+                          NODE_BODY((Node* )node));
   if (r) return r;
   r = add_abs_addr(reg, 0 /*dummy addr.*/);
   return r;
@@ -2132,7 +2132,7 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
 #ifdef USE_SUBEXP_CALL
   case NT_CALL:
     if (! NODE_IS_RECURSION(node))
-      r = get_char_length_tree1(NCALL(node)->target, reg, len, level);
+      r = get_char_length_tree1(NODE_BODY(node), reg, len, level);
     else
       r = GET_CHAR_LEN_VARLEN;
     break;
@@ -2535,7 +2535,7 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
 #ifdef USE_SUBEXP_CALL
   case NT_CALL:
     {
-      Node* t = NCALL(node)->target;
+      Node* t = NODE_BODY(node);
       if (NODE_IS_RECURSION(node)) {
         if (NODE_IS_MIN_FIXED(t))
           *min = NENCLOSE(t)->min_len;
@@ -2695,7 +2695,7 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
 #ifdef USE_SUBEXP_CALL
   case NT_CALL:
     if (! NODE_IS_RECURSION(node))
-      r = get_max_len(NCALL(node)->target, max, env);
+      r = get_max_len(NODE_BODY(node), max, env);
     else
       *max = ONIG_INFINITE_DISTANCE;
     break;
@@ -2823,7 +2823,7 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
     break;
 
   case NT_CALL:
-    r = subexp_inf_recursive_check(NCALL(node)->target, env, head);
+    r = subexp_inf_recursive_check(NODE_BODY(node), env, head);
     break;
 
   case NT_ENCLOSE:
@@ -2927,7 +2927,7 @@ subexp_recursive_check(Node* node)
     break;
 
   case NT_CALL:
-    r = subexp_recursive_check(NCALL(node)->target);
+    r = subexp_recursive_check(NODE_BODY(node));
     if (r != 0) NODE_STATUS_SET(node, NST_RECURSION);
     break;
 
@@ -3068,13 +3068,13 @@ setup_subexp_call(Node* node, ScanEnv* env)
 #ifdef USE_NAMED_GROUP
       set_call_attr:
 #endif
-        cn->target = mem_env[cn->group_num].node;
-        if (IS_NULL(cn->target)) {
+        NODE_BODY((Node* )cn) = mem_env[cn->group_num].node;
+        if (IS_NULL(NODE_BODY((Node* )cn))) {
           onig_scan_env_set_error_string(env,
                    ONIGERR_UNDEFINED_NAME_REFERENCE, cn->name, cn->name_end);
           return ONIGERR_UNDEFINED_NAME_REFERENCE;
         }
-        NODE_STATUS_SET(cn->target, NST_CALLED);
+        NODE_STATUS_SET(NODE_BODY((Node* )cn), NST_CALLED);
         BIT_STATUS_ON_AT(env->bt_mem_start, cn->group_num);
         cn->unset_addr_list = env->unset_addr_list;
       }
@@ -3716,7 +3716,7 @@ quantifiers_memory_node_info(Node* node, int state)
       return NQ_TARGET_IS_EMPTY_REC; /* tiny version */
     }
     else
-      r = quantifiers_memory_node_info(NCALL(node)->target, state);
+      r = quantifiers_memory_node_info(NODE_BODY(node), state);
     break;
 #endif
 
@@ -4899,8 +4899,8 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
       set_mml(&opt->len, 0, ONIG_INFINITE_DISTANCE);
     else {
       OnigOptionType save = env->options;
-      env->options = NENCLOSE(NCALL(node)->target)->option;
-      r = optimize_node_left(NCALL(node)->target, opt, env);
+      env->options = NENCLOSE(NODE_BODY(node))->option;
+      r = optimize_node_left(NODE_BODY(node), opt, env);
       env->options = save;
     }
     break;

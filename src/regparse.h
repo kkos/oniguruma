@@ -210,7 +210,7 @@ typedef struct {
   int     group_num;
   UChar*  name;
   UChar*  name_end;
-  struct _Node*  target;  /* EncloseNode : ENCLOSE_MEMORY */
+  /* struct _Node*  target; EncloseNode : ENCLOSE_MEMORY */
   UnsetAddrList* unset_addr_list;
 } CallNode;
 
