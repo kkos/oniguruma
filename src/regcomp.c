@@ -811,7 +811,7 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
   int len, mod_tlen, cklen;
   int ckn;
   int infinite = IS_REPEAT_INFINITE(qn->upper);
-  int empty_info = qn->target_empty_info;
+  int empty_info = qn->body_empty_info;
   int tlen = compile_length_tree(qn->target, reg);
 
   if (tlen < 0) return tlen;
@@ -891,7 +891,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg)
   int r, mod_tlen;
   int ckn;
   int infinite = IS_REPEAT_INFINITE(qn->upper);
-  int empty_info = qn->target_empty_info;
+  int empty_info = qn->body_empty_info;
   int tlen = compile_length_tree(qn->target, reg);
 
   if (tlen < 0) return tlen;
@@ -1044,7 +1044,7 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
 {
   int len, mod_tlen;
   int infinite = IS_REPEAT_INFINITE(qn->upper);
-  int empty_info = qn->target_empty_info;
+  int empty_info = qn->body_empty_info;
   int tlen = compile_length_tree(NODE_BODY((Node* )qn), reg);
 
   if (tlen < 0) return tlen;
@@ -1109,7 +1109,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg)
 {
   int i, r, mod_tlen;
   int infinite = IS_REPEAT_INFINITE(qn->upper);
-  int empty_info = qn->target_empty_info;
+  int empty_info = qn->body_empty_info;
   int tlen = compile_length_tree(NODE_BODY((Node* )qn), reg);
 
   if (tlen < 0) return tlen;
@@ -3764,7 +3764,7 @@ quantifiers_memory_node_info(Node* node, int state)
 #endif /* USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT */
 
 /* setup_tree does the following work.
- 1. check empty loop. (set qn->target_empty_info)
+ 1. check empty loop. (set qn->body_empty_info)
  2. expand ignore-case in char class.
  3. set memory status bit flags. (reg->mem_stats)
  4. set qn->head_exact for [push, exact] -> [push_or_jump_exact1, exact].
@@ -3851,12 +3851,12 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         r = get_min_len(target, &d, env);
         if (r) break;
         if (d == 0) {
-          qn->target_empty_info = NQ_BODY_IS_EMPTY;
+          qn->body_empty_info = NQ_BODY_IS_EMPTY;
 #ifdef USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT
           r = quantifiers_memory_node_info(target, state);
           if (r < 0) break;
           if (r > 0) {
-            qn->target_empty_info = r;
+            qn->body_empty_info = r;
             if (r == NQ_BODY_IS_EMPTY_REC) {
               if (NTYPE(target) == NT_ENCLOSE &&
                   NENCLOSE(target)->type == ENCLOSE_MEMORY) {
@@ -3907,7 +3907,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
       }
 
 #ifdef USE_OP_PUSH_OR_JUMP_EXACT
-      if (qn->greedy && (qn->target_empty_info != 0)) {
+      if (qn->greedy && (qn->body_empty_info != 0)) {
         if (NTYPE(target) == NT_QTFR) {
           QtfrNode* tqn = NQTFR(target);
           if (IS_NOT_NULL(tqn->head_exact)) {

@@ -170,7 +170,7 @@ typedef struct {
   int lower;
   int upper;
   int greedy;
-  int target_empty_info;
+  int body_empty_info;
   struct _Node* head_exact;
   struct _Node* next_head_exact;
   int is_refered;     /* include called node. don't eliminate even if {0} */

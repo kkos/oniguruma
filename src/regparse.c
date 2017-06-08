@@ -1297,10 +1297,10 @@ node_new_quantifier(int lower, int upper, int by_number)
   NQTFR(node)->lower  = lower;
   NQTFR(node)->upper  = upper;
   NQTFR(node)->greedy = 1;
-  NQTFR(node)->target_empty_info = NQ_BODY_ISNOT_EMPTY;
-  NQTFR(node)->head_exact        = NULL_NODE;
-  NQTFR(node)->next_head_exact   = NULL_NODE;
-  NQTFR(node)->is_refered        = 0;
+  NQTFR(node)->body_empty_info = NQ_BODY_ISNOT_EMPTY;
+  NQTFR(node)->head_exact      = NULL_NODE;
+  NQTFR(node)->next_head_exact = NULL_NODE;
+  NQTFR(node)->is_refered      = 0;
   if (by_number != 0)
     NODE_STATUS_SET(node, NST_BY_NUMBER);
 
