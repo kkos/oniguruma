@@ -473,7 +473,7 @@ compile_call(CallNode* node, regex_t* reg)
   r = add_opcode(reg, OP_CALL);
   if (r) return r;
   r = unset_addr_list_add(node->unset_addr_list, BBUF_GET_OFFSET_POS(reg),
-                          NODE_BODY((Node* )node));
+                          NODE_CALL_BODY(node));
   if (r) return r;
   r = add_abs_addr(reg, 0 /*dummy addr.*/);
   return r;
@@ -772,7 +772,7 @@ compile_range_repeat_node(QtfrNode* qn, int target_len, int empty_info,
   r = entry_repeat_range(reg, num_repeat, qn->lower, qn->upper);
   if (r) return r;
 
-  r = compile_tree_empty_check(NODE_BODY((Node* )qn), reg, empty_info);
+  r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info);
   if (r) return r;
 
   if (
@@ -794,7 +794,7 @@ static int
 is_anychar_star_quantifier(QtfrNode* qn)
 {
   if (qn->greedy && IS_REPEAT_INFINITE(qn->upper) &&
-      NODE_TYPE(NODE_BODY((Node* )qn)) == NT_CANY)
+      NODE_TYPE(NODE_QTFR_BODY(qn)) == NT_CANY)
     return 1;
   else
     return 0;
@@ -1045,12 +1045,12 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
   int len, mod_tlen;
   int infinite = IS_REPEAT_INFINITE(qn->upper);
   int empty_info = qn->body_empty_info;
-  int tlen = compile_length_tree(NODE_BODY((Node* )qn), reg);
+  int tlen = compile_length_tree(NODE_QTFR_BODY(qn), reg);
 
   if (tlen < 0) return tlen;
 
   /* anychar repeat */
-  if (NODE_TYPE(NODE_BODY((Node* )qn)) == NT_CANY) {
+  if (NODE_TYPE(NODE_QTFR_BODY(qn)) == NT_CANY) {
     if (qn->greedy && infinite) {
       if (IS_NOT_NULL(qn->next_head_exact))
         return SIZE_OP_ANYCHAR_STAR_PEEK_NEXT + tlen * qn->lower;
@@ -1110,12 +1110,12 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg)
   int i, r, mod_tlen;
   int infinite = IS_REPEAT_INFINITE(qn->upper);
   int empty_info = qn->body_empty_info;
-  int tlen = compile_length_tree(NODE_BODY((Node* )qn), reg);
+  int tlen = compile_length_tree(NODE_QTFR_BODY(qn), reg);
 
   if (tlen < 0) return tlen;
 
   if (is_anychar_star_quantifier(qn)) {
-    r = compile_tree_n_times(NODE_BODY((Node* )qn), qn->lower, reg);
+    r = compile_tree_n_times(NODE_QTFR_BODY(qn), qn->lower, reg);
     if (r) return r;
     if (IS_NOT_NULL(qn->next_head_exact)) {
       if (IS_MULTILINE(reg->options))
@@ -1155,7 +1155,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg)
       if (r) return r;
     }
     else {
-      r = compile_tree_n_times(NODE_BODY((Node* )qn), qn->lower, reg);
+      r = compile_tree_n_times(NODE_QTFR_BODY(qn), qn->lower, reg);
       if (r) return r;
     }
 
@@ -1165,7 +1165,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg)
                                 mod_tlen + SIZE_OP_JUMP);
         if (r) return r;
         add_bytes(reg, NSTR(qn->head_exact)->s, 1);
-        r = compile_tree_empty_check(NODE_BODY((Node* )qn), reg, empty_info);
+        r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info);
         if (r) return r;
         r = add_opcode_rel_addr(reg, OP_JUMP,
          -(mod_tlen + (int )SIZE_OP_JUMP + (int )SIZE_OP_PUSH_OR_JUMP_EXACT1));
@@ -1175,7 +1175,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg)
                                 mod_tlen + SIZE_OP_JUMP);
         if (r) return r;
         add_bytes(reg, NSTR(qn->next_head_exact)->s, 1);
-        r = compile_tree_empty_check(NODE_BODY((Node* )qn), reg, empty_info);
+        r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info);
         if (r) return r;
         r = add_opcode_rel_addr(reg, OP_JUMP,
           -(mod_tlen + (int )SIZE_OP_JUMP + (int )SIZE_OP_PUSH_IF_PEEK_NEXT));
@@ -1183,7 +1183,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg)
       else {
         r = add_opcode_rel_addr(reg, OP_PUSH, mod_tlen + SIZE_OP_JUMP);
         if (r) return r;
-        r = compile_tree_empty_check(NODE_BODY((Node* )qn), reg, empty_info);
+        r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info);
         if (r) return r;
         r = add_opcode_rel_addr(reg, OP_JUMP,
                    -(mod_tlen + (int )SIZE_OP_JUMP + (int )SIZE_OP_PUSH));
@@ -1192,7 +1192,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg)
     else {
       r = add_opcode_rel_addr(reg, OP_JUMP, mod_tlen);
       if (r) return r;
-      r = compile_tree_empty_check(NODE_BODY((Node* )qn), reg, empty_info);
+      r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info);
       if (r) return r;
       r = add_opcode_rel_addr(reg, OP_PUSH, -(mod_tlen + (int )SIZE_OP_PUSH));
     }
@@ -1200,21 +1200,21 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg)
   else if (qn->upper == 0 && qn->is_refered != 0) { /* /(?<n>..){0}/ */
     r = add_opcode_rel_addr(reg, OP_JUMP, tlen);
     if (r) return r;
-    r = compile_tree(NODE_BODY((Node* )qn), reg);
+    r = compile_tree(NODE_QTFR_BODY(qn), reg);
   }
   else if (!infinite && qn->greedy &&
            (qn->upper == 1 || (tlen + SIZE_OP_PUSH) * qn->upper
                                   <= QUANTIFIER_EXPAND_LIMIT_SIZE)) {
     int n = qn->upper - qn->lower;
 
-    r = compile_tree_n_times(NODE_BODY((Node* )qn), qn->lower, reg);
+    r = compile_tree_n_times(NODE_QTFR_BODY(qn), qn->lower, reg);
     if (r) return r;
 
     for (i = 0; i < n; i++) {
       r = add_opcode_rel_addr(reg, OP_PUSH,
 			   (n - i) * tlen + (n - i - 1) * SIZE_OP_PUSH);
       if (r) return r;
-      r = compile_tree(NODE_BODY((Node* )qn), reg);
+      r = compile_tree(NODE_QTFR_BODY(qn), reg);
       if (r) return r;
     }
   }
@@ -1223,7 +1223,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg)
     if (r) return r;
     r = add_opcode_rel_addr(reg, OP_JUMP, tlen);
     if (r) return r;
-    r = compile_tree(NODE_BODY((Node* )qn), reg);
+    r = compile_tree(NODE_QTFR_BODY(qn), reg);
   }
   else {
     r = compile_range_repeat_node(qn, mod_tlen, empty_info, reg);
@@ -1239,7 +1239,7 @@ compile_length_option_node(EncloseNode* node, regex_t* reg)
   OnigOptionType prev = reg->options;
 
   reg->options = node->option;
-  tlen = compile_length_tree(NODE_BODY((Node* )node), reg);
+  tlen = compile_length_tree(NODE_ENCLOSE_BODY(node), reg);
   reg->options = prev;
 
   if (tlen < 0) return tlen;
@@ -1268,7 +1268,7 @@ compile_option_node(EncloseNode* node, regex_t* reg)
   }
 
   reg->options = node->option;
-  r = compile_tree(NODE_BODY((Node* )node), reg);
+  r = compile_tree(NODE_ENCLOSE_BODY(node), reg);
   reg->options = prev;
 
   if (IS_DYNAMIC_OPTION(prev ^ node->option)) {
@@ -1287,8 +1287,8 @@ compile_length_enclose_node(EncloseNode* node, regex_t* reg)
   if (node->type == ENCLOSE_OPTION)
     return compile_length_option_node(node, reg);
 
-  if (NODE_BODY((Node* )node)) {
-    tlen = compile_length_tree(NODE_BODY((Node* )node), reg);
+  if (NODE_ENCLOSE_BODY(node)) {
+    tlen = compile_length_tree(NODE_ENCLOSE_BODY(node), reg);
     if (tlen < 0) return tlen;
   }
   else
@@ -1327,8 +1327,8 @@ compile_length_enclose_node(EncloseNode* node, regex_t* reg)
 
   case ENCLOSE_STOP_BACKTRACK:
     if (NODE_IS_STOP_BT_SIMPLE_REPEAT((Node* )node)) {
-      QtfrNode* qn = NQTFR(NODE_BODY((Node* )node));
-      tlen = compile_length_tree(NODE_BODY((Node* )qn), reg);
+      QtfrNode* qn = NQTFR(NODE_ENCLOSE_BODY(node));
+      tlen = compile_length_tree(NODE_QTFR_BODY(qn), reg);
       if (tlen < 0) return tlen;
 
       len = tlen * qn->lower
@@ -1367,7 +1367,7 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
       NODE_STATUS_SET((Node* )node, NST_ADDR_FIXED);
       r = add_abs_addr(reg, (int )node->call_addr);
       if (r) return r;
-      len = compile_length_tree(NODE_BODY((Node* )node), reg);
+      len = compile_length_tree(NODE_ENCLOSE_BODY(node), reg);
       len += (SIZE_OP_MEMORY_START_PUSH + SIZE_OP_RETURN);
       if (BIT_STATUS_AT(reg->bt_mem_end, node->regnum))
         len += (NODE_IS_RECURSION((Node* )node)
@@ -1387,7 +1387,7 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
     if (r) return r;
     r = add_mem_num(reg, node->regnum);
     if (r) return r;
-    r = compile_tree(NODE_BODY((Node* )node), reg);
+    r = compile_tree(NODE_ENCLOSE_BODY(node), reg);
     if (r) return r;
 #ifdef USE_SUBEXP_CALL
     if (NODE_IS_CALLED((Node* )node)) {
@@ -1425,16 +1425,16 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
 
   case ENCLOSE_STOP_BACKTRACK:
     if (NODE_IS_STOP_BT_SIMPLE_REPEAT((Node* )node)) {
-      QtfrNode* qn = NQTFR(NODE_BODY((Node* )node));
-      r = compile_tree_n_times(NODE_BODY((Node* )qn), qn->lower, reg);
+      QtfrNode* qn = NQTFR(NODE_ENCLOSE_BODY(node));
+      r = compile_tree_n_times(NODE_QTFR_BODY(qn), qn->lower, reg);
       if (r) return r;
 
-      len = compile_length_tree(NODE_BODY((Node* )qn), reg);
+      len = compile_length_tree(NODE_QTFR_BODY(qn), reg);
       if (len < 0) return len;
 
       r = add_opcode_rel_addr(reg, OP_PUSH, len + SIZE_OP_POP + SIZE_OP_JUMP);
       if (r) return r;
-      r = compile_tree(NODE_BODY((Node* )qn), reg);
+      r = compile_tree(NODE_QTFR_BODY(qn), reg);
       if (r) return r;
       r = add_opcode(reg, OP_POP);
       if (r) return r;
@@ -1444,7 +1444,7 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
     else {
       r = add_opcode(reg, OP_PUSH_STOP_BT);
       if (r) return r;
-      r = compile_tree(NODE_BODY((Node* )node), reg);
+      r = compile_tree(NODE_ENCLOSE_BODY(node), reg);
       if (r) return r;
       r = add_opcode(reg, OP_POP_STOP_BT);
     }
@@ -1464,8 +1464,8 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
   int len;
   int tlen = 0;
 
-  if (NODE_BODY((Node* )node) != 0) {
-    tlen = compile_length_tree(NODE_BODY((Node* )node), reg);
+  if (NODE_ANCHOR_BODY(node) != 0) {
+    tlen = compile_length_tree(NODE_ANCHOR_BODY(node), reg);
     if (tlen < 0) return tlen;
   }
 
@@ -1514,17 +1514,17 @@ compile_anchor_node(AnchorNode* node, regex_t* reg)
   case ANCHOR_PREC_READ:
     r = add_opcode(reg, OP_PUSH_POS);
     if (r) return r;
-    r = compile_tree(NODE_BODY((Node* )node), reg);
+    r = compile_tree(NODE_ANCHOR_BODY(node), reg);
     if (r) return r;
     r = add_opcode(reg, OP_POP_POS);
     break;
 
   case ANCHOR_PREC_READ_NOT:
-    len = compile_length_tree(NODE_BODY((Node* )node), reg);
+    len = compile_length_tree(NODE_ANCHOR_BODY(node), reg);
     if (len < 0) return len;
     r = add_opcode_rel_addr(reg, OP_PUSH_POS_NOT, len + SIZE_OP_FAIL_POS);
     if (r) return r;
-    r = compile_tree(NODE_BODY((Node* )node), reg);
+    r = compile_tree(NODE_ANCHOR_BODY(node), reg);
     if (r) return r;
     r = add_opcode(reg, OP_FAIL_POS);
     break;
@@ -1535,7 +1535,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg)
       r = add_opcode(reg, OP_LOOK_BEHIND);
       if (r) return r;
       if (node->char_len < 0) {
-        r = get_char_length_tree(NODE_BODY((Node* )node), reg, &n);
+        r = get_char_length_tree(NODE_ANCHOR_BODY(node), reg, &n);
         if (r) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
       }
       else
@@ -1543,26 +1543,26 @@ compile_anchor_node(AnchorNode* node, regex_t* reg)
 
       r = add_length(reg, n);
       if (r) return r;
-      r = compile_tree(NODE_BODY((Node* )node), reg);
+      r = compile_tree(NODE_ANCHOR_BODY(node), reg);
     }
     break;
 
   case ANCHOR_LOOK_BEHIND_NOT:
     {
       int n;
-      len = compile_length_tree(NODE_BODY((Node* )node), reg);
+      len = compile_length_tree(NODE_ANCHOR_BODY(node), reg);
       r = add_opcode_rel_addr(reg, OP_PUSH_LOOK_BEHIND_NOT,
 			   len + SIZE_OP_FAIL_LOOK_BEHIND_NOT);
       if (r) return r;
       if (node->char_len < 0) {
-        r = get_char_length_tree(NODE_BODY((Node* )node), reg, &n);
+        r = get_char_length_tree(NODE_ANCHOR_BODY(node), reg, &n);
         if (r) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
       }
       else
         n = node->char_len;
       r = add_length(reg, n);
       if (r) return r;
-      r = compile_tree(NODE_BODY((Node* )node), reg);
+      r = compile_tree(NODE_ANCHOR_BODY(node), reg);
       if (r) return r;
       r = add_opcode(reg, OP_FAIL_LOOK_BEHIND_NOT);
     }
@@ -2815,7 +2815,7 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
       case ANCHOR_PREC_READ_NOT:
       case ANCHOR_LOOK_BEHIND:
       case ANCHOR_LOOK_BEHIND_NOT:
-        r = subexp_inf_recursive_check(NODE_BODY((Node* )an), env, head);
+        r = subexp_inf_recursive_check(NODE_ANCHOR_BODY(an), env, head);
         break;
       }
     }
@@ -2871,7 +2871,7 @@ subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
       case ANCHOR_PREC_READ_NOT:
       case ANCHOR_LOOK_BEHIND:
       case ANCHOR_LOOK_BEHIND_NOT:
-        r = subexp_inf_recursive_check_trav(NODE_BODY((Node* )an), env);
+        r = subexp_inf_recursive_check_trav(NODE_ANCHOR_BODY(an), env);
         break;
       }
     }
@@ -2919,7 +2919,7 @@ subexp_recursive_check(Node* node)
       case ANCHOR_PREC_READ_NOT:
       case ANCHOR_LOOK_BEHIND:
       case ANCHOR_LOOK_BEHIND_NOT:
-        r = subexp_recursive_check(NODE_BODY((Node* )an));
+        r = subexp_recursive_check(NODE_ANCHOR_BODY(an));
         break;
       }
     }
@@ -2988,7 +2988,7 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
       case ANCHOR_PREC_READ_NOT:
       case ANCHOR_LOOK_BEHIND:
       case ANCHOR_LOOK_BEHIND_NOT:
-        r = subexp_recursive_check_trav(NODE_BODY((Node* )an), env);
+        r = subexp_recursive_check_trav(NODE_ANCHOR_BODY(an), env);
         break;
       }
     }
@@ -3067,13 +3067,13 @@ setup_subexp_call(Node* node, ScanEnv* env)
 #ifdef USE_NAMED_GROUP
       set_call_attr:
 #endif
-        NODE_BODY((Node* )cn) = mem_env[cn->group_num].node;
-        if (IS_NULL(NODE_BODY((Node* )cn))) {
+        NODE_CALL_BODY(cn) = mem_env[cn->group_num].node;
+        if (IS_NULL(NODE_CALL_BODY(cn))) {
           onig_scan_env_set_error_string(env,
                    ONIGERR_UNDEFINED_NAME_REFERENCE, cn->name, cn->name_end);
           return ONIGERR_UNDEFINED_NAME_REFERENCE;
         }
-        NODE_STATUS_SET(NODE_BODY((Node* )cn), NST_CALLED);
+        NODE_STATUS_SET(NODE_CALL_BODY(cn), NST_CALLED);
         BIT_STATUS_ON_AT(env->bt_mem_start, cn->group_num);
         cn->unset_addr_list = env->unset_addr_list;
       }
@@ -3111,7 +3111,7 @@ setup_subexp_call(Node* node, ScanEnv* env)
       case ANCHOR_PREC_READ_NOT:
       case ANCHOR_LOOK_BEHIND:
       case ANCHOR_LOOK_BEHIND_NOT:
-        r = setup_subexp_call(NODE_BODY((Node* )an), env);
+        r = setup_subexp_call(NODE_ANCHOR_BODY(an), env);
         break;
       }
     }
@@ -3138,7 +3138,7 @@ divide_look_behind_alternatives(Node* node)
 
   /* fprintf(stderr, "divide_look_behind: %d\n", (int )node); */
 
-  head = NODE_BODY((Node* )an);
+  head = NODE_ANCHOR_BODY(an);
   np = NCAR(head);
   swap_node(node, head);
   NCAR(node) = head;
@@ -3169,7 +3169,7 @@ setup_look_behind(Node* node, regex_t* reg, ScanEnv* env)
 
   /* fprintf(stderr, "setup_look_behind: %x\n", (int )node); */
 
-  r = get_char_length_tree(NODE_BODY((Node* )an), reg, &len);
+  r = get_char_length_tree(NODE_ANCHOR_BODY(an), reg, &len);
   if (r == 0)
     an->char_len = len;
   else if (r == GET_CHAR_LEN_VARLEN)
@@ -3978,10 +3978,10 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
       switch (an->type) {
       case ANCHOR_PREC_READ:
-        r = setup_tree(NODE_BODY((Node* )an), reg, state, env);
+        r = setup_tree(NODE_ANCHOR_BODY(an), reg, state, env);
         break;
       case ANCHOR_PREC_READ_NOT:
-        r = setup_tree(NODE_BODY((Node* )an), reg, (state | IN_NOT), env);
+        r = setup_tree(NODE_ANCHOR_BODY(an), reg, (state | IN_NOT), env);
         break;
 
 /* allowed node types in look-behind */
@@ -4000,11 +4000,11 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
       case ANCHOR_LOOK_BEHIND:
         {
-          r = check_type_tree(NODE_BODY((Node* )an), ALLOWED_TYPE_IN_LB,
+          r = check_type_tree(NODE_ANCHOR_BODY(an), ALLOWED_TYPE_IN_LB,
                               ALLOWED_ENCLOSE_IN_LB, ALLOWED_ANCHOR_IN_LB);
           if (r < 0) return r;
           if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
-          r = setup_tree(NODE_BODY((Node* )an), reg, state, env);
+          r = setup_tree(NODE_ANCHOR_BODY(an), reg, state, env);
           if (r != 0) return r;
           r = setup_look_behind(node, reg, env);
         }
@@ -4012,11 +4012,11 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
       case ANCHOR_LOOK_BEHIND_NOT:
         {
-          r = check_type_tree(NODE_BODY((Node* )an), ALLOWED_TYPE_IN_LB,
+          r = check_type_tree(NODE_ANCHOR_BODY(an), ALLOWED_TYPE_IN_LB,
                    ALLOWED_ENCLOSE_IN_LB_NOT, ALLOWED_ANCHOR_IN_LB_NOT);
           if (r < 0) return r;
           if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
-          r = setup_tree(NODE_BODY((Node* )an), reg, (state | IN_NOT), env);
+          r = setup_tree(NODE_ANCHOR_BODY(an), reg, (state | IN_NOT), env);
           if (r != 0) return r;
           r = setup_look_behind(node, reg, env);
         }

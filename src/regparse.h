@@ -152,6 +152,10 @@
 #define NODE_IS_NAME_REF(node)    (((node)->u.base.status & NST_NAME_REF)    != 0)
 
 #define NODE_BODY(node)           ((node)->u.base.body)
+#define NODE_QTFR_BODY(node)      ((node)->body)
+#define NODE_ENCLOSE_BODY(node)   ((node)->body)
+#define NODE_CALL_BODY(node)      ((node)->body)
+#define NODE_ANCHOR_BODY(node)    ((node)->body)
 
 
 #define CALLNODE_REFNUM_UNDEF  -1
