@@ -918,14 +918,14 @@ onig_name_to_backref_number(regex_t* reg, const UChar* name,
 
 extern int
 onig_name_to_group_numbers(regex_t* reg, const UChar* name,
-			   const UChar* name_end, int** nums)
+                           const UChar* name_end, int** nums)
 {
   return ONIG_NO_SUPPORT_CONFIG;
 }
 
 extern int
 onig_name_to_backref_number(regex_t* reg, const UChar* name,
-			    const UChar* name_end, OnigRegion* region)
+                            const UChar* name_end, OnigRegion* region)
 {
   return ONIG_NO_SUPPORT_CONFIG;
 }
@@ -4339,9 +4339,7 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
 
     case TK_CHAR_PROPERTY:
       {
-        int ctype;
-
-        ctype = fetch_char_property_to_ctype(&p, end, env);
+        int ctype = fetch_char_property_to_ctype(&p, end, env);
         if (ctype < 0) return ctype;
         r = add_ctype_to_cc(cc, ctype, tok->u.prop.not, env);
         if (r != 0) return r;
@@ -4415,8 +4413,8 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
         }
         acc = NCCLASS(anode);
         r = or_cclass(cc, acc, env->enc);
-
         onig_node_free(anode);
+
       cc_open_err:
         if (r != 0) goto err;
       }
@@ -4483,9 +4481,7 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
     NCCLASS_CLEAR_NOT(cc);
   if (IS_NCCLASS_NOT(cc) &&
       IS_SYNTAX_BV(env->syntax, ONIG_SYN_NOT_NEWLINE_IN_NEGATIVE_CC)) {
-    int is_empty;
-
-    is_empty = (IS_NULL(cc->mbuf) ? 1 : 0);
+    int is_empty = (IS_NULL(cc->mbuf) ? 1 : 0);
     if (is_empty != 0)
       BITSET_IS_EMPTY(cc->bs, is_empty);
 
@@ -4521,11 +4517,10 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
   Node *target;
   OnigOptionType option;
   OnigCodePoint c;
-  OnigEncoding enc = env->enc;
-
 #ifdef USE_NAMED_GROUP
   int list_capture;
 #endif
+  OnigEncoding enc = env->enc;
 
   UChar* p = *src;
   PFETCH_READY;
@@ -4774,9 +4769,8 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
   QtfrNode* qn;
 
   qn = NQTFR(qnode);
-  if (qn->lower == 1 && qn->upper == 1) {
+  if (qn->lower == 1 && qn->upper == 1)
     return 1;
-  }
 
   switch (NODE_TYPE(target)) {
   case NT_STR:
