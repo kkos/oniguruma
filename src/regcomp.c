@@ -1364,7 +1364,7 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
       r = add_opcode(reg, OP_CALL);
       if (r) return r;
       node->call_addr = BBUF_GET_OFFSET_POS(reg) + SIZE_ABSADDR + SIZE_OP_JUMP;
-      NODE_STATUS_SET((Node* )node, NST_ADDR_FIXED);
+      NODE_STATUS_SET(node, NST_ADDR_FIXED);
       r = add_abs_addr(reg, (int )node->call_addr);
       if (r) return r;
       len = compile_length_tree(NODE_ENCLOSE_BODY(node), reg);
