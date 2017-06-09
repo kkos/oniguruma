@@ -64,22 +64,22 @@
 #define NODE_TYPE(node)             ((node)->u.base.node_type)
 #define SET_NODE_TYPE(node, ntype)   (node)->u.base.node_type = (ntype)
 
-#define NSTR(node)         (&((node)->u.str))
-#define NCCLASS(node)      (&((node)->u.cclass))
-#define NCTYPE(node)       (&((node)->u.ctype))
-#define NBREF(node)        (&((node)->u.bref))
-#define NQTFR(node)        (&((node)->u.qtfr))
-#define NENCLOSE(node)     (&((node)->u.enclose))
-#define NANCHOR(node)      (&((node)->u.anchor))
-#define NCONS(node)        (&((node)->u.cons))
-#define NCALL(node)        (&((node)->u.call))
+#define STR_(node)         (&((node)->u.str))
+#define CCLASS_(node)      (&((node)->u.cclass))
+#define CTYPE_(node)       (&((node)->u.ctype))
+#define BREF_(node)        (&((node)->u.bref))
+#define QTFR_(node)        (&((node)->u.qtfr))
+#define ENCLOSE_(node)     (&((node)->u.enclose))
+#define ANCHOR_(node)      (&((node)->u.anchor))
+#define CONS_(node)        (&((node)->u.cons))
+#define CALL_(node)        (&((node)->u.call))
 
-#define NCAR(node)         (NCONS(node)->car)
-#define NCDR(node)         (NCONS(node)->cdr)
+#define NCAR(node)         (CONS_(node)->car)
+#define NCDR(node)         (CONS_(node)->cdr)
 
 #define CTYPE_ANYCHAR      -1
 #define NODE_IS_ANYCHAR(node) \
-  (NODE_TYPE(node) == NT_CTYPE && NCTYPE(node)->ctype == CTYPE_ANYCHAR)
+  (NODE_TYPE(node) == NT_CTYPE && CTYPE_(node)->ctype == CTYPE_ANYCHAR)
 
 
 #define ANCHOR_ANYCHAR_STAR_MASK (ANCHOR_ANYCHAR_STAR | ANCHOR_ANYCHAR_STAR_ML)

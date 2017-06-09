@@ -1054,9 +1054,9 @@ onig_node_free(Node* node)
 
   switch (NODE_TYPE(node)) {
   case NT_STR:
-    if (NSTR(node)->capa != 0 &&
-        IS_NOT_NULL(NSTR(node)->s) && NSTR(node)->s != NSTR(node)->buf) {
-      xfree(NSTR(node)->s);
+    if (STR_(node)->capa != 0 &&
+        IS_NOT_NULL(STR_(node)->s) && STR_(node)->s != STR_(node)->buf) {
+      xfree(STR_(node)->s);
     }
     break;
 
@@ -1074,7 +1074,7 @@ onig_node_free(Node* node)
 
   case NT_CCLASS:
     {
-      CClassNode* cc = NCCLASS(node);
+      CClassNode* cc = CCLASS_(node);
 
       if (IS_NCCLASS_SHARE(cc)) return ;
       if (cc->mbuf)
@@ -1083,8 +1083,8 @@ onig_node_free(Node* node)
     break;
 
   case NT_BREF:
-    if (IS_NOT_NULL(NBREF(node)->back_dynamic))
-      xfree(NBREF(node)->back_dynamic);
+    if (IS_NOT_NULL(BREF_(node)->back_dynamic))
+      xfree(BREF_(node)->back_dynamic);
     break;
 
   case NT_QTFR:
@@ -1130,7 +1130,7 @@ node_new_cclass(void)
   CHECK_NULL_RETURN(node);
 
   SET_NODE_TYPE(node, NT_CCLASS);
-  initialize_cclass(NCCLASS(node));
+  initialize_cclass(CCLASS_(node));
   return node;
 }
 
@@ -1141,8 +1141,8 @@ node_new_ctype(int type, int not)
   CHECK_NULL_RETURN(node);
 
   SET_NODE_TYPE(node, NT_CTYPE);
-  NCTYPE(node)->ctype = type;
-  NCTYPE(node)->not   = not;
+  CTYPE_(node)->ctype = type;
+  CTYPE_(node)->not   = not;
   return node;
 }
 
@@ -1201,8 +1201,8 @@ onig_node_new_anchor(int type)
   CHECK_NULL_RETURN(node);
 
   SET_NODE_TYPE(node, NT_ANCHOR);
-  NANCHOR(node)->type     = type;
-  NANCHOR(node)->char_len = -1;
+  ANCHOR_(node)->type     = type;
+  ANCHOR_(node)->char_len = -1;
   return node;
 }
 
@@ -1219,15 +1219,15 @@ node_new_backref(int back_num, int* backrefs, int by_name,
   CHECK_NULL_RETURN(node);
 
   SET_NODE_TYPE(node, NT_BREF);
-  NBREF(node)->back_num = back_num;
-  NBREF(node)->back_dynamic = (int* )NULL;
+  BREF_(node)->back_num = back_num;
+  BREF_(node)->back_dynamic = (int* )NULL;
   if (by_name != 0)
     NODE_STATUS_ADD(node, NST_NAME_REF);
 
 #ifdef USE_BACKREF_WITH_LEVEL
   if (exist_level != 0) {
     NODE_STATUS_ADD(node, NST_NEST_LEVEL);
-    NBREF(node)->nest_level  = nest_level;
+    BREF_(node)->nest_level  = nest_level;
   }
 #endif
 
@@ -1241,7 +1241,7 @@ node_new_backref(int back_num, int* backrefs, int by_name,
 
   if (back_num <= NODE_BACKREFS_SIZE) {
     for (i = 0; i < back_num; i++)
-      NBREF(node)->back_static[i] = backrefs[i];
+      BREF_(node)->back_static[i] = backrefs[i];
   }
   else {
     int* p = (int* )xmalloc(sizeof(int) * back_num);
@@ -1249,7 +1249,7 @@ node_new_backref(int back_num, int* backrefs, int by_name,
       onig_node_free(node);
       return NULL;
     }
-    NBREF(node)->back_dynamic = p;
+    BREF_(node)->back_dynamic = p;
     for (i = 0; i < back_num; i++)
       p[i] = backrefs[i];
   }
@@ -1264,9 +1264,9 @@ node_new_call(UChar* name, UChar* name_end, int gnum)
   CHECK_NULL_RETURN(node);
 
   SET_NODE_TYPE(node, NT_CALL);
-  NCALL(node)->name      = name;
-  NCALL(node)->name_end  = name_end;
-  NCALL(node)->group_num = gnum;  /* call by number if gnum != 0 */
+  CALL_(node)->name      = name;
+  CALL_(node)->name_end  = name_end;
+  CALL_(node)->group_num = gnum;  /* call by number if gnum != 0 */
   return node;
 }
 #endif
@@ -1278,18 +1278,18 @@ node_new_quantifier(int lower, int upper, int by_number)
   CHECK_NULL_RETURN(node);
 
   SET_NODE_TYPE(node, NT_QTFR);
-  NQTFR(node)->lower  = lower;
-  NQTFR(node)->upper  = upper;
-  NQTFR(node)->greedy = 1;
-  NQTFR(node)->body_empty_info = NQ_BODY_ISNOT_EMPTY;
-  NQTFR(node)->head_exact      = NULL_NODE;
-  NQTFR(node)->next_head_exact = NULL_NODE;
-  NQTFR(node)->is_refered      = 0;
+  QTFR_(node)->lower  = lower;
+  QTFR_(node)->upper  = upper;
+  QTFR_(node)->greedy = 1;
+  QTFR_(node)->body_empty_info = NQ_BODY_ISNOT_EMPTY;
+  QTFR_(node)->head_exact      = NULL_NODE;
+  QTFR_(node)->next_head_exact = NULL_NODE;
+  QTFR_(node)->is_refered      = 0;
   if (by_number != 0)
     NODE_STATUS_ADD(node, NST_BY_NUMBER);
 
 #ifdef USE_COMBINATION_EXPLOSION_CHECK
-  NQTFR(node)->comb_exp_check_num = 0;
+  QTFR_(node)->comb_exp_check_num = 0;
 #endif
 
   return node;
@@ -1302,11 +1302,11 @@ node_new_enclose(int type)
   CHECK_NULL_RETURN(node);
 
   SET_NODE_TYPE(node, NT_ENCLOSE);
-  NENCLOSE(node)->type      = type;
-  NENCLOSE(node)->regnum    =  0;
-  NENCLOSE(node)->option    =  0;
-  NENCLOSE(node)->call_addr = -1;
-  NENCLOSE(node)->opt_count =  0;
+  ENCLOSE_(node)->type      = type;
+  ENCLOSE_(node)->regnum    =  0;
+  ENCLOSE_(node)->option    =  0;
+  ENCLOSE_(node)->call_addr = -1;
+  ENCLOSE_(node)->opt_count =  0;
   return node;
 }
 
@@ -1325,7 +1325,7 @@ node_new_enclose_memory(OnigOptionType option, int is_named)
     NODE_STATUS_ADD(node, NST_NAMED_GROUP);
 
 #ifdef USE_SUBEXP_CALL
-  NENCLOSE(node)->option = option;
+  ENCLOSE_(node)->option = option;
 #endif
   return node;
 }
@@ -1335,7 +1335,7 @@ node_new_option(OnigOptionType option)
 {
   Node* node = node_new_enclose(ENCLOSE_OPTION);
   CHECK_NULL_RETURN(node);
-  NENCLOSE(node)->option = option;
+  ENCLOSE_(node)->option = option;
   return node;
 }
 
@@ -1345,31 +1345,31 @@ onig_node_str_cat(Node* node, const UChar* s, const UChar* end)
   int addlen = end - s;
 
   if (addlen > 0) {
-    int len  = NSTR(node)->end - NSTR(node)->s;
+    int len  = STR_(node)->end - STR_(node)->s;
 
-    if (NSTR(node)->capa > 0 || (len + addlen > NODE_STR_BUF_SIZE - 1)) {
+    if (STR_(node)->capa > 0 || (len + addlen > NODE_STR_BUF_SIZE - 1)) {
       UChar* p;
       int capa = len + addlen + NODE_STR_MARGIN;
 
-      if (capa <= NSTR(node)->capa) {
-        onig_strcpy(NSTR(node)->s + len, s, end);
+      if (capa <= STR_(node)->capa) {
+        onig_strcpy(STR_(node)->s + len, s, end);
       }
       else {
-        if (NSTR(node)->s == NSTR(node)->buf)
-          p = strcat_capa_from_static(NSTR(node)->s, NSTR(node)->end,
+        if (STR_(node)->s == STR_(node)->buf)
+          p = strcat_capa_from_static(STR_(node)->s, STR_(node)->end,
                                       s, end, capa);
         else
-          p = strcat_capa(NSTR(node)->s, NSTR(node)->end, s, end, capa);
+          p = strcat_capa(STR_(node)->s, STR_(node)->end, s, end, capa);
 
         CHECK_NULL_RETURN_MEMERR(p);
-        NSTR(node)->s    = p;
-        NSTR(node)->capa = capa;
+        STR_(node)->s    = p;
+        STR_(node)->capa = capa;
       }
     }
     else {
-      onig_strcpy(NSTR(node)->s + len, s, end);
+      onig_strcpy(STR_(node)->s + len, s, end);
     }
-    NSTR(node)->end = NSTR(node)->s + len + addlen;
+    STR_(node)->end = STR_(node)->s + len + addlen;
   }
 
   return 0;
@@ -1395,24 +1395,24 @@ extern void
 onig_node_conv_to_str_node(Node* node, int flag)
 {
   SET_NODE_TYPE(node, NT_STR);
-  NSTR(node)->flag = flag;
-  NSTR(node)->capa = 0;
-  NSTR(node)->s    = NSTR(node)->buf;
-  NSTR(node)->end  = NSTR(node)->buf;
+  STR_(node)->flag = flag;
+  STR_(node)->capa = 0;
+  STR_(node)->s    = STR_(node)->buf;
+  STR_(node)->end  = STR_(node)->buf;
 }
 
 extern void
 onig_node_str_clear(Node* node)
 {
-  if (NSTR(node)->capa != 0 &&
-      IS_NOT_NULL(NSTR(node)->s) && NSTR(node)->s != NSTR(node)->buf) {
-    xfree(NSTR(node)->s);
+  if (STR_(node)->capa != 0 &&
+      IS_NOT_NULL(STR_(node)->s) && STR_(node)->s != STR_(node)->buf) {
+    xfree(STR_(node)->s);
   }
 
-  NSTR(node)->capa = 0;
-  NSTR(node)->flag = 0;
-  NSTR(node)->s    = NSTR(node)->buf;
-  NSTR(node)->end  = NSTR(node)->buf;
+  STR_(node)->capa = 0;
+  STR_(node)->flag = 0;
+  STR_(node)->s    = STR_(node)->buf;
+  STR_(node)->end  = STR_(node)->buf;
 }
 
 static Node*
@@ -1422,10 +1422,10 @@ node_new_str(const UChar* s, const UChar* end)
   CHECK_NULL_RETURN(node);
 
   SET_NODE_TYPE(node, NT_STR);
-  NSTR(node)->capa = 0;
-  NSTR(node)->flag = 0;
-  NSTR(node)->s    = NSTR(node)->buf;
-  NSTR(node)->end  = NSTR(node)->buf;
+  STR_(node)->capa = 0;
+  STR_(node)->flag = 0;
+  STR_(node)->s    = STR_(node)->buf;
+  STR_(node)->end  = STR_(node)->buf;
   if (onig_node_str_cat(node, s, end)) {
     onig_node_free(node);
     return NULL;
@@ -2126,8 +2126,8 @@ onig_reduce_nested_quantifier(Node* pnode, Node* cnode)
   int pnum, cnum;
   QtfrNode *p, *c;
 
-  p = NQTFR(pnode);
-  c = NQTFR(cnode);
+  p = QTFR_(pnode);
+  c = QTFR_(cnode);
   pnum = popular_quantifier_num(p);
   cnum = popular_quantifier_num(c);
   if (pnum < 0 || cnum < 0) return ;
@@ -4017,7 +4017,7 @@ parse_char_property(Node** np, OnigToken* tok, UChar** src, UChar* end,
 
   *np = node_new_cclass();
   CHECK_NULL_RETURN_MEMERR(*np);
-  cc = NCCLASS(*np);
+  cc = CCLASS_(*np);
   r = add_ctype_to_cc(cc, ctype, 0, env);
   if (r != 0) return r;
   if (tok->u.prop.not != 0) NCCLASS_SET_NOT(cc);
@@ -4199,7 +4199,7 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
 
   *np = node = node_new_cclass();
   CHECK_NULL_RETURN_MEMERR(node);
-  cc = NCCLASS(node);
+  cc = CCLASS_(node);
 
   and_start = 0;
   state = CCS_START;
@@ -4393,7 +4393,7 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
           onig_node_free(anode);
           goto cc_open_err;
         }
-        acc = NCCLASS(anode);
+        acc = CCLASS_(anode);
         r = or_cclass(cc, acc, env->enc);
         onig_node_free(anode);
 
@@ -4483,7 +4483,7 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
   return 0;
 
  err:
-  if (cc != NCCLASS(*np))
+  if (cc != CCLASS_(*np))
     bbuf_free(cc->mbuf);
   return r;
 }
@@ -4581,7 +4581,7 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           if (r != 0) return r;
           *np = node_new_enclose_memory(env->option, 1);
           CHECK_NULL_RETURN_MEMERR(*np);
-          NENCLOSE(*np)->regnum = num;
+          ENCLOSE_(*np)->regnum = num;
           if (list_capture != 0)
             BIT_STATUS_ON_AT_SIMPLE(env->capture_history, num);
           env->num_named++;
@@ -4618,7 +4618,7 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
         else if (num >= (int )BIT_STATUS_BITS_NUM) {
           return ONIGERR_GROUP_NUMBER_OVER_FOR_CAPTURE_HISTORY;
         }
-        NENCLOSE(*np)->regnum = num;
+        ENCLOSE_(*np)->regnum = num;
         BIT_STATUS_ON_AT_SIMPLE(env->capture_history, num);
       }
       else {
@@ -4712,7 +4712,7 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
     CHECK_NULL_RETURN_MEMERR(*np);
     num = scan_env_add_mem_entry(env);
     if (num < 0) return num;
-    NENCLOSE(*np)->regnum = num;
+    ENCLOSE_(*np)->regnum = num;
   }
 
   CHECK_NULL_RETURN_MEMERR(*np);
@@ -4726,9 +4726,9 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 
   NODE_BODY(*np) = target;
   if (NODE_TYPE(*np) == NT_ENCLOSE) {
-    if (NENCLOSE(*np)->type == ENCLOSE_MEMORY) {
+    if (ENCLOSE_(*np)->type == ENCLOSE_MEMORY) {
       /* Don't move this to previous of parse_subexp() */
-      r = scan_env_set_mem_node(env, NENCLOSE(*np)->regnum, *np);
+      r = scan_env_set_mem_node(env, ENCLOSE_(*np)->regnum, *np);
       if (r != 0) return r;
     }
   }
@@ -4750,14 +4750,14 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
 {
   QtfrNode* qn;
 
-  qn = NQTFR(qnode);
+  qn = QTFR_(qnode);
   if (qn->lower == 1 && qn->upper == 1)
     return 1;
 
   switch (NODE_TYPE(target)) {
   case NT_STR:
     if (! group) {
-      StrNode* sn = NSTR(target);
+      StrNode* sn = STR_(target);
       if (str_node_can_be_split(sn, env->enc)) {
         Node* n = str_node_split_last_char(sn, env->enc);
         if (IS_NOT_NULL(n)) {
@@ -4771,7 +4771,7 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
   case NT_QTFR:
     { /* check redundant double repeat. */
       /* verbose warn (?:.?)? etc... but not warn (.?)? etc... */
-      QtfrNode* qnt   = NQTFR(target);
+      QtfrNode* qnt   = QTFR_(target);
       int nestq_num   = popular_quantifier_num(qn);
       int targetq_num = popular_quantifier_num(qnt);
 
@@ -4975,7 +4975,7 @@ parse_exp(Node** np, OnigToken* tok, int term,
       Node* target;
       OnigOptionType prev = env->option;
 
-      env->option = NENCLOSE(*np)->option;
+      env->option = ENCLOSE_(*np)->option;
       r = fetch_token(tok, src, end, env);
       if (r < 0) return r;
       r = parse_subexp(&target, tok, term, src, end, env);
@@ -5026,7 +5026,7 @@ parse_exp(Node** np, OnigToken* tok, int term,
       len = 1;
       while (1) {
         if (len >= ONIGENC_MBC_MINLEN(env->enc)) {
-          if (len == enclen(env->enc, NSTR(*np)->s)) {//should not enclen_end()
+          if (len == enclen(env->enc, STR_(*np)->s)) {//should not enclen_end()
             r = fetch_token(tok, src, end, env);
             NSTRING_CLEAR_RAW(*np);
             goto string_end;
@@ -5041,8 +5041,8 @@ parse_exp(Node** np, OnigToken* tok, int term,
           int rem;
           if (len < ONIGENC_MBC_MINLEN(env->enc)) {
             rem = ONIGENC_MBC_MINLEN(env->enc) - len;
-            (void )node_str_head_pad(NSTR(*np), rem, (UChar )0);
-            if (len + rem == enclen(env->enc, NSTR(*np)->s)) {
+            (void )node_str_head_pad(STR_(*np), rem, (UChar )0);
+            if (len + rem == enclen(env->enc, STR_(*np)->s)) {
               NSTRING_CLEAR_RAW(*np);
               goto string_end;
             }
@@ -5107,7 +5107,7 @@ parse_exp(Node** np, OnigToken* tok, int term,
 
           *np = node_new_cclass();
           CHECK_NULL_RETURN_MEMERR(*np);
-          cc = NCCLASS(*np);
+          cc = CCLASS_(*np);
           add_ctype_to_cc(cc, tok->u.prop.ctype, 0, env);
           if (tok->u.prop.not != 0) NCCLASS_SET_NOT(cc);
         }
@@ -5132,7 +5132,7 @@ parse_exp(Node** np, OnigToken* tok, int term,
       r = parse_char_class(np, tok, src, end, env);
       if (r != 0) return r;
 
-      cc = NCCLASS(*np);
+      cc = CCLASS_(*np);
       if (IS_IGNORECASE(env->option)) {
         IApplyCaseFoldArg iarg;
 
@@ -5240,7 +5240,7 @@ parse_exp(Node** np, OnigToken* tok, int term,
       qn = node_new_quantifier(tok->u.repeat.lower, tok->u.repeat.upper,
                                (r == TK_INTERVAL ? 1 : 0));
       CHECK_NULL_RETURN_MEMERR(qn);
-      NQTFR(qn)->greedy = tok->u.repeat.greedy;
+      QTFR_(qn)->greedy = tok->u.repeat.greedy;
       r = set_quantifier(qn, *targetp, group, env);
       if (r < 0) {
         onig_node_free(qn);
