@@ -165,13 +165,13 @@ typedef enum {
 #define CALLNODE_REFNUM_UNDEF  -1
 
 typedef struct {
-  int node_type;
+  NodeType node_type;
   int status;
   struct _Node* body;
 } NodeBase;
 
 typedef struct {
-  int node_type;
+  NodeType node_type;
   int status;
 
   UChar* s;
@@ -182,7 +182,7 @@ typedef struct {
 } StrNode;
 
 typedef struct {
-  int node_type;
+  NodeType node_type;
   int status;
 
   unsigned int flags;
@@ -191,7 +191,7 @@ typedef struct {
 } CClassNode;
 
 typedef struct {
-  int node_type;
+  NodeType node_type;
   int status;
   struct _Node* body;
 
@@ -208,7 +208,7 @@ typedef struct {
 } QtfrNode;
 
 typedef struct {
-  int node_type;
+  NodeType node_type;
   int status;
   struct _Node* body;
 
@@ -237,7 +237,7 @@ typedef struct {
 } UnsetAddrList;
 
 typedef struct {
-  int node_type;
+  NodeType node_type;
   int status;
   struct _Node* body; /* to EncloseNode : ENCLOSE_MEMORY */
 
@@ -250,7 +250,7 @@ typedef struct {
 #endif
 
 typedef struct {
-  int node_type;
+  NodeType node_type;
   int status;
 
   int  back_num;
@@ -260,7 +260,7 @@ typedef struct {
 } BRefNode;
 
 typedef struct {
-  int node_type;
+  NodeType node_type;
   int status;
   struct _Node* body;
 
@@ -269,7 +269,7 @@ typedef struct {
 } AnchorNode;
 
 typedef struct {
-  int node_type;
+  NodeType node_type;
   int status;
 
   struct _Node* car;
@@ -277,7 +277,7 @@ typedef struct {
 } ConsAltNode;
 
 typedef struct {
-  int node_type;
+  NodeType node_type;
   int status;
 
   int ctype;

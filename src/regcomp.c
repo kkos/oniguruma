@@ -1579,10 +1579,9 @@ compile_anchor_node(AnchorNode* node, regex_t* reg)
 static int
 compile_length_tree(Node* node, regex_t* reg)
 {
-  int len, type, r;
+  int len, r;
 
-  type = NODE_TYPE(node);
-  switch (type) {
+  switch (NODE_TYPE(node)) {
   case NODE_LIST:
     len = 0;
     do {
@@ -1671,10 +1670,9 @@ compile_length_tree(Node* node, regex_t* reg)
 static int
 compile_tree(Node* node, regex_t* reg)
 {
-  int n, type, len, pos, r = 0;
+  int n, len, pos, r = 0;
 
-  type = NODE_TYPE(node);
-  switch (type) {
+  switch (NODE_TYPE(node)) {
   case NODE_LIST:
     do {
       r = compile_tree(NODE_CAR(node), reg);
@@ -2196,7 +2194,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
   int i, len;
   OnigCodePoint code;
   UChar *p;
-  int ytype;
+  NodeType ytype;
 
  retry:
   ytype = NODE_TYPE(y);
@@ -2469,7 +2467,8 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
 static int
 check_type_tree(Node* node, int type_mask, int enclose_mask, int anchor_mask)
 {
-  int type, r = 0;
+  NodeType type;
+  int r = 0;
 
   type = NODE_TYPE(node);
   if ((NODE_TYPE2BIT(type) & type_mask) == 0)
@@ -2769,11 +2768,9 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
 static int
 subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
 {
-  int type;
   int r = 0;
 
-  type = NODE_TYPE(node);
-  switch (type) {
+  switch (NODE_TYPE(node)) {
   case NODE_LIST:
     {
       Node *x;
@@ -2847,11 +2844,9 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
 static int
 subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
 {
-  int type;
   int r = 0;
 
-  type = NODE_TYPE(node);
-  switch (type) {
+  switch (NODE_TYPE(node)) {
   case NODE_LIST:
   case NODE_ALT:
     do {
@@ -2943,11 +2938,9 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
 {
 #define FOUND_CALLED_NODE    1
 
-  int type;
   int r = 0;
 
-  type = NODE_TYPE(node);
-  switch (type) {
+  switch (NODE_TYPE(node)) {
   case NODE_LIST:
   case NODE_ALT:
     {
@@ -3001,11 +2994,9 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
 static int
 setup_subexp_call(Node* node, ScanEnv* env)
 {
-  int type;
   int r = 0;
 
-  type = NODE_TYPE(node);
-  switch (type) {
+  switch (NODE_TYPE(node)) {
   case NODE_LIST:
     do {
       r = setup_subexp_call(NODE_CAR(node), env);
@@ -3160,7 +3151,7 @@ setup_look_behind(Node* node, regex_t* reg, ScanEnv* env)
 static int
 next_setup(Node* node, Node* next_node, regex_t* reg)
 {
-  int type;
+  NodeType type;
 
  retry:
   type = NODE_TYPE(node);
@@ -3176,7 +3167,7 @@ next_setup(Node* node, Node* next_node, regex_t* reg)
 #endif
       /* automatic posseivation a*b ==> (?>a*)b */
       if (qn->lower <= 1) {
-        int ttype = NODE_TYPE(NODE_BODY(node));
+        NodeType ttype = NODE_TYPE(NODE_BODY(node));
         if (IS_NODE_TYPE_SIMPLE(ttype)) {
           Node *x, *y;
           x = get_head_value_node(NODE_BODY(node), 0, reg);
@@ -3529,11 +3520,9 @@ expand_case_fold_string(Node* node, regex_t* reg)
 static int
 setup_comb_exp_check(Node* node, int state, ScanEnv* env)
 {
-  int type;
   int r = state;
 
-  type = NODE_TYPE(node);
-  switch (type) {
+  switch (NODE_TYPE(node)) {
   case NODE_LIST:
     {
       Node* prev = NULL_NODE;
@@ -3746,11 +3735,9 @@ quantifiers_memory_node_info(Node* node, int state)
 static int
 setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 {
-  int type;
   int r = 0;
 
-  type = NODE_TYPE(node);
-  switch (type) {
+  switch (NODE_TYPE(node)) {
   case NODE_LIST:
     {
       Node* prev = NULL_NODE;
@@ -3930,7 +3917,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
             QtfrNode* tqn = QTFR_(target);
             if (IS_REPEAT_INFINITE(tqn->upper) && tqn->lower <= 1 &&
                 tqn->greedy != 0) {  /* (?>a*), a*+ etc... */
-              int qtype = NODE_TYPE(NODE_BODY(target));
+              NodeType qtype = NODE_TYPE(NODE_BODY(target));
               if (IS_NODE_TYPE_SIMPLE(qtype))
                 NODE_STATUS_ADD(node, NST_STOP_BT_SIMPLE_REPEAT);
             }
@@ -4644,14 +4631,12 @@ alt_merge_node_opt_info(NodeOptInfo* to, NodeOptInfo* add, OptEnv* env)
 static int
 optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
 {
-  int type;
   int r = 0;
 
   clear_node_opt_info(opt);
   set_bound_node_opt_info(opt, &env->mmd);
 
-  type = NODE_TYPE(node);
-  switch (type) {
+  switch (NODE_TYPE(node)) {
   case NODE_LIST:
     {
       OptEnv nenv;
@@ -4970,8 +4955,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
 
   default:
 #ifdef ONIG_DEBUG
-    fprintf(stderr, "optimize_node_left: undefined node type %d\n",
-	    NODE_TYPE(node));
+    fprintf(stderr, "optimize_node_left: undefined node type %d\n", NODE_TYPE(node));
 #endif
     r = ONIGERR_TYPE_BUG;
     break;
@@ -6182,9 +6166,10 @@ Indent(FILE* f, int indent)
 static void
 print_indent_tree(FILE* f, Node* node, int indent)
 {
-  int i, type;
-  int add = 3;
+  int i;
+  NodeType type;
   UChar* p;
+  int add = 3;
 
   Indent(f, indent);
   if (IS_NULL(node)) {
@@ -6196,7 +6181,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
   switch (type) {
   case NODE_LIST:
   case NODE_ALT:
-    if (NODE_TYPE(node) == NODE_LIST)
+    if (type == NODE_LIST)
       fprintf(f, "<list:%p>\n", node);
     else
       fprintf(f, "<alt:%p>\n", node);

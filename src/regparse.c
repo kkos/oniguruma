@@ -1093,6 +1093,10 @@ onig_node_free(Node* node)
     if (NODE_BODY(node))
       onig_node_free(NODE_BODY(node));
     break;
+
+  case NODE_CTYPE:
+  case NODE_CALL:
+    break;
   }
 
   xfree(node);
