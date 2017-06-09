@@ -167,6 +167,12 @@ typedef enum {
 typedef struct {
   int node_type;
   int status;
+  struct _Node* body;
+} NodeBase;
+
+typedef struct {
+  int node_type;
+  int status;
 
   UChar* s;
   UChar* end;
@@ -174,6 +180,15 @@ typedef struct {
   int    capa;    /* (allocated size - 1) or 0: use buf[] */
   UChar  buf[NODE_STR_BUF_SIZE];
 } StrNode;
+
+typedef struct {
+  int node_type;
+  int status;
+
+  unsigned int flags;
+  BitSet bs;
+  BBuf*  mbuf;   /* multi-byte info or NULL */
+} CClassNode;
 
 typedef struct {
   int node_type;
@@ -368,6 +383,7 @@ extern void   onig_node_str_clear P_((Node* node));
 extern int    onig_names_free P_((regex_t* reg));
 extern int    onig_parse_make_tree P_((Node** root, const UChar* pattern, const UChar* end, regex_t* reg, ScanEnv* env));
 extern int    onig_free_shared_cclass_table P_((void));
+extern int    onig_is_code_in_cc P_((OnigEncoding enc, OnigCodePoint code, CClassNode* cc));
 
 #ifdef ONIG_DEBUG
 #ifdef USE_NAMED_GROUP

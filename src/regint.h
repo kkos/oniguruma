@@ -652,23 +652,6 @@ typedef void* PointerType;
 #define IS_NCCLASS_NOT(nd)      IS_NCCLASS_FLAG_ON(nd, FLAG_NCCLASS_NOT)
 #define IS_NCCLASS_SHARE(nd)    IS_NCCLASS_FLAG_ON(nd, FLAG_NCCLASS_SHARE)
 
-struct _Node;
-
-typedef struct {
-  int node_type;
-  int status;
-  struct _Node* body;
-} NodeBase;
-
-typedef struct {
-  int node_type;
-  int status;
-
-  unsigned int flags;
-  BitSet bs;
-  BBuf*  mbuf;   /* multi-byte info or NULL */
-} CClassNode;
-
 typedef long OnigStackIndex;
 
 typedef struct _OnigStackType {
@@ -765,8 +748,7 @@ extern void  onig_snprintf_with_pattern PV_((UChar buf[], int bufsize, OnigEncod
 extern int  onig_bbuf_init P_((BBuf* buf, int size));
 extern int  onig_compile P_((regex_t* reg, const UChar* pattern, const UChar* pattern_end, OnigErrorInfo* einfo));
 extern void onig_transfer P_((regex_t* to, regex_t* from));
-extern int  onig_is_code_in_cc P_((OnigEncoding enc, OnigCodePoint code, CClassNode* cc));
-extern int  onig_is_code_in_cc_len P_((int enclen, OnigCodePoint code, CClassNode* cc));
+extern int  onig_is_code_in_cc_len P_((int enclen, OnigCodePoint code, void* /* CClassNode* */ cc));
 
 /* strend hash */
 typedef void hash_table_type;
