@@ -2584,9 +2584,6 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
     break;
 
   case NODE_CTYPE:
-    *min = 1;
-    break;
-
   case NODE_CCLASS:
     *min = 1;
     break;
