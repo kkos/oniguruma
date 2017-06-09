@@ -2808,13 +2808,9 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
     break;
 
   case NODE_ANCHOR:
-    {
-      AnchorNode* an = ANCHOR_(node);
-      if (ANCHOR_HAS_BODY(an))
-        r = subexp_inf_recursive_check(NODE_ANCHOR_BODY(an), env, head);
-    }
-    break;
-
+    if (! ANCHOR_HAS_BODY(ANCHOR_(node)))
+      break;
+    /* fall */
   case NODE_CALL:
     r = subexp_inf_recursive_check(NODE_BODY(node), env, head);
     break;
