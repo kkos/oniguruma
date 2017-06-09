@@ -59,9 +59,9 @@ typedef enum {
 #define BIT_NODE_ALT        NODE_TYPE2BIT(NODE_ALT)
 #define BIT_NODE_CALL       NODE_TYPE2BIT(NODE_CALL)
 
-#define IS_NODE_TYPE_SIMPLE(type) \
-  ((NODE_TYPE2BIT(type) & (BIT_NODE_STR | BIT_NODE_CCLASS | BIT_NODE_CTYPE |\
-                           BIT_NODE_BREF)) != 0)
+#define NODE_IS_SIMPLE_TYPE(node) \
+  ((NODE_TYPE2BIT(NODE_TYPE(node)) & \
+    (BIT_NODE_STR | BIT_NODE_CCLASS | BIT_NODE_CTYPE | BIT_NODE_BREF)) != 0)
 
 #define NODE_TYPE(node)             ((node)->u.base.node_type)
 #define SET_NODE_TYPE(node, ntype)   (node)->u.base.node_type = (ntype)

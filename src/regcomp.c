@@ -3167,8 +3167,7 @@ next_setup(Node* node, Node* next_node, regex_t* reg)
 #endif
       /* automatic posseivation a*b ==> (?>a*)b */
       if (qn->lower <= 1) {
-        NodeType ttype = NODE_TYPE(NODE_BODY(node));
-        if (IS_NODE_TYPE_SIMPLE(ttype)) {
+        if (NODE_IS_SIMPLE_TYPE(NODE_BODY(node))) {
           Node *x, *y;
           x = get_head_value_node(NODE_BODY(node), 0, reg);
           if (IS_NOT_NULL(x)) {
@@ -3917,8 +3916,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
             QtfrNode* tqn = QTFR_(target);
             if (IS_REPEAT_INFINITE(tqn->upper) && tqn->lower <= 1 &&
                 tqn->greedy != 0) {  /* (?>a*), a*+ etc... */
-              NodeType qtype = NODE_TYPE(NODE_BODY(target));
-              if (IS_NODE_TYPE_SIMPLE(qtype))
+              if (NODE_IS_SIMPLE_TYPE(NODE_BODY(target)))
                 NODE_STATUS_ADD(node, NST_STOP_BT_SIMPLE_REPEAT);
             }
           }
