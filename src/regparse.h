@@ -167,12 +167,6 @@ typedef enum {
 typedef struct {
   NodeType node_type;
   int status;
-  struct _Node* body;
-} NodeBase;
-
-typedef struct {
-  NodeType node_type;
-  int status;
 
   UChar* s;
   UChar* end;
@@ -286,7 +280,12 @@ typedef struct {
 
 typedef struct _Node {
   union {
-    NodeBase     base;
+    struct {
+      NodeType node_type;
+      int status;
+      struct _Node* body;
+    } base;
+
     StrNode      str;
     CClassNode   cclass;
     QtfrNode     qtfr;
