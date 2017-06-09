@@ -1053,15 +1053,15 @@ onig_node_free(Node* node)
 #endif
 
   switch (NODE_TYPE(node)) {
-  case NT_STR:
+  case NODE_STR:
     if (STR_(node)->capa != 0 &&
         IS_NOT_NULL(STR_(node)->s) && STR_(node)->s != STR_(node)->buf) {
       xfree(STR_(node)->s);
     }
     break;
 
-  case NT_LIST:
-  case NT_ALT:
+  case NODE_LIST:
+  case NODE_ALT:
     onig_node_free(NODE_CAR(node));
     {
       Node* next_node = NODE_CDR(node);
@@ -1072,7 +1072,7 @@ onig_node_free(Node* node)
     }
     break;
 
-  case NT_CCLASS:
+  case NODE_CCLASS:
     {
       CClassNode* cc = CCLASS_(node);
 
@@ -1082,14 +1082,14 @@ onig_node_free(Node* node)
     }
     break;
 
-  case NT_BREF:
+  case NODE_BREF:
     if (IS_NOT_NULL(BREF_(node)->back_dynamic))
       xfree(BREF_(node)->back_dynamic);
     break;
 
-  case NT_QTFR:
-  case NT_ENCLOSE:
-  case NT_ANCHOR:
+  case NODE_QTFR:
+  case NODE_ENCLOSE:
+  case NODE_ANCHOR:
     if (NODE_BODY(node))
       onig_node_free(NODE_BODY(node));
     break;
@@ -1129,7 +1129,7 @@ node_new_cclass(void)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NT_CCLASS);
+  SET_NODE_TYPE(node, NODE_CCLASS);
   initialize_cclass(CCLASS_(node));
   return node;
 }
@@ -1140,7 +1140,7 @@ node_new_ctype(int type, int not)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NT_CTYPE);
+  SET_NODE_TYPE(node, NODE_CTYPE);
   CTYPE_(node)->ctype = type;
   CTYPE_(node)->not   = not;
   return node;
@@ -1152,7 +1152,7 @@ node_new_list(Node* left, Node* right)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NT_LIST);
+  SET_NODE_TYPE(node, NODE_LIST);
   NODE_CAR(node)  = left;
   NODE_CDR(node) = right;
   return node;
@@ -1188,7 +1188,7 @@ onig_node_new_alt(Node* left, Node* right)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NT_ALT);
+  SET_NODE_TYPE(node, NODE_ALT);
   NODE_CAR(node)  = left;
   NODE_CDR(node) = right;
   return node;
@@ -1200,7 +1200,7 @@ onig_node_new_anchor(int type)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NT_ANCHOR);
+  SET_NODE_TYPE(node, NODE_ANCHOR);
   ANCHOR_(node)->type     = type;
   ANCHOR_(node)->char_len = -1;
   return node;
@@ -1218,7 +1218,7 @@ node_new_backref(int back_num, int* backrefs, int by_name,
 
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NT_BREF);
+  SET_NODE_TYPE(node, NODE_BREF);
   BREF_(node)->back_num = back_num;
   BREF_(node)->back_dynamic = (int* )NULL;
   if (by_name != 0)
@@ -1263,7 +1263,7 @@ node_new_call(UChar* name, UChar* name_end, int gnum)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NT_CALL);
+  SET_NODE_TYPE(node, NODE_CALL);
   CALL_(node)->name      = name;
   CALL_(node)->name_end  = name_end;
   CALL_(node)->group_num = gnum;  /* call by number if gnum != 0 */
@@ -1277,7 +1277,7 @@ node_new_quantifier(int lower, int upper, int by_number)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NT_QTFR);
+  SET_NODE_TYPE(node, NODE_QTFR);
   QTFR_(node)->lower  = lower;
   QTFR_(node)->upper  = upper;
   QTFR_(node)->greedy = 1;
@@ -1301,7 +1301,7 @@ node_new_enclose(int type)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NT_ENCLOSE);
+  SET_NODE_TYPE(node, NODE_ENCLOSE);
   ENCLOSE_(node)->type      = type;
   ENCLOSE_(node)->regnum    =  0;
   ENCLOSE_(node)->option    =  0;
@@ -1394,7 +1394,7 @@ node_str_cat_char(Node* node, UChar c)
 extern void
 onig_node_conv_to_str_node(Node* node, int flag)
 {
-  SET_NODE_TYPE(node, NT_STR);
+  SET_NODE_TYPE(node, NODE_STR);
   STR_(node)->flag = flag;
   STR_(node)->capa = 0;
   STR_(node)->s    = STR_(node)->buf;
@@ -1421,7 +1421,7 @@ node_new_str(const UChar* s, const UChar* end)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NT_STR);
+  SET_NODE_TYPE(node, NODE_STR);
   STR_(node)->capa = 0;
   STR_(node)->flag = 0;
   STR_(node)->s    = STR_(node)->buf;
@@ -2047,23 +2047,23 @@ static int
 is_invalid_quantifier_target(Node* node)
 {
   switch (NODE_TYPE(node)) {
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
     return 1;
     break;
 
-  case NT_ENCLOSE:
+  case NODE_ENCLOSE:
     /* allow enclosed elements */
     /* return is_invalid_quantifier_target(NODE_BODY(node)); */
     break;
 
-  case NT_LIST:
+  case NODE_LIST:
     do {
       if (! is_invalid_quantifier_target(NODE_CAR(node))) return 0;
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     return 0;
     break;
 
-  case NT_ALT:
+  case NODE_ALT:
     do {
       if (is_invalid_quantifier_target(NODE_CAR(node))) return 1;
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
@@ -4725,7 +4725,7 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
   }
 
   NODE_BODY(*np) = target;
-  if (NODE_TYPE(*np) == NT_ENCLOSE) {
+  if (NODE_TYPE(*np) == NODE_ENCLOSE) {
     if (ENCLOSE_(*np)->type == ENCLOSE_MEMORY) {
       /* Don't move this to previous of parse_subexp() */
       r = scan_env_set_mem_node(env, ENCLOSE_(*np)->regnum, *np);
@@ -4755,7 +4755,7 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
     return 1;
 
   switch (NODE_TYPE(target)) {
-  case NT_STR:
+  case NODE_STR:
     if (! group) {
       StrNode* sn = STR_(target);
       if (str_node_can_be_split(sn, env->enc)) {
@@ -4768,7 +4768,7 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
     }
     break;
 
-  case NT_QTFR:
+  case NODE_QTFR:
     { /* check redundant double repeat. */
       /* verbose warn (?:.?)? etc... but not warn (.?)? etc... */
       QtfrNode* qnt   = QTFR_(target);
@@ -5313,7 +5313,7 @@ parse_branch(Node** top, OnigToken* tok, int term,
         return r;
       }
 
-      if (NODE_TYPE(node) == NT_LIST) {
+      if (NODE_TYPE(node) == NODE_LIST) {
         *headp = node;
         while (IS_NOT_NULL(NODE_CDR(node))) node = NODE_CDR(node);
         headp = &(NODE_CDR(node));

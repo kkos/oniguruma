@@ -147,7 +147,7 @@ swap_node(Node* a, Node* b)
   Node c;
   c = *a; *a = *b; *b = c;
 
-  if (NODE_TYPE(a) == NT_STR) {
+  if (NODE_TYPE(a) == NODE_STR) {
     StrNode* sn = STR_(a);
     if (sn->capa == 0) {
       int len = sn->end - sn->s;
@@ -156,7 +156,7 @@ swap_node(Node* a, Node* b)
     }
   }
 
-  if (NODE_TYPE(b) == NT_STR) {
+  if (NODE_TYPE(b) == NODE_STR) {
     StrNode* sn = STR_(b);
     if (sn->capa == 0) {
       int len = sn->end - sn->s;
@@ -1583,7 +1583,7 @@ compile_length_tree(Node* node, regex_t* reg)
 
   type = NODE_TYPE(node);
   switch (type) {
-  case NT_LIST:
+  case NODE_LIST:
     len = 0;
     do {
       r = compile_length_tree(NODE_CAR(node), reg);
@@ -1593,7 +1593,7 @@ compile_length_tree(Node* node, regex_t* reg)
     r = len;
     break;
 
-  case NT_ALT:
+  case NODE_ALT:
     {
       int n;
 
@@ -1606,22 +1606,22 @@ compile_length_tree(Node* node, regex_t* reg)
     }
     break;
 
-  case NT_STR:
+  case NODE_STR:
     if (NSTRING_IS_RAW(node))
       r = compile_length_string_raw_node(STR_(node), reg);
     else
       r = compile_length_string_node(node, reg);
     break;
 
-  case NT_CCLASS:
+  case NODE_CCLASS:
     r = compile_length_cclass_node(CCLASS_(node), reg);
     break;
 
-  case NT_CTYPE:
+  case NODE_CTYPE:
     r = SIZE_OPCODE;
     break;
 
-  case NT_BREF:
+  case NODE_BREF:
     {
       BRefNode* br = BREF_(node);
 
@@ -1643,20 +1643,20 @@ compile_length_tree(Node* node, regex_t* reg)
     break;
 
 #ifdef USE_SUBEXP_CALL
-  case NT_CALL:
+  case NODE_CALL:
     r = SIZE_OP_CALL;
     break;
 #endif
 
-  case NT_QTFR:
+  case NODE_QTFR:
     r = compile_length_quantifier_node(QTFR_(node), reg);
     break;
 
-  case NT_ENCLOSE:
+  case NODE_ENCLOSE:
     r = compile_length_enclose_node(ENCLOSE_(node), reg);
     break;
 
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
     r = compile_length_anchor_node(ANCHOR_(node), reg);
     break;
 
@@ -1675,13 +1675,13 @@ compile_tree(Node* node, regex_t* reg)
 
   type = NODE_TYPE(node);
   switch (type) {
-  case NT_LIST:
+  case NODE_LIST:
     do {
       r = compile_tree(NODE_CAR(node), reg);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NT_ALT:
+  case NODE_ALT:
     {
       Node* x = node;
       len = 0;
@@ -1710,18 +1710,18 @@ compile_tree(Node* node, regex_t* reg)
     }
     break;
 
-  case NT_STR:
+  case NODE_STR:
     if (NSTRING_IS_RAW(node))
       r = compile_string_raw_node(STR_(node), reg);
     else
       r = compile_string_node(node, reg);
     break;
 
-  case NT_CCLASS:
+  case NODE_CCLASS:
     r = compile_cclass_node(CCLASS_(node), reg);
     break;
 
-  case NT_CTYPE:
+  case NODE_CTYPE:
     {
       int op;
 
@@ -1747,7 +1747,7 @@ compile_tree(Node* node, regex_t* reg)
     }
     break;
 
-  case NT_BREF:
+  case NODE_BREF:
     {
       BRefNode* br = BREF_(node);
 
@@ -1810,20 +1810,20 @@ compile_tree(Node* node, regex_t* reg)
     break;
 
 #ifdef USE_SUBEXP_CALL
-  case NT_CALL:
+  case NODE_CALL:
     r = compile_call(CALL_(node), reg);
     break;
 #endif
 
-  case NT_QTFR:
+  case NODE_QTFR:
     r = compile_quantifier_node(QTFR_(node), reg);
     break;
 
-  case NT_ENCLOSE:
+  case NODE_ENCLOSE:
     r = compile_enclose_node(ENCLOSE_(node), reg);
     break;
 
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
     r = compile_anchor_node(ANCHOR_(node), reg);
     break;
 
@@ -1846,25 +1846,25 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
   Node* node = *plink;
 
   switch (NODE_TYPE(node)) {
-  case NT_LIST:
-  case NT_ALT:
+  case NODE_LIST:
+  case NODE_ALT:
     do {
       r = noname_disable_map(&(NODE_CAR(node)), map, counter);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NT_QTFR:
+  case NODE_QTFR:
     {
       Node** ptarget = &(NODE_BODY(node));
       Node*  old = *ptarget;
       r = noname_disable_map(ptarget, map, counter);
-      if (*ptarget != old && NODE_TYPE(*ptarget) == NT_QTFR) {
+      if (*ptarget != old && NODE_TYPE(*ptarget) == NODE_QTFR) {
         onig_reduce_nested_quantifier(node, *ptarget);
       }
     }
     break;
 
-  case NT_ENCLOSE:
+  case NODE_ENCLOSE:
     {
       EncloseNode* en = ENCLOSE_(node);
       if (en->type == ENCLOSE_MEMORY) {
@@ -1886,7 +1886,7 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
     }
     break;
 
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
     if (IS_NOT_NULL(NODE_BODY(node)))
       r = noname_disable_map(&(NODE_BODY(node)), map, counter);
     break;
@@ -1932,23 +1932,23 @@ renumber_by_map(Node* node, GroupNumRemap* map)
   int r = 0;
 
   switch (NODE_TYPE(node)) {
-  case NT_LIST:
-  case NT_ALT:
+  case NODE_LIST:
+  case NODE_ALT:
     do {
       r = renumber_by_map(NODE_CAR(node), map);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NT_QTFR:
-  case NT_ENCLOSE:
+  case NODE_QTFR:
+  case NODE_ENCLOSE:
     r = renumber_by_map(NODE_BODY(node), map);
     break;
 
-  case NT_BREF:
+  case NODE_BREF:
     r = renumber_node_backref(node, map);
     break;
 
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
     if (IS_NOT_NULL(NODE_BODY(node)))
       r = renumber_by_map(NODE_BODY(node), map);
     break;
@@ -1966,24 +1966,24 @@ numbered_ref_check(Node* node)
   int r = 0;
 
   switch (NODE_TYPE(node)) {
-  case NT_LIST:
-  case NT_ALT:
+  case NODE_LIST:
+  case NODE_ALT:
     do {
       r = numbered_ref_check(NODE_CAR(node));
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NT_QTFR:
-  case NT_ENCLOSE:
+  case NODE_QTFR:
+  case NODE_ENCLOSE:
     r = numbered_ref_check(NODE_BODY(node));
     break;
 
-  case NT_BREF:
+  case NODE_BREF:
     if (! NODE_IS_NAME_REF(node))
       return ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED;
     break;
 
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
     if (IS_NOT_NULL(NODE_BODY(node)))
       r = numbered_ref_check(NODE_BODY(node));
     break;
@@ -2070,7 +2070,7 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
   level++;
   *len = 0;
   switch (NODE_TYPE(node)) {
-  case NT_LIST:
+  case NODE_LIST:
     do {
       r = get_char_length_tree1(NODE_CAR(node), reg, &tlen, level);
       if (r == 0)
@@ -2078,7 +2078,7 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NT_ALT:
+  case NODE_ALT:
     {
       int tlen2;
       int varlen = 0;
@@ -2104,7 +2104,7 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
     }
     break;
 
-  case NT_STR:
+  case NODE_STR:
     {
       StrNode* sn = STR_(node);
       UChar *s = sn->s;
@@ -2115,7 +2115,7 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
     }
     break;
 
-  case NT_QTFR:
+  case NODE_QTFR:
     {
       QtfrNode* qn = QTFR_(node);
       if (qn->lower == qn->upper) {
@@ -2129,7 +2129,7 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
     break;
 
 #ifdef USE_SUBEXP_CALL
-  case NT_CALL:
+  case NODE_CALL:
     if (! NODE_IS_RECURSION(node))
       r = get_char_length_tree1(NODE_BODY(node), reg, len, level);
     else
@@ -2137,15 +2137,15 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
     break;
 #endif
 
-  case NT_CTYPE:
+  case NODE_CTYPE:
     *len = 1;
     break;
 
-  case NT_CCLASS:
+  case NODE_CCLASS:
     *len = 1;
     break;
 
-  case NT_ENCLOSE:
+  case NODE_ENCLOSE:
     {
       EncloseNode* en = ENCLOSE_(node);
       switch (en->type) {
@@ -2172,7 +2172,7 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
     }
     break;
 
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
     break;
 
   default:
@@ -2201,14 +2201,14 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
  retry:
   ytype = NODE_TYPE(y);
   switch (NODE_TYPE(x)) {
-  case NT_CTYPE:
+  case NODE_CTYPE:
     {
       if (CTYPE_(x)->ctype == CTYPE_ANYCHAR ||
           CTYPE_(y)->ctype == CTYPE_ANYCHAR)
         break;
 
       switch (ytype) {
-      case NT_CTYPE:
+      case NODE_CTYPE:
         if (CTYPE_(y)->ctype == CTYPE_(x)->ctype &&
             CTYPE_(y)->not   != CTYPE_(x)->not)
           return 1;
@@ -2216,7 +2216,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
           return 0;
         break;
 
-      case NT_CCLASS:
+      case NODE_CCLASS:
       swap:
         {
           Node* tmp;
@@ -2225,7 +2225,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
         }
         break;
 
-      case NT_STR:
+      case NODE_STR:
         goto swap;
         break;
 
@@ -2235,11 +2235,11 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
     }
     break;
 
-  case NT_CCLASS:
+  case NODE_CCLASS:
     {
       CClassNode* xc = CCLASS_(x);
       switch (ytype) {
-      case NT_CTYPE:
+      case NODE_CTYPE:
         switch (CTYPE_(y)->ctype) {
         case CTYPE_ANYCHAR:
           return 0;
@@ -2280,7 +2280,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
         }
         break;
 
-      case NT_CCLASS:
+      case NODE_CCLASS:
         {
           int v;
           CClassNode* yc = CCLASS_(y);
@@ -2302,7 +2302,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
         }
         break;
 
-      case NT_STR:
+      case NODE_STR:
         goto swap;
         break;
 
@@ -2312,7 +2312,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
     }
     break;
 
-  case NT_STR:
+  case NODE_STR:
     {
       StrNode* xs = STR_(x);
       if (NSTRING_LEN(x) == 0)
@@ -2320,7 +2320,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
 
       //c = *(xs->s);
       switch (ytype) {
-      case NT_CTYPE:
+      case NODE_CTYPE:
         switch (CTYPE_(y)->ctype) {
         case CTYPE_ANYCHAR:
           break;
@@ -2336,7 +2336,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
         }
         break;
 
-      case NT_CCLASS:
+      case NODE_CCLASS:
         {
           CClassNode* cc = CCLASS_(y);
 
@@ -2346,7 +2346,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
         }
         break;
 
-      case NT_STR:
+      case NODE_STR:
         {
           UChar *q;
           StrNode* ys = STR_(y);
@@ -2383,28 +2383,28 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
   Node* n = NULL_NODE;
 
   switch (NODE_TYPE(node)) {
-  case NT_BREF:
-  case NT_ALT:
+  case NODE_BREF:
+  case NODE_ALT:
 #ifdef USE_SUBEXP_CALL
-  case NT_CALL:
+  case NODE_CALL:
 #endif
     break;
 
-  case NT_CTYPE:
+  case NODE_CTYPE:
     if (CTYPE_(node)->ctype == CTYPE_ANYCHAR)
       break;
     /* through */
-  case NT_CCLASS:
+  case NODE_CCLASS:
     if (exact == 0) {
       n = node;
     }
     break;
 
-  case NT_LIST:
+  case NODE_LIST:
     n = get_head_value_node(NODE_CAR(node), exact, reg);
     break;
 
-  case NT_STR:
+  case NODE_STR:
     {
       StrNode* sn = STR_(node);
 
@@ -2420,7 +2420,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
     }
     break;
 
-  case NT_QTFR:
+  case NODE_QTFR:
     {
       QtfrNode* qn = QTFR_(node);
       if (qn->lower > 0) {
@@ -2432,7 +2432,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
     }
     break;
 
-  case NT_ENCLOSE:
+  case NODE_ENCLOSE:
     {
       EncloseNode* en = ENCLOSE_(node);
       switch (en->type) {
@@ -2454,7 +2454,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
     }
     break;
 
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
     if (ANCHOR_(node)->type == ANCHOR_PREC_READ)
       n = get_head_value_node(NODE_BODY(node), exact, reg);
     break;
@@ -2476,19 +2476,19 @@ check_type_tree(Node* node, int type_mask, int enclose_mask, int anchor_mask)
     return 1;
 
   switch (type) {
-  case NT_LIST:
-  case NT_ALT:
+  case NODE_LIST:
+  case NODE_ALT:
     do {
       r = check_type_tree(NODE_CAR(node), type_mask, enclose_mask,
                           anchor_mask);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NT_QTFR:
+  case NODE_QTFR:
     r = check_type_tree(NODE_BODY(node), type_mask, enclose_mask, anchor_mask);
     break;
 
-  case NT_ENCLOSE:
+  case NODE_ENCLOSE:
     {
       EncloseNode* en = ENCLOSE_(node);
       if ((en->type & enclose_mask) == 0)
@@ -2498,7 +2498,7 @@ check_type_tree(Node* node, int type_mask, int enclose_mask, int anchor_mask)
     }
     break;
 
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
     type = ANCHOR_(node)->type;
     if ((type & anchor_mask) == 0)
       return 1;
@@ -2521,7 +2521,7 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
 
   *min = 0;
   switch (NODE_TYPE(node)) {
-  case NT_BREF:
+  case NODE_BREF:
     {
       int i;
       int* backs;
@@ -2543,7 +2543,7 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
     break;
 
 #ifdef USE_SUBEXP_CALL
-  case NT_CALL:
+  case NODE_CALL:
     {
       Node* t = NODE_BODY(node);
       if (NODE_IS_RECURSION(node)) {
@@ -2556,14 +2556,14 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
     break;
 #endif
 
-  case NT_LIST:
+  case NODE_LIST:
     do {
       r = get_min_len(NODE_CAR(node), &tmin, env);
       if (r == 0) *min += tmin;
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NT_ALT:
+  case NODE_ALT:
     {
       Node *x, *y;
       y = node;
@@ -2577,22 +2577,22 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
     }
     break;
 
-  case NT_STR:
+  case NODE_STR:
     {
       StrNode* sn = STR_(node);
       *min = sn->end - sn->s;
     }
     break;
 
-  case NT_CTYPE:
+  case NODE_CTYPE:
     *min = 1;
     break;
 
-  case NT_CCLASS:
+  case NODE_CCLASS:
     *min = 1;
     break;
 
-  case NT_QTFR:
+  case NODE_QTFR:
     {
       QtfrNode* qn = QTFR_(node);
 
@@ -2604,7 +2604,7 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
     }
     break;
 
-  case NT_ENCLOSE:
+  case NODE_ENCLOSE:
     {
       EncloseNode* en = ENCLOSE_(node);
       switch (en->type) {
@@ -2634,7 +2634,7 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
     }
     break;
 
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
   default:
     break;
   }
@@ -2650,7 +2650,7 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
 
   *max = 0;
   switch (NODE_TYPE(node)) {
-  case NT_LIST:
+  case NODE_LIST:
     do {
       r = get_max_len(NODE_CAR(node), &tmax, env);
       if (r == 0)
@@ -2658,26 +2658,26 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NT_ALT:
+  case NODE_ALT:
     do {
       r = get_max_len(NODE_CAR(node), &tmax, env);
       if (r == 0 && *max < tmax) *max = tmax;
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NT_STR:
+  case NODE_STR:
     {
       StrNode* sn = STR_(node);
       *max = sn->end - sn->s;
     }
     break;
 
-  case NT_CTYPE:
-  case NT_CCLASS:
+  case NODE_CTYPE:
+  case NODE_CCLASS:
     *max = ONIGENC_MBC_MAXLEN_DIST(env->enc);
     break;
 
-  case NT_BREF:
+  case NODE_BREF:
     {
       int i;
       int* backs;
@@ -2698,7 +2698,7 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
     break;
 
 #ifdef USE_SUBEXP_CALL
-  case NT_CALL:
+  case NODE_CALL:
     if (! NODE_IS_RECURSION(node))
       r = get_max_len(NODE_BODY(node), max, env);
     else
@@ -2706,7 +2706,7 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
     break;
 #endif
 
-  case NT_QTFR:
+  case NODE_QTFR:
     {
       QtfrNode* qn = QTFR_(node);
 
@@ -2722,7 +2722,7 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
     }
     break;
 
-  case NT_ENCLOSE:
+  case NODE_ENCLOSE:
     {
       EncloseNode* en = ENCLOSE_(node);
       switch (en->type) {
@@ -2752,7 +2752,7 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
     }
     break;
 
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
   default:
     break;
   }
@@ -2774,7 +2774,7 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
 
   type = NODE_TYPE(node);
   switch (type) {
-  case NT_LIST:
+  case NODE_LIST:
     {
       Node *x;
       OnigLen min;
@@ -2794,7 +2794,7 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
     }
     break;
 
-  case NT_ALT:
+  case NODE_ALT:
     {
       int ret;
       r = RECURSION_EXIST;
@@ -2806,14 +2806,14 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
     }
     break;
 
-  case NT_QTFR:
+  case NODE_QTFR:
     r = subexp_inf_recursive_check(NODE_BODY(node), env, head);
     if (r == RECURSION_EXIST) {
       if (QTFR_(node)->lower == 0) r = 0;
     }
     break;
 
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
     {
       AnchorNode* an = ANCHOR_(node);
       if (ANCHOR_HAS_BODY(an))
@@ -2821,11 +2821,11 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
     }
     break;
 
-  case NT_CALL:
+  case NODE_CALL:
     r = subexp_inf_recursive_check(NODE_BODY(node), env, head);
     break;
 
-  case NT_ENCLOSE:
+  case NODE_ENCLOSE:
     if (NODE_IS_MARK2(node))
       return 0;
     else if (NODE_IS_MARK1(node))
@@ -2852,18 +2852,18 @@ subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
 
   type = NODE_TYPE(node);
   switch (type) {
-  case NT_LIST:
-  case NT_ALT:
+  case NODE_LIST:
+  case NODE_ALT:
     do {
       r = subexp_inf_recursive_check_trav(NODE_CAR(node), env);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NT_QTFR:
+  case NODE_QTFR:
     r = subexp_inf_recursive_check_trav(NODE_BODY(node), env);
     break;
 
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
     {
       AnchorNode* an = ANCHOR_(node);
       if (ANCHOR_HAS_BODY(an))
@@ -2871,7 +2871,7 @@ subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
     }
     break;
 
-  case NT_ENCLOSE:
+  case NODE_ENCLOSE:
     if (NODE_IS_RECURSION(node)) {
       NODE_STATUS_ADD(node, NST_MARK1);
       r = subexp_inf_recursive_check(NODE_BODY(node), env, 1);
@@ -2894,18 +2894,18 @@ subexp_recursive_check(Node* node)
   int r = 0;
 
   switch (NODE_TYPE(node)) {
-  case NT_LIST:
-  case NT_ALT:
+  case NODE_LIST:
+  case NODE_ALT:
     do {
       r |= subexp_recursive_check(NODE_CAR(node));
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NT_QTFR:
+  case NODE_QTFR:
     r = subexp_recursive_check(NODE_BODY(node));
     break;
 
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
     {
       AnchorNode* an = ANCHOR_(node);
       if (ANCHOR_HAS_BODY(an))
@@ -2913,12 +2913,12 @@ subexp_recursive_check(Node* node)
     }
     break;
 
-  case NT_CALL:
+  case NODE_CALL:
     r = subexp_recursive_check(NODE_BODY(node));
     if (r != 0) NODE_STATUS_ADD(node, NST_RECURSION);
     break;
 
-  case NT_ENCLOSE:
+  case NODE_ENCLOSE:
     if (NODE_IS_MARK2(node))
       return 0;
     else if (NODE_IS_MARK1(node))
@@ -2948,8 +2948,8 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
 
   type = NODE_TYPE(node);
   switch (type) {
-  case NT_LIST:
-  case NT_ALT:
+  case NODE_LIST:
+  case NODE_ALT:
     {
       int ret;
       do {
@@ -2960,7 +2960,7 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
     }
     break;
 
-  case NT_QTFR:
+  case NODE_QTFR:
     r = subexp_recursive_check_trav(NODE_BODY(node), env);
     if (QTFR_(node)->upper == 0) {
       if (r == FOUND_CALLED_NODE)
@@ -2968,7 +2968,7 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
     }
     break;
 
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
     {
       AnchorNode* an = ANCHOR_(node);
       if (ANCHOR_HAS_BODY(an))
@@ -2976,7 +2976,7 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
     }
     break;
 
-  case NT_ENCLOSE:
+  case NODE_ENCLOSE:
     if (! NODE_IS_RECURSION(node)) {
       if (NODE_IS_CALLED(node)) {
         NODE_STATUS_ADD(node, NST_MARK1);
@@ -3006,24 +3006,24 @@ setup_subexp_call(Node* node, ScanEnv* env)
 
   type = NODE_TYPE(node);
   switch (type) {
-  case NT_LIST:
+  case NODE_LIST:
     do {
       r = setup_subexp_call(NODE_CAR(node), env);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NT_ALT:
+  case NODE_ALT:
     do {
       r = setup_subexp_call(NODE_CAR(node), env);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NT_QTFR:
-  case NT_ENCLOSE:
+  case NODE_QTFR:
+  case NODE_ENCLOSE:
     r = setup_subexp_call(NODE_BODY(node), env);
     break;
 
-  case NT_CALL:
+  case NODE_CALL:
     {
       CallNode* cn = CALL_(node);
       MemEnv* mem_env = SCANENV_MEMENV(env);
@@ -3082,7 +3082,7 @@ setup_subexp_call(Node* node, ScanEnv* env)
     }
     break;
 
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
     {
       AnchorNode* an = ANCHOR_(node);
       if (ANCHOR_HAS_BODY(an))
@@ -3128,7 +3128,7 @@ divide_look_behind_alternatives(Node* node)
   if (anc_type == ANCHOR_LOOK_BEHIND_NOT) {
     np = node;
     do {
-      SET_NODE_TYPE(np, NT_LIST);  /* alt -> list */
+      SET_NODE_TYPE(np, NODE_LIST);  /* alt -> list */
     } while (IS_NOT_NULL(np = NODE_CDR(np)));
   }
   return 0;
@@ -3164,7 +3164,7 @@ next_setup(Node* node, Node* next_node, regex_t* reg)
 
  retry:
   type = NODE_TYPE(node);
-  if (type == NT_QTFR) {
+  if (type == NODE_QTFR) {
     QtfrNode* qn = QTFR_(node);
     if (qn->greedy && IS_REPEAT_INFINITE(qn->upper)) {
 #ifdef USE_QTFR_PEEK_NEXT
@@ -3194,7 +3194,7 @@ next_setup(Node* node, Node* next_node, regex_t* reg)
       }
     }
   }
-  else if (type == NT_ENCLOSE) {
+  else if (type == NODE_ENCLOSE) {
     EncloseNode* en = ENCLOSE_(node);
     if (en->type == ENCLOSE_MEMORY) {
       node = NODE_BODY(node);
@@ -3534,7 +3534,7 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
 
   type = NODE_TYPE(node);
   switch (type) {
-  case NT_LIST:
+  case NODE_LIST:
     {
       Node* prev = NULL_NODE;
       do {
@@ -3544,7 +3544,7 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
     }
     break;
 
-  case NT_ALT:
+  case NODE_ALT:
     {
       int ret;
       do {
@@ -3554,7 +3554,7 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
     }
     break;
 
-  case NT_QTFR:
+  case NODE_QTFR:
     {
       int child_state = state;
       int add_state = 0;
@@ -3569,10 +3569,10 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
 
           /* check (a*){n,m}, (a+){n,m} => (a*){n,n}, (a+){n,n} */
           if (env->backrefed_mem == 0) {
-            if (NODE_TYPE(NODE_QTFR_BODY(qn)) == NT_ENCLOSE) {
+            if (NODE_TYPE(NODE_QTFR_BODY(qn)) == NODE_ENCLOSE) {
               EncloseNode* en = ENCLOSE_(NODE_QTFR_BODY(qn));
               if (en->type == ENCLOSE_MEMORY) {
-                if (NODE_TYPE(NODE_ENCLOSE_BODY(en)) == NT_QTFR) {
+                if (NODE_TYPE(NODE_ENCLOSE_BODY(en)) == NODE_QTFR) {
                   QtfrNode* q = QTFR_(NODE_ENCLOSE_BODY(en));
                   if (IS_REPEAT_INFINITE(q->upper)
                       && q->greedy == qn->greedy) {
@@ -3619,7 +3619,7 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
     }
     break;
 
-  case NT_ENCLOSE:
+  case NODE_ENCLOSE:
     {
       EncloseNode* en = ENCLOSE_(node);
 
@@ -3641,7 +3641,7 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
     break;
 
 #ifdef USE_SUBEXP_CALL
-  case NT_CALL:
+  case NODE_CALL:
     if (NODE_IS_RECURSION(node))
       env->has_recursion = 1;
     else
@@ -3671,8 +3671,8 @@ quantifiers_memory_node_info(Node* node, int state)
   int r = 0;
 
   switch (NODE_TYPE(node)) {
-  case NT_LIST:
-  case NT_ALT:
+  case NODE_LIST:
+  case NODE_ALT:
     {
       int v;
       do {
@@ -3683,7 +3683,7 @@ quantifiers_memory_node_info(Node* node, int state)
     break;
 
 #ifdef USE_SUBEXP_CALL
-  case NT_CALL:
+  case NODE_CALL:
     if (NODE_IS_RECURSION(node)) {
       return NQ_BODY_IS_EMPTY_REC; /* tiny version */
     }
@@ -3692,7 +3692,7 @@ quantifiers_memory_node_info(Node* node, int state)
     break;
 #endif
 
-  case NT_QTFR:
+  case NODE_QTFR:
     {
       QtfrNode* qn = QTFR_(node);
       if (qn->upper != 0) {
@@ -3701,7 +3701,7 @@ quantifiers_memory_node_info(Node* node, int state)
     }
     break;
 
-  case NT_ENCLOSE:
+  case NODE_ENCLOSE:
     {
       EncloseNode* en = ENCLOSE_(node);
       switch (en->type) {
@@ -3722,11 +3722,11 @@ quantifiers_memory_node_info(Node* node, int state)
     }
     break;
 
-  case NT_BREF:
-  case NT_STR:
-  case NT_CTYPE:
-  case NT_CCLASS:
-  case NT_ANCHOR:
+  case NODE_BREF:
+  case NODE_STR:
+  case NODE_CTYPE:
+  case NODE_CCLASS:
+  case NODE_ANCHOR:
   default:
     break;
   }
@@ -3751,7 +3751,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
   type = NODE_TYPE(node);
   switch (type) {
-  case NT_LIST:
+  case NODE_LIST:
     {
       Node* prev = NULL_NODE;
       do {
@@ -3764,30 +3764,30 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     }
     break;
 
-  case NT_ALT:
+  case NODE_ALT:
     do {
       r = setup_tree(NODE_CAR(node), reg, (state | IN_ALT), env);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NT_CCLASS:
+  case NODE_CCLASS:
     break;
 
-  case NT_STR:
+  case NODE_STR:
     if (IS_IGNORECASE(reg->options) && !NSTRING_IS_RAW(node)) {
       r = expand_case_fold_string(node, reg);
     }
     break;
 
-  case NT_CTYPE:
+  case NODE_CTYPE:
     break;
 
 #ifdef USE_SUBEXP_CALL
-  case NT_CALL:
+  case NODE_CALL:
     break;
 #endif
 
-  case NT_BREF:
+  case NODE_BREF:
     {
       int i;
       int* p;
@@ -3808,7 +3808,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     }
     break;
 
-  case NT_QTFR:
+  case NODE_QTFR:
     {
       OnigLen d;
       QtfrNode* qn = QTFR_(node);
@@ -3829,7 +3829,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
           if (r > 0) {
             qn->body_empty_info = r;
             if (r == NQ_BODY_IS_EMPTY_REC) {
-              if (NODE_TYPE(target) == NT_ENCLOSE &&
+              if (NODE_TYPE(target) == NODE_ENCLOSE &&
                   ENCLOSE_(target)->type == ENCLOSE_MEMORY) {
                 BIT_STATUS_ON_AT(env->bt_mem_end, ENCLOSE_(target)->regnum);
               }
@@ -3842,7 +3842,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
             /*  ()* ==> ()?, ()+ ==> ()  */
             qn->upper = 1;
             if (qn->lower > 1) qn->lower = 1;
-            if (NODE_TYPE(target) == NT_STR) {
+            if (NODE_TYPE(target) == NODE_STR) {
               qn->upper = qn->lower = 0;  /* /(?:)+/ ==> // */
             }
           }
@@ -3858,7 +3858,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
       /* expand string */
 #define EXPAND_STRING_MAX_LENGTH  100
-      if (NODE_TYPE(target) == NT_STR) {
+      if (NODE_TYPE(target) == NODE_STR) {
         if (!IS_REPEAT_INFINITE(qn->lower) && qn->lower == qn->upper &&
             qn->lower > 1 && qn->lower <= EXPAND_STRING_MAX_LENGTH) {
           int len = NSTRING_LEN(target);
@@ -3872,14 +3872,14 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
               if (r) break;
             }
             onig_node_free(target);
-            break; /* break case NT_QTFR: */
+            break; /* break case NODE_QTFR: */
           }
         }
       }
 
 #ifdef USE_OP_PUSH_OR_JUMP_EXACT
       if (qn->greedy && (qn->body_empty_info != 0)) {
-        if (NODE_TYPE(target) == NT_QTFR) {
+        if (NODE_TYPE(target) == NODE_QTFR) {
           QtfrNode* tqn = QTFR_(target);
           if (IS_NOT_NULL(tqn->head_exact)) {
             qn->head_exact  = tqn->head_exact;
@@ -3894,7 +3894,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     }
     break;
 
-  case NT_ENCLOSE:
+  case NODE_ENCLOSE:
     {
       EncloseNode* en = ENCLOSE_(node);
 
@@ -3926,7 +3926,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         {
           Node* target = NODE_BODY(node);
           r = setup_tree(target, reg, state, env);
-          if (NODE_TYPE(target) == NT_QTFR) {
+          if (NODE_TYPE(target) == NODE_QTFR) {
             QtfrNode* tqn = QTFR_(target);
             if (IS_REPEAT_INFINITE(tqn->upper) && tqn->lower <= 1 &&
                 tqn->greedy != 0) {  /* (?>a*), a*+ etc... */
@@ -3941,7 +3941,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     }
     break;
 
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
     {
       AnchorNode* an = ANCHOR_(node);
 
@@ -3955,8 +3955,8 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
 /* allowed node types in look-behind */
 #define ALLOWED_TYPE_IN_LB  \
-  ( BIT_NT_LIST | BIT_NT_ALT | BIT_NT_STR | BIT_NT_CCLASS | BIT_NT_CTYPE | \
-    BIT_NT_ANCHOR | BIT_NT_ENCLOSE | BIT_NT_QTFR | BIT_NT_CALL )
+  ( BIT_NODE_LIST | BIT_NODE_ALT | BIT_NODE_STR | BIT_NODE_CCLASS | BIT_NODE_CTYPE | \
+    BIT_NODE_ANCHOR | BIT_NODE_ENCLOSE | BIT_NODE_QTFR | BIT_NODE_CALL )
 
 #define ALLOWED_ENCLOSE_IN_LB       ( ENCLOSE_MEMORY | ENCLOSE_OPTION )
 #define ALLOWED_ENCLOSE_IN_LB_NOT   ENCLOSE_OPTION
@@ -4652,7 +4652,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
 
   type = NODE_TYPE(node);
   switch (type) {
-  case NT_LIST:
+  case NODE_LIST:
     {
       OptEnv nenv;
       NodeOptInfo nopt;
@@ -4669,7 +4669,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     }
     break;
 
-  case NT_ALT:
+  case NODE_ALT:
     {
       NodeOptInfo nopt;
       Node* nd = node;
@@ -4684,7 +4684,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     }
     break;
 
-  case NT_STR:
+  case NODE_STR:
     {
       StrNode* sn = STR_(node);
       int slen = sn->end - sn->s;
@@ -4727,7 +4727,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     }
     break;
 
-  case NT_CCLASS:
+  case NODE_CCLASS:
     {
       int i, z;
       CClassNode* cc = CCLASS_(node);
@@ -4752,7 +4752,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     }
     break;
 
-  case NT_CTYPE:
+  case NODE_CTYPE:
     {
       int i, min, max;
 
@@ -4790,7 +4790,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     }
     break;
 
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
     switch (ANCHOR_(node)->type) {
     case ANCHOR_BEGIN_BUF:
     case ANCHOR_BEGIN_POSITION:
@@ -4827,7 +4827,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     }
     break;
 
-  case NT_BREF:
+  case NODE_BREF:
     {
       int i;
       int* backs;
@@ -4857,7 +4857,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     break;
 
 #ifdef USE_SUBEXP_CALL
-  case NT_CALL:
+  case NODE_CALL:
     if (NODE_IS_RECURSION(node))
       set_mml(&opt->len, 0, ONIG_INFINITE_DISTANCE);
     else {
@@ -4869,7 +4869,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     break;
 #endif
 
-  case NT_QTFR:
+  case NODE_QTFR:
     {
       int i;
       OnigLen min, max;
@@ -4922,7 +4922,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     }
     break;
 
-  case NT_ENCLOSE:
+  case NODE_ENCLOSE:
     {
       EncloseNode* en = ENCLOSE_(node);
 
@@ -6193,9 +6193,9 @@ print_indent_tree(FILE* f, Node* node, int indent)
 
   type = NODE_TYPE(node);
   switch (type) {
-  case NT_LIST:
-  case NT_ALT:
-    if (NODE_TYPE(node) == NT_LIST)
+  case NODE_LIST:
+  case NODE_ALT:
+    if (NODE_TYPE(node) == NODE_LIST)
       fprintf(f, "<list:%p>\n", node);
     else
       fprintf(f, "<alt:%p>\n", node);
@@ -6210,7 +6210,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
     }
     break;
 
-  case NT_STR:
+  case NODE_STR:
     fprintf(f, "<string%s:%p>",
 	    (NSTRING_IS_RAW(node) ? "-raw" : ""), node);
     for (p = STR_(node)->s; p < STR_(node)->end; p++) {
@@ -6222,7 +6222,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
     }
     break;
 
-  case NT_CCLASS:
+  case NODE_CCLASS:
     fprintf(f, "<cclass:%p>", node);
     if (IS_NCCLASS_NOT(CCLASS_(node))) fputs(" not", f);
     if (CCLASS_(node)->mbuf) {
@@ -6234,7 +6234,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
     }
     break;
 
-  case NT_CTYPE:
+  case NODE_CTYPE:
     fprintf(f, "<ctype:%p> ", node);
     switch (CTYPE_(node)->ctype) {
     case CTYPE_ANYCHAR:
@@ -6254,7 +6254,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
     }
     break;
 
-  case NT_ANCHOR:
+  case NODE_ANCHOR:
     fprintf(f, "<anchor:%p> ", node);
     switch (ANCHOR_(node)->type) {
     case ANCHOR_BEGIN_BUF:      fputs("begin buf",      f); break;
@@ -6293,7 +6293,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
     }
     break;
 
-  case NT_BREF:
+  case NODE_BREF:
     {
       int* p;
       BRefNode* br = BREF_(node);
@@ -6307,7 +6307,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
     break;
 
 #ifdef USE_SUBEXP_CALL
-  case NT_CALL:
+  case NODE_CALL:
     {
       CallNode* cn = CALL_(node);
       fprintf(f, "<call:%p>", node);
@@ -6316,14 +6316,14 @@ print_indent_tree(FILE* f, Node* node, int indent)
     break;
 #endif
 
-  case NT_QTFR:
+  case NODE_QTFR:
     fprintf(f, "<quantifier:%p>{%d,%d}%s\n", node,
 	    QTFR_(node)->lower, QTFR_(node)->upper,
 	    (QTFR_(node)->greedy ? "" : "?"));
     print_indent_tree(f, NODE_BODY(node), indent + add);
     break;
 
-  case NT_ENCLOSE:
+  case NODE_ENCLOSE:
     fprintf(f, "<enclose:%p> ", node);
     switch (ENCLOSE_(node)->type) {
     case ENCLOSE_OPTION:
@@ -6348,8 +6348,8 @@ print_indent_tree(FILE* f, Node* node, int indent)
     break;
   }
 
-  if (type != NT_LIST && type != NT_ALT && type != NT_QTFR &&
-      type != NT_ENCLOSE)
+  if (type != NODE_LIST && type != NODE_ALT && type != NODE_QTFR &&
+      type != NODE_ENCLOSE)
     fprintf(f, "\n");
   fflush(f);
 }
