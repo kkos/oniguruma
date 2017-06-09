@@ -1082,21 +1082,13 @@ onig_node_free(Node* node)
     }
     break;
 
-  case NT_QTFR:
-    if (NODE_BODY(node))
-      onig_node_free(NODE_BODY(node));
-    break;
-
-  case NT_ENCLOSE:
-    if (NODE_BODY(node))
-      onig_node_free(NODE_BODY(node));
-    break;
-
   case NT_BREF:
     if (IS_NOT_NULL(NBREF(node)->back_dynamic))
       xfree(NBREF(node)->back_dynamic);
     break;
 
+  case NT_QTFR:
+  case NT_ENCLOSE:
   case NT_ANCHOR:
     if (NODE_BODY(node))
       onig_node_free(NODE_BODY(node));
@@ -1535,7 +1527,7 @@ onig_scan_unsigned_number(UChar** src, const UChar* end, OnigEncoding enc)
   PFETCH_READY;
 
   num = 0;
-  while (!PEND) {
+  while (! PEND) {
     PFETCH(c);
     if (ONIGENC_IS_CODE_DIGIT(enc, c)) {
       val = (unsigned int )DIGITVAL(c);
@@ -1591,7 +1583,7 @@ scan_unsigned_octal_number(UChar** src, UChar* end, int maxlen,
   PFETCH_READY;
 
   num = 0;
-  while (!PEND && maxlen-- != 0) {
+  while (! PEND && maxlen-- != 0) {
     PFETCH(c);
     if (ONIGENC_IS_CODE_DIGIT(enc, c) && c < '8') {
       val = ODIGITVAL(c);
