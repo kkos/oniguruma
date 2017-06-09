@@ -3058,6 +3058,12 @@ setup_subexp_call(Node* node, ScanEnv* env)
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
+  case NODE_ANCHOR:
+    if (! ANCHOR_HAS_BODY(ANCHOR_(node))) {
+      r = 0;
+      break;
+    }
+    /* fall */
   case NODE_QTFR:
   case NODE_ENCLOSURE:
     r = setup_subexp_call(NODE_BODY(node), env);
@@ -3065,16 +3071,6 @@ setup_subexp_call(Node* node, ScanEnv* env)
 
   case NODE_CALL:
     r = setup_subexp_call_node_call(CALL_(node), env);
-    break;
-
-  case NODE_ANCHOR:
-    {
-      AnchorNode* an = ANCHOR_(node);
-      if (ANCHOR_HAS_BODY(an))
-        r = setup_subexp_call(NODE_ANCHOR_BODY(an), env);
-      else
-        r = 0;
-    }
     break;
 
   default:
