@@ -2998,11 +2998,6 @@ setup_subexp_call(Node* node, ScanEnv* env)
 
   switch (NODE_TYPE(node)) {
   case NODE_LIST:
-    do {
-      r = setup_subexp_call(NODE_CAR(node), env);
-    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
-    break;
-
   case NODE_ALT:
     do {
       r = setup_subexp_call(NODE_CAR(node), env);
