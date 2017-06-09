@@ -1088,7 +1088,7 @@ onig_node_free(Node* node)
     break;
 
   case NODE_QTFR:
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
   case NODE_ANCHOR:
     if (NODE_BODY(node))
       onig_node_free(NODE_BODY(node));
@@ -1300,36 +1300,36 @@ node_new_quantifier(int lower, int upper, int by_number)
 }
 
 static Node*
-node_new_enclose(int type)
+node_new_enclosure(int type)
 {
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NODE_ENCLOSE);
-  ENCLOSE_(node)->type      = type;
-  ENCLOSE_(node)->regnum    =  0;
-  ENCLOSE_(node)->option    =  0;
-  ENCLOSE_(node)->call_addr = -1;
-  ENCLOSE_(node)->opt_count =  0;
+  SET_NODE_TYPE(node, NODE_ENCLOSURE);
+  ENCLOSURE_(node)->type      = type;
+  ENCLOSURE_(node)->regnum    =  0;
+  ENCLOSURE_(node)->option    =  0;
+  ENCLOSURE_(node)->call_addr = -1;
+  ENCLOSURE_(node)->opt_count =  0;
   return node;
 }
 
 extern Node*
-onig_node_new_enclose(int type)
+onig_node_new_enclosure(int type)
 {
-  return node_new_enclose(type);
+  return node_new_enclosure(type);
 }
 
 static Node*
-node_new_enclose_memory(OnigOptionType option, int is_named)
+node_new_enclosure_memory(OnigOptionType option, int is_named)
 {
-  Node* node = node_new_enclose(ENCLOSE_MEMORY);
+  Node* node = node_new_enclosure(ENCLOSURE_MEMORY);
   CHECK_NULL_RETURN(node);
   if (is_named != 0)
     NODE_STATUS_ADD(node, NST_NAMED_GROUP);
 
 #ifdef USE_SUBEXP_CALL
-  ENCLOSE_(node)->option = option;
+  ENCLOSURE_(node)->option = option;
 #endif
   return node;
 }
@@ -1337,9 +1337,9 @@ node_new_enclose_memory(OnigOptionType option, int is_named)
 static Node*
 node_new_option(OnigOptionType option)
 {
-  Node* node = node_new_enclose(ENCLOSE_OPTION);
+  Node* node = node_new_enclosure(ENCLOSURE_OPTION);
   CHECK_NULL_RETURN(node);
-  ENCLOSE_(node)->option = option;
+  ENCLOSURE_(node)->option = option;
   return node;
 }
 
@@ -2055,7 +2055,7 @@ is_invalid_quantifier_target(Node* node)
     return 1;
     break;
 
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
     /* allow enclosed elements */
     /* return is_invalid_quantifier_target(NODE_BODY(node)); */
     break;
@@ -4496,7 +4496,7 @@ static int parse_subexp(Node** top, OnigToken* tok, int term,
 			UChar** src, UChar* end, ScanEnv* env);
 
 static int
-parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
+parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 	      ScanEnv* env)
 {
   int r, num;
@@ -4539,7 +4539,7 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
       *np = onig_node_new_anchor(ANCHOR_PREC_READ_NOT);
       break;
     case '>':            /* (?>...) stop backtrack */
-      *np = node_new_enclose(ENCLOSE_STOP_BACKTRACK);
+      *np = node_new_enclosure(ENCLOSURE_STOP_BACKTRACK);
       break;
 
 #ifdef USE_NAMED_GROUP
@@ -4583,9 +4583,9 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 
           r = name_add(env->reg, name, name_end, num, env);
           if (r != 0) return r;
-          *np = node_new_enclose_memory(env->option, 1);
+          *np = node_new_enclosure_memory(env->option, 1);
           CHECK_NULL_RETURN_MEMERR(*np);
-          ENCLOSE_(*np)->regnum = num;
+          ENCLOSURE_(*np)->regnum = num;
           if (list_capture != 0)
             BIT_STATUS_ON_AT_SIMPLE(env->capture_history, num);
           env->num_named++;
@@ -4613,7 +4613,7 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           PUNFETCH;
         }
 #endif
-        *np = node_new_enclose_memory(env->option, 0);
+        *np = node_new_enclosure_memory(env->option, 0);
         CHECK_NULL_RETURN_MEMERR(*np);
         num = scan_env_add_mem_entry(env);
         if (num < 0) {
@@ -4622,7 +4622,7 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
         else if (num >= (int )BIT_STATUS_BITS_NUM) {
           return ONIGERR_GROUP_NUMBER_OVER_FOR_CAPTURE_HISTORY;
         }
-        ENCLOSE_(*np)->regnum = num;
+        ENCLOSURE_(*np)->regnum = num;
         BIT_STATUS_ON_AT_SIMPLE(env->capture_history, num);
       }
       else {
@@ -4712,11 +4712,11 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
     if (ONIG_IS_OPTION_ON(env->option, ONIG_OPTION_DONT_CAPTURE_GROUP))
       goto group;
 
-    *np = node_new_enclose_memory(env->option, 0);
+    *np = node_new_enclosure_memory(env->option, 0);
     CHECK_NULL_RETURN_MEMERR(*np);
     num = scan_env_add_mem_entry(env);
     if (num < 0) return num;
-    ENCLOSE_(*np)->regnum = num;
+    ENCLOSURE_(*np)->regnum = num;
   }
 
   CHECK_NULL_RETURN_MEMERR(*np);
@@ -4729,10 +4729,10 @@ parse_enclose(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
   }
 
   NODE_BODY(*np) = target;
-  if (NODE_TYPE(*np) == NODE_ENCLOSE) {
-    if (ENCLOSE_(*np)->type == ENCLOSE_MEMORY) {
+  if (NODE_TYPE(*np) == NODE_ENCLOSURE) {
+    if (ENCLOSURE_(*np)->type == ENCLOSURE_MEMORY) {
       /* Don't move this to previous of parse_subexp() */
-      r = scan_env_set_mem_node(env, ENCLOSE_(*np)->regnum, *np);
+      r = scan_env_set_mem_node(env, ENCLOSURE_(*np)->regnum, *np);
       if (r != 0) return r;
     }
   }
@@ -4972,14 +4972,14 @@ parse_exp(Node** np, OnigToken* tok, int term,
   break;
 
   case TK_SUBEXP_OPEN:
-    r = parse_enclose(np, tok, TK_SUBEXP_CLOSE, src, end, env);
+    r = parse_enclosure(np, tok, TK_SUBEXP_CLOSE, src, end, env);
     if (r < 0) return r;
     if (r == 1) group = 1;
     else if (r == 2) { /* option only */
       Node* target;
       OnigOptionType prev = env->option;
 
-      env->option = ENCLOSE_(*np)->option;
+      env->option = ENCLOSURE_(*np)->option;
       r = fetch_token(tok, src, end, env);
       if (r < 0) return r;
       r = parse_subexp(&target, tok, term, src, end, env);
@@ -5253,7 +5253,7 @@ parse_exp(Node** np, OnigToken* tok, int term,
 
       if (tok->u.repeat.possessive != 0) {
         Node* en;
-        en = node_new_enclose(ENCLOSE_STOP_BACKTRACK);
+        en = node_new_enclosure(ENCLOSURE_STOP_BACKTRACK);
         if (IS_NULL(en)) {
           onig_node_free(qn);
           return ONIGERR_MEMORY;

@@ -1233,13 +1233,13 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg)
 #endif /* USE_COMBINATION_EXPLOSION_CHECK */
 
 static int
-compile_length_option_node(EncloseNode* node, regex_t* reg)
+compile_length_option_node(EnclosureNode* node, regex_t* reg)
 {
   int tlen;
   OnigOptionType prev = reg->options;
 
   reg->options = node->option;
-  tlen = compile_length_tree(NODE_ENCLOSE_BODY(node), reg);
+  tlen = compile_length_tree(NODE_ENCLOSURE_BODY(node), reg);
   reg->options = prev;
 
   if (tlen < 0) return tlen;
@@ -1253,7 +1253,7 @@ compile_length_option_node(EncloseNode* node, regex_t* reg)
 }
 
 static int
-compile_option_node(EncloseNode* node, regex_t* reg)
+compile_option_node(EnclosureNode* node, regex_t* reg)
 {
   int r;
   OnigOptionType prev = reg->options;
@@ -1268,7 +1268,7 @@ compile_option_node(EncloseNode* node, regex_t* reg)
   }
 
   reg->options = node->option;
-  r = compile_tree(NODE_ENCLOSE_BODY(node), reg);
+  r = compile_tree(NODE_ENCLOSURE_BODY(node), reg);
   reg->options = prev;
 
   if (IS_DYNAMIC_OPTION(prev ^ node->option)) {
@@ -1279,23 +1279,23 @@ compile_option_node(EncloseNode* node, regex_t* reg)
 }
 
 static int
-compile_length_enclose_node(EncloseNode* node, regex_t* reg)
+compile_length_enclosure_node(EnclosureNode* node, regex_t* reg)
 {
   int len;
   int tlen;
 
-  if (node->type == ENCLOSE_OPTION)
+  if (node->type == ENCLOSURE_OPTION)
     return compile_length_option_node(node, reg);
 
-  if (NODE_ENCLOSE_BODY(node)) {
-    tlen = compile_length_tree(NODE_ENCLOSE_BODY(node), reg);
+  if (NODE_ENCLOSURE_BODY(node)) {
+    tlen = compile_length_tree(NODE_ENCLOSURE_BODY(node), reg);
     if (tlen < 0) return tlen;
   }
   else
     tlen = 0;
 
   switch (node->type) {
-  case ENCLOSE_MEMORY:
+  case ENCLOSURE_MEMORY:
 #ifdef USE_SUBEXP_CALL
     if (NODE_IS_CALLED(node)) {
       len = SIZE_OP_MEMORY_START_PUSH + tlen
@@ -1325,9 +1325,9 @@ compile_length_enclose_node(EncloseNode* node, regex_t* reg)
     }
     break;
 
-  case ENCLOSE_STOP_BACKTRACK:
+  case ENCLOSURE_STOP_BACKTRACK:
     if (NODE_IS_STOP_BT_SIMPLE_REPEAT(node)) {
-      QtfrNode* qn = QTFR_(NODE_ENCLOSE_BODY(node));
+      QtfrNode* qn = QTFR_(NODE_ENCLOSURE_BODY(node));
       tlen = compile_length_tree(NODE_QTFR_BODY(qn), reg);
       if (tlen < 0) return tlen;
 
@@ -1350,15 +1350,15 @@ compile_length_enclose_node(EncloseNode* node, regex_t* reg)
 static int get_char_length_tree(Node* node, regex_t* reg, int* len);
 
 static int
-compile_enclose_node(EncloseNode* node, regex_t* reg)
+compile_enclosure_node(EnclosureNode* node, regex_t* reg)
 {
   int r, len;
 
-  if (node->type == ENCLOSE_OPTION)
+  if (node->type == ENCLOSURE_OPTION)
     return compile_option_node(node, reg);
 
   switch (node->type) {
-  case ENCLOSE_MEMORY:
+  case ENCLOSURE_MEMORY:
 #ifdef USE_SUBEXP_CALL
     if (NODE_IS_CALLED(node)) {
       r = add_opcode(reg, OP_CALL);
@@ -1367,7 +1367,7 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
       NODE_STATUS_ADD(node, NST_ADDR_FIXED);
       r = add_abs_addr(reg, (int )node->call_addr);
       if (r) return r;
-      len = compile_length_tree(NODE_ENCLOSE_BODY(node), reg);
+      len = compile_length_tree(NODE_ENCLOSURE_BODY(node), reg);
       len += (SIZE_OP_MEMORY_START_PUSH + SIZE_OP_RETURN);
       if (BIT_STATUS_AT(reg->bt_mem_end, node->regnum))
         len += (NODE_IS_RECURSION(node)
@@ -1387,7 +1387,7 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
     if (r) return r;
     r = add_mem_num(reg, node->regnum);
     if (r) return r;
-    r = compile_tree(NODE_ENCLOSE_BODY(node), reg);
+    r = compile_tree(NODE_ENCLOSURE_BODY(node), reg);
     if (r) return r;
 #ifdef USE_SUBEXP_CALL
     if (NODE_IS_CALLED(node)) {
@@ -1423,9 +1423,9 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
     }
     break;
 
-  case ENCLOSE_STOP_BACKTRACK:
+  case ENCLOSURE_STOP_BACKTRACK:
     if (NODE_IS_STOP_BT_SIMPLE_REPEAT(node)) {
-      QtfrNode* qn = QTFR_(NODE_ENCLOSE_BODY(node));
+      QtfrNode* qn = QTFR_(NODE_ENCLOSURE_BODY(node));
       r = compile_tree_n_times(NODE_QTFR_BODY(qn), qn->lower, reg);
       if (r) return r;
 
@@ -1444,7 +1444,7 @@ compile_enclose_node(EncloseNode* node, regex_t* reg)
     else {
       r = add_opcode(reg, OP_PUSH_STOP_BT);
       if (r) return r;
-      r = compile_tree(NODE_ENCLOSE_BODY(node), reg);
+      r = compile_tree(NODE_ENCLOSURE_BODY(node), reg);
       if (r) return r;
       r = add_opcode(reg, OP_POP_STOP_BT);
     }
@@ -1651,8 +1651,8 @@ compile_length_tree(Node* node, regex_t* reg)
     r = compile_length_quantifier_node(QTFR_(node), reg);
     break;
 
-  case NODE_ENCLOSE:
-    r = compile_length_enclose_node(ENCLOSE_(node), reg);
+  case NODE_ENCLOSURE:
+    r = compile_length_enclosure_node(ENCLOSURE_(node), reg);
     break;
 
   case NODE_ANCHOR:
@@ -1817,8 +1817,8 @@ compile_tree(Node* node, regex_t* reg)
     r = compile_quantifier_node(QTFR_(node), reg);
     break;
 
-  case NODE_ENCLOSE:
-    r = compile_enclose_node(ENCLOSE_(node), reg);
+  case NODE_ENCLOSURE:
+    r = compile_enclosure_node(ENCLOSURE_(node), reg);
     break;
 
   case NODE_ANCHOR:
@@ -1862,10 +1862,10 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
     }
     break;
 
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
     {
-      EncloseNode* en = ENCLOSE_(node);
-      if (en->type == ENCLOSE_MEMORY) {
+      EnclosureNode* en = ENCLOSURE_(node);
+      if (en->type == ENCLOSURE_MEMORY) {
         if (NODE_IS_NAMED_GROUP(node)) {
           (*counter)++;
           map[en->regnum].new_val = *counter;
@@ -1938,7 +1938,7 @@ renumber_by_map(Node* node, GroupNumRemap* map)
     break;
 
   case NODE_QTFR:
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
     r = renumber_by_map(NODE_BODY(node), map);
     break;
 
@@ -1972,7 +1972,7 @@ numbered_ref_check(Node* node)
     break;
 
   case NODE_QTFR:
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
     r = numbered_ref_check(NODE_BODY(node));
     break;
 
@@ -2039,11 +2039,11 @@ static int
 unset_addr_list_fix(UnsetAddrList* uslist, regex_t* reg)
 {
   int i, offset;
-  EncloseNode* en;
+  EnclosureNode* en;
   AbsAddrType addr;
 
   for (i = 0; i < uslist->num; i++) {
-    en = ENCLOSE_(uslist->us[i].target);
+    en = ENCLOSURE_(uslist->us[i].target);
     if (! NODE_IS_ADDR_FIXED(en)) return ONIGERR_PARSER_BUG;
     addr = en->call_addr;
     offset = uslist->us[i].offset;
@@ -2143,11 +2143,11 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
     *len = 1;
     break;
 
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
     {
-      EncloseNode* en = ENCLOSE_(node);
+      EnclosureNode* en = ENCLOSURE_(node);
       switch (en->type) {
-      case ENCLOSE_MEMORY:
+      case ENCLOSURE_MEMORY:
 #ifdef USE_SUBEXP_CALL
         if (NODE_IS_CLEN_FIXED(node))
           *len = en->char_len;
@@ -2160,8 +2160,8 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
         }
         break;
 #endif
-      case ENCLOSE_OPTION:
-      case ENCLOSE_STOP_BACKTRACK:
+      case ENCLOSURE_OPTION:
+      case ENCLOSURE_STOP_BACKTRACK:
         r = get_char_length_tree1(NODE_BODY(node), reg, len, level);
         break;
       default:
@@ -2430,22 +2430,22 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
     }
     break;
 
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
     {
-      EncloseNode* en = ENCLOSE_(node);
+      EnclosureNode* en = ENCLOSURE_(node);
       switch (en->type) {
-      case ENCLOSE_OPTION:
+      case ENCLOSURE_OPTION:
         {
           OnigOptionType options = reg->options;
 
-          reg->options = ENCLOSE_(node)->option;
+          reg->options = ENCLOSURE_(node)->option;
           n = get_head_value_node(NODE_BODY(node), exact, reg);
           reg->options = options;
         }
         break;
 
-      case ENCLOSE_MEMORY:
-      case ENCLOSE_STOP_BACKTRACK:
+      case ENCLOSURE_MEMORY:
+      case ENCLOSURE_STOP_BACKTRACK:
         n = get_head_value_node(NODE_BODY(node), exact, reg);
         break;
       }
@@ -2465,7 +2465,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
 }
 
 static int
-check_type_tree(Node* node, int type_mask, int enclose_mask, int anchor_mask)
+check_type_tree(Node* node, int type_mask, int enclosure_mask, int anchor_mask)
 {
   NodeType type;
   int r = 0;
@@ -2478,22 +2478,22 @@ check_type_tree(Node* node, int type_mask, int enclose_mask, int anchor_mask)
   case NODE_LIST:
   case NODE_ALT:
     do {
-      r = check_type_tree(NODE_CAR(node), type_mask, enclose_mask,
+      r = check_type_tree(NODE_CAR(node), type_mask, enclosure_mask,
                           anchor_mask);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NODE_QTFR:
-    r = check_type_tree(NODE_BODY(node), type_mask, enclose_mask, anchor_mask);
+    r = check_type_tree(NODE_BODY(node), type_mask, enclosure_mask, anchor_mask);
     break;
 
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
     {
-      EncloseNode* en = ENCLOSE_(node);
-      if ((en->type & enclose_mask) == 0)
+      EnclosureNode* en = ENCLOSURE_(node);
+      if ((en->type & enclosure_mask) == 0)
         return 1;
 
-      r = check_type_tree(NODE_BODY(node), type_mask, enclose_mask, anchor_mask);
+      r = check_type_tree(NODE_BODY(node), type_mask, enclosure_mask, anchor_mask);
     }
     break;
 
@@ -2503,7 +2503,7 @@ check_type_tree(Node* node, int type_mask, int enclose_mask, int anchor_mask)
       return 1;
 
     if (IS_NOT_NULL(NODE_BODY(node)))
-      r = check_type_tree(NODE_BODY(node), type_mask, enclose_mask, anchor_mask);
+      r = check_type_tree(NODE_BODY(node), type_mask, enclosure_mask, anchor_mask);
     break;
 
   default:
@@ -2547,7 +2547,7 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
       Node* t = NODE_BODY(node);
       if (NODE_IS_RECURSION(node)) {
         if (NODE_IS_MIN_FIXED(t))
-          *min = ENCLOSE_(t)->min_len;
+          *min = ENCLOSURE_(t)->min_len;
       }
       else
         r = get_min_len(t, min, env);
@@ -2603,11 +2603,11 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
     }
     break;
 
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
     {
-      EncloseNode* en = ENCLOSE_(node);
+      EnclosureNode* en = ENCLOSURE_(node);
       switch (en->type) {
-      case ENCLOSE_MEMORY:
+      case ENCLOSURE_MEMORY:
         if (NODE_IS_MIN_FIXED(node))
           *min = en->min_len;
         else {
@@ -2625,8 +2625,8 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
         }
         break;
 
-      case ENCLOSE_OPTION:
-      case ENCLOSE_STOP_BACKTRACK:
+      case ENCLOSURE_OPTION:
+      case ENCLOSURE_STOP_BACKTRACK:
         r = get_min_len(NODE_BODY(node), min, env);
         break;
       }
@@ -2721,11 +2721,11 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
     }
     break;
 
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
     {
-      EncloseNode* en = ENCLOSE_(node);
+      EnclosureNode* en = ENCLOSURE_(node);
       switch (en->type) {
-      case ENCLOSE_MEMORY:
+      case ENCLOSURE_MEMORY:
         if (NODE_IS_MAX_FIXED(node))
           *max = en->max_len;
         else {
@@ -2743,8 +2743,8 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
         }
         break;
 
-      case ENCLOSE_OPTION:
-      case ENCLOSE_STOP_BACKTRACK:
+      case ENCLOSURE_OPTION:
+      case ENCLOSURE_STOP_BACKTRACK:
         r = get_max_len(NODE_BODY(node), max, env);
         break;
       }
@@ -2822,7 +2822,7 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
     r = subexp_inf_recursive_check(NODE_BODY(node), env, head);
     break;
 
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
     if (NODE_IS_MARK2(node))
       return 0;
     else if (NODE_IS_MARK1(node))
@@ -2866,7 +2866,7 @@ subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
     }
     break;
 
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
     if (NODE_IS_RECURSION(node)) {
       NODE_STATUS_ADD(node, NST_MARK1);
       r = subexp_inf_recursive_check(NODE_BODY(node), env, 1);
@@ -2913,7 +2913,7 @@ subexp_recursive_check(Node* node)
     if (r != 0) NODE_STATUS_ADD(node, NST_RECURSION);
     break;
 
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
     if (NODE_IS_MARK2(node))
       return 0;
     else if (NODE_IS_MARK1(node))
@@ -2969,7 +2969,7 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
     }
     break;
 
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
     if (! NODE_IS_RECURSION(node)) {
       if (NODE_IS_CALLED(node)) {
         NODE_STATUS_ADD(node, NST_MARK1);
@@ -3067,7 +3067,7 @@ setup_subexp_call(Node* node, ScanEnv* env)
     break;
 
   case NODE_QTFR:
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
     r = setup_subexp_call(NODE_BODY(node), env);
     break;
 
@@ -3178,7 +3178,7 @@ next_setup(Node* node, Node* next_node, regex_t* reg)
           if (IS_NOT_NULL(x)) {
             y = get_head_value_node(next_node,  0, reg);
             if (IS_NOT_NULL(y) && is_exclusive(x, y, reg)) {
-              Node* en = onig_node_new_enclose(ENCLOSE_STOP_BACKTRACK);
+              Node* en = onig_node_new_enclosure(ENCLOSURE_STOP_BACKTRACK);
               CHECK_NULL_RETURN_MEMERR(en);
               NODE_STATUS_ADD(en, NST_STOP_BT_SIMPLE_REPEAT);
               swap_node(node, en);
@@ -3189,9 +3189,9 @@ next_setup(Node* node, Node* next_node, regex_t* reg)
       }
     }
   }
-  else if (type == NODE_ENCLOSE) {
-    EncloseNode* en = ENCLOSE_(node);
-    if (en->type == ENCLOSE_MEMORY) {
+  else if (type == NODE_ENCLOSURE) {
+    EnclosureNode* en = ENCLOSURE_(node);
+    if (en->type == ENCLOSURE_MEMORY) {
       node = NODE_BODY(node);
       goto retry;
     }
@@ -3562,11 +3562,11 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
 
           /* check (a*){n,m}, (a+){n,m} => (a*){n,n}, (a+){n,n} */
           if (env->backrefed_mem == 0) {
-            if (NODE_TYPE(NODE_QTFR_BODY(qn)) == NODE_ENCLOSE) {
-              EncloseNode* en = ENCLOSE_(NODE_QTFR_BODY(qn));
-              if (en->type == ENCLOSE_MEMORY) {
-                if (NODE_TYPE(NODE_ENCLOSE_BODY(en)) == NODE_QTFR) {
-                  QtfrNode* q = QTFR_(NODE_ENCLOSE_BODY(en));
+            if (NODE_TYPE(NODE_QTFR_BODY(qn)) == NODE_ENCLOSURE) {
+              EnclosureNode* en = ENCLOSURE_(NODE_QTFR_BODY(qn));
+              if (en->type == ENCLOSURE_MEMORY) {
+                if (NODE_TYPE(NODE_ENCLOSURE_BODY(en)) == NODE_QTFR) {
+                  QtfrNode* q = QTFR_(NODE_ENCLOSURE_BODY(en));
                   if (IS_REPEAT_INFINITE(q->upper)
                       && q->greedy == qn->greedy) {
                     qn->upper = (qn->lower == 0 ? 1 : qn->lower);
@@ -3612,22 +3612,22 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
     }
     break;
 
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
     {
-      EncloseNode* en = ENCLOSE_(node);
+      EnclosureNode* en = ENCLOSURE_(node);
 
       switch (en->type) {
-      case ENCLOSE_MEMORY:
+      case ENCLOSURE_MEMORY:
         {
           if (env->curr_max_regnum < en->regnum)
             env->curr_max_regnum = en->regnum;
 
-          r = setup_comb_exp_check(NODE_ENCLOSE_BODY(en), state, env);
+          r = setup_comb_exp_check(NODE_ENCLOSURE_BODY(en), state, env);
         }
         break;
 
       default:
-        r = setup_comb_exp_check(NODE_ENCLOSE_BODY(en), state, env);
+        r = setup_comb_exp_check(NODE_ENCLOSURE_BODY(en), state, env);
         break;
       }
     }
@@ -3694,19 +3694,19 @@ quantifiers_memory_node_info(Node* node, int state)
     }
     break;
 
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
     {
-      EncloseNode* en = ENCLOSE_(node);
+      EnclosureNode* en = ENCLOSURE_(node);
       switch (en->type) {
-      case ENCLOSE_MEMORY:
+      case ENCLOSURE_MEMORY:
         if (NODE_IS_RECURSION(node) || (state & IN_RECCALL) != 0) {
           return NQ_BODY_IS_EMPTY_REC;
         }
         return NQ_BODY_IS_EMPTY_MEM;
         break;
 
-      case ENCLOSE_OPTION:
-      case ENCLOSE_STOP_BACKTRACK:
+      case ENCLOSURE_OPTION:
+      case ENCLOSURE_STOP_BACKTRACK:
         r = quantifiers_memory_node_info(NODE_BODY(node), state);
         break;
       default:
@@ -3820,9 +3820,9 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
           if (r > 0) {
             qn->body_empty_info = r;
             if (r == NQ_BODY_IS_EMPTY_REC) {
-              if (NODE_TYPE(target) == NODE_ENCLOSE &&
-                  ENCLOSE_(target)->type == ENCLOSE_MEMORY) {
-                BIT_STATUS_ON_AT(env->bt_mem_end, ENCLOSE_(target)->regnum);
+              if (NODE_TYPE(target) == NODE_ENCLOSURE &&
+                  ENCLOSURE_(target)->type == ENCLOSURE_MEMORY) {
+                BIT_STATUS_ON_AT(env->bt_mem_end, ENCLOSURE_(target)->regnum);
               }
             }
           }
@@ -3885,21 +3885,21 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     }
     break;
 
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
     {
-      EncloseNode* en = ENCLOSE_(node);
+      EnclosureNode* en = ENCLOSURE_(node);
 
       switch (en->type) {
-      case ENCLOSE_OPTION:
+      case ENCLOSURE_OPTION:
         {
           OnigOptionType options = reg->options;
-          reg->options = ENCLOSE_(node)->option;
+          reg->options = ENCLOSURE_(node)->option;
           r = setup_tree(NODE_BODY(node), reg, state, env);
           reg->options = options;
         }
         break;
 
-      case ENCLOSE_MEMORY:
+      case ENCLOSURE_MEMORY:
         if ((state & (IN_ALT | IN_NOT | IN_VAR_REPEAT | IN_CALL)) != 0) {
           BIT_STATUS_ON_AT(env->bt_mem_start, en->regnum);
           /* NODE_STATUS_ADD(node, NST_MEM_IN_ALT_NOT); */
@@ -3913,7 +3913,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         r = setup_tree(NODE_BODY(node), reg, state, env);
         break;
 
-      case ENCLOSE_STOP_BACKTRACK:
+      case ENCLOSURE_STOP_BACKTRACK:
         {
           Node* target = NODE_BODY(node);
           r = setup_tree(target, reg, state, env);
@@ -3946,10 +3946,10 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 /* allowed node types in look-behind */
 #define ALLOWED_TYPE_IN_LB  \
   ( BIT_NODE_LIST | BIT_NODE_ALT | BIT_NODE_STR | BIT_NODE_CCLASS | BIT_NODE_CTYPE | \
-    BIT_NODE_ANCHOR | BIT_NODE_ENCLOSE | BIT_NODE_QTFR | BIT_NODE_CALL )
+    BIT_NODE_ANCHOR | BIT_NODE_ENCLOSURE | BIT_NODE_QTFR | BIT_NODE_CALL )
 
-#define ALLOWED_ENCLOSE_IN_LB       ( ENCLOSE_MEMORY | ENCLOSE_OPTION )
-#define ALLOWED_ENCLOSE_IN_LB_NOT   ENCLOSE_OPTION
+#define ALLOWED_ENCLOSURE_IN_LB       ( ENCLOSURE_MEMORY | ENCLOSURE_OPTION )
+#define ALLOWED_ENCLOSURE_IN_LB_NOT   ENCLOSURE_OPTION
 
 #define ALLOWED_ANCHOR_IN_LB \
 ( ANCHOR_LOOK_BEHIND | ANCHOR_BEGIN_LINE | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUND | ANCHOR_NOT_WORD_BOUND | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END )
@@ -3960,7 +3960,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
       case ANCHOR_LOOK_BEHIND:
         {
           r = check_type_tree(NODE_ANCHOR_BODY(an), ALLOWED_TYPE_IN_LB,
-                              ALLOWED_ENCLOSE_IN_LB, ALLOWED_ANCHOR_IN_LB);
+                              ALLOWED_ENCLOSURE_IN_LB, ALLOWED_ANCHOR_IN_LB);
           if (r < 0) return r;
           if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
           r = setup_tree(NODE_ANCHOR_BODY(an), reg, state, env);
@@ -3972,7 +3972,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
       case ANCHOR_LOOK_BEHIND_NOT:
         {
           r = check_type_tree(NODE_ANCHOR_BODY(an), ALLOWED_TYPE_IN_LB,
-                   ALLOWED_ENCLOSE_IN_LB_NOT, ALLOWED_ANCHOR_IN_LB_NOT);
+                   ALLOWED_ENCLOSURE_IN_LB_NOT, ALLOWED_ANCHOR_IN_LB_NOT);
           if (r < 0) return r;
           if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
           r = setup_tree(NODE_ANCHOR_BODY(an), reg, (state | IN_NOT), env);
@@ -4850,7 +4850,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
       set_mml(&opt->len, 0, ONIG_INFINITE_DISTANCE);
     else {
       OnigOptionType save = env->options;
-      env->options = ENCLOSE_(NODE_BODY(node))->option;
+      env->options = ENCLOSURE_(NODE_BODY(node))->option;
       r = optimize_node_left(NODE_BODY(node), opt, env);
       env->options = save;
     }
@@ -4910,12 +4910,12 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     }
     break;
 
-  case NODE_ENCLOSE:
+  case NODE_ENCLOSURE:
     {
-      EncloseNode* en = ENCLOSE_(node);
+      EnclosureNode* en = ENCLOSURE_(node);
 
       switch (en->type) {
-      case ENCLOSE_OPTION:
+      case ENCLOSURE_OPTION:
         {
           OnigOptionType save = env->options;
 
@@ -4925,7 +4925,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
         }
         break;
 
-      case ENCLOSE_MEMORY:
+      case ENCLOSURE_MEMORY:
 #ifdef USE_SUBEXP_CALL
         en->opt_count++;
         if (en->opt_count > MAX_NODE_OPT_INFO_REF_COUNT) {
@@ -4949,7 +4949,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
           }
         break;
 
-      case ENCLOSE_STOP_BACKTRACK:
+      case ENCLOSURE_STOP_BACKTRACK:
         r = optimize_node_left(NODE_BODY(node), opt, env);
         break;
       }
@@ -6312,16 +6312,16 @@ print_indent_tree(FILE* f, Node* node, int indent)
     print_indent_tree(f, NODE_BODY(node), indent + add);
     break;
 
-  case NODE_ENCLOSE:
-    fprintf(f, "<enclose:%p> ", node);
-    switch (ENCLOSE_(node)->type) {
-    case ENCLOSE_OPTION:
-      fprintf(f, "option:%d", ENCLOSE_(node)->option);
+  case NODE_ENCLOSURE:
+    fprintf(f, "<enclosure:%p> ", node);
+    switch (ENCLOSURE_(node)->type) {
+    case ENCLOSURE_OPTION:
+      fprintf(f, "option:%d", ENCLOSURE_(node)->option);
       break;
-    case ENCLOSE_MEMORY:
-      fprintf(f, "memory:%d", ENCLOSE_(node)->regnum);
+    case ENCLOSURE_MEMORY:
+      fprintf(f, "memory:%d", ENCLOSURE_(node)->regnum);
       break;
-    case ENCLOSE_STOP_BACKTRACK:
+    case ENCLOSURE_STOP_BACKTRACK:
       fprintf(f, "stop-bt");
       break;
 
@@ -6338,7 +6338,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
   }
 
   if (type != NODE_LIST && type != NODE_ALT && type != NODE_QTFR &&
-      type != NODE_ENCLOSE)
+      type != NODE_ENCLOSURE)
     fprintf(f, "\n");
   fflush(f);
 }

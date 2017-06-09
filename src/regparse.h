@@ -33,16 +33,16 @@
 
 /* node type */
 typedef enum {
-  NODE_STR     = 0,
-  NODE_CCLASS  = 1,
-  NODE_CTYPE   = 2,
-  NODE_BREF    = 3,
-  NODE_QTFR    = 4,
-  NODE_ENCLOSE = 5,
-  NODE_ANCHOR  = 6,
-  NODE_LIST    = 7,
-  NODE_ALT     = 8,
-  NODE_CALL    = 9
+  NODE_STR       = 0,
+  NODE_CCLASS    = 1,
+  NODE_CTYPE     = 2,
+  NODE_BREF      = 3,
+  NODE_QTFR      = 4,
+  NODE_ENCLOSURE = 5,
+  NODE_ANCHOR    = 6,
+  NODE_LIST      = 7,
+  NODE_ALT       = 8,
+  NODE_CALL      = 9
 } NodeType;
 
 /* node type bit */
@@ -53,7 +53,7 @@ typedef enum {
 #define BIT_NODE_CTYPE      NODE_TYPE2BIT(NODE_CTYPE)
 #define BIT_NODE_BREF       NODE_TYPE2BIT(NODE_BREF)
 #define BIT_NODE_QTFR       NODE_TYPE2BIT(NODE_QTFR)
-#define BIT_NODE_ENCLOSE    NODE_TYPE2BIT(NODE_ENCLOSE)
+#define BIT_NODE_ENCLOSURE  NODE_TYPE2BIT(NODE_ENCLOSURE)
 #define BIT_NODE_ANCHOR     NODE_TYPE2BIT(NODE_ANCHOR)
 #define BIT_NODE_LIST       NODE_TYPE2BIT(NODE_LIST)
 #define BIT_NODE_ALT        NODE_TYPE2BIT(NODE_ALT)
@@ -71,7 +71,7 @@ typedef enum {
 #define CTYPE_(node)       (&((node)->u.ctype))
 #define BREF_(node)        (&((node)->u.bref))
 #define QTFR_(node)        (&((node)->u.qtfr))
-#define ENCLOSE_(node)     (&((node)->u.enclose))
+#define ENCLOSURE_(node)     (&((node)->u.enclosure))
 #define ANCHOR_(node)      (&((node)->u.anchor))
 #define CONS_(node)        (&((node)->u.cons))
 #define CALL_(node)        (&((node)->u.call))
@@ -87,9 +87,9 @@ typedef enum {
 #define ANCHOR_ANYCHAR_STAR_MASK (ANCHOR_ANYCHAR_STAR | ANCHOR_ANYCHAR_STAR_ML)
 #define ANCHOR_END_BUF_MASK      (ANCHOR_END_BUF | ANCHOR_SEMI_END_BUF)
 
-#define ENCLOSE_MEMORY           (1<<0)
-#define ENCLOSE_OPTION           (1<<1)
-#define ENCLOSE_STOP_BACKTRACK   (1<<2)
+#define ENCLOSURE_MEMORY           (1<<0)
+#define ENCLOSURE_OPTION           (1<<1)
+#define ENCLOSURE_STOP_BACKTRACK   (1<<2)
 
 #define NODE_STR_MARGIN         16
 #define NODE_STR_BUF_SIZE       24  /* sizeof(CClassNode) - sizeof(int)*4 */
@@ -157,7 +157,7 @@ typedef enum {
 
 #define NODE_BODY(node)           ((node)->u.base.body)
 #define NODE_QTFR_BODY(node)      ((node)->body)
-#define NODE_ENCLOSE_BODY(node)   ((node)->body)
+#define NODE_ENCLOSURE_BODY(node)   ((node)->body)
 #define NODE_CALL_BODY(node)      ((node)->body)
 #define NODE_ANCHOR_BODY(node)    ((node)->body)
 
@@ -215,7 +215,7 @@ typedef struct {
   OnigLen max_len; /* max length (byte) */
   int char_len;         /* character length  */
   int opt_count;        /* referenced count in optimize_node_left() */
-} EncloseNode;
+} EnclosureNode;
 
 #ifdef USE_SUBEXP_CALL
 
@@ -233,7 +233,7 @@ typedef struct {
 typedef struct {
   NodeType node_type;
   int status;
-  struct _Node* body; /* to EncloseNode : ENCLOSE_MEMORY */
+  struct _Node* body; /* to EnclosureNode : ENCLOSURE_MEMORY */
 
   int     group_num;
   UChar*  name;
@@ -289,7 +289,7 @@ typedef struct _Node {
     StrNode      str;
     CClassNode   cclass;
     QtfrNode     qtfr;
-    EncloseNode  enclose;
+    EnclosureNode  enclosure;
     BRefNode     bref;
     AnchorNode   anchor;
     ConsAltNode  cons;
@@ -372,7 +372,7 @@ extern void   onig_node_conv_to_str_node P_((Node* node, int raw));
 extern int    onig_node_str_cat P_((Node* node, const UChar* s, const UChar* end));
 extern int    onig_node_str_set P_((Node* node, const UChar* s, const UChar* end));
 extern void   onig_node_free P_((Node* node));
-extern Node*  onig_node_new_enclose P_((int type));
+extern Node*  onig_node_new_enclosure P_((int type));
 extern Node*  onig_node_new_anchor P_((int type));
 extern Node*  onig_node_new_str P_((const UChar* s, const UChar* end));
 extern Node*  onig_node_new_list P_((Node* left, Node* right));
