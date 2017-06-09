@@ -2841,7 +2841,7 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
 static int
 subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
 {
-  int r = 0;
+  int r;
 
   switch (NODE_TYPE(node)) {
   case NODE_LIST:
@@ -2851,16 +2851,14 @@ subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
+  case NODE_ANCHOR:
+    if (! ANCHOR_HAS_BODY(ANCHOR_(node))) {
+      r = 0;
+      break;
+    }
+    /* fall */
   case NODE_QTFR:
     r = subexp_inf_recursive_check_trav(NODE_BODY(node), env);
-    break;
-
-  case NODE_ANCHOR:
-    {
-      AnchorNode* an = ANCHOR_(node);
-      if (ANCHOR_HAS_BODY(an))
-        r = subexp_inf_recursive_check_trav(NODE_ANCHOR_BODY(an), env);
-    }
     break;
 
   case NODE_ENCLOSURE:
@@ -2874,6 +2872,7 @@ subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
     break;
 
   default:
+    r = 0;
     break;
   }
 
