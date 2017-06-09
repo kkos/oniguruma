@@ -32,16 +32,18 @@
 #include "regint.h"
 
 /* node type */
-#define NODE_STR         0
-#define NODE_CCLASS      1
-#define NODE_CTYPE       2
-#define NODE_BREF        3
-#define NODE_QTFR        4
-#define NODE_ENCLOSE     5
-#define NODE_ANCHOR      6
-#define NODE_LIST        7
-#define NODE_ALT         8
-#define NODE_CALL        9
+typedef enum {
+  NODE_STR     = 0,
+  NODE_CCLASS  = 1,
+  NODE_CTYPE   = 2,
+  NODE_BREF    = 3,
+  NODE_QTFR    = 4,
+  NODE_ENCLOSE = 5,
+  NODE_ANCHOR  = 6,
+  NODE_LIST    = 7,
+  NODE_ALT     = 8,
+  NODE_CALL    = 9
+} NodeType;
 
 /* node type bit */
 #define NODE_TYPE2BIT(type)      (1<<(type))
