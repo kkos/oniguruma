@@ -794,7 +794,7 @@ static int
 is_anychar_star_quantifier(QtfrNode* qn)
 {
   if (qn->greedy && IS_REPEAT_INFINITE(qn->upper) &&
-      NODE_TYPE(NODE_QTFR_BODY(qn)) == NT_CANY)
+      NODE_IS_ANYCHAR(NODE_QTFR_BODY(qn)))
     return 1;
   else
     return 0;
@@ -821,7 +821,7 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
   cklen = (CKN_ON ? SIZE_STATE_CHECK_NUM: 0);
 
   /* anychar repeat */
-  if (NODE_TYPE(NODE_QTFR_BODY(qn)) == NT_CANY) {
+  if (NODE_IS_ANYCHAR(NODE_QTFR_BODY(qn))) {
     if (qn->greedy && infinite) {
       if (IS_NOT_NULL(qn->next_head_exact) && !CKN_ON)
         return SIZE_OP_ANYCHAR_STAR_PEEK_NEXT + tlen * qn->lower + cklen;
@@ -1050,7 +1050,7 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
   if (tlen < 0) return tlen;
 
   /* anychar repeat */
-  if (NODE_TYPE(NODE_QTFR_BODY(qn)) == NT_CANY) {
+  if (NODE_IS_ANYCHAR(NODE_QTFR_BODY(qn))) {
     if (qn->greedy && infinite) {
       if (IS_NOT_NULL(qn->next_head_exact))
         return SIZE_OP_ANYCHAR_STAR_PEEK_NEXT + tlen * qn->lower;
@@ -1618,7 +1618,6 @@ compile_length_tree(Node* node, regex_t* reg)
     break;
 
   case NT_CTYPE:
-  case NT_CANY:
     r = SIZE_OPCODE;
     break;
 
@@ -1727,23 +1726,25 @@ compile_tree(Node* node, regex_t* reg)
       int op;
 
       switch (NCTYPE(node)->ctype) {
+      case CTYPE_ANYCHAR:
+        if (IS_MULTILINE(reg->options))
+          r = add_opcode(reg, OP_ANYCHAR_ML);
+        else
+          r = add_opcode(reg, OP_ANYCHAR);
+        break;
+
       case ONIGENC_CTYPE_WORD:
         if (NCTYPE(node)->not != 0)  op = OP_NOT_WORD;
         else                         op = OP_WORD;
+
+        r = add_opcode(reg, op);
         break;
+
       default:
         return ONIGERR_TYPE_BUG;
         break;
       }
-      r = add_opcode(reg, op);
     }
-    break;
-
-  case NT_CANY:
-    if (IS_MULTILINE(reg->options))
-      r = add_opcode(reg, OP_ANYCHAR_ML);
-    else
-      r = add_opcode(reg, OP_ANYCHAR);
     break;
 
   case NT_BREF:
@@ -2143,7 +2144,6 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
     break;
 
   case NT_CCLASS:
-  case NT_CANY:
     *len = 1;
     break;
 
@@ -2193,7 +2193,7 @@ get_char_length_tree(Node* node, regex_t* reg, int* len)
 
 /* x is not included y ==>  1 : 0 */
 static int
-is_not_included(Node* x, Node* y, regex_t* reg)
+is_exclusive(Node* x, Node* y, regex_t* reg)
 {
   int i, len;
   OnigCodePoint code;
@@ -2205,6 +2205,10 @@ is_not_included(Node* x, Node* y, regex_t* reg)
   switch (NODE_TYPE(x)) {
   case NT_CTYPE:
     {
+      if (NCTYPE(x)->ctype == CTYPE_ANYCHAR ||
+          NCTYPE(y)->ctype == CTYPE_ANYCHAR)
+        break;
+
       switch (ytype) {
       case NT_CTYPE:
         if (NCTYPE(y)->ctype == NCTYPE(x)->ctype &&
@@ -2239,6 +2243,10 @@ is_not_included(Node* x, Node* y, regex_t* reg)
       switch (ytype) {
       case NT_CTYPE:
         switch (NCTYPE(y)->ctype) {
+        case CTYPE_ANYCHAR:
+          return 0;
+          break;
+
         case ONIGENC_CTYPE_WORD:
           if (NCTYPE(y)->not == 0) {
             if (IS_NULL(xc->mbuf) && !IS_NCCLASS_NOT(xc)) {
@@ -2316,6 +2324,9 @@ is_not_included(Node* x, Node* y, regex_t* reg)
       switch (ytype) {
       case NT_CTYPE:
         switch (NCTYPE(y)->ctype) {
+        case CTYPE_ANYCHAR:
+          break;
+
         case ONIGENC_CTYPE_WORD:
           if (ONIGENC_IS_MBC_WORD(reg->enc, xs->s, xs->end))
             return NCTYPE(y)->not;
@@ -2376,13 +2387,15 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
   switch (NODE_TYPE(node)) {
   case NT_BREF:
   case NT_ALT:
-  case NT_CANY:
 #ifdef USE_SUBEXP_CALL
   case NT_CALL:
 #endif
     break;
 
   case NT_CTYPE:
+    if (NCTYPE(node)->ctype == CTYPE_ANYCHAR)
+      break;
+    /* through */
   case NT_CCLASS:
     if (exact == 0) {
       n = node;
@@ -2578,7 +2591,6 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
     break;
 
   case NT_CCLASS:
-  case NT_CANY:
     *min = 1;
     break;
 
@@ -2663,11 +2675,7 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
     break;
 
   case NT_CTYPE:
-    *max = ONIGENC_MBC_MAXLEN_DIST(env->enc);
-    break;
-
   case NT_CCLASS:
-  case NT_CANY:
     *max = ONIGENC_MBC_MAXLEN_DIST(env->enc);
     break;
 
@@ -3176,7 +3184,7 @@ next_setup(Node* node, Node* next_node, regex_t* reg)
           x = get_head_value_node(NODE_BODY(node), 0, reg);
           if (IS_NOT_NULL(x)) {
             y = get_head_value_node(next_node,  0, reg);
-            if (IS_NOT_NULL(y) && is_not_included(x, y, reg)) {
+            if (IS_NOT_NULL(y) && is_exclusive(x, y, reg)) {
               Node* en = onig_node_new_enclose(ENCLOSE_STOP_BACKTRACK);
               CHECK_NULL_RETURN_MEMERR(en);
               NODE_STATUS_ADD(en, NST_STOP_BT_SIMPLE_REPEAT);
@@ -3720,7 +3728,6 @@ quantifiers_memory_node_info(Node* node, int state)
   case NT_STR:
   case NT_CTYPE:
   case NT_CCLASS:
-  case NT_CANY:
   case NT_ANCHOR:
   default:
     break;
@@ -3775,7 +3782,6 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     break;
 
   case NT_CTYPE:
-  case NT_CANY:
     break;
 
 #ifdef USE_SUBEXP_CALL
@@ -3952,7 +3958,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 /* allowed node types in look-behind */
 #define ALLOWED_TYPE_IN_LB  \
   ( BIT_NT_LIST | BIT_NT_ALT | BIT_NT_STR | BIT_NT_CCLASS | BIT_NT_CTYPE | \
-    BIT_NT_CANY | BIT_NT_ANCHOR | BIT_NT_ENCLOSE | BIT_NT_QTFR | BIT_NT_CALL )
+    BIT_NT_ANCHOR | BIT_NT_ENCLOSE | BIT_NT_QTFR | BIT_NT_CALL )
 
 #define ALLOWED_ENCLOSE_IN_LB       ( ENCLOSE_MEMORY | ENCLOSE_OPTION )
 #define ALLOWED_ENCLOSE_IN_LB_NOT   ENCLOSE_OPTION
@@ -4758,6 +4764,9 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
         min = 1;
 
         switch (NCTYPE(node)->ctype) {
+        case CTYPE_ANYCHAR:
+          break;
+
         case ONIGENC_CTYPE_WORD:
           if (NCTYPE(node)->not != 0) {
             for (i = 0; i < SINGLE_BYTE_SIZE; i++) {
@@ -4779,14 +4788,6 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
       else {
         min = ONIGENC_MBC_MINLEN(env->enc);
       }
-      set_mml(&opt->len, min, max);
-    }
-    break;
-
-  case NT_CANY:
-    {
-      OnigLen min = ONIGENC_MBC_MINLEN(env->enc);
-      OnigLen max = ONIGENC_MBC_MAXLEN_DIST(env->enc);
       set_mml(&opt->len, min, max);
     }
     break;
@@ -4882,7 +4883,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
 
       if (qn->lower == 0 && IS_REPEAT_INFINITE(qn->upper)) {
         if (env->mmd.max == 0 &&
-            NODE_TYPE(NODE_BODY(node)) == NT_CANY && qn->greedy) {
+            NODE_IS_ANYCHAR(NODE_BODY(node)) && qn->greedy != 0) {
           if (IS_MULTILINE(env->options))
             add_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_STAR_ML);
           else
@@ -6238,6 +6239,10 @@ print_indent_tree(FILE* f, Node* node, int indent)
   case NT_CTYPE:
     fprintf(f, "<ctype:%p> ", node);
     switch (NCTYPE(node)->ctype) {
+    case CTYPE_ANYCHAR:
+      fprintf(f, "<anychar:%p>", node);
+      break;
+
     case ONIGENC_CTYPE_WORD:
       if (NCTYPE(node)->not != 0)
         fputs("not word",       f);
@@ -6249,10 +6254,6 @@ print_indent_tree(FILE* f, Node* node, int indent)
       fprintf(f, "ERROR: undefined ctype.\n");
       exit(0);
     }
-    break;
-
-  case NT_CANY:
-    fprintf(f, "<anychar:%p>", node);
     break;
 
   case NT_ANCHOR:

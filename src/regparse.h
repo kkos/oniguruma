@@ -35,14 +35,13 @@
 #define NT_STR         0
 #define NT_CCLASS      1
 #define NT_CTYPE       2
-#define NT_CANY        3
-#define NT_BREF        4
-#define NT_QTFR        5
-#define NT_ENCLOSE     6
-#define NT_ANCHOR      7
-#define NT_LIST        8
-#define NT_ALT         9
-#define NT_CALL       10
+#define NT_BREF        3
+#define NT_QTFR        4
+#define NT_ENCLOSE     5
+#define NT_ANCHOR      6
+#define NT_LIST        7
+#define NT_ALT         8
+#define NT_CALL        9
 
 /* node type bit */
 #define NODE_TYPE2BIT(type)      (1<<(type))
@@ -50,7 +49,6 @@
 #define BIT_NT_STR        NODE_TYPE2BIT(NT_STR)
 #define BIT_NT_CCLASS     NODE_TYPE2BIT(NT_CCLASS)
 #define BIT_NT_CTYPE      NODE_TYPE2BIT(NT_CTYPE)
-#define BIT_NT_CANY       NODE_TYPE2BIT(NT_CANY)
 #define BIT_NT_BREF       NODE_TYPE2BIT(NT_BREF)
 #define BIT_NT_QTFR       NODE_TYPE2BIT(NT_QTFR)
 #define BIT_NT_ENCLOSE    NODE_TYPE2BIT(NT_ENCLOSE)
@@ -61,7 +59,7 @@
 
 #define IS_NODE_TYPE_SIMPLE(type) \
   ((NODE_TYPE2BIT(type) & (BIT_NT_STR | BIT_NT_CCLASS | BIT_NT_CTYPE |\
-                       BIT_NT_CANY | BIT_NT_BREF)) != 0)
+                           BIT_NT_BREF)) != 0)
 
 #define NODE_TYPE(node)             ((node)->u.base.node_type)
 #define SET_NODE_TYPE(node, ntype)   (node)->u.base.node_type = (ntype)
@@ -79,6 +77,9 @@
 #define NCAR(node)         (NCONS(node)->car)
 #define NCDR(node)         (NCONS(node)->cdr)
 
+#define CTYPE_ANYCHAR      -1
+#define NODE_IS_ANYCHAR(node) \
+  (NODE_TYPE(node) == NT_CTYPE && NCTYPE(node)->ctype == CTYPE_ANYCHAR)
 
 
 #define ANCHOR_ANYCHAR_STAR_MASK (ANCHOR_ANYCHAR_STAR | ANCHOR_ANYCHAR_STAR_ML)

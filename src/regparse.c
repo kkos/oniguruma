@@ -1147,16 +1147,6 @@ node_new_ctype(int type, int not)
 }
 
 static Node*
-node_new_anychar(void)
-{
-  Node* node = node_new();
-  CHECK_NULL_RETURN(node);
-
-  SET_NODE_TYPE(node, NT_CANY);
-  return node;
-}
-
-static Node*
 node_new_list(Node* left, Node* right)
 {
   Node* node = node_new();
@@ -5170,12 +5160,12 @@ parse_exp(Node** np, OnigToken* tok, int term,
     break;
 
   case TK_ANYCHAR:
-    *np = node_new_anychar();
+    *np = node_new_ctype(CTYPE_ANYCHAR, 0);
     CHECK_NULL_RETURN_MEMERR(*np);
     break;
 
   case TK_ANYCHAR_ANYTIME:
-    *np = node_new_anychar();
+    *np = node_new_ctype(CTYPE_ANYCHAR, 0);
     CHECK_NULL_RETURN_MEMERR(*np);
     qn = node_new_quantifier(0, REPEAT_INFINITE, 0);
     CHECK_NULL_RETURN_MEMERR(qn);
