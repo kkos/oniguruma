@@ -2391,7 +2391,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
   case NODE_CTYPE:
     if (CTYPE_(node)->ctype == CTYPE_ANYCHAR)
       break;
-    /* through */
+    /* fall */
   case NODE_CCLASS:
     if (exact == 0) {
       n = node;
@@ -2878,26 +2878,25 @@ subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
 static int
 subexp_recursive_check(Node* node)
 {
-  int r = 0;
+  int r;
 
   switch (NODE_TYPE(node)) {
   case NODE_LIST:
   case NODE_ALT:
+    r = 0;
     do {
       r |= subexp_recursive_check(NODE_CAR(node));
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
+  case NODE_ANCHOR:
+    if (! ANCHOR_HAS_BODY(ANCHOR_(node))) {
+      r = 0;
+      break;
+    }
+    /* fall */
   case NODE_QTFR:
     r = subexp_recursive_check(NODE_BODY(node));
-    break;
-
-  case NODE_ANCHOR:
-    {
-      AnchorNode* an = ANCHOR_(node);
-      if (ANCHOR_HAS_BODY(an))
-        r = subexp_recursive_check(NODE_ANCHOR_BODY(an));
-    }
     break;
 
   case NODE_CALL:
@@ -2918,6 +2917,7 @@ subexp_recursive_check(Node* node)
     break;
 
   default:
+    r = 0;
     break;
   }
 
