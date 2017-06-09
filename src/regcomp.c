@@ -1586,10 +1586,10 @@ compile_length_tree(Node* node, regex_t* reg)
   case NT_LIST:
     len = 0;
     do {
-      r = compile_length_tree(NCAR(node), reg);
+      r = compile_length_tree(NODE_CAR(node), reg);
       if (r < 0) return r;
       len += r;
-    } while (IS_NOT_NULL(node = NCDR(node)));
+    } while (IS_NOT_NULL(node = NODE_CDR(node)));
     r = len;
     break;
 
@@ -1599,9 +1599,9 @@ compile_length_tree(Node* node, regex_t* reg)
 
       n = r = 0;
       do {
-        r += compile_length_tree(NCAR(node), reg);
+        r += compile_length_tree(NODE_CAR(node), reg);
         n++;
-      } while (IS_NOT_NULL(node = NCDR(node)));
+      } while (IS_NOT_NULL(node = NODE_CDR(node)));
       r += (SIZE_OP_PUSH + SIZE_OP_JUMP) * (n - 1);
     }
     break;
@@ -1677,8 +1677,8 @@ compile_tree(Node* node, regex_t* reg)
   switch (type) {
   case NT_LIST:
     do {
-      r = compile_tree(NCAR(node), reg);
-    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
+      r = compile_tree(NODE_CAR(node), reg);
+    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NT_ALT:
@@ -1686,27 +1686,27 @@ compile_tree(Node* node, regex_t* reg)
       Node* x = node;
       len = 0;
       do {
-        len += compile_length_tree(NCAR(x), reg);
-        if (IS_NOT_NULL(NCDR(x))) {
+        len += compile_length_tree(NODE_CAR(x), reg);
+        if (IS_NOT_NULL(NODE_CDR(x))) {
           len += SIZE_OP_PUSH + SIZE_OP_JUMP;
         }
-      } while (IS_NOT_NULL(x = NCDR(x)));
+      } while (IS_NOT_NULL(x = NODE_CDR(x)));
       pos = reg->used + len;  /* goal position */
 
       do {
-        len = compile_length_tree(NCAR(node), reg);
-        if (IS_NOT_NULL(NCDR(node))) {
+        len = compile_length_tree(NODE_CAR(node), reg);
+        if (IS_NOT_NULL(NODE_CDR(node))) {
           r = add_opcode_rel_addr(reg, OP_PUSH, len + SIZE_OP_JUMP);
           if (r) break;
         }
-        r = compile_tree(NCAR(node), reg);
+        r = compile_tree(NODE_CAR(node), reg);
         if (r) break;
-        if (IS_NOT_NULL(NCDR(node))) {
+        if (IS_NOT_NULL(NODE_CDR(node))) {
           len = pos - (reg->used + SIZE_OP_JUMP);
           r = add_opcode_rel_addr(reg, OP_JUMP, len);
           if (r) break;
         }
-      } while (IS_NOT_NULL(node = NCDR(node)));
+      } while (IS_NOT_NULL(node = NODE_CDR(node)));
     }
     break;
 
@@ -1849,8 +1849,8 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
   case NT_LIST:
   case NT_ALT:
     do {
-      r = noname_disable_map(&(NCAR(node)), map, counter);
-    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
+      r = noname_disable_map(&(NODE_CAR(node)), map, counter);
+    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NT_QTFR:
@@ -1935,8 +1935,8 @@ renumber_by_map(Node* node, GroupNumRemap* map)
   case NT_LIST:
   case NT_ALT:
     do {
-      r = renumber_by_map(NCAR(node), map);
-    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
+      r = renumber_by_map(NODE_CAR(node), map);
+    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NT_QTFR:
@@ -1969,8 +1969,8 @@ numbered_ref_check(Node* node)
   case NT_LIST:
   case NT_ALT:
     do {
-      r = numbered_ref_check(NCAR(node));
-    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
+      r = numbered_ref_check(NODE_CAR(node));
+    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NT_QTFR:
@@ -2072,10 +2072,10 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
   switch (NODE_TYPE(node)) {
   case NT_LIST:
     do {
-      r = get_char_length_tree1(NCAR(node), reg, &tlen, level);
+      r = get_char_length_tree1(NODE_CAR(node), reg, &tlen, level);
       if (r == 0)
         *len = distance_add(*len, tlen);
-    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
+    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NT_ALT:
@@ -2083,9 +2083,9 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
       int tlen2;
       int varlen = 0;
 
-      r = get_char_length_tree1(NCAR(node), reg, &tlen, level);
-      while (r == 0 && IS_NOT_NULL(node = NCDR(node))) {
-        r = get_char_length_tree1(NCAR(node), reg, &tlen2, level);
+      r = get_char_length_tree1(NODE_CAR(node), reg, &tlen, level);
+      while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node))) {
+        r = get_char_length_tree1(NODE_CAR(node), reg, &tlen2, level);
         if (r == 0) {
           if (tlen != tlen2)
             varlen = 1;
@@ -2401,7 +2401,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
     break;
 
   case NT_LIST:
-    n = get_head_value_node(NCAR(node), exact, reg);
+    n = get_head_value_node(NODE_CAR(node), exact, reg);
     break;
 
   case NT_STR:
@@ -2479,9 +2479,9 @@ check_type_tree(Node* node, int type_mask, int enclose_mask, int anchor_mask)
   case NT_LIST:
   case NT_ALT:
     do {
-      r = check_type_tree(NCAR(node), type_mask, enclose_mask,
+      r = check_type_tree(NODE_CAR(node), type_mask, enclose_mask,
                           anchor_mask);
-    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
+    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NT_QTFR:
@@ -2558,9 +2558,9 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
 
   case NT_LIST:
     do {
-      r = get_min_len(NCAR(node), &tmin, env);
+      r = get_min_len(NODE_CAR(node), &tmin, env);
       if (r == 0) *min += tmin;
-    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
+    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NT_ALT:
@@ -2568,12 +2568,12 @@ get_min_len(Node* node, OnigLen *min, ScanEnv* env)
       Node *x, *y;
       y = node;
       do {
-        x = NCAR(y);
+        x = NODE_CAR(y);
         r = get_min_len(x, &tmin, env);
         if (r != 0) break;
         if (y == node) *min = tmin;
         else if (*min > tmin) *min = tmin;
-      } while (r == 0 && IS_NOT_NULL(y = NCDR(y)));
+      } while (r == 0 && IS_NOT_NULL(y = NODE_CDR(y)));
     }
     break;
 
@@ -2652,17 +2652,17 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
   switch (NODE_TYPE(node)) {
   case NT_LIST:
     do {
-      r = get_max_len(NCAR(node), &tmax, env);
+      r = get_max_len(NODE_CAR(node), &tmax, env);
       if (r == 0)
         *max = distance_add(*max, tmax);
-    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
+    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NT_ALT:
     do {
-      r = get_max_len(NCAR(node), &tmax, env);
+      r = get_max_len(NODE_CAR(node), &tmax, env);
       if (r == 0 && *max < tmax) *max = tmax;
-    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
+    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NT_STR:
@@ -2782,15 +2782,15 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
 
       x = node;
       do {
-        ret = subexp_inf_recursive_check(NCAR(x), env, head);
+        ret = subexp_inf_recursive_check(NODE_CAR(x), env, head);
         if (ret < 0 || ret == RECURSION_INFINITE) return ret;
         r |= ret;
         if (head) {
-          ret = get_min_len(NCAR(x), &min, env);
+          ret = get_min_len(NODE_CAR(x), &min, env);
           if (ret != 0) return ret;
           if (min != 0) head = 0;
         }
-      } while (IS_NOT_NULL(x = NCDR(x)));
+      } while (IS_NOT_NULL(x = NODE_CDR(x)));
     }
     break;
 
@@ -2799,10 +2799,10 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
       int ret;
       r = RECURSION_EXIST;
       do {
-        ret = subexp_inf_recursive_check(NCAR(node), env, head);
+        ret = subexp_inf_recursive_check(NODE_CAR(node), env, head);
         if (ret < 0 || ret == RECURSION_INFINITE) return ret;
         r &= ret;
-      } while (IS_NOT_NULL(node = NCDR(node)));
+      } while (IS_NOT_NULL(node = NODE_CDR(node)));
     }
     break;
 
@@ -2855,8 +2855,8 @@ subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
   case NT_LIST:
   case NT_ALT:
     do {
-      r = subexp_inf_recursive_check_trav(NCAR(node), env);
-    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
+      r = subexp_inf_recursive_check_trav(NODE_CAR(node), env);
+    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NT_QTFR:
@@ -2897,8 +2897,8 @@ subexp_recursive_check(Node* node)
   case NT_LIST:
   case NT_ALT:
     do {
-      r |= subexp_recursive_check(NCAR(node));
-    } while (IS_NOT_NULL(node = NCDR(node)));
+      r |= subexp_recursive_check(NODE_CAR(node));
+    } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NT_QTFR:
@@ -2953,10 +2953,10 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
     {
       int ret;
       do {
-        ret = subexp_recursive_check_trav(NCAR(node), env);
+        ret = subexp_recursive_check_trav(NODE_CAR(node), env);
         if (ret == FOUND_CALLED_NODE) r = FOUND_CALLED_NODE;
         else if (ret < 0) return ret;
-      } while (IS_NOT_NULL(node = NCDR(node)));
+      } while (IS_NOT_NULL(node = NODE_CDR(node)));
     }
     break;
 
@@ -3008,14 +3008,14 @@ setup_subexp_call(Node* node, ScanEnv* env)
   switch (type) {
   case NT_LIST:
     do {
-      r = setup_subexp_call(NCAR(node), env);
-    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
+      r = setup_subexp_call(NODE_CAR(node), env);
+    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NT_ALT:
     do {
-      r = setup_subexp_call(NCAR(node), env);
-    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
+      r = setup_subexp_call(NODE_CAR(node), env);
+    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NT_QTFR:
@@ -3112,24 +3112,24 @@ divide_look_behind_alternatives(Node* node)
   /* fprintf(stderr, "divide_look_behind: %d\n", (int )node); */
 
   head = NODE_ANCHOR_BODY(an);
-  np = NCAR(head);
+  np = NODE_CAR(head);
   swap_node(node, head);
-  NCAR(node) = head;
+  NODE_CAR(node) = head;
   NODE_BODY(head) = np;
 
   np = node;
-  while (IS_NOT_NULL(np = NCDR(np))) {
+  while (IS_NOT_NULL(np = NODE_CDR(np))) {
     insert_node = onig_node_new_anchor(anc_type);
     CHECK_NULL_RETURN_MEMERR(insert_node);
-    NODE_BODY(insert_node) = NCAR(np);
-    NCAR(np) = insert_node;
+    NODE_BODY(insert_node) = NODE_CAR(np);
+    NODE_CAR(np) = insert_node;
   }
 
   if (anc_type == ANCHOR_LOOK_BEHIND_NOT) {
     np = node;
     do {
       SET_NODE_TYPE(np, NT_LIST);  /* alt -> list */
-    } while (IS_NOT_NULL(np = NCDR(np)));
+    } while (IS_NOT_NULL(np = NODE_CDR(np)));
   }
   return 0;
 }
@@ -3293,11 +3293,11 @@ expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[],
 
     xnode = onig_node_new_list(NULL, NULL);
     if (IS_NULL(xnode)) goto mem_err;
-    NCAR(var_anode) = xnode;
+    NODE_CAR(var_anode) = xnode;
 
     anode = onig_node_new_alt(NULL_NODE, NULL_NODE);
     if (IS_NULL(anode)) goto mem_err;
-    NCAR(xnode) = anode;
+    NODE_CAR(xnode) = anode;
   }
   else {
     *rnode = anode = onig_node_new_alt(NULL_NODE, NULL_NODE);
@@ -3307,7 +3307,7 @@ expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[],
   snode = onig_node_new_str(p, p + slen);
   if (IS_NULL(snode)) goto mem_err;
 
-  NCAR(anode) = snode;
+  NODE_CAR(anode) = snode;
 
   for (i = 0; i < item_num; i++) {
     snode = onig_node_new_str(NULL, NULL);
@@ -3353,18 +3353,18 @@ expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[],
           goto mem_err;
         }
 
-        NCAR(an) = xnode;
+        NODE_CAR(an) = xnode;
       }
       else {
-        NCAR(an) = snode;
+        NODE_CAR(an) = snode;
       }
 
-      NCDR(var_anode) = an;
+      NODE_CDR(var_anode) = an;
       var_anode = an;
     }
     else {
-      NCAR(an)     = snode;
-      NCDR(anode) = an;
+      NODE_CAR(an)     = snode;
+      NODE_CDR(anode) = an;
       anode = an;
     }
   }
@@ -3459,7 +3459,7 @@ expand_case_fold_string(Node* node, regex_t* reg)
           }
         }
 
-        root = NCAR(prev_node);
+        root = NODE_CAR(prev_node);
       }
       else { /* r == 0 */
         if (IS_NOT_NULL(root)) {
@@ -3538,9 +3538,9 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
     {
       Node* prev = NULL_NODE;
       do {
-        r = setup_comb_exp_check(NCAR(node), r, env);
-        prev = NCAR(node);
-      } while (r >= 0 && IS_NOT_NULL(node = NCDR(node)));
+        r = setup_comb_exp_check(NODE_CAR(node), r, env);
+        prev = NODE_CAR(node);
+      } while (r >= 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     }
     break;
 
@@ -3548,9 +3548,9 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
     {
       int ret;
       do {
-        ret = setup_comb_exp_check(NCAR(node), state, env);
+        ret = setup_comb_exp_check(NODE_CAR(node), state, env);
         r |= ret;
-      } while (ret >= 0 && IS_NOT_NULL(node = NCDR(node)));
+      } while (ret >= 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     }
     break;
 
@@ -3676,9 +3676,9 @@ quantifiers_memory_node_info(Node* node, int state)
     {
       int v;
       do {
-        v = quantifiers_memory_node_info(NCAR(node), state);
+        v = quantifiers_memory_node_info(NODE_CAR(node), state);
         if (v > r) r = v;
-      } while (v >= 0 && IS_NOT_NULL(node = NCDR(node)));
+      } while (v >= 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     }
     break;
 
@@ -3755,19 +3755,19 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     {
       Node* prev = NULL_NODE;
       do {
-        r = setup_tree(NCAR(node), reg, state, env);
+        r = setup_tree(NODE_CAR(node), reg, state, env);
         if (IS_NOT_NULL(prev) && r == 0) {
-          r = next_setup(prev, NCAR(node), reg);
+          r = next_setup(prev, NODE_CAR(node), reg);
         }
-        prev = NCAR(node);
-      } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
+        prev = NODE_CAR(node);
+      } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     }
     break;
 
   case NT_ALT:
     do {
-      r = setup_tree(NCAR(node), reg, (state | IN_ALT), env);
-    } while (r == 0 && IS_NOT_NULL(node = NCDR(node)));
+      r = setup_tree(NODE_CAR(node), reg, (state | IN_ALT), env);
+    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NT_CCLASS:
@@ -4660,12 +4660,12 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
 
       copy_opt_env(&nenv, env);
       do {
-        r = optimize_node_left(NCAR(nd), &nopt, &nenv);
+        r = optimize_node_left(NODE_CAR(nd), &nopt, &nenv);
         if (r == 0) {
           add_mml(&nenv.mmd, &nopt.len);
           concat_left_node_opt_info(env->enc, opt, &nopt);
         }
-      } while (r == 0 && IS_NOT_NULL(nd = NCDR(nd)));
+      } while (r == 0 && IS_NOT_NULL(nd = NODE_CDR(nd)));
     }
     break;
 
@@ -4675,12 +4675,12 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
       Node* nd = node;
 
       do {
-        r = optimize_node_left(NCAR(nd), &nopt, env);
+        r = optimize_node_left(NODE_CAR(nd), &nopt, env);
         if (r == 0) {
           if (nd == node) copy_node_opt_info(opt, &nopt);
           else            alt_merge_node_opt_info(opt, &nopt, env);
         }
-      } while ((r == 0) && IS_NOT_NULL(nd = NCDR(nd)));
+      } while ((r == 0) && IS_NOT_NULL(nd = NODE_CDR(nd)));
     }
     break;
 
@@ -6200,13 +6200,13 @@ print_indent_tree(FILE* f, Node* node, int indent)
     else
       fprintf(f, "<alt:%p>\n", node);
 
-    print_indent_tree(f, NCAR(node), indent + add);
-    while (IS_NOT_NULL(node = NCDR(node))) {
+    print_indent_tree(f, NODE_CAR(node), indent + add);
+    while (IS_NOT_NULL(node = NODE_CDR(node))) {
       if (NODE_TYPE(node) != type) {
         fprintf(f, "ERROR: list/alt right is not a cons. %d\n", NODE_TYPE(node));
         exit(0);
       }
-      print_indent_tree(f, NCAR(node), indent + add);
+      print_indent_tree(f, NODE_CAR(node), indent + add);
     }
     break;
 

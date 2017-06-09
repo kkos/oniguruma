@@ -74,8 +74,8 @@
 #define CONS_(node)        (&((node)->u.cons))
 #define CALL_(node)        (&((node)->u.call))
 
-#define NCAR(node)         (CONS_(node)->car)
-#define NCDR(node)         (CONS_(node)->cdr)
+#define NODE_CAR(node)         (CONS_(node)->car)
+#define NODE_CDR(node)         (CONS_(node)->cdr)
 
 #define CTYPE_ANYCHAR      -1
 #define NODE_IS_ANYCHAR(node) \

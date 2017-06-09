@@ -1062,9 +1062,9 @@ onig_node_free(Node* node)
 
   case NT_LIST:
   case NT_ALT:
-    onig_node_free(NCAR(node));
+    onig_node_free(NODE_CAR(node));
     {
-      Node* next_node = NCDR(node);
+      Node* next_node = NODE_CDR(node);
 
       xfree(node);
       node = next_node;
@@ -1153,8 +1153,8 @@ node_new_list(Node* left, Node* right)
   CHECK_NULL_RETURN(node);
 
   SET_NODE_TYPE(node, NT_LIST);
-  NCAR(node)  = left;
-  NCDR(node) = right;
+  NODE_CAR(node)  = left;
+  NODE_CDR(node) = right;
   return node;
 }
 
@@ -1173,10 +1173,10 @@ onig_node_list_add(Node* list, Node* x)
   if (IS_NULL(n)) return NULL_NODE;
 
   if (IS_NOT_NULL(list)) {
-    while (IS_NOT_NULL(NCDR(list)))
-      list = NCDR(list);
+    while (IS_NOT_NULL(NODE_CDR(list)))
+      list = NODE_CDR(list);
 
-    NCDR(list) = n;
+    NODE_CDR(list) = n;
   }
 
   return n;
@@ -1189,8 +1189,8 @@ onig_node_new_alt(Node* left, Node* right)
   CHECK_NULL_RETURN(node);
 
   SET_NODE_TYPE(node, NT_ALT);
-  NCAR(node)  = left;
-  NCDR(node) = right;
+  NODE_CAR(node)  = left;
+  NODE_CDR(node) = right;
   return node;
 }
 
@@ -2058,15 +2058,15 @@ is_invalid_quantifier_target(Node* node)
 
   case NT_LIST:
     do {
-      if (! is_invalid_quantifier_target(NCAR(node))) return 0;
-    } while (IS_NOT_NULL(node = NCDR(node)));
+      if (! is_invalid_quantifier_target(NODE_CAR(node))) return 0;
+    } while (IS_NOT_NULL(node = NODE_CDR(node)));
     return 0;
     break;
 
   case NT_ALT:
     do {
-      if (is_invalid_quantifier_target(NCAR(node))) return 1;
-    } while (IS_NOT_NULL(node = NCDR(node)));
+      if (is_invalid_quantifier_target(NODE_CAR(node))) return 1;
+    } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   default:
@@ -4940,7 +4940,7 @@ i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[],
 
       *(iarg->ptail) = onig_node_new_alt(snode, NULL_NODE);
       CHECK_NULL_RETURN_MEMERR(*(iarg->ptail));
-      iarg->ptail = &(NCDR((*(iarg->ptail))));
+      iarg->ptail = &(NODE_CDR((*(iarg->ptail))));
     }
   }
 
@@ -5272,12 +5272,12 @@ parse_exp(Node** np, OnigToken* tok, int term,
           onig_node_free(qn);
           return ONIGERR_MEMORY;
         }
-        tmp = NCDR(*targetp) = node_new_list(qn, NULL);
+        tmp = NODE_CDR(*targetp) = node_new_list(qn, NULL);
         if (IS_NULL(tmp)) {
           onig_node_free(qn);
           return ONIGERR_MEMORY;
         }
-        targetp = &(NCAR(tmp));
+        targetp = &(NODE_CAR(tmp));
       }
       goto re_entry;
     }
@@ -5305,7 +5305,7 @@ parse_branch(Node** top, OnigToken* tok, int term,
   }
   else {
     *top  = node_new_list(node, NULL);
-    headp = &(NCDR(*top));
+    headp = &(NODE_CDR(*top));
     while (r != TK_EOT && r != term && r != TK_ALT) {
       r = parse_exp(&node, tok, term, src, end, env);
       if (r < 0) {
@@ -5315,12 +5315,12 @@ parse_branch(Node** top, OnigToken* tok, int term,
 
       if (NODE_TYPE(node) == NT_LIST) {
         *headp = node;
-        while (IS_NOT_NULL(NCDR(node))) node = NCDR(node);
-        headp = &(NCDR(node));
+        while (IS_NOT_NULL(NODE_CDR(node))) node = NODE_CDR(node);
+        headp = &(NODE_CDR(node));
       }
       else {
         *headp = node_new_list(node, NULL);
-        headp = &(NCDR(*headp));
+        headp = &(NODE_CDR(*headp));
       }
     }
   }
@@ -5351,7 +5351,7 @@ parse_subexp(Node** top, OnigToken* tok, int term,
   }
   else if (r == TK_ALT) {
     *top  = onig_node_new_alt(node, NULL);
-    headp = &(NCDR(*top));
+    headp = &(NODE_CDR(*top));
     while (r == TK_ALT) {
       r = fetch_token(tok, src, end, env);
       if (r < 0) return r;
@@ -5361,7 +5361,7 @@ parse_subexp(Node** top, OnigToken* tok, int term,
         return r;
       }
       *headp = onig_node_new_alt(node, NULL);
-      headp = &(NCDR(*headp));
+      headp = &(NODE_CDR(*headp));
     }
 
     if (tok->type != (enum TokenSyms )term)
