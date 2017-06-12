@@ -2962,18 +2962,17 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
     break;
 
   case NODE_ENCLOSURE:
-    if (! NODE_IS_RECURSION(node)) {
-      if (NODE_IS_CALLED(node)) {
+    if (NODE_IS_CALLED(node)) {
+      if (! NODE_IS_RECURSION(node)) {
         NODE_STATUS_ADD(node, NST_MARK1);
         r = subexp_recursive_check(NODE_BODY(node));
         if (r != 0)
           NODE_STATUS_ADD(node, NST_RECURSION);
         NODE_STATUS_REMOVE(node, NST_MARK1);
       }
+      r = FOUND_CALLED_NODE;
     }
-    r = subexp_recursive_check_trav(NODE_BODY(node), env);
-    if (NODE_IS_CALLED(node))
-      r |= FOUND_CALLED_NODE;
+    (void) subexp_recursive_check_trav(NODE_BODY(node), env);
     break;
 
   default:
