@@ -5398,8 +5398,8 @@ parse_regexp(Node** top, UChar** src, UChar* end, ScanEnv* env)
 }
 
 extern int
-onig_parse_make_tree(Node** root, const UChar* pattern, const UChar* end,
-		     regex_t* reg, ScanEnv* env)
+onig_parse_tree(Node** root, const UChar* pattern, const UChar* end,
+                regex_t* reg, ScanEnv* env)
 {
   int r;
   UChar* p;
