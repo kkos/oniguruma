@@ -2759,9 +2759,9 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
 
 #ifdef USE_SUBEXP_CALL
 
-#define RECURSION_EXIST        1<<0
-#define RECURSION_MUST         1<<1
-#define RECURSION_INFINITE     1<<2
+#define RECURSION_EXIST        (1<<0)
+#define RECURSION_MUST         (1<<1)
+#define RECURSION_INFINITE     (1<<2)
 
 static int
 subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
@@ -2800,7 +2800,7 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
         if (ret < 0 || (ret & RECURSION_INFINITE) != 0) return ret;
 
         r    |= (ret & RECURSION_EXIST);
-        must &= (ret & RECURSION_MUST);
+        must &= ret;
       } while (IS_NOT_NULL(node = NODE_CDR(node)));
       r |= must;
     }
