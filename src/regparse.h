@@ -238,7 +238,6 @@ typedef struct {
   int     group_num;
   UChar*  name;
   UChar*  name_end;
-  UnsetAddrList* unset_addr_list;
 } CallNode;
 
 #endif
