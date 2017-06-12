@@ -2987,7 +2987,7 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
 __inline
 #endif
 static int
-setup_subexp_call_node_call(CallNode* cn, ScanEnv* env)
+setup_call_node_call(CallNode* cn, ScanEnv* env)
 {
   MemEnv* mem_env = SCANENV_MEMENV(env);
 
@@ -3045,7 +3045,7 @@ setup_subexp_call_node_call(CallNode* cn, ScanEnv* env)
 }
 
 static int
-setup_subexp_call(Node* node, ScanEnv* env)
+setup_call(Node* node, ScanEnv* env)
 {
   int r;
 
@@ -3053,7 +3053,7 @@ setup_subexp_call(Node* node, ScanEnv* env)
   case NODE_LIST:
   case NODE_ALT:
     do {
-      r = setup_subexp_call(NODE_CAR(node), env);
+      r = setup_call(NODE_CAR(node), env);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
@@ -3065,11 +3065,11 @@ setup_subexp_call(Node* node, ScanEnv* env)
     /* fall */
   case NODE_QTFR:
   case NODE_ENCLOSURE:
-    r = setup_subexp_call(NODE_BODY(node), env);
+    r = setup_call(NODE_BODY(node), env);
     break;
 
   case NODE_CALL:
-    r = setup_subexp_call_node_call(CALL_(node), env);
+    r = setup_call_node_call(CALL_(node), env);
     break;
 
   default:
@@ -5368,7 +5368,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
     r = unset_addr_list_init(&uslist, scan_env.num_call);
     if (r != 0) goto err;
     scan_env.unset_addr_list = &uslist;
-    r = setup_subexp_call(root, &scan_env);
+    r = setup_call(root, &scan_env);
     if (r != 0) goto err_unset;
     r = subexp_recursive_check_trav(root, &scan_env);
     if (r  < 0) goto err_unset;
