@@ -899,7 +899,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
   ckn = ((reg->num_comb_exp_check > 0) ? qn->comb_exp_check_num : 0);
 
   if (is_anychar_star_quantifier(qn)) {
-    r = compile_tree_n_times(NODE_QTFR_BODY(qn), qn->lower, reg);
+    r = compile_tree_n_times(NODE_QTFR_BODY(qn), qn->lower, reg, env);
     if (r) return r;
     if (IS_NOT_NULL(qn->next_head_exact) && !CKN_ON) {
       if (IS_MULTILINE(reg->options))
@@ -957,7 +957,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
         r = add_opcode_rel_addr(reg, OP_PUSH, mod_tlen + SIZE_OP_JUMP);
       }
       if (r) return r;
-      r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info);
+      r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info, env);
       if (r) return r;
       r = add_opcode_rel_addr(reg, OP_JUMP,
                 -(mod_tlen + (int )SIZE_OP_JUMP
@@ -968,7 +968,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
         r = add_opcode_rel_addr(reg, OP_JUMP, mod_tlen);
         if (r) return r;
       }
-      r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info);
+      r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info, env);
       if (r) return r;
       if (CKN_ON) {
         r = add_opcode(reg, OP_STATE_CHECK_PUSH_OR_JUMP);
@@ -1026,7 +1026,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
     r = compile_tree(NODE_QTFR_BODY(qn), reg, env);
   }
   else {
-    r = compile_range_repeat_node(qn, mod_tlen, empty_info, reg);
+    r = compile_range_repeat_node(qn, mod_tlen, empty_info, reg, env);
     if (CKN_ON) {
       if (r) return r;
       r = add_opcode(reg, OP_STATE_CHECK);
