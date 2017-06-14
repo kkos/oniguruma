@@ -2867,7 +2867,7 @@ subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
     break;
 
   case NODE_ENCLOSURE:
-    if (NODE_IS_RECURSION(node)) {
+    if (NODE_IS_RECURSION(node) && NODE_IS_CALLED(node)) {
       int ret;
 
       NODE_STATUS_ADD(node, NST_MARK1);
