@@ -2891,7 +2891,7 @@ subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
 }
 
 static int
-subexp_recursive_check(Node* node)
+recursive_call_check(Node* node)
 {
   int r;
 
@@ -2900,7 +2900,7 @@ subexp_recursive_check(Node* node)
   case NODE_ALT:
     r = 0;
     do {
-      r |= subexp_recursive_check(NODE_CAR(node));
+      r |= recursive_call_check(NODE_CAR(node));
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
@@ -2911,11 +2911,11 @@ subexp_recursive_check(Node* node)
     }
     /* fall */
   case NODE_QTFR:
-    r = subexp_recursive_check(NODE_BODY(node));
+    r = recursive_call_check(NODE_BODY(node));
     break;
 
   case NODE_CALL:
-    r = subexp_recursive_check(NODE_BODY(node));
+    r = recursive_call_check(NODE_BODY(node));
     if (r != 0) NODE_STATUS_ADD(node, NST_RECURSION);
     break;
 
@@ -2926,7 +2926,7 @@ subexp_recursive_check(Node* node)
       return 1; /* recursion */
     else {
       NODE_STATUS_ADD(node, NST_MARK2);
-      r = subexp_recursive_check(NODE_BODY(node));
+      r = recursive_call_check(NODE_BODY(node));
       NODE_STATUS_REMOVE(node, NST_MARK2);
     }
     break;
@@ -2943,7 +2943,7 @@ subexp_recursive_check(Node* node)
 #define FOUND_CALLED_NODE    1
 
 static int
-subexp_recursive_check_trav(Node* node, ScanEnv* env, int state)
+recursive_call_check_trav(Node* node, ScanEnv* env, int state)
 {
   int r = 0;
 
@@ -2953,7 +2953,7 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env, int state)
     {
       int ret;
       do {
-        ret = subexp_recursive_check_trav(NODE_CAR(node), env, state);
+        ret = recursive_call_check_trav(NODE_CAR(node), env, state);
         if (ret == FOUND_CALLED_NODE) r = FOUND_CALLED_NODE;
         else if (ret < 0) return ret;
       } while (IS_NOT_NULL(node = NODE_CDR(node)));
@@ -2961,7 +2961,7 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env, int state)
     break;
 
   case NODE_QTFR:
-    r = subexp_recursive_check_trav(NODE_BODY(node), env, state);
+    r = recursive_call_check_trav(NODE_BODY(node), env, state);
     if (QTFR_(node)->upper == 0) {
       if (r == FOUND_CALLED_NODE)
         QTFR_(node)->is_refered = 1;
@@ -2972,7 +2972,7 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env, int state)
     {
       AnchorNode* an = ANCHOR_(node);
       if (ANCHOR_HAS_BODY(an))
-        r = subexp_recursive_check_trav(NODE_ANCHOR_BODY(an), env, state);
+        r = recursive_call_check_trav(NODE_ANCHOR_BODY(an), env, state);
     }
     break;
 
@@ -2980,7 +2980,7 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env, int state)
     if (NODE_IS_CALLED(node) || (state & IN_RECURSION) != 0) {
       if (! NODE_IS_RECURSION(node)) {
         NODE_STATUS_ADD(node, NST_MARK1);
-        r = subexp_recursive_check(NODE_BODY(node));
+        r = recursive_call_check(NODE_BODY(node));
         if (r != 0)
           NODE_STATUS_ADD(node, NST_RECURSION);
         NODE_STATUS_REMOVE(node, NST_MARK1);
@@ -2996,7 +2996,7 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env, int state)
       if (NODE_IS_RECURSION(node))
         state1 |= IN_RECURSION;
 
-      (void) subexp_recursive_check_trav(NODE_BODY(node), env, state1);
+      (void) recursive_call_check_trav(NODE_BODY(node), env, state1);
     }
     break;
 
@@ -5389,7 +5389,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
     scan_env.unset_addr_list = &uslist;
     r = setup_call(root, &scan_env);
     if (r != 0) goto err_unset;
-    r = subexp_recursive_check_trav(root, &scan_env, 0);
+    r = recursive_call_check_trav(root, &scan_env, 0);
     if (r  < 0) goto err_unset;
     r = subexp_inf_recursive_check_trav(root, &scan_env);
     if (r != 0) goto err_unset;
