@@ -2939,12 +2939,12 @@ subexp_recursive_check(Node* node)
   return r;
 }
 
-
-static int
-subexp_recursive_check_trav(Node* node, ScanEnv* env)
-{
+#define IN_RECURSION         (1<<0)
 #define FOUND_CALLED_NODE    1
 
+static int
+subexp_recursive_check_trav(Node* node, ScanEnv* env, int state)
+{
   int r = 0;
 
   switch (NODE_TYPE(node)) {
@@ -2953,7 +2953,7 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
     {
       int ret;
       do {
-        ret = subexp_recursive_check_trav(NODE_CAR(node), env);
+        ret = subexp_recursive_check_trav(NODE_CAR(node), env, state);
         if (ret == FOUND_CALLED_NODE) r = FOUND_CALLED_NODE;
         else if (ret < 0) return ret;
       } while (IS_NOT_NULL(node = NODE_CDR(node)));
@@ -2961,7 +2961,7 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
     break;
 
   case NODE_QTFR:
-    r = subexp_recursive_check_trav(NODE_BODY(node), env);
+    r = subexp_recursive_check_trav(NODE_BODY(node), env, state);
     if (QTFR_(node)->upper == 0) {
       if (r == FOUND_CALLED_NODE)
         QTFR_(node)->is_refered = 1;
@@ -2972,12 +2972,12 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
     {
       AnchorNode* an = ANCHOR_(node);
       if (ANCHOR_HAS_BODY(an))
-        r = subexp_recursive_check_trav(NODE_ANCHOR_BODY(an), env);
+        r = subexp_recursive_check_trav(NODE_ANCHOR_BODY(an), env, state);
     }
     break;
 
   case NODE_ENCLOSURE:
-    if (NODE_IS_CALLED(node)) {
+    if (NODE_IS_CALLED(node) || (state & IN_RECURSION) != 0) {
       if (! NODE_IS_RECURSION(node)) {
         NODE_STATUS_ADD(node, NST_MARK1);
         r = subexp_recursive_check(NODE_BODY(node));
@@ -2985,9 +2985,19 @@ subexp_recursive_check_trav(Node* node, ScanEnv* env)
           NODE_STATUS_ADD(node, NST_RECURSION);
         NODE_STATUS_REMOVE(node, NST_MARK1);
       }
-      r = FOUND_CALLED_NODE;
+
+      if (NODE_IS_CALLED(node))
+        r = FOUND_CALLED_NODE;
     }
-    (void) subexp_recursive_check_trav(NODE_BODY(node), env);
+
+    {
+      int state1 = state;
+
+      if (NODE_IS_RECURSION(node))
+        state1 |= IN_RECURSION;
+
+      (void) subexp_recursive_check_trav(NODE_BODY(node), env, state1);
+    }
     break;
 
   default:
@@ -3656,11 +3666,10 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
 #define IN_REPEAT     (1<<2)
 #define IN_VAR_REPEAT (1<<3)
 #define IN_CALL       (1<<4)
-#define IN_RECCALL    (1<<5)
 
 #ifdef USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT
 static int
-quantifiers_memory_node_info(Node* node, int state)
+quantifiers_memory_node_info(Node* node)
 {
   int r = 0;
 
@@ -3670,7 +3679,7 @@ quantifiers_memory_node_info(Node* node, int state)
     {
       int v;
       do {
-        v = quantifiers_memory_node_info(NODE_CAR(node), state);
+        v = quantifiers_memory_node_info(NODE_CAR(node));
         if (v > r) r = v;
       } while (v >= 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     }
@@ -3682,7 +3691,7 @@ quantifiers_memory_node_info(Node* node, int state)
       return NQ_BODY_IS_EMPTY_REC; /* tiny version */
     }
     else
-      r = quantifiers_memory_node_info(NODE_BODY(node), state);
+      r = quantifiers_memory_node_info(NODE_BODY(node));
     break;
 #endif
 
@@ -3690,7 +3699,7 @@ quantifiers_memory_node_info(Node* node, int state)
     {
       QtfrNode* qn = QTFR_(node);
       if (qn->upper != 0) {
-        r = quantifiers_memory_node_info(NODE_BODY(node), state);
+        r = quantifiers_memory_node_info(NODE_BODY(node));
       }
     }
     break;
@@ -3700,7 +3709,7 @@ quantifiers_memory_node_info(Node* node, int state)
       EnclosureNode* en = ENCLOSURE_(node);
       switch (en->type) {
       case ENCLOSURE_MEMORY:
-        if (NODE_IS_RECURSION(node) || (state & IN_RECCALL) != 0) {
+        if (NODE_IS_RECURSION(node)) {
           return NQ_BODY_IS_EMPTY_REC;
         }
         return NQ_BODY_IS_EMPTY_MEM;
@@ -3708,7 +3717,7 @@ quantifiers_memory_node_info(Node* node, int state)
 
       case ENCLOSURE_OPTION:
       case ENCLOSURE_STOP_BACKTRACK:
-        r = quantifiers_memory_node_info(NODE_BODY(node), state);
+        r = quantifiers_memory_node_info(NODE_BODY(node));
         break;
       default:
         break;
@@ -3816,7 +3825,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         if (d == 0) {
           qn->body_empty_info = NQ_BODY_IS_EMPTY;
 #ifdef USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT
-          r = quantifiers_memory_node_info(target, state);
+          r = quantifiers_memory_node_info(target);
           if (r < 0) break;
           if (r > 0) {
             qn->body_empty_info = r;
@@ -3907,10 +3916,6 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         }
         if (NODE_IS_CALLED(node))
           state |= IN_CALL;
-        if (NODE_IS_RECURSION(node))
-          state |= IN_RECCALL;
-        else if ((state & IN_RECCALL) != 0)
-          NODE_STATUS_ADD(node, NST_RECURSION);
         r = setup_tree(NODE_BODY(node), reg, state, env);
         break;
 
@@ -5384,7 +5389,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
     scan_env.unset_addr_list = &uslist;
     r = setup_call(root, &scan_env);
     if (r != 0) goto err_unset;
-    r = subexp_recursive_check_trav(root, &scan_env);
+    r = subexp_recursive_check_trav(root, &scan_env, 0);
     if (r  < 0) goto err_unset;
     r = subexp_inf_recursive_check_trav(root, &scan_env);
     if (r != 0) goto err_unset;
