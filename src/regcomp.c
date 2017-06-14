@@ -2764,7 +2764,7 @@ get_max_len(Node* node, OnigLen *max, ScanEnv* env)
 #define RECURSION_INFINITE     (1<<2)
 
 static int
-subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
+infinite_recursive_call_check(Node* node, ScanEnv* env, int head)
 {
   int r = 0;
 
@@ -2777,7 +2777,7 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
 
       x = node;
       do {
-        ret = subexp_inf_recursive_check(NODE_CAR(x), env, head);
+        ret = infinite_recursive_call_check(NODE_CAR(x), env, head);
         if (ret < 0 || (ret & RECURSION_INFINITE) != 0) return ret;
         r |= ret;
         if (head) {
@@ -2796,7 +2796,7 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
 
       must = RECURSION_MUST;
       do {
-        ret = subexp_inf_recursive_check(NODE_CAR(node), env, head);
+        ret = infinite_recursive_call_check(NODE_CAR(node), env, head);
         if (ret < 0 || (ret & RECURSION_INFINITE) != 0) return ret;
 
         r    |= (ret & RECURSION_EXIST);
@@ -2807,7 +2807,7 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
     break;
 
   case NODE_QTFR:
-    r = subexp_inf_recursive_check(NODE_BODY(node), env, head);
+    r = infinite_recursive_call_check(NODE_BODY(node), env, head);
     if (r < 0) return r;
     if ((r & RECURSION_MUST) != 0) {
       if (QTFR_(node)->lower == 0)
@@ -2820,7 +2820,7 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
       break;
     /* fall */
   case NODE_CALL:
-    r = subexp_inf_recursive_check(NODE_BODY(node), env, head);
+    r = infinite_recursive_call_check(NODE_BODY(node), env, head);
     break;
 
   case NODE_ENCLOSURE:
@@ -2831,7 +2831,7 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
               : RECURSION_EXIST | RECURSION_MUST | RECURSION_INFINITE);
     else {
       NODE_STATUS_ADD(node, NST_MARK2);
-      r = subexp_inf_recursive_check(NODE_BODY(node), env, head);
+      r = infinite_recursive_call_check(NODE_BODY(node), env, head);
       NODE_STATUS_REMOVE(node, NST_MARK2);
     }
     break;
@@ -2844,7 +2844,7 @@ subexp_inf_recursive_check(Node* node, ScanEnv* env, int head)
 }
 
 static int
-subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
+infinite_recursive_call_check_trav(Node* node, ScanEnv* env)
 {
   int r;
 
@@ -2852,7 +2852,7 @@ subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
   case NODE_LIST:
   case NODE_ALT:
     do {
-      r = subexp_inf_recursive_check_trav(NODE_CAR(node), env);
+      r = infinite_recursive_call_check_trav(NODE_CAR(node), env);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
@@ -2863,7 +2863,7 @@ subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
     }
     /* fall */
   case NODE_QTFR:
-    r = subexp_inf_recursive_check_trav(NODE_BODY(node), env);
+    r = infinite_recursive_call_check_trav(NODE_BODY(node), env);
     break;
 
   case NODE_ENCLOSURE:
@@ -2872,14 +2872,14 @@ subexp_inf_recursive_check_trav(Node* node, ScanEnv* env)
 
       NODE_STATUS_ADD(node, NST_MARK1);
 
-      ret = subexp_inf_recursive_check(NODE_BODY(node), env, 1);
+      ret = infinite_recursive_call_check(NODE_BODY(node), env, 1);
       if (ret < 0) return ret;
       else if ((ret & (RECURSION_MUST | RECURSION_INFINITE)) != 0)
         return ONIGERR_NEVER_ENDING_RECURSION;
 
       NODE_STATUS_REMOVE(node, NST_MARK1);
     }
-    r = subexp_inf_recursive_check_trav(NODE_BODY(node), env);
+    r = infinite_recursive_call_check_trav(NODE_BODY(node), env);
     break;
 
   default:
@@ -5391,7 +5391,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
     if (r != 0) goto err_unset;
     r = recursive_call_check_trav(root, &scan_env, 0);
     if (r  < 0) goto err_unset;
-    r = subexp_inf_recursive_check_trav(root, &scan_env);
+    r = infinite_recursive_call_check_trav(root, &scan_env);
     if (r != 0) goto err_unset;
 
     reg->num_call = scan_env.num_call;
