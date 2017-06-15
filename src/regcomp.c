@@ -2991,12 +2991,15 @@ recursive_call_check_trav(Node* node, ScanEnv* env, int state)
     }
 
     {
+      int ret;
       int state1 = state;
 
       if (NODE_IS_RECURSION(node))
         state1 |= IN_RECURSION;
 
-      (void) recursive_call_check_trav(NODE_BODY(node), env, state1);
+      ret = recursive_call_check_trav(NODE_BODY(node), env, state1);
+      if (ret == FOUND_CALLED_NODE)
+        r = FOUND_CALLED_NODE;
     }
     break;
 
