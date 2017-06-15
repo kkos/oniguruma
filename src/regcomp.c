@@ -2824,15 +2824,24 @@ infinite_recursive_call_check(Node* node, ScanEnv* env, int head)
     break;
 
   case NODE_ENCLOSURE:
-    if (NODE_IS_MARK2(node))
-      return 0;
-    else if (NODE_IS_MARK1(node))
-      return (head == 0 ? RECURSION_EXIST | RECURSION_MUST
-              : RECURSION_EXIST | RECURSION_MUST | RECURSION_INFINITE);
-    else {
-      NODE_STATUS_ADD(node, NST_MARK2);
-      r = infinite_recursive_call_check(NODE_BODY(node), env, head);
-      NODE_STATUS_REMOVE(node, NST_MARK2);
+    {
+      EnclosureNode* en = ENCLOSURE_(node);
+
+      if (en->type == ENCLOSURE_MEMORY) {
+        if (NODE_IS_MARK2(node))
+          return 0;
+        else if (NODE_IS_MARK1(node))
+          return (head == 0 ? RECURSION_EXIST | RECURSION_MUST
+                  : RECURSION_EXIST | RECURSION_MUST | RECURSION_INFINITE);
+        else {
+          NODE_STATUS_ADD(node, NST_MARK2);
+          r = infinite_recursive_call_check(NODE_BODY(node), env, head);
+          NODE_STATUS_REMOVE(node, NST_MARK2);
+        }
+      }
+      else {
+        r = infinite_recursive_call_check(NODE_BODY(node), env, head);
+      }
     }
     break;
 
@@ -2867,18 +2876,25 @@ infinite_recursive_call_check_trav(Node* node, ScanEnv* env)
     break;
 
   case NODE_ENCLOSURE:
-    if (NODE_IS_RECURSION(node) && NODE_IS_CALLED(node)) {
-      int ret;
+    {
+      EnclosureNode* en = ENCLOSURE_(node);
 
-      NODE_STATUS_ADD(node, NST_MARK1);
+      if (en->type == ENCLOSURE_MEMORY) {
+        if (NODE_IS_RECURSION(node) && NODE_IS_CALLED(node)) {
+          int ret;
 
-      ret = infinite_recursive_call_check(NODE_BODY(node), env, 1);
-      if (ret < 0) return ret;
-      else if ((ret & (RECURSION_MUST | RECURSION_INFINITE)) != 0)
-        return ONIGERR_NEVER_ENDING_RECURSION;
+          NODE_STATUS_ADD(node, NST_MARK1);
 
-      NODE_STATUS_REMOVE(node, NST_MARK1);
+          ret = infinite_recursive_call_check(NODE_BODY(node), env, 1);
+          if (ret < 0) return ret;
+          else if ((ret & (RECURSION_MUST | RECURSION_INFINITE)) != 0)
+            return ONIGERR_NEVER_ENDING_RECURSION;
+
+          NODE_STATUS_REMOVE(node, NST_MARK1);
+        }
+      }
     }
+
     r = infinite_recursive_call_check_trav(NODE_BODY(node), env);
     break;
 
