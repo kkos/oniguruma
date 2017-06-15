@@ -272,7 +272,9 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   if (to->allocated == 0) {
     if (from->num_regs > 0) {
       to->beg = (int* )xmalloc(RREGC_SIZE);
+      if (IS_NULL(to->beg)) return;
       to->end = (int* )xmalloc(RREGC_SIZE);
+      if (IS_NULL(to->end)) return;
       to->allocated = from->num_regs;
     }
   }
