@@ -405,6 +405,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
     is_alloca  = 0;\
     alloc_base = (char* )xmalloc(sizeof(OnigStackIndex) * msa->ptr_num\
                   + sizeof(OnigStackType) * (stack_num));\
+    CHECK_NULL_RETURN_MEMERR(alloc_base);\
     stk_base   = (OnigStackType* )(alloc_base\
                  + (sizeof(OnigStackIndex) * msa->ptr_num));\
     stk        = stk_base;\
@@ -414,6 +415,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
     is_alloca  = 1;\
     alloc_base = (char* )xalloca(sizeof(OnigStackIndex) * msa->ptr_num\
                  + sizeof(OnigStackType) * (stack_num));\
+    CHECK_NULL_RETURN_MEMERR(alloc_base);\
     stk_base   = (OnigStackType* )(alloc_base\
                  + (sizeof(OnigStackIndex) * msa->ptr_num));\
     stk        = stk_base;\
