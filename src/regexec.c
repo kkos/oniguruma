@@ -428,6 +428,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
     size_t size = sizeof(OnigStackIndex) * msa->ptr_num \
                 + sizeof(OnigStackType) * msa->stack_n;\
     msa->stack_p = xmalloc(size);\
+    CHECK_NULL_RETURN_MEMERR(msa->stack_p);\
     xmemcpy(msa->stack_p, alloc_base, size);\
   }\
   else {\
