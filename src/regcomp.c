@@ -5427,11 +5427,9 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
     if (r  < 0) goto err_unset;
     r = infinite_recursive_call_check_trav(root, &scan_env);
     if (r != 0) goto err_unset;
-
-    reg->num_call = scan_env.num_call;
   }
-  else
-    reg->num_call = 0;
+
+  reg->num_call = scan_env.num_call;
 #endif
 
   r = setup_tree(root, reg, 0, &scan_env);
