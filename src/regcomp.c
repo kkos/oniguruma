@@ -2920,14 +2920,23 @@ recursive_call_check(Node* node)
     break;
 
   case NODE_ENCLOSURE:
-    if (NODE_IS_MARK2(node))
-      return 0;
-    else if (NODE_IS_MARK1(node))
-      return 1; /* recursion */
-    else {
-      NODE_STATUS_ADD(node, NST_MARK2);
-      r = recursive_call_check(NODE_BODY(node));
-      NODE_STATUS_REMOVE(node, NST_MARK2);
+    {
+      EnclosureNode* en = ENCLOSURE_(node);
+
+      if (en->type == ENCLOSURE_MEMORY) {
+        if (NODE_IS_MARK2(node))
+          return 0;
+        else if (NODE_IS_MARK1(node))
+          return 1; /* recursion */
+        else {
+          NODE_STATUS_ADD(node, NST_MARK2);
+          r = recursive_call_check(NODE_BODY(node));
+          NODE_STATUS_REMOVE(node, NST_MARK2);
+        }
+      }
+      else {
+        r = recursive_call_check(NODE_BODY(node));
+      }
     }
     break;
 
@@ -2977,29 +2986,35 @@ recursive_call_check_trav(Node* node, ScanEnv* env, int state)
     break;
 
   case NODE_ENCLOSURE:
-    if (NODE_IS_CALLED(node) || (state & IN_RECURSION) != 0) {
-      if (! NODE_IS_RECURSION(node)) {
-        NODE_STATUS_ADD(node, NST_MARK1);
-        r = recursive_call_check(NODE_BODY(node));
-        if (r != 0)
-          NODE_STATUS_ADD(node, NST_RECURSION);
-        NODE_STATUS_REMOVE(node, NST_MARK1);
+    {
+      EnclosureNode* en = ENCLOSURE_(node);
+
+      if (en->type == ENCLOSURE_MEMORY) {
+        if (NODE_IS_CALLED(node) || (state & IN_RECURSION) != 0) {
+          if (! NODE_IS_RECURSION(node)) {
+            NODE_STATUS_ADD(node, NST_MARK1);
+            r = recursive_call_check(NODE_BODY(node));
+            if (r != 0)
+              NODE_STATUS_ADD(node, NST_RECURSION);
+            NODE_STATUS_REMOVE(node, NST_MARK1);
+          }
+
+          if (NODE_IS_CALLED(node))
+            r = FOUND_CALLED_NODE;
+        }
       }
 
-      if (NODE_IS_CALLED(node))
-        r = FOUND_CALLED_NODE;
-    }
+      {
+        int ret;
+        int state1 = state;
 
-    {
-      int ret;
-      int state1 = state;
+        if (NODE_IS_RECURSION(node))
+          state1 |= IN_RECURSION;
 
-      if (NODE_IS_RECURSION(node))
-        state1 |= IN_RECURSION;
-
-      ret = recursive_call_check_trav(NODE_BODY(node), env, state1);
-      if (ret == FOUND_CALLED_NODE)
-        r = FOUND_CALLED_NODE;
+        ret = recursive_call_check_trav(NODE_BODY(node), env, state1);
+        if (ret == FOUND_CALLED_NODE)
+          r = FOUND_CALLED_NODE;
+      }
     }
     break;
 
