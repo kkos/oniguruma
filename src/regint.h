@@ -169,6 +169,8 @@
 # include <stdio.h>
 #endif
 
+#include <limits.h>
+
 #include "regenc.h"
 
 #ifdef MIN
