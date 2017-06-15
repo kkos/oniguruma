@@ -277,7 +277,9 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   }
   else if (to->allocated < from->num_regs) {
     to->beg = (int* )xrealloc(to->beg, RREGC_SIZE);
+    if (IS_NULL(to->beg)) return;
     to->end = (int* )xrealloc(to->end, RREGC_SIZE);
+    if (IS_NULL(to->end)) return;
     to->allocated = from->num_regs;
   }
 
