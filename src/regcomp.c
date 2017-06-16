@@ -3150,8 +3150,6 @@ divide_look_behind_alternatives(Node* node)
   AnchorNode* an = ANCHOR_(node);
   int anc_type = an->type;
 
-  /* fprintf(stderr, "divide_look_behind: %d\n", (int )node); */
-
   head = NODE_ANCHOR_BODY(an);
   np = NODE_CAR(head);
   swap_node(node, head);
@@ -3180,8 +3178,6 @@ setup_look_behind(Node* node, regex_t* reg, ScanEnv* env)
 {
   int r, len;
   AnchorNode* an = ANCHOR_(node);
-
-  /* fprintf(stderr, "setup_look_behind: %x\n", (int )node); */
 
   r = get_char_length_tree(NODE_ANCHOR_BODY(an), reg, &len);
   if (r == 0)
@@ -3868,17 +3864,6 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
                   ENCLOSURE_(target)->type == ENCLOSURE_MEMORY) {
                 BIT_STATUS_ON_AT(env->bt_mem_end, ENCLOSURE_(target)->regnum);
               }
-            }
-          }
-#endif
-#if 0
-          r = get_max_len(target, &d, env);
-          if (r == 0 && d == 0) {
-            /*  ()* ==> ()?, ()+ ==> ()  */
-            qn->upper = 1;
-            if (qn->lower > 1) qn->lower = 1;
-            if (NODE_TYPE(target) == NODE_STR) {
-              qn->upper = qn->lower = 0;  /* /(?:)+/ ==> // */
             }
           }
 #endif
