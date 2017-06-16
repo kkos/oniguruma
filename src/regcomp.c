@@ -3951,22 +3951,11 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NODE_CCLASS:
-    break;
-
   case NODE_STR:
     if (IS_IGNORECASE(reg->options) && !NSTRING_IS_RAW(node)) {
       r = expand_case_fold_string(node, reg);
     }
     break;
-
-  case NODE_CTYPE:
-    break;
-
-#ifdef USE_SUBEXP_CALL
-  case NODE_CALL:
-    break;
-#endif
 
   case NODE_BREF:
     {
@@ -3985,10 +3974,6 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 #endif
       }
     }
-    break;
-
-  case NODE_QTFR:
-    r = setup_qtfr(node, reg, state, env);
     break;
 
   case NODE_ENCLOSURE:
@@ -4033,10 +4018,19 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     }
     break;
 
+  case NODE_QTFR:
+    r = setup_qtfr(node, reg, state, env);
+    break;
+
   case NODE_ANCHOR:
     r = setup_anchor(node, reg, state, env);
     break;
 
+#ifdef USE_SUBEXP_CALL
+  case NODE_CALL:
+#endif
+  case NODE_CTYPE:
+  case NODE_CCLASS:
   default:
     break;
   }
