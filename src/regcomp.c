@@ -3873,9 +3873,11 @@ setup_qtfr(Node* node, regex_t* reg, int state, ScanEnv* env)
     }
   }
 
-  state |= IN_REPEAT;
+  if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 2)
+    state |= IN_REPEAT;
   if (qn->lower != qn->upper)
     state |= IN_VAR_REPEAT;
+
   r = setup_tree(target, reg, state, env);
   if (r != 0) return r;
 
