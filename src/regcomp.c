@@ -3822,7 +3822,6 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     {
       int i;
       int* p;
-      MemEnv* mem_env = SCANENV_MEMENV(env);
       BRefNode* br = BREF_(node);
       p = BACKREFS_P(br);
       for (i = 0; i < br->back_num; i++) {
@@ -3834,7 +3833,6 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
           BIT_STATUS_ON_AT(env->bt_mem_end, p[i]);
         }
 #endif
-        NODE_STATUS_ADD(mem_env[p[i]].node, NST_MEM_BACKREFED);
       }
     }
     break;

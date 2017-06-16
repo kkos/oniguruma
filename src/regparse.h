@@ -124,16 +124,15 @@ typedef enum {
 #define NST_CLEN_FIXED            (1<<2)
 #define NST_MARK1                 (1<<3)
 #define NST_MARK2                 (1<<4)
-#define NST_MEM_BACKREFED         (1<<5)
-#define NST_STOP_BT_SIMPLE_REPEAT (1<<6)
-#define NST_RECURSION             (1<<7)
-#define NST_CALLED                (1<<8)
-#define NST_ADDR_FIXED            (1<<9)
-#define NST_NAMED_GROUP           (1<<10)
-#define NST_NAME_REF              (1<<11)
-#define NST_IN_REPEAT             (1<<12) /* STK_REPEAT is nested in stack. */
-#define NST_NEST_LEVEL            (1<<13)
-#define NST_BY_NUMBER             (1<<14) /* {n,m} */
+#define NST_STOP_BT_SIMPLE_REPEAT (1<<5)
+#define NST_RECURSION             (1<<6)
+#define NST_CALLED                (1<<7)
+#define NST_ADDR_FIXED            (1<<8)
+#define NST_NAMED_GROUP           (1<<9)
+#define NST_NAME_REF              (1<<10)
+#define NST_IN_REPEAT             (1<<11) /* STK_REPEAT is nested in stack. */
+#define NST_NEST_LEVEL            (1<<12)
+#define NST_BY_NUMBER             (1<<13) /* {n,m} */
 
 #define NODE_STATUS(node)           (((Node* )node)->u.base.status)
 #define NODE_STATUS_ADD(node,f)     (NODE_STATUS(node) |= (f))
