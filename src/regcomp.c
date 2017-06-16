@@ -3768,6 +3768,75 @@ quantifiers_memory_node_info(Node* node)
 }
 #endif /* USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT */
 
+static int setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env);
+
+#ifdef __GNUC__
+__inline
+#endif
+static int
+setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
+{
+/* allowed node types in look-behind */
+#define ALLOWED_TYPE_IN_LB \
+  ( BIT_NODE_LIST | BIT_NODE_ALT | BIT_NODE_STR | BIT_NODE_CCLASS | BIT_NODE_CTYPE \
+  | BIT_NODE_ANCHOR | BIT_NODE_ENCLOSURE | BIT_NODE_QTFR | BIT_NODE_CALL )
+
+#define ALLOWED_ENCLOSURE_IN_LB       ( ENCLOSURE_MEMORY | ENCLOSURE_OPTION )
+#define ALLOWED_ENCLOSURE_IN_LB_NOT   ENCLOSURE_OPTION
+
+#define ALLOWED_ANCHOR_IN_LB \
+  ( ANCHOR_LOOK_BEHIND | ANCHOR_BEGIN_LINE | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF \
+  | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUND | ANCHOR_NOT_WORD_BOUND \
+  | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END )
+
+#define ALLOWED_ANCHOR_IN_LB_NOT \
+  ( ANCHOR_LOOK_BEHIND | ANCHOR_LOOK_BEHIND_NOT | ANCHOR_BEGIN_LINE \
+  | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUND \
+  | ANCHOR_NOT_WORD_BOUND | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END )
+
+  int r;
+  AnchorNode* an = ANCHOR_(node);
+
+  switch (an->type) {
+  case ANCHOR_PREC_READ:
+    r = setup_tree(NODE_ANCHOR_BODY(an), reg, state, env);
+    break;
+  case ANCHOR_PREC_READ_NOT:
+    r = setup_tree(NODE_ANCHOR_BODY(an), reg, (state | IN_NOT), env);
+    break;
+
+  case ANCHOR_LOOK_BEHIND:
+    {
+      r = check_type_tree(NODE_ANCHOR_BODY(an), ALLOWED_TYPE_IN_LB,
+                          ALLOWED_ENCLOSURE_IN_LB, ALLOWED_ANCHOR_IN_LB);
+      if (r < 0) return r;
+      if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
+      r = setup_tree(NODE_ANCHOR_BODY(an), reg, state, env);
+      if (r != 0) return r;
+      r = setup_look_behind(node, reg, env);
+    }
+    break;
+
+  case ANCHOR_LOOK_BEHIND_NOT:
+    {
+      r = check_type_tree(NODE_ANCHOR_BODY(an), ALLOWED_TYPE_IN_LB,
+                          ALLOWED_ENCLOSURE_IN_LB_NOT, ALLOWED_ANCHOR_IN_LB_NOT);
+      if (r < 0) return r;
+      if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
+      r = setup_tree(NODE_ANCHOR_BODY(an), reg, (state | IN_NOT), env);
+      if (r != 0) return r;
+      r = setup_look_behind(node, reg, env);
+    }
+    break;
+
+  default:
+    r = 0;
+    break;
+  }
+
+  return r;
+}
+
 /* setup_tree does the following work.
  1. check empty loop. (set qn->body_empty_info)
  2. expand ignore-case in char class.
@@ -3955,56 +4024,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     break;
 
   case NODE_ANCHOR:
-    {
-      AnchorNode* an = ANCHOR_(node);
-
-      switch (an->type) {
-      case ANCHOR_PREC_READ:
-        r = setup_tree(NODE_ANCHOR_BODY(an), reg, state, env);
-        break;
-      case ANCHOR_PREC_READ_NOT:
-        r = setup_tree(NODE_ANCHOR_BODY(an), reg, (state | IN_NOT), env);
-        break;
-
-/* allowed node types in look-behind */
-#define ALLOWED_TYPE_IN_LB  \
-  ( BIT_NODE_LIST | BIT_NODE_ALT | BIT_NODE_STR | BIT_NODE_CCLASS | BIT_NODE_CTYPE | \
-    BIT_NODE_ANCHOR | BIT_NODE_ENCLOSURE | BIT_NODE_QTFR | BIT_NODE_CALL )
-
-#define ALLOWED_ENCLOSURE_IN_LB       ( ENCLOSURE_MEMORY | ENCLOSURE_OPTION )
-#define ALLOWED_ENCLOSURE_IN_LB_NOT   ENCLOSURE_OPTION
-
-#define ALLOWED_ANCHOR_IN_LB \
-( ANCHOR_LOOK_BEHIND | ANCHOR_BEGIN_LINE | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUND | ANCHOR_NOT_WORD_BOUND | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END )
-
-#define ALLOWED_ANCHOR_IN_LB_NOT \
-( ANCHOR_LOOK_BEHIND | ANCHOR_LOOK_BEHIND_NOT | ANCHOR_BEGIN_LINE | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUND | ANCHOR_NOT_WORD_BOUND | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END )
-
-      case ANCHOR_LOOK_BEHIND:
-        {
-          r = check_type_tree(NODE_ANCHOR_BODY(an), ALLOWED_TYPE_IN_LB,
-                              ALLOWED_ENCLOSURE_IN_LB, ALLOWED_ANCHOR_IN_LB);
-          if (r < 0) return r;
-          if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
-          r = setup_tree(NODE_ANCHOR_BODY(an), reg, state, env);
-          if (r != 0) return r;
-          r = setup_look_behind(node, reg, env);
-        }
-        break;
-
-      case ANCHOR_LOOK_BEHIND_NOT:
-        {
-          r = check_type_tree(NODE_ANCHOR_BODY(an), ALLOWED_TYPE_IN_LB,
-                   ALLOWED_ENCLOSURE_IN_LB_NOT, ALLOWED_ANCHOR_IN_LB_NOT);
-          if (r < 0) return r;
-          if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
-          r = setup_tree(NODE_ANCHOR_BODY(an), reg, (state | IN_NOT), env);
-          if (r != 0) return r;
-          r = setup_look_behind(node, reg, env);
-        }
-        break;
-      }
-    }
+    r = setup_anchor(node, reg, state, env);
     break;
 
   default:
