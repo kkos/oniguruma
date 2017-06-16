@@ -777,7 +777,7 @@ compile_range_repeat_node(QtfrNode* qn, int target_len, int empty_info,
 
   if (
 #ifdef USE_SUBEXP_CALL
-      reg->num_call > 0 ||
+      NODE_IS_IN_CALLED(qn) ||
 #endif
       NODE_IS_IN_REPEAT(qn)) {
     r = add_opcode(reg, qn->greedy ? OP_REPEAT_INC_SG : OP_REPEAT_INC_NG_SG);
@@ -3850,6 +3850,9 @@ setup_qtfr(Node* node, regex_t* reg, int state, ScanEnv* env)
 
   if ((state & IN_REPEAT) != 0) {
     NODE_STATUS_ADD(node, NST_IN_REPEAT);
+  }
+  if ((state & IN_CALL) != 0) {
+    NODE_STATUS_ADD(node, NST_IN_CALLED);
   }
 
   if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 1) {

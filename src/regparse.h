@@ -131,8 +131,9 @@ typedef enum {
 #define NST_NAMED_GROUP           (1<<9)
 #define NST_NAME_REF              (1<<10)
 #define NST_IN_REPEAT             (1<<11) /* STK_REPEAT is nested in stack. */
-#define NST_NEST_LEVEL            (1<<12)
-#define NST_BY_NUMBER             (1<<13) /* {n,m} */
+#define NST_IN_CALLED             (1<<12)
+#define NST_NEST_LEVEL            (1<<13)
+#define NST_BY_NUMBER             (1<<14) /* {n,m} */
 
 #define NODE_STATUS(node)           (((Node* )node)->u.base.status)
 #define NODE_STATUS_ADD(node,f)     (NODE_STATUS(node) |= (f))
@@ -141,6 +142,7 @@ typedef enum {
 #define NODE_IS_BY_NUMBER(node)   ((NODE_STATUS(node) & NST_BY_NUMBER) != 0)
 #define NODE_IS_IN_REPEAT(node)   ((NODE_STATUS(node) & NST_IN_REPEAT) != 0)
 #define NODE_IS_CALLED(node)      ((NODE_STATUS(node) & NST_CALLED)    != 0)
+#define NODE_IS_IN_CALLED(node)   ((NODE_STATUS(node) & NST_IN_CALLED) != 0)
 #define NODE_IS_RECURSION(node)   ((NODE_STATUS(node) & NST_RECURSION) != 0)
 #define NODE_IS_STOP_BT_SIMPLE_REPEAT(node) \
     ((NODE_STATUS(node) & NST_STOP_BT_SIMPLE_REPEAT) != 0)
