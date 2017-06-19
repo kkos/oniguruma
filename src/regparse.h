@@ -213,6 +213,7 @@ typedef struct {
   int regnum;
   OnigOptionType option;
   AbsAddrType    call_addr;
+  int            entry_count;
   /* for multiple call reference */
   OnigLen min_len; /* min length (byte) */
   OnigLen max_len; /* max length (byte) */

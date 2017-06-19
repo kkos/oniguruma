@@ -3766,10 +3766,11 @@ setup_call2_call(Node* node, ScanEnv* env)
   case NODE_CALL:
     {
       CallNode* cn = CALL_(node);
+      Node* called = NODE_CALL_BODY(cn);
 
-      NODE_STATUS_ADD(NODE_CALL_BODY(cn), NST_CALLED);
-
-      setup_call2_call(NODE_CALL_BODY(cn), env);
+      NODE_STATUS_ADD(called, NST_CALLED);
+      ENCLOSURE_(called)->entry_count++;
+      setup_call2_call(called, env);
     }
     break;
 
@@ -3799,15 +3800,17 @@ setup_call(Node* node, ScanEnv* env, int state)
     break;
 
   case NODE_ANCHOR:
-    if (! ANCHOR_HAS_BODY(ANCHOR_(node))) {
+    if (ANCHOR_HAS_BODY(ANCHOR_(node)))
+      r = setup_call(NODE_BODY(node), env, state);
+    else
       r = 0;
-      break;
-    }
-    /* fall */
-  case NODE_ENCLOSURE:
-    if ((state & IN_ZERO) != 0)
-      NODE_STATUS_ADD(node, NST_IN_ZERO);
+    break;
 
+  case NODE_ENCLOSURE:
+    if ((state & IN_ZERO) != 0) {
+      NODE_STATUS_ADD(node, NST_IN_ZERO);
+      ENCLOSURE_(node)->entry_count--;
+    }
     r = setup_call(NODE_BODY(node), env, state);
     break;
 
