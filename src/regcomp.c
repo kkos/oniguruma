@@ -3768,7 +3768,6 @@ setup_call2_call(Node* node, ScanEnv* env)
       CallNode* cn = CALL_(node);
 
       NODE_STATUS_ADD(NODE_CALL_BODY(cn), NST_CALLED);
-      BIT_STATUS_ON_AT(env->bt_mem_start, cn->group_num);
 
       setup_call2_call(NODE_CALL_BODY(cn), env);
     }
@@ -4098,12 +4097,12 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         break;
 
       case ENCLOSURE_MEMORY:
-        if ((state & (IN_ALT | IN_NOT | IN_VAR_REPEAT | IN_CALL)) != 0) {
-          BIT_STATUS_ON_AT(env->bt_mem_start, en->regnum);
-          /* NODE_STATUS_ADD(node, NST_MEM_IN_ALT_NOT); */
-        }
         if (NODE_IS_CALLED(node))
           state |= IN_CALL;
+
+        if ((state & (IN_ALT | IN_NOT | IN_VAR_REPEAT | IN_CALL)) != 0) {
+          BIT_STATUS_ON_AT(env->bt_mem_start, en->regnum);
+        }
         r = setup_tree(NODE_BODY(node), reg, state, env);
         break;
 
