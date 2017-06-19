@@ -247,7 +247,7 @@ onig_region_new(void)
 extern void
 onig_region_free(OnigRegion* r, int free_self)
 {
-  if (r) {
+  if (r != 0) {
     if (r->allocated > 0) {
       if (r->beg) xfree(r->beg);
       if (r->end) xfree(r->end);
@@ -3315,7 +3315,7 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
 
       r = set_bm_backward_skip(reg->exact, reg->exact_end, reg->enc,
                                &(reg->int_map_backward));
-      if (r) return r;
+      if (r != 0) return r;
     }
     p = bm_search_backward(reg, reg->exact, reg->exact_end, range, adjrange,
                            end, p);
@@ -3414,7 +3414,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 #endif
       ) {
     r = onig_region_resize_clear(region, reg->num_mem + 1);
-    if (r) goto finish_no_msa;
+    if (r != 0) goto finish_no_msa;
   }
 
   if (start > end || start < str) goto mismatch_no_msa;

@@ -179,7 +179,7 @@ bbuf_clone(BBuf** rto, BBuf* from)
 #define ADD_ALL_MULTI_BYTE_RANGE(enc, mbuf) do {\
   if (! ONIGENC_IS_SINGLEBYTE(enc)) {\
     r = SET_ALL_MULTI_BYTE_RANGE(enc, &(mbuf));\
-    if (r) return r;\
+    if (r != 0) return r;\
   }\
 } while (0)
 
@@ -519,7 +519,7 @@ onig_names_free(regex_t* reg)
   NameTable* t;
 
   r = names_clear(reg);
-  if (r) return r;
+  if (r != 0) return r;
 
   t = (NameTable* )reg->name_table;
   if (IS_NOT_NULL(t)) onig_st_free_table(t);
@@ -700,7 +700,7 @@ onig_names_free(regex_t* reg)
   NameTable* t;
 
   r = names_clear(reg);
-  if (r) return r;
+  if (r != 0) return r;
 
   t = (NameTable* )reg->name_table;
   if (IS_NOT_NULL(t)) xfree(t);
@@ -1614,7 +1614,7 @@ new_code_range(BBuf** pbuf)
   bbuf = *pbuf = (BBuf* )xmalloc(sizeof(BBuf));
   CHECK_NULL_RETURN_MEMERR(*pbuf);
   r = BBUF_INIT(*pbuf, INIT_MULTI_BYTE_RANGE_SIZE);
-  if (r) return r;
+  if (r != 0) return r;
 
   n = 0;
   BBUF_WRITE_CODE_POINT(bbuf, 0, n);
@@ -1635,7 +1635,7 @@ add_code_range_to_buf(BBuf** pbuf, OnigCodePoint from, OnigCodePoint to)
 
   if (IS_NULL(*pbuf)) {
     r = new_code_range(pbuf);
-    if (r) return r;
+    if (r != 0) return r;
     bbuf = *pbuf;
     n = 0;
   }

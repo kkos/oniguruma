@@ -350,7 +350,7 @@ add_opcode_rel_addr(regex_t* reg, int opcode, int addr)
   int r;
 
   r = add_opcode(reg, opcode);
-  if (r) return r;
+  if (r != 0) return r;
   r = add_rel_addr(reg, addr);
   return r;
 }
@@ -375,7 +375,7 @@ add_opcode_option(regex_t* reg, int opcode, OnigOptionType option)
   int r;
 
   r = add_opcode(reg, opcode);
-  if (r) return r;
+  if (r != 0) return r;
   r = add_option(reg, option);
   return r;
 }
@@ -441,14 +441,14 @@ compile_tree_empty_check(Node* node, regex_t* reg, int empty_info, ScanEnv* env)
 
   if (empty_info != 0) {
     r = add_opcode(reg, OP_NULL_CHECK_START);
-    if (r) return r;
+    if (r != 0) return r;
     r = add_mem_num(reg, reg->num_null_check); /* NULL CHECK ID */
-    if (r) return r;
+    if (r != 0) return r;
     reg->num_null_check++;
   }
 
   r = compile_tree(node, reg, env);
-  if (r) return r;
+  if (r != 0) return r;
 
   if (empty_info != 0) {
     if (empty_info == NQ_BODY_IS_EMPTY)
@@ -458,7 +458,7 @@ compile_tree_empty_check(Node* node, regex_t* reg, int empty_info, ScanEnv* env)
     else if (empty_info == NQ_BODY_IS_EMPTY_REC)
       r = add_opcode(reg, OP_NULL_CHECK_END_MEMST_PUSH);
 
-    if (r) return r;
+    if (r != 0) return r;
     r = add_mem_num(reg, saved_num_null_check); /* NULL CHECK ID */
   }
   return r;
@@ -471,10 +471,10 @@ compile_call(CallNode* node, regex_t* reg, ScanEnv* env)
   int r;
 
   r = add_opcode(reg, OP_CALL);
-  if (r) return r;
+  if (r != 0) return r;
   r = unset_addr_list_add(env->unset_addr_list, BBUF_GET_OFFSET_POS(reg),
                           NODE_CALL_BODY(node));
-  if (r) return r;
+  if (r != 0) return r;
   r = add_abs_addr(reg, 0 /*dummy addr.*/);
   return r;
 }
@@ -487,7 +487,7 @@ compile_tree_n_times(Node* node, int n, regex_t* reg, ScanEnv* env)
 
   for (i = 0; i < n; i++) {
     r = compile_tree(node, reg, env);
-    if (r) return r;
+    if (r != 0) return r;
   }
   return 0;
 }
@@ -606,7 +606,7 @@ compile_string_node(Node* node, regex_t* reg)
     }
     else {
       r = add_compile_string(prev, prev_len, slen, reg, ambig);
-      if (r) return r;
+      if (r != 0) return r;
 
       prev  = p;
       slen  = 1;
@@ -715,7 +715,7 @@ compile_cclass_node(CClassNode* cc, regex_t* reg)
         add_opcode(reg, OP_CCLASS_MIX);
 
       r = add_bitset(reg, cc->bs);
-      if (r) return r;
+      if (r != 0) return r;
       r = add_multi_byte_cclass(cc->mbuf, reg);
     }
   }
@@ -762,18 +762,18 @@ compile_range_repeat_node(QtfrNode* qn, int target_len, int empty_info,
   int num_repeat = reg->num_repeat;
 
   r = add_opcode(reg, qn->greedy ? OP_REPEAT : OP_REPEAT_NG);
-  if (r) return r;
+  if (r != 0) return r;
   r = add_mem_num(reg, num_repeat); /* OP_REPEAT ID */
   reg->num_repeat++;
-  if (r) return r;
+  if (r != 0) return r;
   r = add_rel_addr(reg, target_len + SIZE_OP_REPEAT_INC);
-  if (r) return r;
+  if (r != 0) return r;
 
   r = entry_repeat_range(reg, num_repeat, qn->lower, qn->upper);
-  if (r) return r;
+  if (r != 0) return r;
 
   r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info, env);
-  if (r) return r;
+  if (r != 0) return r;
 
   if (
 #ifdef USE_SUBEXP_CALL
@@ -785,7 +785,7 @@ compile_range_repeat_node(QtfrNode* qn, int target_len, int empty_info,
   else {
     r = add_opcode(reg, qn->greedy ? OP_REPEAT_INC : OP_REPEAT_INC_NG);
   }
-  if (r) return r;
+  if (r != 0) return r;
   r = add_mem_num(reg, num_repeat); /* OP_REPEAT ID */
   return r;
 }
@@ -900,16 +900,16 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
 
   if (is_anychar_star_quantifier(qn)) {
     r = compile_tree_n_times(NODE_QTFR_BODY(qn), qn->lower, reg, env);
-    if (r) return r;
+    if (r != 0) return r;
     if (IS_NOT_NULL(qn->next_head_exact) && !CKN_ON) {
       if (IS_MULTILINE(reg->options))
         r = add_opcode(reg, OP_ANYCHAR_ML_STAR_PEEK_NEXT);
       else
         r = add_opcode(reg, OP_ANYCHAR_STAR_PEEK_NEXT);
-      if (r) return r;
+      if (r != 0) return r;
       if (CKN_ON) {
         r = add_state_check_num(reg, ckn);
-        if (r) return r;
+        if (r != 0) return r;
       }
 
       return add_bytes(reg, STR_(qn->next_head_exact)->s, 1);
@@ -925,7 +925,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
                              OP_STATE_CHECK_ANYCHAR_STAR
                              : OP_ANYCHAR_STAR));
       }
-      if (r) return r;
+      if (r != 0) return r;
       if (CKN_ON)
         r = add_state_check_num(reg, ckn);
 
@@ -943,22 +943,22 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
       if (qn->lower == 1) {
         r = add_opcode_rel_addr(reg, OP_JUMP,
                        (CKN_ON ? SIZE_OP_STATE_CHECK_PUSH : SIZE_OP_PUSH));
-        if (r) return r;
+        if (r != 0) return r;
       }
 
       if (CKN_ON) {
         r = add_opcode(reg, OP_STATE_CHECK_PUSH);
-        if (r) return r;
+        if (r != 0) return r;
         r = add_state_check_num(reg, ckn);
-        if (r) return r;
+        if (r != 0) return r;
         r = add_rel_addr(reg, mod_tlen + SIZE_OP_JUMP);
       }
       else {
         r = add_opcode_rel_addr(reg, OP_PUSH, mod_tlen + SIZE_OP_JUMP);
       }
-      if (r) return r;
+      if (r != 0) return r;
       r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info, env);
-      if (r) return r;
+      if (r != 0) return r;
       r = add_opcode_rel_addr(reg, OP_JUMP,
                 -(mod_tlen + (int )SIZE_OP_JUMP
                 + (int )(CKN_ON ? SIZE_OP_STATE_CHECK_PUSH : SIZE_OP_PUSH)));
@@ -966,15 +966,15 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
     else {
       if (qn->lower == 0) {
         r = add_opcode_rel_addr(reg, OP_JUMP, mod_tlen);
-        if (r) return r;
+        if (r != 0) return r;
       }
       r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info, env);
-      if (r) return r;
+      if (r != 0) return r;
       if (CKN_ON) {
         r = add_opcode(reg, OP_STATE_CHECK_PUSH_OR_JUMP);
-        if (r) return r;
+        if (r != 0) return r;
         r = add_state_check_num(reg, ckn);
-        if (r) return r;
+        if (r != 0) return r;
         r = add_rel_addr(reg,
                          -(mod_tlen + (int )SIZE_OP_STATE_CHECK_PUSH_OR_JUMP));
       }
@@ -985,7 +985,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
   else if (qn->upper == 0) {
     if (qn->is_refered != 0) { /* /(?<n>..){0}/ */
       r = add_opcode_rel_addr(reg, OP_JUMP, tlen);
-      if (r) return r;
+      if (r != 0) return r;
       r = compile_tree(NODE_QTFR_BODY(qn), reg, env);
     }
     else
@@ -995,15 +995,15 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
     if (qn->lower == 0) {
       if (CKN_ON) {
         r = add_opcode(reg, OP_STATE_CHECK_PUSH);
-        if (r) return r;
+        if (r != 0) return r;
         r = add_state_check_num(reg, ckn);
-        if (r) return r;
+        if (r != 0) return r;
         r = add_rel_addr(reg, tlen);
       }
       else {
         r = add_opcode_rel_addr(reg, OP_PUSH, tlen);
       }
-      if (r) return r;
+      if (r != 0) return r;
     }
 
     r = compile_tree(NODE_QTFR_BODY(qn), reg, env);
@@ -1011,26 +1011,26 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
   else if (!qn->greedy && qn->upper == 1 && qn->lower == 0) { /* '??' */
     if (CKN_ON) {
       r = add_opcode(reg, OP_STATE_CHECK_PUSH);
-      if (r) return r;
+      if (r != 0) return r;
       r = add_state_check_num(reg, ckn);
-      if (r) return r;
+      if (r != 0) return r;
       r = add_rel_addr(reg, SIZE_OP_JUMP);
     }
     else {
       r = add_opcode_rel_addr(reg, OP_PUSH, SIZE_OP_JUMP);
     }
 
-    if (r) return r;
+    if (r != 0) return r;
     r = add_opcode_rel_addr(reg, OP_JUMP, tlen);
-    if (r) return r;
+    if (r != 0) return r;
     r = compile_tree(NODE_QTFR_BODY(qn), reg, env);
   }
   else {
     r = compile_range_repeat_node(qn, mod_tlen, empty_info, reg, env);
     if (CKN_ON) {
-      if (r) return r;
+      if (r != 0) return r;
       r = add_opcode(reg, OP_STATE_CHECK);
-      if (r) return r;
+      if (r != 0) return r;
       r = add_state_check_num(reg, ckn);
     }
   }
@@ -1116,13 +1116,13 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
 
   if (is_anychar_star_quantifier(qn)) {
     r = compile_tree_n_times(NODE_QTFR_BODY(qn), qn->lower, reg, env);
-    if (r) return r;
+    if (r != 0) return r;
     if (IS_NOT_NULL(qn->next_head_exact)) {
       if (IS_MULTILINE(reg->options))
         r = add_opcode(reg, OP_ANYCHAR_ML_STAR_PEEK_NEXT);
       else
         r = add_opcode(reg, OP_ANYCHAR_STAR_PEEK_NEXT);
-      if (r) return r;
+      if (r != 0) return r;
       return add_bytes(reg, STR_(qn->next_head_exact)->s, 1);
     }
     else {
@@ -1152,54 +1152,54 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
       else {
         r = add_opcode_rel_addr(reg, OP_JUMP, SIZE_OP_JUMP);
       }
-      if (r) return r;
+      if (r != 0) return r;
     }
     else {
       r = compile_tree_n_times(NODE_QTFR_BODY(qn), qn->lower, reg, env);
-      if (r) return r;
+      if (r != 0) return r;
     }
 
     if (qn->greedy) {
       if (IS_NOT_NULL(qn->head_exact)) {
         r = add_opcode_rel_addr(reg, OP_PUSH_OR_JUMP_EXACT1,
                                 mod_tlen + SIZE_OP_JUMP);
-        if (r) return r;
+        if (r != 0) return r;
         add_bytes(reg, STR_(qn->head_exact)->s, 1);
         r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info, env);
-        if (r) return r;
+        if (r != 0) return r;
         r = add_opcode_rel_addr(reg, OP_JUMP,
          -(mod_tlen + (int )SIZE_OP_JUMP + (int )SIZE_OP_PUSH_OR_JUMP_EXACT1));
       }
       else if (IS_NOT_NULL(qn->next_head_exact)) {
         r = add_opcode_rel_addr(reg, OP_PUSH_IF_PEEK_NEXT,
                                 mod_tlen + SIZE_OP_JUMP);
-        if (r) return r;
+        if (r != 0) return r;
         add_bytes(reg, STR_(qn->next_head_exact)->s, 1);
         r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info, env);
-        if (r) return r;
+        if (r != 0) return r;
         r = add_opcode_rel_addr(reg, OP_JUMP,
           -(mod_tlen + (int )SIZE_OP_JUMP + (int )SIZE_OP_PUSH_IF_PEEK_NEXT));
       }
       else {
         r = add_opcode_rel_addr(reg, OP_PUSH, mod_tlen + SIZE_OP_JUMP);
-        if (r) return r;
+        if (r != 0) return r;
         r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info, env);
-        if (r) return r;
+        if (r != 0) return r;
         r = add_opcode_rel_addr(reg, OP_JUMP,
                    -(mod_tlen + (int )SIZE_OP_JUMP + (int )SIZE_OP_PUSH));
       }
     }
     else {
       r = add_opcode_rel_addr(reg, OP_JUMP, mod_tlen);
-      if (r) return r;
+      if (r != 0) return r;
       r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info, env);
-      if (r) return r;
+      if (r != 0) return r;
       r = add_opcode_rel_addr(reg, OP_PUSH, -(mod_tlen + (int )SIZE_OP_PUSH));
     }
   }
   else if (qn->upper == 0 && qn->is_refered != 0) { /* /(?<n>..){0}/ */
     r = add_opcode_rel_addr(reg, OP_JUMP, tlen);
-    if (r) return r;
+    if (r != 0) return r;
     r = compile_tree(NODE_QTFR_BODY(qn), reg, env);
   }
   else if (!infinite && qn->greedy &&
@@ -1208,21 +1208,21 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
     int n = qn->upper - qn->lower;
 
     r = compile_tree_n_times(NODE_QTFR_BODY(qn), qn->lower, reg, env);
-    if (r) return r;
+    if (r != 0) return r;
 
     for (i = 0; i < n; i++) {
       r = add_opcode_rel_addr(reg, OP_PUSH,
 			   (n - i) * tlen + (n - i - 1) * SIZE_OP_PUSH);
-      if (r) return r;
+      if (r != 0) return r;
       r = compile_tree(NODE_QTFR_BODY(qn), reg, env);
-      if (r) return r;
+      if (r != 0) return r;
     }
   }
   else if (!qn->greedy && qn->upper == 1 && qn->lower == 0) { /* '??' */
     r = add_opcode_rel_addr(reg, OP_PUSH, SIZE_OP_JUMP);
-    if (r) return r;
+    if (r != 0) return r;
     r = add_opcode_rel_addr(reg, OP_JUMP, tlen);
-    if (r) return r;
+    if (r != 0) return r;
     r = compile_tree(NODE_QTFR_BODY(qn), reg, env);
   }
   else {
@@ -1260,11 +1260,11 @@ compile_option_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
 
   if (IS_DYNAMIC_OPTION(prev ^ node->option)) {
     r = add_opcode_option(reg, OP_SET_OPTION_PUSH, node->option);
-    if (r) return r;
+    if (r != 0) return r;
     r = add_opcode_option(reg, OP_SET_OPTION, prev);
-    if (r) return r;
+    if (r != 0) return r;
     r = add_opcode(reg, OP_FAIL);
-    if (r) return r;
+    if (r != 0) return r;
   }
 
   reg->options = node->option;
@@ -1272,7 +1272,7 @@ compile_option_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
   reg->options = prev;
 
   if (IS_DYNAMIC_OPTION(prev ^ node->option)) {
-    if (r) return r;
+    if (r != 0) return r;
     r = add_opcode_option(reg, OP_SET_OPTION, prev);
   }
   return r;
@@ -1362,11 +1362,11 @@ compile_enclosure_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
 #ifdef USE_SUBEXP_CALL
     if (NODE_IS_CALLED(node)) {
       r = add_opcode(reg, OP_CALL);
-      if (r) return r;
+      if (r != 0) return r;
       node->call_addr = BBUF_GET_OFFSET_POS(reg) + SIZE_ABSADDR + SIZE_OP_JUMP;
       NODE_STATUS_ADD(node, NST_ADDR_FIXED);
       r = add_abs_addr(reg, (int )node->call_addr);
-      if (r) return r;
+      if (r != 0) return r;
       len = compile_length_tree(NODE_ENCLOSURE_BODY(node), reg);
       len += (SIZE_OP_MEMORY_START_PUSH + SIZE_OP_RETURN);
       if (BIT_STATUS_AT(reg->bt_mem_end, node->regnum))
@@ -1377,18 +1377,18 @@ compile_enclosure_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
                 ? SIZE_OP_MEMORY_END_REC : SIZE_OP_MEMORY_END);
 
       r = add_opcode_rel_addr(reg, OP_JUMP, len);
-      if (r) return r;
+      if (r != 0) return r;
     }
 #endif
     if (BIT_STATUS_AT(reg->bt_mem_start, node->regnum))
       r = add_opcode(reg, OP_MEMORY_START_PUSH);
     else
       r = add_opcode(reg, OP_MEMORY_START);
-    if (r) return r;
+    if (r != 0) return r;
     r = add_mem_num(reg, node->regnum);
-    if (r) return r;
+    if (r != 0) return r;
     r = compile_tree(NODE_ENCLOSURE_BODY(node), reg, env);
-    if (r) return r;
+    if (r != 0) return r;
 #ifdef USE_SUBEXP_CALL
     if (NODE_IS_CALLED(node)) {
       if (BIT_STATUS_AT(reg->bt_mem_end, node->regnum))
@@ -1398,9 +1398,9 @@ compile_enclosure_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
         r = add_opcode(reg, (NODE_IS_RECURSION(node)
                              ? OP_MEMORY_END_REC : OP_MEMORY_END));
 
-      if (r) return r;
+      if (r != 0) return r;
       r = add_mem_num(reg, node->regnum);
-      if (r) return r;
+      if (r != 0) return r;
       r = add_opcode(reg, OP_RETURN);
     }
     else if (NODE_IS_RECURSION(node)) {
@@ -1408,7 +1408,7 @@ compile_enclosure_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
         r = add_opcode(reg, OP_MEMORY_END_PUSH_REC);
       else
         r = add_opcode(reg, OP_MEMORY_END_REC);
-      if (r) return r;
+      if (r != 0) return r;
       r = add_mem_num(reg, node->regnum);
     }
     else
@@ -1418,7 +1418,7 @@ compile_enclosure_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
         r = add_opcode(reg, OP_MEMORY_END_PUSH);
       else
         r = add_opcode(reg, OP_MEMORY_END);
-      if (r) return r;
+      if (r != 0) return r;
       r = add_mem_num(reg, node->regnum);
     }
     break;
@@ -1427,25 +1427,25 @@ compile_enclosure_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
     if (NODE_IS_STOP_BT_SIMPLE_REPEAT(node)) {
       QtfrNode* qn = QTFR_(NODE_ENCLOSURE_BODY(node));
       r = compile_tree_n_times(NODE_QTFR_BODY(qn), qn->lower, reg, env);
-      if (r) return r;
+      if (r != 0) return r;
 
       len = compile_length_tree(NODE_QTFR_BODY(qn), reg);
       if (len < 0) return len;
 
       r = add_opcode_rel_addr(reg, OP_PUSH, len + SIZE_OP_POP + SIZE_OP_JUMP);
-      if (r) return r;
+      if (r != 0) return r;
       r = compile_tree(NODE_QTFR_BODY(qn), reg, env);
-      if (r) return r;
+      if (r != 0) return r;
       r = add_opcode(reg, OP_POP);
-      if (r) return r;
+      if (r != 0) return r;
       r = add_opcode_rel_addr(reg, OP_JUMP,
              -((int )SIZE_OP_PUSH + len + (int )SIZE_OP_POP + (int )SIZE_OP_JUMP));
     }
     else {
       r = add_opcode(reg, OP_PUSH_STOP_BT);
-      if (r) return r;
+      if (r != 0) return r;
       r = compile_tree(NODE_ENCLOSURE_BODY(node), reg, env);
-      if (r) return r;
+      if (r != 0) return r;
       r = add_opcode(reg, OP_POP_STOP_BT);
     }
     break;
@@ -1513,9 +1513,9 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
 
   case ANCHOR_PREC_READ:
     r = add_opcode(reg, OP_PUSH_POS);
-    if (r) return r;
+    if (r != 0) return r;
     r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
-    if (r) return r;
+    if (r != 0) return r;
     r = add_opcode(reg, OP_POP_POS);
     break;
 
@@ -1523,9 +1523,9 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     len = compile_length_tree(NODE_ANCHOR_BODY(node), reg);
     if (len < 0) return len;
     r = add_opcode_rel_addr(reg, OP_PUSH_POS_NOT, len + SIZE_OP_FAIL_POS);
-    if (r) return r;
+    if (r != 0) return r;
     r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
-    if (r) return r;
+    if (r != 0) return r;
     r = add_opcode(reg, OP_FAIL_POS);
     break;
 
@@ -1533,16 +1533,16 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     {
       int n;
       r = add_opcode(reg, OP_LOOK_BEHIND);
-      if (r) return r;
+      if (r != 0) return r;
       if (node->char_len < 0) {
         r = get_char_length_tree(NODE_ANCHOR_BODY(node), reg, &n);
-        if (r) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
+        if (r != 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
       }
       else
         n = node->char_len;
 
       r = add_length(reg, n);
-      if (r) return r;
+      if (r != 0) return r;
       r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
     }
     break;
@@ -1553,17 +1553,17 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
       len = compile_length_tree(NODE_ANCHOR_BODY(node), reg);
       r = add_opcode_rel_addr(reg, OP_PUSH_LOOK_BEHIND_NOT,
 			   len + SIZE_OP_FAIL_LOOK_BEHIND_NOT);
-      if (r) return r;
+      if (r != 0) return r;
       if (node->char_len < 0) {
         r = get_char_length_tree(NODE_ANCHOR_BODY(node), reg, &n);
-        if (r) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
+        if (r != 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
       }
       else
         n = node->char_len;
       r = add_length(reg, n);
-      if (r) return r;
+      if (r != 0) return r;
       r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
-      if (r) return r;
+      if (r != 0) return r;
       r = add_opcode(reg, OP_FAIL_LOOK_BEHIND_NOT);
     }
     break;
@@ -1695,14 +1695,14 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
         len = compile_length_tree(NODE_CAR(node), reg);
         if (IS_NOT_NULL(NODE_CDR(node))) {
           r = add_opcode_rel_addr(reg, OP_PUSH, len + SIZE_OP_JUMP);
-          if (r) break;
+          if (r != 0) break;
         }
         r = compile_tree(NODE_CAR(node), reg, env);
-        if (r) break;
+        if (r != 0) break;
         if (IS_NOT_NULL(NODE_CDR(node))) {
           len = pos - (reg->used + SIZE_OP_JUMP);
           r = add_opcode_rel_addr(reg, OP_JUMP, len);
-          if (r) break;
+          if (r != 0) break;
         }
       } while (IS_NOT_NULL(node = NODE_CDR(node)));
     }
@@ -1752,11 +1752,11 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
 #ifdef USE_BACKREF_WITH_LEVEL
       if (NODE_IS_NEST_LEVEL(node)) {
         r = add_opcode(reg, OP_BACKREF_WITH_LEVEL);
-        if (r) return r;
+        if (r != 0) return r;
         r = add_option(reg, (reg->options & ONIG_OPTION_IGNORECASE));
-        if (r) return r;
+        if (r != 0) return r;
         r = add_length(reg, br->nest_level);
-        if (r) return r;
+        if (r != 0) return r;
 
         goto add_bacref_mems;
       }
@@ -1766,7 +1766,7 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
         n = br->back_static[0];
         if (IS_IGNORECASE(reg->options)) {
           r = add_opcode(reg, OP_BACKREFN_IC);
-          if (r) return r;
+          if (r != 0) return r;
           r = add_mem_num(reg, n);
         }
         else {
@@ -1775,7 +1775,7 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
           case 2:  r = add_opcode(reg, OP_BACKREF2); break;
           default:
             r = add_opcode(reg, OP_BACKREFN);
-            if (r) return r;
+            if (r != 0) return r;
             r = add_mem_num(reg, n);
             break;
           }
@@ -1791,17 +1791,17 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
         else {
           r = add_opcode(reg, OP_BACKREF_MULTI);
         }
-        if (r) return r;
+        if (r != 0) return r;
 
 #ifdef USE_BACKREF_WITH_LEVEL
       add_bacref_mems:
 #endif
         r = add_length(reg, br->back_num);
-        if (r) return r;
+        if (r != 0) return r;
         p = BACKREFS_P(br);
         for (i = br->back_num - 1; i >= 0; i--) {
           r = add_mem_num(reg, p[i]);
-          if (r) return r;
+          if (r != 0) return r;
         }
       }
     }
@@ -4917,7 +4917,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
       QtfrNode* qn = QTFR_(node);
 
       r = optimize_node_left(NODE_BODY(node), &nopt, env);
-      if (r) break;
+      if (r != 0) break;
 
       if (qn->lower == 0 && IS_REPEAT_INFINITE(qn->upper)) {
         if (env->mmd.max == 0 &&
@@ -5046,7 +5046,7 @@ set_optimize_exact_info(regex_t* reg, OptExactInfo* e)
     if (e->len >= 3 || (e->len >= 2 && allow_reverse)) {
       r = set_bm_skip(reg->exact, reg->exact_end, reg->enc,
 	              reg->map, &(reg->int_map));
-      if (r) return r;
+      if (r != 0) return r;
 
       reg->optimize = (allow_reverse != 0
 		       ? ONIG_OPTIMIZE_EXACT_BM : ONIG_OPTIMIZE_EXACT_BM_NOT_REV);
@@ -5109,7 +5109,7 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
   clear_mml(&env.mmd);
 
   r = optimize_node_left(node, &opt, &env);
-  if (r) return r;
+  if (r != 0) return r;
 
   reg->anchor = opt.anc.left_anchor & (ANCHOR_BEGIN_BUF |
         ANCHOR_BEGIN_POSITION | ANCHOR_ANYCHAR_STAR | ANCHOR_ANYCHAR_STAR_ML |
@@ -5507,7 +5507,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
     if (scan_env.num_call > 0) {
       r = unset_addr_list_fix(&uslist, reg);
       unset_addr_list_end(&uslist);
-      if (r) goto err;
+      if (r != 0) goto err;
     }
 #endif
 
@@ -5630,7 +5630,7 @@ onig_new_without_alloc(regex_t* reg, const UChar* pattern,
   int r;
 
   r = onig_reg_init(reg, option, ONIGENC_CASE_FOLD_DEFAULT, enc, syntax);
-  if (r) return r;
+  if (r != 0) return r;
 
   r = onig_compile(reg, pattern, pattern_end, einfo);
   return r;
@@ -5647,10 +5647,10 @@ onig_new(regex_t** reg, const UChar* pattern, const UChar* pattern_end,
   if (IS_NULL(*reg)) return ONIGERR_MEMORY;
 
   r = onig_reg_init(*reg, option, ONIGENC_CASE_FOLD_DEFAULT, enc, syntax);
-  if (r) goto err;
+  if (r != 0) goto err;
 
   r = onig_compile(*reg, pattern, pattern_end, einfo);
-  if (r) {
+  if (r != 0) {
   err:
     onig_free(*reg);
     *reg = NULL;
