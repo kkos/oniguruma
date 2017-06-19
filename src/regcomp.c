@@ -3041,102 +3041,6 @@ recursive_call_check_trav(Node* node, ScanEnv* env, int state)
   return r;
 }
 
-#ifdef __GNUC__
-__inline
-#endif
-static int
-setup_call_node_call(CallNode* cn, ScanEnv* env, int state)
-{
-  MemEnv* mem_env = SCANENV_MEMENV(env);
-
-  if (cn->group_num != 0) {
-    int gnum = cn->group_num;
-
-#ifdef USE_NAMED_GROUP
-    if (env->num_named > 0 &&
-        IS_SYNTAX_BV(env->syntax, ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP) &&
-        !ONIG_IS_OPTION_ON(env->option, ONIG_OPTION_CAPTURE_GROUP)) {
-      return ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED;
-    }
-#endif
-    if (gnum > env->num_mem) {
-      onig_scan_env_set_error_string(env, ONIGERR_UNDEFINED_GROUP_REFERENCE,
-                                     cn->name, cn->name_end);
-      return ONIGERR_UNDEFINED_GROUP_REFERENCE;
-    }
-
-#ifdef USE_NAMED_GROUP
-  set_call_attr:
-#endif
-    NODE_CALL_BODY(cn) = mem_env[cn->group_num].node;
-    if (IS_NULL(NODE_CALL_BODY(cn))) {
-      onig_scan_env_set_error_string(env, ONIGERR_UNDEFINED_NAME_REFERENCE,
-                                     cn->name, cn->name_end);
-      return ONIGERR_UNDEFINED_NAME_REFERENCE;
-    }
-    NODE_STATUS_ADD(NODE_CALL_BODY(cn), NST_CALLED);
-    BIT_STATUS_ON_AT(env->bt_mem_start, cn->group_num);
-  }
-#ifdef USE_NAMED_GROUP
-  else {
-    int *refs;
-
-    int n = onig_name_to_group_numbers(env->reg, cn->name, cn->name_end, &refs);
-    if (n <= 0) {
-      onig_scan_env_set_error_string(env, ONIGERR_UNDEFINED_NAME_REFERENCE,
-                                     cn->name, cn->name_end);
-      return ONIGERR_UNDEFINED_NAME_REFERENCE;
-    }
-    else if (n > 1) {
-      onig_scan_env_set_error_string(env, ONIGERR_MULTIPLEX_DEFINITION_NAME_CALL,
-                                     cn->name, cn->name_end);
-      return ONIGERR_MULTIPLEX_DEFINITION_NAME_CALL;
-    }
-    else {
-      cn->group_num = refs[0];
-      goto set_call_attr;
-    }
-  }
-#endif
-
-  return 0;
-}
-
-static int
-setup_call(Node* node, ScanEnv* env, int state)
-{
-  int r;
-
-  switch (NODE_TYPE(node)) {
-  case NODE_LIST:
-  case NODE_ALT:
-    do {
-      r = setup_call(NODE_CAR(node), env, state);
-    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
-    break;
-
-  case NODE_ANCHOR:
-    if (! ANCHOR_HAS_BODY(ANCHOR_(node))) {
-      r = 0;
-      break;
-    }
-    /* fall */
-  case NODE_QTFR:
-  case NODE_ENCLOSURE:
-    r = setup_call(NODE_BODY(node), env, state);
-    break;
-
-  case NODE_CALL:
-    r = setup_call_node_call(CALL_(node), env, state);
-    break;
-
-  default:
-    r = 0;
-    break;
-  }
-
-  return r;
-}
 #endif
 
 /* divide different length alternatives in look-behind.
@@ -3691,12 +3595,6 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
 }
 #endif
 
-#define IN_ALT        (1<<0)
-#define IN_NOT        (1<<1)
-#define IN_REPEAT     (1<<2)
-#define IN_VAR_REPEAT (1<<3)
-#define IN_CALL       (1<<4)
-
 #ifdef USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT
 static int
 quantifiers_memory_node_info(Node* node)
@@ -3767,6 +3665,210 @@ quantifiers_memory_node_info(Node* node)
   return r;
 }
 #endif /* USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT */
+
+
+#define IN_ALT        (1<<0)
+#define IN_NOT        (1<<1)
+#define IN_REPEAT     (1<<2)
+#define IN_VAR_REPEAT (1<<3)
+#define IN_CALL       (1<<4)
+#define IN_ZERO       (1<<5)
+
+#ifdef USE_SUBEXP_CALL
+
+#ifdef __GNUC__
+__inline
+#endif
+static int
+setup_call_node_call(CallNode* cn, ScanEnv* env, int state)
+{
+  MemEnv* mem_env = SCANENV_MEMENV(env);
+
+  if (cn->group_num != 0) {
+    int gnum = cn->group_num;
+
+#ifdef USE_NAMED_GROUP
+    if (env->num_named > 0 &&
+        IS_SYNTAX_BV(env->syntax, ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP) &&
+        !ONIG_IS_OPTION_ON(env->option, ONIG_OPTION_CAPTURE_GROUP)) {
+      return ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED;
+    }
+#endif
+    if (gnum > env->num_mem) {
+      onig_scan_env_set_error_string(env, ONIGERR_UNDEFINED_GROUP_REFERENCE,
+                                     cn->name, cn->name_end);
+      return ONIGERR_UNDEFINED_GROUP_REFERENCE;
+    }
+
+#ifdef USE_NAMED_GROUP
+  set_call_attr:
+#endif
+    NODE_CALL_BODY(cn) = mem_env[cn->group_num].node;
+    if (IS_NULL(NODE_CALL_BODY(cn))) {
+      onig_scan_env_set_error_string(env, ONIGERR_UNDEFINED_NAME_REFERENCE,
+                                     cn->name, cn->name_end);
+      return ONIGERR_UNDEFINED_NAME_REFERENCE;
+    }
+  }
+#ifdef USE_NAMED_GROUP
+  else {
+    int *refs;
+
+    int n = onig_name_to_group_numbers(env->reg, cn->name, cn->name_end, &refs);
+    if (n <= 0) {
+      onig_scan_env_set_error_string(env, ONIGERR_UNDEFINED_NAME_REFERENCE,
+                                     cn->name, cn->name_end);
+      return ONIGERR_UNDEFINED_NAME_REFERENCE;
+    }
+    else if (n > 1) {
+      onig_scan_env_set_error_string(env, ONIGERR_MULTIPLEX_DEFINITION_NAME_CALL,
+                                     cn->name, cn->name_end);
+      return ONIGERR_MULTIPLEX_DEFINITION_NAME_CALL;
+    }
+    else {
+      cn->group_num = refs[0];
+      goto set_call_attr;
+    }
+  }
+#endif
+
+  return 0;
+}
+
+static void
+setup_call2_call(Node* node, ScanEnv* env)
+{
+  switch (NODE_TYPE(node)) {
+  case NODE_LIST:
+  case NODE_ALT:
+    do {
+      setup_call2_call(NODE_CAR(node), env);
+    } while (IS_NOT_NULL(node = NODE_CDR(node)));
+    break;
+
+  case NODE_QTFR:
+    setup_call2_call(NODE_BODY(node), env);
+    break;
+
+  case NODE_ANCHOR:
+    if (ANCHOR_HAS_BODY(ANCHOR_(node)))
+      setup_call2_call(NODE_BODY(node), env);
+    break;
+
+  case NODE_ENCLOSURE:
+    if (! NODE_IS_MARK1(node)) {
+      NODE_STATUS_ADD(node, NST_MARK1);
+      setup_call2_call(NODE_BODY(node), env);
+      NODE_STATUS_REMOVE(node, NST_MARK1);
+    }
+    break;
+
+  case NODE_CALL:
+    {
+      CallNode* cn = CALL_(node);
+
+      NODE_STATUS_ADD(NODE_CALL_BODY(cn), NST_CALLED);
+      BIT_STATUS_ON_AT(env->bt_mem_start, cn->group_num);
+
+      setup_call2_call(NODE_CALL_BODY(cn), env);
+    }
+    break;
+
+  default:
+    break;
+  }
+}
+
+static int
+setup_call(Node* node, ScanEnv* env, int state)
+{
+  int r;
+
+  switch (NODE_TYPE(node)) {
+  case NODE_LIST:
+  case NODE_ALT:
+    do {
+      r = setup_call(NODE_CAR(node), env, state);
+    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
+    break;
+
+  case NODE_QTFR:
+    if (QTFR_(node)->upper == 0)
+      state |= IN_ZERO;
+
+    r = setup_call(NODE_BODY(node), env, state);
+    break;
+
+  case NODE_ANCHOR:
+    if (! ANCHOR_HAS_BODY(ANCHOR_(node))) {
+      r = 0;
+      break;
+    }
+    /* fall */
+  case NODE_ENCLOSURE:
+    if ((state & IN_ZERO) != 0)
+      NODE_STATUS_ADD(node, NST_IN_ZERO);
+
+    r = setup_call(NODE_BODY(node), env, state);
+    break;
+
+  case NODE_CALL:
+    if ((state & IN_ZERO) != 0)
+      NODE_STATUS_ADD(node, NST_IN_ZERO);
+
+    r = setup_call_node_call(CALL_(node), env, state);
+    break;
+
+  default:
+    r = 0;
+    break;
+  }
+
+  return r;
+}
+
+static int
+setup_call2(Node* node, ScanEnv* env)
+{
+  int r = 0;
+
+  switch (NODE_TYPE(node)) {
+  case NODE_LIST:
+  case NODE_ALT:
+    do {
+      r = setup_call2(NODE_CAR(node), env);
+    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
+    break;
+
+  case NODE_QTFR:
+    if (QTFR_(node)->upper != 0)
+      r = setup_call2(NODE_BODY(node), env);
+    break;
+
+  case NODE_ANCHOR:
+    if (ANCHOR_HAS_BODY(ANCHOR_(node)))
+      r = setup_call2(NODE_BODY(node), env);
+    break;
+
+  case NODE_ENCLOSURE:
+    if (! NODE_IS_IN_ZERO(node))
+      r = setup_call2(NODE_BODY(node), env);
+    break;
+
+  case NODE_CALL:
+    if (! NODE_IS_IN_ZERO(node)) {
+      setup_call2_call(node, env);
+    }
+    break;
+
+  default:
+    break;
+  }
+
+  return r;
+}
+#endif  /* USE_SUBEXP_CALL */
+
 
 static int setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env);
 
@@ -5434,6 +5536,8 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
     if (r != 0) goto err;
     scan_env.unset_addr_list = &uslist;
     r = setup_call(root, &scan_env, 0);
+    if (r != 0) goto err_unset;
+    r = setup_call2(root, &scan_env);
     if (r != 0) goto err_unset;
     r = recursive_call_check_trav(root, &scan_env, 0);
     if (r  < 0) goto err_unset;
