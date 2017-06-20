@@ -3764,13 +3764,17 @@ setup_call2_call(Node* node, ScanEnv* env)
     break;
 
   case NODE_CALL:
-    {
-      CallNode* cn = CALL_(node);
-      Node* called = NODE_CALL_BODY(cn);
+    if (! NODE_IS_MARK1(node)) {
+      NODE_STATUS_ADD(node, NST_MARK1);
+      {
+        CallNode* cn = CALL_(node);
+        Node* called = NODE_CALL_BODY(cn);
 
-      NODE_STATUS_ADD(called, NST_CALLED);
-      ENCLOSURE_(called)->entry_count++;
-      setup_call2_call(called, env);
+        NODE_STATUS_ADD(called, NST_CALLED);
+        ENCLOSURE_(called)->entry_count++;
+        setup_call2_call(called, env);
+      }
+      NODE_STATUS_REMOVE(node, NST_MARK1);
     }
     break;
 
