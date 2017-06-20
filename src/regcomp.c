@@ -3737,29 +3737,29 @@ setup_call_node_call(CallNode* cn, ScanEnv* env, int state)
 }
 
 static void
-setup_call2_call(Node* node, ScanEnv* env)
+setup_call2_call(Node* node)
 {
   switch (NODE_TYPE(node)) {
   case NODE_LIST:
   case NODE_ALT:
     do {
-      setup_call2_call(NODE_CAR(node), env);
+      setup_call2_call(NODE_CAR(node));
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NODE_QTFR:
-    setup_call2_call(NODE_BODY(node), env);
+    setup_call2_call(NODE_BODY(node));
     break;
 
   case NODE_ANCHOR:
     if (ANCHOR_HAS_BODY(ANCHOR_(node)))
-      setup_call2_call(NODE_BODY(node), env);
+      setup_call2_call(NODE_BODY(node));
     break;
 
   case NODE_ENCLOSURE:
     if (! NODE_IS_MARK1(node)) {
       NODE_STATUS_ADD(node, NST_MARK1);
-      setup_call2_call(NODE_BODY(node), env);
+      setup_call2_call(NODE_BODY(node));
       NODE_STATUS_REMOVE(node, NST_MARK1);
     }
     break;
@@ -3775,7 +3775,7 @@ setup_call2_call(Node* node, ScanEnv* env)
 
         NODE_STATUS_ADD(called, NST_CALLED);
         ENCLOSURE_(called)->m.entry_count++;
-        setup_call2_call(called, env);
+        setup_call2_call(called);
       }
       NODE_STATUS_REMOVE(node, NST_MARK1);
     }
@@ -3839,7 +3839,7 @@ setup_call(Node* node, ScanEnv* env, int state)
 }
 
 static int
-setup_call2(Node* node, ScanEnv* env)
+setup_call2(Node* node)
 {
   int r = 0;
 
@@ -3847,28 +3847,28 @@ setup_call2(Node* node, ScanEnv* env)
   case NODE_LIST:
   case NODE_ALT:
     do {
-      r = setup_call2(NODE_CAR(node), env);
+      r = setup_call2(NODE_CAR(node));
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NODE_QTFR:
     if (QTFR_(node)->upper != 0)
-      r = setup_call2(NODE_BODY(node), env);
+      r = setup_call2(NODE_BODY(node));
     break;
 
   case NODE_ANCHOR:
     if (ANCHOR_HAS_BODY(ANCHOR_(node)))
-      r = setup_call2(NODE_BODY(node), env);
+      r = setup_call2(NODE_BODY(node));
     break;
 
   case NODE_ENCLOSURE:
     if (! NODE_IS_IN_ZERO(node))
-      r = setup_call2(NODE_BODY(node), env);
+      r = setup_call2(NODE_BODY(node));
     break;
 
   case NODE_CALL:
     if (! NODE_IS_IN_ZERO(node)) {
-      setup_call2_call(node, env);
+      setup_call2_call(node);
     }
     break;
 
@@ -5707,7 +5707,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
     scan_env.unset_addr_list = &uslist;
     r = setup_call(root, &scan_env, 0);
     if (r != 0) goto err_unset;
-    r = setup_call2(root, &scan_env);
+    r = setup_call2(root);
     if (r != 0) goto err_unset;
     r = recursive_call_check_trav(root, &scan_env, 0);
     if (r  < 0) goto err_unset;
