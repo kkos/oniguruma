@@ -3667,12 +3667,13 @@ quantifiers_memory_node_info(Node* node)
 #endif /* USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT */
 
 
-#define IN_ALT        (1<<0)
-#define IN_NOT        (1<<1)
-#define IN_REPEAT     (1<<2)
-#define IN_VAR_REPEAT (1<<3)
-#define IN_CALL       (1<<4)
-#define IN_ZERO       (1<<5)
+#define IN_ALT          (1<<0)
+#define IN_NOT          (1<<1)
+#define IN_REPEAT       (1<<2)
+#define IN_VAR_REPEAT   (1<<3)
+#define IN_ZERO         (1<<4)
+#define IN_CALL         (1<<5)
+#define IN_MULTI_ENTRY  (1<<6)
 
 #ifdef USE_SUBEXP_CALL
 
@@ -3877,6 +3878,165 @@ setup_call2(Node* node, ScanEnv* env)
 
   return r;
 }
+
+
+static void
+setup_called_state_call(Node* node, int state)
+{
+  switch (NODE_TYPE(node)) {
+  case NODE_ALT:
+    state |= IN_ALT;
+    /* fall */
+  case NODE_LIST:
+    do {
+      setup_called_state_call(NODE_CAR(node), state);
+    } while (IS_NOT_NULL(node = NODE_CDR(node)));
+    break;
+
+  case NODE_QTFR:
+    {
+      QtfrNode* qn = QTFR_(node);
+
+      if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 2)
+        state |= IN_REPEAT;
+      if (qn->lower != qn->upper)
+        state |= IN_VAR_REPEAT;
+
+      setup_called_state_call(NODE_QTFR_BODY(qn), state);
+    }
+    break;
+
+  case NODE_ANCHOR:
+    {
+      AnchorNode* an = ANCHOR_(node);
+
+      switch (an->type) {
+      case ANCHOR_PREC_READ_NOT:
+      case ANCHOR_LOOK_BEHIND_NOT:
+        state |= IN_NOT;
+        /* fall */
+      case ANCHOR_PREC_READ:
+      case ANCHOR_LOOK_BEHIND:
+        setup_called_state_call(NODE_ANCHOR_BODY(an), state);
+        break;
+      default:
+        break;
+      }
+    }
+    break;
+
+  case NODE_ENCLOSURE:
+    if (! NODE_IS_MARK1(node)) {
+      EnclosureNode* en = ENCLOSURE_(node);
+
+      NODE_STATUS_ADD(node, NST_MARK1);
+
+      if (en->type == ENCLOSURE_MEMORY)
+        en->m.called_state |= state;
+
+      setup_called_state_call(NODE_BODY(node), state);
+
+      NODE_STATUS_REMOVE(node, NST_MARK1);
+    }
+    break;
+
+  case NODE_CALL:
+    if (! NODE_IS_MARK1(node)) {
+      NODE_STATUS_ADD(node, NST_MARK1);
+      {
+        CallNode* cn = CALL_(node);
+        Node* called = NODE_CALL_BODY(cn);
+
+        setup_called_state_call(called, state | IN_CALL);
+      }
+      NODE_STATUS_REMOVE(node, NST_MARK1);
+    }
+    break;
+
+  default:
+    break;
+  }
+}
+
+static void
+setup_called_state(Node* node, int state)
+{
+  switch (NODE_TYPE(node)) {
+  case NODE_ALT:
+    state |= IN_ALT;
+    /* fall */
+  case NODE_LIST:
+    do {
+      setup_called_state(NODE_CAR(node), state);
+    } while (IS_NOT_NULL(node = NODE_CDR(node)));
+    break;
+
+#ifdef USE_SUBEXP_CALL
+  case NODE_CALL:
+    setup_called_state_call(node, state);
+    break;
+#endif
+
+  case NODE_ENCLOSURE:
+    {
+      EnclosureNode* en = ENCLOSURE_(node);
+
+      switch (en->type) {
+      case ENCLOSURE_MEMORY:
+        if (en->m.entry_count > 1)
+          state |= IN_MULTI_ENTRY;
+
+        en->m.called_state |= state;
+        /* fall */
+      case ENCLOSURE_OPTION:
+      case ENCLOSURE_STOP_BACKTRACK:
+        setup_called_state(NODE_BODY(node), state);
+        break;
+      }
+    }
+    break;
+
+  case NODE_QTFR:
+    {
+      QtfrNode* qn = QTFR_(node);
+
+      if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 2)
+        state |= IN_REPEAT;
+      if (qn->lower != qn->upper)
+        state |= IN_VAR_REPEAT;
+
+      setup_called_state(NODE_QTFR_BODY(qn), state);
+    }
+    break;
+
+  case NODE_ANCHOR:
+    {
+      AnchorNode* an = ANCHOR_(node);
+
+      switch (an->type) {
+      case ANCHOR_PREC_READ_NOT:
+      case ANCHOR_LOOK_BEHIND_NOT:
+        state |= IN_NOT;
+        /* fall */
+      case ANCHOR_PREC_READ:
+      case ANCHOR_LOOK_BEHIND:
+        setup_called_state(NODE_ANCHOR_BODY(an), state);
+        break;
+      default:
+        break;
+      }
+    }
+    break;
+
+  case NODE_BREF:
+  case NODE_STR:
+  case NODE_CTYPE:
+  case NODE_CCLASS:
+  default:
+    break;
+  }
+}
+
 #endif  /* USE_SUBEXP_CALL */
 
 
@@ -5553,6 +5713,8 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
     if (r  < 0) goto err_unset;
     r = infinite_recursive_call_check_trav(root, &scan_env);
     if (r != 0) goto err_unset;
+
+    setup_called_state(root, 0);
   }
 
   reg->num_call = scan_env.num_call;

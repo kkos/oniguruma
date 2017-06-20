@@ -1311,9 +1311,10 @@ node_new_enclosure(int type)
 
   switch (type) {
   case ENCLOSURE_MEMORY:
-    ENCLOSURE_(node)->m.regnum      =  0;
-    ENCLOSURE_(node)->m.call_addr   = -1;
-    ENCLOSURE_(node)->m.entry_count =  1;
+    ENCLOSURE_(node)->m.regnum       =  0;
+    ENCLOSURE_(node)->m.call_addr    = -1;
+    ENCLOSURE_(node)->m.entry_count  =  1;
+    ENCLOSURE_(node)->m.called_state =  0;
     break;
 
   case ENCLOSURE_OPTION:
