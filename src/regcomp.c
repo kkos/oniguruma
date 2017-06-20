@@ -4268,8 +4268,9 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         break;
 
       case ENCLOSURE_MEMORY:
-        if (NODE_IS_CALLED(node))
-          state |= IN_CALL;
+#ifdef USE_SUBEXP_CALL
+        state |= en->m.called_state;
+#endif
 
         if ((state & (IN_ALT | IN_NOT | IN_VAR_REPEAT | IN_CALL)) != 0) {
           BIT_STATUS_ON_AT(env->bt_mem_start, en->m.regnum);
