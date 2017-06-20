@@ -1238,7 +1238,7 @@ compile_length_option_node(EnclosureNode* node, regex_t* reg)
   int tlen;
   OnigOptionType prev = reg->options;
 
-  reg->options = node->option;
+  reg->options = node->o.option;
   tlen = compile_length_tree(NODE_ENCLOSURE_BODY(node), reg);
   reg->options = prev;
 
@@ -1258,8 +1258,8 @@ compile_option_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
   int r;
   OnigOptionType prev = reg->options;
 
-  if (IS_DYNAMIC_OPTION(prev ^ node->option)) {
-    r = add_opcode_option(reg, OP_SET_OPTION_PUSH, node->option);
+  if (IS_DYNAMIC_OPTION(prev ^ node->o.option)) {
+    r = add_opcode_option(reg, OP_SET_OPTION_PUSH, node->o.option);
     if (r != 0) return r;
     r = add_opcode_option(reg, OP_SET_OPTION, prev);
     if (r != 0) return r;
@@ -1267,11 +1267,11 @@ compile_option_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
     if (r != 0) return r;
   }
 
-  reg->options = node->option;
+  reg->options = node->o.option;
   r = compile_tree(NODE_ENCLOSURE_BODY(node), reg, env);
   reg->options = prev;
 
-  if (IS_DYNAMIC_OPTION(prev ^ node->option)) {
+  if (IS_DYNAMIC_OPTION(prev ^ node->o.option)) {
     if (r != 0) return r;
     r = add_opcode_option(reg, OP_SET_OPTION, prev);
   }
@@ -1300,7 +1300,7 @@ compile_length_enclosure_node(EnclosureNode* node, regex_t* reg)
     if (NODE_IS_CALLED(node)) {
       len = SIZE_OP_MEMORY_START_PUSH + tlen
         + SIZE_OP_CALL + SIZE_OP_JUMP + SIZE_OP_RETURN;
-      if (BIT_STATUS_AT(reg->bt_mem_end, node->regnum))
+      if (BIT_STATUS_AT(reg->bt_mem_end, node->m.regnum))
         len += (NODE_IS_RECURSION(node)
                 ? SIZE_OP_MEMORY_END_PUSH_REC : SIZE_OP_MEMORY_END_PUSH);
       else
@@ -1309,18 +1309,18 @@ compile_length_enclosure_node(EnclosureNode* node, regex_t* reg)
     }
     else if (NODE_IS_RECURSION(node)) {
       len = SIZE_OP_MEMORY_START_PUSH;
-      len += tlen + (BIT_STATUS_AT(reg->bt_mem_end, node->regnum)
+      len += tlen + (BIT_STATUS_AT(reg->bt_mem_end, node->m.regnum)
                      ? SIZE_OP_MEMORY_END_PUSH_REC : SIZE_OP_MEMORY_END_REC);
     }
     else
 #endif
     {
-      if (BIT_STATUS_AT(reg->bt_mem_start, node->regnum))
+      if (BIT_STATUS_AT(reg->bt_mem_start, node->m.regnum))
         len = SIZE_OP_MEMORY_START_PUSH;
       else
         len = SIZE_OP_MEMORY_START;
 
-      len += tlen + (BIT_STATUS_AT(reg->bt_mem_end, node->regnum)
+      len += tlen + (BIT_STATUS_AT(reg->bt_mem_end, node->m.regnum)
 		     ? SIZE_OP_MEMORY_END_PUSH : SIZE_OP_MEMORY_END);
     }
     break;
@@ -1363,13 +1363,13 @@ compile_enclosure_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
     if (NODE_IS_CALLED(node)) {
       r = add_opcode(reg, OP_CALL);
       if (r != 0) return r;
-      node->call_addr = BBUF_GET_OFFSET_POS(reg) + SIZE_ABSADDR + SIZE_OP_JUMP;
+      node->m.call_addr = BBUF_GET_OFFSET_POS(reg) + SIZE_ABSADDR + SIZE_OP_JUMP;
       NODE_STATUS_ADD(node, NST_ADDR_FIXED);
-      r = add_abs_addr(reg, (int )node->call_addr);
+      r = add_abs_addr(reg, (int )node->m.call_addr);
       if (r != 0) return r;
       len = compile_length_tree(NODE_ENCLOSURE_BODY(node), reg);
       len += (SIZE_OP_MEMORY_START_PUSH + SIZE_OP_RETURN);
-      if (BIT_STATUS_AT(reg->bt_mem_end, node->regnum))
+      if (BIT_STATUS_AT(reg->bt_mem_end, node->m.regnum))
         len += (NODE_IS_RECURSION(node)
                 ? SIZE_OP_MEMORY_END_PUSH_REC : SIZE_OP_MEMORY_END_PUSH);
       else
@@ -1380,18 +1380,18 @@ compile_enclosure_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
       if (r != 0) return r;
     }
 #endif
-    if (BIT_STATUS_AT(reg->bt_mem_start, node->regnum))
+    if (BIT_STATUS_AT(reg->bt_mem_start, node->m.regnum))
       r = add_opcode(reg, OP_MEMORY_START_PUSH);
     else
       r = add_opcode(reg, OP_MEMORY_START);
     if (r != 0) return r;
-    r = add_mem_num(reg, node->regnum);
+    r = add_mem_num(reg, node->m.regnum);
     if (r != 0) return r;
     r = compile_tree(NODE_ENCLOSURE_BODY(node), reg, env);
     if (r != 0) return r;
 #ifdef USE_SUBEXP_CALL
     if (NODE_IS_CALLED(node)) {
-      if (BIT_STATUS_AT(reg->bt_mem_end, node->regnum))
+      if (BIT_STATUS_AT(reg->bt_mem_end, node->m.regnum))
         r = add_opcode(reg, (NODE_IS_RECURSION(node)
                              ? OP_MEMORY_END_PUSH_REC : OP_MEMORY_END_PUSH));
       else
@@ -1399,27 +1399,27 @@ compile_enclosure_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
                              ? OP_MEMORY_END_REC : OP_MEMORY_END));
 
       if (r != 0) return r;
-      r = add_mem_num(reg, node->regnum);
+      r = add_mem_num(reg, node->m.regnum);
       if (r != 0) return r;
       r = add_opcode(reg, OP_RETURN);
     }
     else if (NODE_IS_RECURSION(node)) {
-      if (BIT_STATUS_AT(reg->bt_mem_end, node->regnum))
+      if (BIT_STATUS_AT(reg->bt_mem_end, node->m.regnum))
         r = add_opcode(reg, OP_MEMORY_END_PUSH_REC);
       else
         r = add_opcode(reg, OP_MEMORY_END_REC);
       if (r != 0) return r;
-      r = add_mem_num(reg, node->regnum);
+      r = add_mem_num(reg, node->m.regnum);
     }
     else
 #endif
     {
-      if (BIT_STATUS_AT(reg->bt_mem_end, node->regnum))
+      if (BIT_STATUS_AT(reg->bt_mem_end, node->m.regnum))
         r = add_opcode(reg, OP_MEMORY_END_PUSH);
       else
         r = add_opcode(reg, OP_MEMORY_END);
       if (r != 0) return r;
-      r = add_mem_num(reg, node->regnum);
+      r = add_mem_num(reg, node->m.regnum);
     }
     break;
 
@@ -1868,8 +1868,8 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
       if (en->type == ENCLOSURE_MEMORY) {
         if (NODE_IS_NAMED_GROUP(node)) {
           (*counter)++;
-          map[en->regnum].new_val = *counter;
-          en->regnum = *counter;
+          map[en->m.regnum].new_val = *counter;
+          en->m.regnum = *counter;
           r = noname_disable_map(&(NODE_BODY(node)), map, counter);
         }
         else {
@@ -2045,7 +2045,7 @@ unset_addr_list_fix(UnsetAddrList* uslist, regex_t* reg)
   for (i = 0; i < uslist->num; i++) {
     en = ENCLOSURE_(uslist->us[i].target);
     if (! NODE_IS_ADDR_FIXED(en)) return ONIGERR_PARSER_BUG;
-    addr = en->call_addr;
+    addr = en->m.call_addr;
     offset = uslist->us[i].offset;
 
     BBUF_WRITE(reg, offset, &addr, SIZE_ABSADDR);
@@ -2438,7 +2438,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
         {
           OnigOptionType options = reg->options;
 
-          reg->options = ENCLOSURE_(node)->option;
+          reg->options = ENCLOSURE_(node)->o.option;
           n = get_head_value_node(NODE_BODY(node), exact, reg);
           reg->options = options;
         }
@@ -3773,7 +3773,7 @@ setup_call2_call(Node* node, ScanEnv* env)
         cn->entry_count++;
 
         NODE_STATUS_ADD(called, NST_CALLED);
-        ENCLOSURE_(called)->entry_count++;
+        ENCLOSURE_(called)->m.entry_count++;
         setup_call2_call(called, env);
       }
       NODE_STATUS_REMOVE(node, NST_MARK1);
@@ -3815,7 +3815,7 @@ setup_call(Node* node, ScanEnv* env, int state)
   case NODE_ENCLOSURE:
     if ((state & IN_ZERO) != 0) {
       NODE_STATUS_ADD(node, NST_IN_ZERO);
-      ENCLOSURE_(node)->entry_count--;
+      ENCLOSURE_(node)->m.entry_count--;
     }
     r = setup_call(NODE_BODY(node), env, state);
     break;
@@ -3980,7 +3980,7 @@ setup_qtfr(Node* node, regex_t* reg, int state, ScanEnv* env)
         if (r == NQ_BODY_IS_EMPTY_REC) {
           if (NODE_TYPE(target) == NODE_ENCLOSURE &&
               ENCLOSURE_(target)->type == ENCLOSURE_MEMORY) {
-            BIT_STATUS_ON_AT(env->bt_mem_end, ENCLOSURE_(target)->regnum);
+            BIT_STATUS_ON_AT(env->bt_mem_end, ENCLOSURE_(target)->m.regnum);
           }
         }
       }
@@ -4101,7 +4101,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
       case ENCLOSURE_OPTION:
         {
           OnigOptionType options = reg->options;
-          reg->options = ENCLOSURE_(node)->option;
+          reg->options = ENCLOSURE_(node)->o.option;
           r = setup_tree(NODE_BODY(node), reg, state, env);
           reg->options = options;
         }
@@ -4112,7 +4112,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
           state |= IN_CALL;
 
         if ((state & (IN_ALT | IN_NOT | IN_VAR_REPEAT | IN_CALL)) != 0) {
-          BIT_STATUS_ON_AT(env->bt_mem_start, en->regnum);
+          BIT_STATUS_ON_AT(env->bt_mem_start, en->m.regnum);
         }
         r = setup_tree(NODE_BODY(node), reg, state, env);
         break;
@@ -5014,7 +5014,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
       set_mml(&opt->len, 0, ONIG_INFINITE_DISTANCE);
     else {
       OnigOptionType save = env->options;
-      env->options = ENCLOSURE_(NODE_BODY(node))->option;
+      env->options = ENCLOSURE_(NODE_BODY(node))->o.option;
       r = optimize_node_left(NODE_BODY(node), opt, env);
       env->options = save;
     }
@@ -5083,7 +5083,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
         {
           OnigOptionType save = env->options;
 
-          env->options = en->option;
+          env->options = en->o.option;
           r = optimize_node_left(NODE_BODY(node), opt, env);
           env->options = save;
         }
@@ -5107,7 +5107,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
             r = optimize_node_left(NODE_BODY(node), opt, env);
 
             if (is_set_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_STAR_MASK)) {
-              if (BIT_STATUS_AT(env->scan_env->backrefed_mem, en->regnum))
+              if (BIT_STATUS_AT(env->scan_env->backrefed_mem, en->m.regnum))
                 remove_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_STAR_MASK);
             }
           }

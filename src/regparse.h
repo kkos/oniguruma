@@ -210,10 +210,16 @@ typedef struct {
   struct _Node* body;
 
   int type;
-  int regnum;
-  OnigOptionType option;
-  AbsAddrType    call_addr;
-  int            entry_count;
+  union {
+    struct {
+      int regnum;
+      AbsAddrType call_addr;
+      int entry_count;
+    } m;
+    struct {
+      OnigOptionType option;
+    } o;
+  };
   /* for multiple call reference */
   OnigLen min_len; /* min length (byte) */
   OnigLen max_len; /* max length (byte) */
