@@ -3926,17 +3926,26 @@ setup_called_state_call(Node* node, int state)
     break;
 
   case NODE_ENCLOSURE:
-    if (! NODE_IS_MARK1(node)) {
+    {
       EnclosureNode* en = ENCLOSURE_(node);
 
-      NODE_STATUS_ADD(node, NST_MARK1);
-
-      if (en->type == ENCLOSURE_MEMORY)
-        en->m.called_state |= state;
-
-      setup_called_state_call(NODE_BODY(node), state);
-
-      NODE_STATUS_REMOVE(node, NST_MARK1);
+      if (en->type == ENCLOSURE_MEMORY) {
+        if (NODE_IS_MARK1(node)) {
+          if ((~en->m.called_state & state) != 0) {
+            en->m.called_state |= state;
+            setup_called_state_call(NODE_BODY(node), state);
+          }
+        }
+        else {
+          NODE_STATUS_ADD(node, NST_MARK1);
+          en->m.called_state |= state;
+          setup_called_state_call(NODE_BODY(node), state);
+          NODE_STATUS_REMOVE(node, NST_MARK1);
+        }
+      }
+      else {
+        setup_called_state_call(NODE_BODY(node), state);
+      }
     }
     break;
 
