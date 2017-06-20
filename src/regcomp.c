@@ -777,7 +777,7 @@ compile_range_repeat_node(QtfrNode* qn, int target_len, int empty_info,
 
   if (
 #ifdef USE_SUBEXP_CALL
-      NODE_IS_IN_CALLED(qn) ||
+      NODE_IS_IN_MULTI_ENTRY(qn) ||
 #endif
       NODE_IS_IN_REPEAT(qn)) {
     r = add_opcode(reg, qn->greedy ? OP_REPEAT_INC_SG : OP_REPEAT_INC_NG_SG);
@@ -3672,8 +3672,7 @@ quantifiers_memory_node_info(Node* node)
 #define IN_REPEAT       (1<<2)
 #define IN_VAR_REPEAT   (1<<3)
 #define IN_ZERO         (1<<4)
-#define IN_CALL         (1<<5)
-#define IN_MULTI_ENTRY  (1<<6)
+#define IN_MULTI_ENTRY  (1<<5)
 
 #ifdef USE_SUBEXP_CALL
 
@@ -3956,7 +3955,7 @@ setup_called_state_call(Node* node, int state)
         CallNode* cn = CALL_(node);
         Node* called = NODE_CALL_BODY(cn);
 
-        setup_called_state_call(called, state | IN_CALL);
+        setup_called_state_call(called, state);
       }
       NODE_STATUS_REMOVE(node, NST_MARK1);
     }
@@ -4132,8 +4131,8 @@ setup_qtfr(Node* node, regex_t* reg, int state, ScanEnv* env)
   if ((state & IN_REPEAT) != 0) {
     NODE_STATUS_ADD(node, NST_IN_REPEAT);
   }
-  if ((state & IN_CALL) != 0) {
-    NODE_STATUS_ADD(node, NST_IN_CALLED);
+  if ((state & IN_MULTI_ENTRY) != 0) {
+    NODE_STATUS_ADD(node, NST_IN_MULTI_ENTRY);
   }
 
   if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 1) {
@@ -4281,7 +4280,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         state |= en->m.called_state;
 #endif
 
-        if ((state & (IN_ALT | IN_NOT | IN_VAR_REPEAT | IN_CALL)) != 0) {
+        if ((state & (IN_ALT | IN_NOT | IN_VAR_REPEAT | IN_MULTI_ENTRY)) != 0) {
           BIT_STATUS_ON_AT(env->bt_mem_start, en->m.regnum);
         }
         r = setup_tree(NODE_BODY(node), reg, state, env);
