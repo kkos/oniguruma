@@ -3949,16 +3949,7 @@ setup_called_state_call(Node* node, int state)
     break;
 
   case NODE_CALL:
-    if (! NODE_IS_MARK1(node)) {
-      NODE_STATUS_ADD(node, NST_MARK1);
-      {
-        CallNode* cn = CALL_(node);
-        Node* called = NODE_CALL_BODY(cn);
-
-        setup_called_state_call(called, state);
-      }
-      NODE_STATUS_REMOVE(node, NST_MARK1);
-    }
+    setup_called_state_call(NODE_BODY(node), state);
     break;
 
   default:
