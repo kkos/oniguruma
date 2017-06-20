@@ -3770,6 +3770,8 @@ setup_call2_call(Node* node, ScanEnv* env)
         CallNode* cn = CALL_(node);
         Node* called = NODE_CALL_BODY(cn);
 
+        cn->entry_count++;
+
         NODE_STATUS_ADD(called, NST_CALLED);
         ENCLOSURE_(called)->entry_count++;
         setup_call2_call(called, env);
@@ -3819,8 +3821,10 @@ setup_call(Node* node, ScanEnv* env, int state)
     break;
 
   case NODE_CALL:
-    if ((state & IN_ZERO) != 0)
+    if ((state & IN_ZERO) != 0) {
       NODE_STATUS_ADD(node, NST_IN_ZERO);
+      CALL_(node)->entry_count--;
+    }
 
     r = setup_call_node_call(CALL_(node), env, state);
     break;

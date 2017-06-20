@@ -242,6 +242,7 @@ typedef struct {
   int     group_num;
   UChar*  name;
   UChar*  name_end;
+  int     entry_count;
 } CallNode;
 
 #endif
