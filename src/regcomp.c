@@ -3671,7 +3671,7 @@ quantifiers_memory_node_info(Node* node)
 #define IN_NOT          (1<<1)
 #define IN_REPEAT       (1<<2)
 #define IN_VAR_REPEAT   (1<<3)
-#define IN_ZERO         (1<<4)
+#define IN_ZERO_REPEAT  (1<<4)
 #define IN_MULTI_ENTRY  (1<<5)
 
 #ifdef USE_SUBEXP_CALL
@@ -3800,7 +3800,7 @@ setup_call(Node* node, ScanEnv* env, int state)
 
   case NODE_QTFR:
     if (QTFR_(node)->upper == 0)
-      state |= IN_ZERO;
+      state |= IN_ZERO_REPEAT;
 
     r = setup_call(NODE_BODY(node), env, state);
     break;
@@ -3813,16 +3813,16 @@ setup_call(Node* node, ScanEnv* env, int state)
     break;
 
   case NODE_ENCLOSURE:
-    if ((state & IN_ZERO) != 0) {
-      NODE_STATUS_ADD(node, NST_IN_ZERO);
+    if ((state & IN_ZERO_REPEAT) != 0) {
+      NODE_STATUS_ADD(node, NST_IN_ZERO_REPEAT);
       ENCLOSURE_(node)->m.entry_count--;
     }
     r = setup_call(NODE_BODY(node), env, state);
     break;
 
   case NODE_CALL:
-    if ((state & IN_ZERO) != 0) {
-      NODE_STATUS_ADD(node, NST_IN_ZERO);
+    if ((state & IN_ZERO_REPEAT) != 0) {
+      NODE_STATUS_ADD(node, NST_IN_ZERO_REPEAT);
       CALL_(node)->entry_count--;
     }
 
@@ -3861,12 +3861,12 @@ setup_call2(Node* node)
     break;
 
   case NODE_ENCLOSURE:
-    if (! NODE_IS_IN_ZERO(node))
+    if (! NODE_IS_IN_ZERO_REPEAT(node))
       r = setup_call2(NODE_BODY(node));
     break;
 
   case NODE_CALL:
-    if (! NODE_IS_IN_ZERO(node)) {
+    if (! NODE_IS_IN_ZERO_REPEAT(node)) {
       setup_call2_call(node);
     }
     break;

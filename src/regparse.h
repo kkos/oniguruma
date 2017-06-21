@@ -132,7 +132,7 @@ typedef enum {
 #define NST_NAME_REF              (1<<10)
 #define NST_IN_REPEAT             (1<<11) /* STK_REPEAT is nested in stack. */
 #define NST_IN_MULTI_ENTRY        (1<<12)
-#define NST_IN_ZERO               (1<<13) /* (....){0} */
+#define NST_IN_ZERO_REPEAT        (1<<13) /* (....){0} */
 #define NST_NEST_LEVEL            (1<<14)
 #define NST_BY_NUMBER             (1<<15) /* {n,m} */
 
@@ -140,23 +140,23 @@ typedef enum {
 #define NODE_STATUS_ADD(node,f)     (NODE_STATUS(node) |= (f))
 #define NODE_STATUS_REMOVE(node,f)  (NODE_STATUS(node) &= ~(f))
 
-#define NODE_IS_BY_NUMBER(node)   ((NODE_STATUS(node) & NST_BY_NUMBER) != 0)
-#define NODE_IS_IN_REPEAT(node)   ((NODE_STATUS(node) & NST_IN_REPEAT) != 0)
-#define NODE_IS_CALLED(node)      ((NODE_STATUS(node) & NST_CALLED)    != 0)
+#define NODE_IS_BY_NUMBER(node)       ((NODE_STATUS(node) & NST_BY_NUMBER) != 0)
+#define NODE_IS_IN_REPEAT(node)       ((NODE_STATUS(node) & NST_IN_REPEAT) != 0)
+#define NODE_IS_CALLED(node)          ((NODE_STATUS(node) & NST_CALLED)    != 0)
 #define NODE_IS_IN_MULTI_ENTRY(node)  ((NODE_STATUS(node) & NST_IN_MULTI_ENTRY) != 0)
-#define NODE_IS_RECURSION(node)   ((NODE_STATUS(node) & NST_RECURSION) != 0)
-#define NODE_IS_IN_ZERO(node)     ((NODE_STATUS(node) & NST_IN_ZERO)   != 0)
+#define NODE_IS_RECURSION(node)       ((NODE_STATUS(node) & NST_RECURSION) != 0)
+#define NODE_IS_IN_ZERO_REPEAT(node)  ((NODE_STATUS(node) & NST_IN_ZERO_REPEAT) != 0)
+#define NODE_IS_NAMED_GROUP(node)     ((NODE_STATUS(node) & NST_NAMED_GROUP) != 0)
+#define NODE_IS_ADDR_FIXED(node)      ((NODE_STATUS(node) & NST_ADDR_FIXED)  != 0)
+#define NODE_IS_CLEN_FIXED(node)      ((NODE_STATUS(node) & NST_CLEN_FIXED)  != 0)
+#define NODE_IS_MIN_FIXED(node)       ((NODE_STATUS(node) & NST_MIN_FIXED)   != 0)
+#define NODE_IS_MAX_FIXED(node)       ((NODE_STATUS(node) & NST_MAX_FIXED)   != 0)
+#define NODE_IS_MARK1(node)           ((NODE_STATUS(node) & NST_MARK1)       != 0)
+#define NODE_IS_MARK2(node)           ((NODE_STATUS(node) & NST_MARK2)       != 0)
+#define NODE_IS_NEST_LEVEL(node)      ((NODE_STATUS(node) & NST_NEST_LEVEL)  != 0)
+#define NODE_IS_NAME_REF(node)        ((NODE_STATUS(node) & NST_NAME_REF)    != 0)
 #define NODE_IS_STOP_BT_SIMPLE_REPEAT(node) \
     ((NODE_STATUS(node) & NST_STOP_BT_SIMPLE_REPEAT) != 0)
-#define NODE_IS_NAMED_GROUP(node) ((NODE_STATUS(node) & NST_NAMED_GROUP) != 0)
-#define NODE_IS_ADDR_FIXED(node)  ((NODE_STATUS(node) & NST_ADDR_FIXED)  != 0)
-#define NODE_IS_CLEN_FIXED(node)  ((NODE_STATUS(node) & NST_CLEN_FIXED)  != 0)
-#define NODE_IS_MIN_FIXED(node)   ((NODE_STATUS(node) & NST_MIN_FIXED)   != 0)
-#define NODE_IS_MAX_FIXED(node)   ((NODE_STATUS(node) & NST_MAX_FIXED)   != 0)
-#define NODE_IS_MARK1(node)       ((NODE_STATUS(node) & NST_MARK1)       != 0)
-#define NODE_IS_MARK2(node)       ((NODE_STATUS(node) & NST_MARK2)       != 0)
-#define NODE_IS_NEST_LEVEL(node)  ((NODE_STATUS(node) & NST_NEST_LEVEL)  != 0)
-#define NODE_IS_NAME_REF(node)    ((NODE_STATUS(node) & NST_NAME_REF)    != 0)
 
 #define NODE_BODY(node)           ((node)->u.base.body)
 #define NODE_QTFR_BODY(node)      ((node)->body)
