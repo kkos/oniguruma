@@ -440,7 +440,7 @@ compile_tree_empty_check(Node* node, regex_t* reg, int empty_info, ScanEnv* env)
   int saved_num_null_check = reg->num_null_check;
 
   if (empty_info != 0) {
-    r = add_opcode(reg, OP_NULL_CHECK_START);
+    r = add_opcode(reg, OP_EMPTY_CHECK_START);
     if (r != 0) return r;
     r = add_mem_num(reg, reg->num_null_check); /* NULL CHECK ID */
     if (r != 0) return r;
@@ -452,11 +452,11 @@ compile_tree_empty_check(Node* node, regex_t* reg, int empty_info, ScanEnv* env)
 
   if (empty_info != 0) {
     if (empty_info == NQ_BODY_IS_EMPTY)
-      r = add_opcode(reg, OP_NULL_CHECK_END);
+      r = add_opcode(reg, OP_EMPTY_CHECK_END);
     else if (empty_info == NQ_BODY_IS_EMPTY_MEM)
-      r = add_opcode(reg, OP_NULL_CHECK_END_MEMST);
+      r = add_opcode(reg, OP_EMPTY_CHECK_END_MEMST);
     else if (empty_info == NQ_BODY_IS_EMPTY_REC)
-      r = add_opcode(reg, OP_NULL_CHECK_END_MEMST_PUSH);
+      r = add_opcode(reg, OP_EMPTY_CHECK_END_MEMST_PUSH);
 
     if (r != 0) return r;
     r = add_mem_num(reg, saved_num_null_check); /* NULL CHECK ID */
@@ -831,7 +831,7 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
   }
 
   if (empty_info != 0)
-    mod_tlen = tlen + (SIZE_OP_NULL_CHECK_START + SIZE_OP_NULL_CHECK_END);
+    mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
   else
     mod_tlen = tlen;
 
@@ -934,7 +934,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
   }
 
   if (empty_info != 0)
-    mod_tlen = tlen + (SIZE_OP_NULL_CHECK_START + SIZE_OP_NULL_CHECK_END);
+    mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
   else
     mod_tlen = tlen;
 
@@ -1060,7 +1060,7 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
   }
 
   if (empty_info != 0)
-    mod_tlen = tlen + (SIZE_OP_NULL_CHECK_START + SIZE_OP_NULL_CHECK_END);
+    mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
   else
     mod_tlen = tlen;
 
@@ -1134,7 +1134,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
   }
 
   if (empty_info != 0)
-    mod_tlen = tlen + (SIZE_OP_NULL_CHECK_START + SIZE_OP_NULL_CHECK_END);
+    mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
   else
     mod_tlen = tlen;
 
@@ -6139,10 +6139,10 @@ OnigOpInfoType OnigOpInfo[] = {
   { OP_REPEAT_INC_NG,       "repeat-inc-ng",        ARG_MEMNUM  },
   { OP_REPEAT_INC_SG,       "repeat-inc-sg",        ARG_MEMNUM  },
   { OP_REPEAT_INC_NG_SG,    "repeat-inc-ng-sg",     ARG_MEMNUM  },
-  { OP_NULL_CHECK_START,    "null-check-start",     ARG_MEMNUM  },
-  { OP_NULL_CHECK_END,      "null-check-end",       ARG_MEMNUM  },
-  { OP_NULL_CHECK_END_MEMST,"null-check-end-memst", ARG_MEMNUM  },
-  { OP_NULL_CHECK_END_MEMST_PUSH,"null-check-end-memst-push", ARG_MEMNUM  },
+  { OP_EMPTY_CHECK_START,   "empty-check-start",    ARG_MEMNUM  },
+  { OP_EMPTY_CHECK_END,     "empty-check-end",      ARG_MEMNUM  },
+  { OP_EMPTY_CHECK_END_MEMST,"empty-check-end-memst", ARG_MEMNUM  },
+  { OP_EMPTY_CHECK_END_MEMST_PUSH,"empty-check-end-memst-push", ARG_MEMNUM  },
   { OP_PUSH_POS,             "push-pos",             ARG_NON },
   { OP_POP_POS,              "pop-pos",              ARG_NON },
   { OP_PUSH_POS_NOT,         "push-pos-not",         ARG_RELADDR },

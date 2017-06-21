@@ -311,8 +311,8 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_REPEAT_INC             0x0300
 #define STK_STATE_CHECK_MARK       0x1000
 /* avoided by normal-POP */
-#define STK_NULL_CHECK_START       0x3000
-#define STK_NULL_CHECK_END         0x5000  /* for recursive call */
+#define STK_EMPTY_CHECK_START      0x3000
+#define STK_EMPTY_CHECK_END        0x5000  /* for recursive call */
 #define STK_MEM_END_MARK           0x8400
 #define STK_POS                    0x0500  /* used when POP-POS */
 #define STK_STOP_BT                0x0600  /* mark for "(?>...)" */
@@ -691,18 +691,18 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_PUSH_NULL_CHECK_START(cnum, s) do {\
+#define STACK_PUSH_EMPTY_CHECK_START(cnum, s) do {\
   STACK_ENSURE(1);\
-  stk->type = STK_NULL_CHECK_START;\
-  stk->u.null_check.num  = (cnum);\
-  stk->u.null_check.pstr = (s);\
+  stk->type = STK_EMPTY_CHECK_START;\
+  stk->u.empty_check.num  = (cnum);\
+  stk->u.empty_check.pstr = (s);\
   STACK_INC;\
 } while(0)
 
-#define STACK_PUSH_NULL_CHECK_END(cnum) do {\
+#define STACK_PUSH_EMPTY_CHECK_END(cnum) do {\
   STACK_ENSURE(1);\
-  stk->type = STK_NULL_CHECK_END;\
-  stk->u.null_check.num  = (cnum);\
+  stk->type = STK_EMPTY_CHECK_END;\
+  stk->u.empty_check.num  = (cnum);\
   STACK_INC;\
 } while(0)
 
@@ -849,49 +849,49 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_NULL_CHECK(isnull,id,s) do {\
+#define STACK_EMPTY_CHECK(isnull,id,s) do {\
   OnigStackType* k = stk;\
   while (1) {\
     k--;\
-    STACK_BASE_CHECK(k, "STACK_NULL_CHECK"); \
-    if (k->type == STK_NULL_CHECK_START) {\
-      if (k->u.null_check.num == (id)) {\
-        (isnull) = (k->u.null_check.pstr == (s));\
+    STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK"); \
+    if (k->type == STK_EMPTY_CHECK_START) {\
+      if (k->u.empty_check.num == (id)) {\
+        (isnull) = (k->u.empty_check.pstr == (s));\
         break;\
       }\
     }\
   }\
 } while(0)
 
-#define STACK_NULL_CHECK_REC(isnull,id,s) do {\
+#define STACK_EMPTY_CHECK_REC(isnull,id,s) do {\
   int level = 0;\
   OnigStackType* k = stk;\
   while (1) {\
     k--;\
-    STACK_BASE_CHECK(k, "STACK_NULL_CHECK_REC"); \
-    if (k->type == STK_NULL_CHECK_START) {\
-      if (k->u.null_check.num == (id)) {\
+    STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_REC"); \
+    if (k->type == STK_EMPTY_CHECK_START) {\
+      if (k->u.empty_check.num == (id)) {\
         if (level == 0) {\
-          (isnull) = (k->u.null_check.pstr == (s));\
+          (isnull) = (k->u.empty_check.pstr == (s));\
           break;\
         }\
         else level--;\
       }\
     }\
-    else if (k->type == STK_NULL_CHECK_END) {\
+    else if (k->type == STK_EMPTY_CHECK_END) {\
       level++;\
     }\
   }\
 } while(0)
 
-#define STACK_NULL_CHECK_MEMST(isnull,id,s,reg) do {\
+#define STACK_EMPTY_CHECK_MEMST(isnull,id,s,reg) do {\
   OnigStackType* k = stk;\
   while (1) {\
     k--;\
-    STACK_BASE_CHECK(k, "STACK_NULL_CHECK_MEMST"); \
-    if (k->type == STK_NULL_CHECK_START) {\
-      if (k->u.null_check.num == (id)) {\
-        if (k->u.null_check.pstr != (s)) {\
+    STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_MEMST"); \
+    if (k->type == STK_EMPTY_CHECK_START) {\
+      if (k->u.empty_check.num == (id)) {\
+        if (k->u.empty_check.pstr != (s)) {\
           (isnull) = 0;\
           break;\
         }\
@@ -924,16 +924,16 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_NULL_CHECK_MEMST_REC(isnull,id,s,reg) do {\
+#define STACK_EMPTY_CHECK_MEMST_REC(isnull,id,s,reg) do {\
   int level = 0;\
   OnigStackType* k = stk;\
   while (1) {\
     k--;\
-    STACK_BASE_CHECK(k, "STACK_NULL_CHECK_MEMST_REC"); \
-    if (k->type == STK_NULL_CHECK_START) {\
-      if (k->u.null_check.num == (id)) {\
+    STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_MEMST_REC"); \
+    if (k->type == STK_EMPTY_CHECK_START) {\
+      if (k->u.empty_check.num == (id)) {\
         if (level == 0) {\
-          if (k->u.null_check.pstr != (s)) {\
+          if (k->u.empty_check.pstr != (s)) {\
             (isnull) = 0;\
             break;\
           }\
@@ -966,8 +966,8 @@ stack_double(int is_alloca, char** arg_alloc_base,
         }\
       }\
     }\
-    else if (k->type == STK_NULL_CHECK_END) {\
-      if (k->u.null_check.num == (id)) level++;\
+    else if (k->type == STK_EMPTY_CHECK_END) {\
+      if (k->u.empty_check.num == (id)) level++;\
     }\
   }\
 } while(0)
@@ -2372,24 +2372,24 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       break;
 #endif
 
-    case OP_NULL_CHECK_START:  MOP_IN(OP_NULL_CHECK_START);
+    case OP_EMPTY_CHECK_START:  MOP_IN(OP_EMPTY_CHECK_START);
       GET_MEMNUM_INC(mem, p);    /* mem: null check id */
-      STACK_PUSH_NULL_CHECK_START(mem, s);
+      STACK_PUSH_EMPTY_CHECK_START(mem, s);
       MOP_OUT;
       continue;
       break;
 
-    case OP_NULL_CHECK_END:  MOP_IN(OP_NULL_CHECK_END);
+    case OP_EMPTY_CHECK_END:  MOP_IN(OP_EMPTY_CHECK_END);
       {
-        int isnull;
+        int is_empty;
 
         GET_MEMNUM_INC(mem, p); /* mem: null check id */
-        STACK_NULL_CHECK(isnull, mem, s);
-        if (isnull) {
+        STACK_EMPTY_CHECK(is_empty, mem, s);
+        if (is_empty) {
 #ifdef ONIG_DEBUG_MATCH
-          fprintf(stderr, "NULL_CHECK_END: skip  id:%d, s:%p\n", (int )mem, s);
+          fprintf(stderr, "EMPTY_CHECK_END: skip  id:%d, s:%p\n", (int )mem, s);
 #endif
-        null_check_found:
+        empty_check_found:
           /* empty loop founded, skip next instruction */
           switch (*p++) {
           case OP_JUMP:
@@ -2413,18 +2413,18 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       break;
 
 #ifdef USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT
-    case OP_NULL_CHECK_END_MEMST:  MOP_IN(OP_NULL_CHECK_END_MEMST);
+    case OP_EMPTY_CHECK_END_MEMST:  MOP_IN(OP_EMPTY_CHECK_END_MEMST);
       {
-        int isnull;
+        int is_empty;
 
         GET_MEMNUM_INC(mem, p); /* mem: null check id */
-        STACK_NULL_CHECK_MEMST(isnull, mem, s, reg);
-        if (isnull) {
+        STACK_EMPTY_CHECK_MEMST(is_empty, mem, s, reg);
+        if (is_empty) {
 #ifdef ONIG_DEBUG_MATCH
-          fprintf(stderr, "NULL_CHECK_END_MEMST: skip  id:%d, s:%p\n", (int )mem, s);
+          fprintf(stderr, "EMPTY_CHECK_END_MEMST: skip  id:%d, s:%p\n", (int)mem, s);
 #endif
-          if (isnull == -1) goto fail;
-          goto 	null_check_found;
+          if (is_empty == -1) goto fail;
+          goto 	empty_check_found;
         }
       }
       MOP_OUT;
@@ -2433,27 +2433,27 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
 
 #ifdef USE_SUBEXP_CALL
-    case OP_NULL_CHECK_END_MEMST_PUSH:
-      MOP_IN(OP_NULL_CHECK_END_MEMST_PUSH);
+    case OP_EMPTY_CHECK_END_MEMST_PUSH:
+      MOP_IN(OP_EMPTY_CHECK_END_MEMST_PUSH);
       {
-        int isnull;
+        int is_empty;
 
         GET_MEMNUM_INC(mem, p); /* mem: null check id */
 #ifdef USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT
-        STACK_NULL_CHECK_MEMST_REC(isnull, mem, s, reg);
+        STACK_EMPTY_CHECK_MEMST_REC(is_empty, mem, s, reg);
 #else
-        STACK_NULL_CHECK_REC(isnull, mem, s);
+        STACK_EMPTY_CHECK_REC(is_empty, mem, s);
 #endif
-        if (isnull) {
+        if (is_empty) {
 #ifdef ONIG_DEBUG_MATCH
-          fprintf(stderr, "NULL_CHECK_END_MEMST_PUSH: skip  id:%d, s:%p\n",
+          fprintf(stderr, "EMPTY_CHECK_END_MEMST_PUSH: skip  id:%d, s:%p\n",
                   (int )mem, s);
 #endif
-          if (isnull == -1) goto fail;
-          goto 	null_check_found;
+          if (is_empty == -1) goto fail;
+          goto 	empty_check_found;
         }
         else {
-          STACK_PUSH_NULL_CHECK_END(mem);
+          STACK_PUSH_EMPTY_CHECK_END(mem);
         }
       }
       MOP_OUT;

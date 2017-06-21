@@ -493,10 +493,10 @@ enum OpCode {
   OP_REPEAT_INC_NG,        /* non greedy */
   OP_REPEAT_INC_SG,        /* search and get in stack */
   OP_REPEAT_INC_NG_SG,     /* search and get in stack (non greedy) */
-  OP_NULL_CHECK_START,     /* null loop checker start */
-  OP_NULL_CHECK_END,       /* null loop checker end   */
-  OP_NULL_CHECK_END_MEMST, /* null loop checker end (with capture status) */
-  OP_NULL_CHECK_END_MEMST_PUSH, /* with capture status and push check-end */
+  OP_EMPTY_CHECK_START,     /* null loop checker start */
+  OP_EMPTY_CHECK_END,       /* null loop checker end   */
+  OP_EMPTY_CHECK_END_MEMST, /* null loop checker end (with capture status) */
+  OP_EMPTY_CHECK_END_MEMST_PUSH, /* with capture status and push check-end */
 
   OP_PUSH_POS,             /* (?=...)  start */
   OP_POP_POS,              /* (?=...)  end   */
@@ -584,8 +584,8 @@ typedef void* PointerType;
 #define SIZE_OP_MEMORY_END_REC         (SIZE_OPCODE + SIZE_MEMNUM)
 #define SIZE_OP_PUSH_STOP_BT            SIZE_OPCODE
 #define SIZE_OP_POP_STOP_BT             SIZE_OPCODE
-#define SIZE_OP_NULL_CHECK_START       (SIZE_OPCODE + SIZE_MEMNUM)
-#define SIZE_OP_NULL_CHECK_END         (SIZE_OPCODE + SIZE_MEMNUM)
+#define SIZE_OP_EMPTY_CHECK_START       (SIZE_OPCODE + SIZE_MEMNUM)
+#define SIZE_OP_EMPTY_CHECK_END         (SIZE_OPCODE + SIZE_MEMNUM)
 #define SIZE_OP_LOOK_BEHIND            (SIZE_OPCODE + SIZE_LENGTH)
 #define SIZE_OP_PUSH_LOOK_BEHIND_NOT   (SIZE_OPCODE + SIZE_RELADDR + SIZE_LENGTH)
 #define SIZE_OP_FAIL_LOOK_BEHIND_NOT    SIZE_OPCODE
@@ -683,7 +683,7 @@ typedef struct _OnigStackType {
     struct {
       int num;           /* null check id */
       UChar *pstr;       /* start position */
-    } null_check;
+    } empty_check;
 #ifdef USE_SUBEXP_CALL
     struct {
       UChar *ret_addr;   /* byte code position */
