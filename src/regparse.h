@@ -95,20 +95,20 @@ typedef enum {
 #define NODE_STR_BUF_SIZE       24  /* sizeof(CClassNode) - sizeof(int)*4 */
 #define NODE_BACKREFS_SIZE       6
 
-#define NSTR_RAW                (1<<0) /* by backslashed number */
-#define NSTR_AMBIG              (1<<1)
-#define NSTR_DONT_GET_OPT_INFO  (1<<2)
+#define STRING_RAW                (1<<0) /* by backslashed number */
+#define STRING_AMBIG              (1<<1)
+#define STRING_DONT_GET_OPT_INFO  (1<<2)
 
 #define NSTRING_LEN(node)             ((node)->u.str.end - (node)->u.str.s)
-#define NSTRING_SET_RAW(node)          (node)->u.str.flag |= NSTR_RAW
-#define NSTRING_CLEAR_RAW(node)        (node)->u.str.flag &= ~NSTR_RAW
-#define NSTRING_SET_AMBIG(node)        (node)->u.str.flag |= NSTR_AMBIG
+#define NSTRING_SET_RAW(node)          (node)->u.str.flag |= STRING_RAW
+#define NSTRING_CLEAR_RAW(node)        (node)->u.str.flag &= ~STRING_RAW
+#define NSTRING_SET_AMBIG(node)        (node)->u.str.flag |= STRING_AMBIG
 #define NSTRING_SET_DONT_GET_OPT_INFO(node) \
-  (node)->u.str.flag |= NSTR_DONT_GET_OPT_INFO
-#define NSTRING_IS_RAW(node)          (((node)->u.str.flag & NSTR_RAW)   != 0)
-#define NSTRING_IS_AMBIG(node)        (((node)->u.str.flag & NSTR_AMBIG) != 0)
+  (node)->u.str.flag |= STRING_DONT_GET_OPT_INFO
+#define NSTRING_IS_RAW(node)          (((node)->u.str.flag & STRING_RAW)   != 0)
+#define NSTRING_IS_AMBIG(node)        (((node)->u.str.flag & STRING_AMBIG) != 0)
 #define NSTRING_IS_DONT_GET_OPT_INFO(node) \
-  (((node)->u.str.flag & NSTR_DONT_GET_OPT_INFO) != 0)
+  (((node)->u.str.flag & STRING_DONT_GET_OPT_INFO) != 0)
 
 #define BACKREFS_P(br) \
   (IS_NOT_NULL((br)->back_dynamic) ? (br)->back_dynamic : (br)->back_static);
