@@ -3599,7 +3599,7 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
 static int
 quantifiers_memory_node_info(Node* node)
 {
-  int r = 0;
+  int r = NQ_BODY_IS_EMPTY;
 
   switch (NODE_TYPE(node)) {
   case NODE_LIST:
@@ -3609,7 +3609,7 @@ quantifiers_memory_node_info(Node* node)
       do {
         v = quantifiers_memory_node_info(NODE_CAR(node));
         if (v > r) r = v;
-      } while (v >= 0 && IS_NOT_NULL(node = NODE_CDR(node)));
+      } while (IS_NOT_NULL(node = NODE_CDR(node)));
     }
     break;
 
@@ -4130,19 +4130,16 @@ setup_qtfr(Node* node, regex_t* reg, int state, ScanEnv* env)
     r = get_min_len(body, &d, env);
     if (r != 0) return r;
     if (d == 0) {
-      qn->body_empty_info = NQ_BODY_IS_EMPTY;
 #ifdef USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT
-      r = quantifiers_memory_node_info(body);
-      if (r < 0) return r;
-      if (r > 0) {
-        qn->body_empty_info = r;
-        if (r == NQ_BODY_IS_EMPTY_REC) {
-          if (NODE_TYPE(body) == NODE_ENCLOSURE &&
-              ENCLOSURE_(body)->type == ENCLOSURE_MEMORY) {
-            BIT_STATUS_ON_AT(env->bt_mem_end, ENCLOSURE_(body)->m.regnum);
-          }
+      qn->body_empty_info = quantifiers_memory_node_info(body);
+      if (qn->body_empty_info == NQ_BODY_IS_EMPTY_REC) {
+        if (NODE_TYPE(body) == NODE_ENCLOSURE &&
+            ENCLOSURE_(body)->type == ENCLOSURE_MEMORY) {
+          BIT_STATUS_ON_AT(env->bt_mem_end, ENCLOSURE_(body)->m.regnum);
         }
       }
+#else
+      qn->body_empty_info = NQ_BODY_IS_EMPTY;
 #endif
     }
   }
