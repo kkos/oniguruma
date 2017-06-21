@@ -779,7 +779,7 @@ compile_range_repeat_node(QtfrNode* qn, int target_len, int empty_info,
 #ifdef USE_SUBEXP_CALL
       NODE_IS_IN_MULTI_ENTRY(qn) ||
 #endif
-      NODE_IS_IN_REPEAT(qn)) {
+      NODE_IS_IN_REAL_REPEAT(qn)) {
     r = add_opcode(reg, qn->greedy ? OP_REPEAT_INC_SG : OP_REPEAT_INC_NG_SG);
   }
   else {
@@ -3669,7 +3669,7 @@ quantifiers_memory_node_info(Node* node)
 
 #define IN_ALT          (1<<0)
 #define IN_NOT          (1<<1)
-#define IN_REPEAT       (1<<2)
+#define IN_REAL_REPEAT  (1<<2)
 #define IN_VAR_REPEAT   (1<<3)
 #define IN_ZERO_REPEAT  (1<<4)
 #define IN_MULTI_ENTRY  (1<<5)
@@ -3897,7 +3897,7 @@ setup_called_state_call(Node* node, int state)
       QtfrNode* qn = QTFR_(node);
 
       if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 2)
-        state |= IN_REPEAT;
+        state |= IN_REAL_REPEAT;
       if (qn->lower != qn->upper)
         state |= IN_VAR_REPEAT;
 
@@ -4000,7 +4000,7 @@ setup_called_state(Node* node, int state)
       QtfrNode* qn = QTFR_(node);
 
       if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 2)
-        state |= IN_REPEAT;
+        state |= IN_REAL_REPEAT;
       if (qn->lower != qn->upper)
         state |= IN_VAR_REPEAT;
 
@@ -4119,8 +4119,8 @@ setup_qtfr(Node* node, regex_t* reg, int state, ScanEnv* env)
   QtfrNode* qn = QTFR_(node);
   Node* target = NODE_BODY(node);
 
-  if ((state & IN_REPEAT) != 0) {
-    NODE_STATUS_ADD(node, NST_IN_REPEAT);
+  if ((state & IN_REAL_REPEAT) != 0) {
+    NODE_STATUS_ADD(node, NST_IN_REAL_REPEAT);
   }
   if ((state & IN_MULTI_ENTRY) != 0) {
     NODE_STATUS_ADD(node, NST_IN_MULTI_ENTRY);
@@ -4148,7 +4148,7 @@ setup_qtfr(Node* node, regex_t* reg, int state, ScanEnv* env)
   }
 
   if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 2)
-    state |= IN_REPEAT;
+    state |= IN_REAL_REPEAT;
   if (qn->lower != qn->upper)
     state |= IN_VAR_REPEAT;
 
