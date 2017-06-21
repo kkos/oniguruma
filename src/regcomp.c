@@ -4117,7 +4117,7 @@ setup_qtfr(Node* node, regex_t* reg, int state, ScanEnv* env)
   int r;
   OnigLen d;
   QtfrNode* qn = QTFR_(node);
-  Node* target = NODE_BODY(node);
+  Node* body = NODE_BODY(node);
 
   if ((state & IN_REAL_REPEAT) != 0) {
     NODE_STATUS_ADD(node, NST_IN_REAL_REPEAT);
@@ -4127,19 +4127,19 @@ setup_qtfr(Node* node, regex_t* reg, int state, ScanEnv* env)
   }
 
   if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 1) {
-    r = get_min_len(target, &d, env);
+    r = get_min_len(body, &d, env);
     if (r != 0) return r;
     if (d == 0) {
       qn->body_empty_info = NQ_BODY_IS_EMPTY;
 #ifdef USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT
-      r = quantifiers_memory_node_info(target);
+      r = quantifiers_memory_node_info(body);
       if (r < 0) return r;
       if (r > 0) {
         qn->body_empty_info = r;
         if (r == NQ_BODY_IS_EMPTY_REC) {
-          if (NODE_TYPE(target) == NODE_ENCLOSURE &&
-              ENCLOSURE_(target)->type == ENCLOSURE_MEMORY) {
-            BIT_STATUS_ON_AT(env->bt_mem_end, ENCLOSURE_(target)->m.regnum);
+          if (NODE_TYPE(body) == NODE_ENCLOSURE &&
+              ENCLOSURE_(body)->type == ENCLOSURE_MEMORY) {
+            BIT_STATUS_ON_AT(env->bt_mem_end, ENCLOSURE_(body)->m.regnum);
           }
         }
       }
@@ -4152,25 +4152,25 @@ setup_qtfr(Node* node, regex_t* reg, int state, ScanEnv* env)
   if (qn->lower != qn->upper)
     state |= IN_VAR_REPEAT;
 
-  r = setup_tree(target, reg, state, env);
+  r = setup_tree(body, reg, state, env);
   if (r != 0) return r;
 
   /* expand string */
 #define EXPAND_STRING_MAX_LENGTH  100
-  if (NODE_TYPE(target) == NODE_STR) {
+  if (NODE_TYPE(body) == NODE_STR) {
     if (!IS_REPEAT_INFINITE(qn->lower) && qn->lower == qn->upper &&
         qn->lower > 1 && qn->lower <= EXPAND_STRING_MAX_LENGTH) {
-      int len = NSTRING_LEN(target);
-      StrNode* sn = STR_(target);
+      int len = NSTRING_LEN(body);
+      StrNode* sn = STR_(body);
 
       if (len * qn->lower <= EXPAND_STRING_MAX_LENGTH) {
         int i, n = qn->lower;
-        onig_node_conv_to_str_node(node, STR_(target)->flag);
+        onig_node_conv_to_str_node(node, STR_(body)->flag);
         for (i = 0; i < n; i++) {
           r = onig_node_str_cat(node, sn->s, sn->end);
           if (r != 0) return r;
         }
-        onig_node_free(target);
+        onig_node_free(body);
         return r;
       }
     }
@@ -4178,8 +4178,8 @@ setup_qtfr(Node* node, regex_t* reg, int state, ScanEnv* env)
 
 #ifdef USE_OP_PUSH_OR_JUMP_EXACT
   if (qn->greedy && (qn->body_empty_info != 0)) {
-    if (NODE_TYPE(target) == NODE_QTFR) {
-      QtfrNode* tqn = QTFR_(target);
+    if (NODE_TYPE(body) == NODE_QTFR) {
+      QtfrNode* tqn = QTFR_(body);
       if (IS_NOT_NULL(tqn->head_exact)) {
         qn->head_exact  = tqn->head_exact;
         tqn->head_exact = NULL;
