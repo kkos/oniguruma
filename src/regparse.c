@@ -1286,7 +1286,7 @@ node_new_quantifier(int lower, int upper, int by_number)
   QTFR_(node)->lower  = lower;
   QTFR_(node)->upper  = upper;
   QTFR_(node)->greedy = 1;
-  QTFR_(node)->body_empty_info = NQ_BODY_ISNOT_EMPTY;
+  QTFR_(node)->body_empty_info = NQ_BODY_IS_NOT_EMPTY;
   QTFR_(node)->head_exact      = NULL_NODE;
   QTFR_(node)->next_head_exact = NULL_NODE;
   QTFR_(node)->is_refered      = 0;

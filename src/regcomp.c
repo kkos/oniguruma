@@ -439,7 +439,7 @@ compile_tree_empty_check(Node* node, regex_t* reg, int empty_info, ScanEnv* env)
   int r;
   int saved_num_null_check = reg->num_null_check;
 
-  if (empty_info != 0) {
+  if (empty_info != NQ_BODY_IS_NOT_EMPTY) {
     r = add_opcode(reg, OP_EMPTY_CHECK_START);
     if (r != 0) return r;
     r = add_mem_num(reg, reg->num_null_check); /* NULL CHECK ID */
@@ -450,7 +450,7 @@ compile_tree_empty_check(Node* node, regex_t* reg, int empty_info, ScanEnv* env)
   r = compile_tree(node, reg, env);
   if (r != 0) return r;
 
-  if (empty_info != 0) {
+  if (empty_info != NQ_BODY_IS_NOT_EMPTY) {
     if (empty_info == NQ_BODY_IS_EMPTY)
       r = add_opcode(reg, OP_EMPTY_CHECK_END);
     else if (empty_info == NQ_BODY_IS_EMPTY_MEM)
@@ -830,10 +830,10 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
     }
   }
 
-  if (empty_info != 0)
-    mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
-  else
+  if (empty_info == NQ_BODY_IS_NOT_EMPTY)
     mod_tlen = tlen;
+  else
+    mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
 
   if (infinite && qn->lower <= 1) {
     if (qn->greedy) {
@@ -933,10 +933,10 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
     }
   }
 
-  if (empty_info != 0)
-    mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
-  else
+  if (empty_info == NQ_BODY_IS_NOT_EMPTY)
     mod_tlen = tlen;
+  else
+    mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
 
   if (infinite && qn->lower <= 1) {
     if (qn->greedy) {
@@ -1059,10 +1059,10 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
     }
   }
 
-  if (empty_info != 0)
-    mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
-  else
+  if (empty_info == NQ_BODY_IS_NOT_EMPTY)
     mod_tlen = tlen;
+  else
+    mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
 
   if (infinite &&
       (qn->lower <= 1 || tlen * qn->lower <= QUANTIFIER_EXPAND_LIMIT_SIZE)) {
@@ -1133,10 +1133,10 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
     }
   }
 
-  if (empty_info != 0)
-    mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
-  else
+  if (empty_info == NQ_BODY_IS_NOT_EMPTY)
     mod_tlen = tlen;
+  else
+    mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
 
   if (infinite &&
       (qn->lower <= 1 || tlen * qn->lower <= QUANTIFIER_EXPAND_LIMIT_SIZE)) {

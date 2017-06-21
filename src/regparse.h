@@ -113,7 +113,7 @@ typedef enum {
 #define BACKREFS_P(br) \
   (IS_NOT_NULL((br)->back_dynamic) ? (br)->back_dynamic : (br)->back_static);
 
-#define NQ_BODY_ISNOT_EMPTY     0
+#define NQ_BODY_IS_NOT_EMPTY    0
 #define NQ_BODY_IS_EMPTY        1
 #define NQ_BODY_IS_EMPTY_MEM    2
 #define NQ_BODY_IS_EMPTY_REC    3
