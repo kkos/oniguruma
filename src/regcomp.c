@@ -4301,7 +4301,8 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         state |= en->m.called_state;
 #endif
 
-        if ((state & (IN_ALT | IN_NOT | IN_VAR_REPEAT | IN_MULTI_ENTRY)) != 0) {
+        if ((state & (IN_ALT | IN_NOT | IN_VAR_REPEAT | IN_MULTI_ENTRY)) != 0
+            || NODE_IS_RECURSION(node)) {
           BIT_STATUS_ON_AT(env->bt_mem_start, en->m.regnum);
         }
         r = setup_tree(NODE_BODY(node), reg, state, env);
