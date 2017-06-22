@@ -2515,10 +2515,10 @@ check_type_tree(Node* node, int type_mask, int enclosure_mask, int anchor_mask)
 static OnigLen
 get_min_len(Node* node, ScanEnv* env)
 {
-  OnigLen min;
+  OnigLen len;
   OnigLen tmin;
 
-  min = 0;
+  len = 0;
   switch (NODE_TYPE(node)) {
   case NODE_BREF:
     {
@@ -2529,10 +2529,10 @@ get_min_len(Node* node, ScanEnv* env)
       if (NODE_IS_RECURSION(node)) break;
 
       backs = BACKREFS_P(br);
-      min = get_min_len(mem_env[backs[0]].node, env);
+      len = get_min_len(mem_env[backs[0]].node, env);
       for (i = 1; i < br->back_num; i++) {
         tmin = get_min_len(mem_env[backs[i]].node, env);
-        if (min > tmin) min = tmin;
+        if (len > tmin) len = tmin;
       }
     }
     break;
@@ -2543,10 +2543,10 @@ get_min_len(Node* node, ScanEnv* env)
       Node* t = NODE_BODY(node);
       if (NODE_IS_RECURSION(node)) {
         if (NODE_IS_MIN_FIXED(t))
-          min = ENCLOSURE_(t)->min_len;
+          len = ENCLOSURE_(t)->min_len;
       }
       else
-        min = get_min_len(t, env);
+        len = get_min_len(t, env);
     }
     break;
 #endif
@@ -2554,7 +2554,7 @@ get_min_len(Node* node, ScanEnv* env)
   case NODE_LIST:
     do {
       tmin = get_min_len(NODE_CAR(node), env);
-      min += tmin;
+      len += tmin;
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
@@ -2565,8 +2565,8 @@ get_min_len(Node* node, ScanEnv* env)
       do {
         x = NODE_CAR(y);
         tmin = get_min_len(x, env);
-        if (y == node) min = tmin;
-        else if (min > tmin) min = tmin;
+        if (y == node) len = tmin;
+        else if (len > tmin) len = tmin;
       } while (IS_NOT_NULL(y = NODE_CDR(y)));
     }
     break;
@@ -2574,13 +2574,13 @@ get_min_len(Node* node, ScanEnv* env)
   case NODE_STR:
     {
       StrNode* sn = STR_(node);
-      min = sn->end - sn->s;
+      len = sn->end - sn->s;
     }
     break;
 
   case NODE_CTYPE:
   case NODE_CCLASS:
-    min = 1;
+    len = 1;
     break;
 
   case NODE_QTFR:
@@ -2588,8 +2588,8 @@ get_min_len(Node* node, ScanEnv* env)
       QtfrNode* qn = QTFR_(node);
 
       if (qn->lower > 0) {
-        min = get_min_len(NODE_BODY(node), env);
-        min = distance_multiply(min, qn->lower);
+        len = get_min_len(NODE_BODY(node), env);
+        len = distance_multiply(len, qn->lower);
       }
     }
     break;
@@ -2600,16 +2600,16 @@ get_min_len(Node* node, ScanEnv* env)
       switch (en->type) {
       case ENCLOSURE_MEMORY:
         if (NODE_IS_MIN_FIXED(node))
-          min = en->min_len;
+          len = en->min_len;
         else {
           if (NODE_IS_MARK1(node))
-            min = 0;  // recursive
+            len = 0;  // recursive
           else {
             NODE_STATUS_ADD(node, NST_MARK1);
-            min = get_min_len(NODE_BODY(node), env);
+            len = get_min_len(NODE_BODY(node), env);
             NODE_STATUS_REMOVE(node, NST_MARK1);
 
-            en->min_len = min;
+            en->min_len = len;
             NODE_STATUS_ADD(node, NST_MIN_FIXED);
           }
         }
@@ -2617,7 +2617,7 @@ get_min_len(Node* node, ScanEnv* env)
 
       case ENCLOSURE_OPTION:
       case ENCLOSURE_STOP_BACKTRACK:
-        min = get_min_len(NODE_BODY(node), env);
+        len = get_min_len(NODE_BODY(node), env);
         break;
       }
     }
@@ -2628,7 +2628,7 @@ get_min_len(Node* node, ScanEnv* env)
     break;
   }
 
-  return min;
+  return len;
 }
 
 static OnigLen
