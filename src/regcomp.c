@@ -1390,37 +1390,26 @@ compile_enclosure_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
     r = compile_tree(NODE_ENCLOSURE_BODY(node), reg, env);
     if (r != 0) return r;
 #ifdef USE_SUBEXP_CALL
+    if (BIT_STATUS_AT(reg->bt_mem_end, node->m.regnum))
+      r = add_opcode(reg, (NODE_IS_RECURSION(node)
+                           ? OP_MEMORY_END_PUSH_REC : OP_MEMORY_END_PUSH));
+    else
+      r = add_opcode(reg, (NODE_IS_RECURSION(node)
+                           ? OP_MEMORY_END_REC : OP_MEMORY_END));
+    if (r != 0) return r;
+    r = add_mem_num(reg, node->m.regnum);
     if (NODE_IS_CALLED(node)) {
-      if (BIT_STATUS_AT(reg->bt_mem_end, node->m.regnum))
-        r = add_opcode(reg, (NODE_IS_RECURSION(node)
-                             ? OP_MEMORY_END_PUSH_REC : OP_MEMORY_END_PUSH));
-      else
-        r = add_opcode(reg, (NODE_IS_RECURSION(node)
-                             ? OP_MEMORY_END_REC : OP_MEMORY_END));
-
-      if (r != 0) return r;
-      r = add_mem_num(reg, node->m.regnum);
       if (r != 0) return r;
       r = add_opcode(reg, OP_RETURN);
     }
-    else if (NODE_IS_RECURSION(node)) {
-      if (BIT_STATUS_AT(reg->bt_mem_end, node->m.regnum))
-        r = add_opcode(reg, OP_MEMORY_END_PUSH_REC);
-      else
-        r = add_opcode(reg, OP_MEMORY_END_REC);
-      if (r != 0) return r;
-      r = add_mem_num(reg, node->m.regnum);
-    }
+#else
+    if (BIT_STATUS_AT(reg->bt_mem_end, node->m.regnum))
+      r = add_opcode(reg, OP_MEMORY_END_PUSH);
     else
+      r = add_opcode(reg, OP_MEMORY_END);
+    if (r != 0) return r;
+    r = add_mem_num(reg, node->m.regnum);
 #endif
-    {
-      if (BIT_STATUS_AT(reg->bt_mem_end, node->m.regnum))
-        r = add_opcode(reg, OP_MEMORY_END_PUSH);
-      else
-        r = add_opcode(reg, OP_MEMORY_END);
-      if (r != 0) return r;
-      r = add_mem_num(reg, node->m.regnum);
-    }
     break;
 
   case ENCLOSURE_STOP_BACKTRACK:
