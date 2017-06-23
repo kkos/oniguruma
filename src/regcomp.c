@@ -3707,7 +3707,7 @@ setup_call_node_call(CallNode* cn, ScanEnv* env, int state)
 {
   MemEnv* mem_env = SCANENV_MEMENV(env);
 
-  if (cn->group_num != 0) {
+  if (cn->by_number != 0) {
     int gnum = cn->group_num;
 
 #ifdef USE_NAMED_GROUP

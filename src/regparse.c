@@ -981,6 +981,12 @@ scan_env_clear(ScanEnv* env)
   env->error      = (UChar* )NULL;
   env->error_end  = (UChar* )NULL;
   env->num_call   = 0;
+
+#ifdef USE_SUBEXP_CALL
+  env->unset_addr_list = NULL;
+  env->has_zero_call   = 0;
+#endif
+
   env->num_mem    = 0;
 #ifdef USE_NAMED_GROUP
   env->num_named  = 0;
@@ -1269,15 +1275,16 @@ node_new_backref(int back_num, int* backrefs, int by_name,
 
 #ifdef USE_SUBEXP_CALL
 static Node*
-node_new_call(UChar* name, UChar* name_end, int gnum)
+node_new_call(UChar* name, UChar* name_end, int gnum, int by_number)
 {
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
   SET_NODE_TYPE(node, NODE_CALL);
+  CALL_(node)->by_number   = by_number;
   CALL_(node)->name        = name;
   CALL_(node)->name_end    = name_end;
-  CALL_(node)->group_num   = gnum;  /* call by number if gnum != 0 */
+  CALL_(node)->group_num   = gnum;
   CALL_(node)->entry_count = 1;
   return node;
 }
@@ -2253,6 +2260,7 @@ typedef struct {
       UChar* name;
       UChar* name_end;
       int    gnum;
+      int    by_number;
     } call;
     struct {
       int ctype;
@@ -2566,7 +2574,10 @@ fetch_name_with_level(OnigCodePoint start_code, UChar** src, UChar* end,
     if (*num_type != IS_NOT_NUM) {
       *rback_num = onig_scan_unsigned_number(&pnum_head, name_end, enc);
       if (*rback_num < 0) return ONIGERR_TOO_BIG_NUMBER;
-      else if (*rback_num == 0) goto err2;
+      else if (*rback_num == 0) {
+        if (*num_type == IS_REL_NUM)
+          goto err2;
+      }
 
       *rback_num *= sign;
     }
@@ -2690,8 +2701,10 @@ fetch_name(OnigCodePoint start_code, UChar** src, UChar* end,
       *rback_num = onig_scan_unsigned_number(&pnum_head, name_end, enc);
       if (*rback_num < 0) return ONIGERR_TOO_BIG_NUMBER;
       else if (*rback_num == 0) {
-        r = ONIGERR_INVALID_GROUP_NAME;
-        goto err;
+        if (*num_type == IS_REL_NUM) {
+          r = ONIGERR_INVALID_GROUP_NAME;
+          goto err;
+        }
       }
 
       *rback_num *= sign;
@@ -2803,8 +2816,10 @@ fetch_name(OnigCodePoint start_code, UChar** src, UChar* end,
     *rback_num = onig_scan_unsigned_number(&pnum_head, name_end, enc);
     if (*rback_num < 0) return ONIGERR_TOO_BIG_NUMBER;
     else if (*rback_num == 0) {
-      r = ONIGERR_INVALID_GROUP_NAME;
-      goto err;
+      if (*num_type == IS_REL_NUM) {
+        r = ONIGERR_INVALID_GROUP_NAME;
+        goto err;
+      }
     }
     *rback_num *= sign;
 
@@ -3603,10 +3618,23 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
                          &gnum, &num_type, 1);
           if (r < 0) return r;
 
+          if (num_type != IS_NOT_NUM) {
+            if (num_type == IS_REL_NUM) {
+              gnum = backref_rel_to_abs(gnum, env);
+              if (gnum < 0)
+                return ONIGERR_UNDEFINED_GROUP_REFERENCE;
+            }
+            tok->u.call.by_number = 1;
+            tok->u.call.gnum      = gnum;
+          }
+          else {
+            tok->u.call.by_number = 0;
+            tok->u.call.gnum      = 0;
+          }
+
           tok->type = TK_CALL;
           tok->u.call.name     = prev;
           tok->u.call.name_end = name_end;
-          tok->u.call.gnum     = gnum;
         }
         else
           PUNFETCH;
@@ -4814,6 +4842,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
   }
 
   NODE_BODY(*np) = target;
+
   if (NODE_TYPE(*np) == NODE_ENCLOSURE) {
     if (ENCLOSURE_(*np)->type == ENCLOSURE_MEMORY) {
       /* Don't move this to previous of parse_subexp() */
@@ -5280,14 +5309,13 @@ parse_exp(Node** np, OnigToken* tok, int term,
     {
       int gnum = tok->u.call.gnum;
 
-      if (gnum < 0) {
-        gnum = backref_rel_to_abs(gnum, env);
-        if (gnum <= 0)
-          return ONIGERR_INVALID_BACKREF;
-      }
-      *np = node_new_call(tok->u.call.name, tok->u.call.name_end, gnum);
+      *np = node_new_call(tok->u.call.name, tok->u.call.name_end,
+                          gnum, tok->u.call.by_number);
       CHECK_NULL_RETURN_MEMERR(*np);
       env->num_call++;
+      if (tok->u.call.by_number != 0 && gnum == 0) {
+        env->has_zero_call = 1;
+      }
     }
     break;
 #endif

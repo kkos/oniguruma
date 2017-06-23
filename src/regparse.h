@@ -246,6 +246,7 @@ typedef struct {
   int status;
   struct _Node* body; /* to EnclosureNode : ENCLOSURE_MEMORY */
 
+  int     by_number;
   int     group_num;
   UChar*  name;
   UChar*  name_end;
@@ -344,6 +345,7 @@ typedef struct {
   int              num_call;
 #ifdef USE_SUBEXP_CALL
   UnsetAddrList*   unset_addr_list;
+  int              has_zero_call;
 #endif
   int              num_mem;
 #ifdef USE_NAMED_GROUP
