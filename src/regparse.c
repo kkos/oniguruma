@@ -5507,6 +5507,27 @@ parse_regexp(Node** top, UChar** src, UChar* end, ScanEnv* env)
   if (r < 0) return r;
   r = parse_subexp(top, &tok, TK_EOT, src, end, env);
   if (r < 0) return r;
+
+#ifdef USE_SUBEXP_CALL
+  if (env->has_call_zero != 0) {
+#define ZERO_G  0
+
+    Node* zero_node = node_new_enclosure_memory(0 /* 0: is not named */);
+    CHECK_NULL_RETURN_MEMERR(zero_node);
+
+    NODE_BODY(zero_node) = *top;
+    ENCLOSURE_(zero_node)->m.regnum = ZERO_G;
+    r = scan_env_set_mem_node(env, ZERO_G, zero_node);
+    if (r != 0) {
+      onig_node_free(zero_node);
+      return r;
+    }
+    else {
+      *top = zero_node;
+    }
+  }
+#endif
+
   return 0;
 }
 
