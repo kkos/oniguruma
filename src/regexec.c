@@ -333,7 +333,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   (msa).region   = (arg_region);\
   (msa).start    = (arg_start);\
   (msa).best_len = ONIG_MISMATCH;\
-  (msa).ptr_num  = (reg)->num_repeat + (reg)->num_mem * 2;\
+  (msa).ptr_num  = (reg)->num_repeat + ((reg)->num_mem + 1) * 2; \
 } while(0)
 #else
 #define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start) do {\
@@ -341,7 +341,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   (msa).options  = (arg_option);\
   (msa).region   = (arg_region);\
   (msa).start    = (arg_start);\
-  (msa).ptr_num  = (reg)->num_repeat + (reg)->num_mem * 2;\
+  (msa).ptr_num  = (reg)->num_repeat + ((reg)->num_mem + 1) * 2; \
 } while(0)
 #endif
 
@@ -431,11 +431,9 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 } while(0)
 
 #define UPDATE_FOR_STACK_REALLOC do{\
-  repeat_stk = (OnigStackIndex* )alloc_base;\
+  repeat_stk    = (OnigStackIndex* )alloc_base;\
   mem_start_stk = (OnigStackIndex* )(repeat_stk + reg->num_repeat);\
-  mem_end_stk   = mem_start_stk + num_mem;\
-  mem_start_stk--; /* for index start from 1 */\
-  mem_end_stk--;   /* for index start from 1 */\
+  mem_end_stk   = mem_start_stk + num_mem + 1;\
 } while(0)
 
 static unsigned int MatchStackLimitSize = DEFAULT_MATCH_STACK_LIMIT_SIZE;
