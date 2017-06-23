@@ -345,7 +345,7 @@ typedef struct {
   int              num_call;
 #ifdef USE_SUBEXP_CALL
   UnsetAddrList*   unset_addr_list;
-  int              has_zero_call;
+  int              has_call_zero;
 #endif
   int              num_mem;
 #ifdef USE_NAMED_GROUP

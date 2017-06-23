@@ -984,7 +984,7 @@ scan_env_clear(ScanEnv* env)
 
 #ifdef USE_SUBEXP_CALL
   env->unset_addr_list = NULL;
-  env->has_zero_call   = 0;
+  env->has_call_zero   = 0;
 #endif
 
   env->num_mem    = 0;
@@ -5314,7 +5314,7 @@ parse_exp(Node** np, OnigToken* tok, int term,
       CHECK_NULL_RETURN_MEMERR(*np);
       env->num_call++;
       if (tok->u.call.by_number != 0 && gnum == 0) {
-        env->has_zero_call = 1;
+        env->has_call_zero = 1;
       }
     }
     break;
