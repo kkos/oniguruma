@@ -2532,8 +2532,9 @@ fetch_name_with_level(OnigCodePoint start_code, UChar** src, UChar* end,
     }
 
   err:
-    r = ONIGERR_INVALID_GROUP_NAME;
     name_end = end;
+  err2:
+    r = ONIGERR_INVALID_GROUP_NAME;
   }
 
  end:
@@ -2541,7 +2542,7 @@ fetch_name_with_level(OnigCodePoint start_code, UChar** src, UChar* end,
     if (is_num != 0) {
       *rback_num = onig_scan_unsigned_number(&pnum_head, name_end, enc);
       if (*rback_num < 0) return ONIGERR_TOO_BIG_NUMBER;
-      else if (*rback_num == 0) goto err;
+      else if (*rback_num == 0) goto err2;
 
       *rback_num *= sign;
     }
