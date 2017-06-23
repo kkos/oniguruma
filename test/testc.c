@@ -586,6 +586,8 @@ extern int main(int argc, char* argv[])
   n("[0-9-a]", ":");          // PR#44
   x3("(\\(((?:[^(]|\\g<1>)*)\\))", "(abc)(abc)", 1, 4, 2); // PR#43
   x2("\\o{101}", "A", 0, 1);
+  x2("(?:\\k'+1'B|(A)C)*", "ACAB", 0, 4); // relative backref by postitive number
+  x2("\\g<+2>(abc)(ABC){0}", "ABCabc", 0, 6); // relative call by positive number
 
   x2("", "дв", 0, 0);
   x2("дв", "дв", 0, 2);
