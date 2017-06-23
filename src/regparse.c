@@ -5508,26 +5508,26 @@ parse_regexp(Node** top, UChar** src, UChar* end, ScanEnv* env)
   r = parse_subexp(top, &tok, TK_EOT, src, end, env);
   if (r < 0) return r;
 
-#ifdef USE_SUBEXP_CALL
-  if (env->has_call_zero != 0) {
-#define ZERO_G  0
+  return 0;
+}
 
-    Node* zero_node = node_new_enclosure_memory(0 /* 0: is not named */);
-    CHECK_NULL_RETURN_MEMERR(zero_node);
+static int
+make_call_zero_body(Node* node, ScanEnv* env, Node** rnode)
+{
+  int r;
 
-    NODE_BODY(zero_node) = *top;
-    ENCLOSURE_(zero_node)->m.regnum = ZERO_G;
-    r = scan_env_set_mem_node(env, ZERO_G, zero_node);
-    if (r != 0) {
-      onig_node_free(zero_node);
-      return r;
-    }
-    else {
-      *top = zero_node;
-    }
+  Node* x = node_new_enclosure_memory(0 /* 0: is not named */);
+  CHECK_NULL_RETURN_MEMERR(x);
+
+  NODE_BODY(x) = node;
+  ENCLOSURE_(x)->m.regnum = 0;
+  r = scan_env_set_mem_node(env, 0, x);
+  if (r != 0) {
+    onig_node_free(x);
+    return r;
   }
-#endif
 
+  *rnode = x;
   return 0;
 }
 
@@ -5558,6 +5558,19 @@ onig_parse_tree(Node** root, const UChar* pattern, const UChar* end,
 
   p = (UChar* )pattern;
   r = parse_regexp(root, &p, (UChar* )end, env);
+
+#ifdef USE_SUBEXP_CALL
+  if (r != 0) return r;
+
+  if (env->has_call_zero != 0) {
+    Node* zero_node;
+    r = make_call_zero_body(*root, env, &zero_node);
+    if (r != 0) return r;
+
+    *root = zero_node;
+  }
+#endif
+
   reg->num_mem = env->num_mem;
   return r;
 }
