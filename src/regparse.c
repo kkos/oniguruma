@@ -175,9 +175,6 @@ static int backref_rel_to_abs(int rel_no, ScanEnv* env)
   }
 }
 
-#define BACKREF_REL_TO_ABS(rel_no, env) \
-  ((env)->num_mem + 1 + (rel_no))
-
 #define ONOFF(v,f,negative)    (negative) ? ((v) &= ~(f)) : ((v) |= (f))
 
 #define MBCODE_START_POS(enc) \
