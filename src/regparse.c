@@ -422,6 +422,7 @@ onig_st_insert_strend(hash_table_type* table, const UChar* str_key,
   int result;
 
   key = (st_str_end_key* )xmalloc(sizeof(st_str_end_key));
+  CHECK_NULL_RETURN_MEMERR(key);
   key->s   = (UChar* )str_key;
   key->end = (UChar* )end_key;
   result = onig_st_insert(table, (st_data_t )key, value);
@@ -1010,14 +1011,15 @@ scan_env_add_mem_entry(ScanEnv* env)
       if (IS_NULL(env->mem_nodes_dynamic)) {
         alloc = INIT_SCANENV_MEMNODES_ALLOC_SIZE;
         p = (Node** )xmalloc(sizeof(Node*) * alloc);
+        CHECK_NULL_RETURN_MEMERR(p);
         xmemcpy(p, env->mem_nodes_static,
                 sizeof(Node*) * SCANENV_MEMNODES_SIZE);
       }
       else {
         alloc = env->mem_alloc * 2;
         p = (Node** )xrealloc(env->mem_nodes_dynamic, sizeof(Node*) * alloc);
+        CHECK_NULL_RETURN_MEMERR(p);
       }
-      CHECK_NULL_RETURN_MEMERR(p);
 
       for (i = env->num_mem + 1; i < alloc; i++)
         p[i] = NULL_NODE;

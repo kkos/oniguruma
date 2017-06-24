@@ -240,6 +240,7 @@ onig_region_new(void)
   OnigRegion* r;
 
   r = (OnigRegion* )xmalloc(sizeof(OnigRegion));
+  CHECK_NULL_RETURN(r);
   onig_region_init(r);
   return r;
 }
@@ -271,13 +272,17 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   if (to->allocated == 0) {
     if (from->num_regs > 0) {
       to->beg = (int* )xmalloc(RREGC_SIZE);
+      if (IS_NULL(to->beg)) return;
       to->end = (int* )xmalloc(RREGC_SIZE);
+      if (IS_NULL(to->end)) return;
       to->allocated = from->num_regs;
     }
   }
   else if (to->allocated < from->num_regs) {
     to->beg = (int* )xrealloc(to->beg, RREGC_SIZE);
+    if (IS_NULL(to->beg)) return;
     to->end = (int* )xrealloc(to->end, RREGC_SIZE);
+    if (IS_NULL(to->end)) return;
     to->allocated = from->num_regs;
   }
 
@@ -400,6 +405,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
     is_alloca  = 0;\
     alloc_base = (char* )xmalloc(sizeof(OnigStackIndex) * msa->ptr_num\
                   + sizeof(OnigStackType) * (stack_num));\
+    CHECK_NULL_RETURN_MEMERR(alloc_base);\
     stk_base   = (OnigStackType* )(alloc_base\
                  + (sizeof(OnigStackIndex) * msa->ptr_num));\
     stk        = stk_base;\
@@ -409,6 +415,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
     is_alloca  = 1;\
     alloc_base = (char* )xalloca(sizeof(OnigStackIndex) * msa->ptr_num\
                  + sizeof(OnigStackType) * (stack_num));\
+    CHECK_NULL_RETURN_MEMERR(alloc_base);\
     stk_base   = (OnigStackType* )(alloc_base\
                  + (sizeof(OnigStackIndex) * msa->ptr_num));\
     stk        = stk_base;\
@@ -423,6 +430,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
     size_t size = sizeof(OnigStackIndex) * msa->ptr_num \
                 + sizeof(OnigStackType) * msa->stack_n;\
     msa->stack_p = xmalloc(size);\
+    CHECK_NULL_RETURN_MEMERR(msa->stack_p);\
     xmemcpy(msa->stack_p, alloc_base, size);\
   }\
   else {\

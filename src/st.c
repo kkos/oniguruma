@@ -265,7 +265,7 @@ st_lookup(table, key, value)
     }
 }
 
-#define ADD_DIRECT(table, key, value, hash_val, bin_pos)\
+#define ADD_DIRECT(table, key, value, hash_val, bin_pos, ret)\
 do {\
     st_table_entry *entry;\
     if (table->num_entries/(table->num_bins) > ST_DEFAULT_MAX_DENSITY) {\
@@ -274,6 +274,7 @@ do {\
     }\
     \
     entry = alloc(st_table_entry);\
+    if (IS_NULL(entry)) return ret;\
     \
     entry->hash = hash_val;\
     entry->key = key;\
@@ -296,7 +297,7 @@ st_insert(table, key, value)
     FIND_ENTRY(table, ptr, hash_val, bin_pos);
 
     if (ptr == 0) {
-	ADD_DIRECT(table, key, value, hash_val, bin_pos);
+	ADD_DIRECT(table, key, value, hash_val, bin_pos, ONIGERR_MEMORY);
 	return 0;
     }
     else {
@@ -315,7 +316,7 @@ st_add_direct(table, key, value)
 
     hash_val = do_hash(key, table);
     bin_pos = hash_val % table->num_bins;
-    ADD_DIRECT(table, key, value, hash_val, bin_pos);
+    ADD_DIRECT(table, key, value, hash_val, bin_pos,);
 }
 
 static void

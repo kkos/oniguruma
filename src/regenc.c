@@ -140,7 +140,8 @@ onigenc_strlen(OnigEncoding enc, const UChar* p, const UChar* end)
   
   while (q < end) {
     q += ONIGENC_MBC_ENC_LEN(enc, q);
-    n++;
+    if (n < INT_MAX)
+      n++;
   }
   return n;
 }
@@ -166,7 +167,8 @@ onigenc_strlen_null(OnigEncoding enc, const UChar* s)
       if (len == 1) return n;
     }
     p += ONIGENC_MBC_ENC_LEN(enc, p);
-    n++;
+    if (n < INT_MAX)
+      n++;
   }
 }
 

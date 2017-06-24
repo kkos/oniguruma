@@ -154,7 +154,7 @@ ONIG_EXTERN struct PropertyNameCtype* sjis_lookup_property_name P_((register con
 /* in enc/unicode.c */
 ONIG_EXTERN int onigenc_unicode_is_code_ctype P_((OnigCodePoint code, unsigned int ctype));
 ONIG_EXTERN int onigenc_utf16_32_get_ctype_code_range P_((OnigCtype ctype, OnigCodePoint *sb_out, const OnigCodePoint* ranges[]));
-ONIG_EXTERN int onigenc_unicode_ctype_code_range P_((int ctype, const OnigCodePoint* ranges[]));
+ONIG_EXTERN int onigenc_unicode_ctype_code_range P_((OnigCtype ctype, const OnigCodePoint* ranges[]));
 ONIG_EXTERN int onigenc_unicode_get_case_fold_codes_by_str P_((OnigEncoding enc, OnigCaseFoldType flag, const OnigUChar* p, const OnigUChar* end, OnigCaseFoldCodeItem items[]));
 ONIG_EXTERN int onigenc_unicode_mbc_case_fold P_((OnigEncoding enc, OnigCaseFoldType flag, const UChar** pp, const UChar* end, UChar* fold));
 ONIG_EXTERN int onigenc_unicode_apply_all_case_fold P_((OnigCaseFoldType flag, OnigApplyAllCaseFoldFunc f, void* arg));
