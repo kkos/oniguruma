@@ -161,12 +161,20 @@
 #endif
 #endif
 
+#include <inttypes.h>
+
 #ifdef __BORLANDC__
 #include <malloc.h>
 #endif
 
 #ifdef ONIG_DEBUG
 # include <stdio.h>
+#endif
+
+#ifdef _WIN32
+#if defined(_MSC_VER) && (_MSC_VER < 1300)
+typedef int intptr_t;
+#endif
 #endif
 
 #include "regenc.h"
@@ -652,7 +660,7 @@ typedef void* PointerType;
 #define IS_NCCLASS_NOT(nd)      IS_NCCLASS_FLAG_ON(nd, FLAG_NCCLASS_NOT)
 #define IS_NCCLASS_SHARE(nd)    IS_NCCLASS_FLAG_ON(nd, FLAG_NCCLASS_SHARE)
 
-typedef long OnigStackIndex;
+typedef intptr_t OnigStackIndex;
 
 typedef struct _OnigStackType {
   unsigned int type;
