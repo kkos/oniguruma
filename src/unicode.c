@@ -2,7 +2,7 @@
   unicode.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -162,7 +162,7 @@ onigenc_unicode_is_code_ctype(OnigCodePoint code, unsigned int ctype)
 
 
 extern int
-onigenc_unicode_ctype_code_range(int ctype, const OnigCodePoint* ranges[])
+onigenc_unicode_ctype_code_range(OnigCtype ctype, const OnigCodePoint* ranges[])
 {
   if (ctype >= CODE_RANGES_NUM) {
     int index = ctype - CODE_RANGES_NUM;
