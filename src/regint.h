@@ -161,7 +161,9 @@
 #endif
 #endif
 
+#ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
+#endif
 
 #ifdef __BORLANDC__
 #include <malloc.h>
