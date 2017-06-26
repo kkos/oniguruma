@@ -429,6 +429,8 @@ onig_st_insert_strend(hash_table_type* table, const UChar* str_key,
   int result;
 
   key = (st_str_end_key* )xmalloc(sizeof(st_str_end_key));
+  CHECK_NULL_RETURN_MEMERR(key);
+
   key->s   = (UChar* )str_key;
   key->end = (UChar* )end_key;
   result = onig_st_insert(table, (st_data_t )key, value);
@@ -769,6 +771,7 @@ onig_number_of_names(regex_t* reg)
 static int
 name_add(regex_t* reg, UChar* name, UChar* name_end, int backref, ScanEnv* env)
 {
+  int r;
   int alloc;
   NameEntry* e;
   NameTable* t = (NameTable* )reg->name_table;
@@ -790,8 +793,9 @@ name_add(regex_t* reg, UChar* name, UChar* name_end, int backref, ScanEnv* env)
     if (IS_NULL(e->name)) {
       xfree(e);  return ONIGERR_MEMORY;
     }
-    onig_st_insert_strend(t, e->name, (e->name + (name_end - name)),
-                          (HashDataType )e);
+    r = onig_st_insert_strend(t, e->name, (e->name + (name_end - name)),
+                              (HashDataType )e);
+    if (r < 0) return r;
 
     e->name_len   = name_end - name;
     e->back_num   = 0;

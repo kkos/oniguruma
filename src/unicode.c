@@ -91,6 +91,7 @@ extern int
 onig_unicode_define_user_property(const char* name, OnigCodePoint* ranges)
 {
   UserDefinedPropertyValue* e;
+  int r;
   int i;
   int n;
   int len;
@@ -130,9 +131,10 @@ onig_unicode_define_user_property(const char* name, OnigCodePoint* ranges)
   e = UserDefinedPropertyRanges + UserDefinedPropertyNum;
   e->ctype = CODE_RANGES_NUM + UserDefinedPropertyNum;
   e->ranges = ranges;
-  onig_st_insert_strend(UserDefinedPropertyTable,
-                        (const UChar* )s, (const UChar* )s + n,
-                        (hash_data_type )((void* )e));
+  r = onig_st_insert_strend(UserDefinedPropertyTable,
+                            (const UChar* )s, (const UChar* )s + n,
+                            (hash_data_type )((void* )e));
+  if (r < 0) return r;
 
   UserDefinedPropertyNum++;
   return 0;
