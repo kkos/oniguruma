@@ -5516,6 +5516,7 @@ parse_regexp(Node** top, UChar** src, UChar* end, ScanEnv* env)
   return 0;
 }
 
+#ifdef USE_SUBEXP_CALL
 static int
 make_call_zero_body(Node* node, ScanEnv* env, Node** rnode)
 {
@@ -5535,6 +5536,7 @@ make_call_zero_body(Node* node, ScanEnv* env, Node** rnode)
   *rnode = x;
   return 0;
 }
+#endif
 
 extern int
 onig_parse_tree(Node** root, const UChar* pattern, const UChar* end,
