@@ -1020,13 +1020,14 @@ scan_env_add_mem_entry(ScanEnv* env)
       if (IS_NULL(env->mem_env_dynamic)) {
         alloc = INIT_SCANENV_MEMENV_ALLOC_SIZE;
         p = (MemEnv* )xmalloc(sizeof(MemEnv) * alloc);
+        CHECK_NULL_RETURN_MEMERR(p);
         xmemcpy(p, env->mem_env_static, sizeof(env->mem_env_static));
       }
       else {
         alloc = env->mem_alloc * 2;
         p = (MemEnv* )xrealloc(env->mem_env_dynamic, sizeof(MemEnv) * alloc);
+        CHECK_NULL_RETURN_MEMERR(p);
       }
-      CHECK_NULL_RETURN_MEMERR(p);
 
       for (i = env->num_mem + 1; i < alloc; i++) {
         p[i].node = NULL_NODE;
