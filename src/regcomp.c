@@ -3618,7 +3618,7 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
 }
 #endif
 
-#ifdef USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT
+#ifdef USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT
 static int
 quantifiers_memory_node_info(Node* node)
 {
@@ -3687,7 +3687,7 @@ quantifiers_memory_node_info(Node* node)
 
   return r;
 }
-#endif /* USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT */
+#endif /* USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT */
 
 
 #define IN_ALT          (1<<0)
@@ -4152,7 +4152,7 @@ setup_qtfr(Node* node, regex_t* reg, int state, ScanEnv* env)
   if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 1) {
     d = get_min_len(body, env);
     if (d == 0) {
-#ifdef USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT
+#ifdef USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT
       qn->body_empty_info = quantifiers_memory_node_info(body);
       if (qn->body_empty_info == NQ_BODY_IS_EMPTY_REC) {
         if (NODE_TYPE(body) == NODE_ENCLOSURE &&
