@@ -233,42 +233,42 @@ onig_bbuf_init(BBuf* buf, int size)
 #ifdef USE_SUBEXP_CALL
 
 static int
-unset_addr_list_init(UnsetAddrList* uslist, int size)
+unset_addr_list_init(UnsetAddrList* list, int size)
 {
   UnsetAddr* p;
 
   p = (UnsetAddr* )xmalloc(sizeof(UnsetAddr)* size);
   CHECK_NULL_RETURN_MEMERR(p);
-  uslist->num   = 0;
-  uslist->alloc = size;
-  uslist->us    = p;
+  list->num   = 0;
+  list->alloc = size;
+  list->us    = p;
   return 0;
 }
 
 static void
-unset_addr_list_end(UnsetAddrList* uslist)
+unset_addr_list_end(UnsetAddrList* list)
 {
-  if (IS_NOT_NULL(uslist->us))
-    xfree(uslist->us);
+  if (IS_NOT_NULL(list->us))
+    xfree(list->us);
 }
 
 static int
-unset_addr_list_add(UnsetAddrList* uslist, int offset, struct _Node* node)
+unset_addr_list_add(UnsetAddrList* list, int offset, struct _Node* node)
 {
   UnsetAddr* p;
   int size;
 
-  if (uslist->num >= uslist->alloc) {
-    size = uslist->alloc * 2;
-    p = (UnsetAddr* )xrealloc(uslist->us, sizeof(UnsetAddr) * size);
+  if (list->num >= list->alloc) {
+    size = list->alloc * 2;
+    p = (UnsetAddr* )xrealloc(list->us, sizeof(UnsetAddr) * size);
     CHECK_NULL_RETURN_MEMERR(p);
-    uslist->alloc = size;
-    uslist->us    = p;
+    list->alloc = size;
+    list->us    = p;
   }
 
-  uslist->us[uslist->num].offset = offset;
-  uslist->us[uslist->num].target = node;
-  uslist->num++;
+  list->us[list->num].offset = offset;
+  list->us[list->num].target = node;
+  list->num++;
   return 0;
 }
 #endif /* USE_SUBEXP_CALL */
