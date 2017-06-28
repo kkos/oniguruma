@@ -251,8 +251,10 @@ typedef unsigned int  MemStatusType;
   ((n) > 0 && (n) < (int )MEM_STATUS_BITS_NUM  ?  ((stats) & ((MemStatusType )1 << n)) : ((stats) & 1))
 
 #define MEM_STATUS_ON_AT(stats,n) do {\
-    if ((n) < (int )MEM_STATUS_BITS_NUM)	\
-    (stats) |= ((MemStatusType )1 << (n));\
+  if ((n) < (int )MEM_STATUS_BITS_NUM) {\
+    if ((n) != 0)\
+      (stats) |= ((MemStatusType )1 << (n));\
+  }\
   else\
     (stats) |= 1;\
 } while (0)
