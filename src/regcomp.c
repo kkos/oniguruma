@@ -2051,7 +2051,7 @@ disable_noname_group_capture(Node** root, regex_t* reg, ScanEnv* env)
   MEM_STATUS_CLEAR(env->capture_history);
   for (i = 1; i <= ONIG_MAX_CAPTURE_HISTORY_GROUP; i++) {
     if (MEM_STATUS_AT(loc, i)) {
-      MEM_STATUS_ON_AT_SIMPLE(env->capture_history, map[i].new_val);
+      MEM_STATUS_ON_SIMPLE(env->capture_history, map[i].new_val);
     }
   }
 
@@ -4196,7 +4196,7 @@ setup_qtfr(Node* node, regex_t* reg, int state, ScanEnv* env)
       if (qn->body_empty_info == QTFR_BODY_IS_EMPTY_REC) {
         if (NODE_TYPE(body) == NODE_ENCLOSURE &&
             ENCLOSURE_(body)->type == ENCLOSURE_MEMORY) {
-          MEM_STATUS_ON_AT(env->bt_mem_end, ENCLOSURE_(body)->m.regnum);
+          MEM_STATUS_ON(env->bt_mem_end, ENCLOSURE_(body)->m.regnum);
         }
       }
 #else
@@ -4299,11 +4299,11 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
       p = BACKREFS_P(br);
       for (i = 0; i < br->back_num; i++) {
         if (p[i] > env->num_mem)  return ONIGERR_INVALID_BACKREF;
-        MEM_STATUS_ON_AT(env->backrefed_mem, p[i]);
-        MEM_STATUS_ON_AT(env->bt_mem_start, p[i]);
+        MEM_STATUS_ON(env->backrefed_mem, p[i]);
+        MEM_STATUS_ON(env->bt_mem_start, p[i]);
 #ifdef USE_BACKREF_WITH_LEVEL
         if (NODE_IS_NEST_LEVEL(node)) {
-          MEM_STATUS_ON_AT(env->bt_mem_end, p[i]);
+          MEM_STATUS_ON(env->bt_mem_end, p[i]);
         }
 #endif
       }
@@ -4331,7 +4331,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
         if ((state & (IN_ALT | IN_NOT | IN_VAR_REPEAT | IN_MULTI_ENTRY)) != 0
             || NODE_IS_RECURSION(node)) {
-          MEM_STATUS_ON_AT(env->bt_mem_start, en->m.regnum);
+          MEM_STATUS_ON(env->bt_mem_start, en->m.regnum);
         }
         r = setup_tree(NODE_BODY(node), reg, state, env);
         break;

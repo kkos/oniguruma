@@ -4705,7 +4705,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           CHECK_NULL_RETURN_MEMERR(*np);
           ENCLOSURE_(*np)->m.regnum = num;
           if (list_capture != 0)
-            MEM_STATUS_ON_AT_SIMPLE(env->capture_history, num);
+            MEM_STATUS_ON_SIMPLE(env->capture_history, num);
           env->num_named++;
         }
         else {
@@ -4741,7 +4741,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           return ONIGERR_GROUP_NUMBER_OVER_FOR_CAPTURE_HISTORY;
         }
         ENCLOSURE_(*np)->m.regnum = num;
-        MEM_STATUS_ON_AT_SIMPLE(env->capture_history, num);
+        MEM_STATUS_ON_SIMPLE(env->capture_history, num);
       }
       else {
         return ONIGERR_UNDEFINED_GROUP_OPTION;

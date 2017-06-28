@@ -250,7 +250,7 @@ typedef unsigned int  MemStatusType;
 #define MEM_STATUS_AT0(stats,n) \
   ((n) > 0 && (n) < (int )MEM_STATUS_BITS_NUM  ?  ((stats) & ((MemStatusType )1 << n)) : ((stats) & 1))
 
-#define MEM_STATUS_ON_AT(stats,n) do {\
+#define MEM_STATUS_ON(stats,n) do {\
   if ((n) < (int )MEM_STATUS_BITS_NUM) {\
     if ((n) != 0)\
       (stats) |= ((MemStatusType )1 << (n));\
@@ -259,7 +259,7 @@ typedef unsigned int  MemStatusType;
     (stats) |= 1;\
 } while (0)
 
-#define MEM_STATUS_ON_AT_SIMPLE(stats,n) do {\
+#define MEM_STATUS_ON_SIMPLE(stats,n) do {\
     if ((n) < (int )MEM_STATUS_BITS_NUM)\
     (stats) |= ((MemStatusType )1 << (n));\
 } while (0)
