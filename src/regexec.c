@@ -869,27 +869,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_EMPTY_CHECK_REC(isnull,id,s) do {\
-  int level = 0;\
-  OnigStackType* k = stk;\
-  while (1) {\
-    k--;\
-    STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_REC"); \
-    if (k->type == STK_EMPTY_CHECK_START) {\
-      if (k->u.empty_check.num == (id)) {\
-        if (level == 0) {\
-          (isnull) = (k->u.empty_check.pstr == (s));\
-          break;\
-        }\
-      }\
-      level--;\
-    }\
-    else if (k->type == STK_EMPTY_CHECK_END) {\
-      level++;\
-    }\
-  }\
-} while(0)
-
+#ifdef USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT
 #define STACK_EMPTY_CHECK_MEMST(isnull,id,s,reg) do {\
   OnigStackType* k = stk;\
   while (1) {\
@@ -977,6 +957,28 @@ stack_double(int is_alloca, char** arg_alloc_base,
     }\
   }\
 } while(0)
+#else
+#define STACK_EMPTY_CHECK_REC(isnull,id,s) do {\
+  int level = 0;\
+  OnigStackType* k = stk;\
+  while (1) {\
+    k--;\
+    STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_REC"); \
+    if (k->type == STK_EMPTY_CHECK_START) {\
+      if (k->u.empty_check.num == (id)) {\
+        if (level == 0) {\
+          (isnull) = (k->u.empty_check.pstr == (s));\
+          break;\
+        }\
+      }\
+      level--;\
+    }\
+    else if (k->type == STK_EMPTY_CHECK_END) {\
+      level++;\
+    }\
+  }\
+} while(0)
+#endif /* USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT */
 
 #define STACK_GET_REPEAT(id, k) do {\
   int level = 0;\
