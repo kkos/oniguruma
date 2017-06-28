@@ -1306,7 +1306,7 @@ compile_length_enclosure_node(EnclosureNode* node, regex_t* reg)
     if (NODE_IS_CALLED(node)) {
       len = SIZE_OP_MEMORY_START_PUSH + tlen
         + SIZE_OP_CALL + SIZE_OP_JUMP + SIZE_OP_RETURN;
-      if (MEM_STATUS_AT(reg->bt_mem_end, node->m.regnum))
+      if (MEM_STATUS_AT0(reg->bt_mem_end, node->m.regnum))
         len += (NODE_IS_RECURSION(node)
                 ? SIZE_OP_MEMORY_END_PUSH_REC : SIZE_OP_MEMORY_END_PUSH);
       else
@@ -1315,18 +1315,18 @@ compile_length_enclosure_node(EnclosureNode* node, regex_t* reg)
     }
     else if (NODE_IS_RECURSION(node)) {
       len = SIZE_OP_MEMORY_START_PUSH;
-      len += tlen + (MEM_STATUS_AT(reg->bt_mem_end, node->m.regnum)
+      len += tlen + (MEM_STATUS_AT0(reg->bt_mem_end, node->m.regnum)
                      ? SIZE_OP_MEMORY_END_PUSH_REC : SIZE_OP_MEMORY_END_REC);
     }
     else
 #endif
     {
-      if (MEM_STATUS_AT(reg->bt_mem_start, node->m.regnum))
+      if (MEM_STATUS_AT0(reg->bt_mem_start, node->m.regnum))
         len = SIZE_OP_MEMORY_START_PUSH;
       else
         len = SIZE_OP_MEMORY_START;
 
-      len += tlen + (MEM_STATUS_AT(reg->bt_mem_end, node->m.regnum)
+      len += tlen + (MEM_STATUS_AT0(reg->bt_mem_end, node->m.regnum)
 		     ? SIZE_OP_MEMORY_END_PUSH : SIZE_OP_MEMORY_END);
     }
     break;
@@ -1391,7 +1391,7 @@ compile_enclosure_memory_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
     if (r != 0) return r;
     len = compile_length_tree(NODE_ENCLOSURE_BODY(node), reg);
     len += (SIZE_OP_MEMORY_START_PUSH + SIZE_OP_RETURN);
-    if (MEM_STATUS_AT(reg->bt_mem_end, node->m.regnum))
+    if (MEM_STATUS_AT0(reg->bt_mem_end, node->m.regnum))
       len += (NODE_IS_RECURSION(node)
               ? SIZE_OP_MEMORY_END_PUSH_REC : SIZE_OP_MEMORY_END_PUSH);
     else
@@ -1403,7 +1403,7 @@ compile_enclosure_memory_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
   }
 #endif
 
-  if (MEM_STATUS_AT(reg->bt_mem_start, node->m.regnum))
+  if (MEM_STATUS_AT0(reg->bt_mem_start, node->m.regnum))
     r = add_opcode(reg, OP_MEMORY_START_PUSH);
   else
     r = add_opcode(reg, OP_MEMORY_START);
@@ -1414,7 +1414,7 @@ compile_enclosure_memory_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
   if (r != 0) return r;
 
 #ifdef USE_SUBEXP_CALL
-  if (MEM_STATUS_AT(reg->bt_mem_end, node->m.regnum))
+  if (MEM_STATUS_AT0(reg->bt_mem_end, node->m.regnum))
     r = add_opcode(reg, (NODE_IS_RECURSION(node)
                          ? OP_MEMORY_END_PUSH_REC : OP_MEMORY_END_PUSH));
   else
@@ -1427,7 +1427,7 @@ compile_enclosure_memory_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
     r = add_opcode(reg, OP_RETURN);
   }
 #else
-  if (MEM_STATUS_AT(reg->bt_mem_end, node->m.regnum))
+  if (MEM_STATUS_AT0(reg->bt_mem_end, node->m.regnum))
     r = add_opcode(reg, OP_MEMORY_END_PUSH);
   else
     r = add_opcode(reg, OP_MEMORY_END);
@@ -5322,7 +5322,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
             r = optimize_node_left(NODE_BODY(node), opt, env);
 
             if (is_set_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_STAR_MASK)) {
-              if (MEM_STATUS_AT(env->scan_env->backrefed_mem, en->m.regnum))
+              if (MEM_STATUS_AT0(env->scan_env->backrefed_mem, en->m.regnum))
                 remove_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_STAR_MASK);
             }
           }
