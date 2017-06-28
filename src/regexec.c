@@ -881,8 +881,8 @@ stack_double(int is_alloca, char** arg_alloc_base,
           (isnull) = (k->u.empty_check.pstr == (s));\
           break;\
         }\
-        else level--;\
       }\
+      level--;\
     }\
     else if (k->type == STK_EMPTY_CHECK_END) {\
       level++;\
