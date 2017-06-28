@@ -1365,9 +1365,9 @@ compile_enclosure_memory_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
   if (node->m.regnum == 0 && NODE_IS_CALLED(node)) {
     r = add_opcode(reg, OP_CALL);
     if (r != 0) return r;
-    node->m.call_addr = BBUF_GET_OFFSET_POS(reg) + SIZE_ABSADDR + SIZE_OP_JUMP;
+    node->m.called_addr = BBUF_GET_OFFSET_POS(reg) + SIZE_ABSADDR + SIZE_OP_JUMP;
     NODE_STATUS_ADD(node, NST_ADDR_FIXED);
-    r = add_abs_addr(reg, (int )node->m.call_addr);
+    r = add_abs_addr(reg, (int )node->m.called_addr);
     if (r != 0) return r;
     len = compile_length_tree(NODE_ENCLOSURE_BODY(node), reg);
     len += SIZE_OP_RETURN;
@@ -1385,9 +1385,9 @@ compile_enclosure_memory_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
   if (NODE_IS_CALLED(node)) {
     r = add_opcode(reg, OP_CALL);
     if (r != 0) return r;
-    node->m.call_addr = BBUF_GET_OFFSET_POS(reg) + SIZE_ABSADDR + SIZE_OP_JUMP;
+    node->m.called_addr = BBUF_GET_OFFSET_POS(reg) + SIZE_ABSADDR + SIZE_OP_JUMP;
     NODE_STATUS_ADD(node, NST_ADDR_FIXED);
-    r = add_abs_addr(reg, (int )node->m.call_addr);
+    r = add_abs_addr(reg, (int )node->m.called_addr);
     if (r != 0) return r;
     len = compile_length_tree(NODE_ENCLOSURE_BODY(node), reg);
     len += (SIZE_OP_MEMORY_START_PUSH + SIZE_OP_RETURN);
@@ -2073,7 +2073,7 @@ unset_addr_list_fix(UnsetAddrList* uslist, regex_t* reg)
   for (i = 0; i < uslist->num; i++) {
     en = ENCLOSURE_(uslist->us[i].target);
     if (! NODE_IS_ADDR_FIXED(en)) return ONIGERR_PARSER_BUG;
-    addr = en->m.call_addr;
+    addr = en->m.called_addr;
     offset = uslist->us[i].offset;
 
     BBUF_WRITE(reg, offset, &addr, SIZE_ABSADDR);

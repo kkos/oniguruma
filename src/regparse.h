@@ -213,7 +213,7 @@ typedef struct {
   union {
     struct {
       int regnum;
-      AbsAddrType call_addr;
+      AbsAddrType called_addr;
       int entry_count;
       int called_state;
     } m;
