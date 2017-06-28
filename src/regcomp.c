@@ -439,7 +439,7 @@ compile_tree_empty_check(Node* node, regex_t* reg, int empty_info, ScanEnv* env)
   int r;
   int saved_num_null_check = reg->num_null_check;
 
-  if (empty_info != NQ_BODY_IS_NOT_EMPTY) {
+  if (empty_info != QTFR_BODY_IS_NOT_EMPTY) {
     r = add_opcode(reg, OP_EMPTY_CHECK_START);
     if (r != 0) return r;
     r = add_mem_num(reg, reg->num_null_check); /* NULL CHECK ID */
@@ -450,12 +450,12 @@ compile_tree_empty_check(Node* node, regex_t* reg, int empty_info, ScanEnv* env)
   r = compile_tree(node, reg, env);
   if (r != 0) return r;
 
-  if (empty_info != NQ_BODY_IS_NOT_EMPTY) {
-    if (empty_info == NQ_BODY_IS_EMPTY)
+  if (empty_info != QTFR_BODY_IS_NOT_EMPTY) {
+    if (empty_info == QTFR_BODY_IS_EMPTY)
       r = add_opcode(reg, OP_EMPTY_CHECK_END);
-    else if (empty_info == NQ_BODY_IS_EMPTY_MEM)
+    else if (empty_info == QTFR_BODY_IS_EMPTY_MEM)
       r = add_opcode(reg, OP_EMPTY_CHECK_END_MEMST);
-    else if (empty_info == NQ_BODY_IS_EMPTY_REC)
+    else if (empty_info == QTFR_BODY_IS_EMPTY_REC)
       r = add_opcode(reg, OP_EMPTY_CHECK_END_MEMST_PUSH);
 
     if (r != 0) return r;
@@ -830,7 +830,7 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
     }
   }
 
-  if (empty_info == NQ_BODY_IS_NOT_EMPTY)
+  if (empty_info == QTFR_BODY_IS_NOT_EMPTY)
     mod_tlen = tlen;
   else
     mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
@@ -933,7 +933,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
     }
   }
 
-  if (empty_info == NQ_BODY_IS_NOT_EMPTY)
+  if (empty_info == QTFR_BODY_IS_NOT_EMPTY)
     mod_tlen = tlen;
   else
     mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
@@ -1059,7 +1059,7 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
     }
   }
 
-  if (empty_info == NQ_BODY_IS_NOT_EMPTY)
+  if (empty_info == QTFR_BODY_IS_NOT_EMPTY)
     mod_tlen = tlen;
   else
     mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
@@ -1133,7 +1133,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
     }
   }
 
-  if (empty_info == NQ_BODY_IS_NOT_EMPTY)
+  if (empty_info == QTFR_BODY_IS_NOT_EMPTY)
     mod_tlen = tlen;
   else
     mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
@@ -3661,7 +3661,7 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
 static int
 quantifiers_memory_node_info(Node* node)
 {
-  int r = NQ_BODY_IS_EMPTY;
+  int r = QTFR_BODY_IS_EMPTY;
 
   switch (NODE_TYPE(node)) {
   case NODE_LIST:
@@ -3678,7 +3678,7 @@ quantifiers_memory_node_info(Node* node)
 #ifdef USE_SUBEXP_CALL
   case NODE_CALL:
     if (NODE_IS_RECURSION(node)) {
-      return NQ_BODY_IS_EMPTY_REC; /* tiny version */
+      return QTFR_BODY_IS_EMPTY_REC; /* tiny version */
     }
     else
       r = quantifiers_memory_node_info(NODE_BODY(node));
@@ -3700,9 +3700,9 @@ quantifiers_memory_node_info(Node* node)
       switch (en->type) {
       case ENCLOSURE_MEMORY:
         if (NODE_IS_RECURSION(node)) {
-          return NQ_BODY_IS_EMPTY_REC;
+          return QTFR_BODY_IS_EMPTY_REC;
         }
-        return NQ_BODY_IS_EMPTY_MEM;
+        return QTFR_BODY_IS_EMPTY_MEM;
         break;
 
       case ENCLOSURE_OPTION:
@@ -4193,14 +4193,14 @@ setup_qtfr(Node* node, regex_t* reg, int state, ScanEnv* env)
     if (d == 0) {
 #ifdef USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT
       qn->body_empty_info = quantifiers_memory_node_info(body);
-      if (qn->body_empty_info == NQ_BODY_IS_EMPTY_REC) {
+      if (qn->body_empty_info == QTFR_BODY_IS_EMPTY_REC) {
         if (NODE_TYPE(body) == NODE_ENCLOSURE &&
             ENCLOSURE_(body)->type == ENCLOSURE_MEMORY) {
           BIT_STATUS_ON_AT(env->bt_mem_end, ENCLOSURE_(body)->m.regnum);
         }
       }
 #else
-      qn->body_empty_info = NQ_BODY_IS_EMPTY;
+      qn->body_empty_info = QTFR_BODY_IS_EMPTY;
 #endif
     }
   }
