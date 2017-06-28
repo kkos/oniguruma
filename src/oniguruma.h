@@ -609,7 +609,7 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 /* #define ONIGERR_OVER_THREAD_PASS_LIMIT_COUNT                -1001 */
 
 
-/* must be smaller than BIT_STATUS_BITS_NUM (unsigned int * 8) */
+/* must be smaller than MEM_STATUS_BITS_NUM (unsigned int * 8) */
 #define ONIG_MAX_CAPTURE_HISTORY_GROUP   31
 #define ONIG_IS_CAPTURE_HISTORY_GROUP(r, i) \
   ((i) <= ONIG_MAX_CAPTURE_HISTORY_GROUP && (r)->list && (r)->list[i])

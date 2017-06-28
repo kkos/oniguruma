@@ -240,23 +240,23 @@ typedef int intptr_t;
 #define ONIG_OPTIMIZE_MAP               5   /* char map */
 
 /* bit status */
-typedef unsigned int  BitStatusType;
+typedef unsigned int  MemStatusType;
 
-#define BIT_STATUS_BITS_NUM          (sizeof(BitStatusType) * 8)
-#define BIT_STATUS_CLEAR(stats)      (stats) = 0
-#define BIT_STATUS_ON_ALL(stats)     (stats) = ~((BitStatusType )0)
-#define BIT_STATUS_AT(stats,n) \
-  ((n) < (int )BIT_STATUS_BITS_NUM  ?  ((stats) & (1 << n)) : ((stats) & 1))
+#define MEM_STATUS_BITS_NUM          (sizeof(MemStatusType) * 8)
+#define MEM_STATUS_CLEAR(stats)      (stats) = 0
+#define MEM_STATUS_ON_ALL(stats)     (stats) = ~((MemStatusType )0)
+#define MEM_STATUS_AT(stats,n) \
+  ((n) < (int )MEM_STATUS_BITS_NUM  ?  ((stats) & (1 << n)) : ((stats) & 1))
 
-#define BIT_STATUS_ON_AT(stats,n) do {\
-    if ((n) < (int )BIT_STATUS_BITS_NUM)	\
+#define MEM_STATUS_ON_AT(stats,n) do {\
+    if ((n) < (int )MEM_STATUS_BITS_NUM)	\
     (stats) |= (1 << (n));\
   else\
     (stats) |= 1;\
 } while (0)
 
-#define BIT_STATUS_ON_AT_SIMPLE(stats,n) do {\
-    if ((n) < (int )BIT_STATUS_BITS_NUM)\
+#define MEM_STATUS_ON_AT_SIMPLE(stats,n) do {\
+    if ((n) < (int )MEM_STATUS_BITS_NUM)\
     (stats) |= (1 << (n));\
 } while (0)
 

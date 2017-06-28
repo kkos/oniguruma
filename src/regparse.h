@@ -333,10 +333,10 @@ typedef struct {
   OnigCaseFoldType case_fold_flag;
   OnigEncoding     enc;
   OnigSyntaxType*  syntax;
-  BitStatusType    capture_history;
-  BitStatusType    bt_mem_start;
-  BitStatusType    bt_mem_end;
-  BitStatusType    backrefed_mem;
+  MemStatusType    capture_history;
+  MemStatusType    bt_mem_start;
+  MemStatusType    bt_mem_end;
+  MemStatusType    backrefed_mem;
   UChar*           pattern;
   UChar*           pattern_end;
   UChar*           error;

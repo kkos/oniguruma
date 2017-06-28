@@ -978,10 +978,10 @@ onig_noname_group_capture_is_active(regex_t* reg)
 static void
 scan_env_clear(ScanEnv* env)
 {
-  BIT_STATUS_CLEAR(env->capture_history);
-  BIT_STATUS_CLEAR(env->bt_mem_start);
-  BIT_STATUS_CLEAR(env->bt_mem_end);
-  BIT_STATUS_CLEAR(env->backrefed_mem);
+  MEM_STATUS_CLEAR(env->capture_history);
+  MEM_STATUS_CLEAR(env->bt_mem_start);
+  MEM_STATUS_CLEAR(env->bt_mem_end);
+  MEM_STATUS_CLEAR(env->backrefed_mem);
   env->error      = (UChar* )NULL;
   env->error_end  = (UChar* )NULL;
   env->num_call   = 0;
@@ -4696,7 +4696,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 
           num = scan_env_add_mem_entry(env);
           if (num < 0) return num;
-          if (list_capture != 0 && num >= (int )BIT_STATUS_BITS_NUM)
+          if (list_capture != 0 && num >= (int )MEM_STATUS_BITS_NUM)
             return ONIGERR_GROUP_NUMBER_OVER_FOR_CAPTURE_HISTORY;
 
           r = name_add(env->reg, name, name_end, num, env);
@@ -4705,7 +4705,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           CHECK_NULL_RETURN_MEMERR(*np);
           ENCLOSURE_(*np)->m.regnum = num;
           if (list_capture != 0)
-            BIT_STATUS_ON_AT_SIMPLE(env->capture_history, num);
+            MEM_STATUS_ON_AT_SIMPLE(env->capture_history, num);
           env->num_named++;
         }
         else {
@@ -4737,11 +4737,11 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
         if (num < 0) {
           return num;
         }
-        else if (num >= (int )BIT_STATUS_BITS_NUM) {
+        else if (num >= (int )MEM_STATUS_BITS_NUM) {
           return ONIGERR_GROUP_NUMBER_OVER_FOR_CAPTURE_HISTORY;
         }
         ENCLOSURE_(*np)->m.regnum = num;
-        BIT_STATUS_ON_AT_SIMPLE(env->capture_history, num);
+        MEM_STATUS_ON_AT_SIMPLE(env->capture_history, num);
       }
       else {
         return ONIGERR_UNDEFINED_GROUP_OPTION;

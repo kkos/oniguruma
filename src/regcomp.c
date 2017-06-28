@@ -1306,7 +1306,7 @@ compile_length_enclosure_node(EnclosureNode* node, regex_t* reg)
     if (NODE_IS_CALLED(node)) {
       len = SIZE_OP_MEMORY_START_PUSH + tlen
         + SIZE_OP_CALL + SIZE_OP_JUMP + SIZE_OP_RETURN;
-      if (BIT_STATUS_AT(reg->bt_mem_end, node->m.regnum))
+      if (MEM_STATUS_AT(reg->bt_mem_end, node->m.regnum))
         len += (NODE_IS_RECURSION(node)
                 ? SIZE_OP_MEMORY_END_PUSH_REC : SIZE_OP_MEMORY_END_PUSH);
       else
@@ -1315,18 +1315,18 @@ compile_length_enclosure_node(EnclosureNode* node, regex_t* reg)
     }
     else if (NODE_IS_RECURSION(node)) {
       len = SIZE_OP_MEMORY_START_PUSH;
-      len += tlen + (BIT_STATUS_AT(reg->bt_mem_end, node->m.regnum)
+      len += tlen + (MEM_STATUS_AT(reg->bt_mem_end, node->m.regnum)
                      ? SIZE_OP_MEMORY_END_PUSH_REC : SIZE_OP_MEMORY_END_REC);
     }
     else
 #endif
     {
-      if (BIT_STATUS_AT(reg->bt_mem_start, node->m.regnum))
+      if (MEM_STATUS_AT(reg->bt_mem_start, node->m.regnum))
         len = SIZE_OP_MEMORY_START_PUSH;
       else
         len = SIZE_OP_MEMORY_START;
 
-      len += tlen + (BIT_STATUS_AT(reg->bt_mem_end, node->m.regnum)
+      len += tlen + (MEM_STATUS_AT(reg->bt_mem_end, node->m.regnum)
 		     ? SIZE_OP_MEMORY_END_PUSH : SIZE_OP_MEMORY_END);
     }
     break;
@@ -1391,7 +1391,7 @@ compile_enclosure_memory_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
     if (r != 0) return r;
     len = compile_length_tree(NODE_ENCLOSURE_BODY(node), reg);
     len += (SIZE_OP_MEMORY_START_PUSH + SIZE_OP_RETURN);
-    if (BIT_STATUS_AT(reg->bt_mem_end, node->m.regnum))
+    if (MEM_STATUS_AT(reg->bt_mem_end, node->m.regnum))
       len += (NODE_IS_RECURSION(node)
               ? SIZE_OP_MEMORY_END_PUSH_REC : SIZE_OP_MEMORY_END_PUSH);
     else
@@ -1403,7 +1403,7 @@ compile_enclosure_memory_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
   }
 #endif
 
-  if (BIT_STATUS_AT(reg->bt_mem_start, node->m.regnum))
+  if (MEM_STATUS_AT(reg->bt_mem_start, node->m.regnum))
     r = add_opcode(reg, OP_MEMORY_START_PUSH);
   else
     r = add_opcode(reg, OP_MEMORY_START);
@@ -1414,7 +1414,7 @@ compile_enclosure_memory_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
   if (r != 0) return r;
 
 #ifdef USE_SUBEXP_CALL
-  if (BIT_STATUS_AT(reg->bt_mem_end, node->m.regnum))
+  if (MEM_STATUS_AT(reg->bt_mem_end, node->m.regnum))
     r = add_opcode(reg, (NODE_IS_RECURSION(node)
                          ? OP_MEMORY_END_PUSH_REC : OP_MEMORY_END_PUSH));
   else
@@ -1427,7 +1427,7 @@ compile_enclosure_memory_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
     r = add_opcode(reg, OP_RETURN);
   }
 #else
-  if (BIT_STATUS_AT(reg->bt_mem_end, node->m.regnum))
+  if (MEM_STATUS_AT(reg->bt_mem_end, node->m.regnum))
     r = add_opcode(reg, OP_MEMORY_END_PUSH);
   else
     r = add_opcode(reg, OP_MEMORY_END);
@@ -2025,7 +2025,7 @@ static int
 disable_noname_group_capture(Node** root, regex_t* reg, ScanEnv* env)
 {
   int r, i, pos, counter;
-  BitStatusType loc;
+  MemStatusType loc;
   GroupNumRemap* map;
 
   map = (GroupNumRemap* )xalloca(sizeof(GroupNumRemap) * (env->num_mem + 1));
@@ -2048,10 +2048,10 @@ disable_noname_group_capture(Node** root, regex_t* reg, ScanEnv* env)
   }
 
   loc = env->capture_history;
-  BIT_STATUS_CLEAR(env->capture_history);
+  MEM_STATUS_CLEAR(env->capture_history);
   for (i = 1; i <= ONIG_MAX_CAPTURE_HISTORY_GROUP; i++) {
-    if (BIT_STATUS_AT(loc, i)) {
-      BIT_STATUS_ON_AT_SIMPLE(env->capture_history, map[i].new_val);
+    if (MEM_STATUS_AT(loc, i)) {
+      MEM_STATUS_ON_AT_SIMPLE(env->capture_history, map[i].new_val);
     }
   }
 
@@ -4196,7 +4196,7 @@ setup_qtfr(Node* node, regex_t* reg, int state, ScanEnv* env)
       if (qn->body_empty_info == QTFR_BODY_IS_EMPTY_REC) {
         if (NODE_TYPE(body) == NODE_ENCLOSURE &&
             ENCLOSURE_(body)->type == ENCLOSURE_MEMORY) {
-          BIT_STATUS_ON_AT(env->bt_mem_end, ENCLOSURE_(body)->m.regnum);
+          MEM_STATUS_ON_AT(env->bt_mem_end, ENCLOSURE_(body)->m.regnum);
         }
       }
 #else
@@ -4299,11 +4299,11 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
       p = BACKREFS_P(br);
       for (i = 0; i < br->back_num; i++) {
         if (p[i] > env->num_mem)  return ONIGERR_INVALID_BACKREF;
-        BIT_STATUS_ON_AT(env->backrefed_mem, p[i]);
-        BIT_STATUS_ON_AT(env->bt_mem_start, p[i]);
+        MEM_STATUS_ON_AT(env->backrefed_mem, p[i]);
+        MEM_STATUS_ON_AT(env->bt_mem_start, p[i]);
 #ifdef USE_BACKREF_WITH_LEVEL
         if (NODE_IS_NEST_LEVEL(node)) {
-          BIT_STATUS_ON_AT(env->bt_mem_end, p[i]);
+          MEM_STATUS_ON_AT(env->bt_mem_end, p[i]);
         }
 #endif
       }
@@ -4331,7 +4331,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
         if ((state & (IN_ALT | IN_NOT | IN_VAR_REPEAT | IN_MULTI_ENTRY)) != 0
             || NODE_IS_RECURSION(node)) {
-          BIT_STATUS_ON_AT(env->bt_mem_start, en->m.regnum);
+          MEM_STATUS_ON_AT(env->bt_mem_start, en->m.regnum);
         }
         r = setup_tree(NODE_BODY(node), reg, state, env);
         break;
@@ -5322,7 +5322,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
             r = optimize_node_left(NODE_BODY(node), opt, env);
 
             if (is_set_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_STAR_MASK)) {
-              if (BIT_STATUS_AT(env->scan_env->backrefed_mem, en->m.regnum))
+              if (MEM_STATUS_AT(env->scan_env->backrefed_mem, en->m.regnum))
                 remove_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_STAR_MASK);
             }
           }
@@ -5789,7 +5789,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   reg->bt_mem_start     = scan_env.bt_mem_start;
   reg->bt_mem_start    |= reg->capture_history;
   if (IS_FIND_CONDITION(reg->options))
-    BIT_STATUS_ON_ALL(reg->bt_mem_end);
+    MEM_STATUS_ON_ALL(reg->bt_mem_end);
   else {
     reg->bt_mem_end  = scan_env.bt_mem_end;
     reg->bt_mem_end |= reg->capture_history;
@@ -5812,7 +5812,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
     if (scan_env.comb_exp_max_regnum > 0) {
       int i;
       for (i = 1; i <= scan_env.comb_exp_max_regnum; i++) {
-        if (BIT_STATUS_AT(scan_env.backrefed_mem, i) != 0) {
+        if (MEM_STATUS_AT(scan_env.backrefed_mem, i) != 0) {
           scan_env.num_comb_exp_check = 0;
           break;
         }

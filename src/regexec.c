@@ -889,7 +889,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
               if (k->u.mem.end == INVALID_STACK_INDEX) {\
                 (isnull) = 0; break;\
               }\
-              if (BIT_STATUS_AT(reg->bt_mem_end, k->u.mem.num))\
+              if (MEM_STATUS_AT(reg->bt_mem_end, k->u.mem.num))\
                 endp = STACK_AT(k->u.mem.end)->u.mem.pstr;\
               else\
                 endp = (UChar* )k->u.mem.end;\
@@ -931,7 +931,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
                 if (k->u.mem.end == INVALID_STACK_INDEX) {\
                   (isnull) = 0; break;\
                 }\
-                if (BIT_STATUS_AT(reg->bt_mem_end, k->u.mem.num))\
+                if (MEM_STATUS_AT(reg->bt_mem_end, k->u.mem.num))\
                   endp = STACK_AT(k->u.mem.end)->u.mem.pstr;\
                 else\
                   endp = (UChar* )k->u.mem.end;\
@@ -1100,7 +1100,7 @@ make_capture_history_tree(OnigCaptureTreeNode* node, OnigStackType** kp,
     if (k->type == STK_MEM_START) {
       n = k->u.mem.num;
       if (n <= ONIG_MAX_CAPTURE_HISTORY_GROUP &&
-          BIT_STATUS_AT(reg->capture_history, n) != 0) {
+          MEM_STATUS_AT(reg->capture_history, n) != 0) {
         child = history_node_new();
         CHECK_NULL_RETURN_MEMERR(child);
         child->group = n;
@@ -1402,12 +1402,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
             rmt[0].rm_eo = s      - str;
             for (i = 1; i <= num_mem; i++) {
               if (mem_end_stk[i] != INVALID_STACK_INDEX) {
-                if (BIT_STATUS_AT(reg->bt_mem_start, i))
+                if (MEM_STATUS_AT(reg->bt_mem_start, i))
                   rmt[i].rm_so = STACK_AT(mem_start_stk[i])->u.mem.pstr - str;
                 else
                   rmt[i].rm_so = (UChar* )((void* )(mem_start_stk[i])) - str;
 
-                rmt[i].rm_eo = (BIT_STATUS_AT(reg->bt_mem_end, i)
+                rmt[i].rm_eo = (MEM_STATUS_AT(reg->bt_mem_end, i)
                                 ? STACK_AT(mem_end_stk[i])->u.mem.pstr
                                 : (UChar* )((void* )mem_end_stk[i])) - str;
               }
@@ -1422,12 +1422,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
             region->end[0] = s      - str;
             for (i = 1; i <= num_mem; i++) {
               if (mem_end_stk[i] != INVALID_STACK_INDEX) {
-                if (BIT_STATUS_AT(reg->bt_mem_start, i))
+                if (MEM_STATUS_AT(reg->bt_mem_start, i))
                   region->beg[i] = STACK_AT(mem_start_stk[i])->u.mem.pstr - str;
                 else
                   region->beg[i] = (UChar* )((void* )mem_start_stk[i]) - str;
 
-                region->end[i] = (BIT_STATUS_AT(reg->bt_mem_end, i)
+                region->end[i] = (MEM_STATUS_AT(reg->bt_mem_end, i)
                                   ? STACK_AT(mem_end_stk[i])->u.mem.pstr
                                   : (UChar* )((void* )mem_end_stk[i])) - str;
               }
@@ -2172,7 +2172,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       mem_end_stk[mem] = (OnigStackIndex )((void* )s);
       STACK_GET_MEM_START(mem, stkp);
 
-      if (BIT_STATUS_AT(reg->bt_mem_start, mem))
+      if (MEM_STATUS_AT(reg->bt_mem_start, mem))
         mem_start_stk[mem] = GET_STACK_INDEX(stkp);
       else
         mem_start_stk[mem] = (OnigStackIndex )((void* )stkp->u.mem.pstr);
@@ -2206,12 +2206,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         if (mem_end_stk[mem]   == INVALID_STACK_INDEX) goto fail;
         if (mem_start_stk[mem] == INVALID_STACK_INDEX) goto fail;
 
-        if (BIT_STATUS_AT(reg->bt_mem_start, mem))
+        if (MEM_STATUS_AT(reg->bt_mem_start, mem))
           pstart = STACK_AT(mem_start_stk[mem])->u.mem.pstr;
         else
           pstart = (UChar* )((void* )mem_start_stk[mem]);
 
-        pend = (BIT_STATUS_AT(reg->bt_mem_end, mem)
+        pend = (MEM_STATUS_AT(reg->bt_mem_end, mem)
                 ? STACK_AT(mem_end_stk[mem])->u.mem.pstr
                 : (UChar* )((void* )mem_end_stk[mem]));
         n = pend - pstart;
@@ -2238,12 +2238,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         if (mem_end_stk[mem]   == INVALID_STACK_INDEX) goto fail;
         if (mem_start_stk[mem] == INVALID_STACK_INDEX) goto fail;
 
-        if (BIT_STATUS_AT(reg->bt_mem_start, mem))
+        if (MEM_STATUS_AT(reg->bt_mem_start, mem))
           pstart = STACK_AT(mem_start_stk[mem])->u.mem.pstr;
         else
           pstart = (UChar* )((void* )mem_start_stk[mem]);
 
-        pend = (BIT_STATUS_AT(reg->bt_mem_end, mem)
+        pend = (MEM_STATUS_AT(reg->bt_mem_end, mem)
                 ? STACK_AT(mem_end_stk[mem])->u.mem.pstr
                 : (UChar* )((void* )mem_end_stk[mem]));
         n = pend - pstart;
@@ -2270,12 +2270,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           if (mem_end_stk[mem]   == INVALID_STACK_INDEX) continue;
           if (mem_start_stk[mem] == INVALID_STACK_INDEX) continue;
 
-          if (BIT_STATUS_AT(reg->bt_mem_start, mem))
+          if (MEM_STATUS_AT(reg->bt_mem_start, mem))
             pstart = STACK_AT(mem_start_stk[mem])->u.mem.pstr;
           else
             pstart = (UChar* )((void* )mem_start_stk[mem]);
 
-          pend = (BIT_STATUS_AT(reg->bt_mem_end, mem)
+          pend = (MEM_STATUS_AT(reg->bt_mem_end, mem)
                   ? STACK_AT(mem_end_stk[mem])->u.mem.pstr
                   : (UChar* )((void* )mem_end_stk[mem]));
           n = pend - pstart;
@@ -2309,12 +2309,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           if (mem_end_stk[mem]   == INVALID_STACK_INDEX) continue;
           if (mem_start_stk[mem] == INVALID_STACK_INDEX) continue;
 
-          if (BIT_STATUS_AT(reg->bt_mem_start, mem))
+          if (MEM_STATUS_AT(reg->bt_mem_start, mem))
             pstart = STACK_AT(mem_start_stk[mem])->u.mem.pstr;
           else
             pstart = (UChar* )((void* )mem_start_stk[mem]);
 
-          pend = (BIT_STATUS_AT(reg->bt_mem_end, mem)
+          pend = (MEM_STATUS_AT(reg->bt_mem_end, mem)
                   ? STACK_AT(mem_end_stk[mem])->u.mem.pstr
                   : (UChar* )((void* )mem_end_stk[mem]));
           n = pend - pstart;
@@ -3867,7 +3867,7 @@ onig_number_of_capture_histories(regex_t* reg)
 
   n = 0;
   for (i = 0; i <= ONIG_MAX_CAPTURE_HISTORY_GROUP; i++) {
-    if (BIT_STATUS_AT(reg->capture_history, i) != 0)
+    if (MEM_STATUS_AT(reg->capture_history, i) != 0)
       n++;
   }
   return n;
