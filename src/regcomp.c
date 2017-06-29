@@ -1931,7 +1931,7 @@ renumber_node_backref(Node* node, GroupNumRemap* map)
   int *backs;
   BRefNode* bn = BREF_(node);
 
-  if (! NODE_IS_NAME_REF(node))
+  if (! NODE_IS_BY_NAME(node))
     return ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED;
 
   old_num = bn->back_num;
@@ -2009,7 +2009,7 @@ numbered_ref_check(Node* node)
     break;
 
   case NODE_BREF:
-    if (! NODE_IS_NAME_REF(node))
+    if (! NODE_IS_BY_NAME(node))
       return ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED;
     break;
 

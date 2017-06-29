@@ -1248,7 +1248,7 @@ node_new_backref(int back_num, int* backrefs, int by_name,
   BREF_(node)->back_num = back_num;
   BREF_(node)->back_dynamic = (int* )NULL;
   if (by_name != 0)
-    NODE_STATUS_ADD(node, NST_NAME_REF);
+    NODE_STATUS_ADD(node, NST_BY_NAME);
 
 #ifdef USE_BACKREF_WITH_LEVEL
   if (exist_level != 0) {
