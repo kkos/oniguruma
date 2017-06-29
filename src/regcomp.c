@@ -328,6 +328,7 @@ add_mem_num(regex_t* reg, int num)
   return 0;
 }
 
+#if 0
 static int
 add_pointer(regex_t* reg, void* addr)
 {
@@ -336,6 +337,7 @@ add_pointer(regex_t* reg, void* addr)
   BBUF_ADD(reg, &ptr, SIZE_POINTER);
   return 0;
 }
+#endif
 
 static int
 add_option(regex_t* reg, OnigOptionType option)
@@ -655,11 +657,6 @@ compile_length_cclass_node(CClassNode* cc, regex_t* reg)
 {
   int len;
 
-  if (IS_NCCLASS_SHARE(cc)) {
-    len = SIZE_OPCODE + SIZE_POINTER;
-    return len;
-  }
-
   if (IS_NULL(cc->mbuf)) {
     len = SIZE_OPCODE + SIZE_BITSET;
   }
@@ -684,12 +681,6 @@ static int
 compile_cclass_node(CClassNode* cc, regex_t* reg)
 {
   int r;
-
-  if (IS_NCCLASS_SHARE(cc)) {
-    add_opcode(reg, OP_CCLASS_NODE);
-    r = add_pointer(reg, cc);
-    return r;
-  }
 
   if (IS_NULL(cc->mbuf)) {
     if (IS_NCCLASS_NOT(cc))

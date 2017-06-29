@@ -1098,7 +1098,6 @@ onig_node_free(Node* node)
     {
       CClassNode* cc = CCLASS_(node);
 
-      if (IS_NCCLASS_SHARE(cc)) return ;
       if (cc->mbuf)
         bbuf_free(cc->mbuf);
     }
