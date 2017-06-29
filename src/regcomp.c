@@ -2801,10 +2801,13 @@ check_backrefs(Node* node, ScanEnv* env)
       int i;
       BRefNode* br = BREF_(node);
       int* backs = BACKREFS_P(br);
+      MemEnv* mem_env = SCANENV_MEMENV(env);
 
       for (i = 0; i < br->back_num; i++) {
         if (backs[i] > env->num_mem)
           return ONIGERR_INVALID_BACKREF;
+
+        NODE_STATUS_ADD(mem_env[backs[i]].node, NST_BACKREF);
       }
       r = 0;
     }
