@@ -1726,7 +1726,7 @@ add_code_range_to_buf(BBuf** pbuf, OnigCodePoint from, OnigCodePoint to)
   }
 
   pos = SIZE_CODE_POINT * (1 + low * 2);
-  BBUF_ENSURE_SIZE_FREE_ON_ERROR(bbuf, pos + SIZE_CODE_POINT * 2);
+  BBUF_ENSURE_SIZE(bbuf, pos + SIZE_CODE_POINT * 2);
   BBUF_WRITE_CODE_POINT(bbuf, pos, from);
   BBUF_WRITE_CODE_POINT(bbuf, pos + SIZE_CODE_POINT, to);
   n += inc_n;

@@ -358,19 +358,6 @@ typedef struct _BBuf {
   }\
 } while (0)
 
-#define BBUF_ENSURE_SIZE_FREE_ON_ERROR(buf,size) do{\
-  unsigned int new_alloc = (buf)->alloc;\
-  while (new_alloc < (unsigned int )(size)) { new_alloc *= 2; }\
-  if ((buf)->alloc != new_alloc) {\
-    (buf)->p = (UChar* )xrealloc((buf)->p, new_alloc);\
-    if (IS_NULL((buf)->p)) {\
-      xfree(buf);\
-      return(ONIGERR_MEMORY);\
-    }\
-    (buf)->alloc = new_alloc;\
-  }\
-} while (0)
-
 #define BBUF_WRITE(buf,pos,bytes,n) do{\
   int used = (pos) + (n);\
   if ((buf)->alloc < (unsigned int )used) BBUF_EXPAND((buf),used);\
