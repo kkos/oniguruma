@@ -1647,9 +1647,13 @@ new_code_range(BBuf** pbuf)
   BBuf* bbuf;
 
   bbuf = *pbuf = (BBuf* )xmalloc(sizeof(BBuf));
-  CHECK_NULL_RETURN_MEMERR(*pbuf);
-  r = BBUF_INIT(*pbuf, INIT_MULTI_BYTE_RANGE_SIZE);
-  if (r != 0) return r;
+  CHECK_NULL_RETURN_MEMERR(bbuf);
+  r = BBUF_INIT(bbuf, INIT_MULTI_BYTE_RANGE_SIZE);
+  if (r != 0) {
+    xfree(bbuf);
+    *pbuf = 0;
+    return r;
+  }
 
   n = 0;
   BBUF_WRITE_CODE_POINT(bbuf, 0, n);
@@ -1723,7 +1727,7 @@ add_code_range_to_buf(BBuf** pbuf, OnigCodePoint from, OnigCodePoint to)
   }
 
   pos = SIZE_CODE_POINT * (1 + low * 2);
-  BBUF_ENSURE_SIZE(bbuf, pos + SIZE_CODE_POINT * 2);
+  BBUF_ENSURE_SIZE_FREE_ON_ERROR(bbuf, pos + SIZE_CODE_POINT * 2);
   BBUF_WRITE_CODE_POINT(bbuf, pos, from);
   BBUF_WRITE_CODE_POINT(bbuf, pos + SIZE_CODE_POINT, to);
   n += inc_n;
