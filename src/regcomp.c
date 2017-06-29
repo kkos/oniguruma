@@ -1999,6 +1999,10 @@ numbered_ref_check(Node* node)
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
+  case NODE_ANCHOR:
+    if (IS_NULL(NODE_BODY(node)))
+      break;
+    /* fall */
   case NODE_QTFR:
   case NODE_ENCLOSURE:
     r = numbered_ref_check(NODE_BODY(node));
@@ -2007,11 +2011,6 @@ numbered_ref_check(Node* node)
   case NODE_BREF:
     if (! NODE_IS_NAME_REF(node))
       return ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED;
-    break;
-
-  case NODE_ANCHOR:
-    if (IS_NOT_NULL(NODE_BODY(node)))
-      r = numbered_ref_check(NODE_BODY(node));
     break;
 
   default:
