@@ -3568,9 +3568,9 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
           if (num_type != IS_NOT_NUM) {
             if (num_type == IS_REL_NUM) {
               back_num = backref_rel_to_abs(back_num, env);
-              if (back_num <= 0)
-                return ONIGERR_INVALID_BACKREF;
             }
+            if (back_num <= 0)
+              return ONIGERR_INVALID_BACKREF;
 
             if (IS_SYNTAX_BV(syn, ONIG_SYN_STRICT_CHECK_BACKREF)) {
               if (back_num > env->num_mem ||
