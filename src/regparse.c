@@ -4433,7 +4433,7 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
 
     case TK_CHAR_TYPE:
       r = add_ctype_to_cc(cc, tok->u.prop.ctype, tok->u.prop.not, env);
-      if (r != 0) return r;
+      if (r != 0) goto err;
 
     next_class:
       r = next_state_class(cc, &vs, &val_type, &state, env);
@@ -4443,9 +4443,12 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
     case TK_CHAR_PROPERTY:
       {
         int ctype = fetch_char_property_to_ctype(&p, end, env);
-        if (ctype < 0) return ctype;
+        if (ctype < 0) {
+          r = ctype;
+          goto err;
+        }
         r = add_ctype_to_cc(cc, ctype, tok->u.prop.not, env);
-        if (r != 0) return r;
+        if (r != 0) goto err;
         goto next_class;
       }
       break;
