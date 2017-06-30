@@ -8,6 +8,7 @@ History
 2017/06/28: update doc/RE, and doc/RE.ja
 2017/06/26: fix fatal bug of endless repeat check on Windows
 2017/06/26: PR #62 : add check for return values
+2017/06/23: [new] support call zero (\g{0})
 2017/06/23: [new] support relative call by positive number
 2017/06/23: [new] support relative back-reference by positive number
 2017/06/15: fix #60 : check value type
