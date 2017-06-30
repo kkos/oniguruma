@@ -1,5 +1,18 @@
 History
 
+2017/07/03: Version 6.4.0
+
+2017/06/30: fix memory leaks
+2017/06/29: fix memory leaks
+2017/06/28: change encoding of doc/XXXX.ja from EUC-JP to UTF-8
+2017/06/28: update doc/RE, and doc/RE.ja
+2017/06/26: fix fatal bug of endless repeat check on Windows
+2017/06/26: PR #62 : add check for return values
+2017/06/23: [new] support relative call by positive number
+2017/06/23: [new] support relative back-reference by positive number
+2017/06/15: fix #60 : check value type
+2017/06/02: change output format for ONIG_DEBUG_COMPILE and ONIG_DEBUG_MATCH
+
 2017/05/29: Version 6.3.0
 
 2017/05/24: fix #60 : invalid state(CCS_VALUE) in parse_char_class()
