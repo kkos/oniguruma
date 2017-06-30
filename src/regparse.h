@@ -37,7 +37,7 @@ typedef enum {
   NODE_CCLASS    = 1,
   NODE_CTYPE     = 2,
   NODE_BREF      = 3,
-  NODE_QTFR      = 4,
+  NODE_QUANT      = 4,
   NODE_ENCLOSURE = 5,
   NODE_ANCHOR    = 6,
   NODE_LIST      = 7,
@@ -52,7 +52,7 @@ typedef enum {
 #define BIT_NODE_CCLASS     NODE_TYPE2BIT(NODE_CCLASS)
 #define BIT_NODE_CTYPE      NODE_TYPE2BIT(NODE_CTYPE)
 #define BIT_NODE_BREF       NODE_TYPE2BIT(NODE_BREF)
-#define BIT_NODE_QTFR       NODE_TYPE2BIT(NODE_QTFR)
+#define BIT_NODE_QUANT       NODE_TYPE2BIT(NODE_QUANT)
 #define BIT_NODE_ENCLOSURE  NODE_TYPE2BIT(NODE_ENCLOSURE)
 #define BIT_NODE_ANCHOR     NODE_TYPE2BIT(NODE_ANCHOR)
 #define BIT_NODE_LIST       NODE_TYPE2BIT(NODE_LIST)
@@ -70,7 +70,7 @@ typedef enum {
 #define CCLASS_(node)      (&((node)->u.cclass))
 #define CTYPE_(node)       (&((node)->u.ctype))
 #define BREF_(node)        (&((node)->u.bref))
-#define QTFR_(node)        (&((node)->u.qtfr))
+#define QUANT_(node)        (&((node)->u.quant))
 #define ENCLOSURE_(node)     (&((node)->u.enclosure))
 #define ANCHOR_(node)      (&((node)->u.anchor))
 #define CONS_(node)        (&((node)->u.cons))
@@ -113,10 +113,10 @@ typedef enum {
 #define BACKREFS_P(br) \
   (IS_NOT_NULL((br)->back_dynamic) ? (br)->back_dynamic : (br)->back_static);
 
-#define QTFR_BODY_IS_NOT_EMPTY    0
-#define QTFR_BODY_IS_EMPTY        1
-#define QTFR_BODY_IS_EMPTY_MEM    2
-#define QTFR_BODY_IS_EMPTY_REC    3
+#define QUANT_BODY_IS_NOT_EMPTY    0
+#define QUANT_BODY_IS_EMPTY        1
+#define QUANT_BODY_IS_EMPTY_MEM    2
+#define QUANT_BODY_IS_EMPTY_REC    3
 
 /* status bits */
 #define NST_MIN_FIXED             (1<<0)
@@ -162,7 +162,7 @@ typedef enum {
     ((NODE_STATUS(node) & NST_STOP_BT_SIMPLE_REPEAT) != 0)
 
 #define NODE_BODY(node)           ((node)->u.base.body)
-#define NODE_QTFR_BODY(node)      ((node)->body)
+#define NODE_QUANT_BODY(node)      ((node)->body)
 #define NODE_ENCLOSURE_BODY(node)   ((node)->body)
 #define NODE_CALL_BODY(node)      ((node)->body)
 #define NODE_ANCHOR_BODY(node)    ((node)->body)
@@ -205,7 +205,7 @@ typedef struct {
 #ifdef USE_COMBINATION_EXPLOSION_CHECK
   int comb_exp_check_num;  /* 1,2,3...: check,  0: no check  */
 #endif
-} QtfrNode;
+} QuantNode;
 
 typedef struct {
   NodeType node_type;
@@ -301,16 +301,16 @@ typedef struct _Node {
       struct _Node* body;
     } base;
 
-    StrNode      str;
-    CClassNode   cclass;
-    QtfrNode     qtfr;
-    EnclosureNode  enclosure;
-    BRefNode     bref;
-    AnchorNode   anchor;
-    ConsAltNode  cons;
-    CtypeNode    ctype;
+    StrNode       str;
+    CClassNode    cclass;
+    QuantNode     quant;
+    EnclosureNode enclosure;
+    BRefNode      bref;
+    AnchorNode    anchor;
+    ConsAltNode   cons;
+    CtypeNode     ctype;
 #ifdef USE_SUBEXP_CALL
-    CallNode     call;
+    CallNode      call;
 #endif
   } u;
 } Node;

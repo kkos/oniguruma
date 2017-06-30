@@ -1108,7 +1108,7 @@ onig_node_free(Node* node)
       xfree(BREF_(node)->back_dynamic);
     break;
 
-  case NODE_QTFR:
+  case NODE_QUANT:
   case NODE_ENCLOSURE:
   case NODE_ANCHOR:
     if (NODE_BODY(node))
@@ -1304,19 +1304,19 @@ node_new_quantifier(int lower, int upper, int by_number)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NODE_QTFR);
-  QTFR_(node)->lower  = lower;
-  QTFR_(node)->upper  = upper;
-  QTFR_(node)->greedy = 1;
-  QTFR_(node)->body_empty_info = QTFR_BODY_IS_NOT_EMPTY;
-  QTFR_(node)->head_exact      = NULL_NODE;
-  QTFR_(node)->next_head_exact = NULL_NODE;
-  QTFR_(node)->is_refered      = 0;
+  SET_NODE_TYPE(node, NODE_QUANT);
+  QUANT_(node)->lower  = lower;
+  QUANT_(node)->upper  = upper;
+  QUANT_(node)->greedy = 1;
+  QUANT_(node)->body_empty_info = QUANT_BODY_IS_NOT_EMPTY;
+  QUANT_(node)->head_exact      = NULL_NODE;
+  QUANT_(node)->next_head_exact = NULL_NODE;
+  QUANT_(node)->is_refered      = 0;
   if (by_number != 0)
     NODE_STATUS_ADD(node, NST_BY_NUMBER);
 
 #ifdef USE_COMBINATION_EXPLOSION_CHECK
-  QTFR_(node)->comb_exp_check_num = 0;
+  QUANT_(node)->comb_exp_check_num = 0;
 #endif
 
   return node;
@@ -2119,7 +2119,7 @@ is_invalid_quantifier_target(Node* node)
 
 /* ?:0, *:1, +:2, ??:3, *?:4, +?:5 */
 static int
-popular_quantifier_num(QtfrNode* q)
+popular_quantifier_num(QuantNode* q)
 {
   if (q->greedy) {
     if (q->lower == 0) {
@@ -2166,10 +2166,10 @@ extern void
 onig_reduce_nested_quantifier(Node* pnode, Node* cnode)
 {
   int pnum, cnum;
-  QtfrNode *p, *c;
+  QuantNode *p, *c;
 
-  p = QTFR_(pnode);
-  c = QTFR_(cnode);
+  p = QUANT_(pnode);
+  c = QUANT_(cnode);
   pnum = popular_quantifier_num(p);
   cnum = popular_quantifier_num(c);
   if (pnum < 0 || cnum < 0) return ;
@@ -4881,9 +4881,9 @@ static const char* ReduceQStr[] = {
 static int
 set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
 {
-  QtfrNode* qn;
+  QuantNode* qn;
 
-  qn = QTFR_(qnode);
+  qn = QUANT_(qnode);
   if (qn->lower == 1 && qn->upper == 1)
     return 1;
 
@@ -4901,10 +4901,10 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
     }
     break;
 
-  case NODE_QTFR:
+  case NODE_QUANT:
     { /* check redundant double repeat. */
       /* verbose warn (?:.?)? etc... but not warn (.?)? etc... */
-      QtfrNode* qnt   = QTFR_(target);
+      QuantNode* qnt   = QUANT_(target);
       int nestq_num   = popular_quantifier_num(qn);
       int targetq_num = popular_quantifier_num(qnt);
 
@@ -5372,7 +5372,7 @@ parse_exp(Node** np, OnigToken* tok, int term,
       qn = node_new_quantifier(tok->u.repeat.lower, tok->u.repeat.upper,
                                (r == TK_INTERVAL ? 1 : 0));
       CHECK_NULL_RETURN_MEMERR(qn);
-      QTFR_(qn)->greedy = tok->u.repeat.greedy;
+      QUANT_(qn)->greedy = tok->u.repeat.greedy;
       r = set_quantifier(qn, *targetp, group, env);
       if (r < 0) {
         onig_node_free(qn);

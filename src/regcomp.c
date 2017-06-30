@@ -441,7 +441,7 @@ compile_tree_empty_check(Node* node, regex_t* reg, int empty_info, ScanEnv* env)
   int r;
   int saved_num_null_check = reg->num_null_check;
 
-  if (empty_info != QTFR_BODY_IS_NOT_EMPTY) {
+  if (empty_info != QUANT_BODY_IS_NOT_EMPTY) {
     r = add_opcode(reg, OP_EMPTY_CHECK_START);
     if (r != 0) return r;
     r = add_mem_num(reg, reg->num_null_check); /* NULL CHECK ID */
@@ -452,12 +452,12 @@ compile_tree_empty_check(Node* node, regex_t* reg, int empty_info, ScanEnv* env)
   r = compile_tree(node, reg, env);
   if (r != 0) return r;
 
-  if (empty_info != QTFR_BODY_IS_NOT_EMPTY) {
-    if (empty_info == QTFR_BODY_IS_EMPTY)
+  if (empty_info != QUANT_BODY_IS_NOT_EMPTY) {
+    if (empty_info == QUANT_BODY_IS_EMPTY)
       r = add_opcode(reg, OP_EMPTY_CHECK_END);
-    else if (empty_info == QTFR_BODY_IS_EMPTY_MEM)
+    else if (empty_info == QUANT_BODY_IS_EMPTY_MEM)
       r = add_opcode(reg, OP_EMPTY_CHECK_END_MEMST);
-    else if (empty_info == QTFR_BODY_IS_EMPTY_REC)
+    else if (empty_info == QUANT_BODY_IS_EMPTY_REC)
       r = add_opcode(reg, OP_EMPTY_CHECK_END_MEMST_PUSH);
 
     if (r != 0) return r;
@@ -746,7 +746,7 @@ entry_repeat_range(regex_t* reg, int id, int lower, int upper)
 }
 
 static int
-compile_range_repeat_node(QtfrNode* qn, int target_len, int empty_info,
+compile_range_repeat_node(QuantNode* qn, int target_len, int empty_info,
                           regex_t* reg, ScanEnv* env)
 {
   int r;
@@ -763,7 +763,7 @@ compile_range_repeat_node(QtfrNode* qn, int target_len, int empty_info,
   r = entry_repeat_range(reg, num_repeat, qn->lower, qn->upper);
   if (r != 0) return r;
 
-  r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info, env);
+  r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, empty_info, env);
   if (r != 0) return r;
 
   if (
@@ -782,10 +782,10 @@ compile_range_repeat_node(QtfrNode* qn, int target_len, int empty_info,
 }
 
 static int
-is_anychar_star_quantifier(QtfrNode* qn)
+is_anychar_star_quantifier(QuantNode* qn)
 {
   if (qn->greedy && IS_REPEAT_INFINITE(qn->upper) &&
-      NODE_IS_ANYCHAR(NODE_QTFR_BODY(qn)))
+      NODE_IS_ANYCHAR(NODE_QUANT_BODY(qn)))
     return 1;
   else
     return 0;
@@ -797,13 +797,13 @@ is_anychar_star_quantifier(QtfrNode* qn)
 #ifdef USE_COMBINATION_EXPLOSION_CHECK
 
 static int
-compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
+compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
 {
   int len, mod_tlen, cklen;
   int ckn;
   int infinite = IS_REPEAT_INFINITE(qn->upper);
   int empty_info = qn->body_empty_info;
-  int tlen = compile_length_tree(NODE_QTFR_BODY(qn), reg);
+  int tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
 
   if (tlen < 0) return tlen;
 
@@ -812,7 +812,7 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
   cklen = (CKN_ON ? SIZE_STATE_CHECK_NUM: 0);
 
   /* anychar repeat */
-  if (NODE_IS_ANYCHAR(NODE_QTFR_BODY(qn))) {
+  if (NODE_IS_ANYCHAR(NODE_QUANT_BODY(qn))) {
     if (qn->greedy && infinite) {
       if (IS_NOT_NULL(qn->next_head_exact) && !CKN_ON)
         return SIZE_OP_ANYCHAR_STAR_PEEK_NEXT + tlen * qn->lower + cklen;
@@ -821,7 +821,7 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
     }
   }
 
-  if (empty_info == QTFR_BODY_IS_NOT_EMPTY)
+  if (empty_info == QUANT_BODY_IS_NOT_EMPTY)
     mod_tlen = tlen;
   else
     mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
@@ -877,20 +877,20 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
 }
 
 static int
-compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
+compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
 {
   int r, mod_tlen;
   int ckn;
   int infinite = IS_REPEAT_INFINITE(qn->upper);
   int empty_info = qn->body_empty_info;
-  int tlen = compile_length_tree(NODE_QTFR_BODY(qn), reg);
+  int tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
 
   if (tlen < 0) return tlen;
 
   ckn = ((reg->num_comb_exp_check > 0) ? qn->comb_exp_check_num : 0);
 
   if (is_anychar_star_quantifier(qn)) {
-    r = compile_tree_n_times(NODE_QTFR_BODY(qn), qn->lower, reg, env);
+    r = compile_tree_n_times(NODE_QUANT_BODY(qn), qn->lower, reg, env);
     if (r != 0) return r;
     if (IS_NOT_NULL(qn->next_head_exact) && !CKN_ON) {
       if (IS_MULTILINE(reg->options))
@@ -924,7 +924,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
     }
   }
 
-  if (empty_info == QTFR_BODY_IS_NOT_EMPTY)
+  if (empty_info == QUANT_BODY_IS_NOT_EMPTY)
     mod_tlen = tlen;
   else
     mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
@@ -948,7 +948,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
         r = add_opcode_rel_addr(reg, OP_PUSH, mod_tlen + SIZE_OP_JUMP);
       }
       if (r != 0) return r;
-      r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info, env);
+      r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, empty_info, env);
       if (r != 0) return r;
       r = add_opcode_rel_addr(reg, OP_JUMP,
                 -(mod_tlen + (int )SIZE_OP_JUMP
@@ -959,7 +959,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
         r = add_opcode_rel_addr(reg, OP_JUMP, mod_tlen);
         if (r != 0) return r;
       }
-      r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info, env);
+      r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, empty_info, env);
       if (r != 0) return r;
       if (CKN_ON) {
         r = add_opcode(reg, OP_STATE_CHECK_PUSH_OR_JUMP);
@@ -977,7 +977,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
     if (qn->is_refered != 0) { /* /(?<n>..){0}/ */
       r = add_opcode_rel_addr(reg, OP_JUMP, tlen);
       if (r != 0) return r;
-      r = compile_tree(NODE_QTFR_BODY(qn), reg, env);
+      r = compile_tree(NODE_QUANT_BODY(qn), reg, env);
     }
     else
       r = 0;
@@ -997,7 +997,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
       if (r != 0) return r;
     }
 
-    r = compile_tree(NODE_QTFR_BODY(qn), reg, env);
+    r = compile_tree(NODE_QUANT_BODY(qn), reg, env);
   }
   else if (!qn->greedy && qn->upper == 1 && qn->lower == 0) { /* '??' */
     if (CKN_ON) {
@@ -1014,7 +1014,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
     if (r != 0) return r;
     r = add_opcode_rel_addr(reg, OP_JUMP, tlen);
     if (r != 0) return r;
-    r = compile_tree(NODE_QTFR_BODY(qn), reg, env);
+    r = compile_tree(NODE_QUANT_BODY(qn), reg, env);
   }
   else {
     r = compile_range_repeat_node(qn, mod_tlen, empty_info, reg, env);
@@ -1031,17 +1031,17 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
 #else /* USE_COMBINATION_EXPLOSION_CHECK */
 
 static int
-compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
+compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
 {
   int len, mod_tlen;
   int infinite = IS_REPEAT_INFINITE(qn->upper);
   int empty_info = qn->body_empty_info;
-  int tlen = compile_length_tree(NODE_QTFR_BODY(qn), reg);
+  int tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
 
   if (tlen < 0) return tlen;
 
   /* anychar repeat */
-  if (NODE_IS_ANYCHAR(NODE_QTFR_BODY(qn))) {
+  if (NODE_IS_ANYCHAR(NODE_QUANT_BODY(qn))) {
     if (qn->greedy && infinite) {
       if (IS_NOT_NULL(qn->next_head_exact))
         return SIZE_OP_ANYCHAR_STAR_PEEK_NEXT + tlen * qn->lower;
@@ -1050,7 +1050,7 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
     }
   }
 
-  if (empty_info == QTFR_BODY_IS_NOT_EMPTY)
+  if (empty_info == QUANT_BODY_IS_NOT_EMPTY)
     mod_tlen = tlen;
   else
     mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
@@ -1096,17 +1096,17 @@ compile_length_quantifier_node(QtfrNode* qn, regex_t* reg)
 }
 
 static int
-compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
+compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
 {
   int i, r, mod_tlen;
   int infinite = IS_REPEAT_INFINITE(qn->upper);
   int empty_info = qn->body_empty_info;
-  int tlen = compile_length_tree(NODE_QTFR_BODY(qn), reg);
+  int tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
 
   if (tlen < 0) return tlen;
 
   if (is_anychar_star_quantifier(qn)) {
-    r = compile_tree_n_times(NODE_QTFR_BODY(qn), qn->lower, reg, env);
+    r = compile_tree_n_times(NODE_QUANT_BODY(qn), qn->lower, reg, env);
     if (r != 0) return r;
     if (IS_NOT_NULL(qn->next_head_exact)) {
       if (IS_MULTILINE(reg->options))
@@ -1124,7 +1124,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
     }
   }
 
-  if (empty_info == QTFR_BODY_IS_NOT_EMPTY)
+  if (empty_info == QUANT_BODY_IS_NOT_EMPTY)
     mod_tlen = tlen;
   else
     mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
@@ -1146,7 +1146,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
       if (r != 0) return r;
     }
     else {
-      r = compile_tree_n_times(NODE_QTFR_BODY(qn), qn->lower, reg, env);
+      r = compile_tree_n_times(NODE_QUANT_BODY(qn), qn->lower, reg, env);
       if (r != 0) return r;
     }
 
@@ -1156,7 +1156,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
                                 mod_tlen + SIZE_OP_JUMP);
         if (r != 0) return r;
         add_bytes(reg, STR_(qn->head_exact)->s, 1);
-        r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info, env);
+        r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, empty_info, env);
         if (r != 0) return r;
         r = add_opcode_rel_addr(reg, OP_JUMP,
          -(mod_tlen + (int )SIZE_OP_JUMP + (int )SIZE_OP_PUSH_OR_JUMP_EXACT1));
@@ -1166,7 +1166,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
                                 mod_tlen + SIZE_OP_JUMP);
         if (r != 0) return r;
         add_bytes(reg, STR_(qn->next_head_exact)->s, 1);
-        r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info, env);
+        r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, empty_info, env);
         if (r != 0) return r;
         r = add_opcode_rel_addr(reg, OP_JUMP,
           -(mod_tlen + (int )SIZE_OP_JUMP + (int )SIZE_OP_PUSH_IF_PEEK_NEXT));
@@ -1174,7 +1174,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
       else {
         r = add_opcode_rel_addr(reg, OP_PUSH, mod_tlen + SIZE_OP_JUMP);
         if (r != 0) return r;
-        r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info, env);
+        r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, empty_info, env);
         if (r != 0) return r;
         r = add_opcode_rel_addr(reg, OP_JUMP,
                    -(mod_tlen + (int )SIZE_OP_JUMP + (int )SIZE_OP_PUSH));
@@ -1183,7 +1183,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
     else {
       r = add_opcode_rel_addr(reg, OP_JUMP, mod_tlen);
       if (r != 0) return r;
-      r = compile_tree_empty_check(NODE_QTFR_BODY(qn), reg, empty_info, env);
+      r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, empty_info, env);
       if (r != 0) return r;
       r = add_opcode_rel_addr(reg, OP_PUSH, -(mod_tlen + (int )SIZE_OP_PUSH));
     }
@@ -1191,21 +1191,21 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
   else if (qn->upper == 0 && qn->is_refered != 0) { /* /(?<n>..){0}/ */
     r = add_opcode_rel_addr(reg, OP_JUMP, tlen);
     if (r != 0) return r;
-    r = compile_tree(NODE_QTFR_BODY(qn), reg, env);
+    r = compile_tree(NODE_QUANT_BODY(qn), reg, env);
   }
   else if (!infinite && qn->greedy &&
            (qn->upper == 1 || (tlen + SIZE_OP_PUSH) * qn->upper
                                   <= QUANTIFIER_EXPAND_LIMIT_SIZE)) {
     int n = qn->upper - qn->lower;
 
-    r = compile_tree_n_times(NODE_QTFR_BODY(qn), qn->lower, reg, env);
+    r = compile_tree_n_times(NODE_QUANT_BODY(qn), qn->lower, reg, env);
     if (r != 0) return r;
 
     for (i = 0; i < n; i++) {
       r = add_opcode_rel_addr(reg, OP_PUSH,
 			   (n - i) * tlen + (n - i - 1) * SIZE_OP_PUSH);
       if (r != 0) return r;
-      r = compile_tree(NODE_QTFR_BODY(qn), reg, env);
+      r = compile_tree(NODE_QUANT_BODY(qn), reg, env);
       if (r != 0) return r;
     }
   }
@@ -1214,7 +1214,7 @@ compile_quantifier_node(QtfrNode* qn, regex_t* reg, ScanEnv* env)
     if (r != 0) return r;
     r = add_opcode_rel_addr(reg, OP_JUMP, tlen);
     if (r != 0) return r;
-    r = compile_tree(NODE_QTFR_BODY(qn), reg, env);
+    r = compile_tree(NODE_QUANT_BODY(qn), reg, env);
   }
   else {
     r = compile_range_repeat_node(qn, mod_tlen, empty_info, reg, env);
@@ -1324,8 +1324,8 @@ compile_length_enclosure_node(EnclosureNode* node, regex_t* reg)
 
   case ENCLOSURE_STOP_BACKTRACK:
     if (NODE_IS_STOP_BT_SIMPLE_REPEAT(node)) {
-      QtfrNode* qn = QTFR_(NODE_ENCLOSURE_BODY(node));
-      tlen = compile_length_tree(NODE_QTFR_BODY(qn), reg);
+      QuantNode* qn = QUANT_(NODE_ENCLOSURE_BODY(node));
+      tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
       if (tlen < 0) return tlen;
 
       len = tlen * qn->lower
@@ -1444,16 +1444,16 @@ compile_enclosure_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
 
   case ENCLOSURE_STOP_BACKTRACK:
     if (NODE_IS_STOP_BT_SIMPLE_REPEAT(node)) {
-      QtfrNode* qn = QTFR_(NODE_ENCLOSURE_BODY(node));
-      r = compile_tree_n_times(NODE_QTFR_BODY(qn), qn->lower, reg, env);
+      QuantNode* qn = QUANT_(NODE_ENCLOSURE_BODY(node));
+      r = compile_tree_n_times(NODE_QUANT_BODY(qn), qn->lower, reg, env);
       if (r != 0) return r;
 
-      len = compile_length_tree(NODE_QTFR_BODY(qn), reg);
+      len = compile_length_tree(NODE_QUANT_BODY(qn), reg);
       if (len < 0) return len;
 
       r = add_opcode_rel_addr(reg, OP_PUSH, len + SIZE_OP_POP + SIZE_OP_JUMP);
       if (r != 0) return r;
-      r = compile_tree(NODE_QTFR_BODY(qn), reg, env);
+      r = compile_tree(NODE_QUANT_BODY(qn), reg, env);
       if (r != 0) return r;
       r = add_opcode(reg, OP_POP);
       if (r != 0) return r;
@@ -1666,8 +1666,8 @@ compile_length_tree(Node* node, regex_t* reg)
     break;
 #endif
 
-  case NODE_QTFR:
-    r = compile_length_quantifier_node(QTFR_(node), reg);
+  case NODE_QUANT:
+    r = compile_length_quantifier_node(QUANT_(node), reg);
     break;
 
   case NODE_ENCLOSURE:
@@ -1832,8 +1832,8 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
     break;
 #endif
 
-  case NODE_QTFR:
-    r = compile_quantifier_node(QTFR_(node), reg, env);
+  case NODE_QUANT:
+    r = compile_quantifier_node(QUANT_(node), reg, env);
     break;
 
   case NODE_ENCLOSURE:
@@ -1870,12 +1870,12 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NODE_QTFR:
+  case NODE_QUANT:
     {
       Node** ptarget = &(NODE_BODY(node));
       Node*  old = *ptarget;
       r = noname_disable_map(ptarget, map, counter);
-      if (*ptarget != old && NODE_TYPE(*ptarget) == NODE_QTFR) {
+      if (*ptarget != old && NODE_TYPE(*ptarget) == NODE_QUANT) {
         onig_reduce_nested_quantifier(node, *ptarget);
       }
     }
@@ -1956,7 +1956,7 @@ renumber_by_map(Node* node, GroupNumRemap* map)
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NODE_QTFR:
+  case NODE_QUANT:
   case NODE_ENCLOSURE:
     r = renumber_by_map(NODE_BODY(node), map);
     break;
@@ -1994,7 +1994,7 @@ numbered_ref_check(Node* node)
     if (IS_NULL(NODE_BODY(node)))
       break;
     /* fall */
-  case NODE_QTFR:
+  case NODE_QUANT:
   case NODE_ENCLOSURE:
     r = numbered_ref_check(NODE_BODY(node));
     break;
@@ -2131,9 +2131,9 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
     }
     break;
 
-  case NODE_QTFR:
+  case NODE_QUANT:
     {
-      QtfrNode* qn = QTFR_(node);
+      QuantNode* qn = QUANT_(node);
       if (qn->lower == qn->upper) {
         r = get_char_length_tree1(NODE_BODY(node), reg, &tlen, level);
         if (r == 0)
@@ -2436,9 +2436,9 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
     }
     break;
 
-  case NODE_QTFR:
+  case NODE_QUANT:
     {
-      QtfrNode* qn = QTFR_(node);
+      QuantNode* qn = QUANT_(node);
       if (qn->lower > 0) {
         if (IS_NOT_NULL(qn->head_exact))
           n = qn->head_exact;
@@ -2501,7 +2501,7 @@ check_type_tree(Node* node, int type_mask, int enclosure_mask, int anchor_mask)
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NODE_QTFR:
+  case NODE_QUANT:
     r = check_type_tree(NODE_BODY(node), type_mask, enclosure_mask, anchor_mask);
     break;
 
@@ -2601,9 +2601,9 @@ get_min_len(Node* node, ScanEnv* env)
     len = 1;
     break;
 
-  case NODE_QTFR:
+  case NODE_QUANT:
     {
-      QtfrNode* qn = QTFR_(node);
+      QuantNode* qn = QUANT_(node);
 
       if (qn->lower > 0) {
         len = get_min_len(NODE_BODY(node), env);
@@ -2710,9 +2710,9 @@ get_max_len(Node* node, ScanEnv* env)
     break;
 #endif
 
-  case NODE_QTFR:
+  case NODE_QUANT:
     {
-      QtfrNode* qn = QTFR_(node);
+      QuantNode* qn = QUANT_(node);
 
       if (qn->upper != 0) {
         len = get_max_len(NODE_BODY(node), env);
@@ -2782,7 +2782,7 @@ check_backrefs(Node* node, ScanEnv* env)
       break;
     }
     /* fall */
-  case NODE_QTFR:
+  case NODE_QUANT:
   case NODE_ENCLOSURE:
     r = check_backrefs(NODE_BODY(node), env);
     break;
@@ -2861,11 +2861,11 @@ infinite_recursive_call_check(Node* node, ScanEnv* env, int head)
     }
     break;
 
-  case NODE_QTFR:
+  case NODE_QUANT:
     r = infinite_recursive_call_check(NODE_BODY(node), env, head);
     if (r < 0) return r;
     if ((r & RECURSION_MUST) != 0) {
-      if (QTFR_(node)->lower == 0)
+      if (QUANT_(node)->lower == 0)
         r &= ~RECURSION_MUST;
     }
     break;
@@ -2926,7 +2926,7 @@ infinite_recursive_call_check_trav(Node* node, ScanEnv* env)
       break;
     }
     /* fall */
-  case NODE_QTFR:
+  case NODE_QUANT:
     r = infinite_recursive_call_check_trav(NODE_BODY(node), env);
     break;
 
@@ -2981,7 +2981,7 @@ recursive_call_check(Node* node)
       break;
     }
     /* fall */
-  case NODE_QTFR:
+  case NODE_QUANT:
     r = recursive_call_check(NODE_BODY(node));
     break;
 
@@ -3040,11 +3040,11 @@ recursive_call_check_trav(Node* node, ScanEnv* env, int state)
     }
     break;
 
-  case NODE_QTFR:
+  case NODE_QUANT:
     r = recursive_call_check_trav(NODE_BODY(node), env, state);
-    if (QTFR_(node)->upper == 0) {
+    if (QUANT_(node)->upper == 0) {
       if (r == FOUND_CALLED_NODE)
-        QTFR_(node)->is_refered = 1;
+        QUANT_(node)->is_refered = 1;
     }
     break;
 
@@ -3160,10 +3160,10 @@ next_setup(Node* node, Node* next_node, regex_t* reg)
 
  retry:
   type = NODE_TYPE(node);
-  if (type == NODE_QTFR) {
-    QtfrNode* qn = QTFR_(node);
+  if (type == NODE_QUANT) {
+    QuantNode* qn = QUANT_(node);
     if (qn->greedy && IS_REPEAT_INFINITE(qn->upper)) {
-#ifdef USE_QTFR_PEEK_NEXT
+#ifdef USE_QUANT_PEEK_NEXT
       Node* n = get_head_value_node(next_node, 1, reg);
       /* '\0': for UTF-16BE etc... */
       if (IS_NOT_NULL(n) && STR_(n)->s[0] != '\0') {
@@ -3547,12 +3547,12 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
     }
     break;
 
-  case NODE_QTFR:
+  case NODE_QUANT:
     {
       int child_state = state;
       int add_state = 0;
-      QtfrNode* qn = QTFR_(node);
-      Node* target = NODE_QTFR_BODY(qn);
+      QuantNode* qn = QUANT_(node);
+      Node* target = NODE_QUANT_BODY(qn);
       int var_num;
 
       if (! IS_REPEAT_INFINITE(qn->upper)) {
@@ -3562,11 +3562,11 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
 
           /* check (a*){n,m}, (a+){n,m} => (a*){n,n}, (a+){n,n} */
           if (env->backrefed_mem == 0) {
-            if (NODE_TYPE(NODE_QTFR_BODY(qn)) == NODE_ENCLOSURE) {
-              EnclosureNode* en = ENCLOSURE_(NODE_QTFR_BODY(qn));
+            if (NODE_TYPE(NODE_QUANT_BODY(qn)) == NODE_ENCLOSURE) {
+              EnclosureNode* en = ENCLOSURE_(NODE_QUANT_BODY(qn));
               if (en->type == ENCLOSURE_MEMORY) {
-                if (NODE_TYPE(NODE_ENCLOSURE_BODY(en)) == NODE_QTFR) {
-                  QtfrNode* q = QTFR_(NODE_ENCLOSURE_BODY(en));
+                if (NODE_TYPE(NODE_ENCLOSURE_BODY(en)) == NODE_QUANT) {
+                  QuantNode* q = QUANT_(NODE_ENCLOSURE_BODY(en));
                   if (IS_REPEAT_INFINITE(q->upper)
                       && q->greedy == qn->greedy) {
                     qn->upper = (qn->lower == 0 ? 1 : qn->lower);
@@ -3654,7 +3654,7 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
 static int
 quantifiers_memory_node_info(Node* node)
 {
-  int r = QTFR_BODY_IS_EMPTY;
+  int r = QUANT_BODY_IS_EMPTY;
 
   switch (NODE_TYPE(node)) {
   case NODE_LIST:
@@ -3671,16 +3671,16 @@ quantifiers_memory_node_info(Node* node)
 #ifdef USE_SUBEXP_CALL
   case NODE_CALL:
     if (NODE_IS_RECURSION(node)) {
-      return QTFR_BODY_IS_EMPTY_REC; /* tiny version */
+      return QUANT_BODY_IS_EMPTY_REC; /* tiny version */
     }
     else
       r = quantifiers_memory_node_info(NODE_BODY(node));
     break;
 #endif
 
-  case NODE_QTFR:
+  case NODE_QUANT:
     {
-      QtfrNode* qn = QTFR_(node);
+      QuantNode* qn = QUANT_(node);
       if (qn->upper != 0) {
         r = quantifiers_memory_node_info(NODE_BODY(node));
       }
@@ -3693,9 +3693,9 @@ quantifiers_memory_node_info(Node* node)
       switch (en->type) {
       case ENCLOSURE_MEMORY:
         if (NODE_IS_RECURSION(node)) {
-          return QTFR_BODY_IS_EMPTY_REC;
+          return QUANT_BODY_IS_EMPTY_REC;
         }
-        return QTFR_BODY_IS_EMPTY_MEM;
+        return QUANT_BODY_IS_EMPTY_MEM;
         break;
 
       case ENCLOSURE_OPTION:
@@ -3801,7 +3801,7 @@ setup_call2_call(Node* node)
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NODE_QTFR:
+  case NODE_QUANT:
     setup_call2_call(NODE_BODY(node));
     break;
 
@@ -3853,8 +3853,8 @@ setup_call(Node* node, ScanEnv* env, int state)
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NODE_QTFR:
-    if (QTFR_(node)->upper == 0)
+  case NODE_QUANT:
+    if (QUANT_(node)->upper == 0)
       state |= IN_ZERO_REPEAT;
 
     r = setup_call(NODE_BODY(node), env, state);
@@ -3905,8 +3905,8 @@ setup_call2(Node* node)
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NODE_QTFR:
-    if (QTFR_(node)->upper != 0)
+  case NODE_QUANT:
+    if (QUANT_(node)->upper != 0)
       r = setup_call2(NODE_BODY(node));
     break;
 
@@ -3947,16 +3947,16 @@ setup_called_state_call(Node* node, int state)
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NODE_QTFR:
+  case NODE_QUANT:
     {
-      QtfrNode* qn = QTFR_(node);
+      QuantNode* qn = QUANT_(node);
 
       if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 2)
         state |= IN_REAL_REPEAT;
       if (qn->lower != qn->upper)
         state |= IN_VAR_REPEAT;
 
-      setup_called_state_call(NODE_QTFR_BODY(qn), state);
+      setup_called_state_call(NODE_QUANT_BODY(qn), state);
     }
     break;
 
@@ -4050,16 +4050,16 @@ setup_called_state(Node* node, int state)
     }
     break;
 
-  case NODE_QTFR:
+  case NODE_QUANT:
     {
-      QtfrNode* qn = QTFR_(node);
+      QuantNode* qn = QUANT_(node);
 
       if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 2)
         state |= IN_REAL_REPEAT;
       if (qn->lower != qn->upper)
         state |= IN_VAR_REPEAT;
 
-      setup_called_state(NODE_QTFR_BODY(qn), state);
+      setup_called_state(NODE_QUANT_BODY(qn), state);
     }
     break;
 
@@ -4105,7 +4105,7 @@ setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
 /* allowed node types in look-behind */
 #define ALLOWED_TYPE_IN_LB \
   ( BIT_NODE_LIST | BIT_NODE_ALT | BIT_NODE_STR | BIT_NODE_CCLASS | BIT_NODE_CTYPE \
-  | BIT_NODE_ANCHOR | BIT_NODE_ENCLOSURE | BIT_NODE_QTFR | BIT_NODE_CALL )
+  | BIT_NODE_ANCHOR | BIT_NODE_ENCLOSURE | BIT_NODE_QUANT | BIT_NODE_CALL )
 
 #define ALLOWED_ENCLOSURE_IN_LB       ( ENCLOSURE_MEMORY | ENCLOSURE_OPTION )
 #define ALLOWED_ENCLOSURE_IN_LB_NOT   ENCLOSURE_OPTION
@@ -4167,11 +4167,11 @@ setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
 __inline
 #endif
 static int
-setup_qtfr(Node* node, regex_t* reg, int state, ScanEnv* env)
+setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
 {
   int r;
   OnigLen d;
-  QtfrNode* qn = QTFR_(node);
+  QuantNode* qn = QUANT_(node);
   Node* body = NODE_BODY(node);
 
   if ((state & IN_REAL_REPEAT) != 0) {
@@ -4186,14 +4186,14 @@ setup_qtfr(Node* node, regex_t* reg, int state, ScanEnv* env)
     if (d == 0) {
 #ifdef USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT
       qn->body_empty_info = quantifiers_memory_node_info(body);
-      if (qn->body_empty_info == QTFR_BODY_IS_EMPTY_REC) {
+      if (qn->body_empty_info == QUANT_BODY_IS_EMPTY_REC) {
         if (NODE_TYPE(body) == NODE_ENCLOSURE &&
             ENCLOSURE_(body)->type == ENCLOSURE_MEMORY) {
           MEM_STATUS_ON(env->bt_mem_end, ENCLOSURE_(body)->m.regnum);
         }
       }
 #else
-      qn->body_empty_info = QTFR_BODY_IS_EMPTY;
+      qn->body_empty_info = QUANT_BODY_IS_EMPTY;
 #endif
     }
   }
@@ -4229,8 +4229,8 @@ setup_qtfr(Node* node, regex_t* reg, int state, ScanEnv* env)
 
 #ifdef USE_OP_PUSH_OR_JUMP_EXACT
   if (qn->greedy && (qn->body_empty_info != 0)) {
-    if (NODE_TYPE(body) == NODE_QTFR) {
-      QtfrNode* tqn = QTFR_(body);
+    if (NODE_TYPE(body) == NODE_QUANT) {
+      QuantNode* tqn = QUANT_(body);
       if (IS_NOT_NULL(tqn->head_exact)) {
         qn->head_exact  = tqn->head_exact;
         tqn->head_exact = NULL;
@@ -4333,8 +4333,8 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         {
           Node* target = NODE_BODY(node);
           r = setup_tree(target, reg, state, env);
-          if (NODE_TYPE(target) == NODE_QTFR) {
-            QtfrNode* tqn = QTFR_(target);
+          if (NODE_TYPE(target) == NODE_QUANT) {
+            QuantNode* tqn = QUANT_(target);
             if (IS_REPEAT_INFINITE(tqn->upper) && tqn->lower <= 1 &&
                 tqn->greedy != 0) {  /* (?>a*), a*+ etc... */
               if (NODE_IS_SIMPLE_TYPE(NODE_BODY(target)))
@@ -4347,8 +4347,8 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     }
     break;
 
-  case NODE_QTFR:
-    r = setup_qtfr(node, reg, state, env);
+  case NODE_QUANT:
+    r = setup_quant(node, reg, state, env);
     break;
 
   case NODE_ANCHOR:
@@ -5229,12 +5229,12 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     break;
 #endif
 
-  case NODE_QTFR:
+  case NODE_QUANT:
     {
       int i;
       OnigLen min, max;
       NodeOptInfo nopt;
-      QtfrNode* qn = QTFR_(node);
+      QuantNode* qn = QUANT_(node);
 
       r = optimize_node_left(NODE_BODY(node), &nopt, env);
       if (r != 0) break;
@@ -6682,10 +6682,10 @@ print_indent_tree(FILE* f, Node* node, int indent)
     break;
 #endif
 
-  case NODE_QTFR:
+  case NODE_QUANT:
     fprintf(f, "<quantifier:%p>{%d,%d}%s\n", node,
-	    QTFR_(node)->lower, QTFR_(node)->upper,
-	    (QTFR_(node)->greedy ? "" : "?"));
+	    QUANT_(node)->lower, QUANT_(node)->upper,
+	    (QUANT_(node)->greedy ? "" : "?"));
     print_indent_tree(f, NODE_BODY(node), indent + add);
     break;
 
@@ -6714,7 +6714,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
     break;
   }
 
-  if (type != NODE_LIST && type != NODE_ALT && type != NODE_QTFR &&
+  if (type != NODE_LIST && type != NODE_ALT && type != NODE_QUANT &&
       type != NODE_ENCLOSURE)
     fprintf(f, "\n");
   fflush(f);
