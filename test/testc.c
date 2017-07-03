@@ -591,6 +591,12 @@ extern int main(int argc, char* argv[])
   x2("A\\g'0'|B()", "AAAAB", 0, 5);
   x3("(A\\g'0')|B", "AAAAB", 0, 5, 1);
 
+  /*
+    < ifndef IGNORE_EUC_JP >
+    for testcases print warnings #63
+    warning: illegal character encoding in string literal [-Winvalid-source-encoding]
+   */
+#ifndef IGNORE_EUC_JP
   x2("", "あ", 0, 0);
   x2("あ", "あ", 0, 2);
   n("い", "あ");
@@ -871,6 +877,8 @@ extern int main(int argc, char* argv[])
   x2("\\p{Hiragana}", "ぴ", 0, 2);
   n("\\P{Hiragana}", "ぴ");
 #endif
+
+#endif /* IGNORE_EUC_JP */
 
   fprintf(stdout,
        "\nRESULT   SUCC: %d,  FAIL: %d,  ERROR: %d      (by Oniguruma %s)\n",
