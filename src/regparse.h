@@ -136,6 +136,7 @@ typedef enum {
 #define NST_BY_NUMBER             (1<<14) /* {n,m} */
 #define NST_BY_NAME               (1<<15) /* backref by name */
 #define NST_BACKREF               (1<<16)
+#define NST_CHECKER               (1<<17)
 
 
 #define NODE_STATUS(node)           (((Node* )node)->u.base.status)
@@ -158,6 +159,7 @@ typedef enum {
 #define NODE_IS_NEST_LEVEL(node)      ((NODE_STATUS(node) & NST_NEST_LEVEL)  != 0)
 #define NODE_IS_BY_NAME(node)         ((NODE_STATUS(node) & NST_BY_NAME)     != 0)
 #define NODE_IS_BACKREF(node)         ((NODE_STATUS(node) & NST_BACKREF)     != 0)
+#define NODE_IS_CHECKER(node)         ((NODE_STATUS(node) & NST_CHECKER)     != 0)
 #define NODE_IS_STOP_BT_SIMPLE_REPEAT(node) \
     ((NODE_STATUS(node) & NST_STOP_BT_SIMPLE_REPEAT) != 0)
 

@@ -48,6 +48,7 @@ OnigSyntaxType OnigSyntaxRuby = {
   , ( ONIG_SYN_OP2_QMARK_GROUP_EFFECT |
       ONIG_SYN_OP2_OPTION_RUBY |
       ONIG_SYN_OP2_QMARK_LT_NAMED_GROUP | ONIG_SYN_OP2_ESC_K_NAMED_BACKREF |
+      ONIG_SYN_OP2_QMARK_LPAREN_IF_ELSE |
       ONIG_SYN_OP2_ESC_G_SUBEXP_CALL |
       ONIG_SYN_OP2_ESC_P_BRACE_CHAR_PROPERTY  |
       ONIG_SYN_OP2_ESC_P_BRACE_CIRCUMFLEX_NOT |
@@ -1281,6 +1282,26 @@ node_new_backref(int back_num, int* backrefs, int by_name,
   return node;
 }
 
+static Node*
+node_new_backref_checker(int back_num, int* backrefs, int by_name,
+#ifdef USE_BACKREF_WITH_LEVEL
+		 int exist_level, int nest_level,
+#endif
+		 ScanEnv* env)
+{
+  Node* node;
+
+  node = node_new_backref(back_num, backrefs, by_name,
+#ifdef USE_BACKREF_WITH_LEVEL
+                          exist_level, nest_level,
+#endif
+                          env);
+  CHECK_NULL_RETURN(node);
+
+  NODE_STATUS_ADD(node, NST_CHECKER);
+  return node;
+}
+
 #ifdef USE_SUBEXP_CALL
 static Node*
 node_new_call(UChar* name, UChar* name_end, int gnum, int by_number)
@@ -2452,8 +2473,9 @@ static OnigCodePoint
 get_name_end_code_point(OnigCodePoint start)
 {
   switch (start) {
-  case '<':  return (OnigCodePoint )'>'; break;
+  case '<':  return (OnigCodePoint )'>';  break;
   case '\'': return (OnigCodePoint )'\''; break;
+  case '(':  return (OnigCodePoint )')';  break;
   default:
     break;
   }
@@ -4729,6 +4751,141 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 #endif
       break;
 
+    case '(':
+      /* (?()...) */
+      if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_LPAREN_IF_ELSE)) {
+        UChar *prev1, *prev;
+        Node* condition;
+        int condition_is_checker;
+
+        if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+        prev1 = p;
+        PFETCH(c);
+        if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+
+        if (ONIGENC_IS_CODE_DIGIT(enc, c) || c == '<' || c == '\'') {
+          UChar* name_end;
+          int back_num;
+          int exist_level;
+          int level;
+          enum REF_NUM num_type;
+          int is_enclosed;
+
+          is_enclosed = (c == '<' || c == '\'') ? 1 : 0;
+          if (! is_enclosed)
+            PUNFETCH;
+          prev = p;
+          exist_level = 0;
+#ifdef USE_BACKREF_WITH_LEVEL
+          name_end = NULL_UCHARP; /* no need. escape gcc warning. */
+          r = fetch_name_with_level(
+                    (OnigCodePoint )(is_enclosed != 0 ? c : '('),
+                    &p, end, &name_end,
+                    env, &back_num, &level, &num_type);
+          if (r == 1) exist_level = 1;
+#else
+          r = fetch_name(&p, end, &name_end, env, &back_num, &num_type, 1);
+#endif
+          if (r < 0) {
+            if (is_enclosed == 0) {
+              p = prev1;
+              goto any_condition;
+            }
+            else
+              return r;
+          }
+
+          condition_is_checker = 1;
+          if (num_type != IS_NOT_NUM) {
+            if (num_type == IS_REL_NUM) {
+              back_num = backref_rel_to_abs(back_num, env);
+            }
+            if (back_num <= 0)
+              return ONIGERR_INVALID_BACKREF;
+
+            if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_STRICT_CHECK_BACKREF)) {
+              if (back_num > env->num_mem ||
+                  IS_NULL(SCANENV_MEMENV(env)[back_num].node))
+                return ONIGERR_INVALID_BACKREF;
+            }
+
+            condition = node_new_backref_checker(1, &back_num, 0,
+#ifdef USE_BACKREF_WITH_LEVEL
+                                                 exist_level, level,
+#endif
+                                                 env);
+          }
+          else {
+            int num;
+            int* backs;
+
+            num = onig_name_to_group_numbers(env->reg, prev, name_end, &backs);
+            if (num <= 0) {
+              onig_scan_env_set_error_string(env,
+                        ONIGERR_UNDEFINED_NAME_REFERENCE, prev, name_end);
+              return ONIGERR_UNDEFINED_NAME_REFERENCE;
+            }
+            if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_STRICT_CHECK_BACKREF)) {
+              int i;
+              for (i = 0; i < num; i++) {
+                if (backs[i] > env->num_mem ||
+                    IS_NULL(SCANENV_MEMENV(env)[backs[i]].node))
+                  return ONIGERR_INVALID_BACKREF;
+              }
+            }
+
+            condition = node_new_backref_checker(num, backs, 1,
+#ifdef USE_BACKREF_WITH_LEVEL
+                                                 exist_level, level,
+#endif
+                                                 env);
+          }
+
+          if (is_enclosed != 0) {
+            if (PEND) goto err_if_else;
+            PFETCH(c);
+            if (c != ')') goto err_if_else;
+          }
+        }
+        else {
+        any_condition:
+
+          condition_is_checker = 0;
+          r = fetch_token(tok, &p, end, env);
+          if (r < 0) return r;
+          r = parse_subexp(&condition, tok, term, &p, end, env);
+          if (r < 0) {
+            onig_node_free(condition);
+            return r;
+          }
+        }
+
+        CHECK_NULL_RETURN_MEMERR(condition);
+
+        if (PEND) {
+        err_if_else:
+          onig_node_free(condition);
+          return ONIGERR_END_PATTERN_IN_GROUP;
+        }
+
+        PFETCH(c);
+        if (c == ')') { /* case: empty body: make backref checker */
+          if (condition_is_checker == 0) {
+            onig_node_free(condition);
+            return ONIGERR_END_PATTERN_IN_GROUP;
+          }
+          *np = condition;
+        }
+        else { /* make if-else */
+          /* TODO */
+        }
+        goto end;
+      }
+      else {
+        return ONIGERR_UNDEFINED_GROUP_OPTION;
+      }
+      break;
+
     case '@':
       if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_ATMARK_CAPTURE_HISTORY)) {
 #ifdef USE_NAMED_GROUP
@@ -4866,6 +5023,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
     }
   }
 
+ end:
   *src = p;
   return 0;
 }
