@@ -248,7 +248,7 @@ onig_region_new(void)
 extern void
 onig_region_free(OnigRegion* r, int free_self)
 {
-  if (r) {
+  if (r != 0) {
     if (r->allocated > 0) {
       if (r->beg) xfree(r->beg);
       if (r->end) xfree(r->end);
@@ -316,8 +316,8 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_REPEAT_INC             0x0300
 #define STK_STATE_CHECK_MARK       0x1000
 /* avoided by normal-POP */
-#define STK_NULL_CHECK_START       0x3000
-#define STK_NULL_CHECK_END         0x5000  /* for recursive call */
+#define STK_EMPTY_CHECK_START      0x3000
+#define STK_EMPTY_CHECK_END        0x5000  /* for recursive call */
 #define STK_MEM_END_MARK           0x8400
 #define STK_POS                    0x0500  /* used when POP-POS */
 #define STK_STOP_BT                0x0600  /* mark for "(?>...)" */
@@ -338,7 +338,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   (msa).region   = (arg_region);\
   (msa).start    = (arg_start);\
   (msa).best_len = ONIG_MISMATCH;\
-  (msa).ptr_num  = (reg)->num_repeat + (reg)->num_mem * 2;\
+  (msa).ptr_num  = (reg)->num_repeat + ((reg)->num_mem + 1) * 2; \
 } while(0)
 #else
 #define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start) do {\
@@ -346,7 +346,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   (msa).options  = (arg_option);\
   (msa).region   = (arg_region);\
   (msa).start    = (arg_start);\
-  (msa).ptr_num  = (reg)->num_repeat + (reg)->num_mem * 2;\
+  (msa).ptr_num  = (reg)->num_repeat + ((reg)->num_mem + 1) * 2; \
 } while(0)
 #endif
 
@@ -439,11 +439,9 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 } while(0)
 
 #define UPDATE_FOR_STACK_REALLOC do{\
-  repeat_stk = (OnigStackIndex* )alloc_base;\
+  repeat_stk    = (OnigStackIndex* )alloc_base;\
   mem_start_stk = (OnigStackIndex* )(repeat_stk + reg->num_repeat);\
-  mem_end_stk   = mem_start_stk + num_mem;\
-  mem_start_stk--; /* for index start from 1 */\
-  mem_end_stk--;   /* for index start from 1 */\
+  mem_end_stk   = mem_start_stk + num_mem + 1;\
 } while(0)
 
 static unsigned int MatchStackLimitSize = DEFAULT_MATCH_STACK_LIMIT_SIZE;
@@ -541,7 +539,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STATE_CHECK_POS(s,snum) \
   (((s) - str) * num_comb_exp_check + ((snum) - 1))
 #define STATE_CHECK_VAL(v,snum) do {\
-  if (state_check_buff != NULL) {\
+  if (IS_NOT_NULL(state_check_buff)) {\
     int x = STATE_CHECK_POS(s,snum);\
     (v) = state_check_buff[x/8] & (1<<(x%8));\
   }\
@@ -578,12 +576,12 @@ stack_double(int is_alloca, char** arg_alloc_base,
   stk->u.state.pcode     = (pat);\
   stk->u.state.pstr      = (s);\
   stk->u.state.pstr_prev = (sprev);\
-  stk->u.state.state_check = ((state_check_buff != NULL) ? (snum) : 0);\
+  stk->u.state.state_check = (IS_NOT_NULL(state_check_buff) ? (snum) : 0);\
   STACK_INC;\
 } while(0)
 
 #define STACK_PUSH_STATE_CHECK(s,snum) do {\
-  if (state_check_buff != NULL) {\
+  if (IS_NOT_NULL(state_check_buff)) {   \
     STACK_ENSURE(1);\
     stk->type = STK_STATE_CHECK_MARK;\
     stk->u.state.pstr = (s);\
@@ -699,18 +697,18 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_PUSH_NULL_CHECK_START(cnum, s) do {\
+#define STACK_PUSH_EMPTY_CHECK_START(cnum, s) do {\
   STACK_ENSURE(1);\
-  stk->type = STK_NULL_CHECK_START;\
-  stk->u.null_check.num  = (cnum);\
-  stk->u.null_check.pstr = (s);\
+  stk->type = STK_EMPTY_CHECK_START;\
+  stk->u.empty_check.num  = (cnum);\
+  stk->u.empty_check.pstr = (s);\
   STACK_INC;\
 } while(0)
 
-#define STACK_PUSH_NULL_CHECK_END(cnum) do {\
+#define STACK_PUSH_EMPTY_CHECK_END(cnum) do {\
   STACK_ENSURE(1);\
-  stk->type = STK_NULL_CHECK_END;\
-  stk->u.null_check.num  = (cnum);\
+  stk->type = STK_EMPTY_CHECK_END;\
+  stk->u.empty_check.num  = (cnum);\
   STACK_INC;\
 } while(0)
 
@@ -857,49 +855,29 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_NULL_CHECK(isnull,id,s) do {\
+#define STACK_EMPTY_CHECK(isnull,id,s) do {\
   OnigStackType* k = stk;\
   while (1) {\
     k--;\
-    STACK_BASE_CHECK(k, "STACK_NULL_CHECK"); \
-    if (k->type == STK_NULL_CHECK_START) {\
-      if (k->u.null_check.num == (id)) {\
-        (isnull) = (k->u.null_check.pstr == (s));\
+    STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK"); \
+    if (k->type == STK_EMPTY_CHECK_START) {\
+      if (k->u.empty_check.num == (id)) {\
+        (isnull) = (k->u.empty_check.pstr == (s));\
         break;\
       }\
     }\
   }\
 } while(0)
 
-#define STACK_NULL_CHECK_REC(isnull,id,s) do {\
-  int level = 0;\
+#ifdef USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT
+#define STACK_EMPTY_CHECK_MEMST(isnull,id,s,reg) do {\
   OnigStackType* k = stk;\
   while (1) {\
     k--;\
-    STACK_BASE_CHECK(k, "STACK_NULL_CHECK_REC"); \
-    if (k->type == STK_NULL_CHECK_START) {\
-      if (k->u.null_check.num == (id)) {\
-        if (level == 0) {\
-          (isnull) = (k->u.null_check.pstr == (s));\
-          break;\
-        }\
-        else level--;\
-      }\
-    }\
-    else if (k->type == STK_NULL_CHECK_END) {\
-      level++;\
-    }\
-  }\
-} while(0)
-
-#define STACK_NULL_CHECK_MEMST(isnull,id,s,reg) do {\
-  OnigStackType* k = stk;\
-  while (1) {\
-    k--;\
-    STACK_BASE_CHECK(k, "STACK_NULL_CHECK_MEMST"); \
-    if (k->type == STK_NULL_CHECK_START) {\
-      if (k->u.null_check.num == (id)) {\
-        if (k->u.null_check.pstr != (s)) {\
+    STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_MEMST"); \
+    if (k->type == STK_EMPTY_CHECK_START) {\
+      if (k->u.empty_check.num == (id)) {\
+        if (k->u.empty_check.pstr != (s)) {\
           (isnull) = 0;\
           break;\
         }\
@@ -911,10 +889,11 @@ stack_double(int is_alloca, char** arg_alloc_base,
               if (k->u.mem.end == INVALID_STACK_INDEX) {\
                 (isnull) = 0; break;\
               }\
-              if (BIT_STATUS_AT(reg->bt_mem_end, k->u.mem.num))\
+              if (MEM_STATUS_AT(reg->bt_mem_end, k->u.mem.num))\
                 endp = STACK_AT(k->u.mem.end)->u.mem.pstr;\
               else\
                 endp = (UChar* )k->u.mem.end;\
+              /*fprintf(stderr, "num: %d, pstr: %p, endp: %p\n", k->u.mem.num, STACK_AT(k->u.mem.start)->u.mem.pstr, endp);*/ \
               if (STACK_AT(k->u.mem.start)->u.mem.pstr != endp) {\
                 (isnull) = 0; break;\
               }\
@@ -924,23 +903,23 @@ stack_double(int is_alloca, char** arg_alloc_base,
             }\
             k++;\
           }\
-  	  break;\
+          break;\
         }\
       }\
     }\
   }\
 } while(0)
 
-#define STACK_NULL_CHECK_MEMST_REC(isnull,id,s,reg) do {\
+#define STACK_EMPTY_CHECK_MEMST_REC(isnull,id,s,reg) do {\
   int level = 0;\
   OnigStackType* k = stk;\
   while (1) {\
     k--;\
-    STACK_BASE_CHECK(k, "STACK_NULL_CHECK_MEMST_REC"); \
-    if (k->type == STK_NULL_CHECK_START) {\
-      if (k->u.null_check.num == (id)) {\
+    STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_MEMST_REC"); \
+    if (k->type == STK_EMPTY_CHECK_START) {\
+      if (k->u.empty_check.num == (id)) {\
         if (level == 0) {\
-          if (k->u.null_check.pstr != (s)) {\
+          if (k->u.empty_check.pstr != (s)) {\
             (isnull) = 0;\
             break;\
           }\
@@ -952,7 +931,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
                 if (k->u.mem.end == INVALID_STACK_INDEX) {\
                   (isnull) = 0; break;\
                 }\
-                if (BIT_STATUS_AT(reg->bt_mem_end, k->u.mem.num))\
+                if (MEM_STATUS_AT(reg->bt_mem_end, k->u.mem.num))\
                   endp = STACK_AT(k->u.mem.end)->u.mem.pstr;\
                 else\
                   endp = (UChar* )k->u.mem.end;\
@@ -965,7 +944,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
               }\
               k++;\
             }\
-  	    break;\
+            break;\
           }\
         }\
         else {\
@@ -973,11 +952,33 @@ stack_double(int is_alloca, char** arg_alloc_base,
         }\
       }\
     }\
-    else if (k->type == STK_NULL_CHECK_END) {\
-      if (k->u.null_check.num == (id)) level++;\
+    else if (k->type == STK_EMPTY_CHECK_END) {\
+      if (k->u.empty_check.num == (id)) level++;\
     }\
   }\
 } while(0)
+#else
+#define STACK_EMPTY_CHECK_REC(isnull,id,s) do {\
+  int level = 0;\
+  OnigStackType* k = stk;\
+  while (1) {\
+    k--;\
+    STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_REC"); \
+    if (k->type == STK_EMPTY_CHECK_START) {\
+      if (k->u.empty_check.num == (id)) {\
+        if (level == 0) {\
+          (isnull) = (k->u.empty_check.pstr == (s));\
+          break;\
+        }\
+      }\
+      level--;\
+    }\
+    else if (k->type == STK_EMPTY_CHECK_END) {\
+      level++;\
+    }\
+  }\
+} while(0)
+#endif /* USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT */
 
 #define STACK_GET_REPEAT(id, k) do {\
   int level = 0;\
@@ -1099,7 +1100,7 @@ make_capture_history_tree(OnigCaptureTreeNode* node, OnigStackType** kp,
     if (k->type == STK_MEM_START) {
       n = k->u.mem.num;
       if (n <= ONIG_MAX_CAPTURE_HISTORY_GROUP &&
-          BIT_STATUS_AT(reg->capture_history, n) != 0) {
+          MEM_STATUS_AT(reg->capture_history, n) != 0) {
         child = history_node_new();
         CHECK_NULL_RETURN_MEMERR(child);
         child->group = n;
@@ -1164,7 +1165,7 @@ static int backref_match_at_nested_level(regex_t* reg
       if (k->type == STK_MEM_START) {
         if (mem_is_in_memp(k->u.mem.num, mem_num, memp)) {
           pstart = k->u.mem.pstr;
-          if (pend != NULL_UCHARP) {
+          if (IS_NOT_NULL(pend)) {
             if (pend - pstart > send - *s) return 0; /* or goto next_mem; */
             p  = pstart;
             ss = *s;
@@ -1337,8 +1338,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   }
 
 #ifdef ONIG_DEBUG_MATCH
-  fprintf(stderr, "match_at: str: %d, end: %d, start: %d, sprev: %d\n",
-	  (int )str, (int )end, (int )sstart, (int )sprev);
+  fprintf(stderr, "match_at: str: %p, end: %p, start: %p, sprev: %p\n",
+          str, end, sstart, sprev);
   fprintf(stderr, "size: %d, start offset: %d\n",
 	  (int )(end - str), (int )(sstart - str));
 #endif
@@ -1349,9 +1350,14 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   while (1) {
 #ifdef ONIG_DEBUG_MATCH
     {
+      static unsigned int counter = 1;
+
       UChar *q, *bp, buf[50];
       int len;
-      fprintf(stderr, "%4d> \"", (int )(s - str));
+      fprintf(stderr, "%7u: %7ld: %4d> \"",
+              counter, GET_STACK_INDEX(stk), (int )(s - str));
+      counter++;
+
       bp = buf;
       for (i = 0, q = s; i < 7 && q < end; i++) {
         len = enclen(encode, q);
@@ -1361,8 +1367,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       else         { xmemcpy(bp, "\"",    1); bp += 1; }
       *bp = 0;
       fputs((char* )buf, stderr);
+
       for (i = 0; i < 20 - (bp - buf); i++) fputc(' ', stderr);
-      onig_print_compiled_byte_code(stderr, p, NULL, encode);
+      fprintf(stderr, "%4d: ", (int )(p - reg->p));
+      onig_print_compiled_byte_code(stderr, p, NULL, reg->p, encode);
       fprintf(stderr, "\n");
     }
 #endif
@@ -1394,12 +1402,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
             rmt[0].rm_eo = s      - str;
             for (i = 1; i <= num_mem; i++) {
               if (mem_end_stk[i] != INVALID_STACK_INDEX) {
-                if (BIT_STATUS_AT(reg->bt_mem_start, i))
+                if (MEM_STATUS_AT(reg->bt_mem_start, i))
                   rmt[i].rm_so = STACK_AT(mem_start_stk[i])->u.mem.pstr - str;
                 else
                   rmt[i].rm_so = (UChar* )((void* )(mem_start_stk[i])) - str;
 
-                rmt[i].rm_eo = (BIT_STATUS_AT(reg->bt_mem_end, i)
+                rmt[i].rm_eo = (MEM_STATUS_AT(reg->bt_mem_end, i)
                                 ? STACK_AT(mem_end_stk[i])->u.mem.pstr
                                 : (UChar* )((void* )mem_end_stk[i])) - str;
               }
@@ -1414,12 +1422,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
             region->end[0] = s      - str;
             for (i = 1; i <= num_mem; i++) {
               if (mem_end_stk[i] != INVALID_STACK_INDEX) {
-                if (BIT_STATUS_AT(reg->bt_mem_start, i))
+                if (MEM_STATUS_AT(reg->bt_mem_start, i))
                   region->beg[i] = STACK_AT(mem_start_stk[i])->u.mem.pstr - str;
                 else
                   region->beg[i] = (UChar* )((void* )mem_start_stk[i]) - str;
 
-                region->end[i] = (BIT_STATUS_AT(reg->bt_mem_end, i)
+                region->end[i] = (MEM_STATUS_AT(reg->bt_mem_end, i)
                                   ? STACK_AT(mem_end_stk[i])->u.mem.pstr
                                   : (UChar* )((void* )mem_end_stk[i])) - str;
               }
@@ -2164,7 +2172,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       mem_end_stk[mem] = (OnigStackIndex )((void* )s);
       STACK_GET_MEM_START(mem, stkp);
 
-      if (BIT_STATUS_AT(reg->bt_mem_start, mem))
+      if (MEM_STATUS_AT(reg->bt_mem_start, mem))
         mem_start_stk[mem] = GET_STACK_INDEX(stkp);
       else
         mem_start_stk[mem] = (OnigStackIndex )((void* )stkp->u.mem.pstr);
@@ -2198,12 +2206,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         if (mem_end_stk[mem]   == INVALID_STACK_INDEX) goto fail;
         if (mem_start_stk[mem] == INVALID_STACK_INDEX) goto fail;
 
-        if (BIT_STATUS_AT(reg->bt_mem_start, mem))
+        if (MEM_STATUS_AT(reg->bt_mem_start, mem))
           pstart = STACK_AT(mem_start_stk[mem])->u.mem.pstr;
         else
           pstart = (UChar* )((void* )mem_start_stk[mem]);
 
-        pend = (BIT_STATUS_AT(reg->bt_mem_end, mem)
+        pend = (MEM_STATUS_AT(reg->bt_mem_end, mem)
                 ? STACK_AT(mem_end_stk[mem])->u.mem.pstr
                 : (UChar* )((void* )mem_end_stk[mem]));
         n = pend - pstart;
@@ -2230,12 +2238,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         if (mem_end_stk[mem]   == INVALID_STACK_INDEX) goto fail;
         if (mem_start_stk[mem] == INVALID_STACK_INDEX) goto fail;
 
-        if (BIT_STATUS_AT(reg->bt_mem_start, mem))
+        if (MEM_STATUS_AT(reg->bt_mem_start, mem))
           pstart = STACK_AT(mem_start_stk[mem])->u.mem.pstr;
         else
           pstart = (UChar* )((void* )mem_start_stk[mem]);
 
-        pend = (BIT_STATUS_AT(reg->bt_mem_end, mem)
+        pend = (MEM_STATUS_AT(reg->bt_mem_end, mem)
                 ? STACK_AT(mem_end_stk[mem])->u.mem.pstr
                 : (UChar* )((void* )mem_end_stk[mem]));
         n = pend - pstart;
@@ -2262,12 +2270,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           if (mem_end_stk[mem]   == INVALID_STACK_INDEX) continue;
           if (mem_start_stk[mem] == INVALID_STACK_INDEX) continue;
 
-          if (BIT_STATUS_AT(reg->bt_mem_start, mem))
+          if (MEM_STATUS_AT(reg->bt_mem_start, mem))
             pstart = STACK_AT(mem_start_stk[mem])->u.mem.pstr;
           else
             pstart = (UChar* )((void* )mem_start_stk[mem]);
 
-          pend = (BIT_STATUS_AT(reg->bt_mem_end, mem)
+          pend = (MEM_STATUS_AT(reg->bt_mem_end, mem)
                   ? STACK_AT(mem_end_stk[mem])->u.mem.pstr
                   : (UChar* )((void* )mem_end_stk[mem]));
           n = pend - pstart;
@@ -2301,12 +2309,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           if (mem_end_stk[mem]   == INVALID_STACK_INDEX) continue;
           if (mem_start_stk[mem] == INVALID_STACK_INDEX) continue;
 
-          if (BIT_STATUS_AT(reg->bt_mem_start, mem))
+          if (MEM_STATUS_AT(reg->bt_mem_start, mem))
             pstart = STACK_AT(mem_start_stk[mem])->u.mem.pstr;
           else
             pstart = (UChar* )((void* )mem_start_stk[mem]);
 
-          pend = (BIT_STATUS_AT(reg->bt_mem_end, mem)
+          pend = (MEM_STATUS_AT(reg->bt_mem_end, mem)
                   ? STACK_AT(mem_end_stk[mem])->u.mem.pstr
                   : (UChar* )((void* )mem_end_stk[mem]));
           n = pend - pstart;
@@ -2372,25 +2380,24 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       break;
 #endif
 
-    case OP_NULL_CHECK_START:  MOP_IN(OP_NULL_CHECK_START);
+    case OP_EMPTY_CHECK_START:  MOP_IN(OP_EMPTY_CHECK_START);
       GET_MEMNUM_INC(mem, p);    /* mem: null check id */
-      STACK_PUSH_NULL_CHECK_START(mem, s);
+      STACK_PUSH_EMPTY_CHECK_START(mem, s);
       MOP_OUT;
       continue;
       break;
 
-    case OP_NULL_CHECK_END:  MOP_IN(OP_NULL_CHECK_END);
+    case OP_EMPTY_CHECK_END:  MOP_IN(OP_EMPTY_CHECK_END);
       {
-        int isnull;
+        int is_empty;
 
         GET_MEMNUM_INC(mem, p); /* mem: null check id */
-        STACK_NULL_CHECK(isnull, mem, s);
-        if (isnull) {
+        STACK_EMPTY_CHECK(is_empty, mem, s);
+        if (is_empty) {
 #ifdef ONIG_DEBUG_MATCH
-          fprintf(stderr, "NULL_CHECK_END: skip  id:%d, s:%d\n",
-                  (int )mem, (int )s);
+          fprintf(stderr, "EMPTY_CHECK_END: skip  id:%d, s:%p\n", (int )mem, s);
 #endif
-        null_check_found:
+        empty_check_found:
           /* empty loop founded, skip next instruction */
           switch (*p++) {
           case OP_JUMP:
@@ -2413,20 +2420,19 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       continue;
       break;
 
-#ifdef USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT
-    case OP_NULL_CHECK_END_MEMST:  MOP_IN(OP_NULL_CHECK_END_MEMST);
+#ifdef USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT
+    case OP_EMPTY_CHECK_END_MEMST:  MOP_IN(OP_EMPTY_CHECK_END_MEMST);
       {
-        int isnull;
+        int is_empty;
 
         GET_MEMNUM_INC(mem, p); /* mem: null check id */
-        STACK_NULL_CHECK_MEMST(isnull, mem, s, reg);
-        if (isnull) {
+        STACK_EMPTY_CHECK_MEMST(is_empty, mem, s, reg);
+        if (is_empty) {
 #ifdef ONIG_DEBUG_MATCH
-          fprintf(stderr, "NULL_CHECK_END_MEMST: skip  id:%d, s:%d\n",
-                  (int )mem, (int )s);
+          fprintf(stderr, "EMPTY_CHECK_END_MEMST: skip  id:%d, s:%p\n", (int)mem, s);
 #endif
-          if (isnull == -1) goto fail;
-          goto 	null_check_found;
+          if (is_empty == -1) goto fail;
+          goto 	empty_check_found;
         }
       }
       MOP_OUT;
@@ -2435,27 +2441,27 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
 
 #ifdef USE_SUBEXP_CALL
-    case OP_NULL_CHECK_END_MEMST_PUSH:
-      MOP_IN(OP_NULL_CHECK_END_MEMST_PUSH);
+    case OP_EMPTY_CHECK_END_MEMST_PUSH:
+      MOP_IN(OP_EMPTY_CHECK_END_MEMST_PUSH);
       {
-        int isnull;
+        int is_empty;
 
         GET_MEMNUM_INC(mem, p); /* mem: null check id */
-#ifdef USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT
-        STACK_NULL_CHECK_MEMST_REC(isnull, mem, s, reg);
+#ifdef USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT
+        STACK_EMPTY_CHECK_MEMST_REC(is_empty, mem, s, reg);
 #else
-        STACK_NULL_CHECK_REC(isnull, mem, s);
+        STACK_EMPTY_CHECK_REC(is_empty, mem, s);
 #endif
-        if (isnull) {
+        if (is_empty) {
 #ifdef ONIG_DEBUG_MATCH
-          fprintf(stderr, "NULL_CHECK_END_MEMST_PUSH: skip  id:%d, s:%d\n",
-                  (int )mem, (int )s);
+          fprintf(stderr, "EMPTY_CHECK_END_MEMST_PUSH: skip  id:%d, s:%p\n",
+                  (int )mem, s);
 #endif
-          if (isnull == -1) goto fail;
-          goto 	null_check_found;
+          if (is_empty == -1) goto fail;
+          goto 	empty_check_found;
         }
         else {
-          STACK_PUSH_NULL_CHECK_END(mem);
+          STACK_PUSH_EMPTY_CHECK_END(mem);
         }
       }
       MOP_OUT;
@@ -2931,8 +2937,8 @@ bm_search_notrev(regex_t* reg, const UChar* target, const UChar* target_end,
   int skip, tlen1;
 
 #ifdef ONIG_DEBUG_SEARCH
-  fprintf(stderr, "bm_search_notrev: text: %d, text_end: %d, text_range: %d\n",
-	  (int )text, (int )text_end, (int )text_range);
+  fprintf(stderr, "bm_search_notrev: text: %p, text_end: %p, text_range: %p\n",
+          text, text_end, text_range);
 #endif
 
   tail = target_end - 1;
@@ -3151,8 +3157,8 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
   UChar *p, *pprev = (UChar* )NULL;
 
 #ifdef ONIG_DEBUG_SEARCH
-  fprintf(stderr, "forward_search_range: str: %d, end: %d, s: %d, range: %d\n",
-	  (int )str, (int )end, (int )s, (int )range);
+  fprintf(stderr, "forward_search_range: str: %p, end: %p, s: %p, range: %p\n",
+          str, end, s, range);
 #endif
 
   p = s;
@@ -3317,7 +3323,7 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
 
       r = set_bm_backward_skip(reg->exact, reg->exact_end, reg->enc,
                                &(reg->int_map_backward));
-      if (r) return r;
+      if (r != 0) return r;
     }
     p = bm_search_backward(reg, reg->exact, reg->exact_end, range, adjrange,
                            end, p);
@@ -3406,8 +3412,8 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 
 #ifdef ONIG_DEBUG_SEARCH
   fprintf(stderr,
-     "onig_search (entry point): str: %d, end: %d, start: %d, range: %d\n",
-     (int )str, (int )(end - str), (int )(start - str), (int )(range - str));
+     "onig_search (entry point): str: %p, end: %d, start: %d, range: %d\n",
+     str, (int )(end - str), (int )(start - str), (int )(range - str));
 #endif
 
   if (region
@@ -3416,7 +3422,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 #endif
       ) {
     r = onig_region_resize_clear(region, reg->num_mem + 1);
-    if (r) goto finish_no_msa;
+    if (r != 0) goto finish_no_msa;
   }
 
   if (start > end || start < str) goto mismatch_no_msa;
@@ -3861,7 +3867,7 @@ onig_number_of_capture_histories(regex_t* reg)
 
   n = 0;
   for (i = 0; i <= ONIG_MAX_CAPTURE_HISTORY_GROUP; i++) {
-    if (BIT_STATUS_AT(reg->capture_history, i) != 0)
+    if (MEM_STATUS_AT(reg->capture_history, i) != 0)
       n++;
   }
   return n;

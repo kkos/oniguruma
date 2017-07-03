@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.3.0    2017/05/19
+Oniguruma Regular Expressions Version 6.4.0    2017/06/28
 
 syntax: ONIG_SYNTAX_RUBY (default)
 
@@ -237,6 +237,8 @@ syntax: ONIG_SYNTAX_RUBY (default)
   \n  \k<n>     \k'n'     (n >= 1) backreference the nth group in the regexp
       \k<-n>    \k'-n'    (n >= 1) backreference the nth group counting
                           backwards from the referring position
+      \k<+n>    \k'+n'    (n >= 1) backreference the nth group counting
+                          forwards from the referring position
       \k<name>  \k'name'  backreference a group with the specified name
 
   When backreferencing with a name that is assigned to more than one groups,
@@ -286,7 +288,10 @@ syntax: ONIG_SYNTAX_RUBY (default)
   that group."
 
   \g<n>     \g'n'     (n >= 1) call the nth group
+  \g<0>     \g'0'     call zero (call the total regexp)
   \g<-n>    \g'-n'    (n >= 1) call the nth group counting backwards from
+                      the calling position
+  \g<+n>    \g'+n'    (n >= 1) call the nth group counting forwards from
                       the calling position
   \g<name>  \g'name'  call the group with the specified name
 

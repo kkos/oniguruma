@@ -4,7 +4,7 @@
   regint.h -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2013  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,14 +59,14 @@
 #define USE_NAMED_GROUP
 #define USE_SUBEXP_CALL
 #define USE_BACKREF_WITH_LEVEL        /* \k<name+n>, \k<name-n> */
-#define USE_MONOMANIAC_CHECK_CAPTURES_IN_ENDLESS_REPEAT  /* /(?:()|())*\2/ */
+#define USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT  /* /(?:()|())*\2/ */
 #define USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE     /* /\n$/ =~ "\n" */
 #define USE_WARNING_REDUNDANT_NESTED_REPEAT_OPERATOR
 /* !!! moved to regenc.h. */ /* #define USE_CRNL_AS_LINE_TERMINATOR */
 
 /* internal config */
 #define USE_OP_PUSH_OR_JUMP_EXACT
-#define USE_QTFR_PEEK_NEXT
+#define USE_QUANT_PEEK_NEXT
 #define USE_ST_LIBRARY
 
 #define INIT_MATCH_STACK_SIZE                     160
@@ -161,6 +161,10 @@
 #endif
 #endif
 
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
+
 #ifdef __BORLANDC__
 #include <malloc.h>
 #endif
@@ -169,7 +173,11 @@
 # include <stdio.h>
 #endif
 
-#include <limits.h>
+#ifdef _WIN32
+#if defined(_MSC_VER) && (_MSC_VER < 1300)
+typedef int intptr_t;
+#endif
+#endif
 
 #include "regenc.h"
 
@@ -232,24 +240,28 @@
 #define ONIG_OPTIMIZE_MAP               5   /* char map */
 
 /* bit status */
-typedef unsigned int  BitStatusType;
+typedef unsigned int  MemStatusType;
 
-#define BIT_STATUS_BITS_NUM          (sizeof(BitStatusType) * 8)
-#define BIT_STATUS_CLEAR(stats)      (stats) = 0
-#define BIT_STATUS_ON_ALL(stats)     (stats) = ~((BitStatusType )0)
-#define BIT_STATUS_AT(stats,n) \
-  ((n) < (int )BIT_STATUS_BITS_NUM  ?  ((stats) & (1 << n)) : ((stats) & 1))
+#define MEM_STATUS_BITS_NUM          (sizeof(MemStatusType) * 8)
+#define MEM_STATUS_CLEAR(stats)      (stats) = 0
+#define MEM_STATUS_ON_ALL(stats)     (stats) = ~((MemStatusType )0)
+#define MEM_STATUS_AT(stats,n) \
+  ((n) < (int )MEM_STATUS_BITS_NUM  ?  ((stats) & ((MemStatusType )1 << n)) : ((stats) & 1))
+#define MEM_STATUS_AT0(stats,n) \
+  ((n) > 0 && (n) < (int )MEM_STATUS_BITS_NUM  ?  ((stats) & ((MemStatusType )1 << n)) : ((stats) & 1))
 
-#define BIT_STATUS_ON_AT(stats,n) do {\
-    if ((n) < (int )BIT_STATUS_BITS_NUM)	\
-    (stats) |= (1 << (n));\
+#define MEM_STATUS_ON(stats,n) do {\
+  if ((n) < (int )MEM_STATUS_BITS_NUM) {\
+    if ((n) != 0)\
+      (stats) |= ((MemStatusType )1 << (n));\
+  }\
   else\
     (stats) |= 1;\
 } while (0)
 
-#define BIT_STATUS_ON_AT_SIMPLE(stats,n) do {\
-    if ((n) < (int )BIT_STATUS_BITS_NUM)\
-    (stats) |= (1 << (n));\
+#define MEM_STATUS_ON_SIMPLE(stats,n) do {\
+    if ((n) < (int )MEM_STATUS_BITS_NUM)\
+    (stats) |= ((MemStatusType )1 << (n));\
 } while (0)
 
 
@@ -396,24 +408,27 @@ typedef struct _BBuf {
 #define BBUF_GET_BYTE(buf, pos) (buf)->p[(pos)]
 
 
-#define ANCHOR_BEGIN_BUF        (1<<0)
-#define ANCHOR_BEGIN_LINE       (1<<1)
-#define ANCHOR_BEGIN_POSITION   (1<<2)
-#define ANCHOR_END_BUF          (1<<3)
-#define ANCHOR_SEMI_END_BUF     (1<<4)
-#define ANCHOR_END_LINE         (1<<5)
-
-#define ANCHOR_WORD_BOUND       (1<<6)
-#define ANCHOR_NOT_WORD_BOUND   (1<<7)
-#define ANCHOR_WORD_BEGIN       (1<<8)
-#define ANCHOR_WORD_END         (1<<9)
-#define ANCHOR_PREC_READ        (1<<10)
-#define ANCHOR_PREC_READ_NOT    (1<<11)
-#define ANCHOR_LOOK_BEHIND      (1<<12)
-#define ANCHOR_LOOK_BEHIND_NOT  (1<<13)
-
+/* has body */
+#define ANCHOR_PREC_READ        (1<<0)
+#define ANCHOR_PREC_READ_NOT    (1<<1)
+#define ANCHOR_LOOK_BEHIND      (1<<2)
+#define ANCHOR_LOOK_BEHIND_NOT  (1<<3)
+/* no body */
+#define ANCHOR_BEGIN_BUF        (1<<4)
+#define ANCHOR_BEGIN_LINE       (1<<5)
+#define ANCHOR_BEGIN_POSITION   (1<<6)
+#define ANCHOR_END_BUF          (1<<7)
+#define ANCHOR_SEMI_END_BUF     (1<<8)
+#define ANCHOR_END_LINE         (1<<9)
+#define ANCHOR_WORD_BOUND       (1<<10)
+#define ANCHOR_NOT_WORD_BOUND   (1<<11)
+#define ANCHOR_WORD_BEGIN       (1<<12)
+#define ANCHOR_WORD_END         (1<<13)
 #define ANCHOR_ANYCHAR_STAR     (1<<14)   /* ".*" optimize info */
 #define ANCHOR_ANYCHAR_STAR_ML  (1<<15)   /* ".*" optimize info (multi-line) */
+
+#define ANCHOR_HAS_BODY(a)      ((a)->type < ANCHOR_BEGIN_BUF)
+
 
 /* operation code */
 enum OpCode {
@@ -492,10 +507,10 @@ enum OpCode {
   OP_REPEAT_INC_NG,        /* non greedy */
   OP_REPEAT_INC_SG,        /* search and get in stack */
   OP_REPEAT_INC_NG_SG,     /* search and get in stack (non greedy) */
-  OP_NULL_CHECK_START,     /* null loop checker start */
-  OP_NULL_CHECK_END,       /* null loop checker end   */
-  OP_NULL_CHECK_END_MEMST, /* null loop checker end (with capture status) */
-  OP_NULL_CHECK_END_MEMST_PUSH, /* with capture status and push check-end */
+  OP_EMPTY_CHECK_START,     /* null loop checker start */
+  OP_EMPTY_CHECK_END,       /* null loop checker end   */
+  OP_EMPTY_CHECK_END_MEMST, /* null loop checker end (with capture status) */
+  OP_EMPTY_CHECK_END_MEMST_PUSH, /* with capture status and push check-end */
 
   OP_PUSH_POS,             /* (?=...)  start */
   OP_POP_POS,              /* (?=...)  end   */
@@ -583,8 +598,8 @@ typedef void* PointerType;
 #define SIZE_OP_MEMORY_END_REC         (SIZE_OPCODE + SIZE_MEMNUM)
 #define SIZE_OP_PUSH_STOP_BT            SIZE_OPCODE
 #define SIZE_OP_POP_STOP_BT             SIZE_OPCODE
-#define SIZE_OP_NULL_CHECK_START       (SIZE_OPCODE + SIZE_MEMNUM)
-#define SIZE_OP_NULL_CHECK_END         (SIZE_OPCODE + SIZE_MEMNUM)
+#define SIZE_OP_EMPTY_CHECK_START       (SIZE_OPCODE + SIZE_MEMNUM)
+#define SIZE_OP_EMPTY_CHECK_END         (SIZE_OPCODE + SIZE_MEMNUM)
 #define SIZE_OP_LOOK_BEHIND            (SIZE_OPCODE + SIZE_LENGTH)
 #define SIZE_OP_PUSH_LOOK_BEHIND_NOT   (SIZE_OPCODE + SIZE_RELADDR + SIZE_LENGTH)
 #define SIZE_OP_FAIL_LOOK_BEHIND_NOT    SIZE_OPCODE
@@ -646,25 +661,10 @@ typedef void* PointerType;
 #define FLAG_NCCLASS_SHARE         (1<<1)
 
 #define NCCLASS_SET_NOT(nd)     NCCLASS_FLAG_SET(nd, FLAG_NCCLASS_NOT)
-#define NCCLASS_SET_SHARE(nd)   NCCLASS_FLAG_SET(nd, FLAG_NCCLASS_SHARE)
 #define NCCLASS_CLEAR_NOT(nd)   NCCLASS_FLAG_CLEAR(nd, FLAG_NCCLASS_NOT)
 #define IS_NCCLASS_NOT(nd)      IS_NCCLASS_FLAG_ON(nd, FLAG_NCCLASS_NOT)
-#define IS_NCCLASS_SHARE(nd)    IS_NCCLASS_FLAG_ON(nd, FLAG_NCCLASS_SHARE)
 
-typedef struct {
-  int type;
-  /* struct _Node* next; */
-  /* unsigned int flags; */
-} NodeBase;
-
-typedef struct {
-  NodeBase base;
-  unsigned int flags;
-  BitSet bs;
-  BBuf*  mbuf;   /* multi-byte info or NULL */
-} CClassNode;
-
-typedef long OnigStackIndex;
+typedef intptr_t OnigStackIndex;
 
 typedef struct _OnigStackType {
   unsigned int type;
@@ -695,7 +695,7 @@ typedef struct _OnigStackType {
     struct {
       int num;           /* null check id */
       UChar *pstr;       /* start position */
-    } null_check;
+    } empty_check;
 #ifdef USE_SUBEXP_CALL
     struct {
       UChar *ret_addr;   /* byte code position */
@@ -746,7 +746,7 @@ typedef struct {
 extern OnigOpInfoType OnigOpInfo[];
 
 
-extern void onig_print_compiled_byte_code P_((FILE* f, UChar* bp, UChar** nextp, OnigEncoding enc));
+extern void onig_print_compiled_byte_code P_((FILE* f, UChar* bp, UChar** nextp, UChar* start, OnigEncoding enc));
 
 #ifdef ONIG_DEBUG_STATISTICS
 extern void onig_statistics_init P_((void));
@@ -760,8 +760,7 @@ extern void  onig_snprintf_with_pattern PV_((UChar buf[], int bufsize, OnigEncod
 extern int  onig_bbuf_init P_((BBuf* buf, int size));
 extern int  onig_compile P_((regex_t* reg, const UChar* pattern, const UChar* pattern_end, OnigErrorInfo* einfo));
 extern void onig_transfer P_((regex_t* to, regex_t* from));
-extern int  onig_is_code_in_cc P_((OnigEncoding enc, OnigCodePoint code, CClassNode* cc));
-extern int  onig_is_code_in_cc_len P_((int enclen, OnigCodePoint code, CClassNode* cc));
+extern int  onig_is_code_in_cc_len P_((int enclen, OnigCodePoint code, void* /* CClassNode* */ cc));
 
 /* strend hash */
 typedef void hash_table_type;
