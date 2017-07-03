@@ -20,6 +20,14 @@ Supported character encodings:
 * CP1251:  contributed by Byte
 
 
+New feature of version 6.4.0
+--------------------------
+
+* Fix fatal problem of endless repeat on Windows
+* NEW: call zero (call the total regexp)
+* NEW: relative backref and relative call by positive number
+
+
 New feature of version 6.3.0
 --------------------------
 
