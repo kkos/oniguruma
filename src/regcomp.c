@@ -545,7 +545,7 @@ compile_length_string_node(Node* node, regex_t* reg)
   if (sn->end <= sn->s)
     return 0;
 
-  ambig = NSTRING_IS_AMBIG(node);
+  ambig = NODE_STRING_IS_AMBIG(node);
 
   p = prev = sn->s;
   prev_len = enclen(enc, p);
@@ -594,7 +594,7 @@ compile_string_node(Node* node, regex_t* reg)
     return 0;
 
   end = sn->end;
-  ambig = NSTRING_IS_AMBIG(node);
+  ambig = NODE_STRING_IS_AMBIG(node);
 
   p = prev = sn->s;
   prev_len = enclen(enc, p);
@@ -1623,7 +1623,7 @@ compile_length_tree(Node* node, regex_t* reg)
     break;
 
   case NODE_STR:
-    if (NSTRING_IS_RAW(node))
+    if (NODE_STRING_IS_RAW(node))
       r = compile_length_string_raw_node(STR_(node), reg);
     else
       r = compile_length_string_node(node, reg);
@@ -1737,7 +1737,7 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
     break;
 
   case NODE_STR:
-    if (NSTRING_IS_RAW(node))
+    if (NODE_STRING_IS_RAW(node))
       r = compile_string_raw_node(STR_(node), reg);
     else
       r = compile_string_node(node, reg);
@@ -2361,7 +2361,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
   case NODE_STR:
     {
       StrNode* xs = STR_(x);
-      if (NSTRING_LEN(x) == 0)
+      if (NODE_STRING_LEN(x) == 0)
         break;
 
       //c = *(xs->s);
@@ -2396,9 +2396,9 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
         {
           UChar *q;
           StrNode* ys = STR_(y);
-          len = NSTRING_LEN(x);
-          if (len > NSTRING_LEN(y)) len = NSTRING_LEN(y);
-          if (NSTRING_IS_AMBIG(x) || NSTRING_IS_AMBIG(y)) {
+          len = NODE_STRING_LEN(x);
+          if (len > NODE_STRING_LEN(y)) len = NODE_STRING_LEN(y);
+          if (NODE_STRING_IS_AMBIG(x) || NODE_STRING_IS_AMBIG(y)) {
             /* tiny version */
             return 0;
           }
@@ -2458,7 +2458,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
         break;
 
       if (exact != 0 &&
-          !NSTRING_IS_RAW(node) && IS_IGNORECASE(reg->options)) {
+          !NODE_STRING_IS_RAW(node) && IS_IGNORECASE(reg->options)) {
       }
       else {
         n = node;
@@ -3287,8 +3287,8 @@ expand_case_fold_make_rem_string(Node** rnode, UChar *s, UChar *end,
     return r;
   }
 
-  NSTRING_SET_AMBIG(node);
-  NSTRING_SET_DONT_GET_OPT_INFO(node);
+  NODE_STRING_SET_AMBIG(node);
+  NODE_STRING_SET_DONT_GET_OPT_INFO(node);
   *rnode = node;
   return 0;
 }
@@ -3416,7 +3416,7 @@ expand_case_fold_string(Node* node, regex_t* reg)
   OnigCaseFoldCodeItem items[ONIGENC_GET_CASE_FOLD_CODES_MAX_NUM];
   StrNode* sn = STR_(node);
 
-  if (NSTRING_IS_AMBIG(node)) return 0;
+  if (NODE_STRING_IS_AMBIG(node)) return 0;
 
   start = sn->s;
   end   = sn->end;
@@ -4241,7 +4241,7 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
   if (NODE_TYPE(body) == NODE_STR) {
     if (!IS_REPEAT_INFINITE(qn->lower) && qn->lower == qn->upper &&
         qn->lower > 1 && qn->lower <= EXPAND_STRING_MAX_LENGTH) {
-      int len = NSTRING_LEN(body);
+      int len = NODE_STRING_LEN(body);
       StrNode* sn = STR_(body);
 
       if (len * qn->lower <= EXPAND_STRING_MAX_LENGTH) {
@@ -4309,7 +4309,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     break;
 
   case NODE_STR:
-    if (IS_IGNORECASE(reg->options) && !NSTRING_IS_RAW(node)) {
+    if (IS_IGNORECASE(reg->options) && !NODE_STRING_IS_RAW(node)) {
       r = expand_case_fold_string(node, reg);
     }
     break;
@@ -5082,11 +5082,11 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     {
       StrNode* sn = STR_(node);
       int slen = sn->end - sn->s;
-      int is_raw = NSTRING_IS_RAW(node);
+      int is_raw = NODE_STRING_IS_RAW(node);
 
-      if (! NSTRING_IS_AMBIG(node)) {
+      if (! NODE_STRING_IS_AMBIG(node)) {
         concat_opt_exact_info_str(&opt->exb, sn->s, sn->end,
-                                  NSTRING_IS_RAW(node), env->enc);
+                                  NODE_STRING_IS_RAW(node), env->enc);
         if (slen > 0) {
           add_char_opt_map_info(&opt->map, *(sn->s), env->enc);
         }
@@ -5095,7 +5095,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
       else {
         int max;
 
-        if (NSTRING_IS_DONT_GET_OPT_INFO(node)) {
+        if (NODE_STRING_IS_DONT_GET_OPT_INFO(node)) {
           int n = onigenc_strlen(env->enc, sn->s, sn->end);
           max = ONIGENC_MBC_MAXLEN_DIST(env->enc) * n;
         }
@@ -6613,7 +6613,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
 
   case NODE_STR:
     fprintf(f, "<string%s:%p>",
-	    (NSTRING_IS_RAW(node) ? "-raw" : ""), node);
+	    (NODE_STRING_IS_RAW(node) ? "-raw" : ""), node);
     for (p = STR_(node)->s; p < STR_(node)->end; p++) {
       if (*p >= 0x20 && *p < 0x7f)
         fputc(*p, f);

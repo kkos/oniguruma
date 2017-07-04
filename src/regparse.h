@@ -99,15 +99,15 @@ typedef enum {
 #define STRING_AMBIG              (1<<1)
 #define STRING_DONT_GET_OPT_INFO  (1<<2)
 
-#define NSTRING_LEN(node)             ((node)->u.str.end - (node)->u.str.s)
-#define NSTRING_SET_RAW(node)          (node)->u.str.flag |= STRING_RAW
-#define NSTRING_CLEAR_RAW(node)        (node)->u.str.flag &= ~STRING_RAW
-#define NSTRING_SET_AMBIG(node)        (node)->u.str.flag |= STRING_AMBIG
-#define NSTRING_SET_DONT_GET_OPT_INFO(node) \
+#define NODE_STRING_LEN(node)             ((node)->u.str.end - (node)->u.str.s)
+#define NODE_STRING_SET_RAW(node)          (node)->u.str.flag |= STRING_RAW
+#define NODE_STRING_CLEAR_RAW(node)        (node)->u.str.flag &= ~STRING_RAW
+#define NODE_STRING_SET_AMBIG(node)        (node)->u.str.flag |= STRING_AMBIG
+#define NODE_STRING_SET_DONT_GET_OPT_INFO(node) \
   (node)->u.str.flag |= STRING_DONT_GET_OPT_INFO
-#define NSTRING_IS_RAW(node)          (((node)->u.str.flag & STRING_RAW)   != 0)
-#define NSTRING_IS_AMBIG(node)        (((node)->u.str.flag & STRING_AMBIG) != 0)
-#define NSTRING_IS_DONT_GET_OPT_INFO(node) \
+#define NODE_STRING_IS_RAW(node)          (((node)->u.str.flag & STRING_RAW)   != 0)
+#define NODE_STRING_IS_AMBIG(node)        (((node)->u.str.flag & STRING_AMBIG) != 0)
+#define NODE_STRING_IS_DONT_GET_OPT_INFO(node) \
   (((node)->u.str.flag & STRING_DONT_GET_OPT_INFO) != 0)
 
 #define BACKREFS_P(br) \

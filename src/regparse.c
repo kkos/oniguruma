@@ -1502,7 +1502,7 @@ static Node*
 node_new_str_raw(UChar* s, UChar* end)
 {
   Node* node = node_new_str(s, end);
-  NSTRING_SET_RAW(node);
+  NODE_STRING_SET_RAW(node);
   return node;
 }
 
@@ -1532,7 +1532,7 @@ str_node_split_last_char(StrNode* sn, OnigEncoding enc)
     if (p && p > sn->s) { /* can be split. */
       n = node_new_str(p, sn->end);
       if ((sn->flag & STRING_RAW) != 0)
-        NSTRING_SET_RAW(n);
+        NODE_STRING_SET_RAW(n);
 
       sn->end = (UChar* )p;
     }
@@ -5219,7 +5219,7 @@ i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[],
 
           /* char-class expanded multi-char only
              compare with string folded at match time. */
-          NSTRING_SET_AMBIG(snode);
+          NODE_STRING_SET_AMBIG(snode);
         }
         else {
           r = onig_node_str_cat(snode, buf, buf + len);
@@ -5320,7 +5320,7 @@ parse_exp(Node** np, OnigToken* tok, int term,
         if (len >= ONIGENC_MBC_MINLEN(env->enc)) {
           if (len == enclen(env->enc, STR_(*np)->s)) {//should not enclen_end()
             r = fetch_token(tok, src, end, env);
-            NSTRING_CLEAR_RAW(*np);
+            NODE_STRING_CLEAR_RAW(*np);
             goto string_end;
           }
         }
@@ -5335,7 +5335,7 @@ parse_exp(Node** np, OnigToken* tok, int term,
             rem = ONIGENC_MBC_MINLEN(env->enc) - len;
             (void )node_str_head_pad(STR_(*np), rem, (UChar )0);
             if (len + rem == enclen(env->enc, STR_(*np)->s)) {
-              NSTRING_CLEAR_RAW(*np);
+              NODE_STRING_CLEAR_RAW(*np);
               goto string_end;
             }
           }
