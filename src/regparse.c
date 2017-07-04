@@ -4763,7 +4763,8 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
         PFETCH(c);
         if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
 
-        if (ONIGENC_IS_CODE_DIGIT(enc, c) || c == '<' || c == '\'') {
+        if (ONIGENC_IS_CODE_DIGIT(enc, c)
+            || c == '-' || c == '+' || c == '<' || c == '\'') {
           UChar* name_end;
           int back_num;
           int exist_level;
