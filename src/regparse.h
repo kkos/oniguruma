@@ -90,6 +90,7 @@ typedef enum {
 #define ENCLOSURE_MEMORY           (1<<0)
 #define ENCLOSURE_OPTION           (1<<1)
 #define ENCLOSURE_STOP_BACKTRACK   (1<<2)
+#define ENCLOSURE_IF_ELSE          (1<<3)
 
 #define NODE_STR_MARGIN         16
 #define NODE_STR_BUF_SIZE       24  /* sizeof(CClassNode) - sizeof(int)*4 */
@@ -225,6 +226,11 @@ typedef struct {
     struct {
       OnigOptionType option;
     } o;
+    struct {
+      /* body is condition */
+      struct _Node* Then;
+      struct _Node* Else;
+    } te;
   };
   /* for multiple call reference */
   OnigLen min_len;   /* min length (byte) */

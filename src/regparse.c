@@ -1124,6 +1124,14 @@ onig_node_free(Node* node)
   xfree(node);
 }
 
+static void
+cons_node_free_alone(Node* node)
+{
+  NODE_CAR(node) = 0;
+  NODE_CDR(node) = 0;
+  onig_node_free(node);
+}
+
 static Node*
 node_new(void)
 {
@@ -1365,6 +1373,11 @@ node_new_enclosure(int type)
     break;
 
   case ENCLOSURE_STOP_BACKTRACK:
+    break;
+
+  case ENCLOSURE_IF_ELSE:
+    ENCLOSURE_(node)->te.Then = 0;
+    ENCLOSURE_(node)->te.Else = 0;
     break;
   }
 
@@ -4869,16 +4882,56 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           return ONIGERR_END_PATTERN_IN_GROUP;
         }
 
-        PFETCH(c);
-        if (c == ')') { /* case: empty body: make backref checker */
+        if (PPEEK_IS(')')) { /* case: empty body: make backref checker */
           if (condition_is_checker == 0) {
             onig_node_free(condition);
-            return ONIGERR_END_PATTERN_IN_GROUP;
+            return ONIGERR_INVALID_IF_ELSE_SYNTAX;
           }
+          PFETCH(c);
           *np = condition;
         }
-        else { /* make if-else */
-          /* TODO */
+        else { /* if-else */
+          Node *Then, *Else;
+
+          r = fetch_token(tok, &p, end, env);
+          if (r < 0) {
+            onig_node_free(condition);
+            return r;
+          }
+          r = parse_subexp(&target, tok, term, &p, end, env);
+          if (r < 0) {
+          err_if_else2:
+            onig_node_free(condition);
+            onig_node_free(target);
+            return r;
+          }
+
+          if (NODE_TYPE(target) == NODE_ALT) {
+            if (NODE_CDR(NODE_CDR(target)) != NULL_NODE) {
+              r = ONIGERR_INVALID_IF_ELSE_SYNTAX;
+              goto err_if_else2;
+            }
+
+            Then = NODE_CAR(target);
+            Else = NODE_CAR(NODE_CDR(target));
+            cons_node_free_alone(target);
+          }
+          else {
+            Then = target;
+            Else = 0;
+          }
+
+          *np = node_new_enclosure(ENCLOSURE_IF_ELSE);
+          if (IS_NULL(*np)) {
+            onig_node_free(condition);
+            onig_node_free(Then);
+            onig_node_free(Else);
+            return ONIGERR_MEMORY;
+          }
+
+          NODE_BODY(*np) = condition;
+          ENCLOSURE_(*np)->te.Then = Then;
+          ENCLOSURE_(*np)->te.Else = Else;
         }
         goto end;
       }
