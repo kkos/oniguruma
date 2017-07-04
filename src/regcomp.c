@@ -1370,9 +1370,7 @@ compile_enclosure_memory_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
     r = add_opcode(reg, OP_RETURN);
     return r;
   }
-#endif
 
-#ifdef USE_SUBEXP_CALL
   if (NODE_IS_CALLED(node)) {
     r = add_opcode(reg, OP_CALL);
     if (r != 0) return r;
@@ -6169,7 +6167,9 @@ OnigOpInfoType OnigOpInfo[] = {
   { OP_BACKREFN_IC,         "backrefn-ic",          ARG_SPECIAL },
   { OP_BACKREF_MULTI,       "backref_multi",        ARG_SPECIAL },
   { OP_BACKREF_MULTI_IC,    "backref_multi-ic",     ARG_SPECIAL },
-  { OP_BACKREF_WITH_LEVEL,    "backref_at_level",     ARG_SPECIAL },
+  { OP_BACKREF_WITH_LEVEL,  "backref_with_level",   ARG_SPECIAL },
+  { OP_BACKREF_CHECK,       "backref_check",        ARG_SPECIAL },
+  { OP_BACKREF_CHECK_WITH_LEVEL, "backref_check_with_level", ARG_SPECIAL },
   { OP_MEMORY_START_PUSH,   "mem-start-push",       ARG_MEMNUM  },
   { OP_MEMORY_START,        "mem-start",            ARG_MEMNUM  },
   { OP_MEMORY_END_PUSH,     "mem-end-push",         ARG_MEMNUM  },
@@ -6272,6 +6272,7 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
   MemNumType mem;
   StateCheckNumType scn;
   OnigCodePoint code;
+  OnigOptionType option;
   UChar *q;
 
   fprintf(f, "%s", op2name(*bp));
@@ -6429,6 +6430,7 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
 
     case OP_BACKREF_MULTI_IC:
     case OP_BACKREF_MULTI:
+    case OP_BACKREF_CHECK:
       fputs(" ", f);
       GET_LENGTH_INC(len, bp);
       for (i = 0; i < len; i++) {
@@ -6439,12 +6441,13 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
       break;
 
     case OP_BACKREF_WITH_LEVEL:
+      GET_OPTION_INC(option, bp);
+      fprintf(f, ":%d", option);
+      /* fall */
+    case OP_BACKREF_CHECK_WITH_LEVEL:
       {
-        OnigOptionType option;
         LengthType level;
 
-        GET_OPTION_INC(option, bp);
-        fprintf(f, ":%d", option);
         GET_LENGTH_INC(level, bp);
         fprintf(f, ":%d", level);
 
