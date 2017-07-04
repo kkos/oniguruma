@@ -37,7 +37,7 @@ typedef enum {
   NODE_CCLASS    = 1,
   NODE_CTYPE     = 2,
   NODE_BREF      = 3,
-  NODE_QUANT      = 4,
+  NODE_QUANT     = 4,
   NODE_ENCLOSURE = 5,
   NODE_ANCHOR    = 6,
   NODE_LIST      = 7,
@@ -52,7 +52,7 @@ typedef enum {
 #define BIT_NODE_CCLASS     NODE_TYPE2BIT(NODE_CCLASS)
 #define BIT_NODE_CTYPE      NODE_TYPE2BIT(NODE_CTYPE)
 #define BIT_NODE_BREF       NODE_TYPE2BIT(NODE_BREF)
-#define BIT_NODE_QUANT       NODE_TYPE2BIT(NODE_QUANT)
+#define BIT_NODE_QUANT      NODE_TYPE2BIT(NODE_QUANT)
 #define BIT_NODE_ENCLOSURE  NODE_TYPE2BIT(NODE_ENCLOSURE)
 #define BIT_NODE_ANCHOR     NODE_TYPE2BIT(NODE_ANCHOR)
 #define BIT_NODE_LIST       NODE_TYPE2BIT(NODE_LIST)
@@ -70,8 +70,8 @@ typedef enum {
 #define CCLASS_(node)      (&((node)->u.cclass))
 #define CTYPE_(node)       (&((node)->u.ctype))
 #define BREF_(node)        (&((node)->u.bref))
-#define QUANT_(node)        (&((node)->u.quant))
-#define ENCLOSURE_(node)     (&((node)->u.enclosure))
+#define QUANT_(node)       (&((node)->u.quant))
+#define ENCLOSURE_(node)   (&((node)->u.enclosure))
 #define ANCHOR_(node)      (&((node)->u.anchor))
 #define CONS_(node)        (&((node)->u.cons))
 #define CALL_(node)        (&((node)->u.call))
@@ -118,7 +118,7 @@ typedef enum {
 #define QUANT_BODY_IS_EMPTY_MEM    2
 #define QUANT_BODY_IS_EMPTY_REC    3
 
-/* status bits */
+/* node status bits */
 #define NST_MIN_FIXED             (1<<0)
 #define NST_MAX_FIXED             (1<<1)
 #define NST_CLEN_FIXED            (1<<2)
@@ -227,10 +227,10 @@ typedef struct {
     } o;
   };
   /* for multiple call reference */
-  OnigLen min_len; /* min length (byte) */
-  OnigLen max_len; /* max length (byte) */
-  int char_len;         /* character length  */
-  int opt_count;        /* referenced count in optimize_node_left() */
+  OnigLen min_len;   /* min length (byte) */
+  OnigLen max_len;   /* max length (byte) */
+  int char_len;      /* character length  */
+  int opt_count;     /* referenced count in optimize_node_left() */
 } EnclosureNode;
 
 #ifdef USE_SUBEXP_CALL
