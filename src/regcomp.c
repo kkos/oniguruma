@@ -230,7 +230,7 @@ onig_bbuf_init(BBuf* buf, int size)
 }
 
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
 
 static int
 unset_addr_list_init(UnsetAddrList* list, int size)
@@ -271,7 +271,7 @@ unset_addr_list_add(UnsetAddrList* list, int offset, struct _Node* node)
   list->num++;
   return 0;
 }
-#endif /* USE_SUBEXP_CALL */
+#endif /* USE_CALL */
 
 
 static int
@@ -466,7 +466,7 @@ compile_tree_empty_check(Node* node, regex_t* reg, int empty_info, ScanEnv* env)
   return r;
 }
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
 static int
 compile_call(CallNode* node, regex_t* reg, ScanEnv* env)
 {
@@ -767,7 +767,7 @@ compile_range_repeat_node(QuantNode* qn, int target_len, int empty_info,
   if (r != 0) return r;
 
   if (
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
       NODE_IS_IN_MULTI_ENTRY(qn) ||
 #endif
       NODE_IS_IN_REAL_REPEAT(qn)) {
@@ -1287,7 +1287,7 @@ compile_length_enclosure_node(EnclosureNode* node, regex_t* reg)
 
   switch (node->type) {
   case ENCLOSURE_MEMORY:
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
 
     if (node->m.regnum == 0 && NODE_IS_CALLED(node)) {
       len = tlen + SIZE_OP_CALL + SIZE_OP_JUMP + SIZE_OP_RETURN;
@@ -1352,7 +1352,7 @@ compile_enclosure_memory_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
   int r;
   int len;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   if (node->m.regnum == 0 && NODE_IS_CALLED(node)) {
     r = add_opcode(reg, OP_CALL);
     if (r != 0) return r;
@@ -1402,7 +1402,7 @@ compile_enclosure_memory_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
   r = compile_tree(NODE_ENCLOSURE_BODY(node), reg, env);
   if (r != 0) return r;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   if (MEM_STATUS_AT0(reg->bt_mem_end, node->m.regnum))
     r = add_opcode(reg, (NODE_IS_RECURSION(node)
                          ? OP_MEMORY_END_PUSH_REC : OP_MEMORY_END_PUSH));
@@ -1669,7 +1669,7 @@ compile_length_tree(Node* node, regex_t* reg)
     }
     break;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   case NODE_CALL:
     r = SIZE_OP_CALL;
     break;
@@ -1852,7 +1852,7 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
     }
     break;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   case NODE_CALL:
     r = compile_call(CALL_(node), reg, env);
     break;
@@ -2078,7 +2078,7 @@ disable_noname_group_capture(Node** root, regex_t* reg, ScanEnv* env)
 }
 #endif /* USE_NAMED_GROUP */
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
 static int
 unset_addr_list_fix(UnsetAddrList* uslist, regex_t* reg)
 {
@@ -2170,7 +2170,7 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
     }
     break;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   case NODE_CALL:
     if (! NODE_IS_RECURSION(node))
       r = get_char_length_tree1(NODE_BODY(node), reg, len, level);
@@ -2192,7 +2192,7 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
       EnclosureNode* en = ENCLOSURE_(node);
       switch (en->type) {
       case ENCLOSURE_MEMORY:
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
         if (NODE_IS_CLEN_FIXED(node))
           *len = en->char_len;
         else {
@@ -2431,7 +2431,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
   switch (NODE_TYPE(node)) {
   case NODE_BACKREF:
   case NODE_ALT:
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   case NODE_CALL:
 #endif
     break;
@@ -2585,7 +2585,7 @@ get_min_len(Node* node, ScanEnv* env)
     }
     break;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   case NODE_CALL:
     {
       Node* t = NODE_BODY(node);
@@ -2731,7 +2731,7 @@ get_max_len(Node* node, ScanEnv* env)
     }
     break;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   case NODE_CALL:
     if (! NODE_IS_RECURSION(node))
       len = get_max_len(NODE_BODY(node), env);
@@ -2843,7 +2843,7 @@ check_backrefs(Node* node, ScanEnv* env)
 }
 
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
 
 #define RECURSION_EXIST        (1<<0)
 #define RECURSION_MUST         (1<<1)
@@ -3663,7 +3663,7 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
     }
     break;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   case NODE_CALL:
     if (NODE_IS_RECURSION(node))
       env->has_recursion = 1;
@@ -3698,7 +3698,7 @@ quantifiers_memory_node_info(Node* node)
     }
     break;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   case NODE_CALL:
     if (NODE_IS_RECURSION(node)) {
       return QUANT_BODY_IS_EMPTY_REC; /* tiny version */
@@ -3759,7 +3759,7 @@ quantifiers_memory_node_info(Node* node)
 #define IN_ZERO_REPEAT  (1<<4)
 #define IN_MULTI_ENTRY  (1<<5)
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
 
 #ifdef __GNUC__
 __inline
@@ -4055,7 +4055,7 @@ setup_called_state(Node* node, int state)
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   case NODE_CALL:
     setup_called_state_call(node, state);
     break;
@@ -4121,7 +4121,7 @@ setup_called_state(Node* node, int state)
   }
 }
 
-#endif  /* USE_SUBEXP_CALL */
+#endif  /* USE_CALL */
 
 
 static int setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env);
@@ -4348,7 +4348,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         break;
 
       case ENCLOSURE_MEMORY:
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
         state |= en->m.called_state;
 #endif
 
@@ -4385,7 +4385,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     r = setup_anchor(node, reg, state, env);
     break;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   case NODE_CALL:
 #endif
   case NODE_CTYPE:
@@ -5246,7 +5246,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     }
     break;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   case NODE_CALL:
     if (NODE_IS_RECURSION(node))
       set_mml(&opt->len, 0, ONIG_INFINITE_DISTANCE);
@@ -5328,7 +5328,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
         break;
 
       case ENCLOSURE_MEMORY:
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
         en->opt_count++;
         if (en->opt_count > MAX_NODE_OPT_INFO_REF_COUNT) {
           OnigLen min, max;
@@ -5732,7 +5732,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   int r, init_size;
   Node*  root;
   ScanEnv  scan_env;
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   UnsetAddrList  uslist;
 #endif
 
@@ -5781,7 +5781,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   r = check_backrefs(root, &scan_env);
   if (r != 0) goto err;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   if (scan_env.num_call > 0) {
     r = unset_addr_list_init(&uslist, scan_env.num_call);
     if (r != 0) goto err;
@@ -5821,12 +5821,12 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 
 #ifdef USE_COMBINATION_EXPLOSION_CHECK
   if (scan_env.backrefed_mem == 0
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
       || scan_env.num_call == 0
 #endif
       ) {
     setup_comb_exp_check(root, 0, &scan_env);
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
     if (scan_env.has_recursion != 0) {
       scan_env.num_comb_exp_check = 0;
     }
@@ -5860,7 +5860,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   r = compile_tree(root, reg, &scan_env);
   if (r == 0) {
     r = add_opcode(reg, OP_END);
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
     if (scan_env.num_call > 0) {
       r = unset_addr_list_fix(&uslist, reg);
       unset_addr_list_end(&uslist);
@@ -5877,7 +5877,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
         reg->stack_pop_level = STACK_POP_LEVEL_FREE;
     }
   }
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   else if (scan_env.num_call > 0) {
     unset_addr_list_end(&uslist);
   }
@@ -5895,7 +5895,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   return r;
 
  err_unset:
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   if (scan_env.num_call > 0) {
     unset_addr_list_end(&uslist);
   }
@@ -6707,7 +6707,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
     }
     break;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   case NODE_CALL:
     {
       CallNode* cn = CALL_(node);

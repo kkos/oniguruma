@@ -233,7 +233,7 @@ typedef struct {
   int opt_count;     /* referenced count in optimize_node_left() */
 } EnclosureNode;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
 
 typedef struct {
   int           offset;
@@ -311,7 +311,7 @@ typedef struct _Node {
     AnchorNode    anchor;
     ConsAltNode   cons;
     CtypeNode     ctype;
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
     CallNode      call;
 #endif
   } u;
@@ -348,7 +348,7 @@ typedef struct {
   UChar*           error_end;
   regex_t*         reg;       /* for reg->names only */
   int              num_call;
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   UnsetAddrList*   unset_addr_list;
   int              has_call_zero;
 #endif

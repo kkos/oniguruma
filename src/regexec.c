@@ -2188,7 +2188,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       continue;
       break;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
     case OP_MEMORY_END_PUSH_REC:  MOP_IN(OP_MEMORY_END_PUSH_REC);
       GET_MEMNUM_INC(mem, p);
       STACK_GET_MEM_START(mem, stkp); /* should be before push mem-end. */
@@ -2510,7 +2510,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       break;
 #endif
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
     case OP_EMPTY_CHECK_END_MEMST_PUSH:
       MOP_IN(OP_EMPTY_CHECK_END_MEMST_PUSH);
       {
@@ -2795,7 +2795,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       goto fail;
       break;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
     case OP_CALL:  MOP_IN(OP_CALL);
       GET_ABSADDR_INC(addr, p);
       STACK_PUSH_CALL_FRAME(p);

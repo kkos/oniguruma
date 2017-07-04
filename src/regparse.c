@@ -991,7 +991,7 @@ scan_env_clear(ScanEnv* env)
   env->error_end  = (UChar* )NULL;
   env->num_call   = 0;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   env->unset_addr_list = NULL;
   env->has_call_zero   = 0;
 #endif
@@ -1302,7 +1302,7 @@ node_new_backref_checker(int back_num, int* backrefs, int by_name,
   return node;
 }
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
 static Node*
 node_new_call(UChar* name, UChar* name_end, int gnum, int by_number)
 {
@@ -3638,7 +3638,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       break;
 #endif
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
     case 'g':
       if (!PEND && IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_G_SUBEXP_CALL)) {
         PFETCH(c);
@@ -5478,7 +5478,7 @@ parse_exp(Node** np, OnigToken* tok, int term,
     CHECK_NULL_RETURN_MEMERR(*np);
     break;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   case TK_CALL:
     {
       int gnum = tok->u.call.gnum;
@@ -5685,7 +5685,7 @@ parse_regexp(Node** top, UChar** src, UChar* end, ScanEnv* env)
   return 0;
 }
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
 static int
 make_call_zero_body(Node* node, ScanEnv* env, Node** rnode)
 {
@@ -5735,7 +5735,7 @@ onig_parse_tree(Node** root, const UChar* pattern, const UChar* end,
   p = (UChar* )pattern;
   r = parse_regexp(root, &p, (UChar* )end, env);
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
   if (r != 0) return r;
 
   if (env->has_call_zero != 0) {

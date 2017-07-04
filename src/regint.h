@@ -57,7 +57,7 @@
 /* config */
 /* spec. config */
 #define USE_NAMED_GROUP
-#define USE_SUBEXP_CALL
+#define USE_CALL
 #define USE_BACKREF_WITH_LEVEL        /* \k<name+n>, \k<name-n> */
 #define USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT  /* /(?:()|())*\2/ */
 #define USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE     /* /\n$/ =~ "\n" */
@@ -698,7 +698,7 @@ typedef struct _OnigStackType {
       int num;           /* null check id */
       UChar *pstr;       /* start position */
     } empty_check;
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
     struct {
       UChar *ret_addr;   /* byte code position */
       int    num;        /* null check id */
