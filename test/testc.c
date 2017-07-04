@@ -590,6 +590,9 @@ extern int main(int argc, char* argv[])
   x2("\\g<+2>(abc)(ABC){0}", "ABCabc", 0, 6); // relative call by positive number
   x2("A\\g'0'|B()", "AAAAB", 0, 5);
   x3("(A\\g'0')|B", "AAAAB", 0, 5, 1);
+  x2("(a*)(?(1))aa", "aaaaa", 0, 5);
+  x2("(a*)(?(-1))aa", "aaaaa", 0, 5);
+  x2("(?<name>aaa)(?('name'))aa", "aaaaa", 0, 5);
 
   /*
     < ifndef IGNORE_EUC_JP >
