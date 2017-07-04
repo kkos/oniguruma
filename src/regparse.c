@@ -1379,7 +1379,7 @@ onig_node_new_enclosure(int type)
 }
 
 static Node*
-node_new_enclosure_memory(int is_named)
+node_new_memory(int is_named)
 {
   Node* node = node_new_enclosure(ENCLOSURE_MEMORY);
   CHECK_NULL_RETURN(node);
@@ -4733,7 +4733,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 
           r = name_add(env->reg, name, name_end, num, env);
           if (r != 0) return r;
-          *np = node_new_enclosure_memory(1);
+          *np = node_new_memory(1);
           CHECK_NULL_RETURN_MEMERR(*np);
           ENCLOSURE_(*np)->m.regnum = num;
           if (list_capture != 0)
@@ -4899,7 +4899,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           PUNFETCH;
         }
 #endif
-        *np = node_new_enclosure_memory(0);
+        *np = node_new_memory(0);
         CHECK_NULL_RETURN_MEMERR(*np);
         num = scan_env_add_mem_entry(env);
         if (num < 0) {
@@ -4998,7 +4998,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
     if (ONIG_IS_OPTION_ON(env->option, ONIG_OPTION_DONT_CAPTURE_GROUP))
       goto group;
 
-    *np = node_new_enclosure_memory(0);
+    *np = node_new_memory(0);
     CHECK_NULL_RETURN_MEMERR(*np);
     num = scan_env_add_mem_entry(env);
     if (num < 0) return num;
@@ -5691,7 +5691,7 @@ make_call_zero_body(Node* node, ScanEnv* env, Node** rnode)
 {
   int r;
 
-  Node* x = node_new_enclosure_memory(0 /* 0: is not named */);
+  Node* x = node_new_memory(0 /* 0: is not named */);
   CHECK_NULL_RETURN_MEMERR(x);
 
   NODE_BODY(x) = node;
