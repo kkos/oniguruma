@@ -1641,19 +1641,30 @@ compile_length_tree(Node* node, regex_t* reg)
     {
       BackRefNode* br = BACKREF_(node);
 
+      if (NODE_IS_CHECKER(node)) {
 #ifdef USE_BACKREF_WITH_LEVEL
-      if (NODE_IS_NEST_LEVEL(node)) {
-        r = SIZE_OPCODE + SIZE_OPTION + SIZE_LENGTH +
-            SIZE_LENGTH + (SIZE_MEMNUM * br->back_num);
-      }
-      else
+        if (NODE_IS_NEST_LEVEL(node)) {
+          r = SIZE_OPCODE + SIZE_LENGTH + SIZE_LENGTH + (SIZE_MEMNUM * br->back_num);
+        }
+        else
 #endif
-      if (br->back_num == 1) {
-        r = ((!IS_IGNORECASE(reg->options) && br->back_static[0] <= 2)
-             ? SIZE_OPCODE : (SIZE_OPCODE + SIZE_MEMNUM));
+          r = SIZE_OPCODE + SIZE_LENGTH + (SIZE_MEMNUM * br->back_num);
       }
       else {
-        r = SIZE_OPCODE + SIZE_LENGTH + (SIZE_MEMNUM * br->back_num);
+#ifdef USE_BACKREF_WITH_LEVEL
+        if (NODE_IS_NEST_LEVEL(node)) {
+          r = SIZE_OPCODE + SIZE_OPTION + SIZE_LENGTH +
+            SIZE_LENGTH + (SIZE_MEMNUM * br->back_num);
+        }
+        else
+#endif
+        if (br->back_num == 1) {
+          r = ((!IS_IGNORECASE(reg->options) && br->back_static[0] <= 2)
+               ? SIZE_OPCODE : (SIZE_OPCODE + SIZE_MEMNUM));
+        }
+        else {
+          r = SIZE_OPCODE + SIZE_LENGTH + (SIZE_MEMNUM * br->back_num);
+        }
       }
     }
     break;
@@ -1766,59 +1777,76 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
     {
       BackRefNode* br = BACKREF_(node);
 
+      if (NODE_IS_CHECKER(node)) {
 #ifdef USE_BACKREF_WITH_LEVEL
-      if (NODE_IS_NEST_LEVEL(node)) {
-        r = add_opcode(reg, OP_BACKREF_WITH_LEVEL);
-        if (r != 0) return r;
-        r = add_option(reg, (reg->options & ONIG_OPTION_IGNORECASE));
-        if (r != 0) return r;
-        r = add_length(reg, br->nest_level);
-        if (r != 0) return r;
+        if (NODE_IS_NEST_LEVEL(node)) {
+          r = add_opcode(reg, OP_BACKREF_CHECK_WITH_LEVEL);
+          if (r != 0) return r;
+          r = add_length(reg, br->nest_level);
+          if (r != 0) return r;
+        }
+        else
+#endif
+          {
+            r = add_opcode(reg, OP_BACKREF_CHECK);
+            if (r != 0) return r;
+          }
 
         goto add_bacref_mems;
       }
-      else
-#endif
-      if (br->back_num == 1) {
-        n = br->back_static[0];
-        if (IS_IGNORECASE(reg->options)) {
-          r = add_opcode(reg, OP_BACKREFN_IC);
+      else {
+#ifdef USE_BACKREF_WITH_LEVEL
+        if (NODE_IS_NEST_LEVEL(node)) {
+          r = add_opcode(reg, OP_BACKREF_WITH_LEVEL);
           if (r != 0) return r;
-          r = add_mem_num(reg, n);
+          r = add_option(reg, (reg->options & ONIG_OPTION_IGNORECASE));
+          if (r != 0) return r;
+          r = add_length(reg, br->nest_level);
+          if (r != 0) return r;
+
+          goto add_bacref_mems;
         }
-        else {
-          switch (n) {
-          case 1:  r = add_opcode(reg, OP_BACKREF1); break;
-          case 2:  r = add_opcode(reg, OP_BACKREF2); break;
-          default:
-            r = add_opcode(reg, OP_BACKREFN);
+        else
+#endif
+        if (br->back_num == 1) {
+          n = br->back_static[0];
+          if (IS_IGNORECASE(reg->options)) {
+            r = add_opcode(reg, OP_BACKREFN_IC);
             if (r != 0) return r;
             r = add_mem_num(reg, n);
-            break;
+          }
+          else {
+            switch (n) {
+            case 1:  r = add_opcode(reg, OP_BACKREF1); break;
+            case 2:  r = add_opcode(reg, OP_BACKREF2); break;
+            default:
+              r = add_opcode(reg, OP_BACKREFN);
+              if (r != 0) return r;
+              r = add_mem_num(reg, n);
+              break;
+            }
           }
         }
-      }
-      else {
-        int i;
-        int* p;
-
-        if (IS_IGNORECASE(reg->options)) {
-          r = add_opcode(reg, OP_BACKREF_MULTI_IC);
-        }
         else {
-          r = add_opcode(reg, OP_BACKREF_MULTI);
-        }
-        if (r != 0) return r;
+          int i;
+          int* p;
 
-#ifdef USE_BACKREF_WITH_LEVEL
-      add_bacref_mems:
-#endif
-        r = add_length(reg, br->back_num);
-        if (r != 0) return r;
-        p = BACKREFS_P(br);
-        for (i = br->back_num - 1; i >= 0; i--) {
-          r = add_mem_num(reg, p[i]);
+          if (IS_IGNORECASE(reg->options)) {
+            r = add_opcode(reg, OP_BACKREF_MULTI_IC);
+          }
+          else {
+            r = add_opcode(reg, OP_BACKREF_MULTI);
+          }
           if (r != 0) return r;
+
+        add_bacref_mems:
+          r = add_length(reg, br->back_num);
+          if (r != 0) return r;
+          p = BACKREFS_P(br);
+          for (i = br->back_num - 1; i >= 0; i--) {
+            r = add_mem_num(reg, p[i]);
+            if (r != 0) return r;
+          }
         }
       }
     }
@@ -2189,6 +2217,10 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
   case NODE_ANCHOR:
     break;
 
+  case NODE_BACKREF:
+    if (NODE_IS_CHECKER(node))
+      break;
+    /* fall */
   default:
     r = GET_CHAR_LEN_VARLEN;
     break;
@@ -2537,7 +2569,7 @@ get_min_len(Node* node, ScanEnv* env)
   len = 0;
   switch (NODE_TYPE(node)) {
   case NODE_BACKREF:
-    {
+    if (! NODE_IS_CHECKER(node)) {
       int i;
       int* backs;
       MemEnv* mem_env = SCANENV_MEMENV(env);
@@ -2682,7 +2714,7 @@ get_max_len(Node* node, ScanEnv* env)
     break;
 
   case NODE_BACKREF:
-    {
+    if (! NODE_IS_CHECKER(node)) {
       int i;
       int* backs;
       MemEnv* mem_env = SCANENV_MEMENV(env);
@@ -5190,7 +5222,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     break;
 
   case NODE_BACKREF:
-    {
+    if (! NODE_IS_CHECKER(node)) {
       int i;
       int* backs;
       OnigLen min, max, tmin, tmax;
@@ -6667,7 +6699,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
       int* p;
       BackRefNode* br = BACKREF_(node);
       p = BACKREFS_P(br);
-      fprintf(f, "<backref:%p>", node);
+      fprintf(f, "<backref%s:%p>", NODE_IS_CHECKER(node) ? "-checker" : "", node);
       for (i = 0; i < br->back_num; i++) {
         if (i > 0) fputs(", ", f);
         fprintf(f, "%d", p[i]);
@@ -6696,10 +6728,10 @@ print_indent_tree(FILE* f, Node* node, int indent)
     fprintf(f, "<enclosure:%p> ", node);
     switch (ENCLOSURE_(node)->type) {
     case ENCLOSURE_OPTION:
-      fprintf(f, "option:%d", ENCLOSURE_(node)->option);
+      fprintf(f, "option:%d", ENCLOSURE_(node)->o.option);
       break;
     case ENCLOSURE_MEMORY:
-      fprintf(f, "memory:%d", ENCLOSURE_(node)->regnum);
+      fprintf(f, "memory:%d", ENCLOSURE_(node)->m.regnum);
       break;
     case ENCLOSURE_STOP_BACKTRACK:
       fprintf(f, "stop-bt");
