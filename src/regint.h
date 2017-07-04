@@ -486,7 +486,9 @@ enum OpCode {
   OP_BACKREFN_IC,
   OP_BACKREF_MULTI,
   OP_BACKREF_MULTI_IC,
-  OP_BACKREF_WITH_LEVEL,    /* \k<xxx+n>, \k<xxx-n> */
+  OP_BACKREF_WITH_LEVEL,        /* \k<xxx+n>, \k<xxx-n> */
+  OP_BACKREF_CHECK,             /* (?(n)), (?('name')) */
+  OP_BACKREF_CHECK_WITH_LEVEL,  /* (?(n)), (?('name')) */
 
   OP_MEMORY_START,
   OP_MEMORY_START_PUSH,   /* push back-tracker to stack */

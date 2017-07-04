@@ -1197,6 +1197,37 @@ static int backref_match_at_nested_level(regex_t* reg
 
   return 0;
 }
+
+static int
+backref_check_at_nested_level(regex_t* reg,
+                              OnigStackType* top, OnigStackType* stk_base,
+                              int nest, int mem_num, UChar* memp)
+{
+  int level;
+  OnigStackType* k;
+
+  level = 0;
+  k = top;
+  k--;
+  while (k >= stk_base) {
+    if (k->type == STK_CALL_FRAME) {
+      level--;
+    }
+    else if (k->type == STK_RETURN) {
+      level++;
+    }
+    else if (level == nest) {
+      if (k->type == STK_MEM_END) {
+        if (mem_is_in_memp(k->u.mem.num, mem_num, memp)) {
+          return 1;
+        }
+      }
+    }
+    k--;
+  }
+
+  return 0;
+}
 #endif /* USE_BACKREF_WITH_LEVEL */
 
 
@@ -2353,6 +2384,45 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           while (sprev + (len = enclen(encode, sprev)) < s)
             sprev += len;
 
+          p += (SIZE_MEMNUM * tlen);
+        }
+        else
+          goto fail;
+
+        MOP_OUT;
+        continue;
+      }
+      break;
+#endif
+
+    case OP_BACKREF_CHECK:  MOP_IN(OP_BACKREF_CHECK);
+      {
+        GET_LENGTH_INC(tlen, p);
+        for (i = 0; i < tlen; i++) {
+          GET_MEMNUM_INC(mem, p);
+
+          if (mem_end_stk[mem]   == INVALID_STACK_INDEX) continue;
+          if (mem_start_stk[mem] == INVALID_STACK_INDEX) continue;
+
+          p += (SIZE_MEMNUM * (tlen - i - 1));
+          break; /* success */
+        }
+        if (i == tlen) goto fail;
+        MOP_OUT;
+        continue;
+      }
+      break;
+
+#ifdef USE_BACKREF_WITH_LEVEL
+    case OP_BACKREF_CHECK_WITH_LEVEL:
+      {
+        LengthType level;
+
+        GET_LENGTH_INC(level, p);
+        GET_LENGTH_INC(tlen,  p);
+
+        if (backref_check_at_nested_level(reg, stk, stk_base,
+                                          (int )level, (int )tlen, p) != 0) {
           p += (SIZE_MEMNUM * tlen);
         }
         else
