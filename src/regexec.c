@@ -2231,9 +2231,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         int len;
         UChar *pstart, *pend;
 
-        /* if you want to remove following line, 
-           you should check in parse and compile time. */
-        if (mem > num_mem) goto fail;
         if (mem_end_stk[mem]   == INVALID_STACK_INDEX) goto fail;
         if (mem_start_stk[mem] == INVALID_STACK_INDEX) goto fail;
 
@@ -2263,9 +2260,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         int len;
         UChar *pstart, *pend;
 
-        /* if you want to remove following line, 
-           you should check in parse and compile time. */
-        if (mem > num_mem) goto fail;
         if (mem_end_stk[mem]   == INVALID_STACK_INDEX) goto fail;
         if (mem_start_stk[mem] == INVALID_STACK_INDEX) goto fail;
 
