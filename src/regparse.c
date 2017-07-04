@@ -1104,9 +1104,9 @@ onig_node_free(Node* node)
     }
     break;
 
-  case NODE_BREF:
-    if (IS_NOT_NULL(BREF_(node)->back_dynamic))
-      xfree(BREF_(node)->back_dynamic);
+  case NODE_BACKREF:
+    if (IS_NOT_NULL(BACKREF_(node)->back_dynamic))
+      xfree(BACKREF_(node)->back_dynamic);
     break;
 
   case NODE_QUANT:
@@ -1244,16 +1244,16 @@ node_new_backref(int back_num, int* backrefs, int by_name,
 
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NODE_BREF);
-  BREF_(node)->back_num = back_num;
-  BREF_(node)->back_dynamic = (int* )NULL;
+  SET_NODE_TYPE(node, NODE_BACKREF);
+  BACKREF_(node)->back_num = back_num;
+  BACKREF_(node)->back_dynamic = (int* )NULL;
   if (by_name != 0)
     NODE_STATUS_ADD(node, NST_BY_NAME);
 
 #ifdef USE_BACKREF_WITH_LEVEL
   if (exist_level != 0) {
     NODE_STATUS_ADD(node, NST_NEST_LEVEL);
-    BREF_(node)->nest_level  = nest_level;
+    BACKREF_(node)->nest_level  = nest_level;
   }
 #endif
 
@@ -1267,7 +1267,7 @@ node_new_backref(int back_num, int* backrefs, int by_name,
 
   if (back_num <= NODE_BACKREFS_SIZE) {
     for (i = 0; i < back_num; i++)
-      BREF_(node)->back_static[i] = backrefs[i];
+      BACKREF_(node)->back_static[i] = backrefs[i];
   }
   else {
     int* p = (int* )xmalloc(sizeof(int) * back_num);
@@ -1275,7 +1275,7 @@ node_new_backref(int back_num, int* backrefs, int by_name,
       onig_node_free(node);
       return NULL;
     }
-    BREF_(node)->back_dynamic = p;
+    BACKREF_(node)->back_dynamic = p;
     for (i = 0; i < back_num; i++)
       p[i] = backrefs[i];
   }

@@ -1639,9 +1639,9 @@ compile_length_tree(Node* node, regex_t* reg)
     r = SIZE_OPCODE;
     break;
 
-  case NODE_BREF:
+  case NODE_BACKREF:
     {
-      BRefNode* br = BREF_(node);
+      BackRefNode* br = BACKREF_(node);
 
 #ifdef USE_BACKREF_WITH_LEVEL
       if (NODE_IS_NEST_LEVEL(node)) {
@@ -1764,9 +1764,9 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
     }
     break;
 
-  case NODE_BREF:
+  case NODE_BACKREF:
     {
-      BRefNode* br = BREF_(node);
+      BackRefNode* br = BACKREF_(node);
 
 #ifdef USE_BACKREF_WITH_LEVEL
       if (NODE_IS_NEST_LEVEL(node)) {
@@ -1920,7 +1920,7 @@ renumber_node_backref(Node* node, GroupNumRemap* map)
 {
   int i, pos, n, old_num;
   int *backs;
-  BRefNode* bn = BREF_(node);
+  BackRefNode* bn = BACKREF_(node);
 
   if (! NODE_IS_BY_NAME(node))
     return ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED;
@@ -1961,7 +1961,7 @@ renumber_by_map(Node* node, GroupNumRemap* map)
     r = renumber_by_map(NODE_BODY(node), map);
     break;
 
-  case NODE_BREF:
+  case NODE_BACKREF:
     r = renumber_node_backref(node, map);
     break;
 
@@ -1999,7 +1999,7 @@ numbered_ref_check(Node* node)
     r = numbered_ref_check(NODE_BODY(node));
     break;
 
-  case NODE_BREF:
+  case NODE_BACKREF:
     if (! NODE_IS_BY_NAME(node))
       return ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED;
     break;
@@ -2399,7 +2399,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
   Node* n = NULL_NODE;
 
   switch (NODE_TYPE(node)) {
-  case NODE_BREF:
+  case NODE_BACKREF:
   case NODE_ALT:
 #ifdef USE_SUBEXP_CALL
   case NODE_CALL:
@@ -2538,12 +2538,12 @@ get_min_len(Node* node, ScanEnv* env)
 
   len = 0;
   switch (NODE_TYPE(node)) {
-  case NODE_BREF:
+  case NODE_BACKREF:
     {
       int i;
       int* backs;
       MemEnv* mem_env = SCANENV_MEMENV(env);
-      BRefNode* br = BREF_(node);
+      BackRefNode* br = BACKREF_(node);
       if (NODE_IS_RECURSION(node)) break;
 
       backs = BACKREFS_P(br);
@@ -2683,12 +2683,12 @@ get_max_len(Node* node, ScanEnv* env)
     len = ONIGENC_MBC_MAXLEN_DIST(env->enc);
     break;
 
-  case NODE_BREF:
+  case NODE_BACKREF:
     {
       int i;
       int* backs;
       MemEnv* mem_env = SCANENV_MEMENV(env);
-      BRefNode* br = BREF_(node);
+      BackRefNode* br = BACKREF_(node);
       if (NODE_IS_RECURSION(node)) {
         len = ONIG_INFINITE_DISTANCE;
         break;
@@ -2787,10 +2787,10 @@ check_backrefs(Node* node, ScanEnv* env)
     r = check_backrefs(NODE_BODY(node), env);
     break;
 
-  case NODE_BREF:
+  case NODE_BACKREF:
     {
       int i;
-      BRefNode* br = BREF_(node);
+      BackRefNode* br = BACKREF_(node);
       int* backs = BACKREFS_P(br);
       MemEnv* mem_env = SCANENV_MEMENV(env);
 
@@ -3708,7 +3708,7 @@ quantifiers_memory_node_info(Node* node)
     }
     break;
 
-  case NODE_BREF:
+  case NODE_BACKREF:
   case NODE_STR:
   case NODE_CTYPE:
   case NODE_CCLASS:
@@ -4082,7 +4082,7 @@ setup_called_state(Node* node, int state)
     }
     break;
 
-  case NODE_BREF:
+  case NODE_BACKREF:
   case NODE_STR:
   case NODE_CTYPE:
   case NODE_CCLASS:
@@ -4284,11 +4284,11 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     }
     break;
 
-  case NODE_BREF:
+  case NODE_BACKREF:
     {
       int i;
       int* p;
-      BRefNode* br = BREF_(node);
+      BackRefNode* br = BACKREF_(node);
       p = BACKREFS_P(br);
       for (i = 0; i < br->back_num; i++) {
         if (p[i] > env->num_mem)  return ONIGERR_INVALID_BACKREF;
@@ -5191,13 +5191,13 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     }
     break;
 
-  case NODE_BREF:
+  case NODE_BACKREF:
     {
       int i;
       int* backs;
       OnigLen min, max, tmin, tmax;
       MemEnv* mem_env = SCANENV_MEMENV(env->scan_env);
-      BRefNode* br = BREF_(node);
+      BackRefNode* br = BACKREF_(node);
 
       if (NODE_IS_RECURSION(node)) {
         set_mml(&opt->len, 0, ONIG_INFINITE_DISTANCE);
@@ -6659,10 +6659,10 @@ print_indent_tree(FILE* f, Node* node, int indent)
     }
     break;
 
-  case NODE_BREF:
+  case NODE_BACKREF:
     {
       int* p;
-      BRefNode* br = BREF_(node);
+      BackRefNode* br = BACKREF_(node);
       p = BACKREFS_P(br);
       fprintf(f, "<backref:%p>", node);
       for (i = 0; i < br->back_num; i++) {

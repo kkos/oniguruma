@@ -36,7 +36,7 @@ typedef enum {
   NODE_STR       = 0,
   NODE_CCLASS    = 1,
   NODE_CTYPE     = 2,
-  NODE_BREF      = 3,
+  NODE_BACKREF   = 3,
   NODE_QUANT     = 4,
   NODE_ENCLOSURE = 5,
   NODE_ANCHOR    = 6,
@@ -51,7 +51,7 @@ typedef enum {
 #define BIT_NODE_STR        NODE_TYPE2BIT(NODE_STR)
 #define BIT_NODE_CCLASS     NODE_TYPE2BIT(NODE_CCLASS)
 #define BIT_NODE_CTYPE      NODE_TYPE2BIT(NODE_CTYPE)
-#define BIT_NODE_BREF       NODE_TYPE2BIT(NODE_BREF)
+#define BIT_NODE_BACKREF    NODE_TYPE2BIT(NODE_BACKREF)
 #define BIT_NODE_QUANT      NODE_TYPE2BIT(NODE_QUANT)
 #define BIT_NODE_ENCLOSURE  NODE_TYPE2BIT(NODE_ENCLOSURE)
 #define BIT_NODE_ANCHOR     NODE_TYPE2BIT(NODE_ANCHOR)
@@ -61,7 +61,7 @@ typedef enum {
 
 #define NODE_IS_SIMPLE_TYPE(node) \
   ((NODE_TYPE2BIT(NODE_TYPE(node)) & \
-    (BIT_NODE_STR | BIT_NODE_CCLASS | BIT_NODE_CTYPE | BIT_NODE_BREF)) != 0)
+    (BIT_NODE_STR | BIT_NODE_CCLASS | BIT_NODE_CTYPE | BIT_NODE_BACKREF)) != 0)
 
 #define NODE_TYPE(node)             ((node)->u.base.node_type)
 #define SET_NODE_TYPE(node, ntype)   (node)->u.base.node_type = (ntype)
@@ -69,7 +69,7 @@ typedef enum {
 #define STR_(node)         (&((node)->u.str))
 #define CCLASS_(node)      (&((node)->u.cclass))
 #define CTYPE_(node)       (&((node)->u.ctype))
-#define BREF_(node)        (&((node)->u.bref))
+#define BACKREF_(node)     (&((node)->u.backref))
 #define QUANT_(node)       (&((node)->u.quant))
 #define ENCLOSURE_(node)   (&((node)->u.enclosure))
 #define ANCHOR_(node)      (&((node)->u.anchor))
@@ -268,7 +268,7 @@ typedef struct {
   int  back_static[NODE_BACKREFS_SIZE];
   int* back_dynamic;
   int  nest_level;
-} BRefNode;
+} BackRefNode;
 
 typedef struct {
   NodeType node_type;
@@ -307,7 +307,7 @@ typedef struct _Node {
     CClassNode    cclass;
     QuantNode     quant;
     EnclosureNode enclosure;
-    BRefNode      bref;
+    BackRefNode   backref;
     AnchorNode    anchor;
     ConsAltNode   cons;
     CtypeNode     ctype;
