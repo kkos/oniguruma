@@ -1109,8 +1109,20 @@ onig_node_free(Node* node)
       xfree(BACKREF_(node)->back_dynamic);
     break;
 
-  case NODE_QUANT:
   case NODE_ENCLOSURE:
+    if (NODE_BODY(node))
+      onig_node_free(NODE_BODY(node));
+
+    {
+      EnclosureNode* en = ENCLOSURE_(node);
+      if (en->type == ENCLOSURE_IF_ELSE) {
+        onig_node_free(en->te.Then);
+        onig_node_free(en->te.Else);
+      }
+    }
+    break;
+
+  case NODE_QUANT:
   case NODE_ANCHOR:
     if (NODE_BODY(node))
       onig_node_free(NODE_BODY(node));
