@@ -4767,12 +4767,11 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
     case '(':
       /* (?()...) */
       if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_LPAREN_IF_ELSE)) {
-        UChar *prev1, *prev;
+        UChar *prev;
         Node* condition;
         int condition_is_checker;
 
         if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
-        prev1 = p;
         PFETCH(c);
         if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
 
@@ -4802,7 +4801,6 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 #endif
           if (r < 0) {
             if (is_enclosed == 0) {
-              p = prev1;
               goto any_condition;
             }
             else
@@ -4863,7 +4861,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
         }
         else {
         any_condition:
-
+          PUNFETCH;
           condition_is_checker = 0;
           r = fetch_token(tok, &p, end, env);
           if (r < 0) return r;
@@ -4891,7 +4889,16 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           *np = condition;
         }
         else { /* if-else */
+          int then_is_empty;
           Node *Then, *Else;
+
+          if (PPEEK_IS('|')) {
+            PFETCH(c);
+            Then = 0;
+            then_is_empty = 1;
+          }
+          else
+            then_is_empty = 0;
 
           r = fetch_token(tok, &p, end, env);
           if (r < 0) {
@@ -4900,25 +4907,30 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           }
           r = parse_subexp(&target, tok, term, &p, end, env);
           if (r < 0) {
-          err_if_else2:
             onig_node_free(condition);
             onig_node_free(target);
             return r;
           }
 
-          if (NODE_TYPE(target) == NODE_ALT) {
-            if (NODE_CDR(NODE_CDR(target)) != NULL_NODE) {
-              r = ONIGERR_INVALID_IF_ELSE_SYNTAX;
-              goto err_if_else2;
-            }
-
-            Then = NODE_CAR(target);
-            Else = NODE_CAR(NODE_CDR(target));
-            cons_node_free_alone(target);
+          if (then_is_empty != 0) {
+            Else = target;
           }
           else {
-            Then = target;
-            Else = 0;
+            if (NODE_TYPE(target) == NODE_ALT) {
+              Then = NODE_CAR(target);
+              if (NODE_CDR(NODE_CDR(target)) == NULL_NODE) {
+                Else = NODE_CAR(NODE_CDR(target));
+                cons_node_free_alone(NODE_CDR(target));
+              }
+              else {
+                Else = NODE_CDR(target);
+              }
+              cons_node_free_alone(target);
+            }
+            else {
+              Then = target;
+              Else = 0;
+            }
           }
 
           *np = node_new_enclosure(ENCLOSURE_IF_ELSE);
