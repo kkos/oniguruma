@@ -3409,7 +3409,7 @@ divide_look_behind_alternatives(Node* node)
   if (anc_type == ANCHOR_LOOK_BEHIND_NOT) {
     np = node;
     do {
-      SET_NODE_TYPE(np, NODE_LIST);  /* alt -> list */
+      NODE_SET_TYPE(np, NODE_LIST);  /* alt -> list */
     } while (IS_NOT_NULL(np = NODE_CDR(np)));
   }
   return 0;

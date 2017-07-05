@@ -64,7 +64,7 @@ typedef enum {
     (BIT_NODE_STR | BIT_NODE_CCLASS | BIT_NODE_CTYPE | BIT_NODE_BACKREF)) != 0)
 
 #define NODE_TYPE(node)             ((node)->u.base.node_type)
-#define SET_NODE_TYPE(node, ntype)   (node)->u.base.node_type = (ntype)
+#define NODE_SET_TYPE(node, ntype)   (node)->u.base.node_type = (ntype)
 
 #define STR_(node)         (&((node)->u.str))
 #define CCLASS_(node)      (&((node)->u.cclass))

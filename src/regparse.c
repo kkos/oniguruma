@@ -1163,7 +1163,7 @@ node_new_cclass(void)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NODE_CCLASS);
+  NODE_SET_TYPE(node, NODE_CCLASS);
   initialize_cclass(CCLASS_(node));
   return node;
 }
@@ -1174,7 +1174,7 @@ node_new_ctype(int type, int not)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NODE_CTYPE);
+  NODE_SET_TYPE(node, NODE_CTYPE);
   CTYPE_(node)->ctype = type;
   CTYPE_(node)->not   = not;
   return node;
@@ -1186,7 +1186,7 @@ node_new_list(Node* left, Node* right)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NODE_LIST);
+  NODE_SET_TYPE(node, NODE_LIST);
   NODE_CAR(node)  = left;
   NODE_CDR(node) = right;
   return node;
@@ -1222,7 +1222,7 @@ onig_node_new_alt(Node* left, Node* right)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NODE_ALT);
+  NODE_SET_TYPE(node, NODE_ALT);
   NODE_CAR(node)  = left;
   NODE_CDR(node) = right;
   return node;
@@ -1234,7 +1234,7 @@ onig_node_new_anchor(int type)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NODE_ANCHOR);
+  NODE_SET_TYPE(node, NODE_ANCHOR);
   ANCHOR_(node)->type     = type;
   ANCHOR_(node)->char_len = -1;
   return node;
@@ -1252,7 +1252,7 @@ node_new_backref(int back_num, int* backrefs, int by_name,
 
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NODE_BACKREF);
+  NODE_SET_TYPE(node, NODE_BACKREF);
   BACKREF_(node)->back_num = back_num;
   BACKREF_(node)->back_dynamic = (int* )NULL;
   if (by_name != 0)
@@ -1317,7 +1317,7 @@ node_new_call(UChar* name, UChar* name_end, int gnum, int by_number)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NODE_CALL);
+  NODE_SET_TYPE(node, NODE_CALL);
   CALL_(node)->by_number   = by_number;
   CALL_(node)->name        = name;
   CALL_(node)->name_end    = name_end;
@@ -1333,7 +1333,7 @@ node_new_quantifier(int lower, int upper, int by_number)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NODE_QUANT);
+  NODE_SET_TYPE(node, NODE_QUANT);
   QUANT_(node)->lower  = lower;
   QUANT_(node)->upper  = upper;
   QUANT_(node)->greedy = 1;
@@ -1357,7 +1357,7 @@ node_new_enclosure(int type)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NODE_ENCLOSURE);
+  NODE_SET_TYPE(node, NODE_ENCLOSURE);
   ENCLOSURE_(node)->type = type;
 
   switch (type) {
@@ -1466,7 +1466,7 @@ node_str_cat_char(Node* node, UChar c)
 extern void
 onig_node_conv_to_str_node(Node* node, int flag)
 {
-  SET_NODE_TYPE(node, NODE_STR);
+  NODE_SET_TYPE(node, NODE_STR);
   STR_(node)->flag = flag;
   STR_(node)->capa = 0;
   STR_(node)->s    = STR_(node)->buf;
@@ -1493,7 +1493,7 @@ node_new_str(const UChar* s, const UChar* end)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  SET_NODE_TYPE(node, NODE_STR);
+  NODE_SET_TYPE(node, NODE_STR);
   STR_(node)->capa = 0;
   STR_(node)->flag = 0;
   STR_(node)->s    = STR_(node)->buf;
