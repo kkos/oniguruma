@@ -603,6 +603,12 @@ extern int main(int argc, char* argv[])
   x2("(a)(?(1+0)b|c)d", "abd", 0, 3);
   x2("(?:(?'name'a)|(?'name'b))(?('name')c|d)e", "ace", 0, 3);
   x2("(?:(?'name'a)|(?'name'b))(?('name')c|d)e", "bce", 0, 3);
+  x2("\\R", "\r\n", 0, 2);
+  x2("\\R", "\r", 0, 1);
+  x2("\\R", "\n", 0, 1);
+  x2("\\R", "\x0b", 0, 1);
+  n("\\R\\n", "\r\n");
+  n("\\R", "\xc2\x85"); // because euc-jp is not Unicode
 
   /*
     < ifndef IGNORE_EUC_JP >
