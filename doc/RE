@@ -70,7 +70,7 @@ syntax: ONIG_SYNTAX_RUBY (default)
 
   \H       non-hexdigit char
 
-  \R       general newline
+  \R       general newline  (* can't be used in character-class)
            "\r\n" or \n,\v,\f,\r  (* but doesn't backtrack from \r\n to \r)
 
            Unicode case:
