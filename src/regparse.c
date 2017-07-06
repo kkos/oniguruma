@@ -49,6 +49,7 @@ OnigSyntaxType OnigSyntaxRuby = {
       ONIG_SYN_OP2_OPTION_RUBY |
       ONIG_SYN_OP2_QMARK_LT_NAMED_GROUP | ONIG_SYN_OP2_ESC_K_NAMED_BACKREF |
       ONIG_SYN_OP2_QMARK_LPAREN_IF_ELSE |
+      ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE |
       ONIG_SYN_OP2_ESC_G_SUBEXP_CALL |
       ONIG_SYN_OP2_ESC_P_BRACE_CHAR_PROPERTY  |
       ONIG_SYN_OP2_ESC_P_BRACE_CIRCUMFLEX_NOT |
@@ -2258,6 +2259,62 @@ onig_reduce_nested_quantifier(Node* pnode, Node* cnode)
   onig_node_free(cnode);
 }
 
+static int
+node_new_general_newline(Node** node, ScanEnv* env)
+{
+  int r;
+  int dlen, alen;
+  UChar buf[ONIGENC_CODE_TO_MBC_MAXLEN * 2];
+  Node* crnl;
+  Node* ncc;
+  Node* x;
+  CClassNode* cc;
+
+  dlen = ONIGENC_CODE_TO_MBC(env->enc, 0x0d, buf);
+  if (dlen < 0) return dlen;
+  alen = ONIGENC_CODE_TO_MBC(env->enc, 0x0a, buf + dlen);
+  if (alen < 0) return alen;
+
+  crnl = node_new_str_raw(buf, buf + dlen + alen);
+  CHECK_NULL_RETURN_MEMERR(crnl);
+
+  ncc = node_new_cclass();
+  if (IS_NULL(ncc)) goto err2;
+
+  cc = CCLASS_(ncc);
+  if (dlen == 1) {
+    bitset_set_range(cc->bs, 0x0a, 0x0d);
+  }
+  else {
+    r = add_code_range(&(cc->mbuf), env, 0x0a, 0x0d);
+    if (r != 0) {
+    err1:
+      onig_node_free(ncc);
+    err2:
+      onig_node_free(crnl);
+      return ONIGERR_MEMORY;
+    }
+  }
+
+  if (ONIGENC_IS_UNICODE_ENCODING(env->enc)) {
+    r = add_code_range(&(cc->mbuf), env, 0x85, 0x85);
+    if (r != 0) goto err1;
+    r = add_code_range(&(cc->mbuf), env, 0x2028, 0x2029);
+    if (r != 0) goto err1;
+  }
+
+  x = node_new_enclosure(ENCLOSURE_IF_ELSE);
+  if (IS_NULL(x)) goto err1;
+
+  NODE_BODY(x) = crnl;
+  ENCLOSURE_(x)->te.Then = 0;
+  ENCLOSURE_(x)->te.Else = ncc;
+
+  *node = x;
+  return 0;
+}
+
+
 
 enum TokenSyms {
   TK_EOT      = 0,   /* end of token */
@@ -2279,6 +2336,8 @@ enum TokenSyms {
   TK_CC_OPEN,
   TK_QUOTE_OPEN,
   TK_CHAR_PROPERTY,    /* \p{...}, \P{...} */
+  TK_GENERAL_NEWLINE,
+
   /* in cc */
   TK_CC_CLOSE,
   TK_CC_RANGE,
@@ -3423,6 +3482,11 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       tok->type = TK_CHAR_TYPE;
       tok->u.prop.ctype = ONIGENC_CTYPE_XDIGIT;
       tok->u.prop.not   = 1;
+      break;
+
+    case 'R':
+      if (! IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE)) break;
+      tok->type = TK_GENERAL_NEWLINE;
       break;
 
     case 'A':
@@ -5586,6 +5650,11 @@ parse_exp(Node** np, OnigToken* tok, int term,
     else {
       goto tk_byte;
     }
+    break;
+
+  case TK_GENERAL_NEWLINE:
+    r = node_new_general_newline(np, env);
+    if (r < 0) return r;
     break;
 
   default:
