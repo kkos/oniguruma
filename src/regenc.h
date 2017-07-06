@@ -239,5 +239,7 @@ ONIG_EXTERN const unsigned short OnigEncAsciiCtypeTable[];
  (ONIGENC_IS_ASCII_CODE_CTYPE(code, ONIGENC_CTYPE_UPPER) ||\
   ONIGENC_IS_ASCII_CODE_CTYPE(code, ONIGENC_CTYPE_LOWER))
    
+#define ONIGENC_IS_UNICODE_ENCODING(enc) \
+  ((enc)->is_code_ctype == onigenc_unicode_is_code_ctype)
 
 #endif /* REGENC_H */
