@@ -1405,6 +1405,19 @@ onig_node_new_enclosure(int type)
 }
 
 static Node*
+node_new_enclosure_if_else(Node* cond, Node* Then, Node* Else)
+{
+  Node* n;
+  n = node_new_enclosure(ENCLOSURE_IF_ELSE);
+  CHECK_NULL_RETURN(n);
+
+  NODE_BODY(n) = cond;
+  ENCLOSURE_(n)->te.Then = Then;
+  ENCLOSURE_(n)->te.Else = Else;
+  return n;
+}
+
+static Node*
 node_new_memory(int is_named)
 {
   Node* node = node_new_enclosure(ENCLOSURE_MEMORY);
@@ -2303,12 +2316,8 @@ node_new_general_newline(Node** node, ScanEnv* env)
     if (r != 0) goto err1;
   }
 
-  x = node_new_enclosure(ENCLOSURE_IF_ELSE);
+  x = node_new_enclosure_if_else(crnl, 0, ncc);
   if (IS_NULL(x)) goto err1;
-
-  NODE_BODY(x) = crnl;
-  ENCLOSURE_(x)->te.Then = 0;
-  ENCLOSURE_(x)->te.Else = ncc;
 
   *node = x;
   return 0;
@@ -5009,17 +5018,13 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
             }
           }
 
-          *np = node_new_enclosure(ENCLOSURE_IF_ELSE);
+          *np = node_new_enclosure_if_else(condition, Then, Else);
           if (IS_NULL(*np)) {
             onig_node_free(condition);
             onig_node_free(Then);
             onig_node_free(Else);
             return ONIGERR_MEMORY;
           }
-
-          NODE_BODY(*np) = condition;
-          ENCLOSURE_(*np)->te.Then = Then;
-          ENCLOSURE_(*np)->te.Else = Else;
         }
         goto end;
       }
