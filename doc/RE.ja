@@ -398,7 +398,6 @@
    + \l,\u,\L,\U, \X, \C
    + (?{code})
    + (??{code})
-   + (?(condition)yes-pat|no-pat)
 
    * \Q...\E
      但しONIG_SYNTAX_PERLとONIG_SYNTAX_JAVAでは有効

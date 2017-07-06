@@ -385,7 +385,6 @@ A-3. Missing features compared with perl 5.8.0
    + \l,\u,\L,\U, \X, \C
    + (?{code})
    + (??{code})
-   + (?(condition)yes-pat|no-pat)
 
    * \Q...\E
      This is effective on ONIG_SYNTAX_PERL and ONIG_SYNTAX_JAVA.
