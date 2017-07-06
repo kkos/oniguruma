@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.4.0    2017/06/28
+Oniguruma Regular Expressions Version 6.5.0    2017/07/06
 
 syntax: ONIG_SYNTAX_RUBY (default)
 
@@ -227,6 +227,18 @@ syntax: ONIG_SYNTAX_RUBY (default)
                      group.
 
                      Assigning the same name to two or more subexps is allowed.
+
+  (?(condition_exp)then_exp|else_exp)    if-then-else
+  (?(condition_exp)then_exp)             if-then
+
+               condition_exp can be a backreference number/name or normal regular
+               expression.
+               When condition_exp is backreference, both then_exp and else_exp
+               can be omitted. Then it works as a backreference validity checker.
+
+                 (?(n)), (?(-n)), (?(+n)), (?(n+level)) ...
+                 (?(<name>)), (?('name')), (?(<name+level>)) ...
+
 
 
 8. Backreferences
