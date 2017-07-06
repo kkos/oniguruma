@@ -593,6 +593,16 @@ extern int main(int argc, char* argv[])
   x2("(a*)(?(1))aa", "aaaaa", 0, 5);
   x2("(a*)(?(-1))aa", "aaaaa", 0, 5);
   x2("(?<name>aaa)(?('name'))aa", "aaaaa", 0, 5);
+  x2("(a)(?(1)aa|bb)a", "aaaaa", 0, 4);
+  x2("(?:aa|())(?(1)aa|bb)a", "aabba", 0, 5);
+  x2("(?:aa|())(?(1)aa|bb|cc)a", "aacca", 0, 5);
+  x3("(a*)(?(1)aa|a)b", "aaab", 0, 1, 1);
+  n("(a)(?(1)a|b)c", "abc");
+  x2("(a)(?(1)|)c", "ac", 0, 2);
+  n("(?()aaa|bbb)", "bbb");
+  x2("(a)(?(1+0)b|c)d", "abd", 0, 3);
+  x2("(?:(?'name'a)|(?'name'b))(?('name')c|d)e", "ace", 0, 3);
+  x2("(?:(?'name'a)|(?'name'b))(?('name')c|d)e", "bce", 0, 3);
 
   /*
     < ifndef IGNORE_EUC_JP >
