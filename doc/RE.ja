@@ -53,7 +53,7 @@
              \t, \n, \v, \f, \r, \x20
 
            Unicodeの場合:
-             0009, 000A, 000B, 000C, 000D, 0085(NEL), 
+             U+0009, U+000A, U+000B, U+000C, U+000D, U+0085(NEL), 
              General_Category -- Line_Separator
                               -- Paragraph_Separator
                               -- Space_Separator
@@ -69,6 +69,12 @@
   \h       16進数字    [0-9a-fA-F]
 
   \H       非16進数字
+
+  \R       汎改行
+           "\r\n" or \n,\v,\f,\r  (* 但し \r\nから\rにはバックトラックしない)
+
+           Unicodeの場合:
+             "\r\n" or \n,\v,\f,\r or U+0085, U+2028, U+2029
 
 
   Character Property
@@ -182,9 +188,9 @@
                Final_Punctuation | Initial_Punctuation | Other_Punctuation |
                Open_Punctuation
       space    Space_Separator | Line_Separator | Paragraph_Separator |
-               0009 | 000A | 000B | 000C | 000D | 0085
+               U+0009 | U+000A | U+000B | U+000C | U+000D | U+0085
       upper    Uppercase_Letter
-      xdigit   0030 - 0039 | 0041 - 0046 | 0061 - 0066
+      xdigit   U+0030 - U+0039 | U+0041 - U+0046 | U+0061 - U+0066
                (0-9, a-f, A-F)
       word     Letter | Mark | Decimal_Number | Connector_Punctuation
 
