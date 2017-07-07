@@ -226,6 +226,14 @@ typedef int intptr_t;
 
 #endif /* PLATFORM_UNALIGNED_WORD_ACCESS */
 
+typedef struct {
+  int num_keeper;
+  int* keepers;
+} RegExt;
+
+#define REG_EXTP(reg)      (RegExt* )((reg)->chain)
+#define REG_EXTPL(reg)     ((reg)->chain)
+
 /* stack pop level */
 #define STACK_POP_LEVEL_FREE        0
 #define STACK_POP_LEVEL_MEM_START   1
