@@ -1,4 +1,4 @@
-鬼車 正規表現 Version 6.5.0    2017/07/06
+鬼車 正規表現 Version 6.5.0    2017/07/07
 
 使用文法: ONIG_SYNTAX_RUBY (既定値)
 
@@ -75,6 +75,9 @@
 
            Unicodeの場合:
              "\r\n" or \n,\v,\f,\r or U+0085, U+2028, U+2029
+
+  \N       非改行  [^\n]
+
 
 
   Character Property

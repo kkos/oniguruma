@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.5.0    2017/07/06
+Oniguruma Regular Expressions Version 6.5.0    2017/07/07
 
 syntax: ONIG_SYNTAX_RUBY (default)
 
@@ -75,6 +75,8 @@ syntax: ONIG_SYNTAX_RUBY (default)
 
            Unicode case:
              "\r\n" or \n,\v,\f,\r or U+0085, U+2028, U+2029
+
+  \N       negative newline   [^\n]
 
 
   Character Property
