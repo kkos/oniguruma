@@ -185,7 +185,7 @@ static int backref_rel_to_abs(int rel_no, ScanEnv* env)
 #define OPTION_ON(v,f)     ((v) |= (f))
 #define OPTION_OFF(v,f)    ((v) &= ~(f))
 
-#define ONOFF(v,f,negative)    (negative) ? ((v) &= ~(f)) : ((v) |= (f))
+#define OPTION_NEGATE(v,f,negative)    (negative) ? ((v) &= ~(f)) : ((v) |= (f))
 
 #define MBCODE_START_POS(enc) \
   (OnigCodePoint )(ONIGENC_MBC_MINLEN(enc) > 1 ? 0 : 0x80)
@@ -5106,11 +5106,11 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
             break;
 
           case '-':  neg = 1; break;
-          case 'x':  ONOFF(option, ONIG_OPTION_EXTEND,     neg); break;
-          case 'i':  ONOFF(option, ONIG_OPTION_IGNORECASE, neg); break;
+          case 'x':  OPTION_NEGATE(option, ONIG_OPTION_EXTEND,     neg); break;
+          case 'i':  OPTION_NEGATE(option, ONIG_OPTION_IGNORECASE, neg); break;
           case 's':
             if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_OPTION_PERL)) {
-              ONOFF(option, ONIG_OPTION_MULTILINE,  neg);
+              OPTION_NEGATE(option, ONIG_OPTION_MULTILINE,  neg);
             }
             else
               return ONIGERR_UNDEFINED_GROUP_OPTION;
@@ -5118,17 +5118,17 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 
           case 'm':
             if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_OPTION_PERL)) {
-              ONOFF(option, ONIG_OPTION_SINGLELINE, (neg == 0 ? 1 : 0));
+              OPTION_NEGATE(option, ONIG_OPTION_SINGLELINE, (neg == 0 ? 1 : 0));
             }
             else if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_OPTION_RUBY)) {
-              ONOFF(option, ONIG_OPTION_MULTILINE,  neg);
+              OPTION_NEGATE(option, ONIG_OPTION_MULTILINE,  neg);
             }
             else
               return ONIGERR_UNDEFINED_GROUP_OPTION;
             break;
 #ifdef USE_POSIXLINE_OPTION
           case 'p':
-            ONOFF(option, ONIG_OPTION_MULTILINE|ONIG_OPTION_SINGLELINE, neg);
+            OPTION_NEGATE(option, ONIG_OPTION_MULTILINE|ONIG_OPTION_SINGLELINE, neg);
             break;
 #endif
           default:
