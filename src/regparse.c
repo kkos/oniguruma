@@ -50,6 +50,7 @@ OnigSyntaxType OnigSyntaxRuby = {
       ONIG_SYN_OP2_QMARK_LT_NAMED_GROUP | ONIG_SYN_OP2_ESC_K_NAMED_BACKREF |
       ONIG_SYN_OP2_QMARK_LPAREN_IF_ELSE |
       ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE |
+      ONIG_SYN_OP2_ESC_CAPITAL_N_NO_NEWLINE |
       ONIG_SYN_OP2_ESC_G_SUBEXP_CALL |
       ONIG_SYN_OP2_ESC_P_BRACE_CHAR_PROPERTY  |
       ONIG_SYN_OP2_ESC_P_BRACE_CIRCUMFLEX_NOT |
@@ -2323,7 +2324,27 @@ node_new_general_newline(Node** node, ScanEnv* env)
   return 0;
 }
 
+static int
+node_new_no_newline(Node** node, ScanEnv* env)
+{
+  Node* a;
+  Node* o;
+  OnigOptionType option = env->option;
 
+  ONOFF(option, ONIG_OPTION_MULTILINE, 1);
+
+  a = node_new_ctype(CTYPE_ANYCHAR, 0);
+  CHECK_NULL_RETURN_MEMERR(a);
+  o = node_new_option(option);
+  if (IS_NULL(o)) {
+    onig_node_free(a);
+    return ONIGERR_MEMORY;
+  }
+  NODE_BODY(o) = a;
+
+  *node = o;
+  return 0;
+}
 
 enum TokenSyms {
   TK_EOT      = 0,   /* end of token */
@@ -2345,7 +2366,8 @@ enum TokenSyms {
   TK_CC_OPEN,
   TK_QUOTE_OPEN,
   TK_CHAR_PROPERTY,    /* \p{...}, \P{...} */
-  TK_GENERAL_NEWLINE,
+  TK_GENERAL_NEWLINE,  /* \R */
+  TK_NO_NEWLINE,       /* \N */
 
   /* in cc */
   TK_CC_CLOSE,
@@ -3496,6 +3518,11 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case 'R':
       if (! IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE)) break;
       tok->type = TK_GENERAL_NEWLINE;
+      break;
+
+    case 'N':
+      if (! IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_CAPITAL_N_NO_NEWLINE)) break;
+      tok->type = TK_NO_NEWLINE;
       break;
 
     case 'A':
@@ -5659,6 +5686,11 @@ parse_exp(Node** np, OnigToken* tok, int term,
 
   case TK_GENERAL_NEWLINE:
     r = node_new_general_newline(np, env);
+    if (r < 0) return r;
+    break;
+
+  case TK_NO_NEWLINE:
+    r = node_new_no_newline(np, env);
     if (r < 0) return r;
     break;
 
