@@ -609,6 +609,8 @@ extern int main(int argc, char* argv[])
   x2("\\R", "\x0b", 0, 1);
   n("\\R\\n", "\r\n");
   n("\\R", "\xc2\x85"); // because euc-jp is not Unicode
+  x2("\\N", "a", 0, 1);
+  n("\\N", "\n");
 
   /*
     < ifndef IGNORE_EUC_JP >
