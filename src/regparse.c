@@ -182,6 +182,9 @@ static int backref_rel_to_abs(int rel_no, ScanEnv* env)
   }
 }
 
+#define OPTION_ON(v,f)     ((v) |= (f))
+#define OPTION_OFF(v,f)    ((v) &= ~(f))
+
 #define ONOFF(v,f,negative)    (negative) ? ((v) &= ~(f)) : ((v) |= (f))
 
 #define MBCODE_START_POS(enc) \
@@ -2331,7 +2334,7 @@ node_new_no_newline(Node** node, ScanEnv* env)
   Node* o;
   OnigOptionType option = env->option;
 
-  ONOFF(option, ONIG_OPTION_MULTILINE, 1);
+  OPTION_OFF(option, ONIG_OPTION_MULTILINE);
 
   a = node_new_ctype(CTYPE_ANYCHAR, 0);
   CHECK_NULL_RETURN_MEMERR(a);
