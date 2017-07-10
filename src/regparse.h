@@ -351,6 +351,14 @@ typedef struct {
 #endif
 } MemEnv;
 
+enum SaveType {
+  SAVE_KEEP  = 0,
+};
+
+typedef struct {
+  enum SaveType type;
+} SaveItem;
+
 typedef struct {
   OnigOptionType   option;
   OnigCaseFoldType case_fold_flag;
@@ -384,6 +392,10 @@ typedef struct {
   int has_recursion;
 #endif
   unsigned int parse_depth;
+
+  int save_num;
+  int save_alloc_num;
+  SaveItem* saves;
 } ScanEnv;
 
 

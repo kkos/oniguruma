@@ -51,6 +51,7 @@ OnigSyntaxType OnigSyntaxRuby = {
       ONIG_SYN_OP2_QMARK_LPAREN_IF_ELSE |
       ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE |
       ONIG_SYN_OP2_ESC_CAPITAL_N_NO_NEWLINE |
+      ONIG_SYN_OP2_ESC_CAPITAL_K_KEEP |
       ONIG_SYN_OP2_ESC_G_SUBEXP_CALL |
       ONIG_SYN_OP2_ESC_P_BRACE_CHAR_PROPERTY  |
       ONIG_SYN_OP2_ESC_P_BRACE_CIRCUMFLEX_NOT |
@@ -306,6 +307,32 @@ strdup_with_null(OnigEncoding enc, UChar* s, UChar* end)
   return r;
 }
 #endif
+
+static int
+save_entry(ScanEnv* env, enum SaveType type, int* id)
+{
+  int nid = env->save_num;
+
+  if (IS_NULL(env->saves)) {
+    int n = 10;
+    env->saves = (SaveItem* )xmalloc(sizeof(SaveItem) * n);
+    CHECK_NULL_RETURN_MEMERR(env->saves);
+    env->save_alloc_num = n;
+  }
+  else if (env->save_alloc_num <= nid) {
+    int n = env->save_alloc_num * 2;
+    SaveItem* p = (SaveItem* )xrealloc(env->saves, sizeof(SaveItem) * n);
+    CHECK_NULL_RETURN_MEMERR(p);
+    env->saves = p;
+    env->save_alloc_num = n;
+  }
+
+  env->saves[nid].type = type;
+
+  env->save_num++;
+  *id = nid;
+  return 0;
+}
 
 /* scan pattern methods */
 #define PEND_VALUE   0
@@ -1017,6 +1044,9 @@ scan_env_clear(ScanEnv* env)
   env->has_recursion       = 0;
 #endif
   env->parse_depth         = 0;
+  env->save_num            = 0;
+  env->save_alloc_num      = 0;
+  env->saves               = 0;
 }
 
 static int
@@ -1440,6 +1470,25 @@ node_new_option(OnigOptionType option)
   CHECK_NULL_RETURN(node);
   ENCLOSURE_(node)->o.option = option;
   return node;
+}
+
+static int
+node_new_keep(Node** node, ScanEnv* env)
+{
+  int id;
+  int r;
+
+  *node = 0;
+  r = save_entry(env, SAVE_KEEP, &id);
+  if (r != ONIG_NORMAL) return r;
+
+  *node = node_new();
+  CHECK_NULL_RETURN_MEMERR(*node);
+
+  NODE_SET_TYPE(*node, NODE_GIMMICK);
+  GIMMICK_(*node)->id   = id;
+  GIMMICK_(*node)->type = SAVE_KEEP;
+  return ONIG_NORMAL;
 }
 
 extern int
@@ -2155,6 +2204,7 @@ is_invalid_quantifier_target(Node* node)
 {
   switch (NODE_TYPE(node)) {
   case NODE_ANCHOR:
+  case NODE_GIMMICK:
     return 1;
     break;
 
@@ -2370,6 +2420,7 @@ enum TokenSyms {
   TK_CC_OPEN,
   TK_QUOTE_OPEN,
   TK_CHAR_PROPERTY,    /* \p{...}, \P{...} */
+  TK_KEEP,             /* \K */
   TK_GENERAL_NEWLINE,  /* \R */
   TK_NO_NEWLINE,       /* \N */
 
@@ -3517,6 +3568,11 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       tok->type = TK_CHAR_TYPE;
       tok->u.prop.ctype = ONIGENC_CTYPE_XDIGIT;
       tok->u.prop.not   = 1;
+      break;
+
+    case 'K':
+      if (! IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_CAPITAL_K_KEEP)) break;
+      tok->type = TK_KEEP;
       break;
 
     case 'R':
@@ -5686,6 +5742,11 @@ parse_exp(Node** np, OnigToken* tok, int term,
     else {
       goto tk_byte;
     }
+    break;
+
+  case TK_KEEP:
+    r = node_new_keep(np, env);
+    if (r < 0) return r;
     break;
 
   case TK_GENERAL_NEWLINE:
