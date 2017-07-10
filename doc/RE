@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.5.0    2017/07/07
+Oniguruma Regular Expressions Version 6.5.0    2017/07/10
 
 syntax: ONIG_SYNTAX_RUBY (default)
 
@@ -141,6 +141,8 @@ syntax: ONIG_SYNTAX_RUBY (default)
   \Z      end of string, or before newline at the end
   \z      end of string
   \G      where the current search attempt begins
+  \K      keep (keep start position of the result string)
+
 
 
 6. Character class
