@@ -676,46 +676,6 @@ typedef void* PointerType;
 
 typedef intptr_t OnigStackIndex;
 
-typedef struct _OnigStackType {
-  unsigned int type;
-  union {
-    struct {
-      UChar *pcode;      /* byte code position */
-      UChar *pstr;       /* string position */
-      UChar *pstr_prev;  /* previous char position of pstr */
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-      unsigned int state_check;
-#endif
-    } state;
-    struct {
-      int   count;       /* for OP_REPEAT_INC, OP_REPEAT_INC_NG */
-      UChar *pcode;      /* byte code position (head of repeated target) */
-      int   num;         /* repeat id */
-    } repeat;
-    struct {
-      OnigStackIndex si;     /* index of stack */
-    } repeat_inc;
-    struct {
-      int num;           /* memory num */
-      UChar *pstr;       /* start/end position */
-      /* Following information is set, if this stack type is MEM-START */
-      OnigStackIndex start;  /* prev. info (for backtrack  "(...)*" ) */
-      OnigStackIndex end;    /* prev. info (for backtrack  "(...)*" ) */
-    } mem;
-    struct {
-      int num;           /* null check id */
-      UChar *pstr;       /* start position */
-    } empty_check;
-#ifdef USE_CALL
-    struct {
-      UChar *ret_addr;   /* byte code position */
-      int    num;        /* null check id */
-      UChar *pstr;       /* string position */
-    } call_frame;
-#endif
-  } u;
-} OnigStackType;
-
 typedef struct {
   void* stack_p;
   int   stack_n;
