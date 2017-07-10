@@ -490,8 +490,8 @@ enum OpCode {
 
   OP_BACKREF1,
   OP_BACKREF2,
-  OP_BACKREFN,
-  OP_BACKREFN_IC,
+  OP_BACKREF_N,
+  OP_BACKREF_N_IC,
   OP_BACKREF_MULTI,
   OP_BACKREF_MULTI_IC,
   OP_BACKREF_WITH_LEVEL,        /* \k<xxx+n>, \k<xxx-n> */

@@ -1934,7 +1934,7 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
         if (br->back_num == 1) {
           n = br->back_static[0];
           if (IS_IGNORECASE(reg->options)) {
-            r = add_opcode(reg, OP_BACKREFN_IC);
+            r = add_opcode(reg, OP_BACKREF_N_IC);
             if (r != 0) return r;
             r = add_mem_num(reg, n);
           }
@@ -1943,7 +1943,7 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
             case 1:  r = add_opcode(reg, OP_BACKREF1); break;
             case 2:  r = add_opcode(reg, OP_BACKREF2); break;
             default:
-              r = add_opcode(reg, OP_BACKREFN);
+              r = add_opcode(reg, OP_BACKREF_N);
               if (r != 0) return r;
               r = add_mem_num(reg, n);
               break;
@@ -6637,8 +6637,8 @@ OnigOpInfoType OnigOpInfo[] = {
   { OP_BEGIN_POSITION,      "begin-position",  ARG_NON },
   { OP_BACKREF1,            "backref1",             ARG_NON },
   { OP_BACKREF2,            "backref2",             ARG_NON },
-  { OP_BACKREFN,            "backrefn",             ARG_MEMNUM  },
-  { OP_BACKREFN_IC,         "backrefn-ic",          ARG_SPECIAL },
+  { OP_BACKREF_N,            "backref-n",           ARG_MEMNUM  },
+  { OP_BACKREF_N_IC,         "backref-n-ic",        ARG_SPECIAL },
   { OP_BACKREF_MULTI,       "backref_multi",        ARG_SPECIAL },
   { OP_BACKREF_MULTI_IC,    "backref_multi-ic",     ARG_SPECIAL },
   { OP_BACKREF_WITH_LEVEL,  "backref_with_level",   ARG_SPECIAL },
@@ -6898,7 +6898,7 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
       }
       break;
 
-    case OP_BACKREFN_IC:
+    case OP_BACKREF_N_IC:
       mem = *((MemNumType* )bp);
       bp += SIZE_MEMNUM;
       fprintf(f, ":%d", mem);

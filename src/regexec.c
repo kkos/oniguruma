@@ -2294,7 +2294,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       goto backref;
       break;
 
-    case OP_BACKREFN:  MOP_IN(OP_BACKREFN);
+    case OP_BACKREF_N:  MOP_IN(OP_BACKREF_N);
       GET_MEMNUM_INC(mem, p);
     backref:
       {
@@ -2324,7 +2324,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       }
       break;
 
-    case OP_BACKREFN_IC:  MOP_IN(OP_BACKREFN_IC);
+    case OP_BACKREF_N_IC:  MOP_IN(OP_BACKREF_N_IC);
       GET_MEMNUM_INC(mem, p);
       {
         int len;
