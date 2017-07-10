@@ -783,7 +783,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 
 #define STACK_GET_SAVE_VAL_TYPE_LAST(stype, sval) do {\
   StackType *k = stk;\
-  while (1) {\
+  while (k > stk_base) {\
     k--;\
     STACK_BASE_CHECK(k, "STACK_GET_SAVE_VAL_TYPE_LAST"); \
     if (k->type == STK_SAVE_VAL && k->u.val.type == (stype)) {\
@@ -2877,18 +2877,29 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
 
     case OP_PUSH_SAVE_VAL: MOP_IN(OP_PUSH_SAVE_VAL);
-      GET_MEMNUM_INC(mem, p); /* mem: save id */
-      STACK_PUSH_SAVE_VAL(mem, SAVE_KEEP, keep);
+      {
+        SaveType type;
+        GET_SAVE_TYPE_INC(type, p);
+        GET_MEMNUM_INC(mem, p); /* mem: save id */
+        switch ((enum SaveType )type) {
+        case SAVE_KEEP:
+          STACK_PUSH_SAVE_VAL(mem, type, s);
+          break;
+        }
+      }
       MOP_OUT;
       continue;
       break;
 
     case OP_UPDATE_VAR: MOP_IN(OP_UPDATE_VAR);
-      GET_MEMNUM_INC(mem, p); /* mem: update var type */
-      switch ((enum UpdateVarType )mem) {
-      case UPDATE_VAR_KEEP_FROM_STACK_LAST:
-        STACK_GET_SAVE_VAL_TYPE_LAST(SAVE_KEEP, keep);
-        break;
+      {
+        UpdateVarType type;
+        GET_UPDATE_VAR_TYPE_INC(type, p);
+        switch ((enum UpdateVarType )type) {
+        case UPDATE_VAR_KEEP_FROM_STACK_LAST:
+          STACK_GET_SAVE_VAL_TYPE_LAST(SAVE_KEEP, keep);
+          break;
+        }
       }
       MOP_OUT;
       continue;

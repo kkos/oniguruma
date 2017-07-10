@@ -46,6 +46,10 @@ typedef enum {
   NODE_GIMMICK   = 10
 } NodeType;
 
+enum GimmickType {
+  GIMMICK_KEEP = 0,
+};
+
 /* node type bit */
 #define NODE_TYPE2BIT(type)      (1<<(type))
 
@@ -309,7 +313,7 @@ typedef struct {
   int status;
 
   int id;
-  int type;
+  enum GimmickType type;
 } GimmickNode;
 
 typedef struct _Node {
@@ -389,6 +393,7 @@ typedef struct {
 #endif
   unsigned int parse_depth;
 
+  int keep_num;
   int save_num;
   int save_alloc_num;
   SaveItem* saves;

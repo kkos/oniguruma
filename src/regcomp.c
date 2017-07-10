@@ -347,6 +347,24 @@ add_option(regex_t* reg, OnigOptionType option)
 }
 
 static int
+add_save_type(regex_t* reg, enum SaveType type)
+{
+  SaveType t = (SaveType )type;
+
+  BBUF_ADD(reg, &t, SIZE_SAVE_TYPE);
+  return 0;
+}
+
+static int
+add_update_var_type(regex_t* reg, enum UpdateVarType type)
+{
+  UpdateVarType t = (UpdateVarType )type;
+
+  BBUF_ADD(reg, &t, SIZE_UPDATE_VAR_TYPE);
+  return 0;
+}
+
+static int
 add_opcode_rel_addr(regex_t* reg, int opcode, int addr)
 {
   int r;
@@ -1663,6 +1681,38 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
 }
 
 static int
+compile_gimmick_node(GimmickNode* node, regex_t* reg)
+{
+  int r;
+
+  switch (node->type) {
+  case GIMMICK_KEEP:
+    r = add_opcode(reg, OP_PUSH_SAVE_VAL);
+    if (r != 0) return r;
+    r = add_save_type(reg, SAVE_KEEP);
+    if (r != 0) return r;
+    r = add_mem_num(reg, node->id);
+    break;
+  }
+
+  return r;
+}
+
+static int
+compile_length_gimmick_node(GimmickNode* node, regex_t* reg)
+{
+  int len;
+
+  switch (node->type) {
+  case GIMMICK_KEEP:
+    len = SIZE_OP_PUSH_SAVE_VAL;
+    break;
+  }
+
+  return len;
+}
+
+static int
 compile_length_tree(Node* node, regex_t* reg)
 {
   int len, r;
@@ -1754,6 +1804,10 @@ compile_length_tree(Node* node, regex_t* reg)
 
   case NODE_ANCHOR:
     r = compile_length_anchor_node(ANCHOR_(node), reg);
+    break;
+
+  case NODE_GIMMICK:
+    r = compile_length_gimmick_node(GIMMICK_(node), reg);
     break;
 
   default:
@@ -1937,6 +1991,10 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
 
   case NODE_ANCHOR:
     r = compile_anchor_node(ANCHOR_(node), reg, env);
+    break;
+
+  case NODE_GIMMICK:
+    r = compile_gimmick_node(GIMMICK_(node), reg);
     break;
 
   default:
@@ -2358,6 +2416,7 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
     break;
 
   case NODE_ANCHOR:
+  case NODE_GIMMICK:
     break;
 
   case NODE_BACKREF:
@@ -2649,6 +2708,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
       n = get_head_value_node(NODE_BODY(node), exact, reg);
     break;
 
+  case NODE_GIMMICK:
   default:
     break;
   }
@@ -2707,6 +2767,7 @@ check_type_tree(Node* node, int type_mask, int enclosure_mask, int anchor_mask)
       r = check_type_tree(NODE_BODY(node), type_mask, enclosure_mask, anchor_mask);
     break;
 
+  case NODE_GIMMICK:
   default:
     break;
   }
@@ -2838,6 +2899,7 @@ get_min_len(Node* node, ScanEnv* env)
     break;
 
   case NODE_ANCHOR:
+  case NODE_GIMMICK:
   default:
     break;
   }
@@ -2967,6 +3029,7 @@ get_max_len(Node* node, ScanEnv* env)
     break;
 
   case NODE_ANCHOR:
+  case NODE_GIMMICK:
   default:
     break;
   }
@@ -4010,6 +4073,7 @@ quantifiers_memory_node_info(Node* node)
   case NODE_CTYPE:
   case NODE_CCLASS:
   case NODE_ANCHOR:
+  case NODE_GIMMICK:
   default:
     break;
   }
@@ -4445,6 +4509,7 @@ setup_called_state(Node* node, int state)
   case NODE_STR:
   case NODE_CTYPE:
   case NODE_CCLASS:
+  case NODE_GIMMICK:
   default:
     break;
   }
@@ -4730,6 +4795,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 #endif
   case NODE_CTYPE:
   case NODE_CCLASS:
+  case NODE_GIMMICK:
   default:
     break;
   }
@@ -5724,6 +5790,9 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     }
     break;
 
+  case NODE_GIMMICK:
+    break;
+
   default:
 #ifdef ONIG_DEBUG
     fprintf(stderr, "optimize_node_left: undefined node type %d\n", NODE_TYPE(node));
@@ -6225,6 +6294,13 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 
   r = compile_tree(root, reg, &scan_env);
   if (r == 0) {
+    if (scan_env.keep_num > 0) {
+      r = add_opcode(reg, OP_UPDATE_VAR);
+      if (r != 0) goto err;
+      r = add_update_var_type(reg, UPDATE_VAR_KEEP_FROM_STACK_LAST);
+      if (r != 0) goto err;
+    }
+
     r = add_opcode(reg, OP_END);
 #ifdef USE_CALL
     if (scan_env.num_call > 0) {
@@ -6286,8 +6362,8 @@ static int onig_inited = 0;
 
 extern int
 onig_reg_init(regex_t* reg, OnigOptionType option,
-	      OnigCaseFoldType case_fold_flag,
-	      OnigEncoding enc, OnigSyntaxType* syntax)
+              OnigCaseFoldType case_fold_flag,
+              OnigEncoding enc, OnigSyntaxType* syntax)
 {
   int r;
 
@@ -6603,6 +6679,8 @@ OnigOpInfoType OnigOpInfo[] = {
   { OP_FAIL_LOOK_BEHIND_NOT, "fail-look-behind-not", ARG_NON },
   { OP_CALL,                 "call",                 ARG_ABSADDR },
   { OP_RETURN,               "return",               ARG_NON },
+  { OP_PUSH_SAVE_VAL,        "push-save-val",        ARG_SPECIAL },
+  { OP_UPDATE_VAR,           "update-var",           ARG_SPECIAL },
   { OP_STATE_CHECK_PUSH,         "state-check-push",         ARG_SPECIAL },
   { OP_STATE_CHECK_PUSH_OR_JUMP, "state-check-push-or-jump", ARG_SPECIAL },
   { OP_STATE_CHECK,              "state-check",              ARG_STATE_CHECK },
@@ -6902,6 +6980,23 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
       p_rel_addr(f, addr, bp, start);
       break;
 
+    case OP_PUSH_SAVE_VAL:
+      {
+        SaveType type;
+        GET_SAVE_TYPE_INC(type, bp);
+        GET_MEMNUM_INC(mem, bp);
+        fprintf(f, ":%d:%d", type, mem);
+      }
+      break;
+
+    case OP_UPDATE_VAR:
+      {
+        UpdateVarType type;
+        GET_UPDATE_VAR_TYPE_INC(type, bp);
+        fprintf(f, ":%d", type);
+      }
+      break;
+
     default:
       fprintf(stderr, "onig_print_compiled_byte_code: undefined code %d\n",
 	      *--bp);
@@ -7108,6 +7203,15 @@ print_indent_tree(FILE* f, Node* node, int indent)
     }
     fprintf(f, "\n");
     print_indent_tree(f, NODE_BODY(node), indent + add);
+    break;
+
+  case NODE_GIMMICK:
+    fprintf(f, "<gimmick:%p> ", node);
+    switch (GIMMICK_(node)->type) {
+    case GIMMICK_KEEP:
+      fprintf(f, "keep:%d", GIMMICK_(node)->id);
+      break;
+    }
     break;
 
   default:

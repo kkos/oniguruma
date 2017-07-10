@@ -1044,6 +1044,7 @@ scan_env_clear(ScanEnv* env)
   env->has_recursion       = 0;
 #endif
   env->parse_depth         = 0;
+  env->keep_num            = 0;
   env->save_num            = 0;
   env->save_alloc_num      = 0;
   env->saves               = 0;
@@ -1487,7 +1488,8 @@ node_new_keep(Node** node, ScanEnv* env)
 
   NODE_SET_TYPE(*node, NODE_GIMMICK);
   GIMMICK_(*node)->id   = id;
-  GIMMICK_(*node)->type = SAVE_KEEP;
+  GIMMICK_(*node)->type = GIMMICK_KEEP;
+  env->keep_num++;
   return ONIG_NORMAL;
 }
 
