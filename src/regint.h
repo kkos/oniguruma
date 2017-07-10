@@ -534,6 +534,8 @@ enum OpCode {
 
   OP_CALL,                 /* \g<name> */
   OP_RETURN,
+  OP_PUSH_SAVE_VAL,
+  OP_UPDATE_VAR,
 
   OP_STATE_CHECK_PUSH,         /* combination explosion check and push */
   OP_STATE_CHECK_PUSH_OR_JUMP, /* check ok -> push, else jump  */
@@ -544,6 +546,14 @@ enum OpCode {
   /* no need: IS_DYNAMIC_OPTION() == 0 */
   OP_SET_OPTION_PUSH,    /* set option and push recover option */
   OP_SET_OPTION          /* set option */
+};
+
+enum SaveType {
+  SAVE_KEEP  = 0,
+};
+
+enum UpdateVarType {
+  UPDATE_VAR_KEEP_FROM_STACK_LAST = 0,
 };
 
 typedef int RelAddrType;

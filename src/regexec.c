@@ -324,7 +324,8 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_REPEAT                 0x0700
 #define STK_CALL_FRAME             0x0800
 #define STK_RETURN                 0x0900
-#define STK_VOID                   0x0a00  /* for fill a blank */
+#define STK_SAVE_VAL               0x0a00
+#define STK_VOID                   0x0b00  /* for fill a blank */
 
 /* stack type check mask */
 #define STK_MASK_POP_USED          0x00ff
@@ -368,6 +369,11 @@ typedef struct _StackType {
       UChar *pstr;       /* string position */
     } call_frame;
 #endif
+    struct {
+      int id;
+      enum SaveType type;
+      UChar* v;
+    } val;
   } u;
 } StackType;
 
@@ -766,6 +772,26 @@ stack_double(int is_alloca, char** arg_alloc_base,
   STACK_INC;\
 } while(0)
 
+#define STACK_PUSH_SAVE_VAL(sid, stype, sval) do {\
+  STACK_ENSURE(1);\
+  stk->type = STK_SAVE_VAL;\
+  stk->u.val.id   = (sid);\
+  stk->u.val.type = (stype);\
+  stk->u.val.v    = (UChar* )(sval);\
+  STACK_INC;\
+} while(0)
+
+#define STACK_GET_SAVE_VAL_TYPE_LAST(stype, sval) do {\
+  StackType *k = stk;\
+  while (1) {\
+    k--;\
+    STACK_BASE_CHECK(k, "STACK_GET_SAVE_VAL_TYPE_LAST"); \
+    if (k->type == STK_SAVE_VAL && k->u.val.type == (stype)) {\
+      (sval) = k->u.val.v;\
+      break;\
+    }\
+  }\
+} while (0)
 
 #ifdef ONIG_DEBUG
 #define STACK_BASE_CHECK(p, at) \
@@ -1390,6 +1416,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   OnigStackIndex si;
   OnigStackIndex *repeat_stk;
   OnigStackIndex *mem_start_stk, *mem_end_stk;
+  UChar* keep;
 #ifdef USE_COMBINATION_EXPLOSION_CHECK
   int scv;
   unsigned char* state_check_buff = msa->state_check_buff;
@@ -1418,7 +1445,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
   STACK_PUSH_ENSURED(STK_ALT, FinishCode);  /* bottom stack */
   best_len = ONIG_MISMATCH;
-  s = (UChar* )sstart;
+  keep = s = (UChar* )sstart;
   while (1) {
 #ifdef ONIG_DEBUG_MATCH
     {
@@ -1466,12 +1493,14 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         best_len = n;
         region = msa->region;
         if (region) {
+          if (keep > s) keep = s;
+
 #ifdef USE_POSIX_API_REGION_OPTION
           if (IS_POSIX_REGION(msa->options)) {
             posix_regmatch_t* rmt = (posix_regmatch_t* )region;
 
-            rmt[0].rm_so = sstart - str;
-            rmt[0].rm_eo = s      - str;
+            rmt[0].rm_so = keep - str;
+            rmt[0].rm_eo = s    - str;
             for (i = 1; i <= num_mem; i++) {
               if (mem_end_stk[i] != INVALID_STACK_INDEX) {
                 if (MEM_STATUS_AT(reg->bt_mem_start, i))
@@ -1490,8 +1519,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           }
           else {
 #endif /* USE_POSIX_API_REGION_OPTION */
-            region->beg[0] = sstart - str;
-            region->end[0] = s      - str;
+            region->beg[0] = keep - str;
+            region->end[0] = s    - str;
             for (i = 1; i <= num_mem; i++) {
               if (mem_end_stk[i] != INVALID_STACK_INDEX) {
                 if (MEM_STATUS_AT(reg->bt_mem_start, i))
@@ -1523,8 +1552,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
               }
 
               node->group = 0;
-              node->beg   = sstart - str;
-              node->end   = s      - str;
+              node->beg   = keep - str;
+              node->end   = s    - str;
 
               stkp = stk_base;
               r = make_capture_history_tree(region->history_root, &stkp,
@@ -2846,6 +2875,24 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       continue;
       break;
 #endif
+
+    case OP_PUSH_SAVE_VAL: MOP_IN(OP_PUSH_SAVE_VAL);
+      GET_MEMNUM_INC(mem, p); /* mem: save id */
+      STACK_PUSH_SAVE_VAL(mem, SAVE_KEEP, keep);
+      MOP_OUT;
+      continue;
+      break;
+
+    case OP_UPDATE_VAR: MOP_IN(OP_UPDATE_VAR);
+      GET_MEMNUM_INC(mem, p); /* mem: update var type */
+      switch ((enum UpdateVarType )mem) {
+      case UPDATE_VAR_KEEP_FROM_STACK_LAST:
+        STACK_GET_SAVE_VAL_TYPE_LAST(SAVE_KEEP, keep);
+        break;
+      }
+      MOP_OUT;
+      continue;
+      break;
 
     case OP_FINISH:
       goto finish;

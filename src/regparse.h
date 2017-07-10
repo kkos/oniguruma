@@ -351,10 +351,6 @@ typedef struct {
 #endif
 } MemEnv;
 
-enum SaveType {
-  SAVE_KEEP  = 0,
-};
-
 typedef struct {
   enum SaveType type;
 } SaveItem;
