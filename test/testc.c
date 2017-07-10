@@ -611,6 +611,11 @@ extern int main(int argc, char* argv[])
   n("\\R", "\xc2\x85"); // because euc-jp is not Unicode
   x2("\\N", "a", 0, 1);
   n("\\N", "\n");
+  x2("\\K", "a", 0, 0);
+  x2("a\\K", "a", 1, 1);
+  x2("a\\Kb", "ab", 1, 2);
+  x2("(a\\Kb|ac\\Kd)", "acd", 2, 3);
+  x2("(a\\Kb|\\Kac\\K)*", "acababacab", 9, 10);
 
   /*
     < ifndef IGNORE_EUC_JP >
