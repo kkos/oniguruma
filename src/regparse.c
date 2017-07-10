@@ -1135,6 +1135,7 @@ onig_node_free(Node* node)
 
   case NODE_CTYPE:
   case NODE_CALL:
+  case NODE_GIMMICK:
     break;
   }
 

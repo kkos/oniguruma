@@ -33,16 +33,17 @@
 
 /* node type */
 typedef enum {
-  NODE_STR       = 0,
-  NODE_CCLASS    = 1,
-  NODE_CTYPE     = 2,
-  NODE_BACKREF   = 3,
-  NODE_QUANT     = 4,
-  NODE_ENCLOSURE = 5,
-  NODE_ANCHOR    = 6,
-  NODE_LIST      = 7,
-  NODE_ALT       = 8,
-  NODE_CALL      = 9
+  NODE_STR       =  0,
+  NODE_CCLASS    =  1,
+  NODE_CTYPE     =  2,
+  NODE_BACKREF   =  3,
+  NODE_QUANT     =  4,
+  NODE_ENCLOSURE =  5,
+  NODE_ANCHOR    =  6,
+  NODE_LIST      =  7,
+  NODE_ALT       =  8,
+  NODE_CALL      =  9,
+  NODE_GIMMICK   = 10
 } NodeType;
 
 /* node type bit */
@@ -58,6 +59,7 @@ typedef enum {
 #define BIT_NODE_LIST       NODE_TYPE2BIT(NODE_LIST)
 #define BIT_NODE_ALT        NODE_TYPE2BIT(NODE_ALT)
 #define BIT_NODE_CALL       NODE_TYPE2BIT(NODE_CALL)
+#define BIT_NODE_GIMMICK    NODE_TYPE2BIT(NODE_GIMMICK)
 
 #define NODE_IS_SIMPLE_TYPE(node) \
   ((NODE_TYPE2BIT(NODE_TYPE(node)) & \
@@ -75,6 +77,7 @@ typedef enum {
 #define ANCHOR_(node)      (&((node)->u.anchor))
 #define CONS_(node)        (&((node)->u.cons))
 #define CALL_(node)        (&((node)->u.call))
+#define GIMMICK_(node)     (&((node)->u.gimmick))
 
 #define NODE_CAR(node)         (CONS_(node)->car)
 #define NODE_CDR(node)         (CONS_(node)->cdr)
@@ -301,6 +304,14 @@ typedef struct {
   int not;
 } CtypeNode;
 
+typedef struct {
+  NodeType node_type;
+  int status;
+
+  int id;
+  int type;
+} GimmickNode;
+
 typedef struct _Node {
   union {
     struct {
@@ -320,6 +331,7 @@ typedef struct _Node {
 #ifdef USE_CALL
     CallNode      call;
 #endif
+    GimmickNode   gimmick;
   } u;
 } Node;
 
