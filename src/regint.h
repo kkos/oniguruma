@@ -691,8 +691,6 @@ typedef int UpdateVarType;
 #define NCCLASS_CLEAR_NOT(nd)   NCCLASS_FLAG_CLEAR(nd, FLAG_NCCLASS_NOT)
 #define IS_NCCLASS_NOT(nd)      IS_NCCLASS_FLAG_ON(nd, FLAG_NCCLASS_NOT)
 
-typedef intptr_t OnigStackIndex;
-
 typedef struct {
   void* stack_p;
   int   stack_n;
