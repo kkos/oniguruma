@@ -332,7 +332,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_MASK_TO_VOID_TARGET    0x10ff
 #define STK_MASK_MEM_END_OR_MARK   0x8000  /* MEM_END or MEM_END_MARK */
 
-typedef intptr_t OnigStackIndex;
+typedef intptr_t StackIndex;
 
 typedef struct _StackType {
   unsigned int type;
@@ -351,14 +351,14 @@ typedef struct _StackType {
       int   num;         /* repeat id */
     } repeat;
     struct {
-      OnigStackIndex si;     /* index of stack */
+      StackIndex si;     /* index of stack */
     } repeat_inc;
     struct {
       int num;           /* memory num */
       UChar *pstr;       /* start/end position */
       /* Following information is set, if this stack type is MEM-START */
-      OnigStackIndex start;  /* prev. info (for backtrack  "(...)*" ) */
-      OnigStackIndex end;    /* prev. info (for backtrack  "(...)*" ) */
+      StackIndex start;  /* prev. info (for backtrack  "(...)*" ) */
+      StackIndex end;    /* prev. info (for backtrack  "(...)*" ) */
     } mem;
     struct {
       int num;           /* null check id */
@@ -446,27 +446,27 @@ typedef struct _StackType {
     is_alloca  = 0;\
     alloc_base = msa->stack_p;\
     stk_base   = (StackType* )(alloc_base\
-                 + (sizeof(OnigStackIndex) * msa->ptr_num));\
+                 + (sizeof(StackIndex) * msa->ptr_num));\
     stk        = stk_base;\
     stk_end    = stk_base + msa->stack_n;\
   }\
   else if (msa->ptr_num > ALLOCA_PTR_NUM_LIMIT) {\
     is_alloca  = 0;\
-    alloc_base = (char* )xmalloc(sizeof(OnigStackIndex) * msa->ptr_num\
+    alloc_base = (char* )xmalloc(sizeof(StackIndex) * msa->ptr_num\
                   + sizeof(StackType) * (stack_num));\
     CHECK_NULL_RETURN_MEMERR(alloc_base);\
     stk_base   = (StackType* )(alloc_base\
-                 + (sizeof(OnigStackIndex) * msa->ptr_num));\
+                 + (sizeof(StackIndex) * msa->ptr_num));\
     stk        = stk_base;\
     stk_end    = stk_base + (stack_num);\
   }\
   else {\
     is_alloca  = 1;\
-    alloc_base = (char* )xalloca(sizeof(OnigStackIndex) * msa->ptr_num\
+    alloc_base = (char* )xalloca(sizeof(StackIndex) * msa->ptr_num\
                  + sizeof(StackType) * (stack_num));\
     CHECK_NULL_RETURN_MEMERR(alloc_base);\
     stk_base   = (StackType* )(alloc_base\
-                 + (sizeof(OnigStackIndex) * msa->ptr_num));\
+                 + (sizeof(StackIndex) * msa->ptr_num));\
     stk        = stk_base;\
     stk_end    = stk_base + (stack_num);\
   }\
@@ -476,7 +476,7 @@ typedef struct _StackType {
 #define STACK_SAVE do{\
   msa->stack_n = stk_end - stk_base;\
   if (is_alloca != 0) {\
-    size_t size = sizeof(OnigStackIndex) * msa->ptr_num \
+    size_t size = sizeof(StackIndex) * msa->ptr_num \
                 + sizeof(StackType) * msa->stack_n;\
     msa->stack_p = xmalloc(size);\
     CHECK_NULL_RETURN_MEMERR(msa->stack_p);\
@@ -488,8 +488,8 @@ typedef struct _StackType {
 } while(0)
 
 #define UPDATE_FOR_STACK_REALLOC do{\
-  repeat_stk    = (OnigStackIndex* )alloc_base;\
-  mem_start_stk = (OnigStackIndex* )(repeat_stk + reg->num_repeat);\
+  repeat_stk    = (StackIndex* )alloc_base;\
+  mem_start_stk = (StackIndex* )(repeat_stk + reg->num_repeat);\
   mem_end_stk   = mem_start_stk + num_mem + 1;\
 } while(0)
 
@@ -528,9 +528,9 @@ stack_double(int is_alloca, char** arg_alloc_base,
   stk      = *arg_stk;
 
   n = stk_end - stk_base;
-  size = sizeof(OnigStackIndex) * msa->ptr_num + sizeof(StackType) * n;
+  size = sizeof(StackIndex) * msa->ptr_num + sizeof(StackType) * n;
   n *= 2;
-  new_size = sizeof(OnigStackIndex) * msa->ptr_num + sizeof(StackType) * n;
+  new_size = sizeof(StackIndex) * msa->ptr_num + sizeof(StackType) * n;
   if (is_alloca != 0) {
     new_alloc_base = (char* )xmalloc(new_size);
     if (IS_NULL(new_alloc_base)) {
@@ -557,7 +557,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
   used = stk - stk_base;
   *arg_alloc_base = alloc_base;
   *arg_stk_base   = (StackType* )(alloc_base
-		       + (sizeof(OnigStackIndex) * msa->ptr_num));
+		       + (sizeof(StackIndex) * msa->ptr_num));
   *arg_stk      = *arg_stk_base + used;
   *arg_stk_end  = *arg_stk_base + n;
   return 0;
@@ -1416,9 +1416,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   char *alloc_base;
   StackType *stk_base, *stk, *stk_end;
   StackType *stkp; /* used as any purpose. */
-  OnigStackIndex si;
-  OnigStackIndex *repeat_stk;
-  OnigStackIndex *mem_start_stk, *mem_end_stk;
+  StackIndex si;
+  StackIndex *repeat_stk;
+  StackIndex *mem_start_stk, *mem_end_stk;
   UChar* keep;
 #ifdef USE_COMBINATION_EXPLOSION_CHECK
   int scv;
@@ -2242,7 +2242,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     case OP_MEMORY_START:  MOP_IN(OP_MEMORY_START);
       GET_MEMNUM_INC(mem, p);
-      mem_start_stk[mem] = (OnigStackIndex )((void* )s);
+      mem_start_stk[mem] = (StackIndex )((void* )s);
       MOP_OUT;
       continue;
       break;
@@ -2256,7 +2256,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     case OP_MEMORY_END:  MOP_IN(OP_MEMORY_END);
       GET_MEMNUM_INC(mem, p);
-      mem_end_stk[mem] = (OnigStackIndex )((void* )s);
+      mem_end_stk[mem] = (StackIndex )((void* )s);
       MOP_OUT;
       continue;
       break;
@@ -2273,13 +2273,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     case OP_MEMORY_END_REC:  MOP_IN(OP_MEMORY_END_REC);
       GET_MEMNUM_INC(mem, p);
-      mem_end_stk[mem] = (OnigStackIndex )((void* )s);
+      mem_end_stk[mem] = (StackIndex )((void* )s);
       STACK_GET_MEM_START(mem, stkp);
 
       if (MEM_STATUS_AT(reg->bt_mem_start, mem))
         mem_start_stk[mem] = GET_STACK_INDEX(stkp);
       else
-        mem_start_stk[mem] = (OnigStackIndex )((void* )stkp->u.mem.pstr);
+        mem_start_stk[mem] = (StackIndex )((void* )stkp->u.mem.pstr);
 
       STACK_PUSH_MEM_END_MARK(mem);
       MOP_OUT;
