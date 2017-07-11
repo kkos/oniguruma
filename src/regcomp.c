@@ -911,7 +911,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
     r = compile_tree_n_times(NODE_QUANT_BODY(qn), qn->lower, reg, env);
     if (r != 0) return r;
     if (IS_NOT_NULL(qn->next_head_exact) && !CKN_ON) {
-      if (IS_MULTILINE(reg->options))
+      if (IS_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), reg)))
         r = add_opcode(reg, OP_ANYCHAR_ML_STAR_PEEK_NEXT);
       else
         r = add_opcode(reg, OP_ANYCHAR_STAR_PEEK_NEXT);
@@ -924,7 +924,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
       return add_bytes(reg, STR_(qn->next_head_exact)->s, 1);
     }
     else {
-      if (IS_MULTILINE(reg->options)) {
+      if (IS_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), reg))) {
         r = add_opcode(reg, (CKN_ON ?
                              OP_STATE_CHECK_ANYCHAR_ML_STAR
                              : OP_ANYCHAR_ML_STAR));
@@ -1127,7 +1127,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
     r = compile_tree_n_times(NODE_QUANT_BODY(qn), qn->lower, reg, env);
     if (r != 0) return r;
     if (IS_NOT_NULL(qn->next_head_exact)) {
-      if (IS_MULTILINE(reg->options))
+      if (IS_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), reg)))
         r = add_opcode(reg, OP_ANYCHAR_ML_STAR_PEEK_NEXT);
       else
         r = add_opcode(reg, OP_ANYCHAR_STAR_PEEK_NEXT);
@@ -1135,7 +1135,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
       return add_bytes(reg, STR_(qn->next_head_exact)->s, 1);
     }
     else {
-      if (IS_MULTILINE(reg->options))
+      if (IS_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), reg)))
         return add_opcode(reg, OP_ANYCHAR_ML_STAR);
       else
         return add_opcode(reg, OP_ANYCHAR_STAR);
@@ -1877,7 +1877,7 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
 
       switch (CTYPE_(node)->ctype) {
       case CTYPE_ANYCHAR:
-        if (IS_MULTILINE(reg->options))
+        if (IS_MULTILINE(CTYPE_OPTION(node, reg)))
           r = add_opcode(reg, OP_ANYCHAR_ML);
         else
           r = add_opcode(reg, OP_ANYCHAR);
@@ -5679,7 +5679,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
       if (qn->lower == 0 && IS_REPEAT_INFINITE(qn->upper)) {
         if (env->mmd.max == 0 &&
             NODE_IS_ANYCHAR(NODE_BODY(node)) && qn->greedy != 0) {
-          if (IS_MULTILINE(env->options))
+          if (IS_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), env)))
             add_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_STAR_ML);
           else
             add_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_STAR);
