@@ -1476,12 +1476,13 @@ compile_enclosure_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
 {
   int r, len;
 
-  if (node->type == ENCLOSURE_OPTION)
-    return compile_option_node(node, reg, env);
-
   switch (node->type) {
   case ENCLOSURE_MEMORY:
     r = compile_enclosure_memory_node(node, reg, env);
+    break;
+
+  case ENCLOSURE_OPTION:
+    r = compile_option_node(node, reg, env);
     break;
 
   case ENCLOSURE_STOP_BACKTRACK:
