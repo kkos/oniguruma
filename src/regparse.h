@@ -90,6 +90,9 @@ enum GimmickType {
 #define NODE_IS_ANYCHAR(node) \
   (NODE_TYPE(node) == NODE_CTYPE && CTYPE_(node)->ctype == CTYPE_ANYCHAR)
 
+#define CTYPE_OPTION(node, reg) \
+  (NODE_IS_FIXED_OPTION(node) ? CTYPE_(node)->option : reg->options)
+
 
 #define ANCHOR_ANYCHAR_STAR_MASK (ANCHOR_ANYCHAR_STAR | ANCHOR_ANYCHAR_STAR_ML)
 #define ANCHOR_END_BUF_MASK      (ANCHOR_END_BUF | ANCHOR_SEMI_END_BUF)
@@ -145,29 +148,30 @@ enum GimmickType {
 #define NST_BY_NAME               (1<<15) /* backref by name */
 #define NST_BACKREF               (1<<16)
 #define NST_CHECKER               (1<<17)
-
+#define NST_FIXED_OPTION          (1<<18)
 
 #define NODE_STATUS(node)           (((Node* )node)->u.base.status)
 #define NODE_STATUS_ADD(node,f)     (NODE_STATUS(node) |= (f))
 #define NODE_STATUS_REMOVE(node,f)  (NODE_STATUS(node) &= ~(f))
 
-#define NODE_IS_BY_NUMBER(node)       ((NODE_STATUS(node) & NST_BY_NUMBER) != 0)
+#define NODE_IS_BY_NUMBER(node)       ((NODE_STATUS(node) & NST_BY_NUMBER)      != 0)
 #define NODE_IS_IN_REAL_REPEAT(node)  ((NODE_STATUS(node) & NST_IN_REAL_REPEAT) != 0)
-#define NODE_IS_CALLED(node)          ((NODE_STATUS(node) & NST_CALLED)    != 0)
+#define NODE_IS_CALLED(node)          ((NODE_STATUS(node) & NST_CALLED)         != 0)
 #define NODE_IS_IN_MULTI_ENTRY(node)  ((NODE_STATUS(node) & NST_IN_MULTI_ENTRY) != 0)
-#define NODE_IS_RECURSION(node)       ((NODE_STATUS(node) & NST_RECURSION) != 0)
+#define NODE_IS_RECURSION(node)       ((NODE_STATUS(node) & NST_RECURSION)      != 0)
 #define NODE_IS_IN_ZERO_REPEAT(node)  ((NODE_STATUS(node) & NST_IN_ZERO_REPEAT) != 0)
-#define NODE_IS_NAMED_GROUP(node)     ((NODE_STATUS(node) & NST_NAMED_GROUP) != 0)
-#define NODE_IS_ADDR_FIXED(node)      ((NODE_STATUS(node) & NST_ADDR_FIXED)  != 0)
-#define NODE_IS_CLEN_FIXED(node)      ((NODE_STATUS(node) & NST_CLEN_FIXED)  != 0)
-#define NODE_IS_MIN_FIXED(node)       ((NODE_STATUS(node) & NST_MIN_FIXED)   != 0)
-#define NODE_IS_MAX_FIXED(node)       ((NODE_STATUS(node) & NST_MAX_FIXED)   != 0)
-#define NODE_IS_MARK1(node)           ((NODE_STATUS(node) & NST_MARK1)       != 0)
-#define NODE_IS_MARK2(node)           ((NODE_STATUS(node) & NST_MARK2)       != 0)
-#define NODE_IS_NEST_LEVEL(node)      ((NODE_STATUS(node) & NST_NEST_LEVEL)  != 0)
-#define NODE_IS_BY_NAME(node)         ((NODE_STATUS(node) & NST_BY_NAME)     != 0)
-#define NODE_IS_BACKREF(node)         ((NODE_STATUS(node) & NST_BACKREF)     != 0)
-#define NODE_IS_CHECKER(node)         ((NODE_STATUS(node) & NST_CHECKER)     != 0)
+#define NODE_IS_NAMED_GROUP(node)     ((NODE_STATUS(node) & NST_NAMED_GROUP)  != 0)
+#define NODE_IS_ADDR_FIXED(node)      ((NODE_STATUS(node) & NST_ADDR_FIXED)   != 0)
+#define NODE_IS_CLEN_FIXED(node)      ((NODE_STATUS(node) & NST_CLEN_FIXED)   != 0)
+#define NODE_IS_MIN_FIXED(node)       ((NODE_STATUS(node) & NST_MIN_FIXED)    != 0)
+#define NODE_IS_MAX_FIXED(node)       ((NODE_STATUS(node) & NST_MAX_FIXED)    != 0)
+#define NODE_IS_MARK1(node)           ((NODE_STATUS(node) & NST_MARK1)        != 0)
+#define NODE_IS_MARK2(node)           ((NODE_STATUS(node) & NST_MARK2)        != 0)
+#define NODE_IS_NEST_LEVEL(node)      ((NODE_STATUS(node) & NST_NEST_LEVEL)   != 0)
+#define NODE_IS_BY_NAME(node)         ((NODE_STATUS(node) & NST_BY_NAME)      != 0)
+#define NODE_IS_BACKREF(node)         ((NODE_STATUS(node) & NST_BACKREF)      != 0)
+#define NODE_IS_CHECKER(node)         ((NODE_STATUS(node) & NST_CHECKER)      != 0)
+#define NODE_IS_FIXED_OPTION(node)    ((NODE_STATUS(node) & NST_FIXED_OPTION) != 0)
 #define NODE_IS_STOP_BT_SIMPLE_REPEAT(node) \
     ((NODE_STATUS(node) & NST_STOP_BT_SIMPLE_REPEAT) != 0)
 
@@ -306,6 +310,7 @@ typedef struct {
 
   int ctype;
   int not;
+  OnigOptionType option;
 } CtypeNode;
 
 typedef struct {
