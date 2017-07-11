@@ -2411,6 +2411,17 @@ node_new_no_newline(Node** node, ScanEnv* env)
   return 0;
 }
 
+static int
+node_new_true_anychar(Node** node, ScanEnv* env)
+{
+  Node* n;
+
+  n = node_new_anychar_with_fixed_option(ONIG_OPTION_MULTILINE);
+  CHECK_NULL_RETURN_MEMERR(n);
+  *node = n;
+  return 0;
+}
+
 enum TokenSyms {
   TK_EOT      = 0,   /* end of token */
   TK_RAW_BYTE = 1,
@@ -2434,6 +2445,7 @@ enum TokenSyms {
   TK_KEEP,             /* \K */
   TK_GENERAL_NEWLINE,  /* \R */
   TK_NO_NEWLINE,       /* \N */
+  TK_TRUE_ANYCHAR,     /* \O */
 
   /* in cc */
   TK_CC_CLOSE,
@@ -3594,6 +3606,11 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case 'N':
       if (! IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_CAPITAL_N_O_SUPER_DOT)) break;
       tok->type = TK_NO_NEWLINE;
+      break;
+
+    case 'O':
+      if (! IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_CAPITAL_N_O_SUPER_DOT)) break;
+      tok->type = TK_TRUE_ANYCHAR;
       break;
 
     case 'A':
@@ -5767,6 +5784,11 @@ parse_exp(Node** np, OnigToken* tok, int term,
 
   case TK_NO_NEWLINE:
     r = node_new_no_newline(np, env);
+    if (r < 0) return r;
+    break;
+
+  case TK_TRUE_ANYCHAR:
+    r = node_new_true_anychar(np, env);
     if (r < 0) return r;
     break;
 
