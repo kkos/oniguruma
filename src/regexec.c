@@ -309,7 +309,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 /* used by normal-POP */
 #define STK_ALT                    0x0001
 #define STK_ALT_PREC_READ_NOT      0x0002
-#define STK_LOOK_BEHIND_NOT        0x0003
+#define STK_ALT_LOOK_BEHIND_NOT    0x0003
 /* handled by normal-POP */
 #define STK_MEM_START              0x0100
 #define STK_MEM_END                0x8200
@@ -664,8 +664,8 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_ALT_PREC_READ_NOT(pat,s,sprev) \
   STACK_PUSH(STK_ALT_PREC_READ_NOT,pat,s,sprev)
 #define STACK_PUSH_STOP_BT              STACK_PUSH_TYPE(STK_STOP_BT)
-#define STACK_PUSH_LOOK_BEHIND_NOT(pat,s,sprev) \
-  STACK_PUSH(STK_LOOK_BEHIND_NOT,pat,s,sprev)
+#define STACK_PUSH_ALT_LOOK_BEHIND_NOT(pat,s,sprev) \
+  STACK_PUSH(STK_ALT_LOOK_BEHIND_NOT,pat,s,sprev)
 
 #define STACK_PUSH_REPEAT(id, pat) do {\
   STACK_ENSURE(1);\
@@ -875,11 +875,11 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_POP_TIL_LOOK_BEHIND_NOT  do {\
+#define STACK_POP_TIL_ALT_LOOK_BEHIND_NOT  do {\
   while (1) {\
     stk--;\
-    STACK_BASE_CHECK(stk, "STACK_POP_TIL_LOOK_BEHIND_NOT"); \
-    if (stk->type == STK_LOOK_BEHIND_NOT) break;\
+    STACK_BASE_CHECK(stk, "STACK_POP_TIL_ALT_LOOK_BEHIND_NOT"); \
+    if (stk->type == STK_ALT_LOOK_BEHIND_NOT) break;\
     else if (stk->type == STK_MEM_START) {\
       mem_start_stk[stk->u.mem.num] = stk->u.mem.start;\
       mem_end_stk[stk->u.mem.num]   = stk->u.mem.end;\
@@ -2849,7 +2849,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         /* goto fail; */
       }
       else {
-        STACK_PUSH_LOOK_BEHIND_NOT(p + addr, s, sprev);
+        STACK_PUSH_ALT_LOOK_BEHIND_NOT(p + addr, s, sprev);
         s = q;
         sprev = (UChar* )onigenc_get_prev_char_head(encode, str, s);
       }
@@ -2858,7 +2858,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       break;
 
     case OP_FAIL_LOOK_BEHIND_NOT:  MOP_IN(OP_FAIL_LOOK_BEHIND_NOT);
-      STACK_POP_TIL_LOOK_BEHIND_NOT;
+      STACK_POP_TIL_ALT_LOOK_BEHIND_NOT;
       goto fail;
       break;
 
