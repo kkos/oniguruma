@@ -1230,6 +1230,13 @@ node_new_ctype(int type, int not)
 }
 
 static Node*
+node_new_anychar(void)
+{
+  Node* node = node_new_ctype(CTYPE_ANYCHAR, 0);
+  return node;
+}
+
+static Node*
 node_new_list(Node* left, Node* right)
 {
   Node* node = node_new();
@@ -2389,7 +2396,7 @@ node_new_no_newline(Node** node, ScanEnv* env)
 
   OPTION_OFF(option, ONIG_OPTION_MULTILINE);
 
-  a = node_new_ctype(CTYPE_ANYCHAR, 0);
+  a = node_new_anychar();
   CHECK_NULL_RETURN_MEMERR(a);
   o = node_new_option(option);
   if (IS_NULL(o)) {
@@ -5687,12 +5694,12 @@ parse_exp(Node** np, OnigToken* tok, int term,
     break;
 
   case TK_ANYCHAR:
-    *np = node_new_ctype(CTYPE_ANYCHAR, 0);
+    *np = node_new_anychar();
     CHECK_NULL_RETURN_MEMERR(*np);
     break;
 
   case TK_ANYCHAR_ANYTIME:
-    *np = node_new_ctype(CTYPE_ANYCHAR, 0);
+    *np = node_new_anychar();
     CHECK_NULL_RETURN_MEMERR(*np);
     qn = node_new_quantifier(0, REPEAT_INFINITE, 0);
     CHECK_NULL_RETURN_MEMERR(qn);
