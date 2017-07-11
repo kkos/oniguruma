@@ -1237,6 +1237,19 @@ node_new_anychar(void)
 }
 
 static Node*
+node_new_anychar_with_fixed_option(OnigOptionType option)
+{
+  CtypeNode* ct;
+  Node* node;
+
+  node = node_new_anychar();
+  ct = CTYPE_(node);
+  ct->option = option;
+  NODE_STATUS_ADD(node, NST_FIXED_OPTION);
+  return node;
+}
+
+static Node*
 node_new_list(Node* left, Node* right)
 {
   Node* node = node_new();
@@ -2390,22 +2403,11 @@ node_new_general_newline(Node** node, ScanEnv* env)
 static int
 node_new_no_newline(Node** node, ScanEnv* env)
 {
-  Node* a;
-  Node* o;
-  OnigOptionType option = env->option;
+  Node* n;
 
-  OPTION_OFF(option, ONIG_OPTION_MULTILINE);
-
-  a = node_new_anychar();
-  CHECK_NULL_RETURN_MEMERR(a);
-  o = node_new_option(option);
-  if (IS_NULL(o)) {
-    onig_node_free(a);
-    return ONIGERR_MEMORY;
-  }
-  NODE_BODY(o) = a;
-
-  *node = o;
+  n = node_new_anychar_with_fixed_option(ONIG_OPTION_NONE);
+  CHECK_NULL_RETURN_MEMERR(n);
+  *node = n;
   return 0;
 }
 
