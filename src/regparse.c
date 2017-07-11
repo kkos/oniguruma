@@ -1521,9 +1521,9 @@ onig_node_str_cat(Node* node, const UChar* s, const UChar* end)
   if (addlen > 0) {
     int len  = STR_(node)->end - STR_(node)->s;
 
-    if (STR_(node)->capa > 0 || (len + addlen > NODE_STR_BUF_SIZE - 1)) {
+    if (STR_(node)->capa > 0 || (len + addlen > NODE_STRING_BUF_SIZE - 1)) {
       UChar* p;
-      int capa = len + addlen + NODE_STR_MARGIN;
+      int capa = len + addlen + NODE_STRING_MARGIN;
 
       if (capa <= STR_(node)->capa) {
         onig_strcpy(STR_(node)->s + len, s, end);
@@ -1668,7 +1668,7 @@ str_node_can_be_split(StrNode* sn, OnigEncoding enc)
 static int
 node_str_head_pad(StrNode* sn, int num, UChar val)
 {
-  UChar buf[NODE_STR_BUF_SIZE];
+  UChar buf[NODE_STRING_BUF_SIZE];
   int i, len;
 
   len = sn->end - sn->s;

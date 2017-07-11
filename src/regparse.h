@@ -102,8 +102,8 @@ enum GimmickType {
 #define ENCLOSURE_STOP_BACKTRACK   (1<<2)
 #define ENCLOSURE_IF_ELSE          (1<<3)
 
-#define NODE_STR_MARGIN         16
-#define NODE_STR_BUF_SIZE       24  /* sizeof(CClassNode) - sizeof(int)*4 */
+#define NODE_STRING_MARGIN         16
+#define NODE_STRING_BUF_SIZE       24  /* sizeof(CClassNode) - sizeof(int)*4 */
 #define NODE_BACKREFS_SIZE       6
 
 #define STRING_RAW                (1<<0) /* by backslashed number */
@@ -192,7 +192,7 @@ typedef struct {
   UChar* end;
   unsigned int flag;
   int    capa;    /* (allocated size - 1) or 0: use buf[] */
-  UChar  buf[NODE_STR_BUF_SIZE];
+  UChar  buf[NODE_STRING_BUF_SIZE];
 } StrNode;
 
 typedef struct {
