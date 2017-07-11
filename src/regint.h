@@ -524,8 +524,8 @@ enum OpCode {
 
   OP_PUSH_POS,             /* (?=...)  start */
   OP_POP_POS,              /* (?=...)  end   */
-  OP_PUSH_POS_NOT,         /* (?!...)  start */
-  OP_FAIL_POS,             /* (?!...)  end   */
+  OP_PUSH_PREC_READ_NOT,   /* (?!...)  start */
+  OP_FAIL_PREC_READ_NOT,   /* (?!...)  end   */
   OP_PUSH_STOP_BT,         /* (?>...)  start */
   OP_POP_STOP_BT,          /* (?>...)  end   */
   OP_LOOK_BEHIND,          /* (?<=...) start (no needs end opcode) */
@@ -609,9 +609,9 @@ typedef int UpdateVarType;
 #define SIZE_OP_REPEAT_INC             (SIZE_OPCODE + SIZE_MEMNUM)
 #define SIZE_OP_REPEAT_INC_NG          (SIZE_OPCODE + SIZE_MEMNUM)
 #define SIZE_OP_PUSH_POS                SIZE_OPCODE
-#define SIZE_OP_PUSH_POS_NOT           (SIZE_OPCODE + SIZE_RELADDR)
+#define SIZE_OP_PUSH_PREC_READ_NOT     (SIZE_OPCODE + SIZE_RELADDR)
 #define SIZE_OP_POP_POS                 SIZE_OPCODE
-#define SIZE_OP_FAIL_POS                SIZE_OPCODE
+#define SIZE_OP_FAIL_PREC_READ_NOT      SIZE_OPCODE
 #define SIZE_OP_SET_OPTION             (SIZE_OPCODE + SIZE_OPTION)
 #define SIZE_OP_SET_OPTION_PUSH        (SIZE_OPCODE + SIZE_OPTION)
 #define SIZE_OP_FAIL                    SIZE_OPCODE

@@ -2805,14 +2805,14 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       continue;
       break;
 
-    case OP_PUSH_POS_NOT:  MOP_IN(OP_PUSH_POS_NOT);
+    case OP_PUSH_PREC_READ_NOT:  MOP_IN(OP_PUSH_PREC_READ_NOT);
       GET_RELADDR_INC(addr, p);
       STACK_PUSH_ALT_PREC_READ_NOT(p + addr, s, sprev);
       MOP_OUT;
       continue;
       break;
 
-    case OP_FAIL_POS:  MOP_IN(OP_FAIL_POS);
+    case OP_FAIL_PREC_READ_NOT:  MOP_IN(OP_FAIL_PREC_READ_NOT);
       STACK_POP_TIL_ALT_PREC_READ_NOT;
       goto fail;
       break;
