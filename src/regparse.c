@@ -50,7 +50,7 @@ OnigSyntaxType OnigSyntaxRuby = {
       ONIG_SYN_OP2_QMARK_LT_NAMED_GROUP | ONIG_SYN_OP2_ESC_K_NAMED_BACKREF |
       ONIG_SYN_OP2_QMARK_LPAREN_IF_ELSE |
       ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE |
-      ONIG_SYN_OP2_ESC_CAPITAL_N_NO_NEWLINE |
+      ONIG_SYN_OP2_ESC_CAPITAL_N_O_SUPER_DOT |
       ONIG_SYN_OP2_ESC_CAPITAL_K_KEEP |
       ONIG_SYN_OP2_ESC_G_SUBEXP_CALL |
       ONIG_SYN_OP2_ESC_P_BRACE_CHAR_PROPERTY  |
@@ -3592,7 +3592,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       break;
 
     case 'N':
-      if (! IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_CAPITAL_N_NO_NEWLINE)) break;
+      if (! IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_CAPITAL_N_O_SUPER_DOT)) break;
       tok->type = TK_NO_NEWLINE;
       break;
 

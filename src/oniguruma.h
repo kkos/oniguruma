@@ -499,7 +499,7 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIG_SYN_OP2_QMARK_LPAREN_IF_ELSE       (1U<<21) /* (?(n)) (?(...)...|...) */
 #define ONIG_SYN_OP2_ESC_CAPITAL_K_KEEP         (1U<<22) /* \K */
 #define ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE (1U<<23) /* \R \r\n else [\x0a-\x0d] */
-#define ONIG_SYN_OP2_ESC_CAPITAL_N_NO_NEWLINE   (1U<<24) /* \N [^\n] */
+#define ONIG_SYN_OP2_ESC_CAPITAL_N_O_SUPER_DOT  (1U<<24) /* \N (?-m:.), \O (?m:.) */
 
 /* syntax (behavior) */
 #define ONIG_SYN_CONTEXT_INDEP_ANCHORS           (1U<<31) /* not implemented */
