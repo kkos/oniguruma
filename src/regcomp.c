@@ -1247,7 +1247,7 @@ compile_length_option_node(EnclosureNode* node, regex_t* reg)
   int tlen;
   OnigOptionType prev = reg->options;
 
-  reg->options = node->o.option;
+  reg->options = node->o.options;
   tlen = compile_length_tree(NODE_ENCLOSURE_BODY(node), reg);
   reg->options = prev;
 
@@ -1267,8 +1267,8 @@ compile_option_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
   int r;
   OnigOptionType prev = reg->options;
 
-  if (IS_DYNAMIC_OPTION(prev ^ node->o.option)) {
-    r = add_opcode_option(reg, OP_SET_OPTION_PUSH, node->o.option);
+  if (IS_DYNAMIC_OPTION(prev ^ node->o.options)) {
+    r = add_opcode_option(reg, OP_SET_OPTION_PUSH, node->o.options);
     if (r != 0) return r;
     r = add_opcode_option(reg, OP_SET_OPTION, prev);
     if (r != 0) return r;
@@ -1276,11 +1276,11 @@ compile_option_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
     if (r != 0) return r;
   }
 
-  reg->options = node->o.option;
+  reg->options = node->o.options;
   r = compile_tree(NODE_ENCLOSURE_BODY(node), reg, env);
   reg->options = prev;
 
-  if (IS_DYNAMIC_OPTION(prev ^ node->o.option)) {
+  if (IS_DYNAMIC_OPTION(prev ^ node->o.options)) {
     if (r != 0) return r;
     r = add_opcode_option(reg, OP_SET_OPTION, prev);
   }
@@ -2689,7 +2689,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
         {
           OnigOptionType options = reg->options;
 
-          reg->options = ENCLOSURE_(node)->o.option;
+          reg->options = ENCLOSURE_(node)->o.options;
           n = get_head_value_node(NODE_BODY(node), exact, reg);
           reg->options = options;
         }
@@ -4107,7 +4107,7 @@ setup_call_node_call(CallNode* cn, ScanEnv* env, int state)
 #ifdef USE_NAMED_GROUP
     if (env->num_named > 0 &&
         IS_SYNTAX_BV(env->syntax, ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP) &&
-        !ONIG_IS_OPTION_ON(env->option, ONIG_OPTION_CAPTURE_GROUP)) {
+        !ONIG_IS_OPTION_ON(env->options, ONIG_OPTION_CAPTURE_GROUP)) {
       return ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED;
     }
 #endif
@@ -4736,7 +4736,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
       case ENCLOSURE_OPTION:
         {
           OnigOptionType options = reg->options;
-          reg->options = ENCLOSURE_(node)->o.option;
+          reg->options = ENCLOSURE_(node)->o.options;
           r = setup_tree(NODE_BODY(node), reg, state, env);
           reg->options = options;
         }
@@ -5659,7 +5659,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
       set_mml(&opt->len, 0, ONIG_INFINITE_DISTANCE);
     else {
       OnigOptionType save = env->options;
-      env->options = ENCLOSURE_(NODE_BODY(node))->o.option;
+      env->options = ENCLOSURE_(NODE_BODY(node))->o.options;
       r = optimize_node_left(NODE_BODY(node), opt, env);
       env->options = save;
     }
@@ -5728,7 +5728,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
         {
           OnigOptionType save = env->options;
 
-          env->options = en->o.option;
+          env->options = en->o.options;
           r = optimize_node_left(NODE_BODY(node), opt, env);
           env->options = save;
         }

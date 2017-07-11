@@ -1244,7 +1244,7 @@ node_new_anychar_with_fixed_option(OnigOptionType option)
 
   node = node_new_anychar();
   ct = CTYPE_(node);
-  ct->option = option;
+  ct->options = option;
   NODE_STATUS_ADD(node, NST_FIXED_OPTION);
   return node;
 }
@@ -1438,7 +1438,7 @@ node_new_enclosure(int type)
     break;
 
   case ENCLOSURE_OPTION:
-    ENCLOSURE_(node)->o.option =  0;
+    ENCLOSURE_(node)->o.options =  0;
     break;
 
   case ENCLOSURE_STOP_BACKTRACK:
@@ -1489,7 +1489,7 @@ node_new_option(OnigOptionType option)
 {
   Node* node = node_new_enclosure(ENCLOSURE_OPTION);
   CHECK_NULL_RETURN(node);
-  ENCLOSURE_(node)->o.option = option;
+  ENCLOSURE_(node)->o.options = option;
   return node;
 }
 
@@ -4050,14 +4050,14 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case '^':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_LINE_ANCHOR)) break;
       tok->type = TK_ANCHOR;
-      tok->u.subtype = (IS_SINGLELINE(env->option)
+      tok->u.subtype = (IS_SINGLELINE(env->options)
 			? ANCHOR_BEGIN_BUF : ANCHOR_BEGIN_LINE);
       break;
 
     case '$':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_LINE_ANCHOR)) break;
       tok->type = TK_ANCHOR;
-      tok->u.subtype = (IS_SINGLELINE(env->option)
+      tok->u.subtype = (IS_SINGLELINE(env->options)
 			? ANCHOR_SEMI_END_BUF : ANCHOR_END_LINE);
       break;
 
@@ -4072,7 +4072,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       break;
 
     case '#':
-      if (IS_EXTEND(env->option)) {
+      if (IS_EXTEND(env->options)) {
         while (!PEND) {
           PFETCH(c);
           if (ONIGENC_IS_CODE_NEWLINE(enc, c))
@@ -4084,7 +4084,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       break;
 
     case ' ': case '\t': case '\n': case '\r': case '\f':
-      if (IS_EXTEND(env->option))
+      if (IS_EXTEND(env->options))
         goto start;
       break;
 
@@ -4875,7 +4875,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
   *np = NULL;
   if (PEND) return ONIGERR_END_PATTERN_WITH_UNMATCHED_PARENTHESIS;
 
-  option = env->option;
+  option = env->options;
   if (PPEEK_IS('?') &&
       IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_GROUP_EFFECT)) {
     PINC;
@@ -5227,13 +5227,13 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
             return 2; /* option only */
           }
           else if (c == ':') {
-            OnigOptionType prev = env->option;
+            OnigOptionType prev = env->options;
 
-            env->option     = option;
+            env->options = option;
             r = fetch_token(tok, &p, end, env);
             if (r < 0) return r;
             r = parse_subexp(&target, tok, term, &p, end, env);
-            env->option = prev;
+            env->options = prev;
             if (r < 0) {
               onig_node_free(target);
               return r;
@@ -5256,7 +5256,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
     }
   }
   else {
-    if (ONIG_IS_OPTION_ON(env->option, ONIG_OPTION_DONT_CAPTURE_GROUP))
+    if (ONIG_IS_OPTION_ON(env->options, ONIG_OPTION_DONT_CAPTURE_GROUP))
       goto group;
 
     *np = node_new_memory(0);
@@ -5526,13 +5526,13 @@ parse_exp(Node** np, OnigToken* tok, int term,
     if (r == 1) group = 1;
     else if (r == 2) { /* option only */
       Node* target;
-      OnigOptionType prev = env->option;
+      OnigOptionType prev = env->options;
 
-      env->option = ENCLOSURE_(*np)->o.option;
+      env->options = ENCLOSURE_(*np)->o.options;
       r = fetch_token(tok, src, end, env);
       if (r < 0) return r;
       r = parse_subexp(&target, tok, term, src, end, env);
-      env->option = prev;
+      env->options = prev;
       if (r < 0) {
         onig_node_free(target);
         return r;
@@ -5686,7 +5686,7 @@ parse_exp(Node** np, OnigToken* tok, int term,
       if (r != 0) return r;
 
       cc = CCLASS_(*np);
-      if (IS_IGNORECASE(env->option)) {
+      if (IS_IGNORECASE(env->options)) {
         IApplyCaseFoldArg iarg;
 
         iarg.env      = env;
@@ -6000,7 +6000,7 @@ onig_parse_tree(Node** root, const UChar* pattern, const UChar* end,
 #endif
 
   scan_env_clear(env);
-  env->option         = reg->options;
+  env->options        = reg->options;
   env->case_fold_flag = reg->case_fold_flag;
   env->enc            = reg->enc;
   env->syntax         = reg->syntax;

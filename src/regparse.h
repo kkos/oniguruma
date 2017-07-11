@@ -91,7 +91,7 @@ enum GimmickType {
   (NODE_TYPE(node) == NODE_CTYPE && CTYPE_(node)->ctype == CTYPE_ANYCHAR)
 
 #define CTYPE_OPTION(node, reg) \
-  (NODE_IS_FIXED_OPTION(node) ? CTYPE_(node)->option : reg->options)
+  (NODE_IS_FIXED_OPTION(node) ? CTYPE_(node)->options : reg->options)
 
 
 #define ANCHOR_ANYCHAR_STAR_MASK (ANCHOR_ANYCHAR_STAR | ANCHOR_ANYCHAR_STAR_ML)
@@ -235,7 +235,7 @@ typedef struct {
       int called_state;
     } m;
     struct {
-      OnigOptionType option;
+      OnigOptionType options;
     } o;
     struct {
       /* body is condition */
@@ -310,7 +310,7 @@ typedef struct {
 
   int ctype;
   int not;
-  OnigOptionType option;
+  OnigOptionType options;
 } CtypeNode;
 
 typedef struct {
@@ -365,7 +365,7 @@ typedef struct {
 } SaveItem;
 
 typedef struct {
-  OnigOptionType   option;
+  OnigOptionType   options;
   OnigCaseFoldType case_fold_flag;
   OnigEncoding     enc;
   OnigSyntaxType*  syntax;
