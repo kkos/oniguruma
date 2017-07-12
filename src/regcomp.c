@@ -7013,7 +7013,8 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
       {
         UpdateVarType type;
         GET_UPDATE_VAR_TYPE_INC(type, bp);
-        fprintf(f, ":%d", type);
+        GET_MEMNUM_INC(mem, bp);
+        fprintf(f, ":%d:%d", type, mem);
       }
       break;
 

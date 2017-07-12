@@ -2928,6 +2928,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         case UPDATE_VAR_RIGHT_RANGE_FROM_STACK_LAST:
           STACK_GET_SAVE_VAL_TYPE_LAST_ID(SAVE_RIGHT_RANGE, mem, right_range);
           break;
+        case UPDATE_VAR_RIGHT_RANGE_SPREV:
+          right_range = sprev;
+          break;
         }
       }
       MOP_OUT;
