@@ -1144,17 +1144,11 @@ static int string_cmp_ic(OnigEncoding enc, int case_fold_flag,
 
 
 #define IS_EMPTY_STR           (str == end)
-#define ON_STR_BEGIN(s)       ((s) == str)
-#define ON_STR_END(s)         ((s) == end)
-#ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
+#define ON_STR_BEGIN(s)        ((s) == str)
+#define ON_STR_END(s)          ((s) == end)
 #define DATA_ENSURE_CHECK1     (s < right_range)
 #define DATA_ENSURE_CHECK(n)   (s + (n) <= right_range)
 #define DATA_ENSURE(n)         if (s + (n) > right_range) goto fail
-#else
-#define DATA_ENSURE_CHECK1     (s < end)
-#define DATA_ENSURE_CHECK(n)   (s + (n) <= end)
-#define DATA_ENSURE(n)         if (s + (n) > end) goto fail
-#endif /* USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE */
 
 
 #ifdef USE_CAPTURE_HISTORY
@@ -1401,7 +1395,7 @@ typedef struct {
 static int
 match_at(regex_t* reg, const UChar* str, const UChar* end,
 #ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
-	 const UChar* right_range,
+	 const UChar* in_right_range,
 #endif
 	 const UChar* sstart, UChar* sprev, OnigMatchArg* msa)
 {
@@ -1412,6 +1406,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   MemNumType mem;
   RelAddrType addr;
   UChar *s, *q, *sbegin;
+  UChar *right_range;
   int is_alloca;
   char *alloc_base;
   StackType *stk_base, *stk, *stk_end;
@@ -1449,6 +1444,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   STACK_PUSH_ENSURED(STK_ALT, FinishCode);  /* bottom stack */
   best_len = ONIG_MISMATCH;
   keep = s = (UChar* )sstart;
+#ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
+  right_range = (UChar* )in_right_range;
+#else
+  right_range = (UChar* )end;
+#endif
+
   while (1) {
 #ifdef ONIG_DEBUG_MATCH
     {
