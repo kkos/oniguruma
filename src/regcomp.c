@@ -7222,7 +7222,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
     fprintf(f, "<enclosure:%p> ", node);
     switch (ENCLOSURE_(node)->type) {
     case ENCLOSURE_OPTION:
-      fprintf(f, "option:%d", ENCLOSURE_(node)->o.option);
+      fprintf(f, "option:%d", ENCLOSURE_(node)->o.options);
       break;
     case ENCLOSURE_MEMORY:
       fprintf(f, "memory:%d", ENCLOSURE_(node)->m.regnum);
@@ -7241,11 +7241,17 @@ print_indent_tree(FILE* f, Node* node, int indent)
   case NODE_GIMMICK:
     fprintf(f, "<gimmick:%p> ", node);
     switch (GIMMICK_(node)->type) {
+    case GIMMICK_FAIL:
+      fprintf(f, "fail");
+      break;
     case GIMMICK_KEEP:
       fprintf(f, "keep:%d", GIMMICK_(node)->id);
       break;
     case GIMMICK_SAVE:
       fprintf(f, "save:%d:%d", GIMMICK_(node)->detail_type, GIMMICK_(node)->id);
+      break;
+    case GIMMICK_UPDATE_VAR:
+      fprintf(f, "update_var:%d:%d", GIMMICK_(node)->detail_type, GIMMICK_(node)->id);
       break;
     }
     break;
