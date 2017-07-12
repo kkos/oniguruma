@@ -1251,6 +1251,28 @@ node_new_anychar_with_fixed_option(OnigOptionType option)
   return node;
 }
 
+static int
+node_new_no_newline(Node** node, ScanEnv* env)
+{
+  Node* n;
+
+  n = node_new_anychar_with_fixed_option(ONIG_OPTION_NONE);
+  CHECK_NULL_RETURN_MEMERR(n);
+  *node = n;
+  return 0;
+}
+
+static int
+node_new_true_anychar(Node** node, ScanEnv* env)
+{
+  Node* n;
+
+  n = node_new_anychar_with_fixed_option(ONIG_OPTION_MULTILINE);
+  CHECK_NULL_RETURN_MEMERR(n);
+  *node = n;
+  return 0;
+}
+
 static Node*
 node_new_list(Node* left, Node* right)
 {
@@ -1297,6 +1319,49 @@ onig_node_new_alt(Node* left, Node* right)
   NODE_CAR(node)  = left;
   NODE_CDR(node) = right;
   return node;
+}
+
+static Node*
+make_list_or_alt(NodeType type, int n, Node* ns[])
+{
+  Node* r;
+
+  if (n <= 0) return NULL_NODE;
+
+  if (n == 1) {
+    r = node_new();
+    CHECK_NULL_RETURN(r);
+    NODE_SET_TYPE(r, type);
+    NODE_CAR(r) = ns[0];
+    NODE_CDR(r) = NULL_NODE;
+  }
+  else {
+    Node* right = make_list_or_alt(type, n - 1, ns + 1);
+    CHECK_NULL_RETURN(right);
+
+    r = node_new();
+    if (IS_NULL(r)) {
+      onig_node_free(right);
+      return NULL_NODE;
+    }
+    NODE_SET_TYPE(r, type);
+    NODE_CAR(r) = ns[0];
+    NODE_CDR(r) = right;
+  }
+
+  return r;
+}
+
+static Node*
+make_list(int n, Node* ns[])
+{
+  return make_list_or_alt(NODE_LIST, n, ns);
+}
+
+static Node*
+make_alt(int n, Node* ns[])
+{
+  return make_list_or_alt(NODE_ALT, n, ns);
 }
 
 extern Node*
@@ -1495,7 +1560,6 @@ node_new_option(OnigOptionType option)
   return node;
 }
 
-/* Used in absent group
 static int
 node_new_fail(Node** node, ScanEnv* env)
 {
@@ -1506,7 +1570,6 @@ node_new_fail(Node** node, ScanEnv* env)
   GIMMICK_(*node)->type = GIMMICK_FAIL;
   return ONIG_NORMAL;
 }
-*/
 
 static int
 node_new_save_gimmick(Node** node, enum SaveType save_type, ScanEnv* env)
@@ -1553,6 +1616,114 @@ node_new_keep(Node** node, ScanEnv* env)
 
   env->keep_num++;
   return ONIG_NORMAL;
+}
+
+static int
+make_absent_group_repeated_body_tree(Node** node, Node* absent_body,
+                                     Node* step_body, ScanEnv* env)
+{
+  int i;
+  int r;
+  int id;
+  Node* top;
+  Node* ns1[6];
+  Node* ns2[3];
+
+  *node = NULL_NODE;
+
+  for (i = 0; i < 6; i++) ns1[i] = NULL_NODE;
+  for (i = 0; i < 3; i++) ns2[i] = NULL_NODE;
+
+  ns1[0] = absent_body;
+  ns1[3] = step_body;
+  r = node_new_update_var_gimmick(&ns1[1], UPDATE_VAR_RIGHT_RANGE_SPREV, 0, env);
+  if (r != 0) goto err;
+  id = GIMMICK_(ns1[1])->id;
+
+  r = node_new_fail(&ns1[2], env);
+  if (r != 0) goto err;
+
+  r = node_new_update_var_gimmick(&ns1[4],
+                                  UPDATE_VAR_RIGHT_RANGE_FROM_STACK_LAST, id, env);
+  if (r != 0) goto err;
+
+  r = node_new_fail(&ns1[5], env);
+  if (r != 0) goto err;
+
+  ns2[0] = make_list(3, ns1 + 0);
+  if (IS_NULL(ns2[0])) goto err;
+  for (i = 0; i < 3; i++) ns1[i] = NULL_NODE;
+
+  ns2[1] = ns1[3];
+  ns1[3] = NULL_NODE;
+
+  ns2[2] = make_list(2, ns1 + 4);
+  if (IS_NULL(ns2[2])) goto err;
+  for (i = 4; i < 6; i++) ns1[i] = NULL_NODE;
+
+  top = make_alt(3, ns2 + 0);
+  if (IS_NULL(ns2[2])) goto err;
+
+  *node = top;
+  return ONIG_NORMAL;
+
+ err:
+  for (i = 0; i < 6; i++) onig_node_free(ns1[i]);
+  for (i = 0; i < 3; i++) onig_node_free(ns2[i]);
+  return ONIGERR_MEMORY;
+}
+
+static int
+make_absent_group_tree(Node** node, Node* absent_body,
+                       Node* generator, ScanEnv* env)
+{
+  int r;
+  Node* top;
+  Node* quant;
+  Node* step_body;
+  Node* repeat_body;
+  Node* save;
+  Node* ns[2];
+
+  *node = NULL_NODE;
+  save = repeat_body = quant = step_body = NULL_NODE;
+
+  if (IS_NULL(generator)) {
+    r = node_new_true_anychar(&step_body, env);
+    if (r != 0) goto err1;
+    quant = node_new_quantifier(1, REPEAT_INFINITE, 0);
+  }
+  else {
+    // TODO
+    return ONIGERR_PARSER_BUG;
+  }
+
+  r = make_absent_group_repeated_body_tree(&repeat_body, absent_body,
+                                           step_body, env);
+  if (r != 0) goto err1;
+
+  NODE_BODY(quant) = repeat_body;
+
+  r = node_new_save_gimmick(&save, SAVE_RIGHT_RANGE, env);
+  if (r != 0) goto err2;
+
+  ns[0] = save;
+  ns[1] = quant;
+  top = make_list(2, ns);
+  if (IS_NULL(top)) goto err2;
+
+  *node = top;
+  return ONIG_NORMAL;
+
+ err1:
+  onig_node_free(absent_body);
+  onig_node_free(step_body);
+
+ err2:
+  onig_node_free(save);
+  onig_node_free(quant);
+
+  return r;
 }
 
 extern int
@@ -2439,28 +2610,6 @@ node_new_general_newline(Node** node, ScanEnv* env)
   if (IS_NULL(x)) goto err1;
 
   *node = x;
-  return 0;
-}
-
-static int
-node_new_no_newline(Node** node, ScanEnv* env)
-{
-  Node* n;
-
-  n = node_new_anychar_with_fixed_option(ONIG_OPTION_NONE);
-  CHECK_NULL_RETURN_MEMERR(n);
-  *node = n;
-  return 0;
-}
-
-static int
-node_new_true_anychar(Node** node, ScanEnv* env)
-{
-  Node* n;
-
-  n = node_new_anychar_with_fixed_option(ONIG_OPTION_MULTILINE);
-  CHECK_NULL_RETURN_MEMERR(n);
-  *node = n;
   return 0;
 }
 
