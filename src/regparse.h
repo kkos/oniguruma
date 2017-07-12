@@ -50,6 +50,7 @@ enum GimmickType {
   GIMMICK_FAIL = 0,
   GIMMICK_KEEP = 1,
   GIMMICK_SAVE = 2,
+  GIMMICK_UPDATE_VAR = 3,
 };
 
 /* node type bit */

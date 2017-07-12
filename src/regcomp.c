@@ -1706,6 +1706,14 @@ compile_gimmick_node(GimmickNode* node, regex_t* reg)
     if (r != 0) return r;
     r = add_mem_num(reg, node->id);
     break;
+
+  case GIMMICK_UPDATE_VAR:
+    r = add_opcode(reg, OP_UPDATE_VAR);
+    if (r != 0) return r;
+    r = add_update_var_type(reg, node->detail_type);
+    if (r != 0) return r;
+    r = add_mem_num(reg, node->id);
+    break;
   }
 
   return r;
@@ -1724,6 +1732,10 @@ compile_length_gimmick_node(GimmickNode* node, regex_t* reg)
   case GIMMICK_KEEP:
   case GIMMICK_SAVE:
     len = SIZE_OP_PUSH_SAVE_VAL;
+    break;
+
+  case GIMMICK_UPDATE_VAR:
+    len = SIZE_OP_UPDATE_VAR;
     break;
   }
 
