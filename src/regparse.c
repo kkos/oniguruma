@@ -1509,32 +1509,12 @@ node_new_fail(Node** node, ScanEnv* env)
 */
 
 static int
-node_new_keep(Node** node, ScanEnv* env)
+node_new_save_gimmick(Node** node, enum SaveType save_type, ScanEnv* env)
 {
   int id;
   int r;
 
-  *node = 0;
-  r = save_entry(env, SAVE_KEEP, &id);
-  if (r != ONIG_NORMAL) return r;
-
-  *node = node_new();
-  CHECK_NULL_RETURN_MEMERR(*node);
-
-  NODE_SET_TYPE(*node, NODE_GIMMICK);
-  GIMMICK_(*node)->id   = id;
-  GIMMICK_(*node)->type = GIMMICK_KEEP;
-  env->keep_num++;
-  return ONIG_NORMAL;
-}
-
-static int
-node_new_save_gimmick(Node** node, ScanEnv* env)
-{
-  int id;
-  int r;
-
-  r = save_entry(env, SAVE_RIGHT_RANGE, &id);
+  r = save_entry(env, save_type, &id);
   if (r != ONIG_NORMAL) return r;
 
   *node = node_new();
@@ -1543,8 +1523,20 @@ node_new_save_gimmick(Node** node, ScanEnv* env)
   NODE_SET_TYPE(*node, NODE_GIMMICK);
   GIMMICK_(*node)->id   = id;
   GIMMICK_(*node)->type = GIMMICK_SAVE;
-  GIMMICK_(*node)->detail_type = SAVE_RIGHT_RANGE;
+  GIMMICK_(*node)->detail_type = (int )save_type;
 
+  return ONIG_NORMAL;
+}
+
+static int
+node_new_keep(Node** node, ScanEnv* env)
+{
+  int r;
+
+  r = node_new_save_gimmick(node, SAVE_KEEP, env);
+  if (r != 0) return r;
+
+  env->keep_num++;
   return ONIG_NORMAL;
 }
 

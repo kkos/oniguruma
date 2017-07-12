@@ -7229,6 +7229,9 @@ print_indent_tree(FILE* f, Node* node, int indent)
     case GIMMICK_KEEP:
       fprintf(f, "keep:%d", GIMMICK_(node)->id);
       break;
+    case GIMMICK_SAVE:
+      fprintf(f, "save:%d:%d", GIMMICK_(node)->detail_type, GIMMICK_(node)->id);
+      break;
     }
     break;
 
