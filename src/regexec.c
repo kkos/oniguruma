@@ -796,6 +796,26 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while (0)
 
+#define STACK_GET_SAVE_VAL_TYPE_LAST_ID(stype, sid, sval) do {\
+  int level = 0;\
+  StackType *k = stk;\
+  while (k > stk_base) {\
+    k--;\
+    STACK_BASE_CHECK(k, "STACK_GET_SAVE_VAL_TYPE_LAST_ID"); \
+    if (k->type == STK_SAVE_VAL && k->u.val.type == (stype)\
+        && k->u.val.id == (sid)) {\
+      if (level == 0) {\
+        (sval) = k->u.val.v;\
+        break;\
+      }\
+    }\
+    else if (k->type == STK_CALL_FRAME)\
+      level--;\
+    else if (k->type == STK_RETURN)\
+      level++;\
+  }\
+} while (0)
+
 #ifdef ONIG_DEBUG
 #define STACK_BASE_CHECK(p, at) \
   if ((p) < stk_base) {\
@@ -2900,9 +2920,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       {
         UpdateVarType type;
         GET_UPDATE_VAR_TYPE_INC(type, p);
+        GET_MEMNUM_INC(mem, p); /* mem: save id */
         switch ((enum UpdateVarType )type) {
         case UPDATE_VAR_KEEP_FROM_STACK_LAST:
           STACK_GET_SAVE_VAL_TYPE_LAST(SAVE_KEEP, keep);
+          break;
+        case UPDATE_VAR_RIGHT_RANGE_FROM_STACK_LAST:
+          STACK_GET_SAVE_VAL_TYPE_LAST_ID(SAVE_RIGHT_RANGE, mem, right_range);
           break;
         }
       }

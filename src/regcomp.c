@@ -6317,6 +6317,8 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
       if (r != 0) goto err;
       r = add_update_var_type(reg, UPDATE_VAR_KEEP_FROM_STACK_LAST);
       if (r != 0) goto err;
+      r = add_mem_num(reg, 0 /* not used */);
+      if (r != 0) goto err;
     }
 
     r = add_opcode(reg, OP_END);

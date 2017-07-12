@@ -555,6 +555,7 @@ enum SaveType {
 
 enum UpdateVarType {
   UPDATE_VAR_KEEP_FROM_STACK_LAST = 0,
+  UPDATE_VAR_RIGHT_RANGE_FROM_STACK_LAST = 1,
 };
 
 typedef int RelAddrType;
