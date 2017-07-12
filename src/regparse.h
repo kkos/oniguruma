@@ -49,6 +49,7 @@ typedef enum {
 enum GimmickType {
   GIMMICK_FAIL = 0,
   GIMMICK_KEEP = 1,
+  GIMMICK_SAVE = 2,
 };
 
 /* node type bit */
@@ -318,8 +319,9 @@ typedef struct {
   NodeType node_type;
   int status;
 
-  int id;
   enum GimmickType type;
+  int  detail_type;
+  int  id;
 } GimmickNode;
 
 typedef struct _Node {

@@ -313,6 +313,7 @@ save_entry(ScanEnv* env, enum SaveType type, int* id)
 {
   int nid = env->save_num;
 
+#if 0
   if (IS_NULL(env->saves)) {
     int n = 10;
     env->saves = (SaveItem* )xmalloc(sizeof(SaveItem) * n);
@@ -328,6 +329,7 @@ save_entry(ScanEnv* env, enum SaveType type, int* id)
   }
 
   env->saves[nid].type = type;
+#endif
 
   env->save_num++;
   *id = nid;
@@ -1523,6 +1525,26 @@ node_new_keep(Node** node, ScanEnv* env)
   GIMMICK_(*node)->id   = id;
   GIMMICK_(*node)->type = GIMMICK_KEEP;
   env->keep_num++;
+  return ONIG_NORMAL;
+}
+
+static int
+node_new_save_gimmick(Node** node, ScanEnv* env)
+{
+  int id;
+  int r;
+
+  r = save_entry(env, SAVE_RIGHT_RANGE, &id);
+  if (r != ONIG_NORMAL) return r;
+
+  *node = node_new();
+  CHECK_NULL_RETURN_MEMERR(*node);
+
+  NODE_SET_TYPE(*node, NODE_GIMMICK);
+  GIMMICK_(*node)->id   = id;
+  GIMMICK_(*node)->type = GIMMICK_SAVE;
+  GIMMICK_(*node)->detail_type = SAVE_RIGHT_RANGE;
+
   return ONIG_NORMAL;
 }
 

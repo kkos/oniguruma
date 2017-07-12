@@ -2887,6 +2887,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         GET_MEMNUM_INC(mem, p); /* mem: save id */
         switch ((enum SaveType )type) {
         case SAVE_KEEP:
+        case SAVE_RIGHT_RANGE:
           STACK_PUSH_SAVE_VAL(mem, type, s);
           break;
         }
