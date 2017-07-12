@@ -49,6 +49,7 @@ OnigSyntaxType OnigSyntaxRuby = {
       ONIG_SYN_OP2_OPTION_RUBY |
       ONIG_SYN_OP2_QMARK_LT_NAMED_GROUP | ONIG_SYN_OP2_ESC_K_NAMED_BACKREF |
       ONIG_SYN_OP2_QMARK_LPAREN_IF_ELSE |
+      ONIG_SYN_OP2_QMARK_TILDE_ABSENT_GROUP |
       ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE |
       ONIG_SYN_OP2_ESC_CAPITAL_N_O_SUPER_DOT |
       ONIG_SYN_OP2_ESC_CAPITAL_K_KEEP |
@@ -5153,6 +5154,29 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
         return ONIGERR_UNDEFINED_GROUP_OPTION;
       }
 #endif
+      break;
+
+    case '~':
+      if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_TILDE_ABSENT_GROUP)) {
+        Node* absent_body;
+        Node* generator;
+
+        if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+
+        generator = NULL_NODE;
+
+        r = fetch_token(tok, &p, end, env);
+        if (r < 0) return r;
+        r = parse_subexp(&absent_body, tok, term, &p, end, env);
+        if (r < 0) return r;
+
+        r = make_absent_group_tree(np, absent_body, generator, env);
+        if (r != 0) return r;
+        goto end;
+      }
+      else {
+        return ONIGERR_UNDEFINED_GROUP_OPTION;
+      }
       break;
 
     case '(':
