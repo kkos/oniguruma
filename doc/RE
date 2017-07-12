@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.5.0    2017/07/11
+Oniguruma Regular Expressions Version 6.5.0    2017/07/12
 
 syntax: ONIG_SYNTAX_RUBY (default)
 
@@ -78,7 +78,7 @@ syntax: ONIG_SYNTAX_RUBY (default)
 
   \N       negative newline  (?-m:.)
 
-  \O       true anychar      (?m:.)
+  \O       true anychar      (?m:.)    (* original function)
 
 
   Character Property
@@ -248,7 +248,8 @@ syntax: ONIG_SYNTAX_RUBY (default)
                When condition_exp is backreference, both then_exp and else_exp
                can be omitted. Then it works as a backreference validity checker.
 
-  <backreference validity checker>
+  [ backreference validity checker ]   (* original function)
+
     (?(n)), (?(-n)), (?(+n)), (?(n+level)) ...
     (?(<n>)), (?('-n')), (?(<+n>)) ...
     (?(<name>)), (?('name')), (?(<name+level>)) ...
