@@ -47,7 +47,8 @@ typedef enum {
 } NodeType;
 
 enum GimmickType {
-  GIMMICK_KEEP = 0,
+  GIMMICK_FAIL = 0,
+  GIMMICK_KEEP = 1,
 };
 
 /* node type bit */

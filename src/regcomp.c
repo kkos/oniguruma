@@ -1687,6 +1687,10 @@ compile_gimmick_node(GimmickNode* node, regex_t* reg)
   int r;
 
   switch (node->type) {
+  case GIMMICK_FAIL:
+    r = add_opcode(reg, OP_FAIL);
+    break;
+
   case GIMMICK_KEEP:
     r = add_opcode(reg, OP_PUSH_SAVE_VAL);
     if (r != 0) return r;
@@ -1705,6 +1709,10 @@ compile_length_gimmick_node(GimmickNode* node, regex_t* reg)
   int len;
 
   switch (node->type) {
+  case GIMMICK_FAIL:
+    len = SIZE_OP_FAIL;
+    break;
+
   case GIMMICK_KEEP:
     len = SIZE_OP_PUSH_SAVE_VAL;
     break;

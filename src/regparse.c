@@ -1493,6 +1493,19 @@ node_new_option(OnigOptionType option)
   return node;
 }
 
+/* Used in absent group
+static int
+node_new_fail(Node** node, ScanEnv* env)
+{
+  *node = node_new();
+  CHECK_NULL_RETURN_MEMERR(*node);
+
+  NODE_SET_TYPE(*node, NODE_GIMMICK);
+  GIMMICK_(*node)->type = GIMMICK_FAIL;
+  return ONIG_NORMAL;
+}
+*/
+
 static int
 node_new_keep(Node** node, ScanEnv* env)
 {
