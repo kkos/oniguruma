@@ -2907,8 +2907,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         GET_MEMNUM_INC(mem, p); /* mem: save id */
         switch ((enum SaveType )type) {
         case SAVE_KEEP:
+          STACK_PUSH_SAVE_VAL(mem, SAVE_KEEP, s);
+          break;
         case SAVE_RIGHT_RANGE:
-          STACK_PUSH_SAVE_VAL(mem, type, s);
+          STACK_PUSH_SAVE_VAL(mem, SAVE_RIGHT_RANGE, right_range);
           break;
         }
       }
@@ -2926,7 +2928,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           STACK_GET_SAVE_VAL_TYPE_LAST(SAVE_KEEP, keep);
           break;
         case UPDATE_VAR_RIGHT_RANGE_FROM_STACK_LAST:
+          //fprintf(stderr, "curr   right_range: %ld\n", (right_range - sstart));
           STACK_GET_SAVE_VAL_TYPE_LAST_ID(SAVE_RIGHT_RANGE, mem, right_range);
+          //fprintf(stderr, "update right_range: %ld\n", (right_range - sstart));
           break;
         case UPDATE_VAR_RIGHT_RANGE_SPREV:
           right_range = sprev;
