@@ -176,6 +176,10 @@ onig_error_code_to_format(int code)
     p = "invalid character property name {%n}"; break;
   case ONIGERR_INVALID_IF_ELSE_SYNTAX:
     p = "invalid if-else syntax"; break;
+  case ONIGERR_INVALID_ABSENT_GROUP_PATTERN:
+    p = "invalid absent group pattern"; break;
+  case ONIGERR_INVALID_ABSENT_GROUP_GENERATOR_PATTERN:
+    p = "invalid absent group generator pattern"; break;
   case ONIGERR_NOT_SUPPORTED_ENCODING_COMBINATION:
     p = "not supported encoding combination"; break;
   case ONIGERR_INVALID_COMBINATION_OF_OPTIONS:
