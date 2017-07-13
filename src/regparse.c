@@ -1679,6 +1679,8 @@ make_absent_group_tree(Node** node, Node* absent_body,
                        Node* generator, ScanEnv* env)
 {
   int r;
+  int invalid_node;
+  OnigLen min_len;
   Node* top;
   Node* quant;
   Node* step_body;
@@ -1688,6 +1690,23 @@ make_absent_group_tree(Node** node, Node* absent_body,
 
   *node = NULL_NODE;
   save = repeat_body = quant = step_body = NULL_NODE;
+
+  invalid_node = 0;
+  min_len = onig_get_tiny_min_len(absent_body, &invalid_node);
+  if (invalid_node != 0) {
+    r = ONIGERR_PARSER_BUG; // invalid absent pattern
+    goto err0;
+  }
+  if (min_len == 0) {
+    Node* f;
+    r = node_new_fail(&f, env);
+    if (r != 0) goto err0;
+
+    *node = f;
+    onig_node_free(absent_body);
+    onig_node_free(step_body);
+    return ONIG_NORMAL;
+  }
 
   if (IS_NULL(generator)) {
     r = node_new_true_anychar(&step_body, env);
@@ -1711,15 +1730,19 @@ make_absent_group_tree(Node** node, Node* absent_body,
   ns[0] = save;
   ns[1] = quant;
   top = make_list(2, ns);
-  if (IS_NULL(top)) goto err2;
+  if (IS_NULL(top)) {
+    r = ONIGERR_MEMORY;
+    goto err2;
+  }
 
   *node = top;
   return ONIG_NORMAL;
 
+ err0:
+  onig_node_free(generator);
  err1:
   onig_node_free(absent_body);
   onig_node_free(step_body);
-
  err2:
   onig_node_free(save);
   onig_node_free(quant);
