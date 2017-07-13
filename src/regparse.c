@@ -1694,23 +1694,6 @@ make_absent_group_tree(Node** node, Node* absent_body,
   *node = NULL_NODE;
   save = repeat_body = repeat = step_body = NULL_NODE;
 
-  invalid_node = 0;
-  min_len = onig_get_tiny_min_len(absent_body, &invalid_node);
-  if (invalid_node != 0) {
-    r = ONIGERR_PARSER_BUG; // invalid absent pattern
-    goto err0;
-  }
-  if (min_len == 0) { // (?~) ==> simple fail
-    Node* f;
-    r = node_new_fail(&f, env);
-    if (r != 0) goto err0;
-
-    *node = f;
-    onig_node_free(absent_body);
-    onig_node_free(step_body);
-    return ONIG_NORMAL;
-  }
-
   if (IS_NULL(generator)) {
     r = node_new_true_anychar(&step_body, env);
     if (r != 0) goto err1;
@@ -1720,7 +1703,7 @@ make_absent_group_tree(Node** node, Node* absent_body,
     QuantNode* q;
     Node* body;
 
-    r = ONIGERR_PARSER_BUG; // invalid absent generator pattern
+    r = ONIGERR_INVALID_ABSENT_GROUP_GENERATOR_PATTERN;
     if (NODE_TYPE(generator) != NODE_QUANT) goto err0;
     q = QUANT_(generator);
     if (q->greedy == 0) goto err0;
@@ -1732,6 +1715,23 @@ make_absent_group_tree(Node** node, Node* absent_body,
 
     repeat = generator;
     step_body = body;
+  }
+
+  invalid_node = 0;
+  min_len = onig_get_tiny_min_len(absent_body, &invalid_node);
+  if (invalid_node != 0) {
+    r = ONIGERR_INVALID_ABSENT_GROUP_PATTERN;
+    goto err0;
+  }
+  if (min_len == 0) { // (?~) ==> simple fail
+    Node* f;
+    r = node_new_fail(&f, env);
+    if (r != 0) goto err0;
+
+    *node = f;
+    onig_node_free(absent_body);
+    onig_node_free(step_body);
+    return ONIG_NORMAL;
   }
 
   r = make_absent_group_repeated_body_tree(&repeat_body, absent_body,
@@ -5225,7 +5225,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           Node* top = absent_body;
           if (NODE_TYPE(top) != NODE_ALT || IS_NULL(NODE_CDR(top))) {
             onig_node_free(top);
-            return ONIGERR_PARSER_BUG;
+            return ONIGERR_INVALID_ABSENT_GROUP_GENERATOR_PATTERN;
           }
 
           generator = NODE_CAR(top);
@@ -5243,8 +5243,8 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 
         r = make_absent_group_tree(np, absent_body, generator, env);
         if (r != 0) {
-          onig_node_free(absent_body);
-          onig_node_free(generator);
+          //onig_node_free(absent_body);
+          //onig_node_free(generator);
           return r;
         }
         goto end;
