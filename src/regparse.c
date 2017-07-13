@@ -1688,11 +1688,12 @@ make_absent_group_tree(Node** node, Node* absent_body,
   Node* repeat;
   Node* step_body;
   Node* repeat_body;
+  Node* stop_bt;
   Node* save;
   Node* ns[2];
 
   *node = NULL_NODE;
-  save = repeat_body = repeat = step_body = NULL_NODE;
+  stop_bt = save = repeat_body = repeat = step_body = NULL_NODE;
 
   if (IS_NULL(generator)) {
     r = node_new_true_anychar(&step_body, env);
@@ -1704,7 +1705,17 @@ make_absent_group_tree(Node** node, Node* absent_body,
     Node* body;
 
     r = ONIGERR_INVALID_ABSENT_GROUP_GENERATOR_PATTERN;
-    if (NODE_TYPE(generator) != NODE_QUANT) goto err0;
+    if (NODE_TYPE(generator) != NODE_QUANT) {
+      if (NODE_TYPE(generator) != NODE_ENCLOSURE ||
+          ENCLOSURE_(generator)->type != ENCLOSURE_STOP_BACKTRACK)
+        goto err0;
+
+      stop_bt = generator;
+      generator = NODE_BODY(stop_bt);
+      NODE_BODY(stop_bt) = NULL_NODE;
+      if (NODE_TYPE(generator) != NODE_QUANT) goto err0;
+    }
+
     q = QUANT_(generator);
     if (q->greedy == 0) goto err0;
     body = NODE_QUANT_BODY(q);
@@ -1739,12 +1750,16 @@ make_absent_group_tree(Node** node, Node* absent_body,
   if (r != 0) goto err1;
 
   NODE_BODY(repeat) = repeat_body;
+  if (IS_NOT_NULL(stop_bt)) {
+    NODE_BODY(stop_bt) = repeat;
+    repeat = NULL_NODE;
+  }
 
   r = node_new_save_gimmick(&save, SAVE_RIGHT_RANGE, env);
   if (r != 0) goto err2;
 
   ns[0] = save;
-  ns[1] = repeat;
+  ns[1] = IS_NULL(stop_bt) ? repeat : stop_bt;
   top = make_list(2, ns);
   if (IS_NULL(top)) {
     r = ONIGERR_MEMORY;
@@ -1760,8 +1775,9 @@ make_absent_group_tree(Node** node, Node* absent_body,
   onig_node_free(absent_body);
   onig_node_free(step_body);
  err2:
-  onig_node_free(save);
   onig_node_free(repeat);
+  onig_node_free(stop_bt);
+  onig_node_free(save);
 
   return r;
 }
