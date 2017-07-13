@@ -1718,7 +1718,7 @@ make_absent_group_tree(Node** node, Node* absent_body,
 
     q = QUANT_(generator);
     if (q->greedy == 0) goto err0;
-    body = NODE_QUANT_BODY(q);
+    body = NODE_BODY(generator);
     invalid_node = 0;
     min_len = onig_get_tiny_min_len(body, &invalid_node);
     /* ignore invalid_node (backref and call) */
@@ -1726,6 +1726,8 @@ make_absent_group_tree(Node** node, Node* absent_body,
 
     repeat = generator;
     step_body = body;
+    NODE_BODY(repeat) = NULL_NODE;
+    generator = NULL_NODE;
   }
 
   invalid_node = 0;
@@ -1742,6 +1744,8 @@ make_absent_group_tree(Node** node, Node* absent_body,
     *node = f;
     onig_node_free(absent_body);
     onig_node_free(step_body);
+    onig_node_free(repeat);
+    onig_node_free(stop_bt);
     return ONIG_NORMAL;
   }
 
