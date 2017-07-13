@@ -1692,7 +1692,7 @@ make_absent_group_tree(Node** node, Node* absent_body,
   if (IS_NULL(generator)) {
     r = node_new_true_anychar(&step_body, env);
     if (r != 0) goto err1;
-    quant = node_new_quantifier(1, REPEAT_INFINITE, 0);
+    quant = node_new_quantifier(0, REPEAT_INFINITE, 0);
   }
   else {
     // TODO
