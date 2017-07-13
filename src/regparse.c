@@ -1337,14 +1337,17 @@ make_list_or_alt(NodeType type, int n, Node* ns[])
     NODE_CDR(r) = NULL_NODE;
   }
   else {
-    Node* right = make_list_or_alt(type, n - 1, ns + 1);
-    CHECK_NULL_RETURN(right);
+    Node* right;
 
     r = node_new();
-    if (IS_NULL(r)) {
-      onig_node_free(right);
+    CHECK_NULL_RETURN(r);
+
+    right = make_list_or_alt(type, n - 1, ns + 1);
+    if (IS_NULL(right)) {
+      onig_node_free(r);
       return NULL_NODE;
     }
+
     NODE_SET_TYPE(r, type);
     NODE_CAR(r) = ns[0];
     NODE_CDR(r) = right;
