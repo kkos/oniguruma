@@ -2937,6 +2937,108 @@ get_min_len(Node* node, ScanEnv* env)
   return len;
 }
 
+extern OnigLen
+onig_get_tiny_min_len(Node* node, int* invalid_node)
+{
+  OnigLen len;
+  OnigLen tmin;
+
+  len = 0;
+  switch (NODE_TYPE(node)) {
+#ifdef USE_CALL
+  case NODE_CALL:
+#endif
+  case NODE_BACKREF:
+    *invalid_node = 1;
+    break;
+
+  case NODE_LIST:
+    do {
+      tmin = onig_get_tiny_min_len(NODE_CAR(node), invalid_node);
+      len = distance_add(len, tmin);
+    } while (IS_NOT_NULL(node = NODE_CDR(node)));
+    break;
+
+  case NODE_ALT:
+    {
+      Node *x, *y;
+      y = node;
+      do {
+        x = NODE_CAR(y);
+        tmin = onig_get_tiny_min_len(x, invalid_node);
+        if (y == node) len = tmin;
+        else if (len > tmin) len = tmin;
+      } while (IS_NOT_NULL(y = NODE_CDR(y)));
+    }
+    break;
+
+  case NODE_STR:
+    {
+      StrNode* sn = STR_(node);
+      len = sn->end - sn->s;
+    }
+    break;
+
+  case NODE_CTYPE:
+  case NODE_CCLASS:
+    len = 1;
+    break;
+
+  case NODE_QUANT:
+    {
+      QuantNode* qn = QUANT_(node);
+
+      if (qn->lower > 0) {
+        len = onig_get_tiny_min_len(NODE_BODY(node), invalid_node);
+        len = distance_multiply(len, qn->lower);
+      }
+    }
+    break;
+
+  case NODE_ENCLOSURE:
+    {
+      EnclosureNode* en = ENCLOSURE_(node);
+      switch (en->type) {
+      case ENCLOSURE_MEMORY:
+      case ENCLOSURE_OPTION:
+      case ENCLOSURE_STOP_BACKTRACK:
+        len = onig_get_tiny_min_len(NODE_BODY(node), invalid_node);
+        break;
+
+      case ENCLOSURE_IF_ELSE:
+        {
+          int elen;
+          len = onig_get_tiny_min_len(NODE_BODY(node), invalid_node);
+          if (IS_NOT_NULL(en->te.Then))
+            len = distance_add(len,
+                               onig_get_tiny_min_len(en->te.Then, invalid_node));
+          if (IS_NOT_NULL(en->te.Else))
+            elen = onig_get_tiny_min_len(en->te.Else, invalid_node);
+          else elen = 0;
+
+          if (elen < len) len = elen;
+        }
+        break;
+      }
+    }
+    break;
+
+  case NODE_GIMMICK:
+    {
+      GimmickNode* g = GIMMICK_(node);
+      if (g->type == GIMMICK_FAIL)
+        return ONIG_INFINITE_DISTANCE;
+    }
+    /* fall */
+
+  case NODE_ANCHOR:
+  default:
+    break;
+  }
+
+  return len;
+}
+
 static OnigLen
 get_max_len(Node* node, ScanEnv* env)
 {

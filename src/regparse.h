@@ -441,6 +441,7 @@ extern int    onig_names_free P_((regex_t* reg));
 extern int    onig_parse_tree P_((Node** root, const UChar* pattern, const UChar* end, regex_t* reg, ScanEnv* env));
 extern int    onig_free_shared_cclass_table P_((void));
 extern int    onig_is_code_in_cc P_((OnigEncoding enc, OnigCodePoint code, CClassNode* cc));
+extern OnigLen onig_get_tiny_min_len(Node* node, int* invalid_node);
 
 #ifdef ONIG_DEBUG
 #ifdef USE_NAMED_GROUP
