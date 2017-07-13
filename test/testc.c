@@ -623,6 +623,35 @@ extern int main(int argc, char* argv[])
   x2("(a\\Kb|ac\\Kd)", "acd", 2, 3);
   x2("(a\\Kb|\\Kac\\K)*", "acababacab", 9, 10);
 
+  n("(?~)", "");
+  n("(?~)", "A");
+  n("aaaaa(?~)", "aaaaaaaaaa");
+  n("(?~(?:|aaa))", "aaa");
+  n("(?~aaa|)", "aaa");
+  x2("a(?~(?~))z", "abcdefghijklmnopqrstuvwxyz", 0, 26);
+  x2("/\\*(?~\\*/)\\*/", "/* */ */", 0, 5);
+  x2("(?~\\w+)zzzzz", "zzzzz", 0, 5);
+  n("(?~\\w*)zzzzz", "zzzzz");
+  x2("(?~A.C|B)", "ABC", 0, 1);
+  x2("(?~XYZ|ABC)a", "ABCa", 1, 4);
+  x2("(?~XYZ|ABC)a", "aABCa", 0, 1);
+
+  x2("(?~|.*|ab)", "ccc\nddd", 0, 3);  // absent group with generator
+  x2("(?~|\\O*|ab)", "ccc\ndab", 0, 6);  // equal with default generator
+  x2("(?~|\\O{2,10}|ab)", "ccc\ndab", 0, 6);
+  x2("(?~|\\O{1,10}|ab)", "ab", 0, 1);
+  n("(?~|\\O{2,10}|ab)", "ab");
+  x2("(?~|\\O{1,10}|ab)", "cccccccccccab", 0, 10);
+  // n("(?~|aaa|)", "aaa");  invalid absent group generator pattern
+  n("(?~|a*|)", "aaaaaa");
+  //n("(?~|a*?|)", "aaaaaa");  invalid absent group generator pattern
+  //n("(a)(?~|\\1*|)", "aaaaaa");  invalid absent group generator pattern
+  n("(a)(?~|(?:a\\1)*|)", "aaaaaa");
+  x2("(b|c)(?~|(?:a\\1)*|abac)", "abababacabab", 1, 6);
+  n("(?~|a*+|c)a", "aaaaa");   // possessive generator
+  x2("(?~|a*+|aaaaaa)", "aaaaa", 0, 5);
+  x2("(?~|a*+|aaaaaa)", "aaaaaa", 0, 5);
+
   /*
     < ifndef IGNORE_EUC_JP >
     for testcases print warnings #63
