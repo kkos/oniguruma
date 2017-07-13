@@ -2947,6 +2947,7 @@ onig_get_tiny_min_len(Node* node, int* invalid_node)
   switch (NODE_TYPE(node)) {
 #ifdef USE_CALL
   case NODE_CALL:
+    /* fall */
 #endif
   case NODE_BACKREF:
     *invalid_node = 1;
