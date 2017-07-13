@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.5.0    2017/07/12
+Oniguruma Regular Expressions Version 6.5.0    2017/07/13
 
 syntax: ONIG_SYNTAX_RUBY (default)
 
@@ -309,7 +309,7 @@ syntax: ONIG_SYNTAX_RUBY (default)
       p r.match("<foo>f<bar>bbb</bar>f</foo>").captures
 
 
-9. Subexp calls ("Tanaka Akira special")
+9. Subexp calls ("Tanaka Akira special")   (* original function)
 
   When we say "call a group," it actually means, "re-execute the subexp in
   that group."
