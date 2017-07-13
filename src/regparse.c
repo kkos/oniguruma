@@ -5199,18 +5199,54 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
       if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_TILDE_ABSENT_GROUP)) {
         Node* absent_body;
         Node* generator;
+        int with_generator;
 
         if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
 
         generator = NULL_NODE;
+
+#if 1
+        if (PPEEK_IS('|')) { // (?~|generator|absent)
+          PINC;
+          if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+
+          with_generator = 1;
+        }
+        else
+#endif
+          with_generator = 0;
 
         r = fetch_token(tok, &p, end, env);
         if (r < 0) return r;
         r = parse_subexp(&absent_body, tok, term, &p, end, env);
         if (r < 0) return r;
 
+        if (with_generator != 0) {
+          Node* top = absent_body;
+          if (NODE_TYPE(top) != NODE_ALT || IS_NULL(NODE_CDR(top))) {
+            onig_node_free(top);
+            return ONIGERR_PARSER_BUG;
+          }
+
+          generator = NODE_CAR(top);
+          absent_body = NODE_CDR(top);
+          NODE_CAR(top) = NULL_NODE;
+          NODE_CDR(top) = NULL_NODE;
+          onig_node_free(top);
+          if (IS_NULL(NODE_CDR(absent_body))) {
+            top = absent_body;
+            absent_body = NODE_CAR(top);
+            NODE_CAR(top) = NULL_NODE;
+            onig_node_free(top);
+          }
+        }
+
         r = make_absent_group_tree(np, absent_body, generator, env);
-        if (r != 0) return r;
+        if (r != 0) {
+          onig_node_free(absent_body);
+          onig_node_free(generator);
+          return r;
+        }
         goto end;
       }
       else {
