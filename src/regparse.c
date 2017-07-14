@@ -1696,73 +1696,66 @@ node_is_include_enclosure_memory(Node* node)
 }
 
 static int
-make_fail_with_something(Node** rnode, Node* absent_body, Node* step_body,
-                         Node* repeat, ScanEnv* env)
+make_fail_with_after(Node** rnode, ScanEnv* env, int num, Node* ns[])
 {
   int r;
+  int i;
   int n;
-  int body_is_list;
-  int absent_used;
-  int step_used;
-  QuantNode* q;
+  int* used;
+  Node** us;
   Node* f;
   Node* x;
-  Node* body;
-  Node* ns[3];
 
   *rnode = NULL_NODE;
   r = node_new_fail(&f, env);
   if (r != 0) return r;
 
-  absent_used = step_used = 0;
-  n = 0;
-  if (node_is_include_enclosure_memory(absent_body)) {
-    ns[n++] = absent_body;
-    absent_used = 1;
-  }
-  if (node_is_include_enclosure_memory(step_body)) {
-    ns[n++] = step_body;
-    step_used = 1;
-  }
-
-  body_is_list = 0;
-  if (n == 0) {
+  if (num <= 0) {
     *rnode = f;
-    onig_node_free(absent_body);
-    onig_node_free(step_body);
-    onig_node_free(repeat);
     return ONIG_NORMAL;
   }
-  else if (n == 1) {
-    body = ns[0];
-  }
-  else {
-    body = make_list(2, ns);
-    if (IS_NULL(body)) goto err;
-    body_is_list = 1;
+
+  us = (Node** )xmalloc(sizeof(*us) * (num + 1));
+  if (IS_NULL(us)) {
+    onig_node_free(f);
+    return ONIGERR_MEMORY;
   }
 
-  q = QUANT_(repeat);
-  q->upper = q->lower = 0;
-  q->is_refered = 1;
-  NODE_BODY(repeat) = body;
-  ns[0] = f;
-  ns[1] = repeat;
-  x = make_list(2, ns);
+  used = (int* )xmalloc(sizeof(*used) * num);
+  if (IS_NULL(used)) goto err1;
+  for (i = 0; i < num; i++) used[i] = 0;
+
+  n = 0;
+  us[n++] = f;
+  for (i = 0; i < num; i++) {
+    if (node_is_include_enclosure_memory(ns[i])) {
+      us[n++] = ns[i];
+      used[i] = 1;
+    }
+  }
+
+  if (n == 1) {
+    *rnode = f;
+    goto end;
+  }
+
+  x = make_list(n, us);
   if (IS_NULL(x)) {
-    if (body_is_list != 0)
-      list_node_free_not_car(body);
-  err:
+    xfree(used);
+  err1:
+    xfree(us);
     onig_node_free(f);
-    NODE_BODY(repeat) = NULL_NODE;
     return ONIGERR_MEMORY;
   }
 
   *rnode = x;
-  if (absent_used == 0)
-    onig_node_free(absent_body);
-  if (step_used == 0)
-    onig_node_free(step_body);
+ end:
+  for (i = 0; i < num; i++) {
+    if (used[i] == 0) onig_node_free(ns[i]);
+  }
+
+  xfree(used);
+  xfree(us);
   return ONIG_NORMAL;
 }
 
@@ -1893,12 +1886,15 @@ make_absent_group_tree(Node** node, Node* absent_body,
     goto err0;
   }
   if (min_len == 0) { // (?~) ==> simple fail
-    Node* f;
+    Node* fail_with_after;
+    Node* ns[2];
 
-    r = make_fail_with_something(&f, absent_body, step_body, repeat, env);
+    ns[0] = step_body; ns[1] = absent_body;
+    r = make_fail_with_after(&fail_with_after, env, 2, ns);
     if (r != 0) goto err0;
 
-    *node = f;
+    *node = fail_with_after;
+    onig_node_free(repeat);
     onig_node_free(stop_bt);
     return ONIG_NORMAL;
   }
