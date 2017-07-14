@@ -1703,11 +1703,13 @@ make_absent_group_tree(Node** node, Node* absent_body,
   *node = NULL_NODE;
   update = stop_bt = save = repeat_body = repeat = step_body = NULL_NODE;
 
+  r = ONIGERR_MEMORY;
   if (IS_NULL(generator)) {
     step_body = node_new_anychar();
     if (IS_NULL(step_body)) goto err1;
     lower = 0;
     repeat = node_new_quantifier(lower, REPEAT_INFINITE, 0);
+    if (IS_NULL(repeat)) goto err1;
   }
   else {
     QuantNode* q;
@@ -5258,8 +5260,10 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
         r = fetch_token(tok, &p, end, env);
         if (r < 0) return r;
         r = parse_subexp(&absent_body, tok, term, &p, end, env);
-        if (r < 0) return r;
-
+        if (r < 0) {
+          onig_node_free(absent_body);
+          return r;
+        }
         if (with_generator != 0) {
           Node* top = absent_body;
           if (NODE_TYPE(top) != NODE_ALT || IS_NULL(NODE_CDR(top))) {
