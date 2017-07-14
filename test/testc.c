@@ -640,7 +640,10 @@ extern int main(int argc, char* argv[])
   x2("(?m:(?~ab))", "ccc\ndab", 0, 6);
   x2("(?-m:(?~ab))", "ccc\ndab", 0, 3);
 
-  x2("(?~|.*|ab)", "ccc\nddd", 0, 3);  // absent group with generator
+  // absent group with generator
+  x2("(?~|\\d*|78)", "123456789", 0, 7);
+  x2("(?~|(?:abc|de|f){0,100}|def)", "abcdedeabcfdefabc", 0, 13);
+  x2("(?~|.*|ab)", "ccc\nddd", 0, 3);
   x2("(?~|\\O*|ab)", "ccc\ndab", 0, 6);
   x2("(?~|\\O{2,10}|ab)", "ccc\ndab", 0, 6);
   x2("(?~|\\O{1,10}|ab)", "ab", 0, 1);
