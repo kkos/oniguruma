@@ -1704,8 +1704,8 @@ make_absent_group_tree(Node** node, Node* absent_body,
   update = stop_bt = save = repeat_body = repeat = step_body = NULL_NODE;
 
   if (IS_NULL(generator)) {
-    r = node_new_true_anychar(&step_body, env);
-    if (r != 0) goto err1;
+    step_body = node_new_anychar();
+    if (IS_NULL(step_body)) goto err1;
     lower = 0;
     repeat = node_new_quantifier(lower, REPEAT_INFINITE, 0);
   }
