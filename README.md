@@ -26,6 +26,18 @@ Supported character encodings:
 * CP1251:  contributed by Byte
 
 
+New feature of version 6.5.0
+--------------------------
+
+* NEW: \K (keep)
+* NEW: \R (general newline) \N (no newline)
+* NEW: \O (true anychar)
+* NEW: if-then-else syntax   (?(...)...\|...)
+* NEW: backreference validity checker  (*original)
+* NEW: absent group   (?~...)
+* NEW: absent group with custom generator  (*original)
+
+
 New feature of version 6.4.0
 --------------------------
 
