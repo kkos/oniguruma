@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.5.0    2017/07/13
+Oniguruma Regular Expressions Version 6.5.0    2017/07/14
 
 syntax: ONIG_SYNTAX_RUBY (default)
 
@@ -239,6 +239,19 @@ syntax: ONIG_SYNTAX_RUBY (default)
                      group.
 
                      Assigning the same name to two or more subexps is allowed.
+
+  (?~absent_exp)     Absent group    (* proposed by Tanaka Akira)
+                     This works like ".*", but it is limited by the range that
+                     does not include the string match with absent_exp.
+                     ".*" is used as a default generator.
+                     Therefore this is affected by the multi-line option (?m).
+
+  (?~|generator|absent_exp)   Absent group with custom generator  (* original)
+                              Generator must be a greedy or possessive quantifier.
+
+                              ex. (?~|\d*|345)
+                                  (?~|(?:abc|de|f){0,100}|def)
+
 
   (?(condition_exp)then_exp|else_exp)    if-then-else
   (?(condition_exp)then_exp)             if-then
