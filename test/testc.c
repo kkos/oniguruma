@@ -635,12 +635,13 @@ extern int main(int argc, char* argv[])
   x2("(?~A.C|B)", "ABC", 0, 1);
   x2("(?~XYZ|ABC)a", "ABCa", 1, 4);
   x2("(?~XYZ|ABC)a", "aABCa", 0, 1);
+  x2("<[^>]*>(?~[<>])</[^>]*>", "<a>vvv</a>   <b>  </b>", 0, 10);
   x2("(?~ab)", "ccc\ndab", 0, 3);
   x2("(?m:(?~ab))", "ccc\ndab", 0, 6);
   x2("(?-m:(?~ab))", "ccc\ndab", 0, 3);
 
   x2("(?~|.*|ab)", "ccc\nddd", 0, 3);  // absent group with generator
-  x2("(?~|\\O*|ab)", "ccc\ndab", 0, 6);  // equal with default generator
+  x2("(?~|\\O*|ab)", "ccc\ndab", 0, 6);
   x2("(?~|\\O{2,10}|ab)", "ccc\ndab", 0, 6);
   x2("(?~|\\O{1,10}|ab)", "ab", 0, 1);
   n("(?~|\\O{2,10}|ab)", "ab");
@@ -654,6 +655,7 @@ extern int main(int argc, char* argv[])
   n("(?~|a*+|c)a", "aaaaa");   // possessive generator
   x2("(?~|a*+|aaaaaa)", "aaaaa", 0, 5);
   x2("(?~|a*+|aaaaaa)", "aaaaaa", 0, 5);
+  x2("(?~|a*+|aaaaaa)b", "aaaaaab", 1, 7);
 
   /*
     < ifndef IGNORE_EUC_JP >
