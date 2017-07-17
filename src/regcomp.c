@@ -2805,7 +2805,7 @@ check_type_tree(Node* node, int type_mask, int enclosure_mask, int anchor_mask)
 }
 
 static OnigLen
-get_min_len(Node* node, ScanEnv* env)
+tree_min_len(Node* node, ScanEnv* env)
 {
   OnigLen len;
   OnigLen tmin;
@@ -2821,9 +2821,9 @@ get_min_len(Node* node, ScanEnv* env)
       if (NODE_IS_RECURSION(node)) break;
 
       backs = BACKREFS_P(br);
-      len = get_min_len(mem_env[backs[0]].node, env);
+      len = tree_min_len(mem_env[backs[0]].node, env);
       for (i = 1; i < br->back_num; i++) {
-        tmin = get_min_len(mem_env[backs[i]].node, env);
+        tmin = tree_min_len(mem_env[backs[i]].node, env);
         if (len > tmin) len = tmin;
       }
     }
@@ -2838,14 +2838,14 @@ get_min_len(Node* node, ScanEnv* env)
           len = ENCLOSURE_(t)->min_len;
       }
       else
-        len = get_min_len(t, env);
+        len = tree_min_len(t, env);
     }
     break;
 #endif
 
   case NODE_LIST:
     do {
-      tmin = get_min_len(NODE_CAR(node), env);
+      tmin = tree_min_len(NODE_CAR(node), env);
       len += tmin;
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
@@ -2856,7 +2856,7 @@ get_min_len(Node* node, ScanEnv* env)
       y = node;
       do {
         x = NODE_CAR(y);
-        tmin = get_min_len(x, env);
+        tmin = tree_min_len(x, env);
         if (y == node) len = tmin;
         else if (len > tmin) len = tmin;
       } while (IS_NOT_NULL(y = NODE_CDR(y)));
@@ -2880,7 +2880,7 @@ get_min_len(Node* node, ScanEnv* env)
       QuantNode* qn = QUANT_(node);
 
       if (qn->lower > 0) {
-        len = get_min_len(NODE_BODY(node), env);
+        len = tree_min_len(NODE_BODY(node), env);
         len = distance_multiply(len, qn->lower);
       }
     }
@@ -2898,7 +2898,7 @@ get_min_len(Node* node, ScanEnv* env)
             len = 0;  // recursive
           else {
             NODE_STATUS_ADD(node, NST_MARK1);
-            len = get_min_len(NODE_BODY(node), env);
+            len = tree_min_len(NODE_BODY(node), env);
             NODE_STATUS_REMOVE(node, NST_MARK1);
 
             en->min_len = len;
@@ -2909,16 +2909,16 @@ get_min_len(Node* node, ScanEnv* env)
 
       case ENCLOSURE_OPTION:
       case ENCLOSURE_STOP_BACKTRACK:
-        len = get_min_len(NODE_BODY(node), env);
+        len = tree_min_len(NODE_BODY(node), env);
         break;
       case ENCLOSURE_IF_ELSE:
         {
           int elen;
-          len = get_min_len(NODE_BODY(node), env);
+          len = tree_min_len(NODE_BODY(node), env);
           if (IS_NOT_NULL(en->te.Then))
-            len += get_min_len(en->te.Then, env);
+            len += tree_min_len(en->te.Then, env);
           if (IS_NOT_NULL(en->te.Else))
-            elen = get_min_len(en->te.Else, env);
+            elen = tree_min_len(en->te.Else, env);
           else elen = 0;
 
           if (elen < len) len = elen;
@@ -3041,7 +3041,7 @@ onig_get_tiny_min_len(Node* node, int* invalid_node)
 }
 
 static OnigLen
-get_max_len(Node* node, ScanEnv* env)
+tree_max_len(Node* node, ScanEnv* env)
 {
   OnigLen len;
   OnigLen tmax;
@@ -3050,14 +3050,14 @@ get_max_len(Node* node, ScanEnv* env)
   switch (NODE_TYPE(node)) {
   case NODE_LIST:
     do {
-      tmax = get_max_len(NODE_CAR(node), env);
+      tmax = tree_max_len(NODE_CAR(node), env);
       len = distance_add(len, tmax);
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NODE_ALT:
     do {
-      tmax = get_max_len(NODE_CAR(node), env);
+      tmax = tree_max_len(NODE_CAR(node), env);
       if (len < tmax) len = tmax;
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
@@ -3086,7 +3086,7 @@ get_max_len(Node* node, ScanEnv* env)
       }
       backs = BACKREFS_P(br);
       for (i = 0; i < br->back_num; i++) {
-        tmax = get_max_len(mem_env[backs[i]].node, env);
+        tmax = tree_max_len(mem_env[backs[i]].node, env);
         if (len < tmax) len = tmax;
       }
     }
@@ -3095,7 +3095,7 @@ get_max_len(Node* node, ScanEnv* env)
 #ifdef USE_CALL
   case NODE_CALL:
     if (! NODE_IS_RECURSION(node))
-      len = get_max_len(NODE_BODY(node), env);
+      len = tree_max_len(NODE_BODY(node), env);
     else
       len = INFINITE_LEN;
     break;
@@ -3106,7 +3106,7 @@ get_max_len(Node* node, ScanEnv* env)
       QuantNode* qn = QUANT_(node);
 
       if (qn->upper != 0) {
-        len = get_max_len(NODE_BODY(node), env);
+        len = tree_max_len(NODE_BODY(node), env);
         if (len != 0) {
           if (! IS_REPEAT_INFINITE(qn->upper))
             len = distance_multiply(len, qn->upper);
@@ -3129,7 +3129,7 @@ get_max_len(Node* node, ScanEnv* env)
             len = INFINITE_LEN;
           else {
             NODE_STATUS_ADD(node, NST_MARK1);
-            len = get_max_len(NODE_BODY(node), env);
+            len = tree_max_len(NODE_BODY(node), env);
             NODE_STATUS_REMOVE(node, NST_MARK1);
 
             en->max_len = len;
@@ -3140,18 +3140,18 @@ get_max_len(Node* node, ScanEnv* env)
 
       case ENCLOSURE_OPTION:
       case ENCLOSURE_STOP_BACKTRACK:
-        len = get_max_len(NODE_BODY(node), env);
+        len = tree_max_len(NODE_BODY(node), env);
         break;
       case ENCLOSURE_IF_ELSE:
         {
           int tlen, elen;
-          len = get_max_len(NODE_BODY(node), env);
+          len = tree_max_len(NODE_BODY(node), env);
           if (IS_NOT_NULL(en->te.Then)) {
-            tlen = get_max_len(en->te.Then, env);
+            tlen = tree_max_len(en->te.Then, env);
             len = distance_add(len, tlen);
           }
           if (IS_NOT_NULL(en->te.Else))
-            elen = get_max_len(en->te.Else, env);
+            elen = tree_max_len(en->te.Else, env);
           else elen = 0;
 
           if (elen > len) len = elen;
@@ -3261,7 +3261,7 @@ infinite_recursive_call_check(Node* node, ScanEnv* env, int head)
         if (ret < 0 || (ret & RECURSION_INFINITE) != 0) return ret;
         r |= ret;
         if (head != 0) {
-          min = get_min_len(NODE_CAR(x), env);
+          min = tree_min_len(NODE_CAR(x), env);
           if (min != 0) head = 0;
         }
       } while (IS_NOT_NULL(x = NODE_CDR(x)));
@@ -3326,7 +3326,7 @@ infinite_recursive_call_check(Node* node, ScanEnv* env, int head)
         if (IS_NOT_NULL(en->te.Then)) {
           OnigLen min;
           if (head != 0) {
-            min = get_min_len(NODE_BODY(node), env);
+            min = tree_min_len(NODE_BODY(node), env);
           }
           else min = 0;
 
@@ -4739,7 +4739,7 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
   }
 
   if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 1) {
-    d = get_min_len(body, env);
+    d = tree_min_len(body, env);
     if (d == 0) {
 #ifdef USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT
       qn->body_empty_info = quantifiers_memory_node_info(body);
@@ -5773,11 +5773,11 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
         break;
       }
       backs = BACKREFS_P(br);
-      min = get_min_len(mem_env[backs[0]].node, env->scan_env);
-      max = get_max_len(mem_env[backs[0]].node, env->scan_env);
+      min = tree_min_len(mem_env[backs[0]].node, env->scan_env);
+      max = tree_max_len(mem_env[backs[0]].node, env->scan_env);
       for (i = 1; i < br->back_num; i++) {
-        tmin = get_min_len(mem_env[backs[i]].node, env->scan_env);
-        tmax = get_max_len(mem_env[backs[i]].node, env->scan_env);
+        tmin = tree_min_len(mem_env[backs[i]].node, env->scan_env);
+        tmax = tree_max_len(mem_env[backs[i]].node, env->scan_env);
         if (min > tmin) min = tmin;
         if (max < tmax) max = tmax;
       }
