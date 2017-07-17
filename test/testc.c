@@ -636,9 +636,9 @@ extern int main(int argc, char* argv[])
   x2("(?~XYZ|ABC)a", "ABCa", 1, 4);
   x2("(?~XYZ|ABC)a", "aABCa", 0, 1);
   x2("<[^>]*>(?~[<>])</[^>]*>", "<a>vvv</a>   <b>  </b>", 0, 10);
-  x2("(?~ab)", "ccc\ndab", 0, 3);
+  x2("(?~ab)", "ccc\ndab", 0, 6);
   x2("(?m:(?~ab))", "ccc\ndab", 0, 6);
-  x2("(?-m:(?~ab))", "ccc\ndab", 0, 3);
+  x2("(?-m:(?~ab))", "ccc\ndab", 0, 6);
 
   // absent group with generator
   x2("(?~|\\d*|78)", "123456789", 0, 7);
