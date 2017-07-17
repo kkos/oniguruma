@@ -169,11 +169,11 @@ swap_node(Node* a, Node* b)
 static OnigLen
 distance_add(OnigLen d1, OnigLen d2)
 {
-  if (d1 == ONIG_INFINITE_DISTANCE || d2 == ONIG_INFINITE_DISTANCE)
-    return ONIG_INFINITE_DISTANCE;
+  if (d1 == INFINITE_LEN || d2 == INFINITE_LEN)
+    return INFINITE_LEN;
   else {
-    if (d1 <= ONIG_INFINITE_DISTANCE - d2) return d1 + d2;
-    else return ONIG_INFINITE_DISTANCE;
+    if (d1 <= INFINITE_LEN - d2) return d1 + d2;
+    else return INFINITE_LEN;
   }
 }
 
@@ -182,10 +182,10 @@ distance_multiply(OnigLen d, int m)
 {
   if (m == 0) return 0;
 
-  if (d < ONIG_INFINITE_DISTANCE / m)
+  if (d < INFINITE_LEN / m)
     return d * m;
   else
-    return ONIG_INFINITE_DISTANCE;
+    return INFINITE_LEN;
 }
 
 static int
@@ -3028,7 +3028,7 @@ onig_get_tiny_min_len(Node* node, int* invalid_node)
     {
       GimmickNode* g = GIMMICK_(node);
       if (g->type == GIMMICK_FAIL)
-        return ONIG_INFINITE_DISTANCE;
+        return INFINITE_LEN;
     }
     /* fall */
 
@@ -3081,7 +3081,7 @@ get_max_len(Node* node, ScanEnv* env)
       MemEnv* mem_env = SCANENV_MEMENV(env);
       BackRefNode* br = BACKREF_(node);
       if (NODE_IS_RECURSION(node)) {
-        len = ONIG_INFINITE_DISTANCE;
+        len = INFINITE_LEN;
         break;
       }
       backs = BACKREFS_P(br);
@@ -3097,7 +3097,7 @@ get_max_len(Node* node, ScanEnv* env)
     if (! NODE_IS_RECURSION(node))
       len = get_max_len(NODE_BODY(node), env);
     else
-      len = ONIG_INFINITE_DISTANCE;
+      len = INFINITE_LEN;
     break;
 #endif
 
@@ -3111,7 +3111,7 @@ get_max_len(Node* node, ScanEnv* env)
           if (! IS_REPEAT_INFINITE(qn->upper))
             len = distance_multiply(len, qn->upper);
           else
-            len = ONIG_INFINITE_DISTANCE;
+            len = INFINITE_LEN;
         }
       }
     }
@@ -3126,7 +3126,7 @@ get_max_len(Node* node, ScanEnv* env)
           len = en->max_len;
         else {
           if (NODE_IS_MARK1(node))
-            len = ONIG_INFINITE_DISTANCE;
+            len = INFINITE_LEN;
           else {
             NODE_STATUS_ADD(node, NST_MARK1);
             len = get_max_len(NODE_BODY(node), env);
@@ -5056,7 +5056,7 @@ distance_value(MinMaxLen* mm)
 
   OnigLen d;
 
-  if (mm->max == ONIG_INFINITE_DISTANCE) return 0;
+  if (mm->max == INFINITE_LEN) return 0;
 
   d = mm->max - mm->min;
   if (d < (OnigLen )(sizeof(dist_vals)/sizeof(dist_vals[0])))
@@ -5769,7 +5769,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
       BackRefNode* br = BACKREF_(node);
 
       if (NODE_IS_RECURSION(node)) {
-        set_mml(&opt->len, 0, ONIG_INFINITE_DISTANCE);
+        set_mml(&opt->len, 0, INFINITE_LEN);
         break;
       }
       backs = BACKREFS_P(br);
@@ -5788,7 +5788,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
 #ifdef USE_CALL
   case NODE_CALL:
     if (NODE_IS_RECURSION(node))
-      set_mml(&opt->len, 0, ONIG_INFINITE_DISTANCE);
+      set_mml(&opt->len, 0, INFINITE_LEN);
     else {
       OnigOptionType save = env->options;
       env->options = ENCLOSURE_(NODE_BODY(node))->o.options;
@@ -5843,7 +5843,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
 
       min = distance_multiply(nopt.len.min, qn->lower);
       if (IS_REPEAT_INFINITE(qn->upper))
-        max = (nopt.len.max > 0 ? ONIG_INFINITE_DISTANCE : 0);
+        max = (nopt.len.max > 0 ? INFINITE_LEN : 0);
       else
         max = distance_multiply(nopt.len.max, qn->upper);
 
@@ -5873,7 +5873,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
           OnigLen min, max;
 
           min = 0;
-          max = ONIG_INFINITE_DISTANCE;
+          max = INFINITE_LEN;
           if (NODE_IS_MIN_FIXED(node)) min = en->min_len;
           if (NODE_IS_MAX_FIXED(node)) max = en->max_len;
           set_mml(&opt->len, min, max);
@@ -5977,7 +5977,7 @@ set_optimize_exact_info(regex_t* reg, OptExactInfo* e)
   reg->dmin = e->mmd.min;
   reg->dmax = e->mmd.max;
 
-  if (reg->dmin != ONIG_INFINITE_DISTANCE) {
+  if (reg->dmin != INFINITE_LEN) {
     reg->threshold_len = reg->dmin + (reg->exact_end - reg->exact);
   }
 
@@ -5996,7 +5996,7 @@ set_optimize_map_info(regex_t* reg, OptMapInfo* m)
   reg->dmin       = m->mmd.min;
   reg->dmax       = m->mmd.max;
 
-  if (reg->dmin != ONIG_INFINITE_DISTANCE) {
+  if (reg->dmin != INFINITE_LEN) {
     reg->threshold_len = reg->dmin + 1;
   }
 }
@@ -6129,14 +6129,14 @@ static void print_enc_string(FILE* fp, OnigEncoding enc,
 static void
 print_distance_range(FILE* f, OnigLen a, OnigLen b)
 {
-  if (a == ONIG_INFINITE_DISTANCE)
+  if (a == INFINITE_LEN)
     fputs("inf", f);
   else
     fprintf(f, "(%u)", a);
 
   fputs("-", f);
 
-  if (b == ONIG_INFINITE_DISTANCE)
+  if (b == INFINITE_LEN)
     fputs("inf", f);
   else
     fprintf(f, "(%u)", b);

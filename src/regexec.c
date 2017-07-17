@@ -3447,7 +3447,7 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
       }
     }
     else {
-      if (reg->dmax != ONIG_INFINITE_DISTANCE) {
+      if (reg->dmax != INFINITE_LEN) {
         if (p - str < reg->dmax) {
           *low = (UChar* )str;
           if (low_prev)
@@ -3576,7 +3576,7 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
     }
 
     /* no needs to adjust *high, *high is used as range check only */
-    if (reg->dmax != ONIG_INFINITE_DISTANCE) {
+    if (reg->dmax != INFINITE_LEN) {
       *low  = p - reg->dmax;
       *high = p - reg->dmin;
       *high = onigenc_get_right_adjust_char_head(reg->enc, adjrange, *high);
@@ -3815,7 +3815,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 
       sch_range = (UChar* )range;
       if (reg->dmax != 0) {
-        if (reg->dmax == ONIG_INFINITE_DISTANCE)
+        if (reg->dmax == INFINITE_LEN)
           sch_range = (UChar* )end;
         else {
           sch_range += reg->dmax;
@@ -3826,7 +3826,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
       if ((end - start) < reg->threshold_len)
         goto mismatch;
 
-      if (reg->dmax != ONIG_INFINITE_DISTANCE) {
+      if (reg->dmax != INFINITE_LEN) {
         do {
           if (! forward_search_range(reg, str, end, s, sch_range,
                                      &low, &high, &low_prev)) goto mismatch;
@@ -3888,7 +3888,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
       else
         adjrange = (UChar* )end;
 
-      if (reg->dmax != ONIG_INFINITE_DISTANCE &&
+      if (reg->dmax != INFINITE_LEN &&
           (end - range) >= reg->threshold_len) {
         do {
           sch_start = s + reg->dmax;
@@ -3913,7 +3913,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 
         sch_start = s;
         if (reg->dmax != 0) {
-          if (reg->dmax == ONIG_INFINITE_DISTANCE)
+          if (reg->dmax == INFINITE_LEN)
             sch_start = (UChar* )end;
           else {
             sch_start += reg->dmax;
