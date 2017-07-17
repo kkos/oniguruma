@@ -2872,7 +2872,7 @@ get_min_len(Node* node, ScanEnv* env)
 
   case NODE_CTYPE:
   case NODE_CCLASS:
-    len = 1;
+    len = ONIGENC_MBC_MINLEN(env->enc);
     break;
 
   case NODE_QUANT:
