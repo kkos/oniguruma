@@ -1842,8 +1842,14 @@ make_absent_group_tree(Node** node, Node* absent_body,
 
   r = ONIGERR_MEMORY;
   if (IS_NULL(generator)) {
+    /* default generator */
+#if 1
+    r = node_new_true_anychar(&step_body, env);
+    if (r != 0) goto err1;
+#else
     step_body = node_new_anychar();
     if (IS_NULL(step_body)) goto err1;
+#endif
     lower = 0;
     repeat = node_new_quantifier(lower, REPEAT_INFINITE, 0);
     if (IS_NULL(repeat)) goto err1;
