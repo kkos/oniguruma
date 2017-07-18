@@ -241,9 +241,11 @@ typedef struct {
 #define REG_EXTPL(reg)     ((reg)->chain)
 
 /* stack pop level */
-#define STACK_POP_LEVEL_FREE        0
-#define STACK_POP_LEVEL_MEM_START   1
-#define STACK_POP_LEVEL_ALL         2
+enum StackPopLevel {
+  STACK_POP_LEVEL_FREE = 0,
+  STACK_POP_LEVEL_MEM_START = 1,
+  STACK_POP_LEVEL_ALL =2
+};
 
 /* optimize flags */
 #define ONIG_OPTIMIZE_NONE              0
