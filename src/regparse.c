@@ -1115,7 +1115,7 @@ onig_node_free(Node* node)
 #endif
 
   switch (NODE_TYPE(node)) {
-  case NODE_STR:
+  case NODE_STRING:
     if (STR_(node)->capa != 0 &&
         IS_NOT_NULL(STR_(node)->s) && STR_(node)->s != STR_(node)->buf) {
       xfree(STR_(node)->s);
@@ -2006,7 +2006,7 @@ node_str_cat_char(Node* node, UChar c)
 extern void
 onig_node_conv_to_str_node(Node* node, int flag)
 {
-  NODE_SET_TYPE(node, NODE_STR);
+  NODE_SET_TYPE(node, NODE_STRING);
   STR_(node)->flag = flag;
   STR_(node)->capa = 0;
   STR_(node)->s    = STR_(node)->buf;
@@ -2033,7 +2033,7 @@ node_new_str(const UChar* s, const UChar* end)
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
-  NODE_SET_TYPE(node, NODE_STR);
+  NODE_SET_TYPE(node, NODE_STRING);
   STR_(node)->capa = 0;
   STR_(node)->flag = 0;
   STR_(node)->s    = STR_(node)->buf;
@@ -5785,7 +5785,7 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
     return 1;
 
   switch (NODE_TYPE(target)) {
-  case NODE_STR:
+  case NODE_STRING:
     if (! group) {
       StrNode* sn = STR_(target);
       if (str_node_can_be_split(sn, env->enc)) {

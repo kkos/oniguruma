@@ -33,7 +33,7 @@
 
 /* node type */
 typedef enum {
-  NODE_STR       =  0,
+  NODE_STRING    =  0,
   NODE_CCLASS    =  1,
   NODE_CTYPE     =  2,
   NODE_BACKREF   =  3,
@@ -56,7 +56,7 @@ enum GimmickType {
 /* node type bit */
 #define NODE_TYPE2BIT(type)      (1<<(type))
 
-#define BIT_NODE_STR        NODE_TYPE2BIT(NODE_STR)
+#define BIT_NODE_STRING     NODE_TYPE2BIT(NODE_STRING)
 #define BIT_NODE_CCLASS     NODE_TYPE2BIT(NODE_CCLASS)
 #define BIT_NODE_CTYPE      NODE_TYPE2BIT(NODE_CTYPE)
 #define BIT_NODE_BACKREF    NODE_TYPE2BIT(NODE_BACKREF)
@@ -70,7 +70,7 @@ enum GimmickType {
 
 #define NODE_IS_SIMPLE_TYPE(node) \
   ((NODE_TYPE2BIT(NODE_TYPE(node)) & \
-    (BIT_NODE_STR | BIT_NODE_CCLASS | BIT_NODE_CTYPE | BIT_NODE_BACKREF)) != 0)
+    (BIT_NODE_STRING | BIT_NODE_CCLASS | BIT_NODE_CTYPE | BIT_NODE_BACKREF)) != 0)
 
 #define NODE_TYPE(node)             ((node)->u.base.node_type)
 #define NODE_SET_TYPE(node, ntype)   (node)->u.base.node_type = (ntype)

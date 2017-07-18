@@ -147,7 +147,7 @@ swap_node(Node* a, Node* b)
   Node c;
   c = *a; *a = *b; *b = c;
 
-  if (NODE_TYPE(a) == NODE_STR) {
+  if (NODE_TYPE(a) == NODE_STRING) {
     StrNode* sn = STR_(a);
     if (sn->capa == 0) {
       int len = sn->end - sn->s;
@@ -156,7 +156,7 @@ swap_node(Node* a, Node* b)
     }
   }
 
-  if (NODE_TYPE(b) == NODE_STR) {
+  if (NODE_TYPE(b) == NODE_STRING) {
     StrNode* sn = STR_(b);
     if (sn->capa == 0) {
       int len = sn->end - sn->s;
@@ -1771,7 +1771,7 @@ compile_length_tree(Node* node, regex_t* reg)
     }
     break;
 
-  case NODE_STR:
+  case NODE_STRING:
     if (NODE_STRING_IS_RAW(node))
       r = compile_length_string_raw_node(STR_(node), reg);
     else
@@ -1889,7 +1889,7 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
     }
     break;
 
-  case NODE_STR:
+  case NODE_STRING:
     if (NODE_STRING_IS_RAW(node))
       r = compile_string_raw_node(STR_(node), reg);
     else
@@ -2352,7 +2352,7 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
     }
     break;
 
-  case NODE_STR:
+  case NODE_STRING:
     {
       StrNode* sn = STR_(node);
       UChar *s = sn->s;
@@ -2503,7 +2503,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
         }
         break;
 
-      case NODE_STR:
+      case NODE_STRING:
         goto swap;
         break;
 
@@ -2580,7 +2580,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
         }
         break;
 
-      case NODE_STR:
+      case NODE_STRING:
         goto swap;
         break;
 
@@ -2590,7 +2590,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
     }
     break;
 
-  case NODE_STR:
+  case NODE_STRING:
     {
       StrNode* xs = STR_(x);
       if (NODE_STRING_LEN(x) == 0)
@@ -2624,7 +2624,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
         }
         break;
 
-      case NODE_STR:
+      case NODE_STRING:
         {
           UChar *q;
           StrNode* ys = STR_(y);
@@ -2682,7 +2682,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
     n = get_head_value_node(NODE_CAR(node), exact, reg);
     break;
 
-  case NODE_STR:
+  case NODE_STRING:
     {
       StrNode* sn = STR_(node);
 
@@ -2863,7 +2863,7 @@ tree_min_len(Node* node, ScanEnv* env)
     }
     break;
 
-  case NODE_STR:
+  case NODE_STRING:
     {
       StrNode* sn = STR_(node);
       len = sn->end - sn->s;
@@ -2973,7 +2973,7 @@ onig_get_tiny_min_len(Node* node, int* invalid_node)
     }
     break;
 
-  case NODE_STR:
+  case NODE_STRING:
     {
       StrNode* sn = STR_(node);
       len = sn->end - sn->s;
@@ -3062,7 +3062,7 @@ tree_max_len(Node* node, ScanEnv* env)
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NODE_STR:
+  case NODE_STRING:
     {
       StrNode* sn = STR_(node);
       len = sn->end - sn->s;
@@ -4202,7 +4202,7 @@ quantifiers_memory_node_info(Node* node)
     break;
 
   case NODE_BACKREF:
-  case NODE_STR:
+  case NODE_STRING:
   case NODE_CTYPE:
   case NODE_CCLASS:
   case NODE_ANCHOR:
@@ -4639,7 +4639,7 @@ setup_called_state(Node* node, int state)
     break;
 
   case NODE_BACKREF:
-  case NODE_STR:
+  case NODE_STRING:
   case NODE_CTYPE:
   case NODE_CCLASS:
   case NODE_GIMMICK:
@@ -4661,8 +4661,9 @@ setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
 {
 /* allowed node types in look-behind */
 #define ALLOWED_TYPE_IN_LB \
-  ( BIT_NODE_LIST | BIT_NODE_ALT | BIT_NODE_STR | BIT_NODE_CCLASS | BIT_NODE_CTYPE \
-  | BIT_NODE_ANCHOR | BIT_NODE_ENCLOSURE | BIT_NODE_QUANT | BIT_NODE_CALL )
+  ( BIT_NODE_LIST | BIT_NODE_ALT | BIT_NODE_STRING | BIT_NODE_CCLASS \
+  | BIT_NODE_CTYPE | BIT_NODE_ANCHOR | BIT_NODE_ENCLOSURE | BIT_NODE_QUANT \
+  | BIT_NODE_CALL )
 
 #define ALLOWED_ENCLOSURE_IN_LB       ( ENCLOSURE_MEMORY | ENCLOSURE_OPTION )
 #define ALLOWED_ENCLOSURE_IN_LB_NOT   ENCLOSURE_OPTION
@@ -4765,7 +4766,7 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
 
   /* expand string */
 #define EXPAND_STRING_MAX_LENGTH  100
-  if (NODE_TYPE(body) == NODE_STR) {
+  if (NODE_TYPE(body) == NODE_STRING) {
     if (!IS_REPEAT_INFINITE(qn->lower) && qn->lower == qn->upper &&
         qn->lower > 1 && qn->lower <= EXPAND_STRING_MAX_LENGTH) {
       int len = NODE_STRING_LEN(body);
@@ -4835,7 +4836,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-  case NODE_STR:
+  case NODE_STRING:
     if (IS_IGNORECASE(reg->options) && !NODE_STRING_IS_RAW(node)) {
       r = expand_case_fold_string(node, reg);
     }
@@ -5617,7 +5618,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     }
     break;
 
-  case NODE_STR:
+  case NODE_STRING:
     {
       StrNode* sn = STR_(node);
       int slen = sn->end - sn->s;
@@ -7208,7 +7209,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
     }
     break;
 
-  case NODE_STR:
+  case NODE_STRING:
     fprintf(f, "<string%s:%p>",
 	    (NODE_STRING_IS_RAW(node) ? "-raw" : ""), node);
     for (p = STR_(node)->s; p < STR_(node)->end; p++) {
