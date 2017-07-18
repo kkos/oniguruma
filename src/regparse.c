@@ -1874,8 +1874,11 @@ make_absent_group_tree(Node** node, Node* absent_body,
     if (q->greedy == 0) goto err0;
     body = NODE_BODY(generator);
     invalid_node = 0;
-    min_len = onig_get_tiny_min_len(body, &invalid_node);
-    /* ignore invalid_node (backref and call) */
+    min_len = onig_get_tiny_min_len(body, (BIT_NODE_CALL), &invalid_node);
+    if (invalid_node != 0) {
+      r = ONIGERR_INVALID_ABSENT_GROUP_GENERATOR_PATTERN;
+      goto err0;
+    }
     if (min_len == 0) goto err0;
 
     repeat = generator;
@@ -1886,7 +1889,8 @@ make_absent_group_tree(Node** node, Node* absent_body,
   }
 
   invalid_node = 0;
-  min_len = onig_get_tiny_min_len(absent_body, &invalid_node);
+  min_len = onig_get_tiny_min_len(absent_body, (BIT_NODE_CALL | BIT_NODE_BACKREF),
+                                  &invalid_node);
   if (invalid_node != 0) {
     r = ONIGERR_INVALID_ABSENT_GROUP_PATTERN;
     goto err0;

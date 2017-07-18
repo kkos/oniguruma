@@ -2938,10 +2938,13 @@ tree_min_len(Node* node, ScanEnv* env)
 }
 
 extern OnigLen
-onig_get_tiny_min_len(Node* node, int* invalid_node)
+onig_get_tiny_min_len(Node* node, unsigned int inhibit_types, int* invalid_node)
 {
   OnigLen len;
   OnigLen tmin;
+
+  if ((NODE_TYPE2BIT(NODE_TYPE(node)) & inhibit_types) != 0)
+    *invalid_node = 1;
 
   len = 0;
   switch (NODE_TYPE(node)) {
@@ -2950,12 +2953,11 @@ onig_get_tiny_min_len(Node* node, int* invalid_node)
     /* fall */
 #endif
   case NODE_BACKREF:
-    *invalid_node = 1;
     break;
 
   case NODE_LIST:
     do {
-      tmin = onig_get_tiny_min_len(NODE_CAR(node), invalid_node);
+      tmin = onig_get_tiny_min_len(NODE_CAR(node), inhibit_types, invalid_node);
       len = distance_add(len, tmin);
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
@@ -2966,7 +2968,7 @@ onig_get_tiny_min_len(Node* node, int* invalid_node)
       y = node;
       do {
         x = NODE_CAR(y);
-        tmin = onig_get_tiny_min_len(x, invalid_node);
+        tmin = onig_get_tiny_min_len(x, inhibit_types, invalid_node);
         if (y == node) len = tmin;
         else if (len > tmin) len = tmin;
       } while (IS_NOT_NULL(y = NODE_CDR(y)));
@@ -2990,7 +2992,7 @@ onig_get_tiny_min_len(Node* node, int* invalid_node)
       QuantNode* qn = QUANT_(node);
 
       if (qn->lower > 0) {
-        len = onig_get_tiny_min_len(NODE_BODY(node), invalid_node);
+        len = onig_get_tiny_min_len(NODE_BODY(node), inhibit_types, invalid_node);
         len = distance_multiply(len, qn->lower);
       }
     }
@@ -3003,18 +3005,18 @@ onig_get_tiny_min_len(Node* node, int* invalid_node)
       case ENCLOSURE_MEMORY:
       case ENCLOSURE_OPTION:
       case ENCLOSURE_STOP_BACKTRACK:
-        len = onig_get_tiny_min_len(NODE_BODY(node), invalid_node);
+        len = onig_get_tiny_min_len(NODE_BODY(node), inhibit_types, invalid_node);
         break;
 
       case ENCLOSURE_IF_ELSE:
         {
           int elen;
-          len = onig_get_tiny_min_len(NODE_BODY(node), invalid_node);
+          len = onig_get_tiny_min_len(NODE_BODY(node), inhibit_types, invalid_node);
           if (IS_NOT_NULL(en->te.Then))
             len = distance_add(len,
-                               onig_get_tiny_min_len(en->te.Then, invalid_node));
+                               onig_get_tiny_min_len(en->te.Then, inhibit_types, invalid_node));
           if (IS_NOT_NULL(en->te.Else))
-            elen = onig_get_tiny_min_len(en->te.Else, invalid_node);
+            elen = onig_get_tiny_min_len(en->te.Else, inhibit_types, invalid_node);
           else elen = 0;
 
           if (elen < len) len = elen;
