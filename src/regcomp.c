@@ -2293,9 +2293,11 @@ unset_addr_list_fix(UnsetAddrList* uslist, regex_t* reg)
   AbsAddrType addr;
 
   for (i = 0; i < uslist->num; i++) {
+    if (! NODE_IS_ADDR_FIXED(uslist->us[i].target))
+      return ONIGERR_PARSER_BUG;
+
     en = ENCLOSURE_(uslist->us[i].target);
-    if (! NODE_IS_ADDR_FIXED(en)) return ONIGERR_PARSER_BUG;
-    addr = en->m.called_addr;
+    addr   = en->m.called_addr;
     offset = uslist->us[i].offset;
 
     BBUF_WRITE(reg, offset, &addr, SIZE_ABSADDR);
