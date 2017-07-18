@@ -565,8 +565,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 
 #define STACK_ENSURE(n)	do {\
   if (stk_end - stk < (n)) {\
-    int r = stack_double(is_alloca, &alloc_base, &stk_base, &stk_end, &stk,\
-                         msa);\
+    int r = stack_double(is_alloca, &alloc_base, &stk_base, &stk_end, &stk, msa);\
     if (r != 0) { STACK_SAVE; return r; } \
     is_alloca = 0;\
     UPDATE_FOR_STACK_REALLOC;\
@@ -776,7 +775,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 } while(0)
 
 #define STACK_PUSH_SAVE_VAL(sid, stype, sval) do {\
-  STACK_ENSURE(1);\
+  /* STACK_ENSURE(1) */;\
   stk->type = STK_SAVE_VAL;\
   stk->u.val.id   = (sid);\
   stk->u.val.type = (stype);\
@@ -796,7 +795,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while (0)
 
-#define STACK_GET_SAVE_VAL_TYPE_LAST_ID(stype, sid, sval) do {\
+#define STACK_GET_SAVE_VAL_TYPE_LAST_ID(stype, sid, sval) do { \
   int level = 0;\
   StackType *k = stk;\
   while (k > stk_base) {\
@@ -813,6 +812,18 @@ stack_double(int is_alloca, char** arg_alloc_base,
       level--;\
     else if (k->type == STK_RETURN)\
       level++;\
+  }\
+} while (0)
+#define STACK_GET_SAVE_VAL_TYPE_LAST_ID_FROM(stype, sid, sval, stk_from) do {\
+  StackType *k = (stk_from);\
+  while (k > stk_base) {\
+    STACK_BASE_CHECK(k, "STACK_GET_SAVE_VAL_TYPE_LAST_ID_FROM"); \
+    if (k->type == STK_SAVE_VAL && k->u.val.type == (stype)\
+        && k->u.val.id == (sid)) {\
+      (sval) = k->u.val.v;\
+      break;\
+    }\
+    k--;\
   }\
 } while (0)
 
@@ -1434,6 +1445,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   StackIndex si;
   StackIndex *repeat_stk;
   StackIndex *mem_start_stk, *mem_end_stk;
+  StackIndex right_range_index;
   UChar* keep;
 #ifdef USE_COMBINATION_EXPLOSION_CHECK
   int scv;
@@ -1469,6 +1481,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #else
   right_range = (UChar* )end;
 #endif
+  right_range_index = INVALID_STACK_INDEX;
 
   while (1) {
 #ifdef ONIG_DEBUG_MATCH
@@ -2905,11 +2918,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         SaveType type;
         GET_SAVE_TYPE_INC(type, p);
         GET_MEMNUM_INC(mem, p); /* mem: save id */
+        STACK_ENSURE(1); /* for GET_STACK_INDEX() */
         switch ((enum SaveType )type) {
         case SAVE_KEEP:
           STACK_PUSH_SAVE_VAL(mem, SAVE_KEEP, s);
           break;
         case SAVE_RIGHT_RANGE:
+          right_range_index = GET_STACK_INDEX(stk);
           STACK_PUSH_SAVE_VAL(mem, SAVE_RIGHT_RANGE, right_range);
           break;
         }
@@ -2928,9 +2943,18 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           STACK_GET_SAVE_VAL_TYPE_LAST(SAVE_KEEP, keep);
           break;
         case UPDATE_VAR_RIGHT_RANGE_FROM_STACK_LAST:
-          //fprintf(stderr, "curr   right_range: %ld\n", (right_range - sstart));
-          STACK_GET_SAVE_VAL_TYPE_LAST_ID(SAVE_RIGHT_RANGE, mem, right_range);
-          //fprintf(stderr, "update right_range: %ld\n", (right_range - sstart));
+          {
+            StackType* from;
+            if (right_range_index != INVALID_STACK_INDEX &&
+                right_range_index < GET_STACK_INDEX(stk))
+              from = STACK_AT(right_range_index);
+            else
+              from = stk;
+
+            STACK_GET_SAVE_VAL_TYPE_LAST_ID_FROM(SAVE_RIGHT_RANGE, mem,
+                                                 right_range, from);
+            //fprintf(stderr, "update right_range: %ld\n", (right_range - sstart));
+          }
           break;
         case UPDATE_VAR_RIGHT_RANGE_SPREV:
           right_range = sprev;
