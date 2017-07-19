@@ -185,8 +185,6 @@ enum GimmickType {
 #define NODE_ANCHOR_BODY(node)    ((node)->body)
 
 
-#define CALLNODE_REFNUM_UNDEF  -1
-
 typedef struct {
   NodeType node_type;
   int status;
