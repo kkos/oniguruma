@@ -648,6 +648,8 @@ extern int main(int argc, char* argv[])
   x2("(?~|\\O{2,10}|ab)", "ccc\ndab", 0, 6);
   x2("(?~|\\O{1,10}|ab)", "ab", 0, 1);
   n("(?~|\\O{2,10}|ab)", "ab");
+  x2("(?~|\\O{1,10}|ab)|abc", "abc", 0, 1);
+  x2("(?~|\\O{5,10}|ab)|abc", "abc", 0, 3);
   x2("(?~|\\O{1,10}|ab)", "cccccccccccab", 0, 10);
   // n("(?~|aaa|)", "aaa");  invalid absent group generator pattern
   n("(?~|a*|)", "aaaaaa");
