@@ -1762,7 +1762,7 @@ make_fail_with_after(Node** rnode, ScanEnv* env, int num, Node* ns[])
 static int
 make_absent_group_repeated_body_tree(Node** node,
                                      Node* absent_body, Node* step_body,
-                                     int repeat_lower, ScanEnv* env, int* rid)
+                                     ScanEnv* env, int* rid)
 {
   int i;
   int r;
@@ -1785,15 +1785,6 @@ make_absent_group_repeated_body_tree(Node** node,
   r = node_new_fail(&ns1[2], env);
   if (r != 0) goto err;
 
-  if (repeat_lower != 0) {
-    r = node_new_update_var_gimmick(&ns1[4],
-                                    UPDATE_VAR_RIGHT_RANGE_FROM_STACK_LAST, id, env);
-    if (r != 0) goto err;
-
-    r = node_new_fail(&ns1[5], env);
-    if (r != 0) goto err;
-  }
-
   ns2[0] = make_list(3, ns1 + 0);
   if (IS_NULL(ns2[0])) goto err;
   for (i = 0; i < 3; i++) ns1[i] = NULL_NODE;
@@ -1801,13 +1792,7 @@ make_absent_group_repeated_body_tree(Node** node,
   ns2[1] = ns1[3];
   ns1[3] = NULL_NODE;
 
-  if (repeat_lower != 0) {
-    ns2[2] = make_list(2, ns1 + 4);
-    if (IS_NULL(ns2[2])) goto err;
-    for (i = 4; i < 6; i++) ns1[i] = NULL_NODE;
-  }
-
-  top = make_alt(repeat_lower != 0 ? 3 : 2, ns2 + 0);
+  top = make_alt(2, ns2 + 0);
   if (IS_NULL(top)) goto err;
 
   *node = top;
@@ -1817,6 +1802,48 @@ make_absent_group_repeated_body_tree(Node** node,
   for (i = 0; i < 6; i++) onig_node_free(ns1[i]);
   for (i = 0; i < 3; i++) onig_node_free(ns2[i]);
   return ONIGERR_MEMORY;
+}
+
+static int
+make_absent_group_restore_fail_for_lower_no_zero(Node** node, Node* repeat_line,
+                                                 int id, ScanEnv* env)
+{
+  int r;
+  Node* restore;
+  Node* alt;
+  Node* ns[2];
+
+  restore = NULL_NODE;
+  ns[0] = ns[1] = NULL_NODE;
+  r = node_new_update_var_gimmick(&ns[0],
+                                  UPDATE_VAR_RIGHT_RANGE_FROM_STACK_LAST, id, env);
+  if (r != 0) goto err;
+
+  r = node_new_fail(&ns[1], env);
+  if (r != 0) goto err;
+
+  restore = make_list(2, ns);
+  if (IS_NULL(restore)) {
+    r = ONIGERR_MEMORY;
+    goto err;
+  }
+
+  ns[0] = repeat_line;
+  ns[1] = restore;
+  alt = make_alt(2, ns);
+  if (IS_NULL(alt)) {
+    r = ONIGERR_MEMORY;
+    goto err1;
+  }
+  *node = alt;
+  return ONIG_NORMAL;
+
+ err:
+  onig_node_free(ns[0]);
+  onig_node_free(ns[1]);
+ err1:
+  onig_node_free(restore);
+  return r;
 }
 
 static int
@@ -1910,7 +1937,7 @@ make_absent_group_tree(Node** node, Node* absent_body,
   }
 
   r = make_absent_group_repeated_body_tree(&repeat_body, absent_body,
-                                      step_body, lower, env, &id);
+                                      step_body, env, &id);
   if (r != 0) goto err1;
 
   NODE_BODY(repeat) = repeat_body;
@@ -1925,17 +1952,38 @@ make_absent_group_tree(Node** node, Node* absent_body,
   ns[0] = save;
   ns[1] = IS_NULL(stop_bt) ? repeat : stop_bt;
 
-  if (lower == 0) {
-    r = node_new_update_var_gimmick(&update, UPDATE_VAR_RIGHT_RANGE_FROM_STACK_LAST,
-                                    id, env);
-    if (r != 0) goto err2;
-    ns[2] = update;
-  }
+  r = node_new_update_var_gimmick(&update, UPDATE_VAR_RIGHT_RANGE_FROM_STACK_LAST,
+                                  id, env);
+  if (r != 0) goto err2;
+  ns[2] = update;
 
-  top = make_list(lower == 0 ? 3 : 2, ns);
-  if (IS_NULL(top)) {
-    r = ONIGERR_MEMORY;
-    goto err2;
+  if (lower == 0) {
+    top = make_list(3, ns);
+    if (IS_NULL(top)) {
+      r = ONIGERR_MEMORY;
+      goto err2;
+    }
+  }
+  else {
+    Node* alt;
+    Node* repeat_line;
+    repeat_line = make_list(2, ns + 1);
+    if (IS_NULL(repeat_line)) {
+      r = ONIGERR_MEMORY;
+      goto err2;
+    }
+
+    r = make_absent_group_restore_fail_for_lower_no_zero(&alt, repeat_line, id, env);
+    if (r != 0) goto err2;
+
+    ns[1] = alt;
+    top = make_list(2, ns);
+    if (IS_NULL(top)) {
+      NODE_CAR(alt) = NULL_NODE;
+      onig_node_free(alt);
+      r = ONIGERR_MEMORY;
+      goto err2;
+    }
   }
 
   *node = top;
