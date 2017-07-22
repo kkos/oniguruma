@@ -2921,11 +2921,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         STACK_ENSURE(1); /* for GET_STACK_INDEX() */
         switch ((enum SaveType )type) {
         case SAVE_KEEP:
-          STACK_PUSH_SAVE_VAL(mem, SAVE_KEEP, s);
-          break;
         case SAVE_S:
-          STACK_PUSH_SAVE_VAL(mem, SAVE_S, s);
+          STACK_PUSH_SAVE_VAL(mem, type, s);
           break;
+
         case SAVE_RIGHT_RANGE:
           right_range_index = GET_STACK_INDEX(stk);
           STACK_PUSH_SAVE_VAL(mem, SAVE_RIGHT_RANGE, right_range);
