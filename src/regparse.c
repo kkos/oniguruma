@@ -1814,7 +1814,7 @@ make_absent_group_restore_fail_for_lower_no_zero(Node** node, Node* repeat_line,
   restore = NULL_NODE;
   ns[0] = ns[1] = NULL_NODE;
   r = node_new_update_var_gimmick(&ns[0],
-                                  UPDATE_VAR_RIGHT_RANGE_FROM_STACK_LAST, id, env);
+                                  UPDATE_VAR_RIGHT_RANGE_FROM_STACK, id, env);
   if (r != 0) goto err;
 
   r = node_new_fail(&ns[1], env);
@@ -1950,7 +1950,7 @@ make_absent_group_tree(Node** node, Node* absent_body,
   ns[0] = save;
   ns[1] = IS_NULL(stop_bt) ? repeat : stop_bt;
 
-  r = node_new_update_var_gimmick(&update, UPDATE_VAR_RIGHT_RANGE_FROM_STACK_LAST,
+  r = node_new_update_var_gimmick(&update, UPDATE_VAR_RIGHT_RANGE_FROM_STACK,
                                   id, env);
   if (r != 0) goto err2;
   ns[2] = update;
