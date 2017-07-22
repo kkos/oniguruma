@@ -2945,6 +2945,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         case UPDATE_VAR_KEEP_FROM_STACK_LAST:
           STACK_GET_SAVE_VAL_TYPE_LAST(SAVE_KEEP, keep);
           break;
+        case UPDATE_VAR_S_FROM_STACK_LAST:
+          STACK_GET_SAVE_VAL_TYPE_LAST(SAVE_S, s);
+          break;
         case UPDATE_VAR_RIGHT_RANGE_FROM_STACK_LAST:
           {
             StackType* from;
