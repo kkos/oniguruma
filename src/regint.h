@@ -557,8 +557,9 @@ enum OpCode {
 };
 
 enum SaveType {
-  SAVE_KEEP = 0,
-  SAVE_RIGHT_RANGE = 1,
+  SAVE_KEEP = 0, /* SAVE S */
+  SAVE_S = 1,
+  SAVE_RIGHT_RANGE = 2,
 };
 
 enum UpdateVarType {

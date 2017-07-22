@@ -2923,6 +2923,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         case SAVE_KEEP:
           STACK_PUSH_SAVE_VAL(mem, SAVE_KEEP, s);
           break;
+        case SAVE_S:
+          STACK_PUSH_SAVE_VAL(mem, SAVE_S, s);
+          break;
         case SAVE_RIGHT_RANGE:
           right_range_index = GET_STACK_INDEX(stk);
           STACK_PUSH_SAVE_VAL(mem, SAVE_RIGHT_RANGE, right_range);
