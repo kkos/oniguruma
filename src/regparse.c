@@ -1636,6 +1636,7 @@ node_new_keep(Node** node, ScanEnv* env)
   return ONIG_NORMAL;
 }
 
+#if 0
 static int
 node_is_include_enclosure_memory(Node* node)
 {
@@ -1999,6 +2000,198 @@ make_absent_group_tree(Node** node, Node* absent_body,
   onig_node_free(update);
 
   return r;
+}
+#endif
+
+static int
+make_absent_engine(Node** node, int pre_save_right_id, Node* absent,
+                   Node* step_one, int lower, int upper, int possessive,
+                   ScanEnv* env)
+{
+  int r;
+  int i;
+  int id;
+  Node* x;
+  Node* ns[4];
+
+  for (i = 0; i < 4; i++) ns[i] = NULL_NODE;
+
+  ns[1] = absent;
+  ns[3] = step_one; // for err
+  r = node_new_save_gimmick(&ns[0], SAVE_S, env);
+  if (r != 0) goto err;
+
+  id = GIMMICK_(ns[0])->id;
+  r = node_new_update_var_gimmick(&ns[2], UPDATE_VAR_RIGHT_RANGE_FROM_S_STACK,
+                                  id, env);
+  if (r != 0) goto err;
+
+  r = node_new_fail(&ns[3], env);
+  if (r != 0) goto err;
+
+  x = make_list(4, ns);
+  if (IS_NULL(x)) goto err;
+
+  ns[0] = x;
+  ns[1] = step_one;
+  ns[2] = ns[3] = NULL_NODE;
+
+  x = make_alt(2, ns);
+  if (IS_NULL(x)) goto err;
+
+  ns[0] = x;
+
+  x = node_new_quantifier(lower, upper, 0);
+  if (IS_NULL(x)) goto err;
+
+  NODE_BODY(x) = ns[0];
+  ns[0] = x;
+
+  if (possessive != 0) {
+    x = node_new_enclosure(ENCLOSURE_STOP_BACKTRACK);
+    if (IS_NULL(x)) goto err;
+
+    NODE_BODY(x) = ns[0];
+    ns[0] = x;
+  }
+
+  r = node_new_update_var_gimmick(&ns[1], UPDATE_VAR_RIGHT_RANGE_FROM_STACK,
+                                  pre_save_right_id, env);
+  if (r != 0) goto err;
+
+  r = node_new_fail(&ns[2], env);
+  if (r != 0) goto err;
+
+  x = make_list(2, ns + 1);
+  if (IS_NULL(x)) goto err;
+
+  ns[1] = x; ns[2] = NULL_NODE;
+
+  x = make_alt(2, ns);
+  if (IS_NULL(x)) goto err;
+
+  *node = x;
+  return ONIG_NORMAL;
+
+ err:
+  for (i = 0; i < 4; i++) onig_node_free(ns[i]);
+  return r;
+}
+
+static int
+make_absent_tail(Node** node1, Node** node2, int pre_save_right_id,
+                 ScanEnv* env)
+{
+  int r;
+  int id;
+  Node* save;
+  Node* x;
+  Node* ns[2];
+
+  *node1 = *node2 = NULL_NODE;
+  save = ns[0] = ns[1] = NULL_NODE;
+
+  r = node_new_save_gimmick(&save, SAVE_RIGHT_RANGE, env);
+  if (r != 0) goto err;
+
+  id = GIMMICK_(save)->id;
+  r = node_new_update_var_gimmick(&ns[0], UPDATE_VAR_RIGHT_RANGE_FROM_STACK,
+                                  id, env);
+  if (r != 0) goto err;
+
+  r = node_new_fail(&ns[1], env);
+  if (r != 0) goto err;
+
+  x = make_list(2, ns);
+  if (IS_NULL(x)) goto err;
+
+  ns[0] = NULL_NODE; ns[1] = x;
+
+  r = node_new_update_var_gimmick(&ns[0], UPDATE_VAR_RIGHT_RANGE_FROM_STACK,
+                                  pre_save_right_id, env);
+  if (r != 0) goto err;
+
+  x = make_alt(2, ns);
+  if (IS_NULL(x)) goto err;
+
+  *node1 = save;
+  *node2 = x;
+  return ONIG_NORMAL;
+
+ err:
+  onig_node_free(save);
+  onig_node_free(ns[0]);
+  onig_node_free(ns[1]);
+  return r;
+}
+
+static int
+make_absent_tree(Node** node, Node* absent, Node* expr, int is_range_cutter,
+                 ScanEnv* env)
+{
+  int r;
+  int i;
+  int id1, id2;
+  int possessive;
+  Node* x;
+  Node* ns[7];
+
+  for (i = 0; i < 7; i++) ns[i] = NULL_NODE;
+  ns[4] = expr; ns[5] = absent;
+
+  if (expr == NULL_NODE && is_range_cutter == 0) {
+    /* default expr \O* */
+    ns[4] = node_new_quantifier(0, REPEAT_INFINITE, 0);
+    if (IS_NULL(ns[4])) goto err;
+
+    r = node_new_true_anychar(&x, env);
+    if (r != 0) goto err;
+
+    NODE_BODY(ns[4]) = x;
+  }
+
+  r = node_new_save_gimmick(&ns[0], SAVE_RIGHT_RANGE, env);
+  if (r != 0) goto err;
+
+  id1 = GIMMICK_(ns[0])->id;
+
+  r = node_new_save_gimmick(&ns[1], SAVE_S, env);
+  if (r != 0) goto err;
+
+  id2 = GIMMICK_(ns[1])->id;
+
+  r = node_new_true_anychar(&ns[3], env);
+  if (r != 0) goto err;
+
+  possessive = 1;
+  r = make_absent_engine(&ns[2], id1, absent, ns[3], 0, REPEAT_INFINITE,
+                         possessive, env);
+  if (r != 0) goto err;
+
+  ns[3] = NULL_NODE;
+  ns[5] = NULL_NODE;
+
+  r = node_new_update_var_gimmick(&ns[3], UPDATE_VAR_S_FROM_STACK, id2, env);
+  if (r != 0) goto err;
+
+  if (is_range_cutter != 0) {
+    x = make_list(4, ns);
+    if (IS_NULL(x)) goto err;
+  }
+  else {
+    r = make_absent_tail(&ns[5], &ns[6], id1, env);
+    if (r != 0) goto err;
+  
+    x = make_list(7, ns);
+    if (IS_NULL(x)) goto err;
+  }
+
+  *node = x;
+  return ONIG_NORMAL;
+
+ err:
+  for (i = 0; i < 7; i++) onig_node_free(ns[i]);
+  return r;  
 }
 
 extern int
@@ -5432,56 +5625,56 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 
     case '~':
       if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_TILDE_ABSENT_GROUP)) {
-        Node* absent_body;
-        Node* generator;
-        int with_generator;
+        Node* absent;
+        Node* expr;
+        int head_bar;
+	int is_range_cutter;
 
         if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
 
-        generator = NULL_NODE;
-
-#if 1
         if (PPEEK_IS('|')) { // (?~|generator|absent)
           PINC;
           if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
 
-          with_generator = 1;
+          head_bar = 1;
         }
         else
-#endif
-          with_generator = 0;
+          head_bar = 0;
 
         r = fetch_token(tok, &p, end, env);
         if (r < 0) return r;
-        r = parse_subexp(&absent_body, tok, term, &p, end, env);
+        r = parse_subexp(&absent, tok, term, &p, end, env);
         if (r < 0) {
-          onig_node_free(absent_body);
+          onig_node_free(absent);
           return r;
         }
-        if (with_generator != 0) {
-          Node* top = absent_body;
-          if (NODE_TYPE(top) != NODE_ALT || IS_NULL(NODE_CDR(top))) {
-            onig_node_free(top);
-            return ONIGERR_INVALID_ABSENT_GROUP_GENERATOR_PATTERN;
-          }
 
-          generator = NODE_CAR(top);
-          absent_body = NODE_CDR(top);
-          NODE_CAR(top) = NULL_NODE;
-          NODE_CDR(top) = NULL_NODE;
-          onig_node_free(top);
-          if (IS_NULL(NODE_CDR(absent_body))) {
-            top = absent_body;
-            absent_body = NODE_CAR(top);
-            NODE_CAR(top) = NULL_NODE;
-            onig_node_free(top);
+        expr = NULL_NODE;
+	is_range_cutter = 0;
+        if (head_bar != 0) {
+          Node* top = absent;
+          if (NODE_TYPE(top) != NODE_ALT || IS_NULL(NODE_CDR(top))) {
+	    expr = NULL_NODE;
+	    is_range_cutter = 1;
+            //return ONIGERR_INVALID_ABSENT_GROUP_GENERATOR_PATTERN;
           }
+	  else {
+	    absent = NODE_CAR(top);
+	    expr   = NODE_CDR(top);
+	    NODE_CAR(top) = NULL_NODE;
+	    NODE_CDR(top) = NULL_NODE;
+	    onig_node_free(top);
+	    if (IS_NULL(NODE_CDR(expr))) {
+	      top = expr;
+	      expr = NODE_CAR(top);
+	      NODE_CAR(top) = NULL_NODE;
+	      onig_node_free(top);
+	    }
+	  }
         }
 
-        r = make_absent_group_tree(np, absent_body, generator, env);
+        r = make_absent_tree(np, absent, expr, is_range_cutter, env);
         if (r != 0) {
-          //onig_node_free(absent_body);
-          //onig_node_free(generator);
           return r;
         }
         goto end;
