@@ -33,9 +33,10 @@ New feature of version 6.5.0
 * NEW: \R (general newline) \N (no newline)
 * NEW: \O (true anychar)
 * NEW: if-then-else syntax   (?(...)...\|...)
-* NEW: backreference validity checker  (*original)
-* NEW: absent group   (?~...)
-* NEW: absent group with custom generator  (*original)
+* NEW: Backreference validity checker  (*original)
+* NEW: Absent repeater (?~absent) == (?~|absent|\O*)
+* NEW: Absent group    (?~|absent|expr)  (* original)
+* NEW: Absent range cutter (?~|absent)     (* original)
 
 
 New feature of version 6.4.0
