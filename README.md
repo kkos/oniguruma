@@ -34,9 +34,9 @@ New feature of version 6.5.0
 * NEW: \O (true anychar)
 * NEW: if-then-else syntax   (?(...)...\|...)
 * NEW: Backreference validity checker  (*original)
-* NEW: Absent repeater (?~absent) == (?~|absent|\O*)
-* NEW: Absent group    (?~|absent|expr)  (* original)
-* NEW: Absent range cutter (?~|absent)     (* original)
+* NEW: Absent repeater (?~absent)
+* NEW: Absent group    (?~|absent|expr)  (*original)
+* NEW: Absent range cutter (?~|absent)     (*original)
 
 
 New feature of version 6.4.0
