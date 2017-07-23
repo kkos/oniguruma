@@ -775,7 +775,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 } while(0)
 
 #define STACK_PUSH_SAVE_VAL(sid, stype, sval) do {\
-  /* STACK_ENSURE(1) */;\
+  STACK_ENSURE(1);\
   stk->type = STK_SAVE_VAL;\
   stk->u.val.id   = (sid);\
   stk->u.val.type = (stype);\
@@ -1452,7 +1452,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   StackIndex si;
   StackIndex *repeat_stk;
   StackIndex *mem_start_stk, *mem_end_stk;
-  StackIndex right_range_index;
   UChar* keep;
 #ifdef USE_COMBINATION_EXPLOSION_CHECK
   int scv;
@@ -1488,7 +1487,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #else
   right_range = (UChar* )end;
 #endif
-  right_range_index = INVALID_STACK_INDEX;
 
   while (1) {
 #ifdef ONIG_DEBUG_MATCH
@@ -2925,7 +2923,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         SaveType type;
         GET_SAVE_TYPE_INC(type, p);
         GET_MEMNUM_INC(mem, p); /* mem: save id */
-        STACK_ENSURE(1); /* for GET_STACK_INDEX() */
         switch ((enum SaveType )type) {
         case SAVE_KEEP:
         case SAVE_S:
@@ -2933,7 +2930,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           break;
 
         case SAVE_RIGHT_RANGE:
-          right_range_index = GET_STACK_INDEX(stk);
           STACK_PUSH_SAVE_VAL(mem, SAVE_RIGHT_RANGE, right_range);
           break;
         }
@@ -2958,18 +2954,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           STACK_GET_SAVE_VAL_TYPE_LAST_ID(SAVE_S, mem, right_range);
           break;
         case UPDATE_VAR_RIGHT_RANGE_FROM_STACK:
-          {
-            StackType* from;
-            if (right_range_index != INVALID_STACK_INDEX &&
-                right_range_index < GET_STACK_INDEX(stk))
-              from = STACK_AT(right_range_index);
-            else
-              from = stk;
-
-            STACK_GET_SAVE_VAL_TYPE_LAST_ID_FROM(SAVE_RIGHT_RANGE, mem,
-                                                 right_range, from);
-            //fprintf(stderr, "update right_range: %ld\n", (right_range - sstart));
-          }
+	  STACK_GET_SAVE_VAL_TYPE_LAST_ID(SAVE_RIGHT_RANGE, mem, right_range);
           break;
         case UPDATE_VAR_RIGHT_RANGE_SPREV:
           right_range = sprev;
