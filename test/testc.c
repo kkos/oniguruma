@@ -623,44 +623,48 @@ extern int main(int argc, char* argv[])
   x2("(a\\Kb|ac\\Kd)", "acd", 2, 3);
   x2("(a\\Kb|\\Kac\\K)*", "acababacab", 9, 10);
 
-  n("(?~)", "");
-  n("(?~)", "A");
-  n("aaaaa(?~)", "aaaaaaaaaa");
-  n("(?~(?:|aaa))", "aaa");
-  n("(?~aaa|)", "aaa");
-  x2("a(?~(?~))z", "abcdefghijklmnopqrstuvwxyz", 0, 26);
+  x2("(?~)", "", 0, 0);
+  x2("(?~)", "A", 0, 0);
+  x2("aaaaa(?~)", "aaaaaaaaaa", 0, 5);
+  x2("(?~(?:|aaa))", "aaa", 0, 0);
+  x2("(?~aaa|)", "aaa", 0, 0);
+  x2("a(?~(?~)).", "abcdefghijklmnopqrstuvwxyz", 0, 26); // !!!
   x2("/\\*(?~\\*/)\\*/", "/* */ */", 0, 5);
   x2("(?~\\w+)zzzzz", "zzzzz", 0, 5);
-  n("(?~\\w*)zzzzz", "zzzzz");
-  x2("(?~A.C|B)", "ABC", 0, 1);
+  x2("(?~\\w*)zzzzz", "zzzzz", 0, 5);
+  x2("(?~A.C|B)", "ABC", 0, 0);
   x2("(?~XYZ|ABC)a", "ABCa", 1, 4);
   x2("(?~XYZ|ABC)a", "aABCa", 0, 1);
   x2("<[^>]*>(?~[<>])</[^>]*>", "<a>vvv</a>   <b>  </b>", 0, 10);
-  x2("(?~ab)", "ccc\ndab", 0, 6);
-  x2("(?m:(?~ab))", "ccc\ndab", 0, 6);
-  x2("(?-m:(?~ab))", "ccc\ndab", 0, 6);
+  x2("(?~ab)", "ccc\ndab", 0, 5);
+  x2("(?m:(?~ab))", "ccc\ndab", 0, 5);
+  x2("(?-m:(?~ab))", "ccc\ndab", 0, 5);
 
-  // absent group with generator
-  x2("(?~|\\d*|78)", "123456789", 0, 7);
-  x2("(?~|(?:abc|de|f){0,100}|def)", "abcdedeabcfdefabc", 0, 13);
-  x2("(?~|.*|ab)", "ccc\nddd", 0, 3);
-  x2("(?~|\\O*|ab)", "ccc\ndab", 0, 6);
-  x2("(?~|\\O{2,10}|ab)", "ccc\ndab", 0, 6);
-  x2("(?~|\\O{1,10}|ab)", "ab", 0, 1);
-  n("(?~|\\O{2,10}|ab)", "ab");
-  x2("(?~|\\O{1,10}|ab)|abc", "abc", 0, 1);
-  x2("(?~|\\O{5,10}|ab)|abc", "abc", 0, 3);
-  x2("(?~|\\O{1,10}|ab)", "cccccccccccab", 0, 10);
-  // n("(?~|aaa|)", "aaa");  invalid absent group generator pattern
-  n("(?~|a*|)", "aaaaaa");
-  //n("(?~|a*?|)", "aaaaaa");  invalid absent group generator pattern
-  //n("(a)(?~|\\1*|)", "aaaaaa");  invalid absent group generator pattern
-  n("(a)(?~|(?:a\\1)*|)", "aaaaaa");
-  x2("(b|c)(?~|(?:a\\1)*|abac)", "abababacabab", 1, 6);
-  n("(?~|a*+|c)a", "aaaaa");   // possessive generator
-  x2("(?~|a*+|aaaaaa)", "aaaaa", 0, 5);
-  x2("(?~|a*+|aaaaaa)", "aaaaaa", 0, 5);
-  x2("(?~|a*+|aaaaaa)b", "aaaaaab", 1, 7);
+  // absent with expr
+  x2("(?~|78|\\d*)", "123456789", 0, 6);
+  x2("(?~|def|(?:abc|de|f){0,100})", "abcdedeabcfdefabc", 0, 11);
+  x2("(?~|ab|.*)", "ccc\nddd", 0, 3);
+  x2("(?~|ab|\\O*)", "ccc\ndab", 0, 5);
+  x2("(?~|ab|\\O{2,10})", "ccc\ndab", 0, 5);
+  x2("(?~|ab|\\O{1,10})", "ab", 1, 2);
+  n("(?~|ab|\\O{2,10})", "ab");
+  x2("(?~|abc|\\O{1,10})", "abc", 1, 3);
+  x2("(?~|ab|\\O{5,10})|abc", "abc", 0, 3);
+  x2("(?~|ab|\\O{1,10})", "cccccccccccab", 0, 10);
+  x2("(?~|aaa|)", "aaa", 0, 0);
+  x2("(?~||a*)", "aaaaaa", 0, 0);
+  x2("(?~||a*?)", "aaaaaa", 0, 0);
+  x2("(a)(?~|b|\\1)", "aaaaaa", 0, 2);
+  x2("(a)(?~|bb|(?:a\\1)*)", "aaaaaa", 0, 5);
+  x2("(b|c)(?~|abac|(?:a\\1)*)", "abababacabab", 1, 4);
+  n("(?~|c|a*+)a", "aaaaa");
+  x2("(?~|aaaaa|a*+)", "aaaaa", 0, 0);
+  x2("(?~|aaaaaa|a*+)b", "aaaaaab", 1, 7);
+
+  // absent range cutter
+  x2("(?~|abc)a*", "aaaaaabc", 0, 5);
+  x2("(?~|abc)a*z|aaaaaabc", "aaaaaabc", 0, 8);
+  x2("(?~|aaaaaa)a*", "aaaaaa", 0, 0);
 
   /*
     < ifndef IGNORE_EUC_JP >
