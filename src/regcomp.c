@@ -4015,10 +4015,8 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
   switch (NODE_TYPE(node)) {
   case NODE_LIST:
     {
-      Node* prev = NULL_NODE;
       do {
         r = setup_comb_exp_check(NODE_CAR(node), r, env);
-        prev = NODE_CAR(node);
       } while (r >= 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     }
     break;
@@ -4105,8 +4103,8 @@ setup_comb_exp_check(Node* node, int state, ScanEnv* env)
       switch (en->type) {
       case ENCLOSURE_MEMORY:
         {
-          if (env->curr_max_regnum < en->regnum)
-            env->curr_max_regnum = en->regnum;
+          if (env->curr_max_regnum < en->m.regnum)
+            env->curr_max_regnum = en->m.regnum;
 
           r = setup_comb_exp_check(NODE_ENCLOSURE_BODY(en), state, env);
         }
