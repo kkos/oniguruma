@@ -16,7 +16,7 @@ AC_SUBST(STATISTICS)
 
 dnl check for COMBINATION_EXPLOSION
 AC_ARG_ENABLE(combination-explosion-check,
-	[  --enable-combination-explosion-check   enable combination explosion check],
+	[  --enable-combination-explosion-check   deprecated],
 	[comb_expl_check=$enableval])
 if test "${comb_expl_check}" = yes; then
   AC_DEFINE(USE_COMBINATION_EXPLOSION_CHECK,1,[Define if combination explosion check])
