@@ -2136,6 +2136,7 @@ make_absent_tree(Node** node, Node* absent, Node* expr, int is_range_cutter,
   Node* x;
   Node* ns[7];
 
+  r = ONIGERR_MEMORY;
   for (i = 0; i < 7; i++) ns[i] = NULL_NODE;
   ns[4] = expr; ns[5] = absent;
 
