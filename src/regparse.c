@@ -5629,7 +5629,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
         Node* absent;
         Node* expr;
         int head_bar;
-	int is_range_cutter;
+        int is_range_cutter;
 
         if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
 
@@ -5651,27 +5651,27 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
         }
 
         expr = NULL_NODE;
-	is_range_cutter = 0;
+        is_range_cutter = 0;
         if (head_bar != 0) {
           Node* top = absent;
           if (NODE_TYPE(top) != NODE_ALT || IS_NULL(NODE_CDR(top))) {
-	    expr = NULL_NODE;
-	    is_range_cutter = 1;
+            expr = NULL_NODE;
+            is_range_cutter = 1;
             //return ONIGERR_INVALID_ABSENT_GROUP_GENERATOR_PATTERN;
           }
-	  else {
-	    absent = NODE_CAR(top);
-	    expr   = NODE_CDR(top);
-	    NODE_CAR(top) = NULL_NODE;
-	    NODE_CDR(top) = NULL_NODE;
-	    onig_node_free(top);
-	    if (IS_NULL(NODE_CDR(expr))) {
-	      top = expr;
-	      expr = NODE_CAR(top);
-	      NODE_CAR(top) = NULL_NODE;
-	      onig_node_free(top);
-	    }
-	  }
+          else {
+            absent = NODE_CAR(top);
+            expr   = NODE_CDR(top);
+            NODE_CAR(top) = NULL_NODE;
+            NODE_CDR(top) = NULL_NODE;
+            onig_node_free(top);
+            if (IS_NULL(NODE_CDR(expr))) {
+              top = expr;
+              expr = NODE_CAR(top);
+              NODE_CAR(top) = NULL_NODE;
+              onig_node_free(top);
+            }
+          }
         }
 
         r = make_absent_tree(np, absent, expr, is_range_cutter, env);
