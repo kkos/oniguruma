@@ -375,6 +375,7 @@ typedef struct _StackType {
       int id;
       enum SaveType type;
       UChar* v;
+      UChar* v2;
     } val;
   } u;
 } StackType;
@@ -783,6 +784,16 @@ stack_double(int is_alloca, char** arg_alloc_base,
   STACK_INC;\
 } while(0)
 
+#define STACK_PUSH_SAVE_VAL_WITH_SPREV(sid, stype, sval) do {\
+  STACK_ENSURE(1);\
+  stk->type = STK_SAVE_VAL;\
+  stk->u.val.id   = (sid);\
+  stk->u.val.type = (stype);\
+  stk->u.val.v    = (UChar* )(sval);\
+  stk->u.val.v2   = sprev;\
+  STACK_INC;\
+} while(0)
+
 #define STACK_GET_SAVE_VAL_TYPE_LAST(stype, sval) do {\
   StackType *k = stk;\
   while (k > stk_base) {\
@@ -814,7 +825,29 @@ stack_double(int is_alloca, char** arg_alloc_base,
       level++;\
   }\
 } while (0)
-#define STACK_GET_SAVE_VAL_TYPE_LAST_ID_FROM(stype, sid, sval, stk_from) do {\
+
+#define STACK_GET_SAVE_VAL_TYPE_LAST_ID_WITH_SPREV(stype, sid, sval) do { \
+  int level = 0;\
+  StackType *k = stk;\
+  while (k > stk_base) {\
+    k--;\
+    STACK_BASE_CHECK(k, "STACK_GET_SAVE_VAL_TYPE_LAST_ID"); \
+    if (k->type == STK_SAVE_VAL && k->u.val.type == (stype)\
+        && k->u.val.id == (sid)) {\
+      if (level == 0) {\
+        (sval) = k->u.val.v;\
+        sprev  = k->u.val.v2;\
+        break;\
+      }\
+    }\
+    else if (k->type == STK_CALL_FRAME)\
+      level--;\
+    else if (k->type == STK_RETURN)\
+      level++;\
+  }\
+} while (0)
+
+#define STACK_GET_SAVE_VAL_TYPE_LAST_ID_FROM(stype, sid, sval, stk_from) do { \
   int level = 0;\
   StackType *k = (stk_from);\
   while (k > stk_base) {\
@@ -2925,8 +2958,11 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         GET_MEMNUM_INC(mem, p); /* mem: save id */
         switch ((enum SaveType )type) {
         case SAVE_KEEP:
-        case SAVE_S:
           STACK_PUSH_SAVE_VAL(mem, type, s);
+          break;
+
+        case SAVE_S:
+          STACK_PUSH_SAVE_VAL_WITH_SPREV(mem, type, s);
           break;
 
         case SAVE_RIGHT_RANGE:
@@ -2948,7 +2984,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           STACK_GET_SAVE_VAL_TYPE_LAST(SAVE_KEEP, keep);
           break;
         case UPDATE_VAR_S_FROM_STACK:
-          STACK_GET_SAVE_VAL_TYPE_LAST_ID(SAVE_S, mem, s);
+          STACK_GET_SAVE_VAL_TYPE_LAST_ID_WITH_SPREV(SAVE_S, mem, s);
           break;
         case UPDATE_VAR_RIGHT_RANGE_FROM_S_STACK:
           STACK_GET_SAVE_VAL_TYPE_LAST_ID(SAVE_S, mem, right_range);
