@@ -2070,6 +2070,7 @@ make_absent_engine(Node** node, int pre_save_right_id, Node* absent,
   x = make_alt(2, ns);
   if (IS_NULL(x)) goto err;
 
+  NODE_STATUS_ADD(x, NST_SUPER);
   *node = x;
   return ONIG_NORMAL;
 
