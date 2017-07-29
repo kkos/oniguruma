@@ -6796,6 +6796,7 @@ OnigOpInfoType OnigOpInfo[] = {
   { OP_FAIL,                "fail",                 ARG_NON },
   { OP_JUMP,                "jump",                 ARG_RELADDR },
   { OP_PUSH,                "push",                 ARG_RELADDR },
+  { OP_PUSH_SUPER,          "push_SUPER",           ARG_RELADDR },
   { OP_POP,                 "pop",                  ARG_NON },
   { OP_PUSH_OR_JUMP_EXACT1, "push-or-jump-e1",      ARG_SPECIAL },
   { OP_PUSH_IF_PEEK_NEXT,   "push-if-peek-next",    ARG_SPECIAL },

@@ -516,6 +516,7 @@ enum OpCode {
   OP_FAIL,               /* pop stack and move */
   OP_JUMP,
   OP_PUSH,
+  OP_PUSH_SUPER,
   OP_POP,
   OP_PUSH_OR_JUMP_EXACT1,  /* if match exact then push, else jump. */
   OP_PUSH_IF_PEEK_NEXT,    /* if match exact then push, else none. */
@@ -617,6 +618,7 @@ typedef int UpdateVarType;
 #define SIZE_OP_ANYCHAR_STAR_PEEK_NEXT (SIZE_OPCODE + 1)
 #define SIZE_OP_JUMP                   (SIZE_OPCODE + SIZE_RELADDR)
 #define SIZE_OP_PUSH                   (SIZE_OPCODE + SIZE_RELADDR)
+#define SIZE_OP_PUSH_SUPER             (SIZE_OPCODE + SIZE_RELADDR)
 #define SIZE_OP_POP                     SIZE_OPCODE
 #define SIZE_OP_PUSH_OR_JUMP_EXACT1    (SIZE_OPCODE + SIZE_RELADDR + 1)
 #define SIZE_OP_PUSH_IF_PEEK_NEXT      (SIZE_OPCODE + SIZE_RELADDR + 1)

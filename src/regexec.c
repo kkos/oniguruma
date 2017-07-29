@@ -662,7 +662,8 @@ stack_double(int is_alloca, char** arg_alloc_base,
 } while(0)
 #endif /* USE_COMBINATION_EXPLOSION_CHECK */
 
-#define STACK_PUSH_ALT(pat,s,sprev)     STACK_PUSH(STK_ALT,pat,s,sprev)
+#define STACK_PUSH_ALT(pat,s,sprev)       STACK_PUSH(STK_ALT,pat,s,sprev)
+#define STACK_PUSH_SUPER_ALT(pat,s,sprev) STACK_PUSH(STK_SUPER_ALT,pat,s,sprev)
 #define STACK_PUSH_POS(s,sprev)         STACK_PUSH(STK_POS,NULL_UCHARP,s,sprev)
 #define STACK_PUSH_ALT_PREC_READ_NOT(pat,s,sprev) \
   STACK_PUSH(STK_ALT_PREC_READ_NOT,pat,s,sprev)
@@ -2692,6 +2693,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     case OP_PUSH:  MOP_IN(OP_PUSH);
       GET_RELADDR_INC(addr, p);
       STACK_PUSH_ALT(p + addr, s, sprev);
+      MOP_OUT;
+      continue;
+      break;
+
+    case OP_PUSH_SUPER:  MOP_IN(OP_PUSH_SUPER);
+      GET_RELADDR_INC(addr, p);
+      STACK_PUSH_SUPER_ALT(p + addr, s, sprev);
       MOP_OUT;
       continue;
       break;
