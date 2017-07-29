@@ -1875,7 +1875,8 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
       do {
         len = compile_length_tree(NODE_CAR(node), reg);
         if (IS_NOT_NULL(NODE_CDR(node))) {
-          r = add_opcode_rel_addr(reg, OP_PUSH, len + SIZE_OP_JUMP);
+          enum OpCode push = NODE_IS_SUPER(node) ? OP_PUSH_SUPER : OP_PUSH;
+          r = add_opcode_rel_addr(reg, push, len + SIZE_OP_JUMP);
           if (r != 0) break;
         }
         r = compile_tree(NODE_CAR(node), reg, env);
