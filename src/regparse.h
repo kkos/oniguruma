@@ -153,6 +153,7 @@ enum GimmickType {
 #define NST_CHECKER               (1<<17)
 #define NST_FIXED_OPTION          (1<<18)
 #define NST_PROHIBIT_RECURSION    (1<<19)
+#define NST_SUPER                 (1<<20)
 
 
 #define NODE_STATUS(node)           (((Node* )node)->u.base.status)
@@ -177,6 +178,7 @@ enum GimmickType {
 #define NODE_IS_BACKREF(node)         ((NODE_STATUS(node) & NST_BACKREF)      != 0)
 #define NODE_IS_CHECKER(node)         ((NODE_STATUS(node) & NST_CHECKER)      != 0)
 #define NODE_IS_FIXED_OPTION(node)    ((NODE_STATUS(node) & NST_FIXED_OPTION) != 0)
+#define NODE_IS_SUPER(node)           ((NODE_STATUS(node) & NST_SUPER)        != 0)
 #define NODE_IS_PROHIBIT_RECURSION(node) \
     ((NODE_STATUS(node) & NST_PROHIBIT_RECURSION) != 0)
 #define NODE_IS_STOP_BT_SIMPLE_REPEAT(node) \
