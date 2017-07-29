@@ -666,6 +666,9 @@ extern int main(int argc, char* argv[])
   x2("(?~|abc)a*z|aaaaaabc", "aaaaaabc", 0, 8);
   x2("(?~|aaaaaa)a*", "aaaaaa", 0, 0);
 
+  x2("(?~|abc)aaaa|aaaabc", "aaaabc", 0, 6);
+  x2("(?>(?~|abc))aaaa|aaaabc", "aaaabc", 0, 6);
+
   /*
     < ifndef IGNORE_EUC_JP >
     for testcases print warnings #63
