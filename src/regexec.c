@@ -305,11 +305,14 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 /** stack **/
 #define INVALID_STACK_INDEX   -1
 
+#define STK_ALT_FLAG               0x0001
+
 /* stack type */
 /* used by normal-POP */
-#define STK_ALT                    0x0001
-#define STK_ALT_PREC_READ_NOT     (0x0002 | STK_ALT)
-#define STK_ALT_LOOK_BEHIND_NOT   (0x0004 | STK_ALT)
+#define STK_SUPER_ALT             STK_ALT_FLAG
+#define STK_ALT                   (0x0002 | STK_ALT_FLAG)
+#define STK_ALT_PREC_READ_NOT     (0x0004 | STK_ALT_FLAG)
+#define STK_ALT_LOOK_BEHIND_NOT   (0x0006 | STK_ALT_FLAG)
 /* handled by normal-POP */
 #define STK_MEM_START              0x0100
 #define STK_MEM_END                0x8200
@@ -328,8 +331,8 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_SAVE_VAL               0x0a00
 
 /* stack type check mask */
-#define STK_MASK_POP_USED          STK_ALT
-#define STK_MASK_TO_VOID_TARGET    0x10ff
+#define STK_MASK_POP_USED          STK_ALT_FLAG
+#define STK_MASK_TO_VOID_TARGET    0x10fe
 #define STK_MASK_MEM_END_OR_MARK   0x8000  /* MEM_END or MEM_END_MARK */
 
 typedef intptr_t StackIndex;
