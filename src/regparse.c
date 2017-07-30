@@ -2006,7 +2006,7 @@ make_absent_group_tree(Node** node, Node* absent_body,
 static int
 make_absent_engine(Node** node, int pre_save_right_id, Node* absent,
                    Node* step_one, int lower, int upper, int possessive,
-                   ScanEnv* env)
+                   int is_range_cutter, ScanEnv* env)
 {
   int r;
   int i;
@@ -2070,7 +2070,9 @@ make_absent_engine(Node** node, int pre_save_right_id, Node* absent,
   x = make_alt(2, ns);
   if (IS_NULL(x)) goto err;
 
-  NODE_STATUS_ADD(x, NST_SUPER);
+  if (is_range_cutter != 0)
+    NODE_STATUS_ADD(x, NST_SUPER);
+
   *node = x;
   return ONIG_NORMAL;
 
@@ -2167,7 +2169,7 @@ make_absent_tree(Node** node, Node* absent, Node* expr, int is_range_cutter,
 
   possessive = 1;
   r = make_absent_engine(&ns[2], id1, absent, ns[3], 0, REPEAT_INFINITE,
-                         possessive, env);
+                         possessive, is_range_cutter, env);
   if (r != 0) goto err;
 
   ns[3] = NULL_NODE;
