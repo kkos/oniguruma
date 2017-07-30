@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.5.0    2017/07/23
+Oniguruma Regular Expressions Version 6.5.0    2017/07/30
 
 syntax: ONIG_SYNTAX_RUBY (default)
 
@@ -249,7 +249,7 @@ syntax: ONIG_SYNTAX_RUBY (default)
                      This is a written abbreviation of (?~|absent|\O*).
                      \O* is used as a repeater.
 
-  (?~|absent|exp)    Absent group  (* original)
+  (?~|absent|exp)    Absent expression  (* original)
                      This works like "exp", but it is limited by the range
                      that does not include the string match with absent.
 
@@ -260,7 +260,7 @@ syntax: ONIG_SYNTAX_RUBY (default)
                      at the point that does not include the string match whth
                      absent.
 
-     * Nested absent repeater/group is not supported and the behavior
+     * Nested absent functions are not supported and the behavior
        is undefined.
 
 
