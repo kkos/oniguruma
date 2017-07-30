@@ -1225,6 +1225,11 @@ static int string_cmp_ic(OnigEncoding enc, int case_fold_flag,
 #define DATA_ENSURE_CHECK(n)   (s + (n) <= right_range)
 #define DATA_ENSURE(n)         if (s + (n) > right_range) goto fail
 
+#ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
+#define INIT_RIGHT_RANGE    right_range = (UChar* )in_right_range
+#else
+#define INIT_RIGHT_RANGE    right_range = (UChar* )end
+#endif
 
 #ifdef USE_CAPTURE_HISTORY
 static int
@@ -1519,11 +1524,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   STACK_PUSH_ENSURED(STK_ALT, FinishCode);  /* bottom stack */
   best_len = ONIG_MISMATCH;
   keep = s = (UChar* )sstart;
-#ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
-  right_range = (UChar* )in_right_range;
-#else
-  right_range = (UChar* )end;
-#endif
+  INIT_RIGHT_RANGE;
 
   while (1) {
 #ifdef ONIG_DEBUG_MATCH
@@ -3002,6 +3003,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           break;
         case UPDATE_VAR_RIGHT_RANGE_FROM_STACK:
 	  STACK_GET_SAVE_VAL_TYPE_LAST_ID(SAVE_RIGHT_RANGE, mem, right_range);
+          break;
+        case UPDATE_VAR_RIGHT_RANGE_INIT:
+          INIT_RIGHT_RANGE;
           break;
         case UPDATE_VAR_RIGHT_RANGE_SPREV:
           right_range = sprev;
