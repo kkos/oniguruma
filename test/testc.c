@@ -665,9 +665,12 @@ extern int main(int argc, char* argv[])
   x2("(?~|abc)a*", "aaaaaabc", 0, 5);
   x2("(?~|abc)a*z|aaaaaabc", "aaaaaabc", 0, 8);
   x2("(?~|aaaaaa)a*", "aaaaaa", 0, 0);
-
   x2("(?~|abc)aaaa|aaaabc", "aaaabc", 0, 6);
   x2("(?>(?~|abc))aaaa|aaaabc", "aaaabc", 0, 6);
+  x2("(?~|)a", "a", 0, 1);
+  n("(?~|a)a", "a");
+  x2("(?~|a)(?~|)a", "a", 0, 1);
+  x2("(?~|a).*(?~|)a", "bbbbbbbbbbbbbbbbbbbba", 0, 21);
 
   /*
     < ifndef IGNORE_EUC_JP >
