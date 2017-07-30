@@ -240,7 +240,7 @@ syntax: ONIG_SYNTAX_RUBY (default)
 
                      Assigning the same name to two or more subexps is allowed.
 
-  <absent functions>
+  <Absent functions>
 
   (?~absent)         Absent repeater    (* proposed by Tanaka Akira)
                      This works like .* (more precisely \O*), but it is
@@ -260,7 +260,11 @@ syntax: ONIG_SYNTAX_RUBY (default)
                      at the point that does not include the string match whth
                      absent.
 
-     * Nested absent functions are not supported and the behavior
+  (?~|)              Absent clear
+                     Clear the effects caused by Absent cutters.
+                     (* This operation is not cancelled by backtrack.)
+
+     * Nested Absent functions are not supported and the behavior
        is undefined.
 
 
@@ -273,7 +277,7 @@ syntax: ONIG_SYNTAX_RUBY (default)
                else_exp can be omitted.
                Then it works as a backreference validity checker.
 
-  [ backreference validity checker ]   (* original function)
+  [ backreference validity checker ]   (* original)
 
     (?(n)), (?(-n)), (?(+n)), (?(n+level)) ...
     (?(<n>)), (?('-n')), (?(<+n>)) ...
