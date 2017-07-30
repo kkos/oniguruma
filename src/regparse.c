@@ -5641,6 +5641,13 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
 
           head_bar = 1;
+          if (PPEEK_IS(')')) { // (?~|)  : absent clear
+            PINC;
+            r = node_new_update_var_gimmick(np, UPDATE_VAR_RIGHT_RANGE_INIT,
+                                            0, env);
+            if (r != 0) return r;
+            goto end;
+          }
         }
         else
           head_bar = 0;
