@@ -3451,7 +3451,7 @@ recursive_call_check(Node* node)
   case NODE_CALL:
     r = recursive_call_check(NODE_BODY(node));
     if (r != 0) {
-      if (NODE_IS_RECURSION(NODE_BODY(node)))
+      if (NODE_IS_MARK1(NODE_BODY(node)))
         NODE_STATUS_ADD(node, NST_RECURSION);
     }
     break;
