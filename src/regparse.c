@@ -1762,6 +1762,113 @@ make_absent_tail(Node** node1, Node** node2, int pre_save_right_id,
 }
 
 static int
+is_simple_one_char_repeat(Node* node, Node** rquant, Node** rbody,
+                          int* is_possessive, ScanEnv* env)
+{
+  Node* quant;
+  Node* body;
+
+  *rquant = *rbody = 0;
+  *is_possessive = 0;
+
+  if (NODE_TYPE(node) == NODE_QUANT) {
+    quant = node;
+  }
+  else {
+    if (NODE_TYPE(node) == NODE_ENCLOSURE) {
+      EnclosureNode* en = ENCLOSURE_(node);
+      if (en->type == ENCLOSURE_STOP_BACKTRACK) {
+        *is_possessive = 1;
+        quant = NODE_ENCLOSURE_BODY(en);
+      }
+      else
+        return 0;
+    }
+    else
+      return 0;
+  }
+
+  body = NODE_BODY(quant);
+  switch (NODE_TYPE(body)) {
+  case NODE_STRING:
+    {
+      int len;
+      StrNode* sn = STR_(body);
+      UChar *s = sn->s;
+
+      len = 0;
+      while (s < sn->end) {
+        s += enclen(env->enc, s);
+        len++;
+      }
+      if (len != 1)
+        break;
+    }
+
+  case NODE_CCLASS:
+    break;
+
+  default:
+    return 0;
+    break;
+  }
+
+  if (node != quant) {
+    NODE_BODY(node) = 0;
+    onig_node_free(node);
+  }
+  NODE_BODY(quant) = NULL_NODE;
+  *rquant = quant;
+  *rbody  = body;
+  return 1;
+}
+
+static int
+make_absent_tree_for_simple_one_char_repeat(Node** node, Node* absent, Node* quant,
+                                            Node* body, int possessive, ScanEnv* env)
+{
+  int r;
+  int i;
+  int id1;
+  int lower, upper;
+  Node* x;
+  Node* ns[4];
+
+  *node = NULL_NODE;
+  r = ONIGERR_MEMORY;
+  ns[0] = ns[1] = NULL_NODE;
+  ns[2] = body, ns[3] = absent;
+
+  lower = QUANT_(quant)->lower;
+  upper = QUANT_(quant)->upper;
+  onig_node_free(quant);
+
+  r = node_new_save_gimmick(&ns[0], SAVE_RIGHT_RANGE, env);
+  if (r != 0) goto err;
+
+  id1 = GIMMICK_(ns[0])->id;
+
+  r = make_absent_engine(&ns[1], id1, absent, body, lower, upper, possessive,
+                         0, env);
+  if (r != 0) goto err;
+
+  ns[2] = ns[3] = NULL_NODE;
+
+  r = make_absent_tail(&ns[2], &ns[3], id1, env);
+  if (r != 0) goto err;
+
+  x = make_list(4, ns);
+  if (IS_NULL(x)) goto err;
+
+  *node = x;
+  return ONIG_NORMAL;
+
+ err:
+  for (i = 0; i < 4; i++) onig_node_free(ns[i]);
+  return r;
+}
+
+static int
 make_absent_tree(Node** node, Node* absent, Node* expr, int is_range_cutter,
                  ScanEnv* env)
 {
@@ -1776,15 +1883,38 @@ make_absent_tree(Node** node, Node* absent, Node* expr, int is_range_cutter,
   for (i = 0; i < 7; i++) ns[i] = NULL_NODE;
   ns[4] = expr; ns[5] = absent;
 
-  if (expr == NULL_NODE && is_range_cutter == 0) {
-    /* default expr \O* */
-    ns[4] = node_new_quantifier(0, REPEAT_INFINITE, 0);
-    if (IS_NULL(ns[4])) goto err;
+  if (is_range_cutter == 0) {
+    Node* quant;
+    Node* body;
 
-    r = node_new_true_anychar(&x, env);
-    if (r != 0) goto err;
+    if (expr == NULL_NODE) {
+      /* default expr \O* */
+      quant = node_new_quantifier(0, REPEAT_INFINITE, 0);
+      if (IS_NULL(quant)) goto err;
 
-    NODE_BODY(ns[4]) = x;
+      r = node_new_true_anychar(&body, env);
+      if (r != 0) {
+        onig_node_free(quant);
+        goto err;
+      }
+      possessive = 0;
+      goto simple;
+    }
+    else {
+      if (is_simple_one_char_repeat(expr, &quant, &body, &possessive, env)) {
+      simple:
+        r = make_absent_tree_for_simple_one_char_repeat(node, absent, quant,
+                                                        body, possessive, env);
+        if (r != 0) {
+          ns[4] = NULL_NODE;
+          onig_node_free(quant);
+          onig_node_free(body);
+          goto err;
+        }
+
+        return ONIG_NORMAL;
+      }
+    }
   }
 
   r = node_new_save_gimmick(&ns[0], SAVE_RIGHT_RANGE, env);
