@@ -2873,13 +2873,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       goto repeat_inc_ng;
       break;
 
-    case OP_PUSH_POS:  MOP_IN(OP_PUSH_POS);
+    case OP_PREC_READ_START:  MOP_IN(OP_PREC_READ_START);
       STACK_PUSH_POS(s, sprev);
       MOP_OUT;
       continue;
       break;
 
-    case OP_POP_POS:  MOP_IN(OP_POP_POS);
+    case OP_PREC_READ_END:  MOP_IN(OP_PREC_READ_END);
       {
         STACK_POS_END(stkp);
         s     = stkp->u.state.pstr;

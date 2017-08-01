@@ -1576,7 +1576,7 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
 
   switch (node->type) {
   case ANCHOR_PREC_READ:
-    len = SIZE_OP_PUSH_POS + tlen + SIZE_OP_POP_POS;
+    len = SIZE_OP_PREC_READ_START + tlen + SIZE_OP_PREC_READ_END;
     break;
   case ANCHOR_PREC_READ_NOT:
     len = SIZE_OP_PUSH_PREC_READ_NOT + tlen + SIZE_OP_FAIL_PREC_READ_NOT;
@@ -1617,11 +1617,11 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
 #endif
 
   case ANCHOR_PREC_READ:
-    r = add_opcode(reg, OP_PUSH_POS);
+    r = add_opcode(reg, OP_PREC_READ_START);
     if (r != 0) return r;
     r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
     if (r != 0) return r;
-    r = add_opcode(reg, OP_POP_POS);
+    r = add_opcode(reg, OP_PREC_READ_END);
     break;
 
   case ANCHOR_PREC_READ_NOT:
@@ -6811,8 +6811,8 @@ OnigOpInfoType OnigOpInfo[] = {
   { OP_EMPTY_CHECK_END,     "empty-check-end",      ARG_MEMNUM  },
   { OP_EMPTY_CHECK_END_MEMST,"empty-check-end-memst", ARG_MEMNUM  },
   { OP_EMPTY_CHECK_END_MEMST_PUSH,"empty-check-end-memst-push", ARG_MEMNUM  },
-  { OP_PUSH_POS,             "push-pos",             ARG_NON },
-  { OP_POP_POS,              "pop-pos",              ARG_NON },
+  { OP_PREC_READ_START,      "push-pos",             ARG_NON },
+  { OP_PREC_READ_END,        "pop-pos",              ARG_NON },
   { OP_PUSH_PREC_READ_NOT,   "push-prec-read-not",   ARG_RELADDR },
   { OP_FAIL_PREC_READ_NOT,   "fail-prec-read-not",   ARG_NON },
   { OP_PUSH_STOP_BT,         "push-stop-bt",         ARG_NON },

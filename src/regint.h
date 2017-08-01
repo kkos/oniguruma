@@ -531,8 +531,8 @@ enum OpCode {
   OP_EMPTY_CHECK_END_MEMST, /* null loop checker end (with capture status) */
   OP_EMPTY_CHECK_END_MEMST_PUSH, /* with capture status and push check-end */
 
-  OP_PUSH_POS,             /* (?=...)  start */
-  OP_POP_POS,              /* (?=...)  end   */
+  OP_PREC_READ_START,             /* (?=...)  start */
+  OP_PREC_READ_END,              /* (?=...)  end   */
   OP_PUSH_PREC_READ_NOT,   /* (?!...)  start */
   OP_FAIL_PREC_READ_NOT,   /* (?!...)  end   */
   OP_PUSH_STOP_BT,         /* (?>...)  start */
@@ -625,9 +625,9 @@ typedef int UpdateVarType;
 #define SIZE_OP_PUSH_IF_PEEK_NEXT      (SIZE_OPCODE + SIZE_RELADDR + 1)
 #define SIZE_OP_REPEAT_INC             (SIZE_OPCODE + SIZE_MEMNUM)
 #define SIZE_OP_REPEAT_INC_NG          (SIZE_OPCODE + SIZE_MEMNUM)
-#define SIZE_OP_PUSH_POS                SIZE_OPCODE
+#define SIZE_OP_PREC_READ_START         SIZE_OPCODE
 #define SIZE_OP_PUSH_PREC_READ_NOT     (SIZE_OPCODE + SIZE_RELADDR)
-#define SIZE_OP_POP_POS                 SIZE_OPCODE
+#define SIZE_OP_PREC_READ_END           SIZE_OPCODE
 #define SIZE_OP_FAIL_PREC_READ_NOT      SIZE_OPCODE
 #define SIZE_OP_SET_OPTION             (SIZE_OPCODE + SIZE_OPTION)
 #define SIZE_OP_SET_OPTION_PUSH        (SIZE_OPCODE + SIZE_OPTION)
