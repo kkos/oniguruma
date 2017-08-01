@@ -4222,7 +4222,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
           if (r == 1) tok->u.backref.exist_level = 1;
           else        tok->u.backref.exist_level = 0;
 #else
-          r = fetch_name(&p, end, &name_end, env, &back_num, &num_type, 1);
+          r = fetch_name(c, &p, end, &name_end, env, &back_num, &num_type, 1);
 #endif
           if (r < 0) return r;
 
@@ -5491,7 +5491,8 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
                     env, &back_num, &level, &num_type);
           if (r == 1) exist_level = 1;
 #else
-          r = fetch_name(&p, end, &name_end, env, &back_num, &num_type, 1);
+          r = fetch_name((OnigCodePoint )(is_enclosed != 0 ? c : '('),
+                         &p, end, &name_end, env, &back_num, &num_type, 1);
 #endif
           if (r < 0) {
             if (is_enclosed == 0) {
