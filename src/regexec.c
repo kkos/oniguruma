@@ -324,7 +324,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_EMPTY_CHECK_END        0x5000  /* for recursive call */
 #define STK_MEM_END_MARK           0x8400
 #define STK_POS                    0x0500  /* used when POP-POS */
-#define STK_STOP_BT                0x0600  /* mark for "(?>...)" */
+#define STK_STOP_BACKTRACK         0x0600  /* mark for "(?>...)" */
 #define STK_REPEAT                 0x0700
 #define STK_CALL_FRAME             0x0800
 #define STK_RETURN                 0x0900
@@ -667,7 +667,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_POS(s,sprev)         STACK_PUSH(STK_POS,NULL_UCHARP,s,sprev)
 #define STACK_PUSH_ALT_PREC_READ_NOT(pat,s,sprev) \
   STACK_PUSH(STK_ALT_PREC_READ_NOT,pat,s,sprev)
-#define STACK_PUSH_STOP_BT              STACK_PUSH_TYPE(STK_STOP_BT)
+#define STACK_PUSH_STOP_BACKTRACK        STACK_PUSH_TYPE(STK_STOP_BACKTRACK)
 #define STACK_PUSH_ALT_LOOK_BEHIND_NOT(pat,s,sprev) \
   STACK_PUSH(STK_ALT_LOOK_BEHIND_NOT,pat,s,sprev)
 
@@ -985,15 +985,15 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_STOP_BT_END do {\
+#define STACK_STOP_BACKTRACK_END do {\
   StackType *k = stk;\
   while (1) {\
     k--;\
-    STACK_BASE_CHECK(k, "STACK_STOP_BT_END"); \
+    STACK_BASE_CHECK(k, "STACK_STOP_BACKTRACK_END"); \
     if (IS_TO_VOID_TARGET(k)) {\
       k->type = STK_VOID;\
     }\
-    else if (k->type == STK_STOP_BT) {\
+    else if (k->type == STK_STOP_BACKTRACK) {\
       k->type = STK_VOID;\
       break;\
     }\
@@ -2902,13 +2902,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       break;
 
     case OP_PUSH_STOP_BT:  MOP_IN(OP_PUSH_STOP_BT);
-      STACK_PUSH_STOP_BT;
+      STACK_PUSH_STOP_BACKTRACK;
       MOP_OUT;
       continue;
       break;
 
     case OP_POP_STOP_BT:  MOP_IN(OP_POP_STOP_BT);
-      STACK_STOP_BT_END;
+      STACK_STOP_BACKTRACK_END;
       MOP_OUT;
       continue;
       break;
