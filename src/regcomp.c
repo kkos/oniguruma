@@ -2931,8 +2931,16 @@ tree_min_len(Node* node, ScanEnv* env)
     }
     break;
 
-  case NODE_ANCHOR:
   case NODE_GIMMICK:
+    {
+      GimmickNode* g = GIMMICK_(node);
+      if (g->type == GIMMICK_FAIL) {
+        len = INFINITE_LEN;
+        break;
+      }
+    }
+    /* fall */
+  case NODE_ANCHOR:
   default:
     break;
   }
