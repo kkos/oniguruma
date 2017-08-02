@@ -35,7 +35,7 @@ New feature of version 6.5.0
 * NEW: if-then-else syntax   (?(...)...\|...)
 * NEW: Backreference validity checker  (*original)
 * NEW: Absent repeater (?~absent)
-* NEW: Absent group    (?~|absent|expr)  (*original)
+* NEW: Absent expression   (?~|absent|expr)  (*original)
 * NEW: Absent range cutter (?~|absent)     (*original)
 
 
