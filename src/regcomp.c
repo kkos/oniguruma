@@ -2849,7 +2849,7 @@ tree_min_len(Node* node, ScanEnv* env)
   case NODE_LIST:
     do {
       tmin = tree_min_len(NODE_CAR(node), env);
-      len += tmin;
+      len = distance_add(len, tmin);
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
