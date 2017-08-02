@@ -3002,7 +3002,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           STACK_GET_SAVE_VAL_TYPE_LAST_ID(SAVE_S, mem, right_range);
           break;
         case UPDATE_VAR_RIGHT_RANGE_FROM_STACK:
-	  STACK_GET_SAVE_VAL_TYPE_LAST_ID(SAVE_RIGHT_RANGE, mem, right_range);
+          STACK_GET_SAVE_VAL_TYPE_LAST_ID(SAVE_RIGHT_RANGE, mem, right_range);
           break;
         case UPDATE_VAR_RIGHT_RANGE_INIT:
           INIT_RIGHT_RANGE;
