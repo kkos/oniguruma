@@ -3007,9 +3007,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         case UPDATE_VAR_RIGHT_RANGE_INIT:
           INIT_RIGHT_RANGE;
           break;
-        case UPDATE_VAR_RIGHT_RANGE_SPREV:
-          right_range = sprev;
-          break;
         }
       }
       MOP_OUT;

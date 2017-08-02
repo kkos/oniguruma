@@ -569,7 +569,6 @@ enum UpdateVarType {
   UPDATE_VAR_RIGHT_RANGE_FROM_STACK   = 2,
   UPDATE_VAR_RIGHT_RANGE_FROM_S_STACK = 3,
   UPDATE_VAR_RIGHT_RANGE_INIT         = 4,
-  UPDATE_VAR_RIGHT_RANGE_SPREV        = 5,
 };
 
 typedef int RelAddrType;
