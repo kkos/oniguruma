@@ -3788,7 +3788,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 
     end_buf:
       if ((OnigLen )(max_semi_end - str) < reg->anchor_dmin)
-	goto mismatch_no_msa;
+        goto mismatch_no_msa;
 
       if (range > start) {
         if ((OnigLen )(min_semi_end - start) > reg->anchor_dmax) {
