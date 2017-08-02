@@ -3347,7 +3347,7 @@ fetch_name(OnigCodePoint start_code, UChar** src, UChar* end,
 
     if (c != end_code) {
       r = ONIGERR_INVALID_GROUP_NAME;
-      name_end = end;
+      goto err;
     }
 
     if (*num_type != IS_NOT_NUM) {
