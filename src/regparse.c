@@ -1780,6 +1780,8 @@ is_simple_one_char_repeat(Node* node, Node** rquant, Node** rbody,
       if (en->type == ENCLOSURE_STOP_BACKTRACK) {
         *is_possessive = 1;
         quant = NODE_ENCLOSURE_BODY(en);
+        if (NODE_TYPE(quant) != NODE_QUANT)
+          return 0;
       }
       else
         return 0;
