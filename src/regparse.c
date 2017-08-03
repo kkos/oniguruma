@@ -1804,7 +1804,7 @@ is_simple_one_char_repeat(Node* node, Node** rquant, Node** rbody,
         len++;
       }
       if (len != 1)
-        break;
+        return 0;
     }
 
   case NODE_CCLASS:
