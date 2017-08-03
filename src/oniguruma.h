@@ -35,7 +35,7 @@ extern "C" {
 
 #define ONIGURUMA
 #define ONIGURUMA_VERSION_MAJOR   6
-#define ONIGURUMA_VERSION_MINOR   4
+#define ONIGURUMA_VERSION_MINOR   5
 #define ONIGURUMA_VERSION_TEENY   0
 
 #ifdef __cplusplus
@@ -496,6 +496,11 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 /* #define ONIG_SYN_OP2_CHAR_PROPERTY_PREFIX_IS (1U<<18) */
 #define ONIG_SYN_OP2_ESC_H_XDIGIT               (1U<<19) /* \h, \H */
 #define ONIG_SYN_OP2_INEFFECTIVE_ESCAPE         (1U<<20) /* \ */
+#define ONIG_SYN_OP2_QMARK_LPAREN_IF_ELSE       (1U<<21) /* (?(n)) (?(...)...|...) */
+#define ONIG_SYN_OP2_ESC_CAPITAL_K_KEEP         (1U<<22) /* \K */
+#define ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE (1U<<23) /* \R \r\n else [\x0a-\x0d] */
+#define ONIG_SYN_OP2_ESC_CAPITAL_N_O_SUPER_DOT  (1U<<24) /* \N (?-m:.), \O (?m:.) */
+#define ONIG_SYN_OP2_QMARK_TILDE_ABSENT_GROUP   (1U<<25) /* (?~...) */
 
 /* syntax (behavior) */
 #define ONIG_SYN_CONTEXT_INDEP_ANCHORS           (1U<<31) /* not implemented */
@@ -596,6 +601,9 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIGERR_NEVER_ENDING_RECURSION                       -221
 #define ONIGERR_GROUP_NUMBER_OVER_FOR_CAPTURE_HISTORY        -222
 #define ONIGERR_INVALID_CHAR_PROPERTY_NAME                   -223
+#define ONIGERR_INVALID_IF_ELSE_SYNTAX                       -224
+#define ONIGERR_INVALID_ABSENT_GROUP_PATTERN                 -225
+#define ONIGERR_INVALID_ABSENT_GROUP_GENERATOR_PATTERN       -226
 #define ONIGERR_INVALID_CODE_POINT_VALUE                     -400
 #define ONIGERR_INVALID_WIDE_CHAR_VALUE                      -400
 #define ONIGERR_TOO_BIG_WIDE_CHAR_VALUE                      -401

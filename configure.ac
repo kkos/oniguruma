@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(onig, 6.4.0)
+AC_INIT(onig, 6.5.0)
 
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -16,7 +16,7 @@ AC_SUBST(STATISTICS)
 
 dnl check for COMBINATION_EXPLOSION
 AC_ARG_ENABLE(combination-explosion-check,
-	[  --enable-combination-explosion-check   enable combination explosion check],
+	[  --enable-combination-explosion-check   deprecated],
 	[comb_expl_check=$enableval])
 if test "${comb_expl_check}" = yes; then
   AC_DEFINE(USE_COMBINATION_EXPLOSION_CHECK,1,[Define if combination explosion check])

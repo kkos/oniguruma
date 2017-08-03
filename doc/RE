@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.4.0    2017/06/28
+Oniguruma Regular Expressions Version 6.5.0    2017/07/30
 
 syntax: ONIG_SYNTAX_RUBY (default)
 
@@ -52,8 +52,8 @@ syntax: ONIG_SYNTAX_RUBY (default)
            Not Unicode:
              \t, \n, \v, \f, \r, \x20
 
-           Unicode:
-             0009, 000A, 000B, 000C, 000D, 0085(NEL),
+           Unicode case:
+             U+0009, U+000A, U+000B, U+000C, U+000D, U+0085(NEL),
              General_Category -- Line_Separator
                               -- Paragraph_Separator
                               -- Space_Separator
@@ -69,6 +69,16 @@ syntax: ONIG_SYNTAX_RUBY (default)
   \h       hexadecimal digit char   [0-9a-fA-F]
 
   \H       non-hexdigit char
+
+  \R       general newline  (* can't be used in character-class)
+           "\r\n" or \n,\v,\f,\r  (* but doesn't backtrack from \r\n to \r)
+
+           Unicode case:
+             "\r\n" or \n,\v,\f,\r or U+0085, U+2028, U+2029
+
+  \N       negative newline  (?-m:.)
+
+  \O       true anychar      (?m:.)    (* original function)
 
 
   Character Property
@@ -133,6 +143,8 @@ syntax: ONIG_SYNTAX_RUBY (default)
   \Z      end of string, or before newline at the end
   \z      end of string
   \G      where the current search attempt begins
+  \K      keep (keep start position of the result string)
+
 
 
 6. Character class
@@ -183,9 +195,9 @@ syntax: ONIG_SYNTAX_RUBY (default)
                Final_Punctuation | Initial_Punctuation | Other_Punctuation |
                Open_Punctuation
       space    Space_Separator | Line_Separator | Paragraph_Separator |
-               0009 | 000A | 000B | 000C | 000D | 0085
+               U+0009 | U+000A | U+000B | U+000C | U+000D | U+0085
       upper    Uppercase_Letter
-      xdigit   0030 - 0039 | 0041 - 0046 | 0061 - 0066
+      xdigit   U+0030 - U+0039 | U+0041 - U+0046 | U+0061 - U+0066
                (0-9, a-f, A-F)
       word     Letter | Mark | Decimal_Number | Connector_Punctuation
 
@@ -227,6 +239,50 @@ syntax: ONIG_SYNTAX_RUBY (default)
                      group.
 
                      Assigning the same name to two or more subexps is allowed.
+
+  <Absent functions>
+
+  (?~absent)         Absent repeater    (* proposed by Tanaka Akira)
+                     This works like .* (more precisely \O*), but it is
+                     limited by the range that does not include the string
+                     match with absent.
+                     This is a written abbreviation of (?~|absent|\O*).
+                     \O* is used as a repeater.
+
+  (?~|absent|exp)    Absent expression  (* original)
+                     This works like "exp", but it is limited by the range
+                     that does not include the string match with absent.
+
+                     ex. (?~|345|\d*)  "12345678"  ==> "12", "1", ""
+
+  (?~|absent)        Absent cutter (* original)
+                     After passed this operator, string right range is limited
+                     at the point that does not include the string match whth
+                     absent.
+
+  (?~|)              Absent clear
+                     Clear the effects caused by Absent cutters.
+                     (* This operation is not cancelled by backtrack.)
+
+     * Nested Absent functions are not supported and the behavior
+       is undefined.
+
+
+  (?(condition_exp)then_exp|else_exp)    if-then-else
+  (?(condition_exp)then_exp)             if-then
+
+               condition_exp can be a backreference number/name or a normal
+               regular expression.
+               When condition_exp is a backreference, both then_exp and
+               else_exp can be omitted.
+               Then it works as a backreference validity checker.
+
+  [ backreference validity checker ]   (* original)
+
+    (?(n)), (?(-n)), (?(+n)), (?(n+level)) ...
+    (?(<n>)), (?('-n')), (?(<+n>)) ...
+    (?(<name>)), (?('name')), (?(<name+level>)) ...
+
 
 
 8. Backreferences
@@ -282,7 +338,7 @@ syntax: ONIG_SYNTAX_RUBY (default)
       p r.match("<foo>f<bar>bbb</bar>f</foo>").captures
 
 
-9. Subexp calls ("Tanaka Akira special")
+9. Subexp calls ("Tanaka Akira special")   (* original function)
 
   When we say "call a group," it actually means, "re-execute the subexp in
   that group."
@@ -367,7 +423,6 @@ A-3. Missing features compared with perl 5.8.0
    + \l,\u,\L,\U, \X, \C
    + (?{code})
    + (??{code})
-   + (?(condition)yes-pat|no-pat)
 
    * \Q...\E
      This is effective on ONIG_SYNTAX_PERL and ONIG_SYNTAX_JAVA.

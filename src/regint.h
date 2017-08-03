@@ -57,7 +57,7 @@
 /* config */
 /* spec. config */
 #define USE_NAMED_GROUP
-#define USE_SUBEXP_CALL
+#define USE_CALL
 #define USE_BACKREF_WITH_LEVEL        /* \k<name+n>, \k<name-n> */
 #define USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT  /* /(?:()|())*\2/ */
 #define USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE     /* /\n$/ =~ "\n" */
@@ -196,6 +196,8 @@ typedef int intptr_t;
 #define CHECK_NULL_RETURN_MEMERR(p)   if (IS_NULL(p)) return ONIGERR_MEMORY
 #define NULL_UCHARP                   ((UChar* )0)
 
+#define INFINITE_LEN        ONIG_INFINITE_DISTANCE
+
 #ifdef PLATFORM_UNALIGNED_WORD_ACCESS
 
 #define PLATFORM_GET_INC(val,p,type) do{\
@@ -211,7 +213,11 @@ typedef int intptr_t;
 } while(0)
 
 /* sizeof(OnigCodePoint) */
-#define WORD_ALIGNMENT_SIZE     SIZEOF_LONG
+#ifdef SIZEOF_SIZE_T
+# define WORD_ALIGNMENT_SIZE     SIZEOF_SIZE_T
+#else
+# define WORD_ALIGNMENT_SIZE     SIZEOF_LONG
+#endif
 
 #define GET_ALIGNMENT_PAD_SIZE(addr,pad_size) do {\
   (pad_size) = WORD_ALIGNMENT_SIZE \
@@ -226,10 +232,20 @@ typedef int intptr_t;
 
 #endif /* PLATFORM_UNALIGNED_WORD_ACCESS */
 
+typedef struct {
+  int num_keeper;
+  int* keepers;
+} RegExt;
+
+#define REG_EXTP(reg)      (RegExt* )((reg)->chain)
+#define REG_EXTPL(reg)     ((reg)->chain)
+
 /* stack pop level */
-#define STACK_POP_LEVEL_FREE        0
-#define STACK_POP_LEVEL_MEM_START   1
-#define STACK_POP_LEVEL_ALL         2
+enum StackPopLevel {
+  STACK_POP_LEVEL_FREE = 0,
+  STACK_POP_LEVEL_MEM_START = 1,
+  STACK_POP_LEVEL_ALL =2
+};
 
 /* optimize flags */
 #define ONIG_OPTIMIZE_NONE              0
@@ -482,11 +498,13 @@ enum OpCode {
 
   OP_BACKREF1,
   OP_BACKREF2,
-  OP_BACKREFN,
-  OP_BACKREFN_IC,
+  OP_BACKREF_N,
+  OP_BACKREF_N_IC,
   OP_BACKREF_MULTI,
   OP_BACKREF_MULTI_IC,
-  OP_BACKREF_WITH_LEVEL,    /* \k<xxx+n>, \k<xxx-n> */
+  OP_BACKREF_WITH_LEVEL,        /* \k<xxx+n>, \k<xxx-n> */
+  OP_BACKREF_CHECK,             /* (?(n)), (?('name')) */
+  OP_BACKREF_CHECK_WITH_LEVEL,  /* (?(n)), (?('name')) */
 
   OP_MEMORY_START,
   OP_MEMORY_START_PUSH,   /* push back-tracker to stack */
@@ -498,6 +516,7 @@ enum OpCode {
   OP_FAIL,               /* pop stack and move */
   OP_JUMP,
   OP_PUSH,
+  OP_PUSH_SUPER,
   OP_POP,
   OP_PUSH_OR_JUMP_EXACT1,  /* if match exact then push, else jump. */
   OP_PUSH_IF_PEEK_NEXT,    /* if match exact then push, else none. */
@@ -512,10 +531,10 @@ enum OpCode {
   OP_EMPTY_CHECK_END_MEMST, /* null loop checker end (with capture status) */
   OP_EMPTY_CHECK_END_MEMST_PUSH, /* with capture status and push check-end */
 
-  OP_PUSH_POS,             /* (?=...)  start */
-  OP_POP_POS,              /* (?=...)  end   */
-  OP_PUSH_POS_NOT,         /* (?!...)  start */
-  OP_FAIL_POS,             /* (?!...)  end   */
+  OP_PREC_READ_START,             /* (?=...)  start */
+  OP_PREC_READ_END,              /* (?=...)  end   */
+  OP_PUSH_PREC_READ_NOT,   /* (?!...)  start */
+  OP_FAIL_PREC_READ_NOT,   /* (?!...)  end   */
   OP_PUSH_STOP_BT,         /* (?>...)  start */
   OP_POP_STOP_BT,          /* (?>...)  end   */
   OP_LOOK_BEHIND,          /* (?<=...) start (no needs end opcode) */
@@ -524,6 +543,8 @@ enum OpCode {
 
   OP_CALL,                 /* \g<name> */
   OP_RETURN,
+  OP_PUSH_SAVE_VAL,
+  OP_UPDATE_VAR,
 
   OP_STATE_CHECK_PUSH,         /* combination explosion check and push */
   OP_STATE_CHECK_PUSH_OR_JUMP, /* check ok -> push, else jump  */
@@ -536,6 +557,20 @@ enum OpCode {
   OP_SET_OPTION          /* set option */
 };
 
+enum SaveType {
+  SAVE_KEEP = 0, /* SAVE S */
+  SAVE_S = 1,
+  SAVE_RIGHT_RANGE = 2,
+};
+
+enum UpdateVarType {
+  UPDATE_VAR_KEEP_FROM_STACK_LAST     = 0,
+  UPDATE_VAR_S_FROM_STACK             = 1,
+  UPDATE_VAR_RIGHT_RANGE_FROM_STACK   = 2,
+  UPDATE_VAR_RIGHT_RANGE_FROM_S_STACK = 3,
+  UPDATE_VAR_RIGHT_RANGE_INIT         = 4,
+};
+
 typedef int RelAddrType;
 typedef int AbsAddrType;
 typedef int LengthType;
@@ -543,6 +578,8 @@ typedef int RepeatNumType;
 typedef int MemNumType;
 typedef short int StateCheckNumType;
 typedef void* PointerType;
+typedef int SaveType;
+typedef int UpdateVarType;
 
 #define SIZE_OPCODE           1
 #define SIZE_RELADDR          sizeof(RelAddrType)
@@ -554,7 +591,8 @@ typedef void* PointerType;
 #define SIZE_OPTION           sizeof(OnigOptionType)
 #define SIZE_CODE_POINT       sizeof(OnigCodePoint)
 #define SIZE_POINTER          sizeof(PointerType)
-
+#define SIZE_SAVE_TYPE        sizeof(SaveType)
+#define SIZE_UPDATE_VAR_TYPE  sizeof(UpdateVarType)
 
 #define GET_RELADDR_INC(addr,p)    PLATFORM_GET_INC(addr,   p, RelAddrType)
 #define GET_ABSADDR_INC(addr,p)    PLATFORM_GET_INC(addr,   p, AbsAddrType)
@@ -564,6 +602,8 @@ typedef void* PointerType;
 #define GET_OPTION_INC(option,p)   PLATFORM_GET_INC(option, p, OnigOptionType)
 #define GET_POINTER_INC(ptr,p)     PLATFORM_GET_INC(ptr,    p, PointerType)
 #define GET_STATE_CHECK_NUM_INC(num,p)  PLATFORM_GET_INC(num, p, StateCheckNumType)
+#define GET_SAVE_TYPE_INC(type,p)       PLATFORM_GET_INC(type, p, SaveType)
+#define GET_UPDATE_VAR_TYPE_INC(type,p) PLATFORM_GET_INC(type, p, UpdateVarType)
 
 /* code point's address must be aligned address. */
 #define GET_CODE_POINT(code,p)   code = *((OnigCodePoint* )(p))
@@ -578,15 +618,16 @@ typedef void* PointerType;
 #define SIZE_OP_ANYCHAR_STAR_PEEK_NEXT (SIZE_OPCODE + 1)
 #define SIZE_OP_JUMP                   (SIZE_OPCODE + SIZE_RELADDR)
 #define SIZE_OP_PUSH                   (SIZE_OPCODE + SIZE_RELADDR)
+#define SIZE_OP_PUSH_SUPER             (SIZE_OPCODE + SIZE_RELADDR)
 #define SIZE_OP_POP                     SIZE_OPCODE
 #define SIZE_OP_PUSH_OR_JUMP_EXACT1    (SIZE_OPCODE + SIZE_RELADDR + 1)
 #define SIZE_OP_PUSH_IF_PEEK_NEXT      (SIZE_OPCODE + SIZE_RELADDR + 1)
 #define SIZE_OP_REPEAT_INC             (SIZE_OPCODE + SIZE_MEMNUM)
 #define SIZE_OP_REPEAT_INC_NG          (SIZE_OPCODE + SIZE_MEMNUM)
-#define SIZE_OP_PUSH_POS                SIZE_OPCODE
-#define SIZE_OP_PUSH_POS_NOT           (SIZE_OPCODE + SIZE_RELADDR)
-#define SIZE_OP_POP_POS                 SIZE_OPCODE
-#define SIZE_OP_FAIL_POS                SIZE_OPCODE
+#define SIZE_OP_PREC_READ_START         SIZE_OPCODE
+#define SIZE_OP_PUSH_PREC_READ_NOT     (SIZE_OPCODE + SIZE_RELADDR)
+#define SIZE_OP_PREC_READ_END           SIZE_OPCODE
+#define SIZE_OP_FAIL_PREC_READ_NOT      SIZE_OPCODE
 #define SIZE_OP_SET_OPTION             (SIZE_OPCODE + SIZE_OPTION)
 #define SIZE_OP_SET_OPTION_PUSH        (SIZE_OPCODE + SIZE_OPTION)
 #define SIZE_OP_FAIL                    SIZE_OPCODE
@@ -605,6 +646,8 @@ typedef void* PointerType;
 #define SIZE_OP_FAIL_LOOK_BEHIND_NOT    SIZE_OPCODE
 #define SIZE_OP_CALL                   (SIZE_OPCODE + SIZE_ABSADDR)
 #define SIZE_OP_RETURN                  SIZE_OPCODE
+#define SIZE_OP_PUSH_SAVE_VAL          (SIZE_OPCODE + SIZE_SAVE_TYPE + SIZE_MEMNUM)
+#define SIZE_OP_UPDATE_VAR             (SIZE_OPCODE + SIZE_UPDATE_VAR_TYPE + SIZE_MEMNUM)
 
 #ifdef USE_COMBINATION_EXPLOSION_CHECK
 #define SIZE_OP_STATE_CHECK            (SIZE_OPCODE + SIZE_STATE_CHECK_NUM)
@@ -663,48 +706,6 @@ typedef void* PointerType;
 #define NCCLASS_SET_NOT(nd)     NCCLASS_FLAG_SET(nd, FLAG_NCCLASS_NOT)
 #define NCCLASS_CLEAR_NOT(nd)   NCCLASS_FLAG_CLEAR(nd, FLAG_NCCLASS_NOT)
 #define IS_NCCLASS_NOT(nd)      IS_NCCLASS_FLAG_ON(nd, FLAG_NCCLASS_NOT)
-
-typedef intptr_t OnigStackIndex;
-
-typedef struct _OnigStackType {
-  unsigned int type;
-  union {
-    struct {
-      UChar *pcode;      /* byte code position */
-      UChar *pstr;       /* string position */
-      UChar *pstr_prev;  /* previous char position of pstr */
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-      unsigned int state_check;
-#endif
-    } state;
-    struct {
-      int   count;       /* for OP_REPEAT_INC, OP_REPEAT_INC_NG */
-      UChar *pcode;      /* byte code position (head of repeated target) */
-      int   num;         /* repeat id */
-    } repeat;
-    struct {
-      OnigStackIndex si;     /* index of stack */
-    } repeat_inc;
-    struct {
-      int num;           /* memory num */
-      UChar *pstr;       /* start/end position */
-      /* Following information is set, if this stack type is MEM-START */
-      OnigStackIndex start;  /* prev. info (for backtrack  "(...)*" ) */
-      OnigStackIndex end;    /* prev. info (for backtrack  "(...)*" ) */
-    } mem;
-    struct {
-      int num;           /* null check id */
-      UChar *pstr;       /* start position */
-    } empty_check;
-#ifdef USE_SUBEXP_CALL
-    struct {
-      UChar *ret_addr;   /* byte code position */
-      int    num;        /* null check id */
-      UChar *pstr;       /* string position */
-    } call_frame;
-#endif
-  } u;
-} OnigStackType;
 
 typedef struct {
   void* stack_p;

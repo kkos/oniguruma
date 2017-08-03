@@ -2,7 +2,7 @@
   regposix.c - Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2008  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -114,6 +114,9 @@ onig2posix_error_code(int code)
     { ONIGERR_NEVER_ENDING_RECURSION,                     REG_BADPAT },
     { ONIGERR_GROUP_NUMBER_OVER_FOR_CAPTURE_HISTORY,      REG_BADPAT },
     { ONIGERR_INVALID_CHAR_PROPERTY_NAME,                 REG_BADPAT },
+    { ONIGERR_INVALID_IF_ELSE_SYNTAX,                     REG_BADPAT },
+    { ONIGERR_INVALID_ABSENT_GROUP_PATTERN,               REG_BADPAT },
+    { ONIGERR_INVALID_ABSENT_GROUP_GENERATOR_PATTERN,     REG_BADPAT },
     { ONIGERR_NOT_SUPPORTED_ENCODING_COMBINATION,         REG_EONIG_BADARG },
     { ONIGERR_LIBRARY_IS_NOT_INITIALIZED,                 REG_EONIG_INTERNAL }
   };

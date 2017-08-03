@@ -305,31 +305,84 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 /** stack **/
 #define INVALID_STACK_INDEX   -1
 
+#define STK_ALT_FLAG               0x0001
+
 /* stack type */
 /* used by normal-POP */
-#define STK_ALT                    0x0001
-#define STK_LOOK_BEHIND_NOT        0x0002
-#define STK_POS_NOT                0x0003
+#define STK_SUPER_ALT             STK_ALT_FLAG
+#define STK_ALT                   (0x0002 | STK_ALT_FLAG)
+#define STK_ALT_PREC_READ_NOT     (0x0004 | STK_ALT_FLAG)
+#define STK_ALT_LOOK_BEHIND_NOT   (0x0006 | STK_ALT_FLAG)
 /* handled by normal-POP */
 #define STK_MEM_START              0x0100
 #define STK_MEM_END                0x8200
 #define STK_REPEAT_INC             0x0300
 #define STK_STATE_CHECK_MARK       0x1000
 /* avoided by normal-POP */
+#define STK_VOID                   0x0000  /* for fill a blank */
 #define STK_EMPTY_CHECK_START      0x3000
 #define STK_EMPTY_CHECK_END        0x5000  /* for recursive call */
 #define STK_MEM_END_MARK           0x8400
 #define STK_POS                    0x0500  /* used when POP-POS */
-#define STK_STOP_BT                0x0600  /* mark for "(?>...)" */
+#define STK_STOP_BACKTRACK         0x0600  /* mark for "(?>...)" */
 #define STK_REPEAT                 0x0700
 #define STK_CALL_FRAME             0x0800
 #define STK_RETURN                 0x0900
-#define STK_VOID                   0x0a00  /* for fill a blank */
+#define STK_SAVE_VAL               0x0a00
 
 /* stack type check mask */
-#define STK_MASK_POP_USED          0x00ff
-#define STK_MASK_TO_VOID_TARGET    0x10ff
+#define STK_MASK_POP_USED          STK_ALT_FLAG
+#define STK_MASK_TO_VOID_TARGET    0x10fe
 #define STK_MASK_MEM_END_OR_MARK   0x8000  /* MEM_END or MEM_END_MARK */
+
+typedef intptr_t StackIndex;
+
+typedef struct _StackType {
+  unsigned int type;
+  union {
+    struct {
+      UChar *pcode;      /* byte code position */
+      UChar *pstr;       /* string position */
+      UChar *pstr_prev;  /* previous char position of pstr */
+#ifdef USE_COMBINATION_EXPLOSION_CHECK
+      unsigned int state_check;
+#endif
+    } state;
+    struct {
+      int   count;       /* for OP_REPEAT_INC, OP_REPEAT_INC_NG */
+      UChar *pcode;      /* byte code position (head of repeated target) */
+      int   num;         /* repeat id */
+    } repeat;
+    struct {
+      StackIndex si;     /* index of stack */
+    } repeat_inc;
+    struct {
+      int num;           /* memory num */
+      UChar *pstr;       /* start/end position */
+      /* Following information is set, if this stack type is MEM-START */
+      StackIndex start;  /* prev. info (for backtrack  "(...)*" ) */
+      StackIndex end;    /* prev. info (for backtrack  "(...)*" ) */
+    } mem;
+    struct {
+      int num;           /* null check id */
+      UChar *pstr;       /* start position */
+    } empty_check;
+#ifdef USE_CALL
+    struct {
+      UChar *ret_addr;   /* byte code position */
+      int    num;        /* null check id */
+      UChar *pstr;       /* string position */
+    } call_frame;
+#endif
+    struct {
+      int id;
+      enum SaveType type;
+      UChar* v;
+      UChar* v2;
+    } val;
+  } u;
+} StackType;
+
 
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
 #define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start) do {\
@@ -396,28 +449,28 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   if (msa->stack_p) {\
     is_alloca  = 0;\
     alloc_base = msa->stack_p;\
-    stk_base   = (OnigStackType* )(alloc_base\
-                 + (sizeof(OnigStackIndex) * msa->ptr_num));\
+    stk_base   = (StackType* )(alloc_base\
+                 + (sizeof(StackIndex) * msa->ptr_num));\
     stk        = stk_base;\
     stk_end    = stk_base + msa->stack_n;\
   }\
   else if (msa->ptr_num > ALLOCA_PTR_NUM_LIMIT) {\
     is_alloca  = 0;\
-    alloc_base = (char* )xmalloc(sizeof(OnigStackIndex) * msa->ptr_num\
-                  + sizeof(OnigStackType) * (stack_num));\
+    alloc_base = (char* )xmalloc(sizeof(StackIndex) * msa->ptr_num\
+                  + sizeof(StackType) * (stack_num));\
     CHECK_NULL_RETURN_MEMERR(alloc_base);\
-    stk_base   = (OnigStackType* )(alloc_base\
-                 + (sizeof(OnigStackIndex) * msa->ptr_num));\
+    stk_base   = (StackType* )(alloc_base\
+                 + (sizeof(StackIndex) * msa->ptr_num));\
     stk        = stk_base;\
     stk_end    = stk_base + (stack_num);\
   }\
   else {\
     is_alloca  = 1;\
-    alloc_base = (char* )xalloca(sizeof(OnigStackIndex) * msa->ptr_num\
-                 + sizeof(OnigStackType) * (stack_num));\
+    alloc_base = (char* )xalloca(sizeof(StackIndex) * msa->ptr_num\
+                 + sizeof(StackType) * (stack_num));\
     CHECK_NULL_RETURN_MEMERR(alloc_base);\
-    stk_base   = (OnigStackType* )(alloc_base\
-                 + (sizeof(OnigStackIndex) * msa->ptr_num));\
+    stk_base   = (StackType* )(alloc_base\
+                 + (sizeof(StackIndex) * msa->ptr_num));\
     stk        = stk_base;\
     stk_end    = stk_base + (stack_num);\
   }\
@@ -427,8 +480,8 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STACK_SAVE do{\
   msa->stack_n = stk_end - stk_base;\
   if (is_alloca != 0) {\
-    size_t size = sizeof(OnigStackIndex) * msa->ptr_num \
-                + sizeof(OnigStackType) * msa->stack_n;\
+    size_t size = sizeof(StackIndex) * msa->ptr_num \
+                + sizeof(StackType) * msa->stack_n;\
     msa->stack_p = xmalloc(size);\
     CHECK_NULL_RETURN_MEMERR(msa->stack_p);\
     xmemcpy(msa->stack_p, alloc_base, size);\
@@ -439,8 +492,8 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 } while(0)
 
 #define UPDATE_FOR_STACK_REALLOC do{\
-  repeat_stk    = (OnigStackIndex* )alloc_base;\
-  mem_start_stk = (OnigStackIndex* )(repeat_stk + reg->num_repeat);\
+  repeat_stk    = (StackIndex* )alloc_base;\
+  mem_start_stk = (StackIndex* )(repeat_stk + reg->num_repeat);\
   mem_end_stk   = mem_start_stk + num_mem + 1;\
 } while(0)
 
@@ -461,8 +514,8 @@ onig_set_match_stack_limit_size(unsigned int size)
 
 static int
 stack_double(int is_alloca, char** arg_alloc_base,
-	     OnigStackType** arg_stk_base,
-	     OnigStackType** arg_stk_end, OnigStackType** arg_stk,
+	     StackType** arg_stk_base,
+	     StackType** arg_stk_end, StackType** arg_stk,
 	     OnigMatchArg* msa)
 {
   unsigned int n;
@@ -471,7 +524,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
   size_t new_size;
   char* alloc_base;
   char* new_alloc_base;
-  OnigStackType *stk_base, *stk_end, *stk;
+  StackType *stk_base, *stk_end, *stk;
 
   alloc_base = *arg_alloc_base;
   stk_base = *arg_stk_base;
@@ -479,9 +532,9 @@ stack_double(int is_alloca, char** arg_alloc_base,
   stk      = *arg_stk;
 
   n = stk_end - stk_base;
-  size = sizeof(OnigStackIndex) * msa->ptr_num + sizeof(OnigStackType) * n;
+  size = sizeof(StackIndex) * msa->ptr_num + sizeof(StackType) * n;
   n *= 2;
-  new_size = sizeof(OnigStackIndex) * msa->ptr_num + sizeof(OnigStackType) * n;
+  new_size = sizeof(StackIndex) * msa->ptr_num + sizeof(StackType) * n;
   if (is_alloca != 0) {
     new_alloc_base = (char* )xmalloc(new_size);
     if (IS_NULL(new_alloc_base)) {
@@ -507,8 +560,8 @@ stack_double(int is_alloca, char** arg_alloc_base,
   alloc_base = new_alloc_base;
   used = stk - stk_base;
   *arg_alloc_base = alloc_base;
-  *arg_stk_base   = (OnigStackType* )(alloc_base
-		       + (sizeof(OnigStackIndex) * msa->ptr_num));
+  *arg_stk_base   = (StackType* )(alloc_base
+		       + (sizeof(StackIndex) * msa->ptr_num));
   *arg_stk      = *arg_stk_base + used;
   *arg_stk_end  = *arg_stk_base + n;
   return 0;
@@ -516,8 +569,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 
 #define STACK_ENSURE(n)	do {\
   if (stk_end - stk < (n)) {\
-    int r = stack_double(is_alloca, &alloc_base, &stk_base, &stk_end, &stk,\
-                         msa);\
+    int r = stack_double(is_alloca, &alloc_base, &stk_base, &stk_end, &stk, msa);\
     if (r != 0) { STACK_SAVE; return r; } \
     is_alloca = 0;\
     UPDATE_FOR_STACK_REALLOC;\
@@ -610,12 +662,14 @@ stack_double(int is_alloca, char** arg_alloc_base,
 } while(0)
 #endif /* USE_COMBINATION_EXPLOSION_CHECK */
 
-#define STACK_PUSH_ALT(pat,s,sprev)     STACK_PUSH(STK_ALT,pat,s,sprev)
+#define STACK_PUSH_ALT(pat,s,sprev)       STACK_PUSH(STK_ALT,pat,s,sprev)
+#define STACK_PUSH_SUPER_ALT(pat,s,sprev) STACK_PUSH(STK_SUPER_ALT,pat,s,sprev)
 #define STACK_PUSH_POS(s,sprev)         STACK_PUSH(STK_POS,NULL_UCHARP,s,sprev)
-#define STACK_PUSH_POS_NOT(pat,s,sprev) STACK_PUSH(STK_POS_NOT,pat,s,sprev)
-#define STACK_PUSH_STOP_BT              STACK_PUSH_TYPE(STK_STOP_BT)
-#define STACK_PUSH_LOOK_BEHIND_NOT(pat,s,sprev) \
-        STACK_PUSH(STK_LOOK_BEHIND_NOT,pat,s,sprev)
+#define STACK_PUSH_ALT_PREC_READ_NOT(pat,s,sprev) \
+  STACK_PUSH(STK_ALT_PREC_READ_NOT,pat,s,sprev)
+#define STACK_PUSH_STOP_BACKTRACK        STACK_PUSH_TYPE(STK_STOP_BACKTRACK)
+#define STACK_PUSH_ALT_LOOK_BEHIND_NOT(pat,s,sprev) \
+  STACK_PUSH(STK_ALT_LOOK_BEHIND_NOT,pat,s,sprev)
 
 #define STACK_PUSH_REPEAT(id, pat) do {\
   STACK_ENSURE(1);\
@@ -725,6 +779,97 @@ stack_double(int is_alloca, char** arg_alloc_base,
   STACK_INC;\
 } while(0)
 
+#define STACK_PUSH_SAVE_VAL(sid, stype, sval) do {\
+  STACK_ENSURE(1);\
+  stk->type = STK_SAVE_VAL;\
+  stk->u.val.id   = (sid);\
+  stk->u.val.type = (stype);\
+  stk->u.val.v    = (UChar* )(sval);\
+  STACK_INC;\
+} while(0)
+
+#define STACK_PUSH_SAVE_VAL_WITH_SPREV(sid, stype, sval) do {\
+  STACK_ENSURE(1);\
+  stk->type = STK_SAVE_VAL;\
+  stk->u.val.id   = (sid);\
+  stk->u.val.type = (stype);\
+  stk->u.val.v    = (UChar* )(sval);\
+  stk->u.val.v2   = sprev;\
+  STACK_INC;\
+} while(0)
+
+#define STACK_GET_SAVE_VAL_TYPE_LAST(stype, sval) do {\
+  StackType *k = stk;\
+  while (k > stk_base) {\
+    k--;\
+    STACK_BASE_CHECK(k, "STACK_GET_SAVE_VAL_TYPE_LAST"); \
+    if (k->type == STK_SAVE_VAL && k->u.val.type == (stype)) {\
+      (sval) = k->u.val.v;\
+      break;\
+    }\
+  }\
+} while (0)
+
+#define STACK_GET_SAVE_VAL_TYPE_LAST_ID(stype, sid, sval) do { \
+  int level = 0;\
+  StackType *k = stk;\
+  while (k > stk_base) {\
+    k--;\
+    STACK_BASE_CHECK(k, "STACK_GET_SAVE_VAL_TYPE_LAST_ID"); \
+    if (k->type == STK_SAVE_VAL && k->u.val.type == (stype)\
+        && k->u.val.id == (sid)) {\
+      if (level == 0) {\
+        (sval) = k->u.val.v;\
+        break;\
+      }\
+    }\
+    else if (k->type == STK_CALL_FRAME)\
+      level--;\
+    else if (k->type == STK_RETURN)\
+      level++;\
+  }\
+} while (0)
+
+#define STACK_GET_SAVE_VAL_TYPE_LAST_ID_WITH_SPREV(stype, sid, sval) do { \
+  int level = 0;\
+  StackType *k = stk;\
+  while (k > stk_base) {\
+    k--;\
+    STACK_BASE_CHECK(k, "STACK_GET_SAVE_VAL_TYPE_LAST_ID"); \
+    if (k->type == STK_SAVE_VAL && k->u.val.type == (stype)\
+        && k->u.val.id == (sid)) {\
+      if (level == 0) {\
+        (sval) = k->u.val.v;\
+        sprev  = k->u.val.v2;\
+        break;\
+      }\
+    }\
+    else if (k->type == STK_CALL_FRAME)\
+      level--;\
+    else if (k->type == STK_RETURN)\
+      level++;\
+  }\
+} while (0)
+
+#define STACK_GET_SAVE_VAL_TYPE_LAST_ID_FROM(stype, sid, sval, stk_from) do { \
+  int level = 0;\
+  StackType *k = (stk_from);\
+  while (k > stk_base) {\
+    STACK_BASE_CHECK(k, "STACK_GET_SAVE_VAL_TYPE_LAST_ID_FROM"); \
+    if (k->type == STK_SAVE_VAL && k->u.val.type == (stype)\
+        && k->u.val.id == (sid)) {\
+      if (level == 0) {\
+        (sval) = k->u.val.v;\
+        break;\
+      }\
+    }\
+    else if (k->type == STK_CALL_FRAME)\
+      level--;\
+    else if (k->type == STK_RETURN)\
+      level++;\
+    k--;\
+  }\
+} while (0)
 
 #ifdef ONIG_DEBUG
 #define STACK_BASE_CHECK(p, at) \
@@ -785,11 +930,11 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_POP_TIL_POS_NOT  do {\
+#define STACK_POP_TIL_ALT_PREC_READ_NOT  do {\
   while (1) {\
     stk--;\
-    STACK_BASE_CHECK(stk, "STACK_POP_TIL_POS_NOT"); \
-    if (stk->type == STK_POS_NOT) break;\
+    STACK_BASE_CHECK(stk, "STACK_POP_TIL_ALT_PREC_READ_NOT"); \
+    if (stk->type == STK_ALT_PREC_READ_NOT) break;\
     else if (stk->type == STK_MEM_START) {\
       mem_start_stk[stk->u.mem.num] = stk->u.mem.start;\
       mem_end_stk[stk->u.mem.num]   = stk->u.mem.end;\
@@ -805,11 +950,11 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_POP_TIL_LOOK_BEHIND_NOT  do {\
+#define STACK_POP_TIL_ALT_LOOK_BEHIND_NOT  do {\
   while (1) {\
     stk--;\
-    STACK_BASE_CHECK(stk, "STACK_POP_TIL_LOOK_BEHIND_NOT"); \
-    if (stk->type == STK_LOOK_BEHIND_NOT) break;\
+    STACK_BASE_CHECK(stk, "STACK_POP_TIL_ALT_LOOK_BEHIND_NOT"); \
+    if (stk->type == STK_ALT_LOOK_BEHIND_NOT) break;\
     else if (stk->type == STK_MEM_START) {\
       mem_start_stk[stk->u.mem.num] = stk->u.mem.start;\
       mem_end_stk[stk->u.mem.num]   = stk->u.mem.end;\
@@ -840,15 +985,15 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_STOP_BT_END do {\
-  OnigStackType *k = stk;\
+#define STACK_STOP_BACKTRACK_END do {\
+  StackType *k = stk;\
   while (1) {\
     k--;\
-    STACK_BASE_CHECK(k, "STACK_STOP_BT_END"); \
+    STACK_BASE_CHECK(k, "STACK_STOP_BACKTRACK_END"); \
     if (IS_TO_VOID_TARGET(k)) {\
       k->type = STK_VOID;\
     }\
-    else if (k->type == STK_STOP_BT) {\
+    else if (k->type == STK_STOP_BACKTRACK) {\
       k->type = STK_VOID;\
       break;\
     }\
@@ -856,7 +1001,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 } while(0)
 
 #define STACK_EMPTY_CHECK(isnull,id,s) do {\
-  OnigStackType* k = stk;\
+  StackType* k = stk;\
   while (1) {\
     k--;\
     STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK"); \
@@ -871,7 +1016,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 
 #ifdef USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT
 #define STACK_EMPTY_CHECK_MEMST(isnull,id,s,reg) do {\
-  OnigStackType* k = stk;\
+  StackType* k = stk;\
   while (1) {\
     k--;\
     STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_MEMST"); \
@@ -912,7 +1057,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 
 #define STACK_EMPTY_CHECK_MEMST_REC(isnull,id,s,reg) do {\
   int level = 0;\
-  OnigStackType* k = stk;\
+  StackType* k = stk;\
   while (1) {\
     k--;\
     STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_MEMST_REC"); \
@@ -960,7 +1105,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #else
 #define STACK_EMPTY_CHECK_REC(isnull,id,s) do {\
   int level = 0;\
-  OnigStackType* k = stk;\
+  StackType* k = stk;\
   while (1) {\
     k--;\
     STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_REC"); \
@@ -1000,7 +1145,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 
 #define STACK_RETURN(addr)  do {\
   int level = 0;\
-  OnigStackType* k = stk;\
+  StackType* k = stk;\
   while (1) {\
     k--;\
     STACK_BASE_CHECK(k, "STACK_RETURN"); \
@@ -1074,27 +1219,26 @@ static int string_cmp_ic(OnigEncoding enc, int case_fold_flag,
 
 
 #define IS_EMPTY_STR           (str == end)
-#define ON_STR_BEGIN(s)       ((s) == str)
-#define ON_STR_END(s)         ((s) == end)
-#ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
+#define ON_STR_BEGIN(s)        ((s) == str)
+#define ON_STR_END(s)          ((s) == end)
 #define DATA_ENSURE_CHECK1     (s < right_range)
 #define DATA_ENSURE_CHECK(n)   (s + (n) <= right_range)
 #define DATA_ENSURE(n)         if (s + (n) > right_range) goto fail
-#else
-#define DATA_ENSURE_CHECK1     (s < end)
-#define DATA_ENSURE_CHECK(n)   (s + (n) <= end)
-#define DATA_ENSURE(n)         if (s + (n) > end) goto fail
-#endif /* USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE */
 
+#ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
+#define INIT_RIGHT_RANGE    right_range = (UChar* )in_right_range
+#else
+#define INIT_RIGHT_RANGE    right_range = (UChar* )end
+#endif
 
 #ifdef USE_CAPTURE_HISTORY
 static int
-make_capture_history_tree(OnigCaptureTreeNode* node, OnigStackType** kp,
-                          OnigStackType* stk_top, UChar* str, regex_t* reg)
+make_capture_history_tree(OnigCaptureTreeNode* node, StackType** kp,
+                          StackType* stk_top, UChar* str, regex_t* reg)
 {
   int n, r;
   OnigCaptureTreeNode* child;
-  OnigStackType* k = *kp;
+  StackType* k = *kp;
 
   while (k < stk_top) {
     if (k->type == STK_MEM_START) {
@@ -1143,13 +1287,13 @@ static int mem_is_in_memp(int mem, int num, UChar* memp)
 }
 
 static int backref_match_at_nested_level(regex_t* reg
-	 , OnigStackType* top, OnigStackType* stk_base
+	 , StackType* top, StackType* stk_base
 	 , int ignore_case, int case_fold_flag
 	 , int nest, int mem_num, UChar* memp, UChar** s, const UChar* send)
 {
   UChar *ss, *p, *pstart, *pend = NULL_UCHARP;
   int level;
-  OnigStackType* k;
+  StackType* k;
 
   level = 0;
   k = top;
@@ -1189,6 +1333,37 @@ static int backref_match_at_nested_level(regex_t* reg
       else if (k->type == STK_MEM_END) {
         if (mem_is_in_memp(k->u.mem.num, mem_num, memp)) {
           pend = k->u.mem.pstr;
+        }
+      }
+    }
+    k--;
+  }
+
+  return 0;
+}
+
+static int
+backref_check_at_nested_level(regex_t* reg,
+                              StackType* top, StackType* stk_base,
+                              int nest, int mem_num, UChar* memp)
+{
+  int level;
+  StackType* k;
+
+  level = 0;
+  k = top;
+  k--;
+  while (k >= stk_base) {
+    if (k->type == STK_CALL_FRAME) {
+      level--;
+    }
+    else if (k->type == STK_RETURN) {
+      level++;
+    }
+    else if (level == nest) {
+      if (k->type == STK_MEM_END) {
+        if (mem_is_in_memp(k->u.mem.num, mem_num, memp)) {
+          return 1;
         }
       }
     }
@@ -1300,7 +1475,7 @@ typedef struct {
 static int
 match_at(regex_t* reg, const UChar* str, const UChar* end,
 #ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
-	 const UChar* right_range,
+	 const UChar* in_right_range,
 #endif
 	 const UChar* sstart, UChar* sprev, OnigMatchArg* msa)
 {
@@ -1311,13 +1486,15 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   MemNumType mem;
   RelAddrType addr;
   UChar *s, *q, *sbegin;
+  UChar *right_range;
   int is_alloca;
   char *alloc_base;
-  OnigStackType *stk_base, *stk, *stk_end;
-  OnigStackType *stkp; /* used as any purpose. */
-  OnigStackIndex si;
-  OnigStackIndex *repeat_stk;
-  OnigStackIndex *mem_start_stk, *mem_end_stk;
+  StackType *stk_base, *stk, *stk_end;
+  StackType *stkp; /* used as any purpose. */
+  StackIndex si;
+  StackIndex *repeat_stk;
+  StackIndex *mem_start_stk, *mem_end_stk;
+  UChar* keep;
 #ifdef USE_COMBINATION_EXPLOSION_CHECK
   int scv;
   unsigned char* state_check_buff = msa->state_check_buff;
@@ -1346,7 +1523,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
   STACK_PUSH_ENSURED(STK_ALT, FinishCode);  /* bottom stack */
   best_len = ONIG_MISMATCH;
-  s = (UChar* )sstart;
+  keep = s = (UChar* )sstart;
+  INIT_RIGHT_RANGE;
+
   while (1) {
 #ifdef ONIG_DEBUG_MATCH
     {
@@ -1394,12 +1573,14 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         best_len = n;
         region = msa->region;
         if (region) {
+          if (keep > s) keep = s;
+
 #ifdef USE_POSIX_API_REGION_OPTION
           if (IS_POSIX_REGION(msa->options)) {
             posix_regmatch_t* rmt = (posix_regmatch_t* )region;
 
-            rmt[0].rm_so = sstart - str;
-            rmt[0].rm_eo = s      - str;
+            rmt[0].rm_so = keep - str;
+            rmt[0].rm_eo = s    - str;
             for (i = 1; i <= num_mem; i++) {
               if (mem_end_stk[i] != INVALID_STACK_INDEX) {
                 if (MEM_STATUS_AT(reg->bt_mem_start, i))
@@ -1418,8 +1599,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           }
           else {
 #endif /* USE_POSIX_API_REGION_OPTION */
-            region->beg[0] = sstart - str;
-            region->end[0] = s      - str;
+            region->beg[0] = keep - str;
+            region->end[0] = s    - str;
             for (i = 1; i <= num_mem; i++) {
               if (mem_end_stk[i] != INVALID_STACK_INDEX) {
                 if (MEM_STATUS_AT(reg->bt_mem_start, i))
@@ -1451,8 +1632,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
               }
 
               node->group = 0;
-              node->beg   = sstart - str;
-              node->end   = s      - str;
+              node->beg   = keep - str;
+              node->end   = s    - str;
 
               stkp = stk_base;
               r = make_capture_history_tree(region->history_root, &stkp,
@@ -2138,7 +2319,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     case OP_MEMORY_START:  MOP_IN(OP_MEMORY_START);
       GET_MEMNUM_INC(mem, p);
-      mem_start_stk[mem] = (OnigStackIndex )((void* )s);
+      mem_start_stk[mem] = (StackIndex )((void* )s);
       MOP_OUT;
       continue;
       break;
@@ -2152,12 +2333,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     case OP_MEMORY_END:  MOP_IN(OP_MEMORY_END);
       GET_MEMNUM_INC(mem, p);
-      mem_end_stk[mem] = (OnigStackIndex )((void* )s);
+      mem_end_stk[mem] = (StackIndex )((void* )s);
       MOP_OUT;
       continue;
       break;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
     case OP_MEMORY_END_PUSH_REC:  MOP_IN(OP_MEMORY_END_PUSH_REC);
       GET_MEMNUM_INC(mem, p);
       STACK_GET_MEM_START(mem, stkp); /* should be before push mem-end. */
@@ -2169,13 +2350,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     case OP_MEMORY_END_REC:  MOP_IN(OP_MEMORY_END_REC);
       GET_MEMNUM_INC(mem, p);
-      mem_end_stk[mem] = (OnigStackIndex )((void* )s);
+      mem_end_stk[mem] = (StackIndex )((void* )s);
       STACK_GET_MEM_START(mem, stkp);
 
       if (MEM_STATUS_AT(reg->bt_mem_start, mem))
         mem_start_stk[mem] = GET_STACK_INDEX(stkp);
       else
-        mem_start_stk[mem] = (OnigStackIndex )((void* )stkp->u.mem.pstr);
+        mem_start_stk[mem] = (StackIndex )((void* )stkp->u.mem.pstr);
 
       STACK_PUSH_MEM_END_MARK(mem);
       MOP_OUT;
@@ -2193,16 +2374,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       goto backref;
       break;
 
-    case OP_BACKREFN:  MOP_IN(OP_BACKREFN);
+    case OP_BACKREF_N:  MOP_IN(OP_BACKREF_N);
       GET_MEMNUM_INC(mem, p);
     backref:
       {
         int len;
         UChar *pstart, *pend;
 
-        /* if you want to remove following line, 
-           you should check in parse and compile time. */
-        if (mem > num_mem) goto fail;
         if (mem_end_stk[mem]   == INVALID_STACK_INDEX) goto fail;
         if (mem_start_stk[mem] == INVALID_STACK_INDEX) goto fail;
 
@@ -2226,15 +2404,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       }
       break;
 
-    case OP_BACKREFN_IC:  MOP_IN(OP_BACKREFN_IC);
+    case OP_BACKREF_N_IC:  MOP_IN(OP_BACKREF_N_IC);
       GET_MEMNUM_INC(mem, p);
       {
         int len;
         UChar *pstart, *pend;
 
-        /* if you want to remove following line, 
-           you should check in parse and compile time. */
-        if (mem > num_mem) goto fail;
         if (mem_end_stk[mem]   == INVALID_STACK_INDEX) goto fail;
         if (mem_start_stk[mem] == INVALID_STACK_INDEX) goto fail;
 
@@ -2364,6 +2539,45 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       break;
 #endif
 
+    case OP_BACKREF_CHECK:  MOP_IN(OP_BACKREF_CHECK);
+      {
+        GET_LENGTH_INC(tlen, p);
+        for (i = 0; i < tlen; i++) {
+          GET_MEMNUM_INC(mem, p);
+
+          if (mem_end_stk[mem]   == INVALID_STACK_INDEX) continue;
+          if (mem_start_stk[mem] == INVALID_STACK_INDEX) continue;
+
+          p += (SIZE_MEMNUM * (tlen - i - 1));
+          break; /* success */
+        }
+        if (i == tlen) goto fail;
+        MOP_OUT;
+        continue;
+      }
+      break;
+
+#ifdef USE_BACKREF_WITH_LEVEL
+    case OP_BACKREF_CHECK_WITH_LEVEL:
+      {
+        LengthType level;
+
+        GET_LENGTH_INC(level, p);
+        GET_LENGTH_INC(tlen,  p);
+
+        if (backref_check_at_nested_level(reg, stk, stk_base,
+                                          (int )level, (int )tlen, p) != 0) {
+          p += (SIZE_MEMNUM * tlen);
+        }
+        else
+          goto fail;
+
+        MOP_OUT;
+        continue;
+      }
+      break;
+#endif
+
 #if 0   /* no need: IS_DYNAMIC_OPTION() == 0 */
     case OP_SET_OPTION_PUSH:  MOP_IN(OP_SET_OPTION_PUSH);
       GET_OPTION_INC(option, p);
@@ -2440,7 +2654,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       break;
 #endif
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
     case OP_EMPTY_CHECK_END_MEMST_PUSH:
       MOP_IN(OP_EMPTY_CHECK_END_MEMST_PUSH);
       {
@@ -2480,6 +2694,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     case OP_PUSH:  MOP_IN(OP_PUSH);
       GET_RELADDR_INC(addr, p);
       STACK_PUSH_ALT(p + addr, s, sprev);
+      MOP_OUT;
+      continue;
+      break;
+
+    case OP_PUSH_SUPER:  MOP_IN(OP_PUSH_SUPER);
+      GET_RELADDR_INC(addr, p);
+      STACK_PUSH_SUPER_ALT(p + addr, s, sprev);
       MOP_OUT;
       continue;
       break;
@@ -2652,13 +2873,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       goto repeat_inc_ng;
       break;
 
-    case OP_PUSH_POS:  MOP_IN(OP_PUSH_POS);
+    case OP_PREC_READ_START:  MOP_IN(OP_PREC_READ_START);
       STACK_PUSH_POS(s, sprev);
       MOP_OUT;
       continue;
       break;
 
-    case OP_POP_POS:  MOP_IN(OP_POP_POS);
+    case OP_PREC_READ_END:  MOP_IN(OP_PREC_READ_END);
       {
         STACK_POS_END(stkp);
         s     = stkp->u.state.pstr;
@@ -2668,26 +2889,26 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       continue;
       break;
 
-    case OP_PUSH_POS_NOT:  MOP_IN(OP_PUSH_POS_NOT);
+    case OP_PUSH_PREC_READ_NOT:  MOP_IN(OP_PUSH_PREC_READ_NOT);
       GET_RELADDR_INC(addr, p);
-      STACK_PUSH_POS_NOT(p + addr, s, sprev);
+      STACK_PUSH_ALT_PREC_READ_NOT(p + addr, s, sprev);
       MOP_OUT;
       continue;
       break;
 
-    case OP_FAIL_POS:  MOP_IN(OP_FAIL_POS);
-      STACK_POP_TIL_POS_NOT;
+    case OP_FAIL_PREC_READ_NOT:  MOP_IN(OP_FAIL_PREC_READ_NOT);
+      STACK_POP_TIL_ALT_PREC_READ_NOT;
       goto fail;
       break;
 
     case OP_PUSH_STOP_BT:  MOP_IN(OP_PUSH_STOP_BT);
-      STACK_PUSH_STOP_BT;
+      STACK_PUSH_STOP_BACKTRACK;
       MOP_OUT;
       continue;
       break;
 
     case OP_POP_STOP_BT:  MOP_IN(OP_POP_STOP_BT);
-      STACK_STOP_BT_END;
+      STACK_STOP_BACKTRACK_END;
       MOP_OUT;
       continue;
       break;
@@ -2712,7 +2933,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         /* goto fail; */
       }
       else {
-        STACK_PUSH_LOOK_BEHIND_NOT(p + addr, s, sprev);
+        STACK_PUSH_ALT_LOOK_BEHIND_NOT(p + addr, s, sprev);
         s = q;
         sprev = (UChar* )onigenc_get_prev_char_head(encode, str, s);
       }
@@ -2721,11 +2942,11 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       break;
 
     case OP_FAIL_LOOK_BEHIND_NOT:  MOP_IN(OP_FAIL_LOOK_BEHIND_NOT);
-      STACK_POP_TIL_LOOK_BEHIND_NOT;
+      STACK_POP_TIL_ALT_LOOK_BEHIND_NOT;
       goto fail;
       break;
 
-#ifdef USE_SUBEXP_CALL
+#ifdef USE_CALL
     case OP_CALL:  MOP_IN(OP_CALL);
       GET_ABSADDR_INC(addr, p);
       STACK_PUSH_CALL_FRAME(p);
@@ -2741,6 +2962,56 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       continue;
       break;
 #endif
+
+    case OP_PUSH_SAVE_VAL: MOP_IN(OP_PUSH_SAVE_VAL);
+      {
+        SaveType type;
+        GET_SAVE_TYPE_INC(type, p);
+        GET_MEMNUM_INC(mem, p); /* mem: save id */
+        switch ((enum SaveType )type) {
+        case SAVE_KEEP:
+          STACK_PUSH_SAVE_VAL(mem, type, s);
+          break;
+
+        case SAVE_S:
+          STACK_PUSH_SAVE_VAL_WITH_SPREV(mem, type, s);
+          break;
+
+        case SAVE_RIGHT_RANGE:
+          STACK_PUSH_SAVE_VAL(mem, SAVE_RIGHT_RANGE, right_range);
+          break;
+        }
+      }
+      MOP_OUT;
+      continue;
+      break;
+
+    case OP_UPDATE_VAR: MOP_IN(OP_UPDATE_VAR);
+      {
+        UpdateVarType type;
+        GET_UPDATE_VAR_TYPE_INC(type, p);
+        GET_MEMNUM_INC(mem, p); /* mem: save id */
+        switch ((enum UpdateVarType )type) {
+        case UPDATE_VAR_KEEP_FROM_STACK_LAST:
+          STACK_GET_SAVE_VAL_TYPE_LAST(SAVE_KEEP, keep);
+          break;
+        case UPDATE_VAR_S_FROM_STACK:
+          STACK_GET_SAVE_VAL_TYPE_LAST_ID_WITH_SPREV(SAVE_S, mem, s);
+          break;
+        case UPDATE_VAR_RIGHT_RANGE_FROM_S_STACK:
+          STACK_GET_SAVE_VAL_TYPE_LAST_ID(SAVE_S, mem, right_range);
+          break;
+        case UPDATE_VAR_RIGHT_RANGE_FROM_STACK:
+          STACK_GET_SAVE_VAL_TYPE_LAST_ID(SAVE_RIGHT_RANGE, mem, right_range);
+          break;
+        case UPDATE_VAR_RIGHT_RANGE_INIT:
+          INIT_RIGHT_RANGE;
+          break;
+        }
+      }
+      MOP_OUT;
+      continue;
+      break;
 
     case OP_FINISH:
       goto finish;
@@ -3248,7 +3519,7 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
       }
     }
     else {
-      if (reg->dmax != ONIG_INFINITE_DISTANCE) {
+      if (reg->dmax != INFINITE_LEN) {
         if (p - str < reg->dmax) {
           *low = (UChar* )str;
           if (low_prev)
@@ -3377,7 +3648,7 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
     }
 
     /* no needs to adjust *high, *high is used as range check only */
-    if (reg->dmax != ONIG_INFINITE_DISTANCE) {
+    if (reg->dmax != INFINITE_LEN) {
       *low  = p - reg->dmax;
       *high = p - reg->dmin;
       *high = onigenc_get_right_adjust_char_head(reg->enc, adjrange, *high);
@@ -3514,7 +3785,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 
     end_buf:
       if ((OnigLen )(max_semi_end - str) < reg->anchor_dmin)
-	goto mismatch_no_msa;
+        goto mismatch_no_msa;
 
       if (range > start) {
         if ((OnigLen )(min_semi_end - start) > reg->anchor_dmax) {
@@ -3616,7 +3887,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 
       sch_range = (UChar* )range;
       if (reg->dmax != 0) {
-        if (reg->dmax == ONIG_INFINITE_DISTANCE)
+        if (reg->dmax == INFINITE_LEN)
           sch_range = (UChar* )end;
         else {
           sch_range += reg->dmax;
@@ -3627,7 +3898,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
       if ((end - start) < reg->threshold_len)
         goto mismatch;
 
-      if (reg->dmax != ONIG_INFINITE_DISTANCE) {
+      if (reg->dmax != INFINITE_LEN) {
         do {
           if (! forward_search_range(reg, str, end, s, sch_range,
                                      &low, &high, &low_prev)) goto mismatch;
@@ -3689,7 +3960,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
       else
         adjrange = (UChar* )end;
 
-      if (reg->dmax != ONIG_INFINITE_DISTANCE &&
+      if (reg->dmax != INFINITE_LEN &&
           (end - range) >= reg->threshold_len) {
         do {
           sch_start = s + reg->dmax;
@@ -3714,7 +3985,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 
         sch_start = s;
         if (reg->dmax != 0) {
-          if (reg->dmax == ONIG_INFINITE_DISTANCE)
+          if (reg->dmax == INFINITE_LEN)
             sch_start = (UChar* )end;
           else {
             sch_start += reg->dmax;

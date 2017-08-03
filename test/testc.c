@@ -590,6 +590,88 @@ extern int main(int argc, char* argv[])
   x2("\\g<+2>(abc)(ABC){0}", "ABCabc", 0, 6); // relative call by positive number
   x2("A\\g'0'|B()", "AAAAB", 0, 5);
   x3("(A\\g'0')|B", "AAAAB", 0, 5, 1);
+  x2("(a*)(?(1))aa", "aaaaa", 0, 5);
+  x2("(a*)(?(-1))aa", "aaaaa", 0, 5);
+  x2("(?<name>aaa)(?('name'))aa", "aaaaa", 0, 5);
+  x2("(a)(?(1)aa|bb)a", "aaaaa", 0, 4);
+  x2("(?:aa|())(?(<1>)aa|bb)a", "aabba", 0, 5);
+  x2("(?:aa|())(?('1')aa|bb|cc)a", "aacca", 0, 5);
+  x3("(a*)(?(1)aa|a)b", "aaab", 0, 1, 1);
+  n("(a)(?(1)a|b)c", "abc");
+  x2("(a)(?(1)|)c", "ac", 0, 2);
+  n("(?()aaa|bbb)", "bbb");
+  x2("(a)(?(1+0)b|c)d", "abd", 0, 3);
+  x2("(?:(?'name'a)|(?'name'b))(?('name')c|d)e", "ace", 0, 3);
+  x2("(?:(?'name'a)|(?'name'b))(?('name')c|d)e", "bce", 0, 3);
+  x2("\\R", "\r\n", 0, 2);
+  x2("\\R", "\r", 0, 1);
+  x2("\\R", "\n", 0, 1);
+  x2("\\R", "\x0b", 0, 1);
+  n("\\R\\n", "\r\n");
+  n("\\R", "\xc2\x85"); // because euc-jp is not Unicode
+  x2("\\N", "a", 0, 1);
+  n("\\N", "\n");
+  n("(?m:\\N)", "\n");
+  n("(?-m:\\N)", "\n");
+  x2("\\O", "a", 0, 1);
+  x2("\\O", "\n", 0, 1);
+  x2("(?m:\\O)", "\n", 0, 1);
+  x2("(?-m:\\O)", "\n", 0, 1);
+  x2("\\K", "a", 0, 0);
+  x2("a\\K", "a", 1, 1);
+  x2("a\\Kb", "ab", 1, 2);
+  x2("(a\\Kb|ac\\Kd)", "acd", 2, 3);
+  x2("(a\\Kb|\\Kac\\K)*", "acababacab", 9, 10);
+
+  x2("(?~)", "", 0, 0);
+  x2("(?~)", "A", 0, 0);
+  x2("aaaaa(?~)", "aaaaaaaaaa", 0, 5);
+  x2("(?~(?:|aaa))", "aaa", 0, 0);
+  x2("(?~aaa|)", "aaa", 0, 0);
+  x2("a(?~(?~)).", "abcdefghijklmnopqrstuvwxyz", 0, 26); // !!!
+  x2("/\\*(?~\\*/)\\*/", "/* */ */", 0, 5);
+  x2("(?~\\w+)zzzzz", "zzzzz", 0, 5);
+  x2("(?~\\w*)zzzzz", "zzzzz", 0, 5);
+  x2("(?~A.C|B)", "ABC", 0, 0);
+  x2("(?~XYZ|ABC)a", "ABCa", 1, 4);
+  x2("(?~XYZ|ABC)a", "aABCa", 0, 1);
+  x2("<[^>]*>(?~[<>])</[^>]*>", "<a>vvv</a>   <b>  </b>", 0, 10);
+  x2("(?~ab)", "ccc\ndab", 0, 5);
+  x2("(?m:(?~ab))", "ccc\ndab", 0, 5);
+  x2("(?-m:(?~ab))", "ccc\ndab", 0, 5);
+
+  // absent with expr
+  x2("(?~|78|\\d*)", "123456789", 0, 6);
+  x2("(?~|def|(?:abc|de|f){0,100})", "abcdedeabcfdefabc", 0, 11);
+  x2("(?~|ab|.*)", "ccc\nddd", 0, 3);
+  x2("(?~|ab|\\O*)", "ccc\ndab", 0, 5);
+  x2("(?~|ab|\\O{2,10})", "ccc\ndab", 0, 5);
+  x2("(?~|ab|\\O{1,10})", "ab", 1, 2);
+  n("(?~|ab|\\O{2,10})", "ab");
+  x2("(?~|abc|\\O{1,10})", "abc", 1, 3);
+  x2("(?~|ab|\\O{5,10})|abc", "abc", 0, 3);
+  x2("(?~|ab|\\O{1,10})", "cccccccccccab", 0, 10);
+  x2("(?~|aaa|)", "aaa", 0, 0);
+  x2("(?~||a*)", "aaaaaa", 0, 0);
+  x2("(?~||a*?)", "aaaaaa", 0, 0);
+  x2("(a)(?~|b|\\1)", "aaaaaa", 0, 2);
+  x2("(a)(?~|bb|(?:a\\1)*)", "aaaaaa", 0, 5);
+  x2("(b|c)(?~|abac|(?:a\\1)*)", "abababacabab", 1, 4);
+  n("(?~|c|a*+)a", "aaaaa");
+  x2("(?~|aaaaa|a*+)", "aaaaa", 0, 0);
+  x2("(?~|aaaaaa|a*+)b", "aaaaaab", 1, 7);
+  x2("(?~|abcd|(?>))", "zzzabcd", 0, 0);
+
+  // absent range cutter
+  x2("(?~|abc)a*", "aaaaaabc", 0, 5);
+  x2("(?~|abc)a*z|aaaaaabc", "aaaaaabc", 0, 8);
+  x2("(?~|aaaaaa)a*", "aaaaaa", 0, 0);
+  x2("(?~|abc)aaaa|aaaabc", "aaaabc", 0, 6);
+  x2("(?>(?~|abc))aaaa|aaaabc", "aaaabc", 0, 6);
+  x2("(?~|)a", "a", 0, 1);
+  n("(?~|a)a", "a");
+  x2("(?~|a)(?~|)a", "a", 0, 1);
+  x2("(?~|a).*(?~|)a", "bbbbbbbbbbbbbbbbbbbba", 0, 21);
 
   /*
     < ifndef IGNORE_EUC_JP >
