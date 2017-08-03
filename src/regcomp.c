@@ -2370,9 +2370,14 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
     {
       QuantNode* qn = QUANT_(node);
       if (qn->lower == qn->upper) {
-        r = get_char_length_tree1(NODE_BODY(node), reg, &tlen, level);
-        if (r == 0)
-          *len = distance_multiply(tlen, qn->lower);
+        if (qn->upper == 0) {
+          *len = 0;
+        }
+        else {
+          r = get_char_length_tree1(NODE_BODY(node), reg, &tlen, level);
+          if (r == 0)
+            *len = distance_multiply(tlen, qn->lower);
+        }
       }
       else
         r = GET_CHAR_LEN_VARLEN;
