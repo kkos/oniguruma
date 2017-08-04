@@ -30,7 +30,7 @@
  */
 
 /* for debug */
-/* #define ONIG_DEBUG_PARSE_TREE */
+/* #define ONIG_DEBUG_PARSE */
 /* #define ONIG_DEBUG_COMPILE */
 /* #define ONIG_DEBUG_SEARCH */
 /* #define ONIG_DEBUG_MATCH */
@@ -39,7 +39,7 @@
 /* for byte-code statistical data. */
 /* #define ONIG_DEBUG_STATISTICS */
 
-#if defined(ONIG_DEBUG_PARSE_TREE) || defined(ONIG_DEBUG_MATCH) || \
+#if defined(ONIG_DEBUG_PARSE) || defined(ONIG_DEBUG_MATCH) || \
     defined(ONIG_DEBUG_SEARCH) || defined(ONIG_DEBUG_COMPILE) || \
     defined(ONIG_DEBUG_STATISTICS)
 #ifndef ONIG_DEBUG

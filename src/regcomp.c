@@ -6202,7 +6202,7 @@ onig_transfer(regex_t* to, regex_t* from)
 #ifdef ONIG_DEBUG_COMPILE
 static void print_compiled_byte_code_list P_((FILE* f, regex_t* reg));
 #endif
-#ifdef ONIG_DEBUG_PARSE_TREE
+#ifdef ONIG_DEBUG_PARSE
 static void print_tree P_((FILE* f, Node* node));
 #endif
 
@@ -6287,7 +6287,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   r = setup_tree(root, reg, 0, &scan_env);
   if (r != 0) goto err_unset;
 
-#ifdef ONIG_DEBUG_PARSE_TREE
+#ifdef ONIG_DEBUG_PARSE
   print_tree(stderr, root);
 #endif
 
@@ -7082,7 +7082,7 @@ print_compiled_byte_code_list(FILE* f, regex_t* reg)
 }
 #endif
 
-#ifdef ONIG_DEBUG_PARSE_TREE
+#ifdef ONIG_DEBUG_PARSE
 
 static void
 Indent(FILE* f, int indent)
