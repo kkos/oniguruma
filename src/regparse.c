@@ -288,7 +288,6 @@ onig_strcpy(UChar* dest, const UChar* src, const UChar* end)
   }
 }
 
-#ifdef USE_NAMED_GROUP
 static UChar*
 strdup_with_null(OnigEncoding enc, UChar* s, UChar* end)
 {
@@ -307,7 +306,6 @@ strdup_with_null(OnigEncoding enc, UChar* s, UChar* end)
 
   return r;
 }
-#endif
 
 static int
 save_entry(ScanEnv* env, enum SaveType type, int* id)
@@ -482,8 +480,6 @@ onig_st_insert_strend(hash_table_type* table, const UChar* str_key,
 
 #endif /* USE_ST_LIBRARY */
 
-
-#ifdef USE_NAMED_GROUP
 
 #define INIT_NAME_BACKREFS_ALLOC_NUM   8
 
@@ -965,49 +961,17 @@ onig_name_to_backref_number(regex_t* reg, const UChar* name,
   }
 }
 
-#else /* USE_NAMED_GROUP */
-
-extern int
-onig_name_to_group_numbers(regex_t* reg, const UChar* name,
-                           const UChar* name_end, int** nums)
-{
-  return ONIG_NO_SUPPORT_CONFIG;
-}
-
-extern int
-onig_name_to_backref_number(regex_t* reg, const UChar* name,
-                            const UChar* name_end, OnigRegion* region)
-{
-  return ONIG_NO_SUPPORT_CONFIG;
-}
-
-extern int
-onig_foreach_name(regex_t* reg,
-  int (*func)(const UChar*, const UChar*,int,int*,regex_t*,void*), void* arg)
-{
-  return ONIG_NO_SUPPORT_CONFIG;
-}
-
-extern int
-onig_number_of_names(regex_t* reg)
-{
-  return 0;
-}
-#endif /* else USE_NAMED_GROUP */
-
 extern int
 onig_noname_group_capture_is_active(regex_t* reg)
 {
   if (ONIG_IS_OPTION_ON(reg->options, ONIG_OPTION_DONT_CAPTURE_GROUP))
     return 0;
 
-#ifdef USE_NAMED_GROUP
   if (onig_number_of_names(reg) > 0 &&
       IS_SYNTAX_BV(reg->syntax, ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP) &&
       !ONIG_IS_OPTION_ON(reg->options, ONIG_OPTION_CAPTURE_GROUP)) {
     return 0;
   }
-#endif
 
   return 1;
 }
@@ -1032,10 +996,8 @@ scan_env_clear(ScanEnv* env)
 #endif
 
   env->num_mem    = 0;
-#ifdef USE_NAMED_GROUP
   env->num_named  = 0;
-#endif
-  env->mem_alloc       = 0;
+  env->mem_alloc  = 0;
   env->mem_env_dynamic = (MemEnv* )NULL;
 
   xmemset(env->mem_env_static, 0, sizeof(env->mem_env_static));
@@ -3110,7 +3072,6 @@ enum REF_NUM {
   IS_REL_NUM = 2
 };
 
-#ifdef USE_NAMED_GROUP
 #ifdef USE_BACKREF_WITH_LEVEL
 /*
    \k<name+n>, \k<name-n>
@@ -3384,111 +3345,6 @@ fetch_name(OnigCodePoint start_code, UChar** src, UChar* end,
     return r;
   }
 }
-#else
-static int
-fetch_name(OnigCodePoint start_code, UChar** src, UChar* end,
-           UChar** rname_end, ScanEnv* env, int* rback_num,
-           enum REF_NUM* num_type, int ref)
-{
-  int r, sign;
-  int digit_count;
-  OnigCodePoint end_code;
-  OnigCodePoint c = 0;
-  UChar *name_end;
-  OnigEncoding enc = env->enc;
-  UChar *pnum_head;
-  UChar *p = *src;
-  PFETCH_READY;
-
-  *rback_num = 0;
-
-  end_code = get_name_end_code_point(start_code);
-
-  digit_count = 0;
-  *rname_end = name_end = end;
-  r = 0;
-  pnum_head = *src;
-  *num_type = IS_ABS_NUM;
-  sign = 1;
-
-  if (PEND) {
-    return ONIGERR_EMPTY_GROUP_NAME;
-  }
-  else {
-    PFETCH(c);
-    if (c == end_code)
-      return ONIGERR_EMPTY_GROUP_NAME;
-
-    if (ONIGENC_IS_CODE_DIGIT(enc, c)) {
-      *num_type = IS_ABS_NUM;
-      digit_count++;
-    }
-    else if (c == '-') {
-      if (ref == 1) {
-        *num_type = IS_REL_NUM;
-        sign = -1;
-        pnum_head = p;
-      }
-      else {
-        r = ONIGERR_INVALID_GROUP_NAME;
-      }
-    }
-    else if (c == '+') {
-      if (ref == 1) {
-        *num_type = IS_REL_NUM;
-        sign = 1;
-        pnum_head = p;
-      }
-      else {
-        r = ONIGERR_INVALID_GROUP_NAME;
-      }
-    }
-    else {
-      r = ONIGERR_INVALID_CHAR_IN_GROUP_NAME;
-    }
-  }
-
-  while (! PEND) {
-    name_end = p;
-
-    PFETCH(c);
-    if (c == end_code || c == ')') break;
-
-    if (ONIGENC_IS_CODE_DIGIT(enc, c))
-      digit_count++;
-    else
-      r = ONIGERR_INVALID_CHAR_IN_GROUP_NAME;
-  }
-  if (r == 0 && c != end_code) {
-    r = ONIGERR_INVALID_GROUP_NAME;
-    name_end = end;
-  }
-  if (r == 0 && digit_count == 0) {
-    r = ONIGERR_INVALID_GROUP_NAME;
-  }
-
-  if (r == 0) {
-    *rback_num = onig_scan_unsigned_number(&pnum_head, name_end, enc);
-    if (*rback_num < 0) return ONIGERR_TOO_BIG_NUMBER;
-    else if (*rback_num == 0) {
-      if (*num_type == IS_REL_NUM) {
-        r = ONIGERR_INVALID_GROUP_NAME;
-        goto err;
-      }
-    }
-    *rback_num *= sign;
-
-    *rname_end = name_end;
-    *src = p;
-    return 0;
-  }
-  else {
-  err:
-    onig_scan_env_set_error_string(env, r, *src, name_end);
-    return r;
-  }
-}
-#endif /* USE_NAMED_GROUP */
 
 static void
 CC_ESC_WARN(ScanEnv* env, UChar *c)
@@ -4205,7 +4061,6 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       }
       break;
 
-#ifdef USE_NAMED_GROUP
     case 'k':
       if (!PEND && IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_K_NAMED_BACKREF)) {
         PFETCH(c);
@@ -4277,7 +4132,6 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
           PUNFETCH;
       }
       break;
-#endif
 
 #ifdef USE_CALL
     case 'g':
@@ -5292,9 +5146,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
   Node *target;
   OnigOptionType option;
   OnigCodePoint c;
-#ifdef USE_NAMED_GROUP
   int list_capture;
-#endif
   OnigEncoding enc = env->enc;
 
   UChar* p = *src;
@@ -5331,7 +5183,6 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
       *np = node_new_enclosure(ENCLOSURE_STOP_BACKTRACK);
       break;
 
-#ifdef USE_NAMED_GROUP
     case '\'':
       if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_LT_NAMED_GROUP)) {
         goto named_group1;
@@ -5339,7 +5190,6 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
       else
         return ONIGERR_UNDEFINED_GROUP_OPTION;
       break;
-#endif
 
     case '<':   /* look behind (?<=...), (?<!...) */
       if (PEND) return ONIGERR_END_PATTERN_WITH_UNMATCHED_PARENTHESIS;
@@ -5348,7 +5198,6 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
         *np = onig_node_new_anchor(ANCHOR_LOOK_BEHIND);
       else if (c == '!')
         *np = onig_node_new_anchor(ANCHOR_LOOK_BEHIND_NOT);
-#ifdef USE_NAMED_GROUP
       else {
         if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_LT_NAMED_GROUP)) {
           UChar *name;
@@ -5385,11 +5234,6 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           return ONIGERR_UNDEFINED_GROUP_OPTION;
         }
       }
-#else
-      else {
-        return ONIGERR_UNDEFINED_GROUP_OPTION;
-      }
-#endif
       break;
 
     case '~':
@@ -5647,7 +5491,6 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 
     case '@':
       if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_ATMARK_CAPTURE_HISTORY)) {
-#ifdef USE_NAMED_GROUP
         if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_LT_NAMED_GROUP)) {
           PFETCH(c);
           if (c == '<' || c == '\'') {
@@ -5656,7 +5499,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           }
           PUNFETCH;
         }
-#endif
+
         *np = node_new_memory(0);
         CHECK_NULL_RETURN_MEMERR(*np);
         num = scan_env_add_mem_entry(env);
@@ -6492,9 +6335,7 @@ onig_parse_tree(Node** root, const UChar* pattern, const UChar* end,
   int r;
   UChar* p;
 
-#ifdef USE_NAMED_GROUP
   names_clear(reg);
-#endif
 
   scan_env_clear(env);
   env->options        = reg->options;

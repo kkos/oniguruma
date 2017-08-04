@@ -2038,8 +2038,6 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
   return r;
 }
 
-#ifdef USE_NAMED_GROUP
-
 static int
 noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
 {
@@ -2283,7 +2281,6 @@ disable_noname_group_capture(Node** root, regex_t* reg, ScanEnv* env)
 
   return onig_renumber_name_table(reg, map);
 }
-#endif /* USE_NAMED_GROUP */
 
 #ifdef USE_CALL
 static int
@@ -4150,22 +4147,19 @@ setup_call_node_call(CallNode* cn, ScanEnv* env, int state)
   if (cn->by_number != 0) {
     int gnum = cn->group_num;
 
-#ifdef USE_NAMED_GROUP
     if (env->num_named > 0 &&
         IS_SYNTAX_BV(env->syntax, ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP) &&
         !ONIG_IS_OPTION_ON(env->options, ONIG_OPTION_CAPTURE_GROUP)) {
       return ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED;
     }
-#endif
+
     if (gnum > env->num_mem) {
       onig_scan_env_set_error_string(env, ONIGERR_UNDEFINED_GROUP_REFERENCE,
                                      cn->name, cn->name_end);
       return ONIGERR_UNDEFINED_GROUP_REFERENCE;
     }
 
-#ifdef USE_NAMED_GROUP
   set_call_attr:
-#endif
     NODE_CALL_BODY(cn) = mem_env[cn->group_num].node;
     if (IS_NULL(NODE_CALL_BODY(cn))) {
       onig_scan_env_set_error_string(env, ONIGERR_UNDEFINED_NAME_REFERENCE,
@@ -4173,7 +4167,6 @@ setup_call_node_call(CallNode* cn, ScanEnv* env, int state)
       return ONIGERR_UNDEFINED_NAME_REFERENCE;
     }
   }
-#ifdef USE_NAMED_GROUP
   else {
     int *refs;
 
@@ -4193,7 +4186,6 @@ setup_call_node_call(CallNode* cn, ScanEnv* env, int state)
       goto set_call_attr;
     }
   }
-#endif
 
   return 0;
 }
@@ -6171,9 +6163,7 @@ onig_free_body(regex_t* reg)
     if (IS_NOT_NULL(reg->repeat_range))     xfree(reg->repeat_range);
     if (IS_NOT_NULL(REG_EXTP(reg)))         xfree(REG_EXTP(reg));
 
-#ifdef USE_NAMED_GROUP
     onig_names_free(reg);
-#endif
   }
 }
 
@@ -6247,7 +6237,6 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   r = onig_parse_tree(&root, pattern, pattern_end, reg, &scan_env);
   if (r != 0) goto err;
 
-#ifdef USE_NAMED_GROUP
   /* mixed use named group and no-named group */
   if (scan_env.num_named > 0 &&
       IS_SYNTAX_BV(scan_env.syntax, ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP) &&
@@ -6259,7 +6248,6 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 
     if (r != 0) goto err;
   }
-#endif
 
   r = check_backrefs(root, &scan_env);
   if (r != 0) goto err;
@@ -6377,9 +6365,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   onig_node_free(root);
 
 #ifdef ONIG_DEBUG_COMPILE
-#ifdef USE_NAMED_GROUP
   onig_print_names(stderr, reg);
-#endif
   print_compiled_byte_code_list(stderr, reg);
 #endif
 

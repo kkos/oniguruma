@@ -392,9 +392,7 @@ typedef struct {
   int              has_call_zero;
 #endif
   int              num_mem;
-#ifdef USE_NAMED_GROUP
   int              num_named;
-#endif
   int              mem_alloc;
   MemEnv            mem_env_static[SCANENV_MEMENV_SIZE];
   MemEnv*           mem_env_dynamic;
@@ -417,13 +415,11 @@ typedef struct {
 #define IS_SYNTAX_OP2(syn, opm)   (((syn)->op2 & (opm)) != 0)
 #define IS_SYNTAX_BV(syn, bvm)    (((syn)->behavior & (bvm)) != 0)
 
-#ifdef USE_NAMED_GROUP
 typedef struct {
   int new_val;
 } GroupNumRemap;
 
 extern int    onig_renumber_name_table P_((regex_t* reg, GroupNumRemap* map));
-#endif
 
 extern int    onig_strncmp P_((const UChar* s1, const UChar* s2, int n));
 extern void   onig_strcpy P_((UChar* dest, const UChar* src, const UChar* end));
@@ -448,9 +444,7 @@ extern int    onig_is_code_in_cc P_((OnigEncoding enc, OnigCodePoint code, CClas
 extern OnigLen onig_get_tiny_min_len(Node* node, unsigned int inhibit_node_types, int* invalid_node);
 
 #ifdef ONIG_DEBUG
-#ifdef USE_NAMED_GROUP
 extern int onig_print_names(FILE*, regex_t*);
-#endif
 #endif
 
 #endif /* REGPARSE_H */

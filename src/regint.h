@@ -56,7 +56,6 @@
 
 /* config */
 /* spec. config */
-#define USE_NAMED_GROUP
 #define USE_CALL
 #define USE_BACKREF_WITH_LEVEL        /* \k<name+n>, \k<name-n> */
 #define USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT  /* /(?:()|())*\2/ */

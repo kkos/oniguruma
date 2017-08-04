@@ -135,11 +135,7 @@ onig_error_code_to_format(int code)
   case ONIGERR_TOO_BIG_BACKREF_NUMBER:
     p = "too big backref number"; break;
   case ONIGERR_INVALID_BACKREF:
-#ifdef USE_NAMED_GROUP
     p = "invalid backref number/name"; break;
-#else
-    p = "invalid backref number"; break;
-#endif
   case ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED:
     p = "numbered backref/call is not allowed. (use name)"; break;
   case ONIGERR_TOO_MANY_CAPTURES:
@@ -155,11 +151,7 @@ onig_error_code_to_format(int code)
   case ONIGERR_INVALID_GROUP_NAME:
     p = "invalid group name <%n>"; break;
   case ONIGERR_INVALID_CHAR_IN_GROUP_NAME:
-#ifdef USE_NAMED_GROUP
     p = "invalid char in group name <%n>"; break;
-#else
-    p = "invalid char in group number <%n>"; break;
-#endif
   case ONIGERR_UNDEFINED_NAME_REFERENCE:
     p = "undefined name <%n> reference"; break;
   case ONIGERR_UNDEFINED_GROUP_REFERENCE:
