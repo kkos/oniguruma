@@ -639,6 +639,7 @@ extern int main(int argc, char* argv[])
   x2("(?~ab)", "ccc\ndab", 0, 5);
   x2("(?m:(?~ab))", "ccc\ndab", 0, 5);
   x2("(?-m:(?~ab))", "ccc\ndab", 0, 5);
+  x2("(?~abc)xyz", "xyz012345678901234567890123456789abc", 0, 3);
 
   // absent with expr
   x2("(?~|78|\\d*)", "123456789", 0, 6);
