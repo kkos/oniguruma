@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.5.0    2017/07/30
+Oniguruma Regular Expressions Version 6.5.0    2017/08/07
 
 syntax: ONIG_SYNTAX_RUBY (default)
 
@@ -245,20 +245,20 @@ syntax: ONIG_SYNTAX_RUBY (default)
   (?~absent)         Absent repeater    (* proposed by Tanaka Akira)
                      This works like .* (more precisely \O*), but it is
                      limited by the range that does not include the string
-                     match with absent.
+                     match with <absent>.
                      This is a written abbreviation of (?~|absent|\O*).
                      \O* is used as a repeater.
 
   (?~|absent|exp)    Absent expression  (* original)
                      This works like "exp", but it is limited by the range
-                     that does not include the string match with absent.
+                     that does not include the string match with <absent>.
 
                      ex. (?~|345|\d*)  "12345678"  ==> "12", "1", ""
 
   (?~|absent)        Absent cutter (* original)
                      After passed this operator, string right range is limited
                      at the point that does not include the string match whth
-                     absent.
+                     <absent>.
 
   (?~|)              Absent clear
                      Clear the effects caused by Absent cutters.
@@ -273,7 +273,7 @@ syntax: ONIG_SYNTAX_RUBY (default)
 
                condition_exp can be a backreference number/name or a normal
                regular expression.
-               When condition_exp is a backreference, both then_exp and
+               When condition_exp is a backreference number/name, both then_exp and
                else_exp can be omitted.
                Then it works as a backreference validity checker.
 
