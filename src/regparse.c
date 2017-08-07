@@ -1752,6 +1752,9 @@ is_simple_one_char_repeat(Node* node, Node** rquant, Node** rbody,
       return 0;
   }
 
+  if (QUANT_(quant)->greedy == 0)
+    return 0;
+
   body = NODE_BODY(quant);
   switch (NODE_TYPE(body)) {
   case NODE_STRING:
