@@ -661,6 +661,7 @@ extern int main(int argc, char* argv[])
   x2("(?~|aaaaa|a*+)", "aaaaa", 0, 0);
   x2("(?~|aaaaaa|a*+)b", "aaaaaab", 1, 7);
   x2("(?~|abcd|(?>))", "zzzabcd", 0, 0);
+  x2("(?~|abc|a*?)", "aaaabc", 0, 0);
 
   // absent range cutter
   x2("(?~|abc)a*", "aaaaaabc", 0, 5);
