@@ -1821,10 +1821,11 @@ make_absent_tree_for_simple_one_char_repeat(Node** node, Node* absent, Node* qua
 
   ns[2] = ns[3] = NULL_NODE;
 
-  r = make_absent_tail(&ns[2], &ns[3], id1, env);
+  r = node_new_update_var_gimmick(&ns[2], UPDATE_VAR_RIGHT_RANGE_FROM_STACK,
+                                  id1, env);
   if (r != 0) goto err;
 
-  x = make_list(4, ns);
+  x = make_list(3, ns);
   if (IS_NULL(x)) goto err;
 
   *node = x;
