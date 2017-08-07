@@ -277,7 +277,7 @@ unset_addr_list_add(UnsetAddrList* list, int offset, struct _Node* node)
 static int
 add_opcode(regex_t* reg, int opcode)
 {
-  BBUF_ADD1(reg, opcode);
+  BB_ADD1(reg, opcode);
   return 0;
 }
 
@@ -287,7 +287,7 @@ add_state_check_num(regex_t* reg, int num)
 {
   StateCheckNumType n = (StateCheckNumType )num;
 
-  BBUF_ADD(reg, &n, SIZE_STATE_CHECK_NUM);
+  BB_ADD(reg, &n, SIZE_STATE_CHECK_NUM);
   return 0;
 }
 #endif
@@ -297,7 +297,7 @@ add_rel_addr(regex_t* reg, int addr)
 {
   RelAddrType ra = (RelAddrType )addr;
 
-  BBUF_ADD(reg, &ra, SIZE_RELADDR);
+  BB_ADD(reg, &ra, SIZE_RELADDR);
   return 0;
 }
 
@@ -306,7 +306,7 @@ add_abs_addr(regex_t* reg, int addr)
 {
   AbsAddrType ra = (AbsAddrType )addr;
 
-  BBUF_ADD(reg, &ra, SIZE_ABSADDR);
+  BB_ADD(reg, &ra, SIZE_ABSADDR);
   return 0;
 }
 
@@ -315,7 +315,7 @@ add_length(regex_t* reg, int len)
 {
   LengthType l = (LengthType )len;
 
-  BBUF_ADD(reg, &l, SIZE_LENGTH);
+  BB_ADD(reg, &l, SIZE_LENGTH);
   return 0;
 }
 
@@ -324,7 +324,7 @@ add_mem_num(regex_t* reg, int num)
 {
   MemNumType n = (MemNumType )num;
 
-  BBUF_ADD(reg, &n, SIZE_MEMNUM);
+  BB_ADD(reg, &n, SIZE_MEMNUM);
   return 0;
 }
 
@@ -334,7 +334,7 @@ add_pointer(regex_t* reg, void* addr)
 {
   PointerType ptr = (PointerType )addr;
 
-  BBUF_ADD(reg, &ptr, SIZE_POINTER);
+  BB_ADD(reg, &ptr, SIZE_POINTER);
   return 0;
 }
 #endif
@@ -342,7 +342,7 @@ add_pointer(regex_t* reg, void* addr)
 static int
 add_option(regex_t* reg, OnigOptionType option)
 {
-  BBUF_ADD(reg, &option, SIZE_OPTION);
+  BB_ADD(reg, &option, SIZE_OPTION);
   return 0;
 }
 
@@ -351,7 +351,7 @@ add_save_type(regex_t* reg, enum SaveType type)
 {
   SaveType t = (SaveType )type;
 
-  BBUF_ADD(reg, &t, SIZE_SAVE_TYPE);
+  BB_ADD(reg, &t, SIZE_SAVE_TYPE);
   return 0;
 }
 
@@ -360,7 +360,7 @@ add_update_var_type(regex_t* reg, enum UpdateVarType type)
 {
   UpdateVarType t = (UpdateVarType )type;
 
-  BBUF_ADD(reg, &t, SIZE_UPDATE_VAR_TYPE);
+  BB_ADD(reg, &t, SIZE_UPDATE_VAR_TYPE);
   return 0;
 }
 
@@ -378,14 +378,14 @@ add_opcode_rel_addr(regex_t* reg, int opcode, int addr)
 static int
 add_bytes(regex_t* reg, UChar* bytes, int len)
 {
-  BBUF_ADD(reg, bytes, len);
+  BB_ADD(reg, bytes, len);
   return 0;
 }
 
 static int
 add_bitset(regex_t* reg, BitSetRef bs)
 {
-  BBUF_ADD(reg, bs, SIZE_BITSET);
+  BB_ADD(reg, bs, SIZE_BITSET);
   return 0;
 }
 
@@ -492,7 +492,7 @@ compile_call(CallNode* node, regex_t* reg, ScanEnv* env)
 
   r = add_opcode(reg, OP_CALL);
   if (r != 0) return r;
-  r = unset_addr_list_add(env->unset_addr_list, BBUF_GET_OFFSET_POS(reg),
+  r = unset_addr_list_add(env->unset_addr_list, BB_GET_OFFSET_POS(reg),
                           NODE_CALL_BODY(node));
   if (r != 0) return r;
   r = add_abs_addr(reg, 0 /*dummy addr.*/);
@@ -655,7 +655,7 @@ add_multi_byte_cclass(BBuf* mbuf, regex_t* reg)
   return add_bytes(reg, mbuf->p, mbuf->used);
 #else
   int r, pad_size;
-  UChar* p = BBUF_GET_ADD_ADDRESS(reg) + SIZE_LENGTH;
+  UChar* p = BB_GET_ADD_ADDRESS(reg) + SIZE_LENGTH;
 
   GET_ALIGNMENT_PAD_SIZE(p, pad_size);
   add_length(reg, mbuf->used + (WORD_ALIGNMENT_SIZE - 1));
@@ -1400,7 +1400,7 @@ compile_enclosure_memory_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
   if (node->m.regnum == 0 && NODE_IS_CALLED(node)) {
     r = add_opcode(reg, OP_CALL);
     if (r != 0) return r;
-    node->m.called_addr = BBUF_GET_OFFSET_POS(reg) + SIZE_ABSADDR + SIZE_OP_JUMP;
+    node->m.called_addr = BB_GET_OFFSET_POS(reg) + SIZE_ABSADDR + SIZE_OP_JUMP;
     NODE_STATUS_ADD(node, NST_ADDR_FIXED);
     r = add_abs_addr(reg, (int )node->m.called_addr);
     if (r != 0) return r;
@@ -1418,7 +1418,7 @@ compile_enclosure_memory_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
   if (NODE_IS_CALLED(node)) {
     r = add_opcode(reg, OP_CALL);
     if (r != 0) return r;
-    node->m.called_addr = BBUF_GET_OFFSET_POS(reg) + SIZE_ABSADDR + SIZE_OP_JUMP;
+    node->m.called_addr = BB_GET_OFFSET_POS(reg) + SIZE_ABSADDR + SIZE_OP_JUMP;
     NODE_STATUS_ADD(node, NST_ADDR_FIXED);
     r = add_abs_addr(reg, (int )node->m.called_addr);
     if (r != 0) return r;
@@ -2298,7 +2298,7 @@ unset_addr_list_fix(UnsetAddrList* uslist, regex_t* reg)
     addr   = en->m.called_addr;
     offset = uslist->us[i].offset;
 
-    BBUF_WRITE(reg, offset, &addr, SIZE_ABSADDR);
+    BB_WRITE(reg, offset, &addr, SIZE_ABSADDR);
   }
   return 0;
 }
@@ -6219,7 +6219,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   if (reg->alloc == 0) {
     init_size = (pattern_end - pattern) * 2;
     if (init_size <= 0) init_size = COMPILE_INIT_SIZE;
-    r = BBUF_INIT(reg, init_size);
+    r = BB_INIT(reg, init_size);
     if (r != 0) goto end;
   }
   else

@@ -163,7 +163,7 @@ bbuf_clone(BBuf** rto, BBuf* from)
 
   *rto = to = (BBuf* )xmalloc(sizeof(BBuf));
   CHECK_NULL_RETURN_MEMERR(to);
-  r = BBUF_INIT(to, from->alloc);
+  r = BB_INIT(to, from->alloc);
   if (r != 0) {
     xfree(to->p);
     *rto = 0;
@@ -2182,8 +2182,8 @@ scan_unsigned_octal_number(UChar** src, UChar* end, int maxlen,
 }
 
 
-#define BBUF_WRITE_CODE_POINT(bbuf,pos,code) \
-    BBUF_WRITE(bbuf, pos, &(code), SIZE_CODE_POINT)
+#define BB_WRITE_CODE_POINT(bbuf,pos,code) \
+    BB_WRITE(bbuf, pos, &(code), SIZE_CODE_POINT)
 
 /* data format:
      [n][from-1][to-1][from-2][to-2] ... [from-n][to-n]
@@ -2199,7 +2199,7 @@ new_code_range(BBuf** pbuf)
 
   bbuf = *pbuf = (BBuf* )xmalloc(sizeof(BBuf));
   CHECK_NULL_RETURN_MEMERR(bbuf);
-  r = BBUF_INIT(bbuf, INIT_MULTI_BYTE_RANGE_SIZE);
+  r = BB_INIT(bbuf, INIT_MULTI_BYTE_RANGE_SIZE);
   if (r != 0) {
     xfree(bbuf);
     *pbuf = 0;
@@ -2207,7 +2207,7 @@ new_code_range(BBuf** pbuf)
   }
 
   n = 0;
-  BBUF_WRITE_CODE_POINT(bbuf, 0, n);
+  BB_WRITE_CODE_POINT(bbuf, 0, n);
   return 0;
 }
 
@@ -2270,19 +2270,19 @@ add_code_range_to_buf(BBuf** pbuf, OnigCodePoint from, OnigCodePoint to)
     int size = (n - high) * 2 * SIZE_CODE_POINT;
 
     if (inc_n > 0) {
-      BBUF_MOVE_RIGHT(bbuf, from_pos, to_pos, size);
+      BB_MOVE_RIGHT(bbuf, from_pos, to_pos, size);
     }
     else {
-      BBUF_MOVE_LEFT_REDUCE(bbuf, from_pos, to_pos);
+      BB_MOVE_LEFT_REDUCE(bbuf, from_pos, to_pos);
     }
   }
 
   pos = SIZE_CODE_POINT * (1 + low * 2);
-  BBUF_ENSURE_SIZE(bbuf, pos + SIZE_CODE_POINT * 2);
-  BBUF_WRITE_CODE_POINT(bbuf, pos, from);
-  BBUF_WRITE_CODE_POINT(bbuf, pos + SIZE_CODE_POINT, to);
+  BB_ENSURE_SIZE(bbuf, pos + SIZE_CODE_POINT * 2);
+  BB_WRITE_CODE_POINT(bbuf, pos, from);
+  BB_WRITE_CODE_POINT(bbuf, pos + SIZE_CODE_POINT, to);
   n += inc_n;
-  BBUF_WRITE_CODE_POINT(bbuf, 0, n);
+  BB_WRITE_CODE_POINT(bbuf, 0, n);
 
   return 0;
 }
@@ -2335,7 +2335,7 @@ not_code_range_buf(OnigEncoding enc, BBuf* bbuf, BBuf** pbuf)
   return r;
 }
 
-#define SWAP_BBUF_NOT(bbuf1, not1, bbuf2, not2) do {\
+#define SWAP_BB_NOT(bbuf1, not1, bbuf2, not2) do {\
   BBuf *tbuf; \
   int  tnot; \
   tnot = not1;  not1  = not2;  not2  = tnot; \
@@ -2359,7 +2359,7 @@ or_code_range_buf(OnigEncoding enc, BBuf* bbuf1, int not1,
 
   r = 0;
   if (IS_NULL(bbuf2))
-    SWAP_BBUF_NOT(bbuf1, not1, bbuf2, not2);
+    SWAP_BB_NOT(bbuf1, not1, bbuf2, not2);
 
   if (IS_NULL(bbuf1)) {
     if (not1 != 0) {
@@ -2376,7 +2376,7 @@ or_code_range_buf(OnigEncoding enc, BBuf* bbuf1, int not1,
   }
 
   if (not1 != 0)
-    SWAP_BBUF_NOT(bbuf1, not1, bbuf2, not2);
+    SWAP_BB_NOT(bbuf1, not1, bbuf2, not2);
 
   data1 = (OnigCodePoint* )(bbuf1->p);
   GET_CODE_POINT(n1, data1);
@@ -2459,7 +2459,7 @@ and_code_range_buf(BBuf* bbuf1, int not1, BBuf* bbuf2, int not2, BBuf** pbuf)
   }
 
   if (not1 != 0)
-    SWAP_BBUF_NOT(bbuf1, not1, bbuf2, not2);
+    SWAP_BB_NOT(bbuf1, not1, bbuf2, not2);
 
   data1 = (OnigCodePoint* )(bbuf1->p);
   data2 = (OnigCodePoint* )(bbuf2->p);
