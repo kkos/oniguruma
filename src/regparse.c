@@ -2107,7 +2107,7 @@ onig_scan_unsigned_number(UChar** src, const UChar* end, OnigEncoding enc)
   num = 0;
   while (! PEND) {
     PFETCH(c);
-    if (ONIGENC_IS_CODE_DIGIT_ASCII(enc, c)) {
+    if (IS_CODE_DIGIT_ASCII(enc, c)) {
       val = (unsigned int )DIGITVAL(c);
       if ((INT_MAX_LIMIT - val) / 10UL < num)
         return -1;  /* overflow */
@@ -2163,7 +2163,7 @@ scan_unsigned_octal_number(UChar** src, UChar* end, int maxlen,
   num = 0;
   while (! PEND && maxlen-- != 0) {
     PFETCH(c);
-    if (ONIGENC_IS_CODE_DIGIT_ASCII(enc, c) && c < '8') {
+    if (IS_CODE_DIGIT_ASCII(enc, c) && c < '8') {
       val = ODIGITVAL(c);
       if ((INT_MAX_LIMIT - val) / 8UL < num)
         return -1;  /* overflow */
@@ -3115,7 +3115,7 @@ fetch_name_with_level(OnigCodePoint start_code, UChar** src, UChar* end,
     if (c == end_code)
       return ONIGERR_EMPTY_GROUP_NAME;
 
-    if (ONIGENC_IS_CODE_DIGIT_ASCII(enc, c)) {
+    if (IS_CODE_DIGIT_ASCII(enc, c)) {
       *num_type = IS_ABS_NUM;
       digit_count++;
     }
@@ -3144,7 +3144,7 @@ fetch_name_with_level(OnigCodePoint start_code, UChar** src, UChar* end,
     }
 
     if (*num_type != IS_NOT_NUM) {
-      if (ONIGENC_IS_CODE_DIGIT_ASCII(enc, c)) {
+      if (IS_CODE_DIGIT_ASCII(enc, c)) {
         digit_count++;
       }
       else {
@@ -3167,7 +3167,7 @@ fetch_name_with_level(OnigCodePoint start_code, UChar** src, UChar* end,
         goto end;
       }
       PFETCH(c);
-      if (! ONIGENC_IS_CODE_DIGIT_ASCII(enc, c)) goto err;
+      if (! IS_CODE_DIGIT_ASCII(enc, c)) goto err;
       PUNFETCH;
       level = onig_scan_unsigned_number(&p, end, enc);
       if (level < 0) return ONIGERR_TOO_BIG_NUMBER;
@@ -3247,7 +3247,7 @@ fetch_name(OnigCodePoint start_code, UChar** src, UChar* end,
     if (c == end_code)
       return ONIGERR_EMPTY_GROUP_NAME;
 
-    if (ONIGENC_IS_CODE_DIGIT_ASCII(enc, c)) {
+    if (IS_CODE_DIGIT_ASCII(enc, c)) {
       if (ref == 1)
         *num_type = IS_ABS_NUM;
       else {
@@ -3291,7 +3291,7 @@ fetch_name(OnigCodePoint start_code, UChar** src, UChar* end,
       }
 
       if (*num_type != IS_NOT_NUM) {
-        if (ONIGENC_IS_CODE_DIGIT_ASCII(enc, c)) {
+        if (IS_CODE_DIGIT_ASCII(enc, c)) {
           digit_count++;
         }
         else {
@@ -3557,7 +3557,7 @@ fetch_token_in_cc(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
         if (num < 0) return ONIGERR_TOO_BIG_WIDE_CHAR_VALUE;
         if (!PEND) {
           c2 = PPEEK;
-          if (ONIGENC_IS_CODE_DIGIT_ASCII(enc, c2))
+          if (IS_CODE_DIGIT_ASCII(enc, c2))
             return ONIGERR_TOO_LONG_WIDE_CHAR_VALUE;
         }
 
@@ -3944,7 +3944,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
         num = scan_unsigned_octal_number(&p, end, 11, enc);
         if (num < 0) return ONIGERR_TOO_BIG_WIDE_CHAR_VALUE;
         if (!PEND) {
-          if (ONIGENC_IS_CODE_DIGIT_ASCII(enc, PPEEK))
+          if (IS_CODE_DIGIT_ASCII(enc, PPEEK))
             return ONIGERR_TOO_LONG_WIDE_CHAR_VALUE;
         }
 
@@ -5316,7 +5316,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
         PFETCH(c);
         if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
 
-        if (ONIGENC_IS_CODE_DIGIT_ASCII(enc, c)
+        if (IS_CODE_DIGIT_ASCII(enc, c)
             || c == '-' || c == '+' || c == '<' || c == '\'') {
           UChar* name_end;
           int back_num;
