@@ -283,7 +283,7 @@ typedef unsigned int  MemStatusType;
 #define INT_MAX_LIMIT           ((1UL << (SIZEOF_INT * 8 - 1)) - 1)
 
 #define ONIGENC_IS_CODE_DIGIT_ASCII(enc, code) \
-  ((code) < 128 && ONIGENC_IS_CODE_CTYPE(enc,code,ONIGENC_CTYPE_DIGIT))
+  ((code) < 128 && ONIGENC_IS_CODE_DIGIT(enc,code))
 #define ONIGENC_IS_CODE_XDIGIT_ASCII(enc, code) \
   ((code) < 128 && ONIGENC_IS_CODE_XDIGIT(enc,code))
 
