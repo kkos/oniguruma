@@ -2135,7 +2135,7 @@ scan_unsigned_hexadecimal_number(UChar** src, UChar* end, int maxlen,
   num = 0;
   while (! PEND && maxlen-- != 0) {
     PFETCH(c);
-    if (ONIGENC_IS_CODE_XDIGIT_ASCII(enc, c)) {
+    if (IS_CODE_XDIGIT_ASCII(enc, c)) {
       val = (unsigned int )XDIGITVAL(enc,c);
       if ((INT_MAX_LIMIT - val) / 16UL < num)
         return -1;  /* overflow */
@@ -3584,7 +3584,7 @@ fetch_token_in_cc(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
         if (num < 0) return ONIGERR_TOO_BIG_WIDE_CHAR_VALUE;
         if (!PEND) {
           c2 = PPEEK;
-          if (ONIGENC_IS_CODE_XDIGIT_ASCII(enc, c2))
+          if (IS_CODE_XDIGIT_ASCII(enc, c2))
             return ONIGERR_TOO_LONG_WIDE_CHAR_VALUE;
         }
 
@@ -3969,7 +3969,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
         num = scan_unsigned_hexadecimal_number(&p, end, 8, enc);
         if (num < 0) return ONIGERR_TOO_BIG_WIDE_CHAR_VALUE;
         if (!PEND) {
-          if (ONIGENC_IS_CODE_XDIGIT_ASCII(enc, PPEEK))
+          if (IS_CODE_XDIGIT_ASCII(enc, PPEEK))
             return ONIGERR_TOO_LONG_WIDE_CHAR_VALUE;
         }
 
