@@ -285,9 +285,9 @@ typedef unsigned int  MemStatusType;
 #define IS_CODE_WORD_ASCII(enc,code) \
   (ONIGENC_IS_CODE_ASCII(code) && ONIGENC_IS_CODE_WORD(enc,code))
 #define IS_CODE_DIGIT_ASCII(enc, code) \
-  ((code) < 128 && ONIGENC_IS_CODE_DIGIT(enc,code))
+  (ONIGENC_IS_CODE_ASCII(code) && ONIGENC_IS_CODE_DIGIT(enc,code))
 #define IS_CODE_XDIGIT_ASCII(enc, code) \
-  ((code) < 128 && ONIGENC_IS_CODE_XDIGIT(enc,code))
+  (ONIGENC_IS_CODE_ASCII(code) && ONIGENC_IS_CODE_XDIGIT(enc,code))
 
 #define DIGITVAL(code)    ((code) - '0')
 #define ODIGITVAL(code)   DIGITVAL(code)
