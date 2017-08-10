@@ -4521,7 +4521,7 @@ add_ctype_to_cc(CClassNode* cc, int ctype, int not, ScanEnv* env)
   case ONIGENC_CTYPE_WORD:
     if (not == 0) {
       for (c = 0; c < SINGLE_BYTE_SIZE; c++) {
-        if (IS_CODE_SB_WORD(enc, c)) BITSET_SET_BIT(cc->bs, c);
+        if (IS_CODE_WORD_ASCII(enc, c)) BITSET_SET_BIT(cc->bs, c);
       }
       ADD_ALL_MULTI_BYTE_RANGE(enc, cc->mbuf);
     }

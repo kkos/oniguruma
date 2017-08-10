@@ -729,7 +729,7 @@ typedef struct {
 } OnigMatchArg;
 
 
-#define IS_CODE_SB_WORD(enc,code) \
+#define IS_CODE_WORD_ASCII(enc,code) \
   (ONIGENC_IS_CODE_ASCII(code) && ONIGENC_IS_CODE_WORD(enc,code))
 
 typedef struct OnigEndCallListItem {
