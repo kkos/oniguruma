@@ -1166,7 +1166,6 @@ node_new(void)
   Node* node;
 
   node = (Node* )xmalloc(sizeof(Node));
-  //xmemset(node, 0, sizeof(node->u.base));
   xmemset(node, 0, sizeof(*node));
 
 #ifdef DEBUG_NODE_FREE
@@ -1180,7 +1179,6 @@ static void
 initialize_cclass(CClassNode* cc)
 {
   BITSET_CLEAR(cc->bs);
-  /* cc->base.flags = 0; */
   cc->flags = 0;
   cc->mbuf  = NULL;
 }
@@ -2127,7 +2125,7 @@ onig_scan_unsigned_number(UChar** src, const UChar* end, OnigEncoding enc)
 
 static int
 scan_unsigned_hexadecimal_number(UChar** src, UChar* end, int maxlen,
-				 OnigEncoding enc)
+                                 OnigEncoding enc)
 {
   OnigCodePoint c;
   unsigned int num, val;
@@ -2155,7 +2153,7 @@ scan_unsigned_hexadecimal_number(UChar** src, UChar* end, int maxlen,
 
 static int
 scan_unsigned_octal_number(UChar** src, UChar* end, int maxlen,
-			   OnigEncoding enc)
+                           OnigEncoding enc)
 {
   OnigCodePoint c;
   unsigned int num, val;
@@ -2401,7 +2399,7 @@ or_code_range_buf(OnigEncoding enc, BBuf* bbuf1, int not1,
 
 static int
 and_code_range1(BBuf** pbuf, OnigCodePoint from1, OnigCodePoint to1,
-	        OnigCodePoint* data, int n)
+                OnigCodePoint* data, int n)
 {
   int i, r;
   OnigCodePoint from2, to2;
@@ -2627,7 +2625,7 @@ conv_backslash_value(OnigCodePoint c, ScanEnv* env)
     case 'e': return '\033';
     case 'v':
       if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_ESC_V_VTAB))
-	return '\v';
+        return '\v';
       break;
 
     default:
@@ -3381,7 +3379,7 @@ CLOSE_BRACKET_WITHOUT_ESC_WARN(ScanEnv* env, UChar* c)
 
 static UChar*
 find_str_position(OnigCodePoint s[], int n, UChar* from, UChar* to,
-		  UChar **next, OnigEncoding enc)
+                  UChar **next, OnigEncoding enc)
 {
   int i;
   OnigCodePoint x;
@@ -3410,7 +3408,7 @@ find_str_position(OnigCodePoint s[], int n, UChar* from, UChar* to,
 
 static int
 str_exist_check_with_esc(OnigCodePoint s[], int n, UChar* from, UChar* to,
-		 OnigCodePoint bad, OnigEncoding enc, OnigSyntaxType* syn)
+                         OnigCodePoint bad, OnigEncoding enc, OnigSyntaxType* syn)
 {
   int i, in_esc;
   OnigCodePoint x;
@@ -4389,8 +4387,8 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
 static int
 add_ctype_to_cc_by_range(CClassNode* cc, int ctype ARG_UNUSED, int not,
-			 OnigEncoding enc ARG_UNUSED,
-                         OnigCodePoint sb_out, const OnigCodePoint mbr[])
+                         OnigEncoding enc ARG_UNUSED, OnigCodePoint sb_out,
+                         const OnigCodePoint mbr[])
 {
   int i, r;
   OnigCodePoint j;
@@ -4650,8 +4648,7 @@ fetch_char_property_to_ctype(UChar** src, UChar* end, ScanEnv* env)
 }
 
 static int
-parse_char_property(Node** np, OnigToken* tok, UChar** src, UChar* end,
-		    ScanEnv* env)
+parse_char_property(Node** np, OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
 {
   int r, ctype;
   CClassNode* cc;
@@ -4685,7 +4682,7 @@ enum CCVALTYPE {
 
 static int
 next_state_class(CClassNode* cc, OnigCodePoint* vs, enum CCVALTYPE* type,
-		 enum CCSTATE* state, ScanEnv* env)
+                 enum CCSTATE* state, ScanEnv* env)
 {
   int r;
 
@@ -4708,9 +4705,9 @@ next_state_class(CClassNode* cc, OnigCodePoint* vs, enum CCVALTYPE* type,
 
 static int
 next_state_val(CClassNode* cc, OnigCodePoint *from, OnigCodePoint to,
-	       int* from_israw, int to_israw,
-	       enum CCVALTYPE intype, enum CCVALTYPE* type,
-	       enum CCSTATE* state, ScanEnv* env)
+               int* from_israw, int to_israw,
+               enum CCVALTYPE intype, enum CCVALTYPE* type,
+               enum CCSTATE* state, ScanEnv* env)
 {
   int r;
 
@@ -4779,7 +4776,7 @@ next_state_val(CClassNode* cc, OnigCodePoint *from, OnigCodePoint to,
 
 static int
 code_exist_check(OnigCodePoint c, UChar* from, UChar* end, int ignore_escaped,
-		 ScanEnv* env)
+                 ScanEnv* env)
 {
   int in_esc;
   OnigCodePoint code;
@@ -5140,11 +5137,11 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
 }
 
 static int parse_subexp(Node** top, OnigToken* tok, int term,
-			UChar** src, UChar* end, ScanEnv* env);
+                        UChar** src, UChar* end, ScanEnv* env);
 
 static int
 parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
-	      ScanEnv* env)
+                ScanEnv* env)
 {
   int r, num;
   Node *target;
@@ -5765,8 +5762,7 @@ typedef struct {
 } IApplyCaseFoldArg;
 
 static int
-i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[],
-		  int to_len, void* arg)
+i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[], int to_len, void* arg)
 {
   IApplyCaseFoldArg* iarg;
   ScanEnv* env;
@@ -5845,8 +5841,8 @@ i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[],
 }
 
 static int
-parse_exp(Node** np, OnigToken* tok, int term,
-	  UChar** src, UChar* end, ScanEnv* env)
+parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
+          ScanEnv* env)
 {
   int r, len, group = 0;
   Node* qn;
@@ -6203,8 +6199,8 @@ parse_exp(Node** np, OnigToken* tok, int term,
 }
 
 static int
-parse_branch(Node** top, OnigToken* tok, int term,
-	     UChar** src, UChar* end, ScanEnv* env)
+parse_branch(Node** top, OnigToken* tok, int term, UChar** src, UChar* end,
+             ScanEnv* env)
 {
   int r;
   Node *node, **headp;
@@ -6246,8 +6242,8 @@ parse_branch(Node** top, OnigToken* tok, int term,
 
 /* term_tok: TK_EOT or TK_SUBEXP_CLOSE */
 static int
-parse_subexp(Node** top, OnigToken* tok, int term,
-	     UChar** src, UChar* end, ScanEnv* env)
+parse_subexp(Node** top, OnigToken* tok, int term, UChar** src, UChar* end,
+             ScanEnv* env)
 {
   int r;
   Node *node, **headp;
@@ -6376,7 +6372,7 @@ onig_parse_tree(Node** root, const UChar* pattern, const UChar* end,
 
 extern void
 onig_scan_env_set_error_string(ScanEnv* env, int ecode ARG_UNUSED,
-				UChar* arg, UChar* arg_end)
+                               UChar* arg, UChar* arg_end)
 {
   env->error     = arg;
   env->error_end = arg_end;
