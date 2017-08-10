@@ -2533,7 +2533,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
             if (IS_NULL(xc->mbuf) && !IS_NCCLASS_NOT(xc)) {
               for (i = 0; i < SINGLE_BYTE_SIZE; i++) {
                 if (BITSET_AT(xc->bs, i)) {
-                  if (IS_CODE_WORD_ASCII(reg->enc, i)) return 0;
+                  if (ONIGENC_IS_CODE_WORD(reg->enc, i)) return 0;
                 }
               }
               return 1;
@@ -2543,7 +2543,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
           else {
             if (IS_NOT_NULL(xc->mbuf)) return 0;
             for (i = 0; i < SINGLE_BYTE_SIZE; i++) {
-              if (! IS_CODE_WORD_ASCII(reg->enc, i)) {
+              if (! ONIGENC_IS_CODE_WORD(reg->enc, i)) {
                 if (!IS_NCCLASS_NOT(xc)) {
                   if (BITSET_AT(xc->bs, i))
                     return 0;
