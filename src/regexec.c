@@ -2002,6 +2002,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       MOP_OUT;
       break;
 
+#ifdef USE_OP_CCLASS_NODE
     case OP_CCLASS_NODE:  MOP_IN(OP_CCLASS_NODE);
       {
         OnigCodePoint code;
@@ -2020,6 +2021,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       }
       MOP_OUT;
       break;
+#endif
 
     case OP_ANYCHAR:  MOP_IN(OP_ANYCHAR);
       DATA_ENSURE(1);

@@ -6652,7 +6652,9 @@ OnigOpInfoType OnigOpInfo[] = {
   { OP_CCLASS_NOT,        "cclass-not",      ARG_SPECIAL },
   { OP_CCLASS_MB_NOT,     "cclass-mb-not",   ARG_SPECIAL },
   { OP_CCLASS_MIX_NOT,    "cclass-mix-not",  ARG_SPECIAL },
+#ifdef USE_OP_CCLASS_NODE
   { OP_CCLASS_NODE,       "cclass-node",     ARG_SPECIAL },
+#endif
   { OP_ANYCHAR,           "anychar",         ARG_NON },
   { OP_ANYCHAR_ML,        "anychar-ml",      ARG_NON },
   { OP_ANYCHAR_STAR,      "anychar*",        ARG_NON },
@@ -6925,6 +6927,7 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
       fprintf(f, ":%d:%d:%d", n, (int )code, len);
       break;
 
+#ifdef USE_OP_CCLASS_NODE
     case OP_CCLASS_NODE:
       {
         CClassNode *cc;
@@ -6934,6 +6937,7 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
         fprintf(f, ":%p:%d", cc, n);
       }
       break;
+#endif
 
     case OP_BACKREF_N_IC:
       mem = *((MemNumType* )bp);
