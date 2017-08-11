@@ -4498,13 +4498,14 @@ add_ctype_to_cc_by_range(CClassNode* cc, int ctype ARG_UNUSED, int not,
         if (r != 0) return r;
       }
       prev = ONIGENC_CODE_RANGE_TO(mbr, i) + 1;
+      if (prev == 0) goto end;
     }
-    if (prev < MAX_CODE_POINT) {
-      r = add_code_range_to_buf(&(cc->mbuf), prev, MAX_CODE_POINT);
-      if (r != 0) return r;
-    }
+
+    r = add_code_range_to_buf(&(cc->mbuf), prev, MAX_CODE_POINT);
+    if (r != 0) return r;
   }
 
+ end:
   return 0;
 }
 
