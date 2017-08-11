@@ -1722,6 +1722,57 @@ make_absent_tail(Node** node1, Node** node2, int pre_save_right_id,
 }
 
 static int
+make_absent_clear(Node** node, ScanEnv* env)
+{
+  int r;
+  int id;
+  Node* save;
+  Node* x;
+  Node* ns[2];
+
+  *node = NULL_NODE;
+  save = ns[0] = ns[1] = NULL_NODE;
+
+  r = node_new_save_gimmick(&save, SAVE_RIGHT_RANGE, env);
+  if (r != 0) goto err;
+
+  id = GIMMICK_(save)->id;
+  r = node_new_update_var_gimmick(&ns[0], UPDATE_VAR_RIGHT_RANGE_FROM_STACK,
+                                  id, env);
+  if (r != 0) goto err;
+
+  r = node_new_fail(&ns[1], env);
+  if (r != 0) goto err;
+
+  x = make_list(2, ns);
+  if (IS_NULL(x)) goto err;
+
+  ns[0] = NULL_NODE; ns[1] = x;
+
+  r = node_new_update_var_gimmick(&ns[0], UPDATE_VAR_RIGHT_RANGE_INIT,
+				  0, env);
+  if (r != 0) goto err;
+
+  x = make_alt(2, ns);
+  if (IS_NULL(x)) goto err;
+
+  ns[0] = save;
+  ns[1] = x;
+  save = NULL_NODE;
+  x = make_list(2, ns);
+  if (IS_NULL(x)) goto err;
+
+  *node = x;
+  return ONIG_NORMAL;
+
+ err:
+  onig_node_free(save);
+  onig_node_free(ns[0]);
+  onig_node_free(ns[1]);
+  return r;
+}
+
+static int
 is_simple_one_char_repeat(Node* node, Node** rquant, Node** rbody,
                           int* is_possessive, ScanEnv* env)
 {
@@ -5253,8 +5304,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           head_bar = 1;
           if (PPEEK_IS(')')) { // (?~|)  : absent clear
             PINC;
-            r = node_new_update_var_gimmick(np, UPDATE_VAR_RIGHT_RANGE_INIT,
-                                            0, env);
+            r = make_absent_clear(np, env);
             if (r != 0) return r;
             goto end;
           }
