@@ -674,6 +674,9 @@ extern int main(int argc, char* argv[])
   n("(?~|a)a", "a");
   x2("(?~|a)(?~|)a", "a", 0, 1);
   x2("(?~|a).*(?~|)a", "bbbbbbbbbbbbbbbbbbbba", 0, 21);
+  x2("(?~|abc).*(xyz|pqr)(?~|)abc", "aaaaxyzaaapqrabc", 0, 16);
+  x2("(?~|abc).*(xyz|pqr)(?~|)abc", "aaaaxyzaaaabcpqrabc", 11, 19);
+  n("\A(?~|abc).*(xyz|pqrabc)(?~|)abc", "aaaaxyzaaaabcpqrabcabc");
 
   /*
     < ifndef IGNORE_EUC_JP >
