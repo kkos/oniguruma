@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.5.0    2017/08/07
+Oniguruma Regular Expressions Version 6.6.0    2017/08/11
 
 syntax: ONIG_SYNTAX_RUBY (default)
 
@@ -262,7 +262,6 @@ syntax: ONIG_SYNTAX_RUBY (default)
 
   (?~|)              Absent clear
                      Clear the effects caused by Absent cutters.
-                     (* This operation is not cancelled by backtrack.)
 
      * Nested Absent functions are not supported and the behavior
        is undefined.
