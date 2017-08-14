@@ -927,6 +927,42 @@ extern int main(int argc, char* argv[])
   x2("\\p{Hiragana}", "ぴ", 0, 3);
   n("\\P{Hiragana}", "ぴ");
 
+  x2("\\p{Word}", "こ", 0, 3);
+  n("\\p{^Word}", "こ");
+  x2("[\\p{Word}]", "こ", 0, 3);
+  n("[\\p{^Word}]", "こ");
+  n("[^\\p{Word}]", "こ");
+  x2("[^\\p{^Word}]", "こ", 0, 3);
+  x2("[^\\p{^Word}&&\\p{ASCII}]", "こ", 0, 3);
+  x2("[^\\p{^Word}&&\\p{ASCII}]", "a", 0, 1);
+  n("[^\\p{^Word}&&\\p{ASCII}]", "#");
+  x2("[^[\\p{^Word}]&&[\\p{ASCII}]]", "こ", 0, 3);
+  x2("[^[\\p{ASCII}]&&[^\\p{Word}]]", "こ", 0, 3);
+  n("[[\\p{ASCII}]&&[^\\p{Word}]]", "こ");
+  x2("[^[\\p{^Word}]&&[^\\p{ASCII}]]", "こ", 0, 3);
+  x2("[^\\x{104a}]", "こ", 0, 3);
+  x2("[^\\p{^Word}&&[^\\x{104a}]]", "こ", 0, 3);
+  x2("[^[\\p{^Word}]&&[^\\x{104a}]]", "こ", 0, 3);
+  n("[^\\p{Word}||[^\\x{104a}]]", "こ");
+
+  x2("\\p{^Cntrl}", "こ", 0, 3);
+  n("\\p{Cntrl}", "こ");
+  x2("[\\p{^Cntrl}]", "こ", 0, 3);
+  n("[\\p{Cntrl}]", "こ");
+  n("[^\\p{^Cntrl}]", "こ");
+  x2("[^\\p{Cntrl}]", "こ", 0, 3);
+  x2("[^\\p{Cntrl}&&\\p{ASCII}]", "こ", 0, 3);
+  x2("[^\\p{Cntrl}&&\\p{ASCII}]", "a", 0, 1);
+  n("[^\\p{^Cntrl}&&\\p{ASCII}]", "#");
+  x2("[^[\\p{^Cntrl}]&&[\\p{ASCII}]]", "こ", 0, 3);
+  x2("[^[\\p{ASCII}]&&[^\\p{Cntrl}]]", "こ", 0, 3);
+  n("[[\\p{ASCII}]&&[^\\p{Cntrl}]]", "こ");
+  n("[^[\\p{^Cntrl}]&&[^\\p{ASCII}]]", "こ");
+  n("[^\\p{^Cntrl}&&[^\\x{104a}]]", "こ");
+  n("[^[\\p{^Cntrl}]&&[^\\x{104a}]]", "こ");
+  n("[^\\p{Cntrl}||[^\\x{104a}]]", "こ");
+
+
   e("(?<abc>\\g<abc>)", "zzzz", ONIGERR_NEVER_ENDING_RECURSION);
 
   fprintf(stdout,
