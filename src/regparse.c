@@ -5672,6 +5672,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
     case 'p':
 #endif
     case '-': case 'i': case 'm': case 's': case 'x':
+    case 'W': case 'D': case 'S': case 'P':
       {
         int neg = 0;
 
@@ -5707,6 +5708,11 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
             OPTION_NEGATE(option, ONIG_OPTION_MULTILINE|ONIG_OPTION_SINGLELINE, neg);
             break;
 #endif
+          case 'W': OPTION_NEGATE(option, ONIG_OPTION_WORD_IS_ASCII, neg); break;
+          case 'D': OPTION_NEGATE(option, ONIG_OPTION_DIGIT_IS_ASCII, neg); break;
+          case 'S': OPTION_NEGATE(option, ONIG_OPTION_SPACE_IS_ASCII, neg); break;
+          case 'P': OPTION_NEGATE(option, ONIG_OPTION_POSIX_IS_ASCII, neg); break;
+
           default:
             return ONIGERR_UNDEFINED_GROUP_OPTION;
           }
