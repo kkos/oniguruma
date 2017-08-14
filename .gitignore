@@ -20,8 +20,5 @@ Makefile.in
 *~
 .libs/
 .deps/
-testc
-testcu
-testp
 /build
 m4/*.m4
