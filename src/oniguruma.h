@@ -385,6 +385,7 @@ typedef unsigned int        OnigOptionType;
 
 /* options */
 #define ONIG_OPTION_NONE                 0U
+/* options (compile time) */
 #define ONIG_OPTION_IGNORECASE           1U
 #define ONIG_OPTION_EXTEND               (ONIG_OPTION_IGNORECASE         << 1)
 #define ONIG_OPTION_MULTILINE            (ONIG_OPTION_EXTEND             << 1)
@@ -395,11 +396,17 @@ typedef unsigned int        OnigOptionType;
 #define ONIG_OPTION_DONT_CAPTURE_GROUP   (ONIG_OPTION_NEGATE_SINGLELINE  << 1)
 #define ONIG_OPTION_CAPTURE_GROUP        (ONIG_OPTION_DONT_CAPTURE_GROUP << 1)
 /* options (search time) */
-#define ONIG_OPTION_NOTBOL               (ONIG_OPTION_CAPTURE_GROUP << 1)
-#define ONIG_OPTION_NOTEOL               (ONIG_OPTION_NOTBOL << 1)
-#define ONIG_OPTION_POSIX_REGION         (ONIG_OPTION_NOTEOL << 1)
-#define ONIG_OPTION_CHECK_VALIDITY_OF_STRING   (ONIG_OPTION_POSIX_REGION << 1)
-#define ONIG_OPTION_MAXBIT               ONIG_OPTION_CHECK_VALIDITY_OF_STRING  /* limit */
+#define ONIG_OPTION_NOTBOL                    (ONIG_OPTION_CAPTURE_GROUP << 1)
+#define ONIG_OPTION_NOTEOL                    (ONIG_OPTION_NOTBOL << 1)
+#define ONIG_OPTION_POSIX_REGION              (ONIG_OPTION_NOTEOL << 1)
+#define ONIG_OPTION_CHECK_VALIDITY_OF_STRING  (ONIG_OPTION_POSIX_REGION << 1)
+/* options (compile time) */
+#define ONIG_OPTION_WORD_IS_ASCII        (ONIG_OPTION_CHECK_VALIDITY_OF_STRING << 1)
+#define ONIG_OPTION_DIGIT_IS_ASCII       (ONIG_OPTION_WORD_IS_ASCII << 1)
+#define ONIG_OPTION_SPACE_IS_ASCII       (ONIG_OPTION_DIGIT_IS_ASCII << 1)
+#define ONIG_OPTION_POSIX_IS_ASCII       (ONIG_OPTION_SPACE_IS_ASCII << 1)
+
+#define ONIG_OPTION_MAXBIT               ONIG_OPTION_POSIX_IS_ASCII  /* limit */
 
 #define ONIG_OPTION_ON(options,regopt)      ((options) |= (regopt))
 #define ONIG_OPTION_OFF(options,regopt)     ((options) &= ~(regopt))
