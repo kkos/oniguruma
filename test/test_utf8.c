@@ -25,7 +25,8 @@ static FILE* err_file;
 
 static OnigRegion* region;
 
-static void xx(char* pattern, char* str, int from, int to, int mem, int not)
+static void xx(char* pattern, char* str, int from, int to, int mem, int not,
+               int error_no)
 {
   int r;
   regex_t* reg;
@@ -35,9 +36,24 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not)
 	       ONIG_OPTION_DEFAULT, ONIG_ENCODING_UTF8, ONIG_SYNTAX_DEFAULT, &einfo);
   if (r) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
-    onig_error_code_to_str((UChar* )s, r, &einfo);
-    fprintf(err_file, "ERROR: %s  /%s/\n", s, pattern);
-    nerror++;
+
+    if (error_no == 0) {
+      onig_error_code_to_str((UChar* )s, r, &einfo);
+      fprintf(err_file, "ERROR: %s  /%s/\n", s, pattern);
+      nerror++;
+    }
+    else {
+      if (r == error_no) {
+        fprintf(stdout, "OK(ERROR): /%s/ %d\n", pattern, r);
+        nsucc++;
+      }
+      else {
+        fprintf(stdout, "FAIL(ERROR): /%s/ '%s', %d, %d\n", pattern, str,
+                error_no, r);
+        nfail++;
+      }
+    }
+
     return ;
   }
 
@@ -46,9 +62,24 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not)
 		  region, ONIG_OPTION_NONE);
   if (r < ONIG_MISMATCH) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
-    onig_error_code_to_str((UChar* )s, r);
-    fprintf(err_file, "ERROR: %s\n", s);
-    nerror++;
+
+    if (error_no == 0) {
+      onig_error_code_to_str((UChar* )s, r);
+      fprintf(err_file, "ERROR: %s\n", s);
+      nerror++;
+    }
+    else {
+      if (r == error_no) {
+        fprintf(stdout, "OK(ERROR): /%s/ '%s', %d\n", pattern, str, r);
+        nsucc++;
+      }
+      else {
+        fprintf(stdout, "FAIL ERROR NO: /%s/ '%s', %d, %d\n", pattern, str,
+                error_no, r);
+        nfail++;
+      }
+    }
+
     return ;
   }
 
@@ -84,17 +115,22 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not)
 
 static void x2(char* pattern, char* str, int from, int to)
 {
-  xx(pattern, str, from, to, 0, 0);
+  xx(pattern, str, from, to, 0, 0, 0);
 }
 
 static void x3(char* pattern, char* str, int from, int to, int mem)
 {
-  xx(pattern, str, from, to, mem, 0);
+  xx(pattern, str, from, to, mem, 0, 0);
 }
 
 static void n(char* pattern, char* str)
 {
-  xx(pattern, str, 0, 0, 0, 1);
+  xx(pattern, str, 0, 0, 0, 1, 0);
+}
+
+static void e(char* pattern, char* str, int error_no)
+{
+  xx(pattern, str, 0, 0, 0, 0, error_no);
 }
 
 extern int main(int argc, char* argv[])
@@ -890,6 +926,8 @@ extern int main(int argc, char* argv[])
 
   x2("\\p{Hiragana}", "ぴ", 0, 3);
   n("\\P{Hiragana}", "ぴ");
+
+  e("(?<abc>\\g<abc>)", "zzzz", ONIGERR_NEVER_ENDING_RECURSION);
 
   fprintf(stdout,
        "\nRESULT   SUCC: %d,  FAIL: %d,  ERROR: %d      (by Oniguruma %s)\n",
