@@ -2571,7 +2571,6 @@ and_cclass(CClassNode* dest, CClassNode* cc, OnigEncoding enc)
   bitset_and(bsr1, bsr2);
   if (bsr1 != dest->bs) {
     bitset_copy(dest->bs, bsr1);
-    bsr1 = dest->bs;
   }
   if (not1 != 0) {
     bitset_invert(dest->bs);
@@ -2629,7 +2628,6 @@ or_cclass(CClassNode* dest, CClassNode* cc, OnigEncoding enc)
   bitset_or(bsr1, bsr2);
   if (bsr1 != dest->bs) {
     bitset_copy(dest->bs, bsr1);
-    bsr1 = dest->bs;
   }
   if (not1 != 0) {
     bitset_invert(dest->bs);
