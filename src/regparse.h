@@ -318,6 +318,7 @@ typedef struct {
   int ctype;
   int not;
   OnigOptionType options;
+  int ascii_mode;
 } CtypeNode;
 
 typedef struct {
