@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.6.0    2017/08/11
+Oniguruma Regular Expressions Version 6.6.0    2017/08/15
 
 syntax: ONIG_SYNTAX_RUBY (default)
 
@@ -207,11 +207,19 @@ syntax: ONIG_SYNTAX_RUBY (default)
 
   (?#...)            comment
 
-  (?imx-imx)         option on/off
-                         i: ignore case
-                         m: multi-line (dot (.) also matches newline)
-                         x: extended form
-  (?imx-imx:subexp)  option on/off for subexp
+  (?imxWDSP-imxWDSP)         option on/off
+                               i: ignore case
+                               m: multi-line (dot (.) also matches newline)
+                               x: extended form
+                               W: ASCII only word (\w, \p{Word}, [[:word:]])
+                                  ASCII only word bound (\b)
+                               D: ASCII only digit (\d, \p{Digit}, [[:digit:]])
+                               S: ASCII only space (\s, \p{Space}, [[:space:]])
+                               P: ASCII only POSIX properties (includes W,D,S)
+                                  (alnum, alpha, blank, cntrl, digit, graph,
+                                   lower, print, punct, space, upper, xdigit, word)
+
+  (?imxWDSP-imxWDSP:subexp)  option on/off for subexp
 
   (?:subexp)         non-capturing group
   (subexp)           capturing group

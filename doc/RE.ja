@@ -205,11 +205,19 @@
 7. 拡張式集合
 
   (?#...)           注釈
-  (?imx-imx)        孤立オプション
-                      i: 大文字小文字照合
-                      m: 複数行
-                      x: 拡張形式
-  (?imx-imx:式)     式オプション
+  (?imxWDSP-imxWDSP)      孤立オプション
+                            i: 大文字小文字照合
+                            m: 複数行
+                            x: 拡張形式
+                            W: wordがASCIIのみ (\w, \p{Word}, [[:word:]])
+                               word境界がASCIIのみ (\b)
+                            D: digitがASCIIのみ (\d, \p{Digit}, [[:digit:]])
+                            S: spaceがASCIIのみ (\s, \p{Space}, [[:space:]])
+                            P: POSIXプロパティがASCIIのみ (W,D,Sを全て含んでいる)
+                               (alnum, alpha, blank, cntrl, digit, graph,
+                                lower, print, punct, space, upper, xdigit, word)
+
+  (?imxWDSP-imxWDSP:式)   式オプション
 
   (式)              捕獲式集合
   (?:式)            非捕獲式集合
