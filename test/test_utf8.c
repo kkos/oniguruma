@@ -973,6 +973,14 @@ extern int main(int argc, char* argv[])
   n("(?S:\\p{Space})", "\xc2\x85");
   x2("(?-P:\\p{Word})", "こ", 0, 3);
   n("(?P:\\p{Word})", "こ");
+  x2("(?-W:\\w)", "こ", 0, 3);
+  n("(?W:\\w)", "こ");
+  x2("(?-W:\\w)", "k", 0, 1);
+  x2("(?W:\\w)", "k", 0, 1);
+  n("(?-W:\\W)", "こ");
+  x2("(?W:\\W)", "こ", 0, 3);
+  n("(?-W:\\W)", "k");
+  n("(?W:\\W)", "k");
 
   e("(?<abc>\\g<abc>)", "zzzz", ONIGERR_NEVER_ENDING_RECURSION);
 
