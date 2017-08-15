@@ -1345,14 +1345,15 @@ make_alt(int n, Node* ns[])
 }
 
 extern Node*
-onig_node_new_anchor(int type)
+onig_node_new_anchor(int type, int ascii_mode)
 {
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
   NODE_SET_TYPE(node, NODE_ANCHOR);
-  ANCHOR_(node)->type     = type;
-  ANCHOR_(node)->char_len = -1;
+  ANCHOR_(node)->type       = type;
+  ANCHOR_(node)->char_len   = -1;
+  ANCHOR_(node)->ascii_mode = ascii_mode;
   return node;
 }
 
@@ -5328,10 +5329,10 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
       break;
 
     case '=':
-      *np = onig_node_new_anchor(ANCHOR_PREC_READ);
+      *np = onig_node_new_anchor(ANCHOR_PREC_READ, 0);
       break;
     case '!':  /*         preceding read */
-      *np = onig_node_new_anchor(ANCHOR_PREC_READ_NOT);
+      *np = onig_node_new_anchor(ANCHOR_PREC_READ_NOT, 0);
       break;
     case '>':            /* (?>...) stop backtrack */
       *np = node_new_enclosure(ENCLOSURE_STOP_BACKTRACK);
@@ -5349,9 +5350,9 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
       if (PEND) return ONIGERR_END_PATTERN_WITH_UNMATCHED_PARENTHESIS;
       PFETCH(c);
       if (c == '=')
-        *np = onig_node_new_anchor(ANCHOR_LOOK_BEHIND);
+        *np = onig_node_new_anchor(ANCHOR_LOOK_BEHIND, 0);
       else if (c == '!')
-        *np = onig_node_new_anchor(ANCHOR_LOOK_BEHIND_NOT);
+        *np = onig_node_new_anchor(ANCHOR_LOOK_BEHIND_NOT, 0);
       else {
         if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_LT_NAMED_GROUP)) {
           UChar *name;
@@ -6254,7 +6255,11 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 #endif
 
   case TK_ANCHOR:
-    *np = onig_node_new_anchor(tok->u.anchor);
+    {
+      int ascii_mode =
+        IS_WORD_ASCII(env->options) && IS_WORD_ANCHOR_TYPE(tok->u.anchor) ? 1 : 0;
+      *np = onig_node_new_anchor(tok->u.anchor, ascii_mode);
+    }
     break;
 
   case TK_OP_REPEAT:

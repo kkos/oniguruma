@@ -3520,7 +3520,7 @@ divide_look_behind_alternatives(Node* node)
 
   np = node;
   while (IS_NOT_NULL(np = NODE_CDR(np))) {
-    insert_node = onig_node_new_anchor(anc_type);
+    insert_node = onig_node_new_anchor(anc_type, an->ascii_mode);
     CHECK_NULL_RETURN_MEMERR(insert_node);
     NODE_BODY(insert_node) = NODE_CAR(np);
     NODE_CAR(np) = insert_node;

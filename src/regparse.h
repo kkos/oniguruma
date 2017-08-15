@@ -301,6 +301,7 @@ typedef struct {
 
   int type;
   int char_len;
+  int ascii_mode;
 } AnchorNode;
 
 typedef struct {
@@ -432,7 +433,7 @@ extern int    onig_node_str_cat P_((Node* node, const UChar* s, const UChar* end
 extern int    onig_node_str_set P_((Node* node, const UChar* s, const UChar* end));
 extern void   onig_node_free P_((Node* node));
 extern Node*  onig_node_new_enclosure P_((int type));
-extern Node*  onig_node_new_anchor P_((int type));
+extern Node*  onig_node_new_anchor P_((int type, int ascii_mode));
 extern Node*  onig_node_new_str P_((const UChar* s, const UChar* end));
 extern Node*  onig_node_new_list P_((Node* left, Node* right));
 extern Node*  onig_node_list_add P_((Node* list, Node* x));
