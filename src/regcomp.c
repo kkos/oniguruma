@@ -1914,9 +1914,12 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
         break;
 
       case ONIGENC_CTYPE_WORD:
-        if (CTYPE_(node)->not != 0)  op = OP_NOT_WORD;
-        else                         op = OP_WORD;
-
+        if (CTYPE_(node)->ascii_mode == 0) {
+          op = CTYPE_(node)->not != 0 ? OP_NOT_WORD : OP_WORD;
+        }
+        else {
+          op = CTYPE_(node)->not != 0 ? OP_NOT_WORD_ASCII : OP_WORD_ASCII;
+        }
         r = add_opcode(reg, op);
         break;
 
@@ -2490,7 +2493,8 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
       switch (ytype) {
       case NODE_CTYPE:
         if (CTYPE_(y)->ctype == CTYPE_(x)->ctype &&
-            CTYPE_(y)->not   != CTYPE_(x)->not)
+            CTYPE_(y)->not   != CTYPE_(x)->not &&
+            CTYPE_(y)->ascii_mode == CTYPE_(x)->ascii_mode)
           return 1;
         else
           return 0;
@@ -2517,6 +2521,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
 
   case NODE_CCLASS:
     {
+      int range;
       CClassNode* xc = CCLASS_(x);
       switch (ytype) {
       case NODE_CTYPE:
@@ -2528,7 +2533,8 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
         case ONIGENC_CTYPE_WORD:
           if (CTYPE_(y)->not == 0) {
             if (IS_NULL(xc->mbuf) && !IS_NCCLASS_NOT(xc)) {
-              for (i = 0; i < SINGLE_BYTE_SIZE; i++) {
+              range = CTYPE_(y)->ascii_mode != 0 ? 128 : SINGLE_BYTE_SIZE;
+              for (i = 0; i < range; i++) {
                 if (BITSET_AT(xc->bs, i)) {
                   if (ONIGENC_IS_CODE_WORD(reg->enc, i)) return 0;
                 }
@@ -2539,17 +2545,17 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
           }
           else {
             if (IS_NOT_NULL(xc->mbuf)) return 0;
-            for (i = 0; i < SINGLE_BYTE_SIZE; i++) {
+            if (IS_NCCLASS_NOT(xc)) return 0;
+
+            range = CTYPE_(y)->ascii_mode != 0 ? 128 : SINGLE_BYTE_SIZE;
+            for (i = 0; i < range; i++) {
               if (! ONIGENC_IS_CODE_WORD(reg->enc, i)) {
-                if (!IS_NCCLASS_NOT(xc)) {
-                  if (BITSET_AT(xc->bs, i))
-                    return 0;
-                }
-                else {
-                  if (! BITSET_AT(xc->bs, i))
-                    return 0;
-                }
+                if (BITSET_AT(xc->bs, i))
+                  return 0;
               }
+            }
+            for (i = range; i < SINGLE_BYTE_SIZE; i++) {
+              if (BITSET_AT(xc->bs, i)) return 0;
             }
             return 1;
           }
@@ -2606,10 +2612,18 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
           break;
 
         case ONIGENC_CTYPE_WORD:
-          if (ONIGENC_IS_MBC_WORD(reg->enc, xs->s, xs->end))
-            return CTYPE_(y)->not;
-          else
-            return !(CTYPE_(y)->not);
+          if (CTYPE_(y)->ascii_mode == 0) {
+            if (ONIGENC_IS_MBC_WORD(reg->enc, xs->s, xs->end))
+              return CTYPE_(y)->not;
+            else
+              return !(CTYPE_(y)->not);
+          }
+          else {
+            if (ONIGENC_IS_MBC_WORD_ASCII(reg->enc, xs->s, xs->end))
+              return CTYPE_(y)->not;
+            else
+              return !(CTYPE_(y)->not);
+          }
           break;
         default:
           break;
@@ -5592,6 +5606,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
   case NODE_CTYPE:
     {
       int i, min, max;
+      int range;
 
       max = ONIGENC_MBC_MAXLEN_DIST(env->enc);
 
@@ -5603,15 +5618,19 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
           break;
 
         case ONIGENC_CTYPE_WORD:
+          range = CTYPE_(node)->ascii_mode != 0 ? 128 : SINGLE_BYTE_SIZE;
           if (CTYPE_(node)->not != 0) {
-            for (i = 0; i < SINGLE_BYTE_SIZE; i++) {
+            for (i = 0; i < range; i++) {
               if (! ONIGENC_IS_CODE_WORD(env->enc, i)) {
                 add_char_opt_map_info(&opt->map, (UChar )i, env->enc);
               }
             }
+            for (i = range; i < SINGLE_BYTE_SIZE; i++) {
+              add_char_opt_map_info(&opt->map, (UChar )i, env->enc);
+            }
           }
           else {
-            for (i = 0; i < SINGLE_BYTE_SIZE; i++) {
+            for (i = 0; i < range; i++) {
               if (ONIGENC_IS_CODE_WORD(env->enc, i)) {
                 add_char_opt_map_info(&opt->map, (UChar )i, env->enc);
               }
@@ -7146,9 +7165,13 @@ print_indent_tree(FILE* f, Node* node, int indent)
 
     case ONIGENC_CTYPE_WORD:
       if (CTYPE_(node)->not != 0)
-        fputs("not word",       f);
+        fputs("not word", f);
       else
-        fputs("word",           f);
+        fputs("word",     f);
+
+      if (CTYPE_(node)->ascii_mode != 0)
+        fputs(" (ascii)", f);
+
       break;
 
     default:
