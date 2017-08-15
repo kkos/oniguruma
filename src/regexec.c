@@ -2154,9 +2154,27 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       MOP_OUT;
       break;
 
+    case OP_WORD_ASCII:  MOP_IN(OP_WORD_ASCII);
+      DATA_ENSURE(1);
+      if (! ONIGENC_IS_MBC_WORD_ASCII(encode, s, end))
+        goto fail;
+
+      s += enclen(encode, s);
+      MOP_OUT;
+      break;
+
     case OP_NOT_WORD:  MOP_IN(OP_NOT_WORD);
       DATA_ENSURE(1);
       if (ONIGENC_IS_MBC_WORD(encode, s, end))
+        goto fail;
+
+      s += enclen(encode, s);
+      MOP_OUT;
+      break;
+
+    case OP_NOT_WORD_ASCII:  MOP_IN(OP_NOT_WORD_ASCII);
+      DATA_ENSURE(1);
+      if (ONIGENC_IS_MBC_WORD_ASCII(encode, s, end))
         goto fail;
 
       s += enclen(encode, s);
