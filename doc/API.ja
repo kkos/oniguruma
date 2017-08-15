@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.1.0   2016/08/22
+鬼車インターフェース Version 6.6.0   2017/08/15
 
 #include <oniguruma.h>
 
@@ -82,6 +82,15 @@
 
       ONIG_OPTION_DONT_CAPTURE_GROUP 名前付き捕獲式集合のみ捕獲
       ONIG_OPTION_CAPTURE_GROUP      名前無し捕獲式集合も捕獲
+      ONIG_OPTION_WORD_IS_ASCII      wordがASCIIのみ (\w, \p{Word}, [[:word:]])
+                                     word boundがASCIIのみ (\b)
+      ONIG_OPTION_DIGIT_IS_ASCII     digitがASCIIのみ (\d, \p{Digit}, [[:digit:]])
+      ONIG_OPTION_SPACE_IS_ASCII     spaceがASCIIのみ (\s, \p{Space}, [[:space:]])
+      ONIG_OPTION_POSIX_IS_ASCII     POSIXプロパティがASCIIのみ
+                                     (word, digit, spaceを全て含んでいる)
+                                     (alnum, alpha, blank, cntrl, digit, graph,
+                                      lower, print, punct, space, upper, xdigit,
+                                      word)
 
   5 enc:        文字エンコーディング
 
