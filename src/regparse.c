@@ -1195,21 +1195,23 @@ node_new_cclass(void)
 }
 
 static Node*
-node_new_ctype(int type, int not)
+node_new_ctype(int type, int not, OnigOptionType options)
 {
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
 
   NODE_SET_TYPE(node, NODE_CTYPE);
-  CTYPE_(node)->ctype = type;
-  CTYPE_(node)->not   = not;
+  CTYPE_(node)->ctype   = type;
+  CTYPE_(node)->not     = not;
+  CTYPE_(node)->options = options;
+  CTYPE_(node)->ascii_mode = IS_ASCII_MODE_CTYPE_OPTION(type, options);
   return node;
 }
 
 static Node*
 node_new_anychar(void)
 {
-  Node* node = node_new_ctype(CTYPE_ANYCHAR, 0);
+  Node* node = node_new_ctype(CTYPE_ANYCHAR, 0, ONIG_OPTION_NONE);
   return node;
 }
 
@@ -4612,7 +4614,7 @@ add_ctype_to_cc(CClassNode* cc, int ctype, int not, ScanEnv* env)
   OnigCodePoint sb_out;
   OnigEncoding enc = env->enc;
 
-  ascii_mode = 0;
+  ascii_mode = IS_ASCII_MODE_CTYPE_OPTION(ctype, env->options);
 
   r = ONIGENC_GET_CTYPE_CODE_RANGE(enc, ctype, &sb_out, &ranges);
   if (r == 0) {
@@ -6144,7 +6146,7 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
     {
       switch (tok->u.prop.ctype) {
       case ONIGENC_CTYPE_WORD:
-        *np = node_new_ctype(tok->u.prop.ctype, tok->u.prop.not);
+        *np = node_new_ctype(tok->u.prop.ctype, tok->u.prop.not, env->options);
         CHECK_NULL_RETURN_MEMERR(*np);
         break;
 
