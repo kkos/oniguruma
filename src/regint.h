@@ -307,6 +307,21 @@ typedef unsigned int  MemStatusType;
 #define IS_NOTEOL(option)         ((option) & ONIG_OPTION_NOTEOL)
 #define IS_POSIX_REGION(option)   ((option) & ONIG_OPTION_POSIX_REGION)
 
+#define IS_WORD_ASCII(option) \
+  ((option) & (ONIG_OPTION_WORD_IS_ASCII | ONIG_OPTION_POSIX_IS_ASCII))
+#define IS_DIGIT_ASCII(option) \
+  ((option) & (ONIG_OPTION_DIGIT_IS_ASCII | ONIG_OPTION_POSIX_IS_ASCII))
+#define IS_SPACE_ASCII(option) \
+  ((option) & (ONIG_OPTION_SPACE_IS_ASCII | ONIG_OPTION_POSIX_IS_ASCII))
+#define IS_POSIX_ASCII(option)    ((option) & ONIG_OPTION_POSIX_IS_ASCII)
+
+#define IS_ASCII_MODE_CTYPE_OPTION(ctype, options) \
+  ((ctype) >= 0 && \
+  (((ctype) < ONIGENC_CTYPE_ASCII  && IS_POSIX_ASCII(options)) ||\
+   ((ctype) == ONIGENC_CTYPE_WORD  && IS_WORD_ASCII(options))  ||\
+   ((ctype) == ONIGENC_CTYPE_DIGIT && IS_DIGIT_ASCII(options)) ||\
+   ((ctype) == ONIGENC_CTYPE_SPACE && IS_SPACE_ASCII(options))))
+
 /* OP_SET_OPTION is required for these options.
 #define IS_DYNAMIC_OPTION(option) \
   (((option) & (ONIG_OPTION_MULTILINE | ONIG_OPTION_IGNORECASE)) != 0)
