@@ -2391,9 +2391,6 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
 #endif
 
   case NODE_CTYPE:
-    *len = 1;
-    break;
-
   case NODE_CCLASS:
     *len = 1;
     break;
