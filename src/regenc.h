@@ -145,6 +145,7 @@ ONIG_EXTERN int onigenc_mb2_code_to_mbclen P_((OnigCodePoint code));
 ONIG_EXTERN int onigenc_mb2_code_to_mbc P_((OnigEncoding enc, OnigCodePoint code, UChar *buf));
 ONIG_EXTERN int onigenc_minimum_property_name_to_ctype P_((OnigEncoding enc, UChar* p, UChar* end));
 ONIG_EXTERN int onigenc_unicode_property_name_to_ctype P_((OnigEncoding enc, UChar* p, UChar* end));
+ONIG_EXTERN int onigenc_is_mbc_word_ascii P_((OnigEncoding enc, UChar* s, const UChar* end));
 ONIG_EXTERN int onigenc_mb2_is_code_ctype P_((OnigEncoding enc, OnigCodePoint code, unsigned int ctype));
 ONIG_EXTERN int onigenc_mb4_code_to_mbclen P_((OnigCodePoint code));
 ONIG_EXTERN int onigenc_mb4_code_to_mbc P_((OnigEncoding enc, OnigCodePoint code, UChar *buf));

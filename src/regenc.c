@@ -841,6 +841,16 @@ onigenc_minimum_property_name_to_ctype(OnigEncoding enc, UChar* p, UChar* end)
 }
 
 extern int
+onigenc_is_mbc_word_ascii(OnigEncoding enc, UChar* s, const UChar* end)
+{
+  OnigCodePoint code = ONIGENC_MBC_TO_CODE(enc, s, end);
+
+  if (code > 127) return 0;
+
+  return ONIGENC_IS_ASCII_CODE_WORD(code);
+}
+
+extern int
 onigenc_mb2_is_code_ctype(OnigEncoding enc, OnigCodePoint code,
 			  unsigned int ctype)
 {
