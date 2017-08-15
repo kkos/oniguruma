@@ -466,6 +466,9 @@ typedef struct _BBuf {
 
 #define ANCHOR_HAS_BODY(a)      ((a)->type < ANCHOR_BEGIN_BUF)
 
+#define IS_WORD_ANCHOR_TYPE(type) \
+  ((type) == ANCHOR_WORD_BOUND || (type) == ANCHOR_NOT_WORD_BOUND || \
+   (type) == ANCHOR_WORD_BEGIN || (type) == ANCHOR_WORD_END)
 
 /* operation code */
 enum OpCode {
