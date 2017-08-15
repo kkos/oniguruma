@@ -365,6 +365,13 @@ add_update_var_type(regex_t* reg, enum UpdateVarType type)
 }
 
 static int
+add_mode(regex_t* reg, ModeType mode)
+{
+  BB_ADD(reg, &mode, SIZE_MODE);
+  return 0;
+}
+
+static int
 add_opcode_rel_addr(regex_t* reg, int opcode, int addr)
 {
   int r;
@@ -1588,6 +1595,15 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
     len = SIZE_OP_PUSH_LOOK_BEHIND_NOT + tlen + SIZE_OP_FAIL_LOOK_BEHIND_NOT;
     break;
 
+  case ANCHOR_WORD_BOUND:
+  case ANCHOR_NOT_WORD_BOUND:
+#ifdef USE_WORD_BEGIN_END
+  case ANCHOR_WORD_BEGIN:
+  case ANCHOR_WORD_END:
+#endif
+    len = SIZE_OP_WORD_BOUND;
+    break;
+
   default:
     len = SIZE_OPCODE;
     break;
@@ -1600,6 +1616,7 @@ static int
 compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
 {
   int r, len;
+  enum OpCode op;
 
   switch (node->type) {
   case ANCHOR_BEGIN_BUF:      r = add_opcode(reg, OP_BEGIN_BUF);      break;
@@ -1609,11 +1626,24 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
   case ANCHOR_SEMI_END_BUF:   r = add_opcode(reg, OP_SEMI_END_BUF);   break;
   case ANCHOR_BEGIN_POSITION: r = add_opcode(reg, OP_BEGIN_POSITION); break;
 
-  case ANCHOR_WORD_BOUND:     r = add_opcode(reg, OP_WORD_BOUND);     break;
-  case ANCHOR_NOT_WORD_BOUND: r = add_opcode(reg, OP_NOT_WORD_BOUND); break;
+  case ANCHOR_WORD_BOUND:
+    op = OP_WORD_BOUND;
+  word:
+    r = add_opcode(reg, op);
+    if (r != 0) return r;
+    r = add_mode(reg, (ModeType )node->ascii_mode);
+    break;
+
+  case ANCHOR_NOT_WORD_BOUND:
+    op = OP_NOT_WORD_BOUND; goto word;
+    break;
 #ifdef USE_WORD_BEGIN_END
-  case ANCHOR_WORD_BEGIN:     r = add_opcode(reg, OP_WORD_BEGIN);     break;
-  case ANCHOR_WORD_END:       r = add_opcode(reg, OP_WORD_END);       break;
+  case ANCHOR_WORD_BEGIN:
+    op = OP_WORD_BEGIN; goto word;
+    break;
+  case ANCHOR_WORD_END:
+    op = OP_WORD_END; goto word;
+    break;
 #endif
 
   case ANCHOR_PREC_READ:
@@ -6644,6 +6674,7 @@ onig_is_code_in_cc(OnigEncoding enc, OnigCodePoint code, CClassNode* cc)
 #define ARG_MEMNUM       4
 #define ARG_OPTION       5
 #define ARG_STATE_CHECK  6
+#define ARG_MODE         7
 
 OnigOpInfoType OnigOpInfo[] = {
   { OP_FINISH,            "finish",          ARG_NON },
@@ -6681,10 +6712,10 @@ OnigOpInfoType OnigOpInfo[] = {
   { OP_WORD_ASCII,          "word-ascii",      ARG_NON },
   { OP_NOT_WORD,            "not-word",        ARG_NON },
   { OP_NOT_WORD_ASCII,      "not-word-ascii",  ARG_NON },
-  { OP_WORD_BOUND,          "word-bound",      ARG_NON },
-  { OP_NOT_WORD_BOUND,      "not-word-bound",  ARG_NON },
-  { OP_WORD_BEGIN,          "word-begin",      ARG_NON },
-  { OP_WORD_END,            "word-end",        ARG_NON },
+  { OP_WORD_BOUND,          "word-bound",      ARG_MODE },
+  { OP_NOT_WORD_BOUND,      "not-word-bound",  ARG_MODE },
+  { OP_WORD_BEGIN,          "word-begin",      ARG_MODE },
+  { OP_WORD_END,            "word-end",        ARG_MODE },
   { OP_BEGIN_BUF,           "begin-buf",       ARG_NON },
   { OP_END_BUF,             "end-buf",         ARG_NON },
   { OP_BEGIN_LINE,          "begin-line",      ARG_NON },
@@ -6806,6 +6837,7 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
   StateCheckNumType scn;
   OnigCodePoint code;
   OnigOptionType option;
+  ModeType mode;
   UChar *q;
 
   fprintf(f, "%s", op2name(*bp));
@@ -6845,6 +6877,12 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
       scn = *((StateCheckNumType* )bp);
       bp += SIZE_STATE_CHECK_NUM;
       fprintf(f, ":%d", scn);
+      break;
+
+    case ARG_MODE:
+      mode = *((ModeType* )bp);
+      bp += SIZE_MODE;
+      fprintf(f, ":%d", mode);
       break;
     }
   }

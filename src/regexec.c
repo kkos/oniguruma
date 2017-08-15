@@ -2182,37 +2182,48 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       break;
 
     case OP_WORD_BOUND:  MOP_IN(OP_WORD_BOUND);
-      if (ON_STR_BEGIN(s)) {
-        DATA_ENSURE(1);
-        if (! ONIGENC_IS_MBC_WORD(encode, s, end))
-          goto fail;
-      }
-      else if (ON_STR_END(s)) {
-        if (! ONIGENC_IS_MBC_WORD(encode, sprev, end))
-          goto fail;
-      }
-      else {
-        if (ONIGENC_IS_MBC_WORD(encode, s, end)
-            == ONIGENC_IS_MBC_WORD(encode, sprev, end))
-          goto fail;
+      {
+        ModeType mode;
+        GET_MODE_INC(mode, p); // ascii_mode
+
+        if (ON_STR_BEGIN(s)) {
+          DATA_ENSURE(1);
+          if (! ONIGENC_IS_MBC_WORD_ASCII_MODE(encode, s, end, mode))
+            goto fail;
+        }
+        else if (ON_STR_END(s)) {
+          if (! ONIGENC_IS_MBC_WORD_ASCII_MODE(encode, sprev, end, mode))
+            goto fail;
+        }
+        else {
+          if (ONIGENC_IS_MBC_WORD_ASCII_MODE(encode, s, end, mode)
+              == ONIGENC_IS_MBC_WORD_ASCII_MODE(encode, sprev, end, mode))
+            goto fail;
+        }
       }
       MOP_OUT;
       continue;
       break;
 
     case OP_NOT_WORD_BOUND:  MOP_IN(OP_NOT_WORD_BOUND);
-      if (ON_STR_BEGIN(s)) {
-        if (DATA_ENSURE_CHECK1 && ONIGENC_IS_MBC_WORD(encode, s, end))
-          goto fail;
-      }
-      else if (ON_STR_END(s)) {
-        if (ONIGENC_IS_MBC_WORD(encode, sprev, end))
-          goto fail;
-      }
-      else {
-        if (ONIGENC_IS_MBC_WORD(encode, s, end)
-            != ONIGENC_IS_MBC_WORD(encode, sprev, end))
-          goto fail;
+      {
+        ModeType mode;
+        GET_MODE_INC(mode, p); // ascii_mode
+
+        if (ON_STR_BEGIN(s)) {
+          if (DATA_ENSURE_CHECK1 &&
+              ONIGENC_IS_MBC_WORD_ASCII_MODE(encode, s, end, mode))
+            goto fail;
+        }
+        else if (ON_STR_END(s)) {
+          if (ONIGENC_IS_MBC_WORD_ASCII_MODE(encode, sprev, end, mode))
+            goto fail;
+        }
+        else {
+          if (ONIGENC_IS_MBC_WORD_ASCII_MODE(encode, s, end, mode)
+              != ONIGENC_IS_MBC_WORD_ASCII_MODE(encode, sprev, end, mode))
+            goto fail;
+        }
       }
       MOP_OUT;
       continue;
@@ -2220,20 +2231,34 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
 #ifdef USE_WORD_BEGIN_END
     case OP_WORD_BEGIN:  MOP_IN(OP_WORD_BEGIN);
-      if (DATA_ENSURE_CHECK1 && ONIGENC_IS_MBC_WORD(encode, s, end)) {
-        if (ON_STR_BEGIN(s) || !ONIGENC_IS_MBC_WORD(encode, sprev, end)) {
-          MOP_OUT;
-          continue;
+      {
+        ModeType mode;
+        GET_MODE_INC(mode, p); // ascii_mode
+
+        if (DATA_ENSURE_CHECK1 &&
+            ONIGENC_IS_MBC_WORD_ASCII_MODE(encode, s, end, mode)) {
+          if (ON_STR_BEGIN(s) ||
+              ! ONIGENC_IS_MBC_WORD_ASCII_MODE(encode, sprev, end, mode)) {
+            MOP_OUT;
+            continue;
+          }
         }
       }
       goto fail;
       break;
 
     case OP_WORD_END:  MOP_IN(OP_WORD_END);
-      if (!ON_STR_BEGIN(s) && ONIGENC_IS_MBC_WORD(encode, sprev, end)) {
-        if (ON_STR_END(s) || !ONIGENC_IS_MBC_WORD(encode, s, end)) {
-          MOP_OUT;
-          continue;
+      {
+        ModeType mode;
+        GET_MODE_INC(mode, p); // ascii_mode
+
+        if (!ON_STR_BEGIN(s) &&
+            ONIGENC_IS_MBC_WORD_ASCII_MODE(encode, sprev, end, mode)) {
+          if (ON_STR_END(s) ||
+              ! ONIGENC_IS_MBC_WORD_ASCII_MODE(encode, s, end, mode)) {
+            MOP_OUT;
+            continue;
+          }
         }
       }
       goto fail;
