@@ -237,6 +237,8 @@ ONIG_EXTERN const unsigned short OnigEncAsciiCtypeTable[];
 #define ONIGENC_ASCII_CODE_TO_UPPER_CASE(c) OnigEncAsciiToUpperCaseTable[c]
 #define ONIGENC_IS_ASCII_CODE_CTYPE(code,ctype) \
   ((OnigEncAsciiCtypeTable[code] & CTYPE_TO_BIT(ctype)) != 0)
+#define ONIGENC_IS_ASCII_CODE_WORD(code) \
+  ((OnigEncAsciiCtypeTable[code] & CTYPE_TO_BIT(ONIGENC_CTYPE_WORD)) != 0)
 #define ONIGENC_IS_ASCII_CODE_CASE_AMBIG(code) \
  (ONIGENC_IS_ASCII_CODE_CTYPE(code, ONIGENC_CTYPE_UPPER) ||\
   ONIGENC_IS_ASCII_CODE_CTYPE(code, ONIGENC_CTYPE_LOWER))
