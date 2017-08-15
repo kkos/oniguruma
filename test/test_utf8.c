@@ -962,6 +962,17 @@ extern int main(int argc, char* argv[])
   n("[^[\\p{^Cntrl}]&&[^\\x{104a}]]", "こ");
   n("[^\\p{Cntrl}||[^\\x{104a}]]", "こ");
 
+  x2("(?-W:\\p{Word})", "こ", 0, 3);
+  n("(?W:\\p{Word})", "こ");
+  x2("(?W:\\p{Word})", "k", 0, 1);
+  x2("(?-W:[[:word:]])", "こ", 0, 3);
+  n("(?W:[[:word:]])", "こ");
+  x2("(?-D:\\p{Digit})", "３", 0, 3);
+  n("(?D:\\p{Digit})", "３");
+  x2("(?-S:\\p{Space})", "\xc2\x85", 0, 2);
+  n("(?S:\\p{Space})", "\xc2\x85");
+  x2("(?-P:\\p{Word})", "こ", 0, 3);
+  n("(?P:\\p{Word})", "こ");
 
   e("(?<abc>\\g<abc>)", "zzzz", ONIGERR_NEVER_ENDING_RECURSION);
 
