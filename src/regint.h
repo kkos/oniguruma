@@ -608,6 +608,7 @@ typedef short int StateCheckNumType;
 typedef void* PointerType;
 typedef int SaveType;
 typedef int UpdateVarType;
+typedef int ModeType;
 
 #define SIZE_OPCODE           1
 #define SIZE_RELADDR          sizeof(RelAddrType)
@@ -621,6 +622,7 @@ typedef int UpdateVarType;
 #define SIZE_POINTER          sizeof(PointerType)
 #define SIZE_SAVE_TYPE        sizeof(SaveType)
 #define SIZE_UPDATE_VAR_TYPE  sizeof(UpdateVarType)
+#define SIZE_MODE             sizeof(ModeType)
 
 #define GET_RELADDR_INC(addr,p)    PLATFORM_GET_INC(addr,   p, RelAddrType)
 #define GET_ABSADDR_INC(addr,p)    PLATFORM_GET_INC(addr,   p, AbsAddrType)
@@ -632,6 +634,7 @@ typedef int UpdateVarType;
 #define GET_STATE_CHECK_NUM_INC(num,p)  PLATFORM_GET_INC(num, p, StateCheckNumType)
 #define GET_SAVE_TYPE_INC(type,p)       PLATFORM_GET_INC(type, p, SaveType)
 #define GET_UPDATE_VAR_TYPE_INC(type,p) PLATFORM_GET_INC(type, p, UpdateVarType)
+#define GET_MODE_INC(mode,p)            PLATFORM_GET_INC(mode, p, ModeType)
 
 /* code point's address must be aligned address. */
 #define GET_CODE_POINT(code,p)   code = *((OnigCodePoint* )(p))
@@ -652,6 +655,10 @@ typedef int UpdateVarType;
 #define SIZE_OP_PUSH_IF_PEEK_NEXT      (SIZE_OPCODE + SIZE_RELADDR + 1)
 #define SIZE_OP_REPEAT_INC             (SIZE_OPCODE + SIZE_MEMNUM)
 #define SIZE_OP_REPEAT_INC_NG          (SIZE_OPCODE + SIZE_MEMNUM)
+#define SIZE_OP_WORD_BOUND             (SIZE_OPCODE + SIZE_MODE)
+#define SIZE_OP_NOT_WORD_BOUND         (SIZE_OPCODE + SIZE_MODE)
+#define SIZE_OP_WORD_BEGIN             (SIZE_OPCODE + SIZE_MODE)
+#define SIZE_OP_WORD_END               (SIZE_OPCODE + SIZE_MODE)
 #define SIZE_OP_PREC_READ_START         SIZE_OPCODE
 #define SIZE_OP_PUSH_PREC_READ_NOT     (SIZE_OPCODE + SIZE_RELADDR)
 #define SIZE_OP_PREC_READ_END           SIZE_OPCODE
