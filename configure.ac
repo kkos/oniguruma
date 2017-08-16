@@ -24,7 +24,7 @@ fi
 
 dnl check for CRNL_AS_LINE_TERMINATOR
 AC_ARG_ENABLE(crnl-as-line-terminator,
-	[  --enable-crnl-as-line-terminator   enable CR+NL as line terminator],
+	[  --enable-crnl-as-line-terminator   deprecated],
 	[crnl_as_line_terminator=$enableval])
 if test "${crnl_as_line_terminator}" = yes; then
   AC_DEFINE(USE_CRNL_AS_LINE_TERMINATOR,1,[Define if enable CR+NL as line terminator])
