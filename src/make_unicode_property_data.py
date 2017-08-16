@@ -52,17 +52,17 @@ def print_prop_and_index(prop, i):
     print "%-35s %3d" % (prop + ',', i)
     PropIndex[prop] = i
 
-print_cache = { }
+PRINT_CACHE = { }
 
 def print_property(prop, data, desc):
     print ''
     print "/* PROPERTY: '%s': %s */" % (prop, desc)
 
-    prev_prop = dic_find_by_value(print_cache, data)
+    prev_prop = dic_find_by_value(PRINT_CACHE, data)
     if prev_prop is not None:
         print "#define CR_%s CR_%s" % (prop, prev_prop)
     else:
-        print_cache[prop] = data
+        PRINT_CACHE[prop] = data
         print "static const OnigCodePoint"
         print "CR_%s[] = { %d," % (prop, len(data))
         for (start, end) in data:
@@ -390,7 +390,7 @@ LIST_COUNTER = 1
 def entry_prop_name(name, index):
     global LIST_COUNTER
     set_max_prop_name(name)
-    if OUTPUT_LIST and index >= len(POSIX_LIST):
+    if OUTPUT_LIST_MODE and index >= len(POSIX_LIST):
         print >> UPF, "%3d: %s" % (LIST_COUNTER, name)
         LIST_COUNTER += 1
 
@@ -404,7 +404,7 @@ if argc >= 2:
     if argv[1] == '-posix':
         POSIX_ONLY = True
 
-OUTPUT_LIST = not(POSIX_ONLY)
+OUTPUT_LIST_MODE = not(POSIX_ONLY)
 
 with open('UnicodeData.txt', 'r') as f:
     dic, assigned = parse_unicode_data_file(f)
@@ -489,7 +489,7 @@ struct PropertyNameCtype {
 '''
 sys.stdout.write(s)
 
-if OUTPUT_LIST:
+if OUTPUT_LIST_MODE:
     UPF = open("UNICODE_PROPERTIES", "w")
     if VERSION_INFO is not None:
         print >> UPF, "Unicode Properties (from Unicode Version: %s)" % VERSION_INFO
@@ -539,7 +539,7 @@ if VERSION_INFO is not None:
 print "#define PROPERTY_NAME_MAX_SIZE  %d" % (PROPERTY_NAME_MAX_LEN + 10)
 print "#define CODE_RANGES_NUM         %d" % (index + 1)
 
-if OUTPUT_LIST:
+if OUTPUT_LIST_MODE:
     UPF.close()
 
 sys.exit(0)
