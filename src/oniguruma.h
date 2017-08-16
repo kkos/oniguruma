@@ -271,8 +271,6 @@ ONIG_EXTERN OnigEncodingType OnigEncodingGB18030;
 #define ONIGENC_IS_MBC_WORD(enc,s,end) \
    ONIGENC_IS_CODE_WORD(enc,ONIGENC_MBC_TO_CODE(enc,s,end))
 #define ONIGENC_IS_MBC_WORD_ASCII(enc,s,end) onigenc_is_mbc_word_ascii(enc,s,end)
-#define ONIGENC_IS_MBC_WORD_ASCII_MODE(enc,s,end,mode) \
-  ((mode) == 0 ? ONIGENC_IS_MBC_WORD(enc,s,end) : ONIGENC_IS_MBC_WORD_ASCII(enc,s,end))
 
 #define ONIGENC_NAME(enc)                      ((enc)->name)
 
