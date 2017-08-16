@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.6.0    2017/08/15
+Oniguruma Regular Expressions Version 6.6.0    2017/08/16
 
 syntax: ONIG_SYNTAX_RUBY (default)
 
@@ -263,13 +263,13 @@ syntax: ONIG_SYNTAX_RUBY (default)
 
                      ex. (?~|345|\d*)  "12345678"  ==> "12", "1", ""
 
-  (?~|absent)        Absent cutter (* original)
+  (?~|absent)        Absent stopper (* original)
                      After passed this operator, string right range is limited
                      at the point that does not include the string match whth
                      <absent>.
 
   (?~|)              Absent clear
-                     Clear the effects caused by Absent cutters.
+                     Clear the effects caused by Absent stoppers.
 
      * Nested Absent functions are not supported and the behavior
        is undefined.

@@ -43,7 +43,7 @@ New feature of version 6.5.0
 * NEW: Backreference validity checker (?(xxx)) (*original)
 * NEW: Absent repeater (?~absent)
 * NEW: Absent expression   (?~|absent|expr)  (*original)
-* NEW: Absent range cutter (?~|absent)     (*original)
+* NEW: Absent stopper (?~|absent)     (*original)
 
 
 New feature of version 6.4.0
