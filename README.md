@@ -5,8 +5,8 @@ https://github.com/kkos/oniguruma
 
 FIXED Security Issues:
 --------------------------
-  CVE-2017-9224, CVE-2017-9225, CVE-2017-9226
-  CVE-2017-9227, CVE-2017-9228, CVE-2017-9229
+  **CVE-2017-9224, CVE-2017-9225, CVE-2017-9226**
+  **CVE-2017-9227, CVE-2017-9228, CVE-2017-9229**
 
 
 Oniguruma is a regular expressions library.
@@ -24,6 +24,13 @@ Supported character encodings:
 
 * GB18030: contributed by KUBO Takehiro
 * CP1251:  contributed by Byte
+
+
+New feature of version 6.6.0
+--------------------------
+
+* NEW: ASCII mode options for char type/property (?WDSP)
+* SPEC: Absent-clear operator restores previous range in backtrack.
 
 
 New feature of version 6.5.0
