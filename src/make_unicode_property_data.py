@@ -394,6 +394,10 @@ def entry_prop_name(name, index):
         print >> UPF, "%3d: %s" % (LIST_COUNTER, name)
         LIST_COUNTER += 1
 
+def entry_and_print_prop_and_index(name, index):
+  entry_prop_name(name, index)
+  nname = normalize_prop_name(name)
+  print_prop_and_index(nname, index)
 
 ### main ###
 argv = sys.argv
@@ -498,16 +502,12 @@ if OUTPUT_LIST_MODE:
 index = -1
 for prop in POSIX_LIST:
   index += 1
-  entry_prop_name(prop, index)
-  prop = normalize_prop_name(prop)
-  print_prop_and_index(prop, index)
+  entry_and_print_prop_and_index(prop, index)
 
 if not(POSIX_ONLY):
     for prop in PROPS:
         index += 1
-        entry_prop_name(prop, index)
-        prop = normalize_prop_name(prop)
-        print_prop_and_index(prop, index)
+        entry_and_print_prop_and_index(prop, index)
 
     NALIASES = map(lambda (k,v):(normalize_prop_name(k), k, v), ALIASES.items())
     NALIASES = sorted(NALIASES)
@@ -526,9 +526,7 @@ if not(POSIX_ONLY):
 
     for name in BLOCKS:
         index += 1
-        entry_prop_name(name, index)
-        name = normalize_prop_name(name)
-        print_prop_and_index(name, index)
+        entry_and_print_prop_and_index(name, index)
 
 print '%%'
 print ''
