@@ -1,5 +1,5 @@
-/* ANSI-C code produced by gperf version 3.0.3 */
-/* Command-line: /Library/Developer/CommandLineTools/usr/bin/gperf -T -C -c -t -j1 -L ANSI-C --ignore-case -N unicode_lookup_property_name --output-file gperf.tmp unicode_property_data_posix.gperf  */
+/* ANSI-C code produced by gperf version 3.0.4 */
+/* Command-line: gperf -T -C -c -t -j1 -L ANSI-C --ignore-case -N unicode_lookup_property_name --output-file gperf.tmp unicode_property_data_posix.gperf  */
 /* Computed positions: -k'1,3' */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
@@ -4879,6 +4879,12 @@ hash (register const char *str, register unsigned int len)
   return len + asso_values[(unsigned char)str[2]] + asso_values[(unsigned char)str[0]];
 }
 
+#ifdef __GNUC__
+__inline
+#if defined __GNUC_STDC_INLINE__ || defined __GNUC_GNU_INLINE__
+__attribute__ ((__gnu_inline__))
+#endif
+#endif
 const struct PropertyNameCtype *
 unicode_lookup_property_name (register const char *str, register unsigned int len)
 {
@@ -4919,9 +4925,9 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
     {
-      unsigned int key = hash (str, len);
+      register int key = hash (str, len);
 
-      if (key <= MAX_HASH_VALUE)
+      if (key <= MAX_HASH_VALUE && key >= 0)
         {
           register const char *s = wordlist[key].name;
 
