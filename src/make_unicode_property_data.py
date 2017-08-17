@@ -391,13 +391,10 @@ def set_max_prop_name(name):
   if n > PROPERTY_NAME_MAX_LEN:
     PROPERTY_NAME_MAX_LEN = n
 
-LIST_COUNTER = 1
 def entry_prop_name(name, index):
-  global LIST_COUNTER
   set_max_prop_name(name)
   if OUTPUT_LIST_MODE and index >= len(POSIX_LIST):
-    print >> UPF, "%3d: %s" % (LIST_COUNTER, name)
-    LIST_COUNTER += 1
+    print >> UPF, "%3d: %s" % (index, name)
 
 def entry_and_print_prop_and_index(name, index):
   entry_prop_name(name, index)
