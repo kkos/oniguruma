@@ -11,6 +11,8 @@ POSIX_LIST = [
 
 MAX_CODE_POINT = 0x10ffff
 
+GRAPHEME_CLUSTER_BREAK_NAME_PREFIX = 'Grapheme_Cluster_Break_'
+
 UD_FIRST_REG = re.compile("<.+,\s*First>")
 UD_LAST_REG  = re.compile("<.+,\s*Last>")
 PR_TOTAL_REG = re.compile("#\s*Total\s+code\s+points:")
@@ -218,7 +220,7 @@ def parse_unicode_data_file(f):
   normalize_ranges_in_dic(dic)
   return dic, assigned
 
-def parse_properties(path, klass):
+def parse_properties(path, klass, prop_prefix = None):
   with open(path, 'r') as f:
     dic = { }
     prop = None
@@ -235,6 +237,9 @@ def parse_properties(path, klass):
       m = PR_LINE_REG.match(s)
       if m:
         prop = m.group(3)
+        if prop_prefix is not None:
+          prop = prop_prefix + prop
+
         if m.group(2):
           start = int(m.group(1), 16)
           end   = int(m.group(2), 16)
@@ -440,6 +445,16 @@ merge_dic(ALIASES, a)
 
 dic, BLOCKS = parse_blocks('Blocks.txt')
 merge_dic(DIC, dic)
+
+dic, props = parse_properties('GraphemeBreakProperty.txt',
+                              'GraphemeBreak Property',
+                              GRAPHEME_CLUSTER_BREAK_NAME_PREFIX)
+merge_dic(DIC, dic)
+merge_props(PROPS, props)
+#prop = GRAPHEME_CLUSTER_BREAK_NAME_PREFIX + 'Other'
+#DIC[prop] = inverse_ranges(add_ranges_in_dic(dic))
+#PROPS.append(prop)
+#KDIC[prop] = 'GrapemeBreak Property'
 
 add_posix_props(DIC)
 
