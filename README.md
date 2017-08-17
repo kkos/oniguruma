@@ -30,7 +30,8 @@ New feature of version 6.6.0
 --------------------------
 
 * NEW: ASCII mode options for char type/property (?WDSP)
-* SPEC: Absent-clear operator restores previous range in backtrack.
+* NEW: Grapheme Cluster Break properties (Unicode 8.0.0)
+* Absent-clear operator restores previous range in backtrack.
 
 
 New feature of version 6.5.0
