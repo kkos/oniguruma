@@ -531,13 +531,13 @@ if not(POSIX_ONLY):
     if PropIndex.get(nk, None) is not None:
       print >> sys.stderr, "ALIASES: already exists: %s => %s" % (k, v)
       continue
-    index = PropIndex.get(nv, None)
-    if index is None:
+    aindex = PropIndex.get(nv, None)
+    if aindex is None:
       #print >> sys.stderr, "ALIASES: value is not exist: %s => %s" % (k, v)
       continue
 
-    entry_prop_name(k, index)
-    print_prop_and_index(nk, index)
+    entry_prop_name(k, aindex)
+    print_prop_and_index(nk, aindex)
 
   for name in BLOCKS:
     index += 1
