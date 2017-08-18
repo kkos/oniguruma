@@ -20,7 +20,7 @@ PR_LINE_REG  = re.compile("([0-9A-Fa-f]+)(?:..([0-9A-Fa-f]+))?\s*;\s*(\w+)")
 PA_LINE_REG  = re.compile("(\w+)\s*;\s*(\w+)")
 PVA_LINE_REG = re.compile("(sc|gc)\s*;\s*(\w+)\s*;\s*(\w+)(?:\s*;\s*(\w+))?")
 BL_LINE_REG  = re.compile("([0-9A-Fa-f]+)\.\.([0-9A-Fa-f]+)\s*;\s*(.*)")
-VERSION_REG  = re.compile("#\s*.*-(\d\.\d\.\d)\.txt")
+VERSION_REG  = re.compile("#\s*.*-(\d+\.\d+\.\d+)\.txt")
 
 VERSION_INFO = None
 DIC  = { }

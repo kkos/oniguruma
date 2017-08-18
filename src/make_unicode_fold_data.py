@@ -15,7 +15,7 @@ DataName = 'OnigUnicodeFolds'
 ENCODING = 'utf-8'
 
 LINE_REG = re.compile("([0-9A-F]{1,6}); (.); ([0-9A-F]{1,6})(?: ([0-9A-F]{1,6}))?(?: ([0-9A-F]{1,6}))?;(?:\s*#\s*)(.*)")
-VERSION_REG  = re.compile("#.*-(\d\.\d\.\d)\.txt")
+VERSION_REG  = re.compile("#.*-(\d+\.\d+\.\d+)\.txt")
 
 VERSION_INFO = None
 
