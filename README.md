@@ -29,8 +29,7 @@ Supported character encodings:
 New feature of version 6.6.0
 --------------------------
 
-* NEW: ASCII mode options for char type/property (?WDSP)
-* NEW: Grapheme Cluster Break properties (Unicode 8.0.0)
+* NEW: ASCII only mode options for character type/property (?WDSP)
 * Absent-clear operator restores previous range in backtrack.
 
 
