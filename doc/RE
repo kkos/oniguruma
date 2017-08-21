@@ -80,6 +80,13 @@ syntax: ONIG_SYNTAX_RUBY (default)
 
   \O       true anychar      (?m:.)    (* original function)
 
+  \X       Extended Grapheme Cluster   \O(?:\Y\O)*+
+
+           Unicode case:
+             See [Unicode Standard Annex #29: http://unicode.org/reports/tr29/]
+
+           Not Unicode:   (?>\r\n|\O)
+
 
   Character Property
 
@@ -139,8 +146,8 @@ syntax: ONIG_SYNTAX_RUBY (default)
   $       end of the line
   \b      word boundary
   \B      non-word boundary
-  \y      extended grapheme cluster boundary
-  \Y      extended grapheme cluster non-boundary
+  \y      Extended Grapheme Cluster boundary
+  \Y      Extended Grapheme Cluster non-boundary
 
   \A      beginning of string
   \Z      end of string, or before newline at the end
@@ -430,7 +437,7 @@ A-2. Original extensions
 A-3. Missing features compared with perl 5.8.0
 
    + \N{name}
-   + \l,\u,\L,\U, \X, \C
+   + \l,\u,\L,\U,\C
    + (?{code})
    + (??{code})
 

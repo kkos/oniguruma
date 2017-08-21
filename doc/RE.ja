@@ -80,6 +80,13 @@
 
   \O       真任意文字  (?m:.)      (* 原作)
 
+  \X       拡張書記素房   \O(?:\Y\O)*+
+
+           Unicodeの場合:
+             参照 [Unicode Standard Annex #29: http://unicode.org/reports/tr29/]
+
+           Unicode以外の場合:   (?>\r\n|\O)
+
 
   Character Property
 
