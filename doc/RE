@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.6.0    2017/08/16
+Oniguruma Regular Expressions Version 6.6.0    2017/08/21
 
 syntax: ONIG_SYNTAX_RUBY (default)
 
@@ -139,6 +139,9 @@ syntax: ONIG_SYNTAX_RUBY (default)
   $       end of the line
   \b      word boundary
   \B      non-word boundary
+  \y      extended grapheme cluster boundary
+  \Y      extended grapheme cluster non-boundary
+
   \A      beginning of string
   \Z      end of string, or before newline at the end
   \z      end of string
