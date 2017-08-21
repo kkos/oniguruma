@@ -944,6 +944,17 @@ extern int main(int argc, char* argv[])
   x2("\000.\000\\\000Y\000.\000\000", "\x0B\xA8\x0B\xBF\000\000", 0, 4);
   n("\000.\000\\\000y\000.\000\000", "\x0B\xA8\x0B\xBF\000\000");
 
+  // CR + LF
+  n("\000\\\000X\000\\\000X\000\000", "\x00\x0d\x00\x0a\000\000");
+  x2("\000^\000\\\000X\000$\000\000", "\x00\x0d\x00\x0a\000\000", 0, 4);
+  // LATIN SMALL LETTER G, COMBINING DIAERESIS
+  n("\000\\\000X\000\\\000X\000\000", "\x00\x67\x03\x08\000\000");
+  x2("\000^\000\\\000X\000$\000\000", "\x00\x67\x03\x08\000\000", 0, 4);
+  // TAMIL LETTER NA, TAMIL VOWEL SIGN I,
+  x2("\000^\000\\\000X\000$\000\000", "\x0B\xA8\x0B\xBF\000\000", 0, 4);
+  n("\000\\\000X\000\\\000X\000\000", "\x0B\xA8\x0B\xBF\000\000");
+
+
   fprintf(stdout,
        "\nRESULT   SUCC: %d,  FAIL: %d,  ERROR: %d      (by Oniguruma %s)\n",
        nsucc, nfail, nerror, onig_version());

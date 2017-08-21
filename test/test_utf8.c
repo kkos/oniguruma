@@ -1028,6 +1028,25 @@ extern int main(int argc, char* argv[])
   x2(".\\Y.", "\xE0\xA4\xB7\xE0\xA4\xBF", 0, 6);
   n(".\\y.", "\xE0\xA4\xB7\xE0\xA4\xBF");
 
+  // CR + LF
+  n("^\\X\\X$", "\x0d\x0a");
+  x2("^\\X$", "\x0d\x0a", 0, 2);
+  // LATIN SMALL LETTER G, COMBINING DIAERESIS
+  n("^\\X\\X.$", "\x67\xCC\x88");
+  x2("^\\X$", "\x67\xCC\x88", 0, 3);
+  // HANGUL CHOSEONG KIYEOK, HANGUL JUNGSEONG A, HANGUL JONGSEONG KIYEOK
+  x2("^\\X$", "\xE1\x84\x80\xE1\x85\xA1\xE1\x86\xA8", 0, 9);
+  n("^\\X\\X\\X$", "\xE1\x84\x80\xE1\x85\xA1\xE1\x86\xA8");
+  // TAMIL LETTER NA, TAMIL VOWEL SIGN I,
+  x2("^\\X$", "\xE0\xAE\xA8\xE0\xAE\xBF", 0, 6);
+  n("\\X\\X", "\xE0\xAE\xA8\xE0\xAE\xBF");
+  // THAI CHARACTER KO KAI, THAI CHARACTER SARA AM
+  x2("^\\X$", "\xE0\xB8\x81\xE0\xB8\xB3", 0, 6);
+  n("\\X\\X", "\xE0\xB8\x81\xE0\xB8\xB3");
+  // DEVANAGARI LETTER SSA, DEVANAGARI VOWEL SIGN I
+  x2("^\\X$", "\xE0\xA4\xB7\xE0\xA4\xBF", 0, 6);
+  n("\\X\\X", "\xE0\xA4\xB7\xE0\xA4\xBF");
+
 
   e("(?<abc>\\g<abc>)", "zzzz", ONIGERR_NEVER_ENDING_RECURSION);
 
