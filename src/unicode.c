@@ -794,7 +794,7 @@ unicode_egcb_is_break_2code(OnigCodePoint from_code, OnigCodePoint to_code)
 
 extern int
 onigenc_egcb_is_break_position(OnigEncoding enc, UChar* p, UChar* prev,
-                               UChar* start, UChar* end)
+                               const UChar* start, const UChar* end)
 {
   OnigCodePoint from;
   OnigCodePoint to;

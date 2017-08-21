@@ -162,7 +162,7 @@ ONIG_EXTERN int onigenc_unicode_ctype_code_range P_((OnigCtype ctype, const Onig
 ONIG_EXTERN int onigenc_unicode_get_case_fold_codes_by_str P_((OnigEncoding enc, OnigCaseFoldType flag, const OnigUChar* p, const OnigUChar* end, OnigCaseFoldCodeItem items[]));
 ONIG_EXTERN int onigenc_unicode_mbc_case_fold P_((OnigEncoding enc, OnigCaseFoldType flag, const UChar** pp, const UChar* end, UChar* fold));
 ONIG_EXTERN int onigenc_unicode_apply_all_case_fold P_((OnigCaseFoldType flag, OnigApplyAllCaseFoldFunc f, void* arg));
-ONIG_EXTERN int onigenc_egcb_is_break_position P_((OnigEncoding enc, UChar* p, UChar* prev, UChar* start, UChar* end));
+ONIG_EXTERN int onigenc_egcb_is_break_position P_((OnigEncoding enc, UChar* p, UChar* prev, const UChar* start, const UChar* end));
 
 
 #define UTF16_IS_SURROGATE_FIRST(c)    (((c) & 0xfc) == 0xd8)
