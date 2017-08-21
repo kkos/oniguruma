@@ -1969,7 +1969,7 @@ make_absent_tree(Node** node, Node* absent, Node* expr, int is_range_cutter,
     if (expr == NULL_NODE) {
       /* default expr \O* */
       quant = node_new_quantifier(0, REPEAT_INFINITE, 0);
-      if (IS_NULL(quant)) goto err;
+      if (IS_NULL(quant)) goto err0;
 
       r = node_new_true_anychar(&body, env);
       if (r != 0) {
@@ -2022,19 +2022,21 @@ make_absent_tree(Node** node, Node* absent, Node* expr, int is_range_cutter,
 
   if (is_range_cutter != 0) {
     x = make_list(4, ns);
-    if (IS_NULL(x)) goto err;
+    if (IS_NULL(x)) goto err0;
   }
   else {
     r = make_absent_tail(&ns[5], &ns[6], id1, env);
     if (r != 0) goto err;
   
     x = make_list(7, ns);
-    if (IS_NULL(x)) goto err;
+    if (IS_NULL(x)) goto err0;
   }
 
   *node = x;
   return ONIG_NORMAL;
 
+ err0:
+  r = ONIGERR_MEMORY;
  err:
   for (i = 0; i < 7; i++) onig_node_free(ns[i]);
   return r;  
