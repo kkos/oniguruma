@@ -1601,6 +1601,56 @@ node_new_keep(Node** node, ScanEnv* env)
 }
 
 static int
+make_extended_grapheme_cluster(Node** node, ScanEnv* env)
+{
+  int r;
+  int i;
+  Node* x;
+  Node* ns[2];
+
+  /* \X == \O(?:\Y\O)*+ */
+
+  r = ONIGERR_MEMORY;
+  ns[0] = onig_node_new_anchor(ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUND, 0);
+  if (IS_NULL(ns[0])) goto err;
+
+  r = node_new_true_anychar(&ns[1], env);
+  if (r != 0) goto err1;
+
+  x = make_list(2, ns);
+  if (IS_NULL(x)) goto err;
+  ns[0] = x;
+
+  x = node_new_quantifier(0, REPEAT_INFINITE, 1);
+  if (IS_NULL(x)) goto err;
+
+  NODE_BODY(x) = ns[0];
+  ns[0] = x;
+
+  x = node_new_enclosure(ENCLOSURE_STOP_BACKTRACK);
+  if (IS_NULL(x)) goto err;
+
+  NODE_BODY(x) = ns[0];
+  ns[0] = NULL_NODE;
+  ns[1] = x;
+
+  r = node_new_true_anychar(&ns[0], env);
+  if (r != 0) goto err1;
+
+  x = make_list(2, ns);
+  if (IS_NULL(x)) goto err;
+
+  *node = x;
+  return ONIG_NORMAL;
+
+ err:
+  r = ONIGERR_MEMORY;
+ err1:
+  for (i = 0; i < 2; i++) onig_node_free(ns[i]);
+  return r;
+}
+
+static int
 make_absent_engine(Node** node, int pre_save_right_id, Node* absent,
                    Node* step_one, int lower, int upper, int possessive,
                    int is_range_cutter, ScanEnv* env)
@@ -2891,6 +2941,7 @@ enum TokenSyms {
   TK_GENERAL_NEWLINE,  /* \R */
   TK_NO_NEWLINE,       /* \N */
   TK_TRUE_ANYCHAR,     /* \O */
+  TK_EXTENDED_GRAPHEME_CLUSTER, /* \X */
 
   /* in cc */
   TK_CC_CLOSE,
@@ -3962,6 +4013,11 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case 'O':
       if (! IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_CAPITAL_N_O_SUPER_DOT)) break;
       tok->type = TK_TRUE_ANYCHAR;
+      break;
+
+    case 'X':
+      if (! IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER)) break;
+      tok->type = TK_EXTENDED_GRAPHEME_CLUSTER;
       break;
 
     case 'A':
@@ -6305,6 +6361,11 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 
   case TK_TRUE_ANYCHAR:
     r = node_new_true_anychar(np, env);
+    if (r < 0) return r;
+    break;
+
+  case TK_EXTENDED_GRAPHEME_CLUSTER:
+    r = make_extended_grapheme_cluster(np, env);
     if (r < 0) return r;
     break;
 
