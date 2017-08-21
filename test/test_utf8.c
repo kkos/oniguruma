@@ -1003,6 +1003,27 @@ extern int main(int argc, char* argv[])
   x2("\\p{Grapheme_Cluster_Break_Regional_Indicator}", "\xF0\x9F\x87\xA9", 0, 4);
   n("\\p{Grapheme_Cluster_Break_Regional_Indicator}",  "\xF0\x9F\x87\xA5");
 
+  // extended grapheme cluster
+
+  // LATIN SMALL LETTER G, COMBINING DIAERESIS
+  n("^.\\y.$", "\x67\xCC\x88");
+  x2(".\\Y.", "\x67\xCC\x88", 0, 3);
+  x2("\\y.\\Y.\\y", "\x67\xCC\x88", 0, 3);
+  // HANGUL SYLLABLE GAG
+  x2("\\y.\\y", "\xEA\xB0\x81", 0, 3);
+  // HANGUL CHOSEONG KIYEOK, HANGUL JUNGSEONG A, HANGUL JONGSEONG KIYEOK
+  x2("^.\\Y.\\Y.$", "\xE1\x84\x80\xE1\x85\xA1\xE1\x86\xA8", 0, 9);
+  n("^.\\y.\\Y.$", "\xE1\x84\x80\xE1\x85\xA1\xE1\x86\xA8");
+  // TAMIL LETTER NA, TAMIL VOWEL SIGN I,
+  x2(".\\Y.", "\xE0\xAE\xA8\xE0\xAE\xBF", 0, 6);
+  n(".\\y.", "\xE0\xAE\xA8\xE0\xAE\xBF");
+  // THAI CHARACTER KO KAI, THAI CHARACTER SARA AM
+  x2(".\\Y.", "\xE0\xB8\x81\xE0\xB8\xB3", 0, 6);
+  n(".\\y.", "\xE0\xB8\x81\xE0\xB8\xB3");
+  // DEVANAGARI LETTER SSA, DEVANAGARI VOWEL SIGN I
+  x2(".\\Y.", "\xE0\xA4\xB7\xE0\xA4\xBF", 0, 6);
+  n(".\\y.", "\xE0\xA4\xB7\xE0\xA4\xBF");
+
 
   e("(?<abc>\\g<abc>)", "zzzz", ONIGERR_NEVER_ENDING_RECURSION);
 
