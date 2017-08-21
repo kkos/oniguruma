@@ -2166,7 +2166,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       MOP_OUT;
       break;
 
-    case OP_NOT_WORD:  MOP_IN(OP_NOT_WORD);
+    case OP_NO_WORD:  MOP_IN(OP_NO_WORD);
       DATA_ENSURE(1);
       if (ONIGENC_IS_MBC_WORD(encode, s, end))
         goto fail;
@@ -2175,7 +2175,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       MOP_OUT;
       break;
 
-    case OP_NOT_WORD_ASCII:  MOP_IN(OP_NOT_WORD_ASCII);
+    case OP_NO_WORD_ASCII:  MOP_IN(OP_NO_WORD_ASCII);
       DATA_ENSURE(1);
       if (ONIGENC_IS_MBC_WORD_ASCII(encode, s, end))
         goto fail;
@@ -2208,7 +2208,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       continue;
       break;
 
-    case OP_NOT_WORD_BOUND:  MOP_IN(OP_NOT_WORD_BOUND);
+    case OP_NO_WORD_BOUND:  MOP_IN(OP_NO_WORD_BOUND);
       {
         ModeType mode;
         GET_MODE_INC(mode, p); // ascii_mode

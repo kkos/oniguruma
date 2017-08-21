@@ -458,7 +458,7 @@ typedef struct _BBuf {
 #define ANCHOR_SEMI_END_BUF     (1<<8)
 #define ANCHOR_END_LINE         (1<<9)
 #define ANCHOR_WORD_BOUND       (1<<10)
-#define ANCHOR_NOT_WORD_BOUND   (1<<11)
+#define ANCHOR_NO_WORD_BOUND   (1<<11)
 #define ANCHOR_WORD_BEGIN       (1<<12)
 #define ANCHOR_WORD_END         (1<<13)
 #define ANCHOR_ANYCHAR_STAR     (1<<14)   /* ".*" optimize info */
@@ -467,7 +467,7 @@ typedef struct _BBuf {
 #define ANCHOR_HAS_BODY(a)      ((a)->type < ANCHOR_BEGIN_BUF)
 
 #define IS_WORD_ANCHOR_TYPE(type) \
-  ((type) == ANCHOR_WORD_BOUND || (type) == ANCHOR_NOT_WORD_BOUND || \
+  ((type) == ANCHOR_WORD_BOUND || (type) == ANCHOR_NO_WORD_BOUND || \
    (type) == ANCHOR_WORD_BEGIN || (type) == ANCHOR_WORD_END)
 
 /* operation code */
@@ -510,10 +510,10 @@ enum OpCode {
 
   OP_WORD,
   OP_WORD_ASCII,
-  OP_NOT_WORD,
-  OP_NOT_WORD_ASCII,
+  OP_NO_WORD,
+  OP_NO_WORD_ASCII,
   OP_WORD_BOUND,
-  OP_NOT_WORD_BOUND,
+  OP_NO_WORD_BOUND,
   OP_WORD_BEGIN,
   OP_WORD_END,
 

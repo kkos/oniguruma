@@ -3873,7 +3873,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case 'B':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_B_WORD_BOUND)) break;
       tok->type = TK_ANCHOR;
-      tok->u.anchor = ANCHOR_NOT_WORD_BOUND;
+      tok->u.anchor = ANCHOR_NO_WORD_BOUND;
       break;
 
 #ifdef USE_WORD_BEGIN_END

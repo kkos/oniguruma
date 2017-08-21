@@ -1596,7 +1596,7 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
     break;
 
   case ANCHOR_WORD_BOUND:
-  case ANCHOR_NOT_WORD_BOUND:
+  case ANCHOR_NO_WORD_BOUND:
 #ifdef USE_WORD_BEGIN_END
   case ANCHOR_WORD_BEGIN:
   case ANCHOR_WORD_END:
@@ -1634,8 +1634,8 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     r = add_mode(reg, (ModeType )node->ascii_mode);
     break;
 
-  case ANCHOR_NOT_WORD_BOUND:
-    op = OP_NOT_WORD_BOUND; goto word;
+  case ANCHOR_NO_WORD_BOUND:
+    op = OP_NO_WORD_BOUND; goto word;
     break;
 #ifdef USE_WORD_BEGIN_END
   case ANCHOR_WORD_BEGIN:
@@ -1945,10 +1945,10 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
 
       case ONIGENC_CTYPE_WORD:
         if (CTYPE_(node)->ascii_mode == 0) {
-          op = CTYPE_(node)->not != 0 ? OP_NOT_WORD : OP_WORD;
+          op = CTYPE_(node)->not != 0 ? OP_NO_WORD : OP_WORD;
         }
         else {
-          op = CTYPE_(node)->not != 0 ? OP_NOT_WORD_ASCII : OP_WORD_ASCII;
+          op = CTYPE_(node)->not != 0 ? OP_NO_WORD_ASCII : OP_WORD_ASCII;
         }
         r = add_opcode(reg, op);
         break;
@@ -4617,13 +4617,13 @@ setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
 
 #define ALLOWED_ANCHOR_IN_LB \
   ( ANCHOR_LOOK_BEHIND | ANCHOR_BEGIN_LINE | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF \
-  | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUND | ANCHOR_NOT_WORD_BOUND \
+  | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUND | ANCHOR_NO_WORD_BOUND \
   | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END )
 
 #define ALLOWED_ANCHOR_IN_LB_NOT \
   ( ANCHOR_LOOK_BEHIND | ANCHOR_LOOK_BEHIND_NOT | ANCHOR_BEGIN_LINE \
   | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUND \
-  | ANCHOR_NOT_WORD_BOUND | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END )
+  | ANCHOR_NO_WORD_BOUND | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END )
 
   int r;
   AnchorNode* an = ANCHOR_(node);
@@ -6710,10 +6710,10 @@ OnigOpInfoType OnigOpInfo[] = {
   { OP_ANYCHAR_ML_STAR_PEEK_NEXT, "anychar-ml*-peek-next", ARG_SPECIAL },
   { OP_WORD,                "word",            ARG_NON },
   { OP_WORD_ASCII,          "word-ascii",      ARG_NON },
-  { OP_NOT_WORD,            "not-word",        ARG_NON },
-  { OP_NOT_WORD_ASCII,      "not-word-ascii",  ARG_NON },
+  { OP_NO_WORD,             "not-word",        ARG_NON },
+  { OP_NO_WORD_ASCII,       "not-word-ascii",  ARG_NON },
   { OP_WORD_BOUND,          "word-bound",      ARG_MODE },
-  { OP_NOT_WORD_BOUND,      "not-word-bound",  ARG_MODE },
+  { OP_NO_WORD_BOUND,       "not-word-bound",  ARG_MODE },
   { OP_WORD_BEGIN,          "word-begin",      ARG_MODE },
   { OP_WORD_END,            "word-end",        ARG_MODE },
   { OP_BEGIN_BUF,           "begin-buf",       ARG_NON },
@@ -7229,7 +7229,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
     case ANCHOR_BEGIN_POSITION: fputs("begin position", f); break;
 
     case ANCHOR_WORD_BOUND:      fputs("word bound",     f); break;
-    case ANCHOR_NOT_WORD_BOUND:  fputs("not word bound", f); break;
+    case ANCHOR_NO_WORD_BOUND:   fputs("not word bound", f); break;
 #ifdef USE_WORD_BEGIN_END
     case ANCHOR_WORD_BEGIN:      fputs("word begin", f);     break;
     case ANCHOR_WORD_END:        fputs("word end", f);       break;
