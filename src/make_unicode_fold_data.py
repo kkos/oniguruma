@@ -1,5 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+# make_unicode_fold_data.py
+# Copyright (c) 2016-2017  K.Kosako
 
 import sys
 import re

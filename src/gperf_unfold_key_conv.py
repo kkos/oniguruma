@@ -1,5 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+# gperf_unfold_key_conv.py
+# Copyright (c) 2016-2017  K.Kosako
 
 import sys
 import re
