@@ -664,3 +664,203 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
 
   return n;
 }
+
+
+#ifdef USE_UNICODE_EXTENDED_GRAPHEME_CLUSTER
+
+enum EGCB_BREAK_TYPE {
+  EGCB_NOT_BREAK = 0,
+  EGCB_BREAK     = 1,
+  EGCB_BREAK_UNDEF_E_MODIFIER = 2,
+  EGCB_BREAK_UNDEF_RI_RI = 3
+};
+
+enum EGCB_TYPE {
+  EGCB_Other   = 0,
+  EGCB_CR      = 1,
+  EGCB_LF      = 2,
+  EGCB_Control = 3,
+  EGCB_Extend  = 4,
+  EGCB_Prepend = 5,
+  EGCB_Regional_Indicator = 6,
+  EGCB_SpacingMark = 7,
+  EGCB_ZWJ         = 8,
+  EGCB_E_Base         = 9,
+  EGCB_E_Base_GAZ     = 10,
+  EGCB_E_Modifier     = 11,
+  EGCB_Glue_After_Zwj = 12,
+  EGCB_L   = 13,
+  EGCB_LV  = 14,
+  EGCB_LVT = 15,
+  EGCB_T   = 16,
+  EGCB_V   = 17
+};
+
+typedef struct {
+  OnigCodePoint  start;
+  OnigCodePoint  end;
+  enum EGCB_TYPE type;
+} EGCB_RANGE_TYPE;
+
+#include "unicode_egcb_data.c"
+
+static enum EGCB_TYPE
+egcb_get_type(OnigCodePoint code)
+{
+  OnigCodePoint low, high, x;
+  enum EGCB_TYPE type;
+
+  for (low = 0, high = EGCB_RANGE_NUM; low < high; ) {
+    x = (low + high) >> 1;
+    if (code > EGCB_RANGES[x].end)
+      low = x + 1;
+    else
+      high = x;
+  }
+
+  type = (low < EGCB_RANGE_NUM && code >= EGCB_RANGES[low].start) ?
+    EGCB_RANGES[low].type : EGCB_Other;
+  return type;
+}
+
+#define IS_CONTROL_CR_LF(code)   ((code) <= EGCB_Control && (code) >= EGCB_CR)
+#define IS_HANGUL(code)          ((code) >= EGCB_L)
+
+/* GB1 and GB2 are outside of this function. */
+static enum EGCB_BREAK_TYPE
+unicode_egcb_is_break_2code(OnigCodePoint from_code, OnigCodePoint to_code)
+{
+  enum EGCB_TYPE from;
+  enum EGCB_TYPE to;
+
+  from = egcb_get_type(from_code);
+  to   = egcb_get_type(to_code);
+
+  /* short cut */
+  if (from == 0 && to == 0) goto GB999;
+
+  /* GB3 */
+  if (from == EGCB_CR && to == EGCB_LF) return EGCB_NOT_BREAK;
+  /* GB4 */
+  if (IS_CONTROL_CR_LF(from)) return EGCB_BREAK;
+  /* GB5 */
+  if (IS_CONTROL_CR_LF(to)) return EGCB_BREAK;
+
+  if (IS_HANGUL(from) && IS_HANGUL(to)) {
+    /* GB6 */
+    if (from == EGCB_L && to != EGCB_T) return EGCB_NOT_BREAK;
+    /* GB7 */
+    if ((from == EGCB_LV || from == EGCB_V)
+        && (to == EGCB_V || to == EGCB_T)) return EGCB_NOT_BREAK;
+
+    /* GB8 */
+    if ((from == EGCB_LVT || from == EGCB_T) && (to == EGCB_T))
+      return EGCB_NOT_BREAK;
+
+    goto GB999;
+  }
+
+  /* GB9 */
+  if (to == EGCB_Extend || to == EGCB_ZWJ) return EGCB_NOT_BREAK;
+
+  /* GB9a */
+  if (to == EGCB_SpacingMark) return EGCB_NOT_BREAK;
+  /* GB9b */
+  if (from == EGCB_Prepend) return EGCB_NOT_BREAK;
+
+  /* GB10 */
+  if (to == EGCB_E_Modifier) {
+    if (from == EGCB_E_Base || from == EGCB_E_Base_GAZ) return EGCB_NOT_BREAK;
+    if (from == EGCB_Extend) return EGCB_BREAK_UNDEF_E_MODIFIER;
+    goto GB999;
+  }
+
+  /* GB11 */
+  if (from == EGCB_ZWJ) {
+    if (to == EGCB_Glue_After_Zwj || to == EGCB_E_Base_GAZ) return EGCB_NOT_BREAK;
+    goto GB999;
+  }
+
+  /* GB12, GB13 */
+  if (from == EGCB_Regional_Indicator && to == EGCB_Regional_Indicator) {
+    return EGCB_BREAK_UNDEF_RI_RI;
+  }
+
+ GB999:
+  return EGCB_BREAK;
+}
+
+#endif /* USE_UNICODE_EXTENDED_GRAPHEME_CLUSTER */
+
+extern int
+onigenc_egcb_is_break_position(OnigEncoding enc, UChar* p, UChar* prev,
+                               UChar* start, UChar* end)
+{
+  OnigCodePoint from;
+  OnigCodePoint to;
+#ifdef USE_UNICODE_EXTENDED_GRAPHEME_CLUSTER
+  enum EGCB_BREAK_TYPE btype;
+  enum EGCB_TYPE type;
+#endif
+
+  /* GB1 and GB2 */
+  if (p == start) return 1;
+  if (p == end)   return 1;
+
+  if (IS_NULL(prev)) {
+    prev = onigenc_get_prev_char_head(enc, start, p);
+    if (IS_NULL(prev)) return 1;
+  }
+
+  from = ONIGENC_MBC_TO_CODE(enc, prev, end);
+  to   = ONIGENC_MBC_TO_CODE(enc, p, end);
+
+#ifdef USE_UNICODE_EXTENDED_GRAPHEME_CLUSTER
+  if (! ONIGENC_IS_UNICODE_ENCODING(enc)) {
+    if (from == 0x000d && to == 0x000a) return 0;
+    else return 1;
+  }
+
+  btype = unicode_egcb_is_break_2code(from, to);
+  switch (btype) {
+  case EGCB_NOT_BREAK:
+    return 0;
+    break;
+  case EGCB_BREAK:
+    return 1;
+    break;
+
+  case EGCB_BREAK_UNDEF_E_MODIFIER:
+    while ((prev = onigenc_get_prev_char_head(enc, start, prev)) != NULL) {
+      from = ONIGENC_MBC_TO_CODE(enc, prev, end);
+      type = egcb_get_type(from);
+      if (type == EGCB_E_Base || type == EGCB_E_Base_GAZ)
+        return 0;
+      if (type != EGCB_Extend)
+        break;
+    }
+    break;
+
+  case EGCB_BREAK_UNDEF_RI_RI:
+    {
+      int n = 0;
+      while ((prev = onigenc_get_prev_char_head(enc, start, prev)) != NULL) {
+        from = ONIGENC_MBC_TO_CODE(enc, prev, end);
+        type = egcb_get_type(from);
+        if (type != EGCB_Regional_Indicator)
+          break;
+
+        n++;
+      }
+      if ((n % 2) == 0) return 0;
+    }
+    break;
+  }
+
+  return 1;
+
+#else
+  if (from == 0x000d && to == 0x000a) return 0;
+  else return 1;
+#endif /* USE_UNICODE_EXTENDED_GRAPHEME_CLUSTER */
+}

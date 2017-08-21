@@ -111,6 +111,7 @@ struct PropertyNameCtype {
 
 /* #define USE_CRNL_AS_LINE_TERMINATOR */
 #define USE_UNICODE_PROPERTIES
+#define USE_UNICODE_EXTENDED_GRAPHEME_CLUSTER
 /* #define USE_UNICODE_CASE_FOLD_TURKISH_AZERI */
 /* #define USE_UNICODE_ALL_LINE_TERMINATORS */  /* see Unicode.org UTS #18 */
 
@@ -161,6 +162,7 @@ ONIG_EXTERN int onigenc_unicode_ctype_code_range P_((OnigCtype ctype, const Onig
 ONIG_EXTERN int onigenc_unicode_get_case_fold_codes_by_str P_((OnigEncoding enc, OnigCaseFoldType flag, const OnigUChar* p, const OnigUChar* end, OnigCaseFoldCodeItem items[]));
 ONIG_EXTERN int onigenc_unicode_mbc_case_fold P_((OnigEncoding enc, OnigCaseFoldType flag, const UChar** pp, const UChar* end, UChar* fold));
 ONIG_EXTERN int onigenc_unicode_apply_all_case_fold P_((OnigCaseFoldType flag, OnigApplyAllCaseFoldFunc f, void* arg));
+ONIG_EXTERN int onigenc_egcb_is_break_position P_((OnigEncoding enc, UChar* p, UChar* prev, UChar* start, UChar* end));
 
 
 #define UTF16_IS_SURROGATE_FIRST(c)    (((c) & 0xfc) == 0xd8)
