@@ -678,6 +678,15 @@ extern int main(int argc, char* argv[])
   x2("(?~|abc).*(xyz|pqr)(?~|)abc", "aaaaxyzaaaabcpqrabc", 11, 19);
   n("\\A(?~|abc).*(xyz|pqrabc)(?~|)abc", "aaaaxyzaaaabcpqrabcabc");
 
+  // extended grapheme cluster
+
+  // CR + LF
+  n(".\\y\\O", "\x0d\x0a");
+  x2(".\\Y\\O", "\x0d\x0a", 0, 2);
+  n("\\X\\X", "\x0d\x0a");
+  x2("^\\X$", "\x0d\x0a", 0, 2);
+  x2("^\\X\\X\\X$", "ab\x0d\x0a", 0, 4);
+
   /*
     < ifndef IGNORE_EUC_JP >
     for testcases print warnings #63
