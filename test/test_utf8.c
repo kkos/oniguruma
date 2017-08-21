@@ -1005,6 +1005,10 @@ extern int main(int argc, char* argv[])
 
   // extended grapheme cluster
 
+  // CR + LF
+  n(".\\y\\O", "\x0d\x0a");
+  x2(".\\Y\\O", "\x0d\x0a", 0, 2);
+
   // LATIN SMALL LETTER G, COMBINING DIAERESIS
   n("^.\\y.$", "\x67\xCC\x88");
   x2(".\\Y.", "\x67\xCC\x88", 0, 3);
