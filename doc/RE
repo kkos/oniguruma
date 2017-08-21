@@ -82,6 +82,9 @@ syntax: ONIG_SYNTAX_RUBY (default)
 
   \X       Extended Grapheme Cluster   \O(?:\Y\O)*+
 
+           \X doesn't check whether matching start position is boundary.
+           Write as \y\X if you want to ensure it.
+
            Unicode case:
              See [Unicode Standard Annex #29: http://unicode.org/reports/tr29/]
 

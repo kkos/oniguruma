@@ -82,6 +82,9 @@
 
   \X       拡張書記素房   \O(?:\Y\O)*+
 
+           \Xは照合の開始位置が拡張書記素房の境界かどうかを確認しない。
+           それを確実にしたければ、\y\Xと書けば良い。
+
            Unicodeの場合:
              参照 [Unicode Standard Annex #29: http://unicode.org/reports/tr29/]
 
@@ -445,7 +448,7 @@
 補記 3. Perl 5.8.0と比較して存在しない機能
 
    + \N{name}
-   + \l,\u,\L,\U, \X, \C
+   + \l,\u,\L,\U,\C
    + (?{code})
    + (??{code})
 
