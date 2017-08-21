@@ -458,11 +458,14 @@ typedef struct _BBuf {
 #define ANCHOR_SEMI_END_BUF     (1<<8)
 #define ANCHOR_END_LINE         (1<<9)
 #define ANCHOR_WORD_BOUND       (1<<10)
-#define ANCHOR_NO_WORD_BOUND   (1<<11)
+#define ANCHOR_NO_WORD_BOUND    (1<<11)
 #define ANCHOR_WORD_BEGIN       (1<<12)
 #define ANCHOR_WORD_END         (1<<13)
 #define ANCHOR_ANYCHAR_STAR     (1<<14)   /* ".*" optimize info */
 #define ANCHOR_ANYCHAR_STAR_ML  (1<<15)   /* ".*" optimize info (multi-line) */
+#define ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUND       (1<<16)
+#define ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUND    (1<<17)
+
 
 #define ANCHOR_HAS_BODY(a)      ((a)->type < ANCHOR_BEGIN_BUF)
 

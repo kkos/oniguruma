@@ -3876,6 +3876,18 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       tok->u.anchor = ANCHOR_NO_WORD_BOUND;
       break;
 
+    case 'y':
+      if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER)) break;
+      tok->type = TK_ANCHOR;
+      tok->u.anchor = ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUND;
+      break;
+
+    case 'Y':
+      if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER)) break;
+      tok->type = TK_ANCHOR;
+      tok->u.anchor = ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUND;
+      break;
+
 #ifdef USE_WORD_BEGIN_END
     case '<':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_LTGT_WORD_BEGIN_END)) break;
