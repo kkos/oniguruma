@@ -1935,11 +1935,13 @@ make_absent_tree_for_simple_one_char_repeat(Node** node, Node* absent, Node* qua
   if (r != 0) goto err;
 
   x = make_list(3, ns);
-  if (IS_NULL(x)) goto err;
+  if (IS_NULL(x)) goto err0;
 
   *node = x;
   return ONIG_NORMAL;
 
+ err0:
+  r = ONIGERR_MEMORY;
  err:
   for (i = 0; i < 4; i++) onig_node_free(ns[i]);
   return r;
