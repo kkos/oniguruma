@@ -1677,26 +1677,26 @@ make_absent_engine(Node** node, int pre_save_right_id, Node* absent,
   if (r != 0) goto err;
 
   x = make_list(4, ns);
-  if (IS_NULL(x)) goto err;
+  if (IS_NULL(x)) goto err0;
 
   ns[0] = x;
   ns[1] = step_one;
   ns[2] = ns[3] = NULL_NODE;
 
   x = make_alt(2, ns);
-  if (IS_NULL(x)) goto err;
+  if (IS_NULL(x)) goto err0;
 
   ns[0] = x;
 
   x = node_new_quantifier(lower, upper, 0);
-  if (IS_NULL(x)) goto err;
+  if (IS_NULL(x)) goto err0;
 
   NODE_BODY(x) = ns[0];
   ns[0] = x;
 
   if (possessive != 0) {
     x = node_new_enclosure(ENCLOSURE_STOP_BACKTRACK);
-    if (IS_NULL(x)) goto err;
+    if (IS_NULL(x)) goto err0;
 
     NODE_BODY(x) = ns[0];
     ns[0] = x;
@@ -1710,12 +1710,12 @@ make_absent_engine(Node** node, int pre_save_right_id, Node* absent,
   if (r != 0) goto err;
 
   x = make_list(2, ns + 1);
-  if (IS_NULL(x)) goto err;
+  if (IS_NULL(x)) goto err0;
 
   ns[1] = x; ns[2] = NULL_NODE;
 
   x = make_alt(2, ns);
-  if (IS_NULL(x)) goto err;
+  if (IS_NULL(x)) goto err0;
 
   if (is_range_cutter != 0)
     NODE_STATUS_ADD(x, NST_SUPER);
@@ -1723,6 +1723,8 @@ make_absent_engine(Node** node, int pre_save_right_id, Node* absent,
   *node = x;
   return ONIG_NORMAL;
 
+ err0:
+  r = ONIGERR_MEMORY;
  err:
   for (i = 0; i < 4; i++) onig_node_free(ns[i]);
   return r;
