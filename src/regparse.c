@@ -1803,7 +1803,7 @@ make_absent_clear(Node** node, ScanEnv* env)
   if (r != 0) goto err;
 
   x = make_list(2, ns);
-  if (IS_NULL(x)) goto err;
+  if (IS_NULL(x)) goto err0;
 
   ns[0] = NULL_NODE; ns[1] = x;
 
@@ -1812,17 +1812,19 @@ make_absent_clear(Node** node, ScanEnv* env)
   if (r != 0) goto err;
 
   x = make_alt(2, ns);
-  if (IS_NULL(x)) goto err;
+  if (IS_NULL(x)) goto err0;
 
   ns[0] = save;
   ns[1] = x;
   save = NULL_NODE;
   x = make_list(2, ns);
-  if (IS_NULL(x)) goto err;
+  if (IS_NULL(x)) goto err0;
 
   *node = x;
   return ONIG_NORMAL;
 
+ err0:
+  r = ONIGERR_MEMORY;
  err:
   onig_node_free(save);
   onig_node_free(ns[0]);
