@@ -1640,7 +1640,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     break;
 
   case ANCHOR_NO_WORD_BOUNDARY:
-    op = OP_NO_WORD_BOUND; goto word;
+    op = OP_NO_WORD_BOUNDARY; goto word;
     break;
 #ifdef USE_WORD_BEGIN_END
   case ANCHOR_WORD_BEGIN:
@@ -6730,7 +6730,7 @@ OnigOpInfoType OnigOpInfo[] = {
   { OP_NO_WORD,             "not-word",        ARG_NON },
   { OP_NO_WORD_ASCII,       "not-word-ascii",  ARG_NON },
   { OP_WORD_BOUNDARY,       "word-boundary",     ARG_MODE },
-  { OP_NO_WORD_BOUND,       "not-word-boundary", ARG_MODE },
+  { OP_NO_WORD_BOUNDARY,    "not-word-boundary", ARG_MODE },
   { OP_WORD_BEGIN,          "word-begin",      ARG_MODE },
   { OP_WORD_END,            "word-end",        ARG_MODE },
   { OP_BEGIN_BUF,           "begin-buf",       ARG_NON },

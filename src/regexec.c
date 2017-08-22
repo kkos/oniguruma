@@ -2208,7 +2208,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       continue;
       break;
 
-    case OP_NO_WORD_BOUND:  MOP_IN(OP_NO_WORD_BOUND);
+    case OP_NO_WORD_BOUNDARY:  MOP_IN(OP_NO_WORD_BOUNDARY);
       {
         ModeType mode;
         GET_MODE_INC(mode, p); // ascii_mode
