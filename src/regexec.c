@@ -2184,7 +2184,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       MOP_OUT;
       break;
 
-    case OP_WORD_BOUND:  MOP_IN(OP_WORD_BOUND);
+    case OP_WORD_BOUNDARY:  MOP_IN(OP_WORD_BOUNDARY);
       {
         ModeType mode;
         GET_MODE_INC(mode, p); // ascii_mode

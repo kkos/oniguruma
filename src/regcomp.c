@@ -1601,7 +1601,7 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
   case ANCHOR_WORD_BEGIN:
   case ANCHOR_WORD_END:
 #endif
-    len = SIZE_OP_WORD_BOUND;
+    len = SIZE_OP_WORD_BOUNDARY;
     break;
 
   case ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
@@ -1632,7 +1632,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
   case ANCHOR_BEGIN_POSITION: r = add_opcode(reg, OP_BEGIN_POSITION); break;
 
   case ANCHOR_WORD_BOUNDARY:
-    op = OP_WORD_BOUND;
+    op = OP_WORD_BOUNDARY;
   word:
     r = add_opcode(reg, op);
     if (r != 0) return r;
@@ -6729,8 +6729,8 @@ OnigOpInfoType OnigOpInfo[] = {
   { OP_WORD_ASCII,          "word-ascii",      ARG_NON },
   { OP_NO_WORD,             "not-word",        ARG_NON },
   { OP_NO_WORD_ASCII,       "not-word-ascii",  ARG_NON },
-  { OP_WORD_BOUND,          "word-bound",      ARG_MODE },
-  { OP_NO_WORD_BOUND,       "not-word-bound",  ARG_MODE },
+  { OP_WORD_BOUNDARY,       "word-boundary",     ARG_MODE },
+  { OP_NO_WORD_BOUND,       "not-word-boundary", ARG_MODE },
   { OP_WORD_BEGIN,          "word-begin",      ARG_MODE },
   { OP_WORD_END,            "word-end",        ARG_MODE },
   { OP_BEGIN_BUF,           "begin-buf",       ARG_NON },
