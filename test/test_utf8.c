@@ -1000,8 +1000,8 @@ extern int main(int argc, char* argv[])
   n("(?P:\\B)", "h");
 
   x2("\\p{InBasicLatin}", "\x41", 0, 1);
-  x2("\\p{Grapheme_Cluster_Break_Regional_Indicator}", "\xF0\x9F\x87\xA9", 0, 4);
-  n("\\p{Grapheme_Cluster_Break_Regional_Indicator}",  "\xF0\x9F\x87\xA5");
+  //x2("\\p{Grapheme_Cluster_Break_Regional_Indicator}", "\xF0\x9F\x87\xA9", 0, 4);
+  //n("\\p{Grapheme_Cluster_Break_Regional_Indicator}",  "\xF0\x9F\x87\xA5");
 
   // extended grapheme cluster
 
