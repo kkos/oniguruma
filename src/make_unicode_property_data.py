@@ -6,6 +6,8 @@
 import sys
 import re
 
+INCLUDE_GRAPHEME_CLUSTER_DATA = False
+
 POSIX_LIST = [
     'NEWLINE', 'Alpha', 'Blank', 'Cntrl', 'Digit', 'Graph', 'Lower',
     'Print', 'Punct', 'Space', 'Upper', 'XDigit', 'Word', 'Alnum', 'ASCII'
@@ -444,15 +446,16 @@ merge_dic(ALIASES, a)
 dic, BLOCKS = parse_blocks('Blocks.txt')
 merge_dic(DIC, dic)
 
-dic, props = parse_properties('GraphemeBreakProperty.txt',
-                              'GraphemeBreak Property',
-                              GRAPHEME_CLUSTER_BREAK_NAME_PREFIX)
-merge_dic(DIC, dic)
-merge_props(PROPS, props)
-#prop = GRAPHEME_CLUSTER_BREAK_NAME_PREFIX + 'Other'
-#DIC[prop] = inverse_ranges(add_ranges_in_dic(dic))
-#PROPS.append(prop)
-#KDIC[prop] = 'GrapemeBreak Property'
+if INCLUDE_GRAPHEME_CLUSTER_DATA:
+  dic, props = parse_properties('GraphemeBreakProperty.txt',
+                                'GraphemeBreak Property',
+                                GRAPHEME_CLUSTER_BREAK_NAME_PREFIX)
+  merge_dic(DIC, dic)
+  merge_props(PROPS, props)
+  #prop = GRAPHEME_CLUSTER_BREAK_NAME_PREFIX + 'Other'
+  #DIC[prop] = inverse_ranges(add_ranges_in_dic(dic))
+  #PROPS.append(prop)
+  #KDIC[prop] = 'GrapemeBreak Property'
 
 add_posix_props(DIC)
 PROPS = sorted(PROPS)

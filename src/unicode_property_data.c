@@ -11243,42 +11243,9 @@ CR_Grapheme_Base[] = { 743,
 0x2f800, 0x2fa1d,
 }; /* END of CR_Grapheme_Base */
 
-/* PROPERTY: 'Grapheme_Cluster_Break_CR': GraphemeBreak Property */
+/* PROPERTY: 'Grapheme_Extend': Derived Property */
 static const OnigCodePoint
-CR_Grapheme_Cluster_Break_CR[] = { 1,
-0x000d, 0x000d,
-}; /* END of CR_Grapheme_Cluster_Break_CR */
-
-/* PROPERTY: 'Grapheme_Cluster_Break_Control': GraphemeBreak Property */
-static const OnigCodePoint
-CR_Grapheme_Cluster_Break_Control[] = { 22,
-0x0000, 0x0009,
-0x000b, 0x000c,
-0x000e, 0x001f,
-0x007f, 0x009f,
-0x00ad, 0x00ad,
-0x0600, 0x0605,
-0x061c, 0x061c,
-0x06dd, 0x06dd,
-0x070f, 0x070f,
-0x180e, 0x180e,
-0x200b, 0x200b,
-0x200e, 0x200f,
-0x2028, 0x202e,
-0x2060, 0x206f,
-0xd800, 0xdfff,
-0xfeff, 0xfeff,
-0xfff0, 0xfffb,
-0x110bd, 0x110bd,
-0x1bca0, 0x1bca3,
-0x1d173, 0x1d17a,
-0xe0000, 0xe00ff,
-0xe01f0, 0xe0fff,
-}; /* END of CR_Grapheme_Cluster_Break_Control */
-
-/* PROPERTY: 'Grapheme_Cluster_Break_Extend': GraphemeBreak Property */
-static const OnigCodePoint
-CR_Grapheme_Cluster_Break_Extend[] = { 283,
+CR_Grapheme_Extend[] = { 283,
 0x0300, 0x036f,
 0x0483, 0x0489,
 0x0591, 0x05bd,
@@ -11562,985 +11529,7 @@ CR_Grapheme_Cluster_Break_Extend[] = { 283,
 0x1daa1, 0x1daaf,
 0x1e8d0, 0x1e8d6,
 0xe0100, 0xe01ef,
-}; /* END of CR_Grapheme_Cluster_Break_Extend */
-
-/* PROPERTY: 'Grapheme_Cluster_Break_L': GraphemeBreak Property */
-static const OnigCodePoint
-CR_Grapheme_Cluster_Break_L[] = { 2,
-0x1100, 0x115f,
-0xa960, 0xa97c,
-}; /* END of CR_Grapheme_Cluster_Break_L */
-
-/* PROPERTY: 'Grapheme_Cluster_Break_LF': GraphemeBreak Property */
-#define CR_Grapheme_Cluster_Break_LF CR_NEWLINE
-
-/* PROPERTY: 'Grapheme_Cluster_Break_LV': GraphemeBreak Property */
-static const OnigCodePoint
-CR_Grapheme_Cluster_Break_LV[] = { 399,
-0xac00, 0xac00,
-0xac1c, 0xac1c,
-0xac38, 0xac38,
-0xac54, 0xac54,
-0xac70, 0xac70,
-0xac8c, 0xac8c,
-0xaca8, 0xaca8,
-0xacc4, 0xacc4,
-0xace0, 0xace0,
-0xacfc, 0xacfc,
-0xad18, 0xad18,
-0xad34, 0xad34,
-0xad50, 0xad50,
-0xad6c, 0xad6c,
-0xad88, 0xad88,
-0xada4, 0xada4,
-0xadc0, 0xadc0,
-0xaddc, 0xaddc,
-0xadf8, 0xadf8,
-0xae14, 0xae14,
-0xae30, 0xae30,
-0xae4c, 0xae4c,
-0xae68, 0xae68,
-0xae84, 0xae84,
-0xaea0, 0xaea0,
-0xaebc, 0xaebc,
-0xaed8, 0xaed8,
-0xaef4, 0xaef4,
-0xaf10, 0xaf10,
-0xaf2c, 0xaf2c,
-0xaf48, 0xaf48,
-0xaf64, 0xaf64,
-0xaf80, 0xaf80,
-0xaf9c, 0xaf9c,
-0xafb8, 0xafb8,
-0xafd4, 0xafd4,
-0xaff0, 0xaff0,
-0xb00c, 0xb00c,
-0xb028, 0xb028,
-0xb044, 0xb044,
-0xb060, 0xb060,
-0xb07c, 0xb07c,
-0xb098, 0xb098,
-0xb0b4, 0xb0b4,
-0xb0d0, 0xb0d0,
-0xb0ec, 0xb0ec,
-0xb108, 0xb108,
-0xb124, 0xb124,
-0xb140, 0xb140,
-0xb15c, 0xb15c,
-0xb178, 0xb178,
-0xb194, 0xb194,
-0xb1b0, 0xb1b0,
-0xb1cc, 0xb1cc,
-0xb1e8, 0xb1e8,
-0xb204, 0xb204,
-0xb220, 0xb220,
-0xb23c, 0xb23c,
-0xb258, 0xb258,
-0xb274, 0xb274,
-0xb290, 0xb290,
-0xb2ac, 0xb2ac,
-0xb2c8, 0xb2c8,
-0xb2e4, 0xb2e4,
-0xb300, 0xb300,
-0xb31c, 0xb31c,
-0xb338, 0xb338,
-0xb354, 0xb354,
-0xb370, 0xb370,
-0xb38c, 0xb38c,
-0xb3a8, 0xb3a8,
-0xb3c4, 0xb3c4,
-0xb3e0, 0xb3e0,
-0xb3fc, 0xb3fc,
-0xb418, 0xb418,
-0xb434, 0xb434,
-0xb450, 0xb450,
-0xb46c, 0xb46c,
-0xb488, 0xb488,
-0xb4a4, 0xb4a4,
-0xb4c0, 0xb4c0,
-0xb4dc, 0xb4dc,
-0xb4f8, 0xb4f8,
-0xb514, 0xb514,
-0xb530, 0xb530,
-0xb54c, 0xb54c,
-0xb568, 0xb568,
-0xb584, 0xb584,
-0xb5a0, 0xb5a0,
-0xb5bc, 0xb5bc,
-0xb5d8, 0xb5d8,
-0xb5f4, 0xb5f4,
-0xb610, 0xb610,
-0xb62c, 0xb62c,
-0xb648, 0xb648,
-0xb664, 0xb664,
-0xb680, 0xb680,
-0xb69c, 0xb69c,
-0xb6b8, 0xb6b8,
-0xb6d4, 0xb6d4,
-0xb6f0, 0xb6f0,
-0xb70c, 0xb70c,
-0xb728, 0xb728,
-0xb744, 0xb744,
-0xb760, 0xb760,
-0xb77c, 0xb77c,
-0xb798, 0xb798,
-0xb7b4, 0xb7b4,
-0xb7d0, 0xb7d0,
-0xb7ec, 0xb7ec,
-0xb808, 0xb808,
-0xb824, 0xb824,
-0xb840, 0xb840,
-0xb85c, 0xb85c,
-0xb878, 0xb878,
-0xb894, 0xb894,
-0xb8b0, 0xb8b0,
-0xb8cc, 0xb8cc,
-0xb8e8, 0xb8e8,
-0xb904, 0xb904,
-0xb920, 0xb920,
-0xb93c, 0xb93c,
-0xb958, 0xb958,
-0xb974, 0xb974,
-0xb990, 0xb990,
-0xb9ac, 0xb9ac,
-0xb9c8, 0xb9c8,
-0xb9e4, 0xb9e4,
-0xba00, 0xba00,
-0xba1c, 0xba1c,
-0xba38, 0xba38,
-0xba54, 0xba54,
-0xba70, 0xba70,
-0xba8c, 0xba8c,
-0xbaa8, 0xbaa8,
-0xbac4, 0xbac4,
-0xbae0, 0xbae0,
-0xbafc, 0xbafc,
-0xbb18, 0xbb18,
-0xbb34, 0xbb34,
-0xbb50, 0xbb50,
-0xbb6c, 0xbb6c,
-0xbb88, 0xbb88,
-0xbba4, 0xbba4,
-0xbbc0, 0xbbc0,
-0xbbdc, 0xbbdc,
-0xbbf8, 0xbbf8,
-0xbc14, 0xbc14,
-0xbc30, 0xbc30,
-0xbc4c, 0xbc4c,
-0xbc68, 0xbc68,
-0xbc84, 0xbc84,
-0xbca0, 0xbca0,
-0xbcbc, 0xbcbc,
-0xbcd8, 0xbcd8,
-0xbcf4, 0xbcf4,
-0xbd10, 0xbd10,
-0xbd2c, 0xbd2c,
-0xbd48, 0xbd48,
-0xbd64, 0xbd64,
-0xbd80, 0xbd80,
-0xbd9c, 0xbd9c,
-0xbdb8, 0xbdb8,
-0xbdd4, 0xbdd4,
-0xbdf0, 0xbdf0,
-0xbe0c, 0xbe0c,
-0xbe28, 0xbe28,
-0xbe44, 0xbe44,
-0xbe60, 0xbe60,
-0xbe7c, 0xbe7c,
-0xbe98, 0xbe98,
-0xbeb4, 0xbeb4,
-0xbed0, 0xbed0,
-0xbeec, 0xbeec,
-0xbf08, 0xbf08,
-0xbf24, 0xbf24,
-0xbf40, 0xbf40,
-0xbf5c, 0xbf5c,
-0xbf78, 0xbf78,
-0xbf94, 0xbf94,
-0xbfb0, 0xbfb0,
-0xbfcc, 0xbfcc,
-0xbfe8, 0xbfe8,
-0xc004, 0xc004,
-0xc020, 0xc020,
-0xc03c, 0xc03c,
-0xc058, 0xc058,
-0xc074, 0xc074,
-0xc090, 0xc090,
-0xc0ac, 0xc0ac,
-0xc0c8, 0xc0c8,
-0xc0e4, 0xc0e4,
-0xc100, 0xc100,
-0xc11c, 0xc11c,
-0xc138, 0xc138,
-0xc154, 0xc154,
-0xc170, 0xc170,
-0xc18c, 0xc18c,
-0xc1a8, 0xc1a8,
-0xc1c4, 0xc1c4,
-0xc1e0, 0xc1e0,
-0xc1fc, 0xc1fc,
-0xc218, 0xc218,
-0xc234, 0xc234,
-0xc250, 0xc250,
-0xc26c, 0xc26c,
-0xc288, 0xc288,
-0xc2a4, 0xc2a4,
-0xc2c0, 0xc2c0,
-0xc2dc, 0xc2dc,
-0xc2f8, 0xc2f8,
-0xc314, 0xc314,
-0xc330, 0xc330,
-0xc34c, 0xc34c,
-0xc368, 0xc368,
-0xc384, 0xc384,
-0xc3a0, 0xc3a0,
-0xc3bc, 0xc3bc,
-0xc3d8, 0xc3d8,
-0xc3f4, 0xc3f4,
-0xc410, 0xc410,
-0xc42c, 0xc42c,
-0xc448, 0xc448,
-0xc464, 0xc464,
-0xc480, 0xc480,
-0xc49c, 0xc49c,
-0xc4b8, 0xc4b8,
-0xc4d4, 0xc4d4,
-0xc4f0, 0xc4f0,
-0xc50c, 0xc50c,
-0xc528, 0xc528,
-0xc544, 0xc544,
-0xc560, 0xc560,
-0xc57c, 0xc57c,
-0xc598, 0xc598,
-0xc5b4, 0xc5b4,
-0xc5d0, 0xc5d0,
-0xc5ec, 0xc5ec,
-0xc608, 0xc608,
-0xc624, 0xc624,
-0xc640, 0xc640,
-0xc65c, 0xc65c,
-0xc678, 0xc678,
-0xc694, 0xc694,
-0xc6b0, 0xc6b0,
-0xc6cc, 0xc6cc,
-0xc6e8, 0xc6e8,
-0xc704, 0xc704,
-0xc720, 0xc720,
-0xc73c, 0xc73c,
-0xc758, 0xc758,
-0xc774, 0xc774,
-0xc790, 0xc790,
-0xc7ac, 0xc7ac,
-0xc7c8, 0xc7c8,
-0xc7e4, 0xc7e4,
-0xc800, 0xc800,
-0xc81c, 0xc81c,
-0xc838, 0xc838,
-0xc854, 0xc854,
-0xc870, 0xc870,
-0xc88c, 0xc88c,
-0xc8a8, 0xc8a8,
-0xc8c4, 0xc8c4,
-0xc8e0, 0xc8e0,
-0xc8fc, 0xc8fc,
-0xc918, 0xc918,
-0xc934, 0xc934,
-0xc950, 0xc950,
-0xc96c, 0xc96c,
-0xc988, 0xc988,
-0xc9a4, 0xc9a4,
-0xc9c0, 0xc9c0,
-0xc9dc, 0xc9dc,
-0xc9f8, 0xc9f8,
-0xca14, 0xca14,
-0xca30, 0xca30,
-0xca4c, 0xca4c,
-0xca68, 0xca68,
-0xca84, 0xca84,
-0xcaa0, 0xcaa0,
-0xcabc, 0xcabc,
-0xcad8, 0xcad8,
-0xcaf4, 0xcaf4,
-0xcb10, 0xcb10,
-0xcb2c, 0xcb2c,
-0xcb48, 0xcb48,
-0xcb64, 0xcb64,
-0xcb80, 0xcb80,
-0xcb9c, 0xcb9c,
-0xcbb8, 0xcbb8,
-0xcbd4, 0xcbd4,
-0xcbf0, 0xcbf0,
-0xcc0c, 0xcc0c,
-0xcc28, 0xcc28,
-0xcc44, 0xcc44,
-0xcc60, 0xcc60,
-0xcc7c, 0xcc7c,
-0xcc98, 0xcc98,
-0xccb4, 0xccb4,
-0xccd0, 0xccd0,
-0xccec, 0xccec,
-0xcd08, 0xcd08,
-0xcd24, 0xcd24,
-0xcd40, 0xcd40,
-0xcd5c, 0xcd5c,
-0xcd78, 0xcd78,
-0xcd94, 0xcd94,
-0xcdb0, 0xcdb0,
-0xcdcc, 0xcdcc,
-0xcde8, 0xcde8,
-0xce04, 0xce04,
-0xce20, 0xce20,
-0xce3c, 0xce3c,
-0xce58, 0xce58,
-0xce74, 0xce74,
-0xce90, 0xce90,
-0xceac, 0xceac,
-0xcec8, 0xcec8,
-0xcee4, 0xcee4,
-0xcf00, 0xcf00,
-0xcf1c, 0xcf1c,
-0xcf38, 0xcf38,
-0xcf54, 0xcf54,
-0xcf70, 0xcf70,
-0xcf8c, 0xcf8c,
-0xcfa8, 0xcfa8,
-0xcfc4, 0xcfc4,
-0xcfe0, 0xcfe0,
-0xcffc, 0xcffc,
-0xd018, 0xd018,
-0xd034, 0xd034,
-0xd050, 0xd050,
-0xd06c, 0xd06c,
-0xd088, 0xd088,
-0xd0a4, 0xd0a4,
-0xd0c0, 0xd0c0,
-0xd0dc, 0xd0dc,
-0xd0f8, 0xd0f8,
-0xd114, 0xd114,
-0xd130, 0xd130,
-0xd14c, 0xd14c,
-0xd168, 0xd168,
-0xd184, 0xd184,
-0xd1a0, 0xd1a0,
-0xd1bc, 0xd1bc,
-0xd1d8, 0xd1d8,
-0xd1f4, 0xd1f4,
-0xd210, 0xd210,
-0xd22c, 0xd22c,
-0xd248, 0xd248,
-0xd264, 0xd264,
-0xd280, 0xd280,
-0xd29c, 0xd29c,
-0xd2b8, 0xd2b8,
-0xd2d4, 0xd2d4,
-0xd2f0, 0xd2f0,
-0xd30c, 0xd30c,
-0xd328, 0xd328,
-0xd344, 0xd344,
-0xd360, 0xd360,
-0xd37c, 0xd37c,
-0xd398, 0xd398,
-0xd3b4, 0xd3b4,
-0xd3d0, 0xd3d0,
-0xd3ec, 0xd3ec,
-0xd408, 0xd408,
-0xd424, 0xd424,
-0xd440, 0xd440,
-0xd45c, 0xd45c,
-0xd478, 0xd478,
-0xd494, 0xd494,
-0xd4b0, 0xd4b0,
-0xd4cc, 0xd4cc,
-0xd4e8, 0xd4e8,
-0xd504, 0xd504,
-0xd520, 0xd520,
-0xd53c, 0xd53c,
-0xd558, 0xd558,
-0xd574, 0xd574,
-0xd590, 0xd590,
-0xd5ac, 0xd5ac,
-0xd5c8, 0xd5c8,
-0xd5e4, 0xd5e4,
-0xd600, 0xd600,
-0xd61c, 0xd61c,
-0xd638, 0xd638,
-0xd654, 0xd654,
-0xd670, 0xd670,
-0xd68c, 0xd68c,
-0xd6a8, 0xd6a8,
-0xd6c4, 0xd6c4,
-0xd6e0, 0xd6e0,
-0xd6fc, 0xd6fc,
-0xd718, 0xd718,
-0xd734, 0xd734,
-0xd750, 0xd750,
-0xd76c, 0xd76c,
-0xd788, 0xd788,
-}; /* END of CR_Grapheme_Cluster_Break_LV */
-
-/* PROPERTY: 'Grapheme_Cluster_Break_LVT': GraphemeBreak Property */
-static const OnigCodePoint
-CR_Grapheme_Cluster_Break_LVT[] = { 399,
-0xac01, 0xac1b,
-0xac1d, 0xac37,
-0xac39, 0xac53,
-0xac55, 0xac6f,
-0xac71, 0xac8b,
-0xac8d, 0xaca7,
-0xaca9, 0xacc3,
-0xacc5, 0xacdf,
-0xace1, 0xacfb,
-0xacfd, 0xad17,
-0xad19, 0xad33,
-0xad35, 0xad4f,
-0xad51, 0xad6b,
-0xad6d, 0xad87,
-0xad89, 0xada3,
-0xada5, 0xadbf,
-0xadc1, 0xaddb,
-0xaddd, 0xadf7,
-0xadf9, 0xae13,
-0xae15, 0xae2f,
-0xae31, 0xae4b,
-0xae4d, 0xae67,
-0xae69, 0xae83,
-0xae85, 0xae9f,
-0xaea1, 0xaebb,
-0xaebd, 0xaed7,
-0xaed9, 0xaef3,
-0xaef5, 0xaf0f,
-0xaf11, 0xaf2b,
-0xaf2d, 0xaf47,
-0xaf49, 0xaf63,
-0xaf65, 0xaf7f,
-0xaf81, 0xaf9b,
-0xaf9d, 0xafb7,
-0xafb9, 0xafd3,
-0xafd5, 0xafef,
-0xaff1, 0xb00b,
-0xb00d, 0xb027,
-0xb029, 0xb043,
-0xb045, 0xb05f,
-0xb061, 0xb07b,
-0xb07d, 0xb097,
-0xb099, 0xb0b3,
-0xb0b5, 0xb0cf,
-0xb0d1, 0xb0eb,
-0xb0ed, 0xb107,
-0xb109, 0xb123,
-0xb125, 0xb13f,
-0xb141, 0xb15b,
-0xb15d, 0xb177,
-0xb179, 0xb193,
-0xb195, 0xb1af,
-0xb1b1, 0xb1cb,
-0xb1cd, 0xb1e7,
-0xb1e9, 0xb203,
-0xb205, 0xb21f,
-0xb221, 0xb23b,
-0xb23d, 0xb257,
-0xb259, 0xb273,
-0xb275, 0xb28f,
-0xb291, 0xb2ab,
-0xb2ad, 0xb2c7,
-0xb2c9, 0xb2e3,
-0xb2e5, 0xb2ff,
-0xb301, 0xb31b,
-0xb31d, 0xb337,
-0xb339, 0xb353,
-0xb355, 0xb36f,
-0xb371, 0xb38b,
-0xb38d, 0xb3a7,
-0xb3a9, 0xb3c3,
-0xb3c5, 0xb3df,
-0xb3e1, 0xb3fb,
-0xb3fd, 0xb417,
-0xb419, 0xb433,
-0xb435, 0xb44f,
-0xb451, 0xb46b,
-0xb46d, 0xb487,
-0xb489, 0xb4a3,
-0xb4a5, 0xb4bf,
-0xb4c1, 0xb4db,
-0xb4dd, 0xb4f7,
-0xb4f9, 0xb513,
-0xb515, 0xb52f,
-0xb531, 0xb54b,
-0xb54d, 0xb567,
-0xb569, 0xb583,
-0xb585, 0xb59f,
-0xb5a1, 0xb5bb,
-0xb5bd, 0xb5d7,
-0xb5d9, 0xb5f3,
-0xb5f5, 0xb60f,
-0xb611, 0xb62b,
-0xb62d, 0xb647,
-0xb649, 0xb663,
-0xb665, 0xb67f,
-0xb681, 0xb69b,
-0xb69d, 0xb6b7,
-0xb6b9, 0xb6d3,
-0xb6d5, 0xb6ef,
-0xb6f1, 0xb70b,
-0xb70d, 0xb727,
-0xb729, 0xb743,
-0xb745, 0xb75f,
-0xb761, 0xb77b,
-0xb77d, 0xb797,
-0xb799, 0xb7b3,
-0xb7b5, 0xb7cf,
-0xb7d1, 0xb7eb,
-0xb7ed, 0xb807,
-0xb809, 0xb823,
-0xb825, 0xb83f,
-0xb841, 0xb85b,
-0xb85d, 0xb877,
-0xb879, 0xb893,
-0xb895, 0xb8af,
-0xb8b1, 0xb8cb,
-0xb8cd, 0xb8e7,
-0xb8e9, 0xb903,
-0xb905, 0xb91f,
-0xb921, 0xb93b,
-0xb93d, 0xb957,
-0xb959, 0xb973,
-0xb975, 0xb98f,
-0xb991, 0xb9ab,
-0xb9ad, 0xb9c7,
-0xb9c9, 0xb9e3,
-0xb9e5, 0xb9ff,
-0xba01, 0xba1b,
-0xba1d, 0xba37,
-0xba39, 0xba53,
-0xba55, 0xba6f,
-0xba71, 0xba8b,
-0xba8d, 0xbaa7,
-0xbaa9, 0xbac3,
-0xbac5, 0xbadf,
-0xbae1, 0xbafb,
-0xbafd, 0xbb17,
-0xbb19, 0xbb33,
-0xbb35, 0xbb4f,
-0xbb51, 0xbb6b,
-0xbb6d, 0xbb87,
-0xbb89, 0xbba3,
-0xbba5, 0xbbbf,
-0xbbc1, 0xbbdb,
-0xbbdd, 0xbbf7,
-0xbbf9, 0xbc13,
-0xbc15, 0xbc2f,
-0xbc31, 0xbc4b,
-0xbc4d, 0xbc67,
-0xbc69, 0xbc83,
-0xbc85, 0xbc9f,
-0xbca1, 0xbcbb,
-0xbcbd, 0xbcd7,
-0xbcd9, 0xbcf3,
-0xbcf5, 0xbd0f,
-0xbd11, 0xbd2b,
-0xbd2d, 0xbd47,
-0xbd49, 0xbd63,
-0xbd65, 0xbd7f,
-0xbd81, 0xbd9b,
-0xbd9d, 0xbdb7,
-0xbdb9, 0xbdd3,
-0xbdd5, 0xbdef,
-0xbdf1, 0xbe0b,
-0xbe0d, 0xbe27,
-0xbe29, 0xbe43,
-0xbe45, 0xbe5f,
-0xbe61, 0xbe7b,
-0xbe7d, 0xbe97,
-0xbe99, 0xbeb3,
-0xbeb5, 0xbecf,
-0xbed1, 0xbeeb,
-0xbeed, 0xbf07,
-0xbf09, 0xbf23,
-0xbf25, 0xbf3f,
-0xbf41, 0xbf5b,
-0xbf5d, 0xbf77,
-0xbf79, 0xbf93,
-0xbf95, 0xbfaf,
-0xbfb1, 0xbfcb,
-0xbfcd, 0xbfe7,
-0xbfe9, 0xc003,
-0xc005, 0xc01f,
-0xc021, 0xc03b,
-0xc03d, 0xc057,
-0xc059, 0xc073,
-0xc075, 0xc08f,
-0xc091, 0xc0ab,
-0xc0ad, 0xc0c7,
-0xc0c9, 0xc0e3,
-0xc0e5, 0xc0ff,
-0xc101, 0xc11b,
-0xc11d, 0xc137,
-0xc139, 0xc153,
-0xc155, 0xc16f,
-0xc171, 0xc18b,
-0xc18d, 0xc1a7,
-0xc1a9, 0xc1c3,
-0xc1c5, 0xc1df,
-0xc1e1, 0xc1fb,
-0xc1fd, 0xc217,
-0xc219, 0xc233,
-0xc235, 0xc24f,
-0xc251, 0xc26b,
-0xc26d, 0xc287,
-0xc289, 0xc2a3,
-0xc2a5, 0xc2bf,
-0xc2c1, 0xc2db,
-0xc2dd, 0xc2f7,
-0xc2f9, 0xc313,
-0xc315, 0xc32f,
-0xc331, 0xc34b,
-0xc34d, 0xc367,
-0xc369, 0xc383,
-0xc385, 0xc39f,
-0xc3a1, 0xc3bb,
-0xc3bd, 0xc3d7,
-0xc3d9, 0xc3f3,
-0xc3f5, 0xc40f,
-0xc411, 0xc42b,
-0xc42d, 0xc447,
-0xc449, 0xc463,
-0xc465, 0xc47f,
-0xc481, 0xc49b,
-0xc49d, 0xc4b7,
-0xc4b9, 0xc4d3,
-0xc4d5, 0xc4ef,
-0xc4f1, 0xc50b,
-0xc50d, 0xc527,
-0xc529, 0xc543,
-0xc545, 0xc55f,
-0xc561, 0xc57b,
-0xc57d, 0xc597,
-0xc599, 0xc5b3,
-0xc5b5, 0xc5cf,
-0xc5d1, 0xc5eb,
-0xc5ed, 0xc607,
-0xc609, 0xc623,
-0xc625, 0xc63f,
-0xc641, 0xc65b,
-0xc65d, 0xc677,
-0xc679, 0xc693,
-0xc695, 0xc6af,
-0xc6b1, 0xc6cb,
-0xc6cd, 0xc6e7,
-0xc6e9, 0xc703,
-0xc705, 0xc71f,
-0xc721, 0xc73b,
-0xc73d, 0xc757,
-0xc759, 0xc773,
-0xc775, 0xc78f,
-0xc791, 0xc7ab,
-0xc7ad, 0xc7c7,
-0xc7c9, 0xc7e3,
-0xc7e5, 0xc7ff,
-0xc801, 0xc81b,
-0xc81d, 0xc837,
-0xc839, 0xc853,
-0xc855, 0xc86f,
-0xc871, 0xc88b,
-0xc88d, 0xc8a7,
-0xc8a9, 0xc8c3,
-0xc8c5, 0xc8df,
-0xc8e1, 0xc8fb,
-0xc8fd, 0xc917,
-0xc919, 0xc933,
-0xc935, 0xc94f,
-0xc951, 0xc96b,
-0xc96d, 0xc987,
-0xc989, 0xc9a3,
-0xc9a5, 0xc9bf,
-0xc9c1, 0xc9db,
-0xc9dd, 0xc9f7,
-0xc9f9, 0xca13,
-0xca15, 0xca2f,
-0xca31, 0xca4b,
-0xca4d, 0xca67,
-0xca69, 0xca83,
-0xca85, 0xca9f,
-0xcaa1, 0xcabb,
-0xcabd, 0xcad7,
-0xcad9, 0xcaf3,
-0xcaf5, 0xcb0f,
-0xcb11, 0xcb2b,
-0xcb2d, 0xcb47,
-0xcb49, 0xcb63,
-0xcb65, 0xcb7f,
-0xcb81, 0xcb9b,
-0xcb9d, 0xcbb7,
-0xcbb9, 0xcbd3,
-0xcbd5, 0xcbef,
-0xcbf1, 0xcc0b,
-0xcc0d, 0xcc27,
-0xcc29, 0xcc43,
-0xcc45, 0xcc5f,
-0xcc61, 0xcc7b,
-0xcc7d, 0xcc97,
-0xcc99, 0xccb3,
-0xccb5, 0xcccf,
-0xccd1, 0xcceb,
-0xcced, 0xcd07,
-0xcd09, 0xcd23,
-0xcd25, 0xcd3f,
-0xcd41, 0xcd5b,
-0xcd5d, 0xcd77,
-0xcd79, 0xcd93,
-0xcd95, 0xcdaf,
-0xcdb1, 0xcdcb,
-0xcdcd, 0xcde7,
-0xcde9, 0xce03,
-0xce05, 0xce1f,
-0xce21, 0xce3b,
-0xce3d, 0xce57,
-0xce59, 0xce73,
-0xce75, 0xce8f,
-0xce91, 0xceab,
-0xcead, 0xcec7,
-0xcec9, 0xcee3,
-0xcee5, 0xceff,
-0xcf01, 0xcf1b,
-0xcf1d, 0xcf37,
-0xcf39, 0xcf53,
-0xcf55, 0xcf6f,
-0xcf71, 0xcf8b,
-0xcf8d, 0xcfa7,
-0xcfa9, 0xcfc3,
-0xcfc5, 0xcfdf,
-0xcfe1, 0xcffb,
-0xcffd, 0xd017,
-0xd019, 0xd033,
-0xd035, 0xd04f,
-0xd051, 0xd06b,
-0xd06d, 0xd087,
-0xd089, 0xd0a3,
-0xd0a5, 0xd0bf,
-0xd0c1, 0xd0db,
-0xd0dd, 0xd0f7,
-0xd0f9, 0xd113,
-0xd115, 0xd12f,
-0xd131, 0xd14b,
-0xd14d, 0xd167,
-0xd169, 0xd183,
-0xd185, 0xd19f,
-0xd1a1, 0xd1bb,
-0xd1bd, 0xd1d7,
-0xd1d9, 0xd1f3,
-0xd1f5, 0xd20f,
-0xd211, 0xd22b,
-0xd22d, 0xd247,
-0xd249, 0xd263,
-0xd265, 0xd27f,
-0xd281, 0xd29b,
-0xd29d, 0xd2b7,
-0xd2b9, 0xd2d3,
-0xd2d5, 0xd2ef,
-0xd2f1, 0xd30b,
-0xd30d, 0xd327,
-0xd329, 0xd343,
-0xd345, 0xd35f,
-0xd361, 0xd37b,
-0xd37d, 0xd397,
-0xd399, 0xd3b3,
-0xd3b5, 0xd3cf,
-0xd3d1, 0xd3eb,
-0xd3ed, 0xd407,
-0xd409, 0xd423,
-0xd425, 0xd43f,
-0xd441, 0xd45b,
-0xd45d, 0xd477,
-0xd479, 0xd493,
-0xd495, 0xd4af,
-0xd4b1, 0xd4cb,
-0xd4cd, 0xd4e7,
-0xd4e9, 0xd503,
-0xd505, 0xd51f,
-0xd521, 0xd53b,
-0xd53d, 0xd557,
-0xd559, 0xd573,
-0xd575, 0xd58f,
-0xd591, 0xd5ab,
-0xd5ad, 0xd5c7,
-0xd5c9, 0xd5e3,
-0xd5e5, 0xd5ff,
-0xd601, 0xd61b,
-0xd61d, 0xd637,
-0xd639, 0xd653,
-0xd655, 0xd66f,
-0xd671, 0xd68b,
-0xd68d, 0xd6a7,
-0xd6a9, 0xd6c3,
-0xd6c5, 0xd6df,
-0xd6e1, 0xd6fb,
-0xd6fd, 0xd717,
-0xd719, 0xd733,
-0xd735, 0xd74f,
-0xd751, 0xd76b,
-0xd76d, 0xd787,
-0xd789, 0xd7a3,
-}; /* END of CR_Grapheme_Cluster_Break_LVT */
-
-/* PROPERTY: 'Grapheme_Cluster_Break_Regional_Indicator': GraphemeBreak Property */
-static const OnigCodePoint
-CR_Grapheme_Cluster_Break_Regional_Indicator[] = { 1,
-0x1f1e6, 0x1f1ff,
-}; /* END of CR_Grapheme_Cluster_Break_Regional_Indicator */
-
-/* PROPERTY: 'Grapheme_Cluster_Break_SpacingMark': GraphemeBreak Property */
-static const OnigCodePoint
-CR_Grapheme_Cluster_Break_SpacingMark[] = { 132,
-0x0903, 0x0903,
-0x093b, 0x093b,
-0x093e, 0x0940,
-0x0949, 0x094c,
-0x094e, 0x094f,
-0x0982, 0x0983,
-0x09bf, 0x09c0,
-0x09c7, 0x09c8,
-0x09cb, 0x09cc,
-0x0a03, 0x0a03,
-0x0a3e, 0x0a40,
-0x0a83, 0x0a83,
-0x0abe, 0x0ac0,
-0x0ac9, 0x0ac9,
-0x0acb, 0x0acc,
-0x0b02, 0x0b03,
-0x0b40, 0x0b40,
-0x0b47, 0x0b48,
-0x0b4b, 0x0b4c,
-0x0bbf, 0x0bbf,
-0x0bc1, 0x0bc2,
-0x0bc6, 0x0bc8,
-0x0bca, 0x0bcc,
-0x0c01, 0x0c03,
-0x0c41, 0x0c44,
-0x0c82, 0x0c83,
-0x0cbe, 0x0cbe,
-0x0cc0, 0x0cc1,
-0x0cc3, 0x0cc4,
-0x0cc7, 0x0cc8,
-0x0cca, 0x0ccb,
-0x0d02, 0x0d03,
-0x0d3f, 0x0d40,
-0x0d46, 0x0d48,
-0x0d4a, 0x0d4c,
-0x0d82, 0x0d83,
-0x0dd0, 0x0dd1,
-0x0dd8, 0x0dde,
-0x0df2, 0x0df3,
-0x0e33, 0x0e33,
-0x0eb3, 0x0eb3,
-0x0f3e, 0x0f3f,
-0x0f7f, 0x0f7f,
-0x1031, 0x1031,
-0x103b, 0x103c,
-0x1056, 0x1057,
-0x1084, 0x1084,
-0x17b6, 0x17b6,
-0x17be, 0x17c5,
-0x17c7, 0x17c8,
-0x1923, 0x1926,
-0x1929, 0x192b,
-0x1930, 0x1931,
-0x1933, 0x1938,
-0x1a19, 0x1a1a,
-0x1a55, 0x1a55,
-0x1a57, 0x1a57,
-0x1a6d, 0x1a72,
-0x1b04, 0x1b04,
-0x1b35, 0x1b35,
-0x1b3b, 0x1b3b,
-0x1b3d, 0x1b41,
-0x1b43, 0x1b44,
-0x1b82, 0x1b82,
-0x1ba1, 0x1ba1,
-0x1ba6, 0x1ba7,
-0x1baa, 0x1baa,
-0x1be7, 0x1be7,
-0x1bea, 0x1bec,
-0x1bee, 0x1bee,
-0x1bf2, 0x1bf3,
-0x1c24, 0x1c2b,
-0x1c34, 0x1c35,
-0x1ce1, 0x1ce1,
-0x1cf2, 0x1cf3,
-0xa823, 0xa824,
-0xa827, 0xa827,
-0xa880, 0xa881,
-0xa8b4, 0xa8c3,
-0xa952, 0xa953,
-0xa983, 0xa983,
-0xa9b4, 0xa9b5,
-0xa9ba, 0xa9bb,
-0xa9bd, 0xa9c0,
-0xaa2f, 0xaa30,
-0xaa33, 0xaa34,
-0xaa4d, 0xaa4d,
-0xaaeb, 0xaaeb,
-0xaaee, 0xaaef,
-0xaaf5, 0xaaf5,
-0xabe3, 0xabe4,
-0xabe6, 0xabe7,
-0xabe9, 0xabea,
-0xabec, 0xabec,
-0x11000, 0x11000,
-0x11002, 0x11002,
-0x11082, 0x11082,
-0x110b0, 0x110b2,
-0x110b7, 0x110b8,
-0x1112c, 0x1112c,
-0x11182, 0x11182,
-0x111b3, 0x111b5,
-0x111bf, 0x111c0,
-0x1122c, 0x1122e,
-0x11232, 0x11233,
-0x11235, 0x11235,
-0x112e0, 0x112e2,
-0x11302, 0x11303,
-0x1133f, 0x1133f,
-0x11341, 0x11344,
-0x11347, 0x11348,
-0x1134b, 0x1134d,
-0x11362, 0x11363,
-0x114b1, 0x114b2,
-0x114b9, 0x114b9,
-0x114bb, 0x114bc,
-0x114be, 0x114be,
-0x114c1, 0x114c1,
-0x115b0, 0x115b1,
-0x115b8, 0x115bb,
-0x115be, 0x115be,
-0x11630, 0x11632,
-0x1163b, 0x1163c,
-0x1163e, 0x1163e,
-0x116ac, 0x116ac,
-0x116ae, 0x116af,
-0x116b6, 0x116b6,
-0x11720, 0x11721,
-0x11726, 0x11726,
-0x16f51, 0x16f7e,
-0x1d166, 0x1d166,
-0x1d16d, 0x1d16d,
-}; /* END of CR_Grapheme_Cluster_Break_SpacingMark */
-
-/* PROPERTY: 'Grapheme_Cluster_Break_T': GraphemeBreak Property */
-static const OnigCodePoint
-CR_Grapheme_Cluster_Break_T[] = { 2,
-0x11a8, 0x11ff,
-0xd7cb, 0xd7fb,
-}; /* END of CR_Grapheme_Cluster_Break_T */
-
-/* PROPERTY: 'Grapheme_Cluster_Break_V': GraphemeBreak Property */
-static const OnigCodePoint
-CR_Grapheme_Cluster_Break_V[] = { 2,
-0x1160, 0x11a7,
-0xd7b0, 0xd7c6,
-}; /* END of CR_Grapheme_Cluster_Break_V */
-
-/* PROPERTY: 'Grapheme_Extend': Derived Property */
-#define CR_Grapheme_Extend CR_Grapheme_Cluster_Break_Extend
+}; /* END of CR_Grapheme_Extend */
 
 /* PROPERTY: 'Grapheme_Link': Derived Property */
 static const OnigCodePoint
@@ -23492,17 +22481,6 @@ const CodeRanges[] = {
   CR_Gothic,
   CR_Grantha,
   CR_Grapheme_Base,
-  CR_Grapheme_Cluster_Break_CR,
-  CR_Grapheme_Cluster_Break_Control,
-  CR_Grapheme_Cluster_Break_Extend,
-  CR_Grapheme_Cluster_Break_L,
-  CR_Grapheme_Cluster_Break_LF,
-  CR_Grapheme_Cluster_Break_LV,
-  CR_Grapheme_Cluster_Break_LVT,
-  CR_Grapheme_Cluster_Break_Regional_Indicator,
-  CR_Grapheme_Cluster_Break_SpacingMark,
-  CR_Grapheme_Cluster_Break_T,
-  CR_Grapheme_Cluster_Break_V,
   CR_Grapheme_Extend,
   CR_Grapheme_Link,
   CR_Greek,
@@ -23931,12 +22909,12 @@ const CodeRanges[] = {
   CR_In_No_Block,
 };
 
-#define TOTAL_KEYWORDS 722
+#define TOTAL_KEYWORDS 711
 #define MIN_WORD_LENGTH 1
 #define MAX_WORD_LENGTH 44
 #define MIN_HASH_VALUE 1
-#define MAX_HASH_VALUE 5580
-/* maximum key range = 5580, duplicates = 0 */
+#define MAX_HASH_VALUE 5162
+/* maximum key range = 5162, duplicates = 0 */
 
 #ifndef GPERF_DOWNCASE
 #define GPERF_DOWNCASE 1
@@ -23995,32 +22973,32 @@ hash (register const char *str, register unsigned int len)
 {
   static const unsigned short asso_values[] =
     {
-      5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581,   11, 1121,    8,  582,   38,
-        32,  713,  293,    2,  103, 1833,  129,    7,    0,  271,
-      1354,    0,  210,   33,   71, 1407,  361,  379,  120,  895,
-         1, 5581, 5581, 5581, 5581, 5581, 5581,   11, 1121,    8,
-       582,   38,   32,  713,  293,    2,  103, 1833,  129,    7,
-         0,  271, 1354,    0,  210,   33,   71, 1407,  361,  379,
-       120,  895,    1, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581, 5581,
-      5581, 5581, 5581, 5581, 5581, 5581
+      5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163,   11, 1103,    8,  582,   38,
+        53, 1066,  293,    2,   67, 1766,  129,    7,    0,  271,
+       719,    0,  210,   33,   71, 1001, 1376,  537,   22, 1162,
+         1, 5163, 5163, 5163, 5163, 5163, 5163,   11, 1103,    8,
+       582,   38,   53, 1066,  293,    2,   67, 1766,  129,    7,
+         0,  271,  719,    0,  210,   33,   71, 1001, 1376,  537,
+        22, 1162,    1, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
+      5163, 5163, 5163, 5163, 5163, 5163
     };
   register int hval = len;
 
@@ -24073,52 +23051,52 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
     {
       {""},
 
-      {"n",                                  155},
+      {"n",                                  144},
       {""},
 
-      {"z",                                  245},
+      {"z",                                  234},
       {""}, {""}, {""}, {""},
 
-      {"zzzz",                               236},
+      {"zzzz",                               225},
 
-      {"mn",                                 149},
+      {"mn",                                 138},
 
       {"cn",                                  51},
       {""}, {""}, {""},
 
       {"ci",                                  38},
 
-      {"m",                                  136},
+      {"m",                                  125},
       {""},
 
       {"c",                                   35},
       {""}, {""}, {""}, {""}, {""},
 
-      {"inmanichaean",                       441},
+      {"inmanichaean",                       430},
 
-      {"mani",                               140},
+      {"mani",                               129},
 
-      {"mc",                                 142},
+      {"mc",                                 131},
 
       {"cc",                                  41},
       {""},
 
-      {"qaai",                               105},
+      {"qaai",                                94},
       {""}, {""}, {""}, {""}, {""},
 
       {"qaac",                                54},
       {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"incham",                             384},
+      {"incham",                             373},
       {""}, {""}, {""}, {""},
 
-      {"mandaic",                            139},
+      {"mandaic",                            128},
       {""}, {""},
 
-      {"sm",                                 213},
+      {"sm",                                 202},
       {""},
 
-      {"sc",                                 206},
+      {"sc",                                 195},
       {""}, {""}, {""}, {""},
 
       {"cans",                                36},
@@ -24127,240 +23105,240 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
       {"ascii",                               14},
       {""}, {""},
 
-      {"insamaritan",                        266},
+      {"insamaritan",                        255},
       {""},
 
-      {"incuneiform",                        467},
+      {"incuneiform",                        456},
 
-      {"s",                                  202},
+      {"s",                                  191},
 
-      {"inarmenian",                         259},
+      {"inarmenian",                         248},
 
-      {"zs",                                 248},
-      {""}, {""}, {""}, {""},
-
-      {"cf",                                  42},
-      {""},
+      {"zs",                                 237},
+      {""}, {""}, {""}, {""}, {""}, {""},
 
       {"cs",                                  55},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"me",                                 143},
+      {"me",                                 132},
       {""}, {""}, {""}, {""},
 
-      {"incommonindicnumberforms",           375},
+      {"incommonindicnumberforms",           364},
       {""}, {""},
 
-      {"inavestan",                          442},
+      {"inavestan",                          431},
 
-      {"inthai",                             279},
+      {"inthai",                             268},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"inipaextensions",                    253},
+      {"inipaextensions",                    242},
       {""}, {""}, {""}, {""},
 
-      {"initialpunctuation",                 194},
+      {"initialpunctuation",                 183},
       {""}, {""}, {""},
 
-      {"inancientsymbols",                   413},
+      {"inancientsymbols",                   402},
       {""},
 
-      {"inthaana",                           264},
-      {""}, {""}, {""},
-
-      {"incuneiformnumbersandpunctuation",   468},
-      {""}, {""}, {""},
-
-      {"mtei",                               144},
+      {"inthaana",                           253},
       {""},
 
-      {"inspecials",                         408},
+      {"cf",                                  42},
+      {""},
+
+      {"incuneiformnumbersandpunctuation",   457},
+      {""}, {""}, {""},
+
+      {"mtei",                               133},
+      {""},
+
+      {"inspecials",                         397},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"inmusicalsymbols",                   481},
+      {"inmusicalsymbols",                   470},
       {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"inmiscellaneousmathematicalsymbolsa", 334},
+      {"inmiscellaneousmathematicalsymbolsa", 323},
       {""}, {""}, {""},
 
-      {"lm",                                 128},
+      {"lm",                                 117},
 
-      {"lina",                               124},
+      {"lina",                               113},
 
-      {"lc",                                 119},
+      {"lc",                                 108},
       {""},
 
-      {"inlycian",                           415},
+      {"inlycian",                           404},
       {""}, {""}, {""}, {""}, {""},
 
-      {"lana",                               223},
-      {""}, {""},
+      {"lana",                               212},
+      {""},
 
-      {"inmyanmarextendeda",                 385},
+      {"intaixuanjingsymbols",               472},
+
+      {"inmyanmarextendeda",                 374},
 
       {"alnum",                               13},
       {""},
 
-      {"sterm",                              203},
+      {"sterm",                              192},
 
-      {"intaitham",                          303},
+      {"intaitham",                          292},
 
-      {"intransportandmapsymbols",           497},
+      {"intransportandmapsymbols",           486},
       {""},
 
-      {"taile",                              222},
+      {"taile",                              211},
       {""},
 
-      {"inmalayalam",                        277},
+      {"inmalayalam",                        266},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"inmiscellaneoussymbols",             332},
+      {"inmiscellaneoussymbols",             321},
 
-      {"incontrolpictures",                  326},
+      {"incontrolpictures",                  315},
       {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"inmiscellaneoussymbolsandarrows",    340},
+      {"inmiscellaneoussymbolsandarrows",    329},
       {""}, {""}, {""},
 
-      {"inlineara",                          428},
+      {"inlineara",                          417},
 
-      {"inmiscellaneoussymbolsandpictographs", 494},
+      {"inmiscellaneoussymbolsandpictographs", 483},
       {""}, {""},
 
-      {"sinhala",                            211},
+      {"sinhala",                            200},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"taiviet",                            224},
+      {"taiviet",                            213},
+      {""}, {""},
+
+      {"ext",                                 69},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
 
-      {"latn",                               121},
+      {"latn",                               110},
 
-      {"latin",                              121},
+      {"latin",                              110},
 
-      {"ital",                               166},
+      {"ital",                               155},
 
-      {"intamil",                            274},
+      {"intamil",                            263},
       {""},
 
-      {"inmultani",                          457},
+      {"inmultani",                          446},
       {""},
 
-      {"taml",                               226},
+      {"taml",                               215},
       {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"inrunic",                            290},
+      {"inrunic",                            279},
 
-      {"incarian",                           416},
+      {"incarian",                           405},
       {""},
 
       {"armn",                                21},
       {""},
 
-      {"armi",                               104},
+      {"armi",                                93},
 
       {"cari",                                37},
 
-      {"inlatinextendedc",                   342},
+      {"inlatinextendedc",                   331},
       {""},
 
       {"armenian",                            21},
 
-      {"inmyanmar",                          282},
+      {"inmyanmar",                          271},
 
-      {"incyrillic",                         257},
+      {"incyrillic",                         246},
       {""},
 
-      {"inlatinextendeda",                   251},
+      {"inlatinextendeda",                   240},
       {""}, {""}, {""},
 
       {"carian",                              37},
       {""}, {""},
 
-      {"intaile",                            299},
+      {"intaile",                            288},
       {""}, {""}, {""},
 
-      {"tale",                               222},
-      {""},
-
-      {"intaixuanjingsymbols",               483},
+      {"tale",                               211},
+      {""}, {""},
 
       {"arabic",                              20},
       {""}, {""},
 
-      {"l",                                  118},
+      {"l",                                  107},
 
-      {"nl",                                 160},
+      {"nl",                                 149},
 
-      {"zl",                                 246},
+      {"zl",                                 235},
       {""},
 
-      {"insyriac",                           262},
+      {"insyriac",                           251},
       {""},
 
-      {"samr",                               204},
+      {"samr",                               193},
       {""},
 
-      {"merc",                               146},
+      {"merc",                               135},
       {""},
 
-      {"inlinearbideograms",                 410},
+      {"inlinearbideograms",                 399},
       {""}, {""},
 
-      {"samaritan",                          204},
+      {"samaritan",                          193},
 
-      {"lt",                                 132},
+      {"lt",                                 121},
       {""}, {""},
 
-      {"insharada",                          454},
+      {"insharada",                          443},
       {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"inmeeteimayekextensions",            387},
+      {"inmeeteimayekextensions",            376},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"inruminumeralsymbols",               448},
+      {"inruminumeralsymbols",               437},
       {""}, {""},
 
-      {"miao",                               148},
+      {"miao",                               137},
 
-      {"inlatinextendede",                   389},
+      {"inlatinextendede",                   378},
       {""}, {""}, {""},
 
-      {"zinh",                               105},
-      {""}, {""},
+      {"zinh",                                94},
+      {""}, {""}, {""},
 
-      {"ext",                                 69},
-
-      {"inahom",                             464},
+      {"inahom",                             453},
       {""},
 
-      {"incherokee",                         287},
+      {"incherokee",                         276},
 
-      {"han",                                 91},
+      {"han",                                 80},
       {""}, {""},
 
-      {"hani",                                91},
+      {"hani",                                80},
 
-      {"inosmanya",                          425},
+      {"inosmanya",                          414},
 
-      {"inmiscellaneoustechnical",           325},
+      {"inmiscellaneoustechnical",           314},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""},
 
       {"cham",                                44},
       {""},
 
-      {"inmahajani",                         453},
+      {"inmahajani",                         442},
 
-      {"osma",                               173},
+      {"osma",                               162},
       {""}, {""},
 
-      {"manichaean",                         140},
+      {"manichaean",                         129},
 
-      {"term",                               228},
+      {"term",                               217},
       {""},
 
-      {"sinh",                               211},
+      {"sinh",                               200},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
       {"cntrl",                                3},
@@ -24368,168 +23346,130 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
 
       {"chakma",                              43},
 
-      {"insinhala",                          278},
+      {"insinhala",                          267},
       {""}, {""}, {""},
 
-      {"tamil",                              226},
+      {"tamil",                              215},
 
-      {"inethiopic",                         285},
+      {"inethiopic",                         274},
       {""}, {""},
 
-      {"connectorpunctuation",               188},
+      {"connectorpunctuation",               177},
 
-      {"shavian",                            208},
-      {""}, {""}, {""}, {""},
+      {"shavian",                            197},
+      {""}, {""}, {""},
 
-      {"inenclosedalphanumerics",            328},
+      {"joinc",                               98},
+
+      {"inenclosedalphanumerics",            317},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"ahex",                                15},
+
+      {"inlatinextendedadditional",          304},
+
+      {"lineara",                            113},
       {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"inlatinextendedadditional",          315},
+      {"inenclosedcjklettersandmonths",      350},
 
-      {"lineara",                            124},
+      {"hex",                                 85},
+      {""}, {""},
+
+      {"thai",                               219},
+
+      {"mahj",                               126},
+      {""}, {""}, {""},
+
+      {"math",                               130},
+      {""}, {""},
+
+      {"ll",                                 116},
+
+      {"thaa",                               218},
       {""},
 
-      {"invai",                              369},
+      {"hatran",                              83},
       {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"vai",                                238},
+      {"mahajani",                           126},
 
-      {"vaii",                               238},
+      {"insinhalaarchaicnumbers",            444},
+      {""},
 
-      {"thai",                               230},
+      {"taitham",                            212},
+
+      {"thaana",                             218},
       {""}, {""}, {""}, {""},
-
-      {"math",                               141},
-      {""}, {""},
-
-      {"ll",                                 127},
-
-      {"thaa",                               229},
-      {""},
-
-      {"hatran",                              94},
-      {""}, {""}, {""}, {""},
-
-      {"joinc",                              109},
-      {""}, {""},
-
-      {"insinhalaarchaicnumbers",            455},
-      {""},
-
-      {"taitham",                            223},
-
-      {"thaana",                             229},
-      {""}, {""},
-
-      {"cwcm",                                46},
-      {""},
 
       {"ethi",                                68},
 
-      {"inenclosedalphanumericsupplement",   492},
+      {"inenclosedalphanumericsupplement",   481},
+      {""}, {""}, {""}, {""},
 
-      {"intifinagh",                         345},
-      {""}, {""},
+      {"meroiticcursive",                    135},
 
-      {"inenclosedcjklettersandmonths",      361},
+      {"inideographicdescriptioncharacters", 340},
+      {""}, {""}, {""},
 
-      {"meroiticcursive",                    146},
-
-      {"inideographicdescriptioncharacters", 351},
-
-      {"inshavian",                          424},
-
-      {"tifinagh",                           232},
-
-      {"mahj",                               137},
-
-      {"terminalpunctuation",                228},
+      {"terminalpunctuation",                217},
       {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"inemoticons",                        495},
-      {""}, {""},
+      {"inemoticons",                        484},
+      {""}, {""}, {""}, {""},
 
-      {"vs",                                 239},
-      {""},
-
-      {"cwcf",                                45},
+      {"intifinagh",                         334},
       {""},
 
       {"asciihexdigit",                       15},
-      {""},
-
-      {"mahajani",                           137},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"inearlydynasticcuneiform",           469},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"inopticalcharacterrecognition",      327},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"newline",                              0},
-      {""},
-
-      {"ahex",                                15},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
-
-      {"newtailue",                          158},
-      {""},
-
-      {"loe",                                130},
-
-      {"avst",                                23},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"titlecaseletter",                    132},
-      {""}, {""},
-
-      {"inscriptionalparthian",              107},
-
-      {"java",                               108},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"avestan",                             23},
-      {""},
-
-      {"innewtailue",                        300},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"oriya",                              172},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"intaiviet",                          386},
-      {""},
-
-      {"tavt",                               224},
-      {""},
-
-      {"hira",                                97},
       {""}, {""}, {""}, {""},
 
-      {"injavanese",                         382},
+      {"tifinagh",                           221},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""},
 
-      {"sora",                               216},
+      {"inearlydynasticcuneiform",           458},
+      {""}, {""}, {""}, {""}, {""},
 
-      {"mero",                               147},
-      {""},
+      {"inopticalcharacterrecognition",      316},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""},
 
-      {"cwt",                                 48},
-      {""}, {""},
-
-      {"inarrows",                           323},
-      {""},
-
-      {"inhiragana",                         353},
+      {"loe",                                119},
       {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"no",                                 161},
+      {"titlecaseletter",                    121},
+      {""}, {""},
+
+      {"inscriptionalparthian",               96},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""},
+
+      {"oriya",                              161},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"hira",                                86},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"sora",                               205},
+
+      {"mero",                               136},
       {""}, {""}, {""}, {""},
 
-      {"innko",                              265},
+      {"inarrows",                           312},
+      {""},
+
+      {"inhiragana",                         342},
+      {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"no",                                 150},
+
+      {"inmahjongtiles",                     478},
+      {""}, {""}, {""},
+
+      {"innko",                              254},
       {""}, {""},
 
       {"co",                                  52},
@@ -24537,1716 +23477,1638 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
       {"cher",                                50},
       {""}, {""},
 
-      {"inmro",                              473},
-      {""}, {""},
-
-      {"javanese",                           108},
-      {""}, {""}, {""},
+      {"inmro",                              462},
+      {""}, {""}, {""}, {""}, {""}, {""},
 
       {"common",                              53},
+
+      {"cwcm",                                46},
+      {""}, {""}, {""},
+
+      {"inmiao",                             465},
       {""}, {""}, {""}, {""},
 
-      {"inmiao",                             476},
-      {""}, {""}, {""}, {""},
-
-      {"inscriptionalpahlavi",               106},
-
-      {"hex",                                 96},
-      {""},
-
-      {"inmathematicalalphanumericsymbols",  485},
-
-      {"so",                                 214},
-      {""},
-
-      {"hano",                                93},
-
-      {"tirh",                               233},
-
-      {"inmahjongtiles",                     489},
+      {"inscriptionalpahlavi",                95},
       {""}, {""},
 
-      {"inhatran",                           433},
+      {"inmathematicalalphanumericsymbols",  474},
 
-      {"inolchiki",                          309},
+      {"so",                                 203},
+      {""},
+
+      {"hano",                                82},
+
+      {"tirh",                               222},
+      {""}, {""}, {""},
+
+      {"inhatran",                           422},
+
+      {"inolchiki",                          298},
 
       {"ahom",                                16},
       {""},
 
       {"di",                                  60},
 
-      {"hatr",                                94},
+      {"hatr",                                83},
       {""},
 
-      {"inogham",                            289},
+      {"inogham",                            278},
       {""}, {""}, {""}, {""},
 
-      {"intirhuta",                          460},
-      {""}, {""},
+      {"intirhuta",                          449},
+      {""}, {""}, {""}, {""},
 
-      {"insmallformvariants",                405},
+      {"inmodi",                             451},
       {""},
 
-      {"inmodi",                             462},
+      {"idc",                                 90},
 
-      {"inlowsurrogates",                    396},
-
-      {"idc",                                101},
-
-      {"mand",                               139},
+      {"mand",                               128},
       {""}, {""}, {""},
 
-      {"inmandaic",                          267},
+      {"inmandaic",                          256},
 
       {"dia",                                 64},
-      {""}, {""}, {""}, {""}, {""},
 
-      {"wara",                               240},
-      {""},
+      {"cwcf",                                45},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"inshorthandformatcontrols",          479},
-
-      {"inwarangciti",                       465},
+      {"xidc",                               231},
       {""}, {""},
 
-      {"sind",                               117},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"sind",                               106},
 
-      {"mend",                               145},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
+      {"newline",                              0},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"mend",                               134},
+      {""}, {""}, {""},
+
+      {"newtailue",                          147},
+      {""}, {""},
+
+      {"inshorthandformatcontrols",          468},
+      {""}, {""}, {""},
 
       {"anatolianhieroglyphs",                18},
+
+      {"xids",                               232},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"ids",                                 91},
       {""}, {""}, {""}, {""}, {""},
 
-      {"cwl",                                 47},
-      {""}, {""}, {""}, {""},
+      {"innewtailue",                        289},
 
-      {"ids",                                102},
+      {"insylotinagri",                      363},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"insundanese",                        295},
       {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"insylotinagri",                      374},
-      {""}, {""}, {""}, {""}, {""},
+      {"lo",                                 118},
+      {""}, {""}, {""},
 
-      {"insundanese",                        306},
+      {"indominotiles",                      479},
+
+      {"inlao",                              269},
+      {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"lao",                                109},
+
+      {"laoo",                               109},
+
+      {"mongolian",                          140},
       {""}, {""},
 
-      {"invariationselectors",               401},
-      {""}, {""},
+      {"cwt",                                 48},
+      {""},
+
+      {"idst",                                89},
 
       {"format",                              42},
+      {""}, {""},
 
-      {"lo",                                 129},
-      {""}, {""}, {""},
-
-      {"indominotiles",                      490},
-
-      {"inlao",                              280},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"lao",                                120},
-
-      {"laoo",                               120},
-
-      {"mongolian",                          151},
-      {""}, {""}, {""}, {""},
-
-      {"idst",                               100},
-      {""}, {""}, {""},
-
-      {"lineseparator",                      246},
+      {"lineseparator",                      235},
       {""}, {""}, {""}, {""}, {""},
 
-      {"letter",                             118},
+      {"letter",                             107},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"idcontinue",                         101},
+      {"idcontinue",                          90},
       {""}, {""},
 
-      {"inanatolianhieroglyphs",             471},
-      {""},
-
-      {"xidc",                               242},
-
-      {"invariationselectorssupplement",     508},
-      {""}, {""},
-
-      {"shaw",                               208},
-      {""}, {""},
-
-      {"inlydian",                           435},
-      {""}, {""},
-
-      {"nchar",                              162},
-      {""}, {""}, {""}, {""},
-
-      {"inspacingmodifierletters",           254},
-
-      {"oalpha",                             174},
-
-      {"inmongolian",                        296},
-      {""},
-
-      {"indeseret",                          423},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"xids",                               243},
-      {""}, {""}, {""}, {""},
-
-      {"ingrantha",                          459},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"mro",                                152},
-
-      {"mroo",                               152},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
-
-      {"ingeneralpunctuation",               317},
+      {"inanatolianhieroglyphs",             460},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"whitespace",                         241},
+      {"inlydian",                           424},
       {""},
 
-      {"joincontrol",                        109},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {"pi",                                 183},
 
-      {"tfng",                               232},
-      {""}, {""}, {""},
+      {"nchar",                              151},
+      {""}, {""}, {""}, {""},
 
-      {"diacritic",                           64},
+      {"inspacingmodifierletters",           243},
 
-      {"tagbanwa",                           221},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"ingujarati",                         272},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"oalpha",                             163},
       {""}, {""},
 
-      {"hanunoo",                             93},
+      {"indeseret",                          412},
+      {""},
+
+      {"pc",                                 177},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
       {"xdigit",                              11},
-      {""}, {""}, {""},
-
-      {"intags",                             507},
       {""},
 
-      {"odi",                                175},
-      {""}, {""}, {""}, {""},
+      {"inphaistosdisc",                     403},
 
-      {"xidstart",                           243},
+      {"joincontrol",                         98},
 
-      {"modi",                               150},
+      {"inlowsurrogates",                    385},
+      {""},
 
-      {"oidc",                               177},
+      {"mro",                                141},
+
+      {"mroo",                               141},
       {""}, {""}, {""},
 
-      {"insundanesesupplement",              310},
-      {""}, {""}, {""}, {""},
+      {"xidstart",                           232},
+      {""}, {""}, {""}, {""}, {""},
 
-      {"inolditalic",                        418},
-      {""}, {""}, {""},
-
-      {"omath",                              180},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"wara",                               229},
       {""}, {""},
 
-      {"oids",                               178},
+      {"inwarangciti",                       454},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""},
+
+      {"ps",                                 185},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"pe",                                 179},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"cwl",                                 47},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"incoptic",                           332},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"diacritic",                           64},
+      {""}, {""},
+
+      {"pf",                                 180},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"space",                                9},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"hanunoo",                             82},
+      {""}, {""},
+
+      {"incyrillicextendeda",                336},
+      {""}, {""}, {""},
+
+      {"odi",                                164},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"modi",                               139},
+
+      {"oidc",                               166},
+
+      {"incopticepactnumbers",               406},
+      {""},
+
+      {"palm",                               173},
+
+      {"insundanesesupplement",              299},
+
+      {"patws",                              175},
+      {""}, {""}, {""},
+
+      {"inolditalic",                        407},
+
+      {"inlepcha",                           297},
+
+      {"shaw",                               197},
+      {""},
+
+      {"omath",                              169},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"alpha",                                1},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"oids",                               167},
       {""}, {""}, {""},
 
       {"control",                             41},
 
-      {"ideo",                               103},
-      {""}, {""},
+      {"ideo",                                92},
+
+      {"lepc",                               111},
+
+      {"psalterpahlavi",                     186},
 
       {"dsrt",                                62},
-
-      {"yi",                                 244},
-
-      {"otheridcontinue",                    177},
-      {""}, {""},
-
-      {"yiii",                               244},
       {""},
 
-      {"decimalnumber",                      157},
+      {"otheridcontinue",                    166},
+      {""}, {""}, {""},
+
+      {"inpalmyrene",                        420},
+
+      {"decimalnumber",                      146},
       {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"noncharactercodepoint",              162},
+      {"noncharactercodepoint",              151},
 
-      {"idstart",                            102},
+      {"idstart",                             91},
 
-      {"otheralphabetic",                    174},
+      {"otheralphabetic",                    163},
 
-      {"letternumber",                       160},
+      {"letternumber",                       149},
       {""}, {""}, {""}, {""},
 
       {"dash",                                59},
+      {""}, {""},
+
+      {"xidcontinue",                        231},
+      {""}, {""}, {""},
+
+      {"finalpunctuation",                   180},
+
+      {"extender",                            69},
+      {""}, {""}, {""},
+
+      {"siddham",                            198},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"inoldturkic",                        435},
       {""}, {""},
 
-      {"siddham",                            209},
+      {"sharada",                            196},
       {""}, {""},
 
-      {"gran",                                73},
-      {""}, {""}, {""}, {""}, {""},
+      {"whitespace",                         230},
+      {""}, {""}, {""}, {""},
 
-      {"ingurmukhi",                         271},
-
-      {"inoldturkic",                        446},
+      {"inmodifiertoneletters",              361},
       {""},
 
-      {"caseignorable",                       38},
-
-      {"sharada",                            207},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"incyrillicextendeda",                347},
-      {""},
-
-      {"inmodifiertoneletters",              372},
-      {""},
-
-      {"radical",                            199},
+      {"radical",                            188},
       {""},
 
       {"canadianaboriginal",                  36},
-      {""}, {""},
-
-      {"inverticalforms",                    402},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"indevanagari",                       269},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {"inethiopicextendeda",                377},
+
+      {"imperialaramaic",                     93},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"perm",                               157},
 
       {"deseret",                             62},
-
-      {"insuttonsignwriting",                486},
-      {""},
-
-      {"insorasompeng",                      451},
-      {""},
-
-      {"casedletter",                        119},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
-
-      {"mong",                               151},
-
-      {"deva",                                63},
-
-      {"invedicextensions",                  311},
-      {""}, {""}, {""},
-
-      {"otheridstart",                       178},
-      {""}, {""},
-
-      {"devanagari",                          63},
-      {""},
-
-      {"ogam",                               163},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
-
-      {"hmng",                               183},
-
-      {"othersymbol",                        214},
-      {""}, {""},
-
-      {"hang",                                92},
-      {""}, {""},
-
-      {"xidcontinue",                        242},
       {""}, {""}, {""}, {""},
 
-      {"extender",                            69},
+      {"casedletter",                        108},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""},
 
-      {"rjng",                               200},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"otherlowercase",                     179},
-
-      {"lyci",                               134},
-      {""}, {""}, {""},
-
-      {"mlym",                               138},
-      {""},
-
-      {"lowercase",                          131},
+      {"inimperialaramaic",                  419},
       {""}, {""},
 
-      {"inrejang",                           380},
-      {""},
+      {"otheridstart",                       167},
+      {""}, {""}, {""}, {""},
 
-      {"lycian",                             134},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
-
-      {"other",                               35},
+      {"prti",                                96},
       {""}, {""}, {""}, {""}, {""},
-
-      {"othernumber",                        161},
-
-      {"inethiopicextendeda",                388},
-      {""},
-
-      {"malayalam",                          138},
-      {""},
-
-      {"inenclosedideographicsupplement",    493},
-      {""}, {""}, {""}, {""},
-
-      {"inyijinghexagramsymbols",            364},
-      {""}, {""},
-
-      {"gothic",                              72},
-      {""},
-
-      {"olditalic",                          166},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
-
-      {"inoldnortharabian",                  440},
-
-      {"ingreekandcoptic",                   256},
-
-      {"ingothic",                           419},
-      {""}, {""},
-
-      {"inherited",                          105},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"grext",                               86},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"ingeometricshapes",                  331},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"shrd",                               207},
-
-      {"mymr",                               154},
-      {""}, {""},
-
-      {"inoldsoutharabian",                  439},
-      {""}, {""},
-
-      {"sgnw",                               210},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"olower",                             179},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"sylotinagri",                        218},
-      {""},
-
-      {"innabataean",                        432},
-      {""}, {""},
-
-      {"myanmar",                            154},
-      {""},
-
-      {"syrc",                               219},
-      {""}, {""}, {""},
-
-      {"othermath",                          180},
-
-      {"idsbinaryoperator",                   99},
-
-      {"mathsymbol",                         213},
-      {""},
-
-      {"bamum",                               25},
-      {""}, {""},
-
-      {"inarabic",                           261},
-      {""}, {""},
-
-      {"inoldhungarian",                     447},
-      {""},
-
-      {"nd",                                 157},
-      {""}, {""}, {""},
-
-      {"inbasiclatin",                       249},
-
-      {"syriac",                             219},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"inornamentaldingbats",               496},
-      {""},
-
-      {"inelbasan",                          426},
-      {""},
-
-      {"innumberforms",                      322},
-      {""}, {""}, {""}, {""},
-
-      {"inoriya",                            273},
-
-      {"modifierletter",                     128},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"otherletter",                        129},
-
-      {"inyiradicals",                       367},
-      {""}, {""},
-
-      {"sd",                                 215},
-      {""}, {""},
-
-      {"bass",                                26},
-
-      {"sidd",                               209},
-
-      {"lower",                                6},
-      {""},
-
-      {"ingeorgian",                         283},
-
-      {"nbat",                               156},
-
-      {"inbyzantinemusicalsymbols",          480},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"insiddham",                          461},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"cased",                               39},
-
-      {"inlinearbsyllabary",                 409},
-
-      {"nabataean",                          156},
-
-      {"osmanya",                            173},
-
-      {"inhangulsyllables",                  392},
-
-      {"inarabicpresentationformsa",         400},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"geor",                                70},
-      {""}, {""}, {""},
-
-      {"oldpersian",                         169},
-
-      {"intibetan",                          281},
-      {""}, {""}, {""},
-
-      {"hexdigit",                            96},
-
-      {"cyrl",                                58},
-
-      {"oldpermic",                          168},
-
-      {"hiragana",                            97},
-      {""}, {""},
-
-      {"inmiscellaneousmathematicalsymbolsb", 338},
-      {""}, {""}, {""}, {""},
-
-      {"linb",                               125},
-
-      {"inbraillepatterns",                  336},
-      {""},
-
-      {"inmeroitichieroglyphs",              436},
-      {""}, {""}, {""},
-
-      {"limb",                               123},
-      {""}, {""}, {""},
-
-      {"bali",                                24},
-
-      {"inmyanmarextendedb",                 383},
-
-      {"tibt",                               231},
-      {""},
-
-      {"glagolitic",                          71},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
-
-      {"tibetan",                            231},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"variationselector",                  239},
-      {""},
-
-      {"lowercaseletter",                    127},
-      {""}, {""},
-
-      {"ogham",                              163},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"inbalinese",                         305},
-
-      {"elba",                                67},
-      {""}, {""}, {""}, {""},
-
-      {"bengali",                             28},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"grantha",                             73},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"warangciti",                         240},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"sylo",                               218},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"elbasan",                             67},
-
-      {"indingbats",                         333},
-      {""}, {""}, {""}, {""},
-
-      {"balinese",                            24},
-
-      {"narb",                               167},
-      {""},
-
-      {"brai",                                32},
-
-      {"inhanguljamoextendeda",              381},
-      {""}, {""},
-
-      {"goth",                                72},
-
-      {"graphemebase",                        74},
-      {""}, {""}, {""},
-
-      {"arab",                                20},
-      {""},
-
-      {"brahmi",                              31},
-
-      {"pi",                                 194},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
-
-      {"pc",                                 188},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"sarb",                               170},
-
-      {"assigned",                            22},
-      {""}, {""}, {""},
-
-      {"inlatinextendedd",                   373},
-      {""}, {""},
-
-      {"cyrillic",                            58},
-
-      {"ingreekextended",                    316},
-      {""}, {""},
-
-      {"orya",                               172},
-      {""},
-
-      {"inphaistosdisc",                     414},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"logicalorderexception",              130},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"pf",                                 191},
-      {""},
-
-      {"ps",                                 196},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"pe",                                 190},
-      {""}, {""}, {""}, {""},
-
-      {"inbrahmi",                           449},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"digit",                                4},
-      {""},
-
-      {"word",                                12},
-      {""}, {""}, {""}, {""},
-
-      {"incoptic",                           343},
-      {""}, {""}, {""},
-
-      {"incaucasianalbanian",                427},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"ogrext",                             176},
-      {""}, {""},
-
-      {"cuneiform",                           56},
-      {""},
-
-      {"inglagolitic",                       341},
-      {""},
-
-      {"inhighprivateusesurrogates",         395},
-
-      {"symbol",                             202},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"space",                                9},
-
-      {"linearb",                            125},
-      {""}, {""}, {""},
-
-      {"inletterlikesymbols",                321},
-
-      {"meroitichieroglyphs",                147},
-      {""}, {""},
-
-      {"inblockelements",                    330},
-      {""}, {""},
-
-      {"incombininghalfmarks",               403},
-
-      {"inbassavah",                         474},
-      {""}, {""}, {""}, {""},
-
-      {"inancientgreekmusicalnotation",      482},
-
-      {"sundanese",                          217},
-      {""}, {""}, {""}, {""},
-
-      {"incopticepactnumbers",               417},
-
-      {"incurrencysymbols",                  319},
-
-      {"palm",                               184},
-      {""},
-
-      {"patws",                              186},
-      {""}, {""}, {""}, {""},
-
-      {"inlepcha",                           308},
-      {""}, {""}, {""},
-
-      {"saurashtra",                         205},
-      {""}, {""},
-
-      {"intagalog",                          291},
-      {""},
-
-      {"alpha",                                1},
-
-      {"inancientgreeknumbers",              412},
-
-      {"inunifiedcanadianaboriginalsyllabics", 288},
-      {""},
-
-      {"graph",                                5},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"lepc",                               122},
-
-      {"psalterpahlavi",                     197},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"inpalmyrene",                        431},
-
-      {"sorasompeng",                        216},
-      {""},
-
-      {"finalpunctuation",                   191},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"inhanguljamo",                       284},
-
-      {"multani",                            153},
-
-      {"ideographic",                        103},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"glag",                                71},
-      {""}, {""}, {""}, {""},
-
-      {"lisu",                               126},
-      {""}, {""}, {""},
-
-      {"inarabicmathematicalalphabeticsymbols", 488},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"indevanagariextended",               378},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"imperialaramaic",                    104},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"lydi",                               135},
-
-      {"perm",                               168},
-      {""}, {""},
-
-      {"inalchemicalsymbols",                498},
-      {""},
-
-      {"mult",                               153},
-      {""}, {""}, {""},
-
-      {"talu",                               158},
-
-      {"lydian",                             135},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"tglg",                               220},
-      {""}, {""},
-
-      {"inimperialaramaic",                  430},
-      {""}, {""}, {""},
-
-      {"inethiopicextended",                 346},
-
-      {"runic",                              201},
-
-      {"brah",                                31},
-      {""},
-
-      {"prti",                               107},
-      {""}, {""}, {""},
-
-      {"braille",                             32},
-      {""},
 
       {"cprt",                                57},
-
-      {"inugaritic",                         421},
-
-      {"telu",                               227},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"coptic",                              54},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"saur",                               205},
-
-      {"hebr",                                95},
-      {""}, {""}, {""}, {""},
-
-      {"ingeometricshapesextended",          499},
       {""}, {""}, {""}, {""}, {""},
 
-      {"inphoenician",                       434},
+      {"othersymbol",                        203},
       {""}, {""}, {""},
 
-      {"changeswhencasemapped",               46},
-      {""}, {""},
+      {"coptic",                              54},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""},
 
-      {"xsux",                                56},
+      {"otherlowercase",                     168},
 
-      {"inlatin1supplement",                 250},
+      {"phnx",                               182},
+      {""}, {""}, {""},
 
-      {"insaurashtra",                       377},
+      {"inphoenician",                       423},
       {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"ininscriptionalparthian",            443},
+      {"incaucasianalbanian",                416},
 
-      {"ininscriptionalpahlavi",             444},
-      {""},
+      {"inlatin1supplement",                 239},
+      {""}, {""}, {""},
+
+      {"xpeo",                               158},
+      {""}, {""}, {""},
+
+      {"ininscriptionalparthian",            432},
+
+      {"ininscriptionalpahlavi",             433},
+
+      {"other",                               35},
 
       {"privateuse",                          52},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""},
 
-      {"changeswhencasefolded",               45},
+      {"othernumber",                        150},
+      {""}, {""}, {""}, {""},
+
+      {"inenclosedideographicsupplement",    482},
       {""},
 
       {"copt",                                54},
       {""}, {""}, {""}, {""},
 
       {"print",                                7},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""},
+
+      {"cuneiform",                           56},
+
+      {"olditalic",                          155},
+
+      {"xsux",                                56},
       {""}, {""}, {""},
 
-      {"bidic",                               29},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"idsb",                                99},
-      {""}, {""},
-
-      {"georgian",                            70},
-      {""}, {""}, {""},
-
-      {"incountingrodnumerals",              484},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"incyrillicsupplement",               258},
+      {"inmongolian",                        285},
       {""}, {""}, {""}, {""},
 
-      {"inalphabeticpresentationforms",      399},
+      {"inancientgreekmusicalnotation",      471},
 
-      {"spaceseparator",                     248},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {"sundanese",                          206},
 
-      {"phnx",                               193},
-      {""}, {""}, {""},
-
-      {"changeswhentitlecased",               48},
-      {""}, {""}, {""},
-
-      {"tirhuta",                            233},
+      {"inoldnortharabian",                  429},
       {""},
 
-      {"softdotted",                         215},
-
-      {"phli",                               106},
-
-      {"rejang",                             200},
-      {""},
-
-      {"patternwhitespace",                  186},
-      {""},
-
-      {"xpeo",                               169},
-      {""}, {""}, {""},
-
-      {"inmathematicaloperators",            324},
-      {""},
-
-      {"inarabicextendeda",                  268},
-
-      {"incherokeesupplement",               390},
-
-      {"inprivateusearea",                   397},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"any",                                 19},
-      {""}, {""}, {""}, {""},
-
-      {"inpsalterpahlavi",                   445},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"closepunctuation",                   190},
-
-      {"patternsyntax",                      185},
+      {"patternsyntax",                      174},
       {""}, {""},
 
-      {"runr",                               201},
-      {""},
+      {"inherited",                           94},
 
-      {"inphoneticextensions",               312},
-      {""}, {""}, {""}, {""},
+      {"ingrantha",                          448},
 
-      {"bassavah",                            26},
-      {""}, {""}, {""},
-
-      {"lepcha",                             122},
-      {""}, {""}, {""}, {""},
-
-      {"inbengali",                          270},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"inkannada",                          276},
-
-      {"wspace",                             241},
-      {""}, {""},
-
-      {"kana",                               112},
-      {""}, {""}, {""},
-
-      {"cakm",                                43},
-      {""},
-
-      {"separator",                          245},
-      {""}, {""}, {""}, {""},
-
-      {"otherdefaultignorablecodepoint",     175},
-
-      {"inethiopicsupplement",               286},
-      {""},
-
-      {"inchakma",                           452},
-      {""}, {""},
-
-      {"beng",                                28},
-      {""},
-
-      {"number",                             155},
-      {""}, {""},
-
-      {"inphoneticextensionssupplement",     313},
-      {""}, {""}, {""}, {""},
-
-      {"inbuginese",                         302},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
-
-      {"po",                                 195},
-
-      {"graphemeextend",                      86},
+      {"inphoneticextensions",               301},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"inyisyllables",                      366},
-      {""},
-
-      {"incjkcompatibilityforms",            404},
-      {""}, {""}, {""},
-
-      {"tagalog",                            220},
-
-      {"incjkcompatibilityideographs",       398},
-      {""},
-
-      {"inkaithi",                           450},
-      {""},
-
-      {"tagb",                               221},
-      {""}, {""}, {""},
-
-      {"takri",                              225},
-      {""}, {""}, {""},
-
-      {"intagbanwa",                         294},
-      {""},
-
-      {"phoenician",                         193},
-      {""},
-
-      {"mendekikakui",                       145},
-
-      {"inaegeannumbers",                    411},
-      {""},
-
-      {"inhalfwidthandfullwidthforms",       407},
-      {""}, {""},
-
-      {"inkatakana",                         354},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"incjkstrokes",                       359},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"incjkcompatibilityideographssupplement", 506},
-      {""}, {""},
-
-      {"meeteimayek",                        144},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"hangul",                              92},
-      {""}, {""}, {""},
-
-      {"kali",                               113},
-      {""}, {""},
-
-      {"inhanunoo",                          292},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"incombiningdiacriticalmarks",        255},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"incombiningdiacriticalmarksforsymbols", 320},
-      {""},
-
-      {"inmeeteimayek",                      391},
-      {""}, {""},
-
-      {"changeswhenlowercased",               47},
-      {""},
-
-      {"inbuhid",                            293},
+      {"saurashtra",                         194},
       {""}, {""}, {""}, {""}, {""},
 
-      {"inhebrew",                           260},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"inancientgreeknumbers",              401},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"shrd",                               196},
       {""}, {""}, {""},
 
-      {"sund",                               217},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"inoldsoutharabian",                  428},
+
+      {"innabataean",                        421},
+
+      {"inalphabeticpresentationforms",      388},
+
+      {"spaceseparator",                     237},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"olower",                             168},
+      {""},
+
+      {"ingeneralpunctuation",               306},
+
+      {"inunifiedcanadianaboriginalsyllabics", 277},
+      {""},
+
+      {"bamum",                               25},
       {""}, {""},
 
-      {"incombiningdiacriticalmarkssupplement", 314},
+      {"inarabic",                           250},
       {""}, {""}, {""},
 
-      {"inkanasupplement",                   477},
+      {"phli",                                95},
+
+      {"inphoneticextensionssupplement",     302},
+      {""},
+
+      {"patternwhitespace",                  175},
+      {""},
+
+      {"inbasiclatin",                       238},
+      {""},
+
+      {"othermath",                          169},
+
+      {"idsbinaryoperator",                   88},
+
+      {"inmathematicaloperators",            313},
+
+      {"multani",                            142},
+
+      {"ingujarati",                         261},
+      {""}, {""}, {""}, {""},
+
+      {"inelbasan",                          415},
+
+      {"inoldhungarian",                     436},
+
+      {"innumberforms",                      311},
+
+      {"nd",                                 146},
+      {""},
+
+      {"yi",                                 233},
+
+      {"lisu",                               115},
+      {""}, {""},
+
+      {"yiii",                               233},
+      {""},
+
+      {"inpsalterpahlavi",                   434},
+      {""}, {""}, {""},
+
+      {"tagbanwa",                           210},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"bass",                                26},
+      {""}, {""}, {""}, {""},
+
+      {"nbat",                               145},
+
+      {"inbyzantinemusicalsymbols",          469},
+      {""},
+
+      {"closepunctuation",                   179},
+      {""},
+
+      {"tfng",                               221},
+
+      {"otherletter",                        118},
+      {""}, {""}, {""},
+
+      {"sd",                                 204},
+      {""}, {""},
+
+      {"lowercase",                          120},
+
+      {"sidd",                               198},
+      {""},
+
+      {"nabataean",                          145},
+      {""},
+
+      {"lepcha",                             111},
+
+      {"inarabicpresentationformsa",         389},
+      {""},
+
+      {"modifierletter",                     117},
+
+      {"intags",                             496},
+
+      {"mult",                               142},
+      {""}, {""},
+
+      {"insiddham",                          450},
+
+      {"talu",                               147},
+      {""}, {""}, {""}, {""},
+
+      {"cased",                               39},
+      {""},
+
+      {"intibetan",                          270},
+      {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"separator",                          234},
+      {""},
+
+      {"runic",                              190},
+
+      {"inmiscellaneousmathematicalsymbolsb", 327},
+      {""}, {""}, {""}, {""},
+
+      {"linb",                               114},
+
+      {"inbraillepatterns",                  325},
+
+      {"oldpersian",                         158},
+      {""},
+
+      {"inugaritic",                         410},
+
+      {"telu",                               216},
+      {""},
+
+      {"limb",                               112},
+      {""},
+
+      {"oldpermic",                          157},
+      {""},
+
+      {"bali",                                24},
+
+      {"inmyanmarextendedb",                 372},
+
+      {"tibt",                               220},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"saur",                               194},
+      {""}, {""}, {""},
+
+      {"po",                                 184},
+      {""},
+
+      {"tibetan",                            220},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"insaurashtra",                       366},
+      {""}, {""}, {""},
+
+      {"inbalinese",                         294},
+
+      {"elba",                                67},
+      {""}, {""}, {""}, {""},
+
+      {"bengali",                             28},
+
+      {"gran",                                73},
+      {""}, {""}, {""},
+
+      {"phoenician",                         182},
+      {""},
+
+      {"ingurmukhi",                         260},
+      {""}, {""},
+
+      {"caseignorable",                       38},
+      {""}, {""}, {""}, {""},
+
+      {"lyci",                               123},
+      {""},
+
+      {"inyijinghexagramsymbols",            353},
+      {""},
+
+      {"mlym",                               127},
+      {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"lycian",                             123},
+      {""}, {""}, {""}, {""},
+
+      {"elbasan",                             67},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"balinese",                            24},
+
+      {"narb",                               156},
+      {""},
+
+      {"brai",                                32},
+      {""}, {""},
+
+      {"insuttonsignwriting",                475},
+      {""},
+
+      {"insorasompeng",                      440},
+
+      {"malayalam",                          127},
+      {""}, {""},
+
+      {"arab",                                20},
+      {""},
+
+      {"brahmi",                              31},
+      {""},
+
+      {"incountingrodnumerals",              473},
+      {""}, {""}, {""},
+
+      {"rjng",                               189},
+
+      {"mong",                               140},
+      {""}, {""}, {""},
+
+      {"incyrillicsupplement",               247},
+      {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"ogam",                               152},
+      {""},
+
+      {"sarb",                               159},
+
+      {"lower",                                6},
+      {""},
+
+      {"inrejang",                           369},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"hmng",                               172},
+      {""}, {""},
+
+      {"tirhuta",                            222},
+
+      {"hang",                                81},
+      {""}, {""}, {""}, {""},
+
+      {"wspace",                             230},
+      {""}, {""}, {""}, {""},
+
+      {"inlatinextendedd",                   362},
+      {""}, {""},
+
+      {"invai",                              358},
+
+      {"incherokeesupplement",               379},
+      {""},
+
+      {"mymr",                               143},
+      {""}, {""}, {""},
+
+      {"vai",                                227},
+
+      {"vaii",                               227},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""},
 
       {"ethiopic",                            68},
       {""},
 
-      {"unassigned",                          51},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"signwriting",                        210},
-      {""}, {""},
-
-      {"incyrillicextendedb",                370},
-
-      {"mark",                               136},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"inkharoshthi",                       438},
+      {"sylotinagri",                        207},
       {""}, {""}, {""}, {""},
 
-      {"induployan",                         478},
+      {"myanmar",                            143},
+      {""},
+
+      {"syrc",                               208},
+      {""},
+
+      {"inbrahmi",                           438},
+      {""}, {""}, {""},
+
+      {"mathsymbol",                         202},
+      {""},
+
+      {"runr",                               190},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"inshavian",                          413},
+
+      {"gothic",                              72},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"syriac",                             208},
+
+      {"p",                                  171},
+      {""},
+
+      {"zp",                                 236},
+
+      {"induployan",                         467},
+      {""},
+
+      {"vs",                                 228},
       {""}, {""},
 
-      {"inunifiedcanadianaboriginalsyllabicsextended", 297},
+      {"ingreekandcoptic",                   245},
+
+      {"ingothic",                           408},
+      {""}, {""},
+
+      {"lowercaseletter",                    116},
+      {""}, {""}, {""},
+
+      {"inoriya",                            262},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"grext",                               75},
+
+      {"linearb",                            114},
+
+      {"inyiradicals",                       356},
+      {""},
+
+      {"inethiopicsupplement",               275},
+
+      {"inletterlikesymbols",                310},
+
+      {"ingeometricshapes",                  320},
+      {""},
+
+      {"java",                                97},
+
+      {"inblockelements",                    319},
+      {""},
+
+      {"number",                             144},
+
+      {"incombininghalfmarks",               392},
+
+      {"inbassavah",                         463},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"inlinearbsyllabary",                 398},
+      {""},
+
+      {"osmanya",                            162},
+      {""}, {""}, {""},
+
+      {"avst",                                23},
+      {""}, {""}, {""}, {""},
+
+      {"hexdigit",                            85},
+      {""}, {""}, {""},
+
+      {"injavanese",                         371},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"cyrl",                                58},
+
+      {"avestan",                             23},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"intaiviet",                          375},
+
+      {"inornamentaldingbats",               485},
+
+      {"tavt",                               213},
+      {""}, {""}, {""}, {""},
+
+      {"javanese",                            97},
+
+      {"inethiopicextended",                 335},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""},
+
+      {"inhalfwidthandfullwidthforms",       396},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"ingeorgian",                         272},
+      {""},
+
+      {"inarabicmathematicalalphabeticsymbols", 477},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"hangul",                              81},
+      {""},
+
+      {"insuperscriptsandsubscripts",        307},
+      {""}, {""}, {""}, {""},
+
+      {"inhanunoo",                          281},
+      {""},
+
+      {"inhangulsyllables",                  381},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"inoldpersian",                       411},
+      {""}, {""},
+
+      {"geor",                                70},
+      {""},
+
+      {"otherpunctuation",                   184},
+      {""},
+
+      {"inoldpermic",                        409},
+      {""}, {""}, {""}, {""},
+
+      {"inalchemicalsymbols",                487},
+
+      {"sylo",                               207},
+      {""},
+
+      {"hiragana",                            86},
+      {""}, {""},
+
+      {"word",                                12},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"inmeroitichieroglyphs",              425},
+      {""},
+
+      {"insmallformvariants",                394},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"sund",                               206},
+
+      {"brah",                                31},
+      {""},
+
+      {"insupplementalmathematicaloperators", 328},
+
+      {"glagolitic",                          71},
+      {""}, {""},
+
+      {"braille",                             32},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""},
+
+      {"unassigned",                          51},
+
+      {"sgnw",                               199},
+      {""}, {""}, {""},
+
+      {"plrd",                               137},
+      {""}, {""}, {""},
+
+      {"hebr",                                84},
+
+      {"ogham",                              152},
+      {""}, {""}, {""}, {""},
+
+      {"cyrillic",                            58},
+      {""}, {""}, {""},
+
+      {"orya",                               161},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""},
+
+      {"grantha",                             73},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"invariationselectors",               390},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"indingbats",                         322},
+      {""},
+
+      {"inunifiedcanadianaboriginalsyllabicsextended", 286},
+      {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"inhanguljamoextendeda",              370},
+      {""}, {""},
+
+      {"goth",                                72},
+
+      {"graphemebase",                        74},
+      {""},
+
+      {"bidic",                               29},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"ogrext",                             165},
+      {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"idsb",                                88},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"invariationselectorssupplement",     497},
+
+      {"assigned",                            22},
+      {""}, {""}, {""},
+
+      {"symbol",                             191},
+      {""}, {""}, {""},
+
+      {"ingreekextended",                    305},
+      {""},
+
+      {"pauc",                               176},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"meroitichieroglyphs",                136},
+      {""},
+
+      {"logicalorderexception",              119},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"incurrencysymbols",                  308},
+      {""}, {""}, {""},
+
+      {"inarabicextendeda",                  257},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"insupplementalarrowsc",              489},
+      {""}, {""},
+
+      {"insupplementalarrowsa",              324},
+      {""},
+
+      {"inkannada",                          265},
+      {""}, {""}, {""},
+
+      {"kana",                               101},
+
+      {"phagspa",                            181},
+      {""}, {""},
+
+      {"cakm",                                43},
+
+      {"digit",                                4},
+      {""}, {""}, {""}, {""},
+
+      {"softdotted",                         204},
+      {""}, {""}, {""},
+
+      {"inchakma",                           441},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""},
+
+      {"inphagspa",                          365},
+      {""}, {""}, {""},
+
+      {"inhighprivateusesurrogates",         384},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""},
+
+      {"warangciti",                         229},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"incjkcompatibilityforms",            393},
+      {""}, {""},
+
+      {"idstrinaryoperator",                  89},
+      {""},
+
+      {"incjkcompatibilityideographs",       387},
+      {""},
+
+      {"inkaithi",                           439},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"takri",                              214},
+      {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"phlp",                               186},
+
+      {"mendekikakui",                       134},
+      {""},
+
+      {"punct",                                8},
+      {""}, {""},
+
+      {"otherdefaultignorablecodepoint",     164},
+
+      {"inkatakana",                         343},
+      {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"graph",                                5},
+
+      {"lydi",                               124},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"pd",                                 178},
+      {""},
+
+      {"incjkstrokes",                       348},
+      {""}, {""},
+
+      {"lydian",                             124},
+      {""}, {""}, {""}, {""},
+
+      {"sorasompeng",                        205},
+      {""},
+
+      {"incjkcompatibilityideographssupplement", 495},
+      {""}, {""},
+
+      {"meeteimayek",                        133},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"otheruppercase",                     170},
+      {""}, {""},
+
+      {"kali",                               102},
+      {""}, {""},
+
+      {"inhanguljamo",                       273},
+      {""},
+
+      {"ideographic",                         92},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"inmeeteimayek",                      380},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""},
+
+      {"incyrillicextendedb",                359},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"inhighsurrogates",                   394},
+      {"hluw",                                18},
+      {""}, {""}, {""}, {""},
 
-      {"inkhmer",                            295},
+      {"patsyn",                             174},
       {""}, {""},
 
-      {"inphagspa",                          376},
+      {"incombiningdiacriticalmarks",        244},
+
+      {"inarabicsupplement",                 252},
+      {""},
+
+      {"inkanasupplement",                   466},
+      {""},
+
+      {"deprecated",                          61},
+
+      {"inverticalforms",                    391},
+      {""}, {""}, {""},
+
+      {"incombiningdiacriticalmarksforsymbols", 309},
+      {""}, {""}, {""}, {""},
+
+      {"indevanagari",                       258},
+      {""},
+
+      {"inbuhid",                            282},
+      {""},
+
+      {"alphabetic",                          17},
+      {""}, {""}, {""},
+
+      {"oldhungarian",                       154},
+      {""}, {""},
+
+      {"mark",                               125},
+      {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"inkharoshthi",                       427},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"deva",                                63},
+
+      {"invedicextensions",                  300},
+      {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"devanagari",                          63},
+
+      {"incombiningdiacriticalmarkssupplement", 303},
+      {""}, {""}, {""},
+
+      {"ingeometricshapesextended",          488},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"inkhmer",                            284},
+      {""}, {""}, {""},
+
+      {"changeswhencasemapped",               46},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""},
 
-      {"bidicontrol",                         29},
+      {"intakri",                            452},
+      {""}, {""},
 
-      {"intakri",                            463},
+      {"dep",                                 61},
+
+      {"takr",                               214},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"changeswhencasefolded",               45},
+      {""},
+
+      {"kaithi",                              99},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""},
+
+      {"phag",                               181},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""},
+
+      {"inpahawhhmong",                      464},
+      {""},
+
+      {"bidicontrol",                         29},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"inkhojki",                           445},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"bamu",                                25},
+
+      {"inbamum",                            360},
+
+      {"changeswhentitlecased",               48},
+      {""}, {""},
+
+      {"inkhmersymbols",                     290},
+
+      {"uideo",                              224},
+
+      {"lu",                                 122},
+      {""}, {""},
+
+      {"kthi",                                99},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"limbu",                              112},
+      {""},
+
+      {"defaultignorablecodepoint",           60},
       {""}, {""}, {""},
 
-      {"takr",                               225},
+      {"inplayingcards",                     480},
+      {""},
+
+      {"inhebrew",                           249},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"modifiersymbol",                     201},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"ugaritic",                           223},
+      {""}, {""}, {""}, {""},
+
+      {"inlisu",                             357},
+
+      {"inglagolitic",                       330},
+      {""},
+
+      {"inprivateusearea",                   386},
+      {""}, {""},
+
+      {"olck",                               153},
+      {""}, {""}, {""},
+
+      {"inbengali",                          259},
+      {""}, {""},
+
+      {"olchiki",                            153},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"caucasianalbanian",                   40},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"oldturkic",                          160},
+
+      {"beng",                                28},
+
+      {"intelugu",                           264},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"hyphen",                              87},
+      {""}, {""},
+
+      {"inbuginese",                         291},
+      {""}, {""}, {""},
+
+      {"intagalog",                          280},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"cypriot",                             57},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"inlimbu",                            287},
+      {""}, {""},
+
+      {"graphemeextend",                      75},
+      {""}, {""},
+
+      {"tagb",                               210},
+      {""}, {""}, {""},
+
+      {"incypriotsyllabary",                 418},
+      {""}, {""}, {""},
+
+      {"intagbanwa",                         283},
+      {""}, {""}, {""}, {""},
+
+      {"inaegeannumbers",                    400},
+      {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"inkatakanaphoneticextensions",       349},
+
+      {"glag",                                71},
+
+      {"combiningmark",                      125},
+
+      {"palmyrene",                          173},
+      {""},
+
+      {"khmr",                               104},
+      {""}, {""}, {""},
+
+      {"khar",                               103},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"ugar",                               223},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"inarabicpresentationformsb",         395},
+      {""}, {""}, {""},
+
+      {"insupplementaryprivateuseareaa",     498},
+      {""},
+
+      {"variationselector",                  228},
+      {""}, {""}, {""}, {""},
+
+      {"nko",                                148},
+
+      {"nkoo",                               148},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"inbamumsupplement",                  461},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"tglg",                               209},
+      {""},
+
+      {"any",                                 19},
+
+      {"enclosingmark",                      132},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"gujr",                                78},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"changeswhenlowercased",               47},
+      {""}, {""}, {""}, {""},
+
+      {"knda",                               100},
+
+      {"hung",                               154},
+
+      {"gujarati",                            78},
+      {""}, {""},
+
+      {"bopo",                                30},
+      {""}, {""}, {""}, {""},
+
+      {"inmendekikakui",                     476},
+      {""}, {""},
+
+      {"inbopomofo",                         344},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"kharoshthi",                         103},
+      {""},
+
+      {"kannada",                            100},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""},
+
+      {"khoj",                               105},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""},
+
+      {"cherokee",                            50},
+      {""}, {""}, {""},
+
+      {"inlatinextendedb",                   241},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"dashpunctuation",                    178},
+      {""}, {""},
+
+      {"dupl",                                65},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"inyisyllables",                      355},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"georgian",                            70},
+      {""},
+
+      {"rejang",                             189},
+      {""},
+
+      {"oupper",                             170},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""},
 
       {"aghb",                                40},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""},
 
-      {"kaithi",                             110},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"modifiersymbol",                     212},
+      {"khmer",                              104},
+      {""}, {""},
 
       {"grbase",                              74},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
-
-      {"inkhmersymbols",                     301},
-      {""}, {""}, {""}, {""},
-
-      {"kthi",                               110},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"hluw",                                18},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"inkhojki",                           456},
-
-      {"ugaritic",                           234},
-
-      {"inoldpersian",                       422},
-      {""}, {""}, {""}, {""},
-
-      {"otherpunctuation",                   195},
-      {""},
-
-      {"inoldpermic",                        420},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"othergraphemeextend",                176},
+      {"currencysymbol",                     195},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"olck",                               164},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"olchiki",                            164},
-      {""},
-
-      {"hebrew",                              95},
+      {"incombiningdiacriticalmarksextended", 293},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"plrd",                               148},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"inmeroiticcursive",                  437},
-      {""},
-
-      {"otheruppercase",                     181},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
-
-      {"inarabicpresentationformsb",         406},
-
-      {"patsyn",                             185},
-      {""}, {""}, {""}, {""},
-
-      {"inkatakanaphoneticextensions",       360},
-      {""},
-
-      {"combiningmark",                      136},
-
-      {"ugar",                               234},
-      {""},
-
-      {"khmr",                               115},
       {""}, {""}, {""},
 
-      {"khar",                               114},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"spacingmark",                        131},
+      {""},
+
+      {"orkh",                               160},
       {""}, {""}, {""}, {""}, {""},
 
-      {"phag",                               192},
-      {""}, {""},
-
-      {"nko",                                159},
-
-      {"nkoo",                               159},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"inpahawhhmong",                      475},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"oldhungarian",                       165},
-      {""}, {""}, {""}, {""},
-
-      {"enclosingmark",                      143},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"cwu",                                 49},
       {""},
 
-      {"hung",                               165},
+      {"hebrew",                              84},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
-
-      {"knda",                               111},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"gujr",                                89},
-      {""}, {""},
-
-      {"inmendekikakui",                     487},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
-
-      {"kharoshthi",                         114},
-
-      {"gujarati",                            89},
-
-      {"kannada",                            111},
-      {""}, {""}, {""},
-
-      {"inhanguljamoextendedb",              393},
-      {""}, {""},
-
-      {"inlatinextendedb",                   252},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
-
-      {"graphemeclusterbreaklf",              79},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"idstrinaryoperator",                 100},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"cherokee",                            50},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"khoj",                               116},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"graphemeclusterbreakt",               84},
-      {""},
-
-      {"graphemeclusterbreaklvt",             81},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"inplayingcards",                     491},
-
-      {"pd",                                 189},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
-
-      {"defaultignorablecodepoint",           60},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"uideo",                              235},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"incombiningdiacriticalmarksextended", 304},
-      {""}, {""},
-
-      {"bamu",                                25},
-
-      {"inbamum",                            371},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"khmer",                              115},
+      {"insupplementalpunctuation",          337},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""},
 
-      {"graphemeclusterbreakl",               78},
+      {"oldnortharabian",                    156},
       {""}, {""}, {""}, {""}, {""},
 
-      {"graphemeclusterbreakcontrol",         76},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
-
-      {"hyphen",                              98},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
-
-      {"oldnortharabian",                    167},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"cypriot",                             57},
+      {"incjksymbolsandpunctuation",         341},
       {""}, {""},
 
-      {"orkh",                               171},
-
-      {"deprecated",                          61},
-      {""}, {""}, {""},
-
-      {"oldturkic",                          171},
-      {""}, {""},
-
-      {"caucasianalbanian",                   40},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"inarabicsupplement",                 263},
-
-      {"incypriotsyllabary",                 429},
+      {"othergraphemeextend",                165},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""},
 
-      {"inkangxiradicals",                   350},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
-
-      {"alphabetic",                          17},
-      {""},
-
-      {"palmyrene",                          184},
-      {""}, {""}, {""}, {""},
-
-      {"graphemeclusterbreakcr",              75},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"graphemeclusterbreakregionalindicator",  82},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"inlimbu",                            298},
+      {"indevanagariextended",               367},
       {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"tagalog",                            209},
+      {""}, {""}, {""}, {""}, {""}, {""},
 
       {"surrogate",                           55},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"zyyy",                                53},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"p",                                  182},
-      {""},
-
-      {"zp",                                 247},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
-
-      {"ingeorgiansupplement",               344},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
-
-      {"inkayahli",                          379},
-      {""},
-
-      {"inbamumsupplement",                  472},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"unifiedideograph",                   235},
       {""}, {""}, {""},
 
-      {"incjkcompatibility",                 362},
+      {"bopomofo",                            30},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""},
+
+      {"ingeorgiansupplement",               333},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"pauc",                               187},
+      {"uppercase",                          226},
+      {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"unifiedideograph",                   224},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""},
+
+      {"inpaucinhau",                        455},
+
+      {"paucinhau",                          176},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""},
+
+      {"insupplementalsymbolsandpictographs", 490},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"nonspacingmark",                     138},
+      {""},
+
+      {"inhanguljamoextendedb",              382},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"inhighsurrogates",                   383},
+
+      {"punctuation",                        171},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""},
+
+      {"openpunctuation",                    185},
+
+      {"bassavah",                            26},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""},
+
+      {"upper",                               10},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""},
 
-      {"grek",                                88},
-      {""}, {""},
+      {"insupplementalarrowsb",              326},
 
-      {"graphemeclusterbreakv",               85},
-
-      {"graphemeclusterbreaklv",              80},
+      {"inkanbun",                           346},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""},
 
-      {"insuperscriptsandsubscripts",        318},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"inkangxiradicals",                   339},
+      {""}, {""}, {""},
 
-      {"egyptianhieroglyphs",                 66},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"insupplementalmathematicaloperators", 339},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"punct",                                8},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"currencysymbol",                     206},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"lu",                                 133},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"inmeroiticcursive",                  426},
       {""}, {""},
 
-      {"limbu",                              123},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {"signwriting",                        199},
+      {""}, {""},
 
-      {"inkanbun",                           357},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"incjkradicalssupplement",            338},
       {""},
 
-      {"inlisu",                             368},
+      {"pahawhhmong",                        172},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
+      {""}, {""}, {""},
 
-      {"egyp",                                66},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"inkayahli",                          368},
 
-      {"bopo",                                30},
-      {""}, {""},
-
-      {"intelugu",                           275},
-      {""}, {""},
-
-      {"graphemeclusterbreakextend",          77},
-      {""},
-
-      {"inbopomofo",                         355},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"uppercaseletter",                    122},
       {""},
 
       {"batk",                                27},
       {""}, {""}, {""}, {""},
 
-      {"inbatak",                            307},
+      {"inbatak",                            296},
       {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"insupplementalarrowsc",              500},
+      {"incjkcompatibility",                 351},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""},
 
-      {"pahawhhmong",                        183},
+      {"buhd",                                34},
+      {""}, {""}, {""}, {""}, {""},
+
+      {"egyp",                                66},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""},
 
-      {"insupplementalarrowsa",              335},
-      {""},
-
-      {"inegyptianhieroglyphs",              470},
-      {""}, {""}, {""}, {""},
-
-      {"phagspa",                            192},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
-
-      {"innoblock",                          511},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
-
-      {"phlp",                               197},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"kayahli",                            113},
+      {"innoblock",                          500},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"cwu",                                 49},
+      {"inegyptianhieroglyphs",              459},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
+      {""}, {""}, {""}, {""},
 
-      {"spacingmark",                        142},
-      {""}, {""},
+      {"grek",                                77},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""},
 
       {"bugi",                                33},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"inboxdrawing",                       329},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
-
-      {"changeswhenuppercased",               49},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"incjksymbolsandpunctuation",         352},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""},
-
-      {"bopomofo",                            30},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
-
-      {"buginese",                            33},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"dep",                                 61},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
-
-      {"buhd",                                34},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
-
-      {"dashpunctuation",                    189},
-      {""}, {""},
-
-      {"dupl",                                65},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"nonspacingmark",                     149},
+      {"changeswhenuppercased",               49},
+      {""}, {""}, {""},
+
+      {"paragraphseparator",                 236},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""},
 
-      {"oupper",                             181},
+      {"buginese",                            33},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"guru",                                79},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"incjkradicalssupplement",            349},
+      {"inbopomofoextended",                 347},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""},
+      {""}, {""}, {""},
 
-      {"qmark",                              198},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
-
-      {"sk",                                 212},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"telugu",                             216},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""},
 
-      {"guru",                                90},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"quotationmark",                      187},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""},
 
-      {"telugu",                             227},
+      {"inkhudawadi",                        447},
       {""}, {""}, {""}, {""}, {""},
 
-      {"insupplementalsymbolsandpictographs", 501},
+      {"kayahli",                            102},
+      {""},
 
-      {"katakana",                           112},
-
-      {"inhangulcompatibilityjamo",          356},
+      {"oldsoutharabian",                    159},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""},
 
-      {"oldsoutharabian",                    170},
+      {"insupplementaryprivateuseareab",     499},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""},
 
-      {"quotationmark",                      198},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"inhangulcompatibilityjamo",          345},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""},
 
-      {"inkhudawadi",                        458},
+      {"zyyy",                                53},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"unknown",                            236},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"khudawadi",                          117},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"qmark",                              187},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""},
 
       {"buhid",                               34},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"sk",                                 201},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""},
 
-      {"inbopomofoextended",                 358},
+      {"unknown",                            225},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
 
-      {"incjkunifiedideographsextensionc",   503},
-      {""}, {""},
-
-      {"incjkunifiedideographsextensiona",   363},
-      {""}, {""}, {""}, {""},
-
-      {"paragraphseparator",                 247},
+      {"khudawadi",                          106},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"incjkunifiedideographs",             365},
+      {"katakana",                           101},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"insupplementalarrowsb",              337},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {"incjkunifiedideographsextensionc",   492},
+      {""}, {""},
 
-      {"incjkunifiedideographsextensione",   505},
+      {"incjkunifiedideographsextensiona",   352},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""},
 
-      {"inpaucinhau",                        466},
-
-      {"paucinhau",                          187},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"insupplementaryprivateuseareaa",     509},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
-
-      {"khojki",                             116},
-      {""}, {""}, {""}, {""}, {""},
-
-      {"insupplementalpunctuation",          348},
-      {""}, {""}, {""},
-
-      {"punctuation",                        182},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"incjkunifiedideographs",             354},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""},
 
-      {"graphemeclusterbreakspacingmark",     83},
+      {"incjkunifiedideographsextensione",   494},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"uppercase",                          237},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
-
-      {"openpunctuation",                    196},
       {""}, {""}, {""}, {""}, {""}, {""},
 
       {"duployan",                            65},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""},
+      {""},
 
-      {"upper",                               10},
+      {"egyptianhieroglyphs",                 66},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
@@ -26256,27 +25118,57 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"uppercaseletter",                    133},
+      {"inboxdrawing",                       318},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"khojki",                             105},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""},
 
-      {"greek",                               88},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
-
-      {"incjkunifiedideographsextensiond",   504},
-      {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"grlink",                              87},
+      {"incjkunifiedideographsextensiond",   493},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
@@ -26293,22 +25185,79 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
       {"batak",                               27},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"incjkunifiedideographsextensionb",   491},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""},
 
       {"blank",                                2},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+
+      {"greek",                               77},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""},
 
-      {"graphemelink",                        87},
+      {"grlink",                              76},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
@@ -26321,57 +25270,9 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {""}, {""},
 
-      {"incjkunifiedideographsextensionb",   502},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-
-      {"insupplementaryprivateuseareab",     510},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {"gurmukhi",                            79},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
@@ -26385,7 +25286,7 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
 
-      {"gurmukhi",                            90}
+      {"graphemelink",                        76}
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
@@ -26408,4 +25309,4 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
 #define PROPERTY_VERSION  8_0_0
 
 #define PROPERTY_NAME_MAX_SIZE  59
-#define CODE_RANGES_NUM         512
+#define CODE_RANGES_NUM         501
