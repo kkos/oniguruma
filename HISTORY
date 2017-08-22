@@ -1,5 +1,18 @@
 History
 
+2017/08/28: Version 6.6.0
+
+2017/08/21: [new] Extended Grapheme Cluster \X and boundary \y, \Y
+2017/08/17: fix: invalid index(ctype) value assigned to Unicode Block properties
+2017/08/16: --enable-crnl-as-line-terminator to be deprecated
+2017/08/15: [new] ASCII only mode options (?WDSP)
+2017/08/14: [new] ONIG_OPTION_XXXX_IS_ASCII  options
+2017/08/11: disable OP_CCLASS_NODE
+2017/08/11: [spec] Absent clear restore previous range value at backtrack
+2017/08/07: optimize for simple one char repetition in Absent expression
+2017/08/07: fix: invalid impl. for reluctant repetition in Absent expression
+2017/08/04: remove compile switch USE_NAMED_GROUP
+
 2017/08/03: Version 6.5.0
 
 2017/07/30: [new] support Absent clear (Absent functions)
