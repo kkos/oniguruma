@@ -1595,7 +1595,7 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
     len = SIZE_OP_PUSH_LOOK_BEHIND_NOT + tlen + SIZE_OP_FAIL_LOOK_BEHIND_NOT;
     break;
 
-  case ANCHOR_WORD_BOUND:
+  case ANCHOR_WORD_BOUNDARY:
   case ANCHOR_NO_WORD_BOUND:
 #ifdef USE_WORD_BEGIN_END
   case ANCHOR_WORD_BEGIN:
@@ -1631,7 +1631,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
   case ANCHOR_SEMI_END_BUF:   r = add_opcode(reg, OP_SEMI_END_BUF);   break;
   case ANCHOR_BEGIN_POSITION: r = add_opcode(reg, OP_BEGIN_POSITION); break;
 
-  case ANCHOR_WORD_BOUND:
+  case ANCHOR_WORD_BOUNDARY:
     op = OP_WORD_BOUND;
   word:
     r = add_opcode(reg, op);
@@ -4630,14 +4630,14 @@ setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
 
 #define ALLOWED_ANCHOR_IN_LB \
   ( ANCHOR_LOOK_BEHIND | ANCHOR_BEGIN_LINE | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF \
-  | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUND | ANCHOR_NO_WORD_BOUND \
+  | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUNDARY | ANCHOR_NO_WORD_BOUND \
   | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END \
   | ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUND \
   | ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUND )
 
 #define ALLOWED_ANCHOR_IN_LB_NOT \
   ( ANCHOR_LOOK_BEHIND | ANCHOR_LOOK_BEHIND_NOT | ANCHOR_BEGIN_LINE \
-  | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUND \
+  | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUNDARY \
   | ANCHOR_NO_WORD_BOUND | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END \
   | ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUND \
   | ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUND )
@@ -7245,8 +7245,8 @@ print_indent_tree(FILE* f, Node* node, int indent)
     case ANCHOR_SEMI_END_BUF:   fputs("semi end buf",   f); break;
     case ANCHOR_BEGIN_POSITION: fputs("begin position", f); break;
 
-    case ANCHOR_WORD_BOUND:      fputs("word bound",     f); break;
-    case ANCHOR_NO_WORD_BOUND:   fputs("not word bound", f); break;
+    case ANCHOR_WORD_BOUNDARY:   fputs("word boundary",     f); break;
+    case ANCHOR_NO_WORD_BOUND:   fputs("not word boundary", f); break;
 #ifdef USE_WORD_BEGIN_END
     case ANCHOR_WORD_BEGIN:      fputs("word begin", f);     break;
     case ANCHOR_WORD_END:        fputs("word end", f);       break;
