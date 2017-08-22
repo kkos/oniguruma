@@ -1596,7 +1596,7 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
     break;
 
   case ANCHOR_WORD_BOUNDARY:
-  case ANCHOR_NO_WORD_BOUND:
+  case ANCHOR_NO_WORD_BOUNDARY:
 #ifdef USE_WORD_BEGIN_END
   case ANCHOR_WORD_BEGIN:
   case ANCHOR_WORD_END:
@@ -1639,7 +1639,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     r = add_mode(reg, (ModeType )node->ascii_mode);
     break;
 
-  case ANCHOR_NO_WORD_BOUND:
+  case ANCHOR_NO_WORD_BOUNDARY:
     op = OP_NO_WORD_BOUND; goto word;
     break;
 #ifdef USE_WORD_BEGIN_END
@@ -4630,7 +4630,7 @@ setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
 
 #define ALLOWED_ANCHOR_IN_LB \
   ( ANCHOR_LOOK_BEHIND | ANCHOR_BEGIN_LINE | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF \
-  | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUNDARY | ANCHOR_NO_WORD_BOUND \
+  | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUNDARY | ANCHOR_NO_WORD_BOUNDARY \
   | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END \
   | ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUND \
   | ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUND )
@@ -4638,7 +4638,7 @@ setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
 #define ALLOWED_ANCHOR_IN_LB_NOT \
   ( ANCHOR_LOOK_BEHIND | ANCHOR_LOOK_BEHIND_NOT | ANCHOR_BEGIN_LINE \
   | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUNDARY \
-  | ANCHOR_NO_WORD_BOUND | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END \
+  | ANCHOR_NO_WORD_BOUNDARY | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END \
   | ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUND \
   | ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUND )
 
@@ -7238,18 +7238,18 @@ print_indent_tree(FILE* f, Node* node, int indent)
   case NODE_ANCHOR:
     fprintf(f, "<anchor:%p> ", node);
     switch (ANCHOR_(node)->type) {
-    case ANCHOR_BEGIN_BUF:      fputs("begin buf",      f); break;
-    case ANCHOR_END_BUF:        fputs("end buf",        f); break;
-    case ANCHOR_BEGIN_LINE:     fputs("begin line",     f); break;
-    case ANCHOR_END_LINE:       fputs("end line",       f); break;
-    case ANCHOR_SEMI_END_BUF:   fputs("semi end buf",   f); break;
-    case ANCHOR_BEGIN_POSITION: fputs("begin position", f); break;
+    case ANCHOR_BEGIN_BUF:        fputs("begin buf",      f); break;
+    case ANCHOR_END_BUF:          fputs("end buf",        f); break;
+    case ANCHOR_BEGIN_LINE:       fputs("begin line",     f); break;
+    case ANCHOR_END_LINE:         fputs("end line",       f); break;
+    case ANCHOR_SEMI_END_BUF:     fputs("semi end buf",   f); break;
+    case ANCHOR_BEGIN_POSITION:   fputs("begin position", f); break;
 
-    case ANCHOR_WORD_BOUNDARY:   fputs("word boundary",     f); break;
-    case ANCHOR_NO_WORD_BOUND:   fputs("not word boundary", f); break;
+    case ANCHOR_WORD_BOUNDARY:    fputs("word boundary",     f); break;
+    case ANCHOR_NO_WORD_BOUNDARY: fputs("not word boundary", f); break;
 #ifdef USE_WORD_BEGIN_END
-    case ANCHOR_WORD_BEGIN:      fputs("word begin", f);     break;
-    case ANCHOR_WORD_END:        fputs("word end", f);       break;
+    case ANCHOR_WORD_BEGIN:       fputs("word begin", f);     break;
+    case ANCHOR_WORD_END:         fputs("word end", f);       break;
 #endif
     case ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUND:
       fputs("extended-grapheme-cluster bound", f); break;
