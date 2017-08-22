@@ -3940,7 +3940,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case 'y':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER)) break;
       tok->type = TK_ANCHOR;
-      tok->u.anchor = ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUND;
+      tok->u.anchor = ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY;
       break;
 
     case 'Y':
