@@ -2264,8 +2264,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       break;
 #endif
 
-    case OP_EXTENDED_GRAPHEME_CLUSTER_BOUND:
-      MOP_IN(OP_EXTENDED_GRAPHEME_CLUSTER_BOUND);
+    case OP_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
+      MOP_IN(OP_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY);
       if (onigenc_egcb_is_break_position(encode, s, sprev, str, end)) {
         MOP_OUT;
         continue;
