@@ -1656,7 +1656,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     break;
 
   case ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
-    r = add_opcode(reg, OP_NO_EXTENDED_GRAPHEME_CLUSTER_BOUND);
+    r = add_opcode(reg, OP_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY);
     break;
 
   case ANCHOR_PREC_READ:
