@@ -1611,7 +1611,7 @@ make_extended_grapheme_cluster(Node** node, ScanEnv* env)
   /* \X == \O(?:\Y\O)*+ */
 
   r = ONIGERR_MEMORY;
-  ns[0] = onig_node_new_anchor(ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUND, 0);
+  ns[0] = onig_node_new_anchor(ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY, 0);
   if (IS_NULL(ns[0])) goto err;
 
   r = node_new_true_anychar(&ns[1], env);
@@ -3946,7 +3946,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case 'Y':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER)) break;
       tok->type = TK_ANCHOR;
-      tok->u.anchor = ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUND;
+      tok->u.anchor = ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY;
       break;
 
 #ifdef USE_WORD_BEGIN_END

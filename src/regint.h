@@ -464,7 +464,7 @@ typedef struct _BBuf {
 #define ANCHOR_ANYCHAR_STAR     (1<<14)   /* ".*" optimize info */
 #define ANCHOR_ANYCHAR_STAR_ML  (1<<15)   /* ".*" optimize info (multi-line) */
 #define ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY    (1<<16)
-#define ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUND    (1<<17)
+#define ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY (1<<17)
 
 
 #define ANCHOR_HAS_BODY(a)      ((a)->type < ANCHOR_BEGIN_BUF)

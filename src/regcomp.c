@@ -1605,7 +1605,7 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
     break;
 
   case ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
-  case ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUND:
+  case ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
     len = SIZE_OPCODE;
     break;
 
@@ -1655,7 +1655,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     r = add_opcode(reg, OP_EXTENDED_GRAPHEME_CLUSTER_BOUND);
     break;
 
-  case ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUND:
+  case ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
     r = add_opcode(reg, OP_NO_EXTENDED_GRAPHEME_CLUSTER_BOUND);
     break;
 
@@ -4633,14 +4633,14 @@ setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
   | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUNDARY | ANCHOR_NO_WORD_BOUNDARY \
   | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END \
   | ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY \
-  | ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUND )
+  | ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY )
 
 #define ALLOWED_ANCHOR_IN_LB_NOT \
   ( ANCHOR_LOOK_BEHIND | ANCHOR_LOOK_BEHIND_NOT | ANCHOR_BEGIN_LINE \
   | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUNDARY \
   | ANCHOR_NO_WORD_BOUNDARY | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END \
   | ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY \
-  | ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUND )
+  | ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY )
 
   int r;
   AnchorNode* an = ANCHOR_(node);
@@ -7253,7 +7253,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
 #endif
     case ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
       fputs("extended-grapheme-cluster boundary", f); break;
-    case ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUND:
+    case ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
       fputs("no-extended-grapheme-cluster boundary", f); break;
     case ANCHOR_PREC_READ:
       fprintf(f, "prec read\n");
