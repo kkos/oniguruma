@@ -664,7 +664,7 @@ extern int main(int argc, char* argv[])
   x2("(?~|abcd|(?>))", "zzzabcd", 0, 0);
   x2("(?~|abc|a*?)", "aaaabc", 0, 0);
 
-  // absent range cutter
+  // absent stopper
   x2("(?~|abc)a*", "aaaaaabc", 0, 5);
   x2("(?~|abc)a*z|aaaaaabc", "aaaaaabc", 0, 8);
   x2("(?~|aaaaaa)a*", "aaaaaa", 0, 0);
@@ -677,6 +677,9 @@ extern int main(int argc, char* argv[])
   x2("(?~|abc).*(xyz|pqr)(?~|)abc", "aaaaxyzaaapqrabc", 0, 16);
   x2("(?~|abc).*(xyz|pqr)(?~|)abc", "aaaaxyzaaaabcpqrabc", 11, 19);
   n("\\A(?~|abc).*(xyz|pqrabc)(?~|)abc", "aaaaxyzaaaabcpqrabcabc");
+  x2("(?~|a)(?~|)c|ab|a|", "ab", 0, 2);
+  x2("(?~|a)((?~|)c|ab|a|)", "ab", 0, 0);
+  x2("(?~|a)((?>(?~|))c|ab|a|)", "ab", 0, 0);
 
   // extended grapheme cluster
 
