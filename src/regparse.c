@@ -1807,12 +1807,13 @@ make_absent_clear(Node** node, ScanEnv* env)
 
   ns[0] = NULL_NODE; ns[1] = x;
 
-  r = node_new_update_var_gimmick(&ns[0], UPDATE_VAR_RIGHT_RANGE_INIT,
-				  0, env);
+  r = node_new_update_var_gimmick(&ns[0], UPDATE_VAR_RIGHT_RANGE_INIT, 0, env);
   if (r != 0) goto err;
 
   x = make_alt(2, ns);
   if (IS_NULL(x)) goto err0;
+
+  NODE_STATUS_ADD(x, NST_SUPER);
 
   ns[0] = save;
   ns[1] = x;
