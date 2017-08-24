@@ -199,8 +199,8 @@ extern OnigCodePoint OnigUnicodeFolds3[];
 
 struct ByUnfoldKey {
   OnigCodePoint code;
-  int   index;
-  int   fold_len;
+  short int     index;
+  short int     fold_len;
 };
 
 extern const struct ByUnfoldKey* unicode_unfold_key(OnigCodePoint code);
