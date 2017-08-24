@@ -32,7 +32,7 @@ New feature of version 6.6.0
 * NEW: ASCII only mode options for character type/property (?WDSP)
 * NEW: Extended Grapheme Cluster boundary \y, \Y (*original)
 * NEW: Extended Grapheme Cluster \X
-* Range-clear (renamed from Absent-clear) operator restores previous range in backtrack.
+* Range-clear (Absent-clear) operator restores previous range in backtrack.
 
 
 New feature of version 6.5.0
@@ -52,14 +52,14 @@ New feature of version 6.4.0
 --------------------------
 
 * Fix fatal problem of endless repeat on Windows
-* NEW: call zero (call the total regexp)
-* NEW: relative backref and relative call by positive number
+* NEW: call zero (call the total regexp) \g<0>
+* NEW: relative backref/call by positive number \k<+n>, \g<+n>
 
 
 New feature of version 6.3.0
 --------------------------
 
-* NEW SYNTAX: escape-o-brace for octal codepoint.
+* NEW: octal codepoint \o{.....}
 
 
 New feature of version 6.1.2
