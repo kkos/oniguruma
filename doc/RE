@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.6.0    2017/08/21
+Oniguruma Regular Expressions Version 6.6.0    2017/08/24
 
 syntax: ONIG_SYNTAX_RUBY (default)
 
@@ -281,7 +281,7 @@ syntax: ONIG_SYNTAX_RUBY (default)
                      at the point that does not include the string match whth
                      <absent>.
 
-  (?~|)              Absent clear
+  (?~|)              Range clear
                      Clear the effects caused by Absent stoppers.
 
      * Nested Absent functions are not supported and the behavior

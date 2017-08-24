@@ -1780,7 +1780,7 @@ make_absent_tail(Node** node1, Node** node2, int pre_save_right_id,
 }
 
 static int
-make_absent_clear(Node** node, ScanEnv* env)
+make_range_clear(Node** node, ScanEnv* env)
 {
   int r;
   int id;
@@ -5485,9 +5485,9 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
 
           head_bar = 1;
-          if (PPEEK_IS(')')) { // (?~|)  : absent clear
+          if (PPEEK_IS(')')) { // (?~|)  : range clear
             PINC;
-            r = make_absent_clear(np, env);
+            r = make_range_clear(np, env);
             if (r != 0) return r;
             goto end;
           }

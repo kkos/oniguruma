@@ -30,9 +30,9 @@ New feature of version 6.6.0
 --------------------------
 
 * NEW: ASCII only mode options for character type/property (?WDSP)
-* NEW: \y, \Y  Extended Grapheme Cluster boundary (*original)
-* NEW: \X  Extended Grapheme Cluster
-* Absent-clear operator restores previous range in backtrack.
+* NEW: Extended Grapheme Cluster boundary \y, \Y (*original)
+* NEW: Extended Grapheme Cluster \X
+* Range-clear (renamed from Absent-clear) operator restores previous range in backtrack.
 
 
 New feature of version 6.5.0
