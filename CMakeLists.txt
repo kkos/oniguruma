@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8)
 project(oniguruma C)
 
 set(PACKAGE onig)
-set(PACKAGE_VERSION "6.5.0")
+set(PACKAGE_VERSION "6.6.0")
 
 set(USE_COMBINATION_EXPLOSION_CHECK 0)
 set(USE_CRNL_AS_LINE_TERMINATOR 0)
@@ -81,7 +81,7 @@ install_library(onig)
 install_header(src/oniguruma.h src/onigposix.h src/oniggnu.h)
 
 install_doc(doc/API doc/API.ja doc/RE doc/RE.ja doc/UNICODE_PROPERTIES)
-install_data(AUTHORS COPYING HISTORY README)
+install_data(AUTHORS COPYING HISTORY README.md)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/oniguruma.pc
   DESTINATION lib/pkgconfig)

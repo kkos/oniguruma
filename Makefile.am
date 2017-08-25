@@ -4,7 +4,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = src test sample
 
-EXTRA_DIST = oniguruma.pc.in HISTORY README.ja README.md \
+EXTRA_DIST = oniguruma.pc.in HISTORY README_japanese README.md \
 	index.html index_ja.html \
 	CMakeLists.txt dist.info oniguruma.pc.cmake.in cmake/dist.cmake \
 	src/config.h.cmake.in \
