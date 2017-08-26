@@ -125,7 +125,7 @@ enum GimmickType {
   (((node)->u.str.flag & STRING_DONT_GET_OPT_INFO) != 0)
 
 #define BACKREFS_P(br) \
-  (IS_NOT_NULL((br)->back_dynamic) ? (br)->back_dynamic : (br)->back_static);
+  (IS_NOT_NULL((br)->back_dynamic) ? (br)->back_dynamic : (br)->back_static)
 
 #define QUANT_BODY_IS_NOT_EMPTY    0
 #define QUANT_BODY_IS_EMPTY        1
