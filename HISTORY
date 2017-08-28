@@ -2,6 +2,7 @@ History
 
 2017/08/28: Version 6.6.0
 
+2017/08/26: fix #67: can't compile with Visual Studio 2005
 2017/08/24: rename Absent clear to Range clear
 2017/08/21: [new] Extended Grapheme Cluster \X and boundary \y, \Y
 2017/08/17: fix: invalid index(ctype) value assigned to Unicode Block properties
