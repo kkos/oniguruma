@@ -26,6 +26,12 @@ Supported character encodings:
 * CP1251:  contributed by Byte
 
 
+New feature of version 6.6.1
+--------------------------
+
+* Fix definition of \X
+
+
 New feature of version 6.6.0
 --------------------------
 
