@@ -100,10 +100,10 @@ enum GimmickType {
 #define ANCHOR_ANYCHAR_STAR_MASK (ANCHOR_ANYCHAR_STAR | ANCHOR_ANYCHAR_STAR_ML)
 #define ANCHOR_END_BUF_MASK      (ANCHOR_END_BUF | ANCHOR_SEMI_END_BUF)
 
-#define ENCLOSURE_MEMORY           (1<<0)
-#define ENCLOSURE_OPTION           (1<<1)
-#define ENCLOSURE_STOP_BACKTRACK   (1<<2)
-#define ENCLOSURE_IF_ELSE          (1<<3)
+#define ENCLOSURE_MEMORY           0
+#define ENCLOSURE_OPTION           1
+#define ENCLOSURE_STOP_BACKTRACK   2
+#define ENCLOSURE_IF_ELSE          3
 
 #define NODE_STRING_MARGIN         16
 #define NODE_STRING_BUF_SIZE       24  /* sizeof(CClassNode) - sizeof(int)*4 */

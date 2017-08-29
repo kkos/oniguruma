@@ -2831,7 +2831,7 @@ check_type_tree(Node* node, int type_mask, int enclosure_mask, int anchor_mask)
   case NODE_ENCLOSURE:
     {
       EnclosureNode* en = ENCLOSURE_(node);
-      if ((en->type & enclosure_mask) == 0)
+      if (((1<<en->type) & enclosure_mask) == 0)
         return 1;
 
       r = check_type_tree(NODE_BODY(node), type_mask, enclosure_mask, anchor_mask);
@@ -4625,8 +4625,8 @@ setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
   | BIT_NODE_CTYPE | BIT_NODE_ANCHOR | BIT_NODE_ENCLOSURE | BIT_NODE_QUANT \
   | BIT_NODE_CALL )
 
-#define ALLOWED_ENCLOSURE_IN_LB       ( ENCLOSURE_MEMORY | ENCLOSURE_OPTION )
-#define ALLOWED_ENCLOSURE_IN_LB_NOT   ENCLOSURE_OPTION
+#define ALLOWED_ENCLOSURE_IN_LB       ( 1<<ENCLOSURE_MEMORY | 1<<ENCLOSURE_OPTION )
+#define ALLOWED_ENCLOSURE_IN_LB_NOT   (1<<ENCLOSURE_OPTION)
 
 #define ALLOWED_ANCHOR_IN_LB \
   ( ANCHOR_LOOK_BEHIND | ANCHOR_BEGIN_LINE | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF \
