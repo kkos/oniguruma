@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.6.0    2017/08/24
+Oniguruma Regular Expressions Version 6.6.0    2017/08/29
 
 syntax: ONIG_SYNTAX_RUBY (default)
 
@@ -80,7 +80,7 @@ syntax: ONIG_SYNTAX_RUBY (default)
 
   \O       true anychar      (?m:.)    (* original function)
 
-  \X       Extended Grapheme Cluster   \O(?:\Y\O)*+
+  \X       Extended Grapheme Cluster    (?>\O(?:\Y\O)*)
 
            \X doesn't check whether matching start position is boundary.
            Write as \y\X if you want to ensure it.
