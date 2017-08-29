@@ -1047,6 +1047,8 @@ extern int main(int argc, char* argv[])
   x2("^\\X$", "\xE0\xA4\xB7\xE0\xA4\xBF", 0, 6);
   n("\\X\\X", "\xE0\xA4\xB7\xE0\xA4\xBF");
 
+  n("^\\X.$", "\xE0\xAE\xA8\xE0\xAE\xBF");
+
 
   e("(?<abc>\\g<abc>)", "zzzz", ONIGERR_NEVER_ENDING_RECURSION);
   e("(?<=(?>abc))", "abc", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
