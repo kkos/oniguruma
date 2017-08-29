@@ -1608,7 +1608,7 @@ make_extended_grapheme_cluster(Node** node, ScanEnv* env)
   Node* x;
   Node* ns[2];
 
-  /* \X == \O(?:\Y\O)*+ */
+  /* \X == (?>\O(?:\Y\O)*) */
 
   ns[1] = NULL_NODE;
 
@@ -1622,14 +1622,9 @@ make_extended_grapheme_cluster(Node** node, ScanEnv* env)
   x = make_list(2, ns);
   if (IS_NULL(x)) goto err;
   ns[0] = x;
+  ns[1] = NULL_NODE;
 
   x = node_new_quantifier(0, REPEAT_INFINITE, 1);
-  if (IS_NULL(x)) goto err;
-
-  NODE_BODY(x) = ns[0];
-  ns[0] = x;
-
-  x = node_new_enclosure(ENCLOSURE_STOP_BACKTRACK);
   if (IS_NULL(x)) goto err;
 
   NODE_BODY(x) = ns[0];
@@ -1641,6 +1636,14 @@ make_extended_grapheme_cluster(Node** node, ScanEnv* env)
 
   x = make_list(2, ns);
   if (IS_NULL(x)) goto err;
+
+  ns[0] = x;
+  ns[1] = NULL_NODE;
+
+  x = node_new_enclosure(ENCLOSURE_STOP_BACKTRACK);
+  if (IS_NULL(x)) goto err;
+
+  NODE_BODY(x) = ns[0];
 
   *node = x;
   return ONIG_NORMAL;
