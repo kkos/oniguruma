@@ -100,10 +100,12 @@ enum GimmickType {
 #define ANCHOR_ANYCHAR_STAR_MASK (ANCHOR_ANYCHAR_STAR | ANCHOR_ANYCHAR_STAR_ML)
 #define ANCHOR_END_BUF_MASK      (ANCHOR_END_BUF | ANCHOR_SEMI_END_BUF)
 
-#define ENCLOSURE_MEMORY           0
-#define ENCLOSURE_OPTION           1
-#define ENCLOSURE_STOP_BACKTRACK   2
-#define ENCLOSURE_IF_ELSE          3
+enum EnclosureType {
+  ENCLOSURE_MEMORY = 0,
+  ENCLOSURE_OPTION = 1,
+  ENCLOSURE_STOP_BACKTRACK = 2,
+  ENCLOSURE_IF_ELSE = 3,
+};
 
 #define NODE_STRING_MARGIN         16
 #define NODE_STRING_BUF_SIZE       24  /* sizeof(CClassNode) - sizeof(int)*4 */
@@ -233,7 +235,7 @@ typedef struct {
   int status;
   struct _Node* body;
 
-  int type;
+  enum EnclosureType type;
   union {
     struct {
       int regnum;

@@ -1470,7 +1470,7 @@ node_new_quantifier(int lower, int upper, int by_number)
 }
 
 static Node*
-node_new_enclosure(int type)
+node_new_enclosure(enum EnclosureType type)
 {
   Node* node = node_new();
   CHECK_NULL_RETURN(node);
