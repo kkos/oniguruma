@@ -509,6 +509,8 @@ extern int main(int argc, char* argv[])
   x2("(?<=a|bc)b", "bcb", 2, 3);
   x2("(?<=a|bc)b", "ab", 1, 2);
   x2("(?<=a|bc||defghij|klmnopq|r)z", "rz", 1, 2);
+  x3("(?<=(abc))d", "abcd", 0, 3, 1);
+  x2("(?<=(?i:abc))d", "ABCd", 3, 4);
   x2("(a)\\g<1>", "aa", 0, 2);
   x2("(?<!a)b", "cb", 1, 2);
   n("(?<!a)b", "ab");
