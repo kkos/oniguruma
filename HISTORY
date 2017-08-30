@@ -1,5 +1,7 @@
 History
 
+2017/08/30: Version 6.6.1
+
 2017/08/29: fix definition of \X to (?>\O(?:\Y\O)*)
 
 2017/08/28: Version 6.6.0
