@@ -2245,18 +2245,21 @@ onig_scan_unsigned_number(UChar** src, const UChar* end, OnigEncoding enc)
 }
 
 static int
-scan_unsigned_hexadecimal_number(UChar** src, UChar* end, int maxlen,
-                                 OnigEncoding enc)
+scan_unsigned_hexadecimal_number(UChar** src, UChar* end, int minlen,
+                                 int maxlen, OnigEncoding enc)
 {
   OnigCodePoint c;
   unsigned int num, val;
+  int n;
   UChar* p = *src;
   PFETCH_READY;
 
   num = 0;
-  while (! PEND && maxlen-- != 0) {
+  n = 0;
+  while (! PEND && n < maxlen) {
     PFETCH(c);
     if (IS_CODE_XDIGIT_ASCII(enc, c)) {
+      n++;
       val = (unsigned int )XDIGITVAL(enc,c);
       if ((INT_MAX_LIMIT - val) / 16UL < num)
         return -1;  /* overflow */
@@ -3700,7 +3703,7 @@ fetch_token_in_cc(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       prev = p;
       if (PPEEK_IS('{') && IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_X_BRACE_HEX8)) {
         PINC;
-        num = scan_unsigned_hexadecimal_number(&p, end, 8, enc);
+        num = scan_unsigned_hexadecimal_number(&p, end, 0, 8, enc);
         if (num < 0) return ONIGERR_TOO_BIG_WIDE_CHAR_VALUE;
         if (!PEND) {
           c2 = PPEEK;
@@ -3720,7 +3723,7 @@ fetch_token_in_cc(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
         }
       }
       else if (IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_X_HEX2)) {
-        num = scan_unsigned_hexadecimal_number(&p, end, 2, enc);
+        num = scan_unsigned_hexadecimal_number(&p, end, 0, 2, enc);
         if (num < 0) return ONIGERR_TOO_BIG_NUMBER;
         if (p == prev) {  /* can't read nothing. */
           num = 0; /* but, it's not error */
@@ -3736,7 +3739,7 @@ fetch_token_in_cc(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
       prev = p;
       if (IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_U_HEX4)) {
-        num = scan_unsigned_hexadecimal_number(&p, end, 4, enc);
+        num = scan_unsigned_hexadecimal_number(&p, end, 4, 4, enc);
         if (num < 0) return ONIGERR_TOO_BIG_NUMBER;
         if (p == prev) {  /* can't read nothing. */
           num = 0; /* but, it's not error */
@@ -4103,7 +4106,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       prev = p;
       if (PPEEK_IS('{') && IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_X_BRACE_HEX8)) {
         PINC;
-        num = scan_unsigned_hexadecimal_number(&p, end, 8, enc);
+        num = scan_unsigned_hexadecimal_number(&p, end, 0, 8, enc);
         if (num < 0) return ONIGERR_TOO_BIG_WIDE_CHAR_VALUE;
         if (!PEND) {
           if (IS_CODE_XDIGIT_ASCII(enc, PPEEK))
@@ -4121,7 +4124,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
         }
       }
       else if (IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_X_HEX2)) {
-        num = scan_unsigned_hexadecimal_number(&p, end, 2, enc);
+        num = scan_unsigned_hexadecimal_number(&p, end, 0, 2, enc);
         if (num < 0) return ONIGERR_TOO_BIG_NUMBER;
         if (p == prev) {  /* can't read nothing. */
           num = 0; /* but, it's not error */
@@ -4137,7 +4140,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
       prev = p;
       if (IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_U_HEX4)) {
-        num = scan_unsigned_hexadecimal_number(&p, end, 4, enc);
+        num = scan_unsigned_hexadecimal_number(&p, end, 4, 4, enc);
         if (num < 0) return ONIGERR_TOO_BIG_NUMBER;
         if (p == prev) {  /* can't read nothing. */
           num = 0; /* but, it's not error */
