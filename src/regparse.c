@@ -2271,6 +2271,10 @@ scan_unsigned_hexadecimal_number(UChar** src, UChar* end, int minlen,
       break;
     }
   }
+
+  if (n < minlen)
+    return ONIGERR_INVALID_CODE_POINT_VALUE;
+
   *src = p;
   return num;
 }
