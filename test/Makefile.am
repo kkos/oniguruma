@@ -3,7 +3,7 @@ lib_onig = ../src/libonig.la
 
 AM_LDFLAGS  = -L$(prefix)/lib
 AM_CFLAGS =
-AM_CPPFLAGS = -I../src -I$(includedir)
+AM_CPPFLAGS = -I$(top_srcdir)/src -I$(includedir)
 
 TESTS = test_utf8 testc testp testcu
 
