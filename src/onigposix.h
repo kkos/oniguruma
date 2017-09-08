@@ -147,6 +147,7 @@ ONIG_EXTERN int  onig_set_default_syntax P_((OnigSyntaxType* syntax));
 ONIG_EXTERN void onig_copy_syntax P_((OnigSyntaxType* to, OnigSyntaxType* from));
 ONIG_EXTERN const char* onig_version P_((void));
 ONIG_EXTERN const char* onig_copyright P_((void));
+ONIG_EXTERN int onig_end P_((void));
 
 #endif /* ONIGURUMA_H */
 
