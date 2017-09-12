@@ -3051,6 +3051,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     case OP_UPDATE_VAR: MOP_IN(OP_UPDATE_VAR);
       {
         UpdateVarType type;
+        enum SaveType save_type;
+
         GET_UPDATE_VAR_TYPE_INC(type, p);
         GET_MEMNUM_INC(mem, p); /* mem: save id */
         switch ((enum UpdateVarType )type) {
@@ -3061,10 +3063,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           STACK_GET_SAVE_VAL_TYPE_LAST_ID_WITH_SPREV(SAVE_S, mem, s);
           break;
         case UPDATE_VAR_RIGHT_RANGE_FROM_S_STACK:
-          STACK_GET_SAVE_VAL_TYPE_LAST_ID(SAVE_S, mem, right_range);
+          save_type = SAVE_S;
+          goto get_save_val_type_last_id;
           break;
         case UPDATE_VAR_RIGHT_RANGE_FROM_STACK:
-          STACK_GET_SAVE_VAL_TYPE_LAST_ID(SAVE_RIGHT_RANGE, mem, right_range);
+          save_type = SAVE_RIGHT_RANGE;
+        get_save_val_type_last_id:
+          STACK_GET_SAVE_VAL_TYPE_LAST_ID(save_type, mem, right_range);
           break;
         case UPDATE_VAR_RIGHT_RANGE_INIT:
           INIT_RIGHT_RANGE;
