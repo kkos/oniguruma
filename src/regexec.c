@@ -670,7 +670,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_POS(s,sprev)         STACK_PUSH(STK_POS,NULL_UCHARP,s,sprev)
 #define STACK_PUSH_ALT_PREC_READ_NOT(pat,s,sprev) \
   STACK_PUSH(STK_ALT_PREC_READ_NOT,pat,s,sprev)
-#define STACK_PUSH_STOP_BACKTRACK        STACK_PUSH_TYPE(STK_TO_VOID_START)
+#define STACK_PUSH_TO_VOID_START        STACK_PUSH_TYPE(STK_TO_VOID_START)
 #define STACK_PUSH_ALT_LOOK_BEHIND_NOT(pat,s,sprev) \
   STACK_PUSH(STK_ALT_LOOK_BEHIND_NOT,pat,s,sprev)
 
@@ -988,11 +988,11 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_STOP_BACKTRACK_END do {\
+#define STACK_EXEC_TO_VOID do {\
   StackType *k = stk;\
   while (1) {\
     k--;\
-    STACK_BASE_CHECK(k, "STACK_STOP_BACKTRACK_END"); \
+    STACK_BASE_CHECK(k, "STACK_EXEC_TO_VOID"); \
     if (IS_TO_VOID_TARGET(k)) {\
       k->type = STK_VOID;\
     }\
@@ -2964,13 +2964,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       break;
 
     case OP_ATOMIC_START:  MOP_IN(OP_ATOMIC_START);
-      STACK_PUSH_STOP_BACKTRACK;
+      STACK_PUSH_TO_VOID_START;
       MOP_OUT;
       continue;
       break;
 
     case OP_ATOMIC_END:  MOP_IN(OP_ATOMIC_END);
-      STACK_STOP_BACKTRACK_END;
+      STACK_EXEC_TO_VOID;
       MOP_OUT;
       continue;
       break;
