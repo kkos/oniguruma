@@ -327,7 +327,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_EMPTY_CHECK_END        0x5000  /* for recursive call */
 #define STK_MEM_END_MARK           0x8400
 #define STK_POS                    0x0500  /* used when POP-POS */
-#define STK_STOP_BACKTRACK         0x0600  /* mark for "(?>...)" */
+#define STK_TO_VOID_START          0x0600  /* mark for "(?>...)" */
 #define STK_REPEAT                 0x0700
 #define STK_CALL_FRAME             0x0800
 #define STK_RETURN                 0x0900
@@ -670,7 +670,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_POS(s,sprev)         STACK_PUSH(STK_POS,NULL_UCHARP,s,sprev)
 #define STACK_PUSH_ALT_PREC_READ_NOT(pat,s,sprev) \
   STACK_PUSH(STK_ALT_PREC_READ_NOT,pat,s,sprev)
-#define STACK_PUSH_STOP_BACKTRACK        STACK_PUSH_TYPE(STK_STOP_BACKTRACK)
+#define STACK_PUSH_STOP_BACKTRACK        STACK_PUSH_TYPE(STK_TO_VOID_START)
 #define STACK_PUSH_ALT_LOOK_BEHIND_NOT(pat,s,sprev) \
   STACK_PUSH(STK_ALT_LOOK_BEHIND_NOT,pat,s,sprev)
 
@@ -996,7 +996,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
     if (IS_TO_VOID_TARGET(k)) {\
       k->type = STK_VOID;\
     }\
-    else if (k->type == STK_STOP_BACKTRACK) {\
+    else if (k->type == STK_TO_VOID_START) {\
       k->type = STK_VOID;\
       break;\
     }\
