@@ -1357,7 +1357,7 @@ compile_length_enclosure_node(EnclosureNode* node, regex_t* reg)
         + SIZE_OP_PUSH + tlen + SIZE_OP_POP + SIZE_OP_JUMP;
     }
     else {
-      len = SIZE_OP_PUSH_STOP_BT + tlen + SIZE_OP_POP_STOP_BT;
+      len = SIZE_OP_ATOMIC_START + tlen + SIZE_OP_ATOMIC_END;
     }
     break;
 
@@ -1370,7 +1370,7 @@ compile_length_enclosure_node(EnclosureNode* node, regex_t* reg)
       len = compile_length_tree(cond, reg);
       if (len < 0) return len;
       len += SIZE_OP_PUSH;
-      len += SIZE_OP_PUSH_STOP_BT + SIZE_OP_POP_STOP_BT;
+      len += SIZE_OP_ATOMIC_START + SIZE_OP_ATOMIC_END;
 
       if (IS_NOT_NULL(Then)) {
         tlen = compile_length_tree(Then, reg);
@@ -1511,11 +1511,11 @@ compile_enclosure_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
              -((int )SIZE_OP_PUSH + len + (int )SIZE_OP_POP + (int )SIZE_OP_JUMP));
     }
     else {
-      r = add_opcode(reg, OP_PUSH_STOP_BT);
+      r = add_opcode(reg, OP_ATOMIC_START);
       if (r != 0) return r;
       r = compile_tree(NODE_ENCLOSURE_BODY(node), reg, env);
       if (r != 0) return r;
-      r = add_opcode(reg, OP_POP_STOP_BT);
+      r = add_opcode(reg, OP_ATOMIC_END);
     }
     break;
 
@@ -1526,7 +1526,7 @@ compile_enclosure_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
       Node* Then = node->te.Then;
       Node* Else = node->te.Else;
 
-      r = add_opcode(reg, OP_PUSH_STOP_BT);
+      r = add_opcode(reg, OP_ATOMIC_START);
       if (r != 0) return r;
 
       cond_len = compile_length_tree(cond, reg);
@@ -1538,14 +1538,14 @@ compile_enclosure_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
       else
         then_len = 0;
 
-      jump_len = cond_len + then_len + SIZE_OP_POP_STOP_BT;
+      jump_len = cond_len + then_len + SIZE_OP_ATOMIC_END;
       if (IS_NOT_NULL(Else)) jump_len += SIZE_OP_JUMP;
 
       r = add_opcode_rel_addr(reg, OP_PUSH, jump_len);
       if (r != 0) return r;
       r = compile_tree(cond, reg, env);
       if (r != 0) return r;
-      r = add_opcode(reg, OP_POP_STOP_BT);
+      r = add_opcode(reg, OP_ATOMIC_END);
       if (r != 0) return r;
 
       if (IS_NOT_NULL(Then)) {
@@ -6777,8 +6777,8 @@ OnigOpInfoType OnigOpInfo[] = {
   { OP_PREC_READ_END,        "pop-pos",              ARG_NON },
   { OP_PUSH_PREC_READ_NOT,   "push-prec-read-not",   ARG_RELADDR },
   { OP_FAIL_PREC_READ_NOT,   "fail-prec-read-not",   ARG_NON },
-  { OP_PUSH_STOP_BT,         "push-stop-bt",         ARG_NON },
-  { OP_POP_STOP_BT,          "pop-stop-bt",          ARG_NON },
+  { OP_ATOMIC_START,         "atomic-start",         ARG_NON },
+  { OP_ATOMIC_END,           "atomic-end",           ARG_NON },
   { OP_LOOK_BEHIND,          "look-behind",          ARG_SPECIAL },
   { OP_PUSH_LOOK_BEHIND_NOT, "push-look-behind-not", ARG_SPECIAL },
   { OP_FAIL_LOOK_BEHIND_NOT, "fail-look-behind-not", ARG_NON },

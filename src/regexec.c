@@ -2963,13 +2963,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       goto fail;
       break;
 
-    case OP_PUSH_STOP_BT:  MOP_IN(OP_PUSH_STOP_BT);
+    case OP_ATOMIC_START:  MOP_IN(OP_ATOMIC_START);
       STACK_PUSH_STOP_BACKTRACK;
       MOP_OUT;
       continue;
       break;
 
-    case OP_POP_STOP_BT:  MOP_IN(OP_POP_STOP_BT);
+    case OP_ATOMIC_END:  MOP_IN(OP_ATOMIC_END);
       STACK_STOP_BACKTRACK_END;
       MOP_OUT;
       continue;
