@@ -326,12 +326,11 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_EMPTY_CHECK_START      0x3000
 #define STK_EMPTY_CHECK_END        0x5000  /* for recursive call */
 #define STK_MEM_END_MARK           0x8400
-#define STK_POS                    0x0500  /* used when POP-POS */
-#define STK_TO_VOID_START          0x0600  /* mark for "(?>...)" */
-#define STK_REPEAT                 0x0700
-#define STK_CALL_FRAME             0x0800
-#define STK_RETURN                 0x0900
-#define STK_SAVE_VAL               0x0a00
+#define STK_TO_VOID_START          0x0500  /* mark for "(?>...)" */
+#define STK_REPEAT                 0x0600
+#define STK_CALL_FRAME             0x0700
+#define STK_RETURN                 0x0800
+#define STK_SAVE_VAL               0x0900
 
 /* stack type check mask */
 #define STK_MASK_POP_USED          STK_ALT_FLAG
@@ -667,7 +666,8 @@ stack_double(int is_alloca, char** arg_alloc_base,
 
 #define STACK_PUSH_ALT(pat,s,sprev)       STACK_PUSH(STK_ALT,pat,s,sprev)
 #define STACK_PUSH_SUPER_ALT(pat,s,sprev) STACK_PUSH(STK_SUPER_ALT,pat,s,sprev)
-#define STACK_PUSH_POS(s,sprev)         STACK_PUSH(STK_POS,NULL_UCHARP,s,sprev)
+#define STACK_PUSH_POS(s,sprev) \
+  STACK_PUSH(STK_TO_VOID_START,NULL_UCHARP,s,sprev)
 #define STACK_PUSH_ALT_PREC_READ_NOT(pat,s,sprev) \
   STACK_PUSH(STK_ALT_PREC_READ_NOT,pat,s,sprev)
 #define STACK_PUSH_TO_VOID_START        STACK_PUSH_TYPE(STK_TO_VOID_START)
@@ -970,21 +970,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
       mem_end_stk[stk->u.mem.num]   = stk->u.mem.end;\
     }\
     ELSE_IF_STATE_CHECK_MARK(stk);\
-  }\
-} while(0)
-
-#define STACK_POS_END(k) do {\
-  k = stk;\
-  while (1) {\
-    k--;\
-    STACK_BASE_CHECK(k, "STACK_POS_END"); \
-    if (IS_TO_VOID_TARGET(k)) {\
-      k->type = STK_VOID;\
-    }\
-    else if (k->type == STK_POS) {\
-      k->type = STK_VOID;\
-      break;\
-    }\
   }\
 } while(0)
 
@@ -2943,7 +2928,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     case OP_PREC_READ_END:  MOP_IN(OP_PREC_READ_END);
       {
-        STACK_POS_END(stkp);
+        STACK_EXEC_TO_VOID(stkp);
         s     = stkp->u.state.pstr;
         sprev = stkp->u.state.pstr_prev;
       }
