@@ -988,8 +988,8 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_EXEC_TO_VOID do {\
-  StackType *k = stk;\
+#define STACK_EXEC_TO_VOID(k) do {\
+  k = stk;\
   while (1) {\
     k--;\
     STACK_BASE_CHECK(k, "STACK_EXEC_TO_VOID"); \
@@ -2970,7 +2970,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       break;
 
     case OP_ATOMIC_END:  MOP_IN(OP_ATOMIC_END);
-      STACK_EXEC_TO_VOID;
+      STACK_EXEC_TO_VOID(stkp);
       MOP_OUT;
       continue;
       break;
