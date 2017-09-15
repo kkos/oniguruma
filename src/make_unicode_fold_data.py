@@ -250,8 +250,8 @@ def output_gperf_unfold_key(f):
 %}
 struct ByUnfoldKey {
   OnigCodePoint code;
-  int   index;
-  int   fold_len;
+  short int   index;
+  short int   fold_len;
 };
 %%
 """
@@ -272,7 +272,7 @@ def output_gperf_fold_key(f, key_len):
 #include <string.h>
 #include "regenc.h"
 %}
-int
+short int
 %%
 """
     f.write(head)
