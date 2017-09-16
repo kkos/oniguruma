@@ -2038,6 +2038,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         s += n;
       }
       MOP_OUT;
+      continue;
       break;
 
     case OP_ANYCHAR_ML_STAR:  MOP_IN(OP_ANYCHAR_ML_STAR);
@@ -2055,6 +2056,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         }
       }
       MOP_OUT;
+      continue;
       break;
 
     case OP_ANYCHAR_STAR_PEEK_NEXT:  MOP_IN(OP_ANYCHAR_STAR_PEEK_NEXT);
