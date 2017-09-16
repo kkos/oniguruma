@@ -1058,6 +1058,8 @@ extern int main(int argc, char* argv[])
   x2("\\u4E38", "\xE4\xB8\xB8", 0, 3);
   x2("\\u0040", "@", 0, 1);
 
+  x2("c.*\\b", "abc", 2, 3);
+  x2("\\b.*abc.*\\b", "abc", 0, 3);
 
   e("\\u040", "@", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("(?<abc>\\g<abc>)", "zzzz", ONIGERR_NEVER_ENDING_RECURSION);
