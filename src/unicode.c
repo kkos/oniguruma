@@ -29,6 +29,11 @@
 
 #include "regint.h"
 
+struct PoolPropertyNameCtype {
+  short int name;
+  short int ctype;
+};
+
 #define ONIGENC_IS_UNICODE_ISO_8859_1_CTYPE(code,ctype) \
   ((EncUNICODE_ISO_8859_1_CtypeTable[code] & CTYPE_TO_BIT(ctype)) != 0)
 
@@ -194,7 +199,7 @@ onigenc_unicode_property_name_to_ctype(OnigEncoding enc, UChar* name, UChar* end
   int len;
   UChar *p;
   OnigCodePoint code;
-  const struct PropertyNameCtype* pc;
+  const struct PoolPropertyNameCtype* pc;
   char buf[PROPERTY_NAME_MAX_SIZE];
 
   p = name;
@@ -234,7 +239,7 @@ onigenc_unicode_property_name_to_ctype(OnigEncoding enc, UChar* name, UChar* end
       return ONIGERR_INVALID_CHAR_PROPERTY_NAME;
 #endif
 
-    return pc->ctype;
+    return (int )pc->ctype;
   }
 
   return ONIGERR_INVALID_CHAR_PROPERTY_NAME;

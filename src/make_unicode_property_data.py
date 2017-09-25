@@ -502,9 +502,9 @@ if not(POSIX_ONLY):
 
 s = '''};
 %}
-struct PropertyNameCtype {
-  char* name:
-  int ctype;
+struct PoolPropertyNameCtype {
+  short int name;
+  short int ctype;
 };
 %%
 '''

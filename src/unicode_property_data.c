@@ -1,5 +1,5 @@
 /* ANSI-C code produced by gperf version 3.0.4 */
-/* Command-line: gperf -T -C -c -t -j1 -L ANSI-C --ignore-case -N unicode_lookup_property_name --output-file gperf.tmp unicode_property_data.gperf  */
+/* Command-line: gperf -T -C -c -t -j1 -L ANSI-C --ignore-case --pic -Q unicode_prop_name_pool -N unicode_lookup_property_name --output-file gperf.tmp unicode_property_data.gperf  */
 /* Computed positions: -k'1-3,5-6,12,16,$' */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
@@ -23038,2255 +23038,3684 @@ hash (register const char *str, register unsigned int len)
   return hval + asso_values[(unsigned char)str[len - 1]];
 }
 
+struct unicode_prop_name_pool_t
+  {
+    char unicode_prop_name_pool_str1[sizeof("n")];
+    char unicode_prop_name_pool_str3[sizeof("z")];
+    char unicode_prop_name_pool_str8[sizeof("zzzz")];
+    char unicode_prop_name_pool_str9[sizeof("mn")];
+    char unicode_prop_name_pool_str10[sizeof("cn")];
+    char unicode_prop_name_pool_str14[sizeof("ci")];
+    char unicode_prop_name_pool_str15[sizeof("m")];
+    char unicode_prop_name_pool_str17[sizeof("c")];
+    char unicode_prop_name_pool_str23[sizeof("inmanichaean")];
+    char unicode_prop_name_pool_str24[sizeof("mani")];
+    char unicode_prop_name_pool_str25[sizeof("mc")];
+    char unicode_prop_name_pool_str26[sizeof("cc")];
+    char unicode_prop_name_pool_str28[sizeof("qaai")];
+    char unicode_prop_name_pool_str34[sizeof("qaac")];
+    char unicode_prop_name_pool_str41[sizeof("incham")];
+    char unicode_prop_name_pool_str46[sizeof("mandaic")];
+    char unicode_prop_name_pool_str49[sizeof("sm")];
+    char unicode_prop_name_pool_str51[sizeof("sc")];
+    char unicode_prop_name_pool_str56[sizeof("cans")];
+    char unicode_prop_name_pool_str61[sizeof("ascii")];
+    char unicode_prop_name_pool_str64[sizeof("insamaritan")];
+    char unicode_prop_name_pool_str66[sizeof("incuneiform")];
+    char unicode_prop_name_pool_str67[sizeof("s")];
+    char unicode_prop_name_pool_str68[sizeof("inarmenian")];
+    char unicode_prop_name_pool_str69[sizeof("zs")];
+    char unicode_prop_name_pool_str76[sizeof("cs")];
+    char unicode_prop_name_pool_str85[sizeof("me")];
+    char unicode_prop_name_pool_str90[sizeof("incommonindicnumberforms")];
+    char unicode_prop_name_pool_str93[sizeof("inavestan")];
+    char unicode_prop_name_pool_str94[sizeof("inthai")];
+    char unicode_prop_name_pool_str103[sizeof("inipaextensions")];
+    char unicode_prop_name_pool_str108[sizeof("initialpunctuation")];
+    char unicode_prop_name_pool_str112[sizeof("inancientsymbols")];
+    char unicode_prop_name_pool_str114[sizeof("inthaana")];
+    char unicode_prop_name_pool_str116[sizeof("cf")];
+    char unicode_prop_name_pool_str118[sizeof("incuneiformnumbersandpunctuation")];
+    char unicode_prop_name_pool_str122[sizeof("mtei")];
+    char unicode_prop_name_pool_str124[sizeof("inspecials")];
+    char unicode_prop_name_pool_str133[sizeof("inmusicalsymbols")];
+    char unicode_prop_name_pool_str141[sizeof("inmiscellaneousmathematicalsymbolsa")];
+    char unicode_prop_name_pool_str145[sizeof("lm")];
+    char unicode_prop_name_pool_str146[sizeof("lina")];
+    char unicode_prop_name_pool_str147[sizeof("lc")];
+    char unicode_prop_name_pool_str149[sizeof("inlycian")];
+    char unicode_prop_name_pool_str155[sizeof("lana")];
+    char unicode_prop_name_pool_str157[sizeof("intaixuanjingsymbols")];
+    char unicode_prop_name_pool_str158[sizeof("inmyanmarextendeda")];
+    char unicode_prop_name_pool_str159[sizeof("alnum")];
+    char unicode_prop_name_pool_str161[sizeof("sterm")];
+    char unicode_prop_name_pool_str162[sizeof("intaitham")];
+    char unicode_prop_name_pool_str163[sizeof("intransportandmapsymbols")];
+    char unicode_prop_name_pool_str165[sizeof("taile")];
+    char unicode_prop_name_pool_str167[sizeof("inmalayalam")];
+    char unicode_prop_name_pool_str176[sizeof("inmiscellaneoussymbols")];
+    char unicode_prop_name_pool_str177[sizeof("incontrolpictures")];
+    char unicode_prop_name_pool_str185[sizeof("inmiscellaneoussymbolsandarrows")];
+    char unicode_prop_name_pool_str189[sizeof("inlineara")];
+    char unicode_prop_name_pool_str190[sizeof("inmiscellaneoussymbolsandpictographs")];
+    char unicode_prop_name_pool_str193[sizeof("sinhala")];
+    char unicode_prop_name_pool_str202[sizeof("taiviet")];
+    char unicode_prop_name_pool_str205[sizeof("ext")];
+    char unicode_prop_name_pool_str215[sizeof("latn")];
+    char unicode_prop_name_pool_str216[sizeof("latin")];
+    char unicode_prop_name_pool_str217[sizeof("ital")];
+    char unicode_prop_name_pool_str218[sizeof("intamil")];
+    char unicode_prop_name_pool_str220[sizeof("inmultani")];
+    char unicode_prop_name_pool_str222[sizeof("taml")];
+    char unicode_prop_name_pool_str229[sizeof("inrunic")];
+    char unicode_prop_name_pool_str230[sizeof("incarian")];
+    char unicode_prop_name_pool_str232[sizeof("armn")];
+    char unicode_prop_name_pool_str234[sizeof("armi")];
+    char unicode_prop_name_pool_str235[sizeof("cari")];
+    char unicode_prop_name_pool_str236[sizeof("inlatinextendedc")];
+    char unicode_prop_name_pool_str238[sizeof("armenian")];
+    char unicode_prop_name_pool_str239[sizeof("inmyanmar")];
+    char unicode_prop_name_pool_str240[sizeof("incyrillic")];
+    char unicode_prop_name_pool_str242[sizeof("inlatinextendeda")];
+    char unicode_prop_name_pool_str246[sizeof("carian")];
+    char unicode_prop_name_pool_str249[sizeof("intaile")];
+    char unicode_prop_name_pool_str253[sizeof("tale")];
+    char unicode_prop_name_pool_str256[sizeof("arabic")];
+    char unicode_prop_name_pool_str259[sizeof("l")];
+    char unicode_prop_name_pool_str260[sizeof("nl")];
+    char unicode_prop_name_pool_str261[sizeof("zl")];
+    char unicode_prop_name_pool_str263[sizeof("insyriac")];
+    char unicode_prop_name_pool_str265[sizeof("samr")];
+    char unicode_prop_name_pool_str267[sizeof("merc")];
+    char unicode_prop_name_pool_str269[sizeof("inlinearbideograms")];
+    char unicode_prop_name_pool_str272[sizeof("samaritan")];
+    char unicode_prop_name_pool_str273[sizeof("lt")];
+    char unicode_prop_name_pool_str276[sizeof("insharada")];
+    char unicode_prop_name_pool_str283[sizeof("inmeeteimayekextensions")];
+    char unicode_prop_name_pool_str292[sizeof("inruminumeralsymbols")];
+    char unicode_prop_name_pool_str295[sizeof("miao")];
+    char unicode_prop_name_pool_str296[sizeof("inlatinextendede")];
+    char unicode_prop_name_pool_str300[sizeof("zinh")];
+    char unicode_prop_name_pool_str304[sizeof("inahom")];
+    char unicode_prop_name_pool_str306[sizeof("incherokee")];
+    char unicode_prop_name_pool_str307[sizeof("han")];
+    char unicode_prop_name_pool_str310[sizeof("hani")];
+    char unicode_prop_name_pool_str311[sizeof("inosmanya")];
+    char unicode_prop_name_pool_str312[sizeof("inmiscellaneoustechnical")];
+    char unicode_prop_name_pool_str323[sizeof("cham")];
+    char unicode_prop_name_pool_str325[sizeof("inmahajani")];
+    char unicode_prop_name_pool_str326[sizeof("osma")];
+    char unicode_prop_name_pool_str329[sizeof("manichaean")];
+    char unicode_prop_name_pool_str330[sizeof("term")];
+    char unicode_prop_name_pool_str332[sizeof("sinh")];
+    char unicode_prop_name_pool_str342[sizeof("cntrl")];
+    char unicode_prop_name_pool_str347[sizeof("chakma")];
+    char unicode_prop_name_pool_str348[sizeof("insinhala")];
+    char unicode_prop_name_pool_str352[sizeof("tamil")];
+    char unicode_prop_name_pool_str353[sizeof("inethiopic")];
+    char unicode_prop_name_pool_str356[sizeof("connectorpunctuation")];
+    char unicode_prop_name_pool_str357[sizeof("shavian")];
+    char unicode_prop_name_pool_str361[sizeof("joinc")];
+    char unicode_prop_name_pool_str362[sizeof("inenclosedalphanumerics")];
+    char unicode_prop_name_pool_str368[sizeof("ahex")];
+    char unicode_prop_name_pool_str369[sizeof("inlatinextendedadditional")];
+    char unicode_prop_name_pool_str370[sizeof("lineara")];
+    char unicode_prop_name_pool_str377[sizeof("inenclosedcjklettersandmonths")];
+    char unicode_prop_name_pool_str378[sizeof("hex")];
+    char unicode_prop_name_pool_str381[sizeof("thai")];
+    char unicode_prop_name_pool_str382[sizeof("mahj")];
+    char unicode_prop_name_pool_str386[sizeof("math")];
+    char unicode_prop_name_pool_str389[sizeof("ll")];
+    char unicode_prop_name_pool_str390[sizeof("thaa")];
+    char unicode_prop_name_pool_str392[sizeof("hatran")];
+    char unicode_prop_name_pool_str399[sizeof("mahajani")];
+    char unicode_prop_name_pool_str400[sizeof("insinhalaarchaicnumbers")];
+    char unicode_prop_name_pool_str402[sizeof("taitham")];
+    char unicode_prop_name_pool_str403[sizeof("thaana")];
+    char unicode_prop_name_pool_str408[sizeof("ethi")];
+    char unicode_prop_name_pool_str409[sizeof("inenclosedalphanumericsupplement")];
+    char unicode_prop_name_pool_str414[sizeof("meroiticcursive")];
+    char unicode_prop_name_pool_str415[sizeof("inideographicdescriptioncharacters")];
+    char unicode_prop_name_pool_str419[sizeof("terminalpunctuation")];
+    char unicode_prop_name_pool_str426[sizeof("inemoticons")];
+    char unicode_prop_name_pool_str431[sizeof("intifinagh")];
+    char unicode_prop_name_pool_str433[sizeof("asciihexdigit")];
+    char unicode_prop_name_pool_str438[sizeof("tifinagh")];
+    char unicode_prop_name_pool_str451[sizeof("inearlydynasticcuneiform")];
+    char unicode_prop_name_pool_str457[sizeof("inopticalcharacterrecognition")];
+    char unicode_prop_name_pool_str479[sizeof("loe")];
+    char unicode_prop_name_pool_str486[sizeof("titlecaseletter")];
+    char unicode_prop_name_pool_str489[sizeof("inscriptionalparthian")];
+    char unicode_prop_name_pool_str510[sizeof("oriya")];
+    char unicode_prop_name_pool_str520[sizeof("hira")];
+    char unicode_prop_name_pool_str529[sizeof("sora")];
+    char unicode_prop_name_pool_str530[sizeof("mero")];
+    char unicode_prop_name_pool_str535[sizeof("inarrows")];
+    char unicode_prop_name_pool_str537[sizeof("inhiragana")];
+    char unicode_prop_name_pool_str544[sizeof("no")];
+    char unicode_prop_name_pool_str545[sizeof("inmahjongtiles")];
+    char unicode_prop_name_pool_str549[sizeof("innko")];
+    char unicode_prop_name_pool_str552[sizeof("co")];
+    char unicode_prop_name_pool_str553[sizeof("cher")];
+    char unicode_prop_name_pool_str556[sizeof("inmro")];
+    char unicode_prop_name_pool_str563[sizeof("common")];
+    char unicode_prop_name_pool_str564[sizeof("cwcm")];
+    char unicode_prop_name_pool_str568[sizeof("inmiao")];
+    char unicode_prop_name_pool_str573[sizeof("inscriptionalpahlavi")];
+    char unicode_prop_name_pool_str576[sizeof("inmathematicalalphanumericsymbols")];
+    char unicode_prop_name_pool_str577[sizeof("so")];
+    char unicode_prop_name_pool_str579[sizeof("hano")];
+    char unicode_prop_name_pool_str580[sizeof("tirh")];
+    char unicode_prop_name_pool_str584[sizeof("inhatran")];
+    char unicode_prop_name_pool_str585[sizeof("inolchiki")];
+    char unicode_prop_name_pool_str586[sizeof("ahom")];
+    char unicode_prop_name_pool_str588[sizeof("di")];
+    char unicode_prop_name_pool_str589[sizeof("hatr")];
+    char unicode_prop_name_pool_str591[sizeof("inogham")];
+    char unicode_prop_name_pool_str596[sizeof("intirhuta")];
+    char unicode_prop_name_pool_str601[sizeof("inmodi")];
+    char unicode_prop_name_pool_str603[sizeof("idc")];
+    char unicode_prop_name_pool_str604[sizeof("mand")];
+    char unicode_prop_name_pool_str608[sizeof("inmandaic")];
+    char unicode_prop_name_pool_str609[sizeof("dia")];
+    char unicode_prop_name_pool_str610[sizeof("cwcf")];
+    char unicode_prop_name_pool_str618[sizeof("xidc")];
+    char unicode_prop_name_pool_str621[sizeof("sind")];
+    char unicode_prop_name_pool_str622[sizeof("newline")];
+    char unicode_prop_name_pool_str631[sizeof("mend")];
+    char unicode_prop_name_pool_str635[sizeof("newtailue")];
+    char unicode_prop_name_pool_str638[sizeof("inshorthandformatcontrols")];
+    char unicode_prop_name_pool_str642[sizeof("anatolianhieroglyphs")];
+    char unicode_prop_name_pool_str643[sizeof("xids")];
+    char unicode_prop_name_pool_str653[sizeof("ids")];
+    char unicode_prop_name_pool_str659[sizeof("innewtailue")];
+    char unicode_prop_name_pool_str660[sizeof("insylotinagri")];
+    char unicode_prop_name_pool_str666[sizeof("insundanese")];
+    char unicode_prop_name_pool_str673[sizeof("lo")];
+    char unicode_prop_name_pool_str677[sizeof("indominotiles")];
+    char unicode_prop_name_pool_str678[sizeof("inlao")];
+    char unicode_prop_name_pool_str685[sizeof("lao")];
+    char unicode_prop_name_pool_str686[sizeof("laoo")];
+    char unicode_prop_name_pool_str687[sizeof("mongolian")];
+    char unicode_prop_name_pool_str690[sizeof("cwt")];
+    char unicode_prop_name_pool_str692[sizeof("idst")];
+    char unicode_prop_name_pool_str693[sizeof("format")];
+    char unicode_prop_name_pool_str696[sizeof("lineseparator")];
+    char unicode_prop_name_pool_str702[sizeof("letter")];
+    char unicode_prop_name_pool_str711[sizeof("idcontinue")];
+    char unicode_prop_name_pool_str714[sizeof("inanatolianhieroglyphs")];
+    char unicode_prop_name_pool_str723[sizeof("inlydian")];
+    char unicode_prop_name_pool_str725[sizeof("pi")];
+    char unicode_prop_name_pool_str726[sizeof("nchar")];
+    char unicode_prop_name_pool_str731[sizeof("inspacingmodifierletters")];
+    char unicode_prop_name_pool_str732[sizeof("oalpha")];
+    char unicode_prop_name_pool_str735[sizeof("indeseret")];
+    char unicode_prop_name_pool_str737[sizeof("pc")];
+    char unicode_prop_name_pool_str756[sizeof("xdigit")];
+    char unicode_prop_name_pool_str758[sizeof("inphaistosdisc")];
+    char unicode_prop_name_pool_str759[sizeof("joincontrol")];
+    char unicode_prop_name_pool_str760[sizeof("inlowsurrogates")];
+    char unicode_prop_name_pool_str762[sizeof("mro")];
+    char unicode_prop_name_pool_str763[sizeof("mroo")];
+    char unicode_prop_name_pool_str767[sizeof("xidstart")];
+    char unicode_prop_name_pool_str773[sizeof("wara")];
+    char unicode_prop_name_pool_str776[sizeof("inwarangciti")];
+    char unicode_prop_name_pool_str787[sizeof("ps")];
+    char unicode_prop_name_pool_str797[sizeof("pe")];
+    char unicode_prop_name_pool_str806[sizeof("cwl")];
+    char unicode_prop_name_pool_str816[sizeof("incoptic")];
+    char unicode_prop_name_pool_str824[sizeof("diacritic")];
+    char unicode_prop_name_pool_str827[sizeof("pf")];
+    char unicode_prop_name_pool_str844[sizeof("space")];
+    char unicode_prop_name_pool_str853[sizeof("hanunoo")];
+    char unicode_prop_name_pool_str856[sizeof("incyrillicextendeda")];
+    char unicode_prop_name_pool_str860[sizeof("odi")];
+    char unicode_prop_name_pool_str866[sizeof("modi")];
+    char unicode_prop_name_pool_str867[sizeof("oidc")];
+    char unicode_prop_name_pool_str868[sizeof("incopticepactnumbers")];
+    char unicode_prop_name_pool_str870[sizeof("palm")];
+    char unicode_prop_name_pool_str871[sizeof("insundanesesupplement")];
+    char unicode_prop_name_pool_str872[sizeof("patws")];
+    char unicode_prop_name_pool_str876[sizeof("inolditalic")];
+    char unicode_prop_name_pool_str877[sizeof("inlepcha")];
+    char unicode_prop_name_pool_str878[sizeof("shaw")];
+    char unicode_prop_name_pool_str880[sizeof("omath")];
+    char unicode_prop_name_pool_str886[sizeof("alpha")];
+    char unicode_prop_name_pool_str892[sizeof("oids")];
+    char unicode_prop_name_pool_str896[sizeof("control")];
+    char unicode_prop_name_pool_str897[sizeof("ideo")];
+    char unicode_prop_name_pool_str898[sizeof("lepc")];
+    char unicode_prop_name_pool_str899[sizeof("psalterpahlavi")];
+    char unicode_prop_name_pool_str900[sizeof("dsrt")];
+    char unicode_prop_name_pool_str902[sizeof("otheridcontinue")];
+    char unicode_prop_name_pool_str906[sizeof("inpalmyrene")];
+    char unicode_prop_name_pool_str907[sizeof("decimalnumber")];
+    char unicode_prop_name_pool_str915[sizeof("noncharactercodepoint")];
+    char unicode_prop_name_pool_str916[sizeof("idstart")];
+    char unicode_prop_name_pool_str917[sizeof("otheralphabetic")];
+    char unicode_prop_name_pool_str918[sizeof("letternumber")];
+    char unicode_prop_name_pool_str923[sizeof("dash")];
+    char unicode_prop_name_pool_str926[sizeof("xidcontinue")];
+    char unicode_prop_name_pool_str930[sizeof("finalpunctuation")];
+    char unicode_prop_name_pool_str931[sizeof("extender")];
+    char unicode_prop_name_pool_str935[sizeof("siddham")];
+    char unicode_prop_name_pool_str945[sizeof("inoldturkic")];
+    char unicode_prop_name_pool_str948[sizeof("sharada")];
+    char unicode_prop_name_pool_str951[sizeof("whitespace")];
+    char unicode_prop_name_pool_str956[sizeof("inmodifiertoneletters")];
+    char unicode_prop_name_pool_str958[sizeof("radical")];
+    char unicode_prop_name_pool_str960[sizeof("canadianaboriginal")];
+    char unicode_prop_name_pool_str969[sizeof("inethiopicextendeda")];
+    char unicode_prop_name_pool_str970[sizeof("imperialaramaic")];
+    char unicode_prop_name_pool_str978[sizeof("perm")];
+    char unicode_prop_name_pool_str979[sizeof("deseret")];
+    char unicode_prop_name_pool_str984[sizeof("casedletter")];
+    char unicode_prop_name_pool_str998[sizeof("inimperialaramaic")];
+    char unicode_prop_name_pool_str1001[sizeof("otheridstart")];
+    char unicode_prop_name_pool_str1006[sizeof("prti")];
+    char unicode_prop_name_pool_str1012[sizeof("cprt")];
+    char unicode_prop_name_pool_str1018[sizeof("othersymbol")];
+    char unicode_prop_name_pool_str1022[sizeof("coptic")];
+    char unicode_prop_name_pool_str1037[sizeof("otherlowercase")];
+    char unicode_prop_name_pool_str1038[sizeof("phnx")];
+    char unicode_prop_name_pool_str1042[sizeof("inphoenician")];
+    char unicode_prop_name_pool_str1049[sizeof("incaucasianalbanian")];
+    char unicode_prop_name_pool_str1050[sizeof("inlatin1supplement")];
+    char unicode_prop_name_pool_str1054[sizeof("xpeo")];
+    char unicode_prop_name_pool_str1058[sizeof("ininscriptionalparthian")];
+    char unicode_prop_name_pool_str1059[sizeof("ininscriptionalpahlavi")];
+    char unicode_prop_name_pool_str1060[sizeof("other")];
+    char unicode_prop_name_pool_str1061[sizeof("privateuse")];
+    char unicode_prop_name_pool_str1066[sizeof("othernumber")];
+    char unicode_prop_name_pool_str1071[sizeof("inenclosedideographicsupplement")];
+    char unicode_prop_name_pool_str1073[sizeof("copt")];
+    char unicode_prop_name_pool_str1078[sizeof("print")];
+    char unicode_prop_name_pool_str1080[sizeof("cuneiform")];
+    char unicode_prop_name_pool_str1081[sizeof("olditalic")];
+    char unicode_prop_name_pool_str1082[sizeof("xsux")];
+    char unicode_prop_name_pool_str1086[sizeof("inmongolian")];
+    char unicode_prop_name_pool_str1091[sizeof("inancientgreekmusicalnotation")];
+    char unicode_prop_name_pool_str1092[sizeof("sundanese")];
+    char unicode_prop_name_pool_str1093[sizeof("inoldnortharabian")];
+    char unicode_prop_name_pool_str1095[sizeof("patternsyntax")];
+    char unicode_prop_name_pool_str1098[sizeof("inherited")];
+    char unicode_prop_name_pool_str1099[sizeof("ingrantha")];
+    char unicode_prop_name_pool_str1100[sizeof("inphoneticextensions")];
+    char unicode_prop_name_pool_str1110[sizeof("saurashtra")];
+    char unicode_prop_name_pool_str1116[sizeof("inancientgreeknumbers")];
+    char unicode_prop_name_pool_str1122[sizeof("shrd")];
+    char unicode_prop_name_pool_str1126[sizeof("inoldsoutharabian")];
+    char unicode_prop_name_pool_str1127[sizeof("innabataean")];
+    char unicode_prop_name_pool_str1128[sizeof("inalphabeticpresentationforms")];
+    char unicode_prop_name_pool_str1129[sizeof("spaceseparator")];
+    char unicode_prop_name_pool_str1135[sizeof("olower")];
+    char unicode_prop_name_pool_str1137[sizeof("ingeneralpunctuation")];
+    char unicode_prop_name_pool_str1138[sizeof("inunifiedcanadianaboriginalsyllabics")];
+    char unicode_prop_name_pool_str1140[sizeof("bamum")];
+    char unicode_prop_name_pool_str1143[sizeof("inarabic")];
+    char unicode_prop_name_pool_str1147[sizeof("phli")];
+    char unicode_prop_name_pool_str1148[sizeof("inphoneticextensionssupplement")];
+    char unicode_prop_name_pool_str1150[sizeof("patternwhitespace")];
+    char unicode_prop_name_pool_str1152[sizeof("inbasiclatin")];
+    char unicode_prop_name_pool_str1154[sizeof("othermath")];
+    char unicode_prop_name_pool_str1155[sizeof("idsbinaryoperator")];
+    char unicode_prop_name_pool_str1156[sizeof("inmathematicaloperators")];
+    char unicode_prop_name_pool_str1157[sizeof("multani")];
+    char unicode_prop_name_pool_str1158[sizeof("ingujarati")];
+    char unicode_prop_name_pool_str1163[sizeof("inelbasan")];
+    char unicode_prop_name_pool_str1164[sizeof("inoldhungarian")];
+    char unicode_prop_name_pool_str1165[sizeof("innumberforms")];
+    char unicode_prop_name_pool_str1166[sizeof("nd")];
+    char unicode_prop_name_pool_str1168[sizeof("yi")];
+    char unicode_prop_name_pool_str1169[sizeof("lisu")];
+    char unicode_prop_name_pool_str1172[sizeof("yiii")];
+    char unicode_prop_name_pool_str1174[sizeof("inpsalterpahlavi")];
+    char unicode_prop_name_pool_str1178[sizeof("tagbanwa")];
+    char unicode_prop_name_pool_str1184[sizeof("bass")];
+    char unicode_prop_name_pool_str1189[sizeof("nbat")];
+    char unicode_prop_name_pool_str1190[sizeof("inbyzantinemusicalsymbols")];
+    char unicode_prop_name_pool_str1192[sizeof("closepunctuation")];
+    char unicode_prop_name_pool_str1194[sizeof("tfng")];
+    char unicode_prop_name_pool_str1195[sizeof("otherletter")];
+    char unicode_prop_name_pool_str1199[sizeof("sd")];
+    char unicode_prop_name_pool_str1202[sizeof("lowercase")];
+    char unicode_prop_name_pool_str1203[sizeof("sidd")];
+    char unicode_prop_name_pool_str1205[sizeof("nabataean")];
+    char unicode_prop_name_pool_str1207[sizeof("lepcha")];
+    char unicode_prop_name_pool_str1208[sizeof("inarabicpresentationformsa")];
+    char unicode_prop_name_pool_str1210[sizeof("modifierletter")];
+    char unicode_prop_name_pool_str1211[sizeof("intags")];
+    char unicode_prop_name_pool_str1212[sizeof("mult")];
+    char unicode_prop_name_pool_str1215[sizeof("insiddham")];
+    char unicode_prop_name_pool_str1216[sizeof("talu")];
+    char unicode_prop_name_pool_str1221[sizeof("cased")];
+    char unicode_prop_name_pool_str1223[sizeof("intibetan")];
+    char unicode_prop_name_pool_str1230[sizeof("separator")];
+    char unicode_prop_name_pool_str1232[sizeof("runic")];
+    char unicode_prop_name_pool_str1233[sizeof("inmiscellaneousmathematicalsymbolsb")];
+    char unicode_prop_name_pool_str1238[sizeof("linb")];
+    char unicode_prop_name_pool_str1239[sizeof("inbraillepatterns")];
+    char unicode_prop_name_pool_str1240[sizeof("oldpersian")];
+    char unicode_prop_name_pool_str1242[sizeof("inugaritic")];
+    char unicode_prop_name_pool_str1243[sizeof("telu")];
+    char unicode_prop_name_pool_str1245[sizeof("limb")];
+    char unicode_prop_name_pool_str1247[sizeof("oldpermic")];
+    char unicode_prop_name_pool_str1249[sizeof("bali")];
+    char unicode_prop_name_pool_str1250[sizeof("inmyanmarextendedb")];
+    char unicode_prop_name_pool_str1251[sizeof("tibt")];
+    char unicode_prop_name_pool_str1259[sizeof("saur")];
+    char unicode_prop_name_pool_str1263[sizeof("po")];
+    char unicode_prop_name_pool_str1265[sizeof("tibetan")];
+    char unicode_prop_name_pool_str1280[sizeof("insaurashtra")];
+    char unicode_prop_name_pool_str1284[sizeof("inbalinese")];
+    char unicode_prop_name_pool_str1285[sizeof("elba")];
+    char unicode_prop_name_pool_str1290[sizeof("bengali")];
+    char unicode_prop_name_pool_str1291[sizeof("gran")];
+    char unicode_prop_name_pool_str1295[sizeof("phoenician")];
+    char unicode_prop_name_pool_str1297[sizeof("ingurmukhi")];
+    char unicode_prop_name_pool_str1300[sizeof("caseignorable")];
+    char unicode_prop_name_pool_str1305[sizeof("lyci")];
+    char unicode_prop_name_pool_str1307[sizeof("inyijinghexagramsymbols")];
+    char unicode_prop_name_pool_str1309[sizeof("mlym")];
+    char unicode_prop_name_pool_str1316[sizeof("lycian")];
+    char unicode_prop_name_pool_str1321[sizeof("elbasan")];
+    char unicode_prop_name_pool_str1327[sizeof("balinese")];
+    char unicode_prop_name_pool_str1328[sizeof("narb")];
+    char unicode_prop_name_pool_str1330[sizeof("brai")];
+    char unicode_prop_name_pool_str1333[sizeof("insuttonsignwriting")];
+    char unicode_prop_name_pool_str1335[sizeof("insorasompeng")];
+    char unicode_prop_name_pool_str1336[sizeof("malayalam")];
+    char unicode_prop_name_pool_str1339[sizeof("arab")];
+    char unicode_prop_name_pool_str1341[sizeof("brahmi")];
+    char unicode_prop_name_pool_str1343[sizeof("incountingrodnumerals")];
+    char unicode_prop_name_pool_str1347[sizeof("rjng")];
+    char unicode_prop_name_pool_str1348[sizeof("mong")];
+    char unicode_prop_name_pool_str1352[sizeof("incyrillicsupplement")];
+    char unicode_prop_name_pool_str1359[sizeof("ogam")];
+    char unicode_prop_name_pool_str1361[sizeof("sarb")];
+    char unicode_prop_name_pool_str1362[sizeof("lower")];
+    char unicode_prop_name_pool_str1364[sizeof("inrejang")];
+    char unicode_prop_name_pool_str1370[sizeof("hmng")];
+    char unicode_prop_name_pool_str1373[sizeof("tirhuta")];
+    char unicode_prop_name_pool_str1374[sizeof("hang")];
+    char unicode_prop_name_pool_str1379[sizeof("wspace")];
+    char unicode_prop_name_pool_str1384[sizeof("inlatinextendedd")];
+    char unicode_prop_name_pool_str1387[sizeof("invai")];
+    char unicode_prop_name_pool_str1388[sizeof("incherokeesupplement")];
+    char unicode_prop_name_pool_str1390[sizeof("mymr")];
+    char unicode_prop_name_pool_str1394[sizeof("vai")];
+    char unicode_prop_name_pool_str1395[sizeof("vaii")];
+    char unicode_prop_name_pool_str1408[sizeof("ethiopic")];
+    char unicode_prop_name_pool_str1410[sizeof("sylotinagri")];
+    char unicode_prop_name_pool_str1415[sizeof("myanmar")];
+    char unicode_prop_name_pool_str1417[sizeof("syrc")];
+    char unicode_prop_name_pool_str1419[sizeof("inbrahmi")];
+    char unicode_prop_name_pool_str1423[sizeof("mathsymbol")];
+    char unicode_prop_name_pool_str1425[sizeof("runr")];
+    char unicode_prop_name_pool_str1431[sizeof("inshavian")];
+    char unicode_prop_name_pool_str1432[sizeof("gothic")];
+    char unicode_prop_name_pool_str1438[sizeof("syriac")];
+    char unicode_prop_name_pool_str1439[sizeof("p")];
+    char unicode_prop_name_pool_str1441[sizeof("zp")];
+    char unicode_prop_name_pool_str1442[sizeof("induployan")];
+    char unicode_prop_name_pool_str1444[sizeof("vs")];
+    char unicode_prop_name_pool_str1447[sizeof("ingreekandcoptic")];
+    char unicode_prop_name_pool_str1448[sizeof("ingothic")];
+    char unicode_prop_name_pool_str1451[sizeof("lowercaseletter")];
+    char unicode_prop_name_pool_str1455[sizeof("inoriya")];
+    char unicode_prop_name_pool_str1461[sizeof("grext")];
+    char unicode_prop_name_pool_str1462[sizeof("linearb")];
+    char unicode_prop_name_pool_str1463[sizeof("inyiradicals")];
+    char unicode_prop_name_pool_str1465[sizeof("inethiopicsupplement")];
+    char unicode_prop_name_pool_str1466[sizeof("inletterlikesymbols")];
+    char unicode_prop_name_pool_str1467[sizeof("ingeometricshapes")];
+    char unicode_prop_name_pool_str1469[sizeof("java")];
+    char unicode_prop_name_pool_str1470[sizeof("inblockelements")];
+    char unicode_prop_name_pool_str1472[sizeof("number")];
+    char unicode_prop_name_pool_str1473[sizeof("incombininghalfmarks")];
+    char unicode_prop_name_pool_str1474[sizeof("inbassavah")];
+    char unicode_prop_name_pool_str1489[sizeof("inlinearbsyllabary")];
+    char unicode_prop_name_pool_str1491[sizeof("osmanya")];
+    char unicode_prop_name_pool_str1495[sizeof("avst")];
+    char unicode_prop_name_pool_str1500[sizeof("hexdigit")];
+    char unicode_prop_name_pool_str1504[sizeof("injavanese")];
+    char unicode_prop_name_pool_str1513[sizeof("cyrl")];
+    char unicode_prop_name_pool_str1514[sizeof("avestan")];
+    char unicode_prop_name_pool_str1531[sizeof("intaiviet")];
+    char unicode_prop_name_pool_str1532[sizeof("inornamentaldingbats")];
+    char unicode_prop_name_pool_str1533[sizeof("tavt")];
+    char unicode_prop_name_pool_str1538[sizeof("javanese")];
+    char unicode_prop_name_pool_str1539[sizeof("inethiopicextended")];
+    char unicode_prop_name_pool_str1550[sizeof("inhalfwidthandfullwidthforms")];
+    char unicode_prop_name_pool_str1559[sizeof("ingeorgian")];
+    char unicode_prop_name_pool_str1561[sizeof("inarabicmathematicalalphabeticsymbols")];
+    char unicode_prop_name_pool_str1569[sizeof("hangul")];
+    char unicode_prop_name_pool_str1571[sizeof("insuperscriptsandsubscripts")];
+    char unicode_prop_name_pool_str1576[sizeof("inhanunoo")];
+    char unicode_prop_name_pool_str1578[sizeof("inhangulsyllables")];
+    char unicode_prop_name_pool_str1586[sizeof("inoldpersian")];
+    char unicode_prop_name_pool_str1589[sizeof("geor")];
+    char unicode_prop_name_pool_str1591[sizeof("otherpunctuation")];
+    char unicode_prop_name_pool_str1593[sizeof("inoldpermic")];
+    char unicode_prop_name_pool_str1598[sizeof("inalchemicalsymbols")];
+    char unicode_prop_name_pool_str1599[sizeof("sylo")];
+    char unicode_prop_name_pool_str1601[sizeof("hiragana")];
+    char unicode_prop_name_pool_str1604[sizeof("word")];
+    char unicode_prop_name_pool_str1612[sizeof("inmeroitichieroglyphs")];
+    char unicode_prop_name_pool_str1614[sizeof("insmallformvariants")];
+    char unicode_prop_name_pool_str1620[sizeof("sund")];
+    char unicode_prop_name_pool_str1621[sizeof("brah")];
+    char unicode_prop_name_pool_str1623[sizeof("insupplementalmathematicaloperators")];
+    char unicode_prop_name_pool_str1624[sizeof("glagolitic")];
+    char unicode_prop_name_pool_str1627[sizeof("braille")];
+    char unicode_prop_name_pool_str1639[sizeof("unassigned")];
+    char unicode_prop_name_pool_str1640[sizeof("sgnw")];
+    char unicode_prop_name_pool_str1644[sizeof("plrd")];
+    char unicode_prop_name_pool_str1648[sizeof("hebr")];
+    char unicode_prop_name_pool_str1649[sizeof("ogham")];
+    char unicode_prop_name_pool_str1654[sizeof("cyrillic")];
+    char unicode_prop_name_pool_str1658[sizeof("orya")];
+    char unicode_prop_name_pool_str1669[sizeof("grantha")];
+    char unicode_prop_name_pool_str1684[sizeof("invariationselectors")];
+    char unicode_prop_name_pool_str1693[sizeof("indingbats")];
+    char unicode_prop_name_pool_str1695[sizeof("inunifiedcanadianaboriginalsyllabicsextended")];
+    char unicode_prop_name_pool_str1702[sizeof("inhanguljamoextendeda")];
+    char unicode_prop_name_pool_str1705[sizeof("goth")];
+    char unicode_prop_name_pool_str1706[sizeof("graphemebase")];
+    char unicode_prop_name_pool_str1708[sizeof("bidic")];
+    char unicode_prop_name_pool_str1717[sizeof("ogrext")];
+    char unicode_prop_name_pool_str1724[sizeof("idsb")];
+    char unicode_prop_name_pool_str1732[sizeof("invariationselectorssupplement")];
+    char unicode_prop_name_pool_str1733[sizeof("assigned")];
+    char unicode_prop_name_pool_str1737[sizeof("symbol")];
+    char unicode_prop_name_pool_str1741[sizeof("ingreekextended")];
+    char unicode_prop_name_pool_str1743[sizeof("pauc")];
+    char unicode_prop_name_pool_str1752[sizeof("meroitichieroglyphs")];
+    char unicode_prop_name_pool_str1754[sizeof("logicalorderexception")];
+    char unicode_prop_name_pool_str1771[sizeof("incurrencysymbols")];
+    char unicode_prop_name_pool_str1775[sizeof("inarabicextendeda")];
+    char unicode_prop_name_pool_str1783[sizeof("insupplementalarrowsc")];
+    char unicode_prop_name_pool_str1786[sizeof("insupplementalarrowsa")];
+    char unicode_prop_name_pool_str1788[sizeof("inkannada")];
+    char unicode_prop_name_pool_str1792[sizeof("kana")];
+    char unicode_prop_name_pool_str1793[sizeof("phagspa")];
+    char unicode_prop_name_pool_str1796[sizeof("cakm")];
+    char unicode_prop_name_pool_str1797[sizeof("digit")];
+    char unicode_prop_name_pool_str1802[sizeof("softdotted")];
+    char unicode_prop_name_pool_str1806[sizeof("inchakma")];
+    char unicode_prop_name_pool_str1818[sizeof("inphagspa")];
+    char unicode_prop_name_pool_str1822[sizeof("inhighprivateusesurrogates")];
+    char unicode_prop_name_pool_str1836[sizeof("warangciti")];
+    char unicode_prop_name_pool_str1844[sizeof("incjkcompatibilityforms")];
+    char unicode_prop_name_pool_str1847[sizeof("idstrinaryoperator")];
+    char unicode_prop_name_pool_str1849[sizeof("incjkcompatibilityideographs")];
+    char unicode_prop_name_pool_str1851[sizeof("inkaithi")];
+    char unicode_prop_name_pool_str1857[sizeof("takri")];
+    char unicode_prop_name_pool_str1864[sizeof("phlp")];
+    char unicode_prop_name_pool_str1865[sizeof("mendekikakui")];
+    char unicode_prop_name_pool_str1867[sizeof("punct")];
+    char unicode_prop_name_pool_str1870[sizeof("otherdefaultignorablecodepoint")];
+    char unicode_prop_name_pool_str1871[sizeof("inkatakana")];
+    char unicode_prop_name_pool_str1878[sizeof("graph")];
+    char unicode_prop_name_pool_str1879[sizeof("lydi")];
+    char unicode_prop_name_pool_str1885[sizeof("pd")];
+    char unicode_prop_name_pool_str1887[sizeof("incjkstrokes")];
+    char unicode_prop_name_pool_str1890[sizeof("lydian")];
+    char unicode_prop_name_pool_str1895[sizeof("sorasompeng")];
+    char unicode_prop_name_pool_str1897[sizeof("incjkcompatibilityideographssupplement")];
+    char unicode_prop_name_pool_str1900[sizeof("meeteimayek")];
+    char unicode_prop_name_pool_str1909[sizeof("otheruppercase")];
+    char unicode_prop_name_pool_str1912[sizeof("kali")];
+    char unicode_prop_name_pool_str1915[sizeof("inhanguljamo")];
+    char unicode_prop_name_pool_str1917[sizeof("ideographic")];
+    char unicode_prop_name_pool_str1935[sizeof("inmeeteimayek")];
+    char unicode_prop_name_pool_str1948[sizeof("incyrillicextendedb")];
+    char unicode_prop_name_pool_str1964[sizeof("hluw")];
+    char unicode_prop_name_pool_str1969[sizeof("patsyn")];
+    char unicode_prop_name_pool_str1972[sizeof("incombiningdiacriticalmarks")];
+    char unicode_prop_name_pool_str1973[sizeof("inarabicsupplement")];
+    char unicode_prop_name_pool_str1975[sizeof("inkanasupplement")];
+    char unicode_prop_name_pool_str1977[sizeof("deprecated")];
+    char unicode_prop_name_pool_str1978[sizeof("inverticalforms")];
+    char unicode_prop_name_pool_str1982[sizeof("incombiningdiacriticalmarksforsymbols")];
+    char unicode_prop_name_pool_str1987[sizeof("indevanagari")];
+    char unicode_prop_name_pool_str1989[sizeof("inbuhid")];
+    char unicode_prop_name_pool_str1991[sizeof("alphabetic")];
+    char unicode_prop_name_pool_str1995[sizeof("oldhungarian")];
+    char unicode_prop_name_pool_str1998[sizeof("mark")];
+    char unicode_prop_name_pool_str2005[sizeof("inkharoshthi")];
+    char unicode_prop_name_pool_str2011[sizeof("deva")];
+    char unicode_prop_name_pool_str2012[sizeof("invedicextensions")];
+    char unicode_prop_name_pool_str2019[sizeof("devanagari")];
+    char unicode_prop_name_pool_str2020[sizeof("incombiningdiacriticalmarkssupplement")];
+    char unicode_prop_name_pool_str2024[sizeof("ingeometricshapesextended")];
+    char unicode_prop_name_pool_str2030[sizeof("inkhmer")];
+    char unicode_prop_name_pool_str2034[sizeof("changeswhencasemapped")];
+    char unicode_prop_name_pool_str2058[sizeof("intakri")];
+    char unicode_prop_name_pool_str2061[sizeof("dep")];
+    char unicode_prop_name_pool_str2062[sizeof("takr")];
+    char unicode_prop_name_pool_str2080[sizeof("changeswhencasefolded")];
+    char unicode_prop_name_pool_str2082[sizeof("kaithi")];
+    char unicode_prop_name_pool_str2093[sizeof("phag")];
+    char unicode_prop_name_pool_str2104[sizeof("inpahawhhmong")];
+    char unicode_prop_name_pool_str2106[sizeof("bidicontrol")];
+    char unicode_prop_name_pool_str2116[sizeof("inkhojki")];
+    char unicode_prop_name_pool_str2126[sizeof("bamu")];
+    char unicode_prop_name_pool_str2127[sizeof("inbamum")];
+    char unicode_prop_name_pool_str2128[sizeof("changeswhentitlecased")];
+    char unicode_prop_name_pool_str2131[sizeof("inkhmersymbols")];
+    char unicode_prop_name_pool_str2132[sizeof("uideo")];
+    char unicode_prop_name_pool_str2133[sizeof("lu")];
+    char unicode_prop_name_pool_str2136[sizeof("kthi")];
+    char unicode_prop_name_pool_str2145[sizeof("limbu")];
+    char unicode_prop_name_pool_str2147[sizeof("defaultignorablecodepoint")];
+    char unicode_prop_name_pool_str2151[sizeof("inplayingcards")];
+    char unicode_prop_name_pool_str2153[sizeof("inhebrew")];
+    char unicode_prop_name_pool_str2161[sizeof("modifiersymbol")];
+    char unicode_prop_name_pool_str2167[sizeof("ugaritic")];
+    char unicode_prop_name_pool_str2172[sizeof("inlisu")];
+    char unicode_prop_name_pool_str2173[sizeof("inglagolitic")];
+    char unicode_prop_name_pool_str2175[sizeof("inprivateusearea")];
+    char unicode_prop_name_pool_str2178[sizeof("olck")];
+    char unicode_prop_name_pool_str2182[sizeof("inbengali")];
+    char unicode_prop_name_pool_str2185[sizeof("olchiki")];
+    char unicode_prop_name_pool_str2195[sizeof("caucasianalbanian")];
+    char unicode_prop_name_pool_str2210[sizeof("oldturkic")];
+    char unicode_prop_name_pool_str2211[sizeof("beng")];
+    char unicode_prop_name_pool_str2212[sizeof("intelugu")];
+    char unicode_prop_name_pool_str2218[sizeof("hyphen")];
+    char unicode_prop_name_pool_str2221[sizeof("inbuginese")];
+    char unicode_prop_name_pool_str2225[sizeof("intagalog")];
+    char unicode_prop_name_pool_str2240[sizeof("cypriot")];
+    char unicode_prop_name_pool_str2249[sizeof("inlimbu")];
+    char unicode_prop_name_pool_str2252[sizeof("graphemeextend")];
+    char unicode_prop_name_pool_str2255[sizeof("tagb")];
+    char unicode_prop_name_pool_str2259[sizeof("incypriotsyllabary")];
+    char unicode_prop_name_pool_str2263[sizeof("intagbanwa")];
+    char unicode_prop_name_pool_str2268[sizeof("inaegeannumbers")];
+    char unicode_prop_name_pool_str2275[sizeof("inkatakanaphoneticextensions")];
+    char unicode_prop_name_pool_str2276[sizeof("glag")];
+    char unicode_prop_name_pool_str2277[sizeof("combiningmark")];
+    char unicode_prop_name_pool_str2278[sizeof("palmyrene")];
+    char unicode_prop_name_pool_str2280[sizeof("khmr")];
+    char unicode_prop_name_pool_str2284[sizeof("khar")];
+    char unicode_prop_name_pool_str2292[sizeof("ugar")];
+    char unicode_prop_name_pool_str2300[sizeof("inarabicpresentationformsb")];
+    char unicode_prop_name_pool_str2304[sizeof("insupplementaryprivateuseareaa")];
+    char unicode_prop_name_pool_str2306[sizeof("variationselector")];
+    char unicode_prop_name_pool_str2311[sizeof("nko")];
+    char unicode_prop_name_pool_str2312[sizeof("nkoo")];
+    char unicode_prop_name_pool_str2330[sizeof("inbamumsupplement")];
+    char unicode_prop_name_pool_str2336[sizeof("tglg")];
+    char unicode_prop_name_pool_str2338[sizeof("any")];
+    char unicode_prop_name_pool_str2339[sizeof("enclosingmark")];
+    char unicode_prop_name_pool_str2348[sizeof("gujr")];
+    char unicode_prop_name_pool_str2358[sizeof("changeswhenlowercased")];
+    char unicode_prop_name_pool_str2363[sizeof("knda")];
+    char unicode_prop_name_pool_str2364[sizeof("hung")];
+    char unicode_prop_name_pool_str2365[sizeof("gujarati")];
+    char unicode_prop_name_pool_str2368[sizeof("bopo")];
+    char unicode_prop_name_pool_str2373[sizeof("inmendekikakui")];
+    char unicode_prop_name_pool_str2376[sizeof("inbopomofo")];
+    char unicode_prop_name_pool_str2386[sizeof("kharoshthi")];
+    char unicode_prop_name_pool_str2388[sizeof("kannada")];
+    char unicode_prop_name_pool_str2401[sizeof("khoj")];
+    char unicode_prop_name_pool_str2422[sizeof("cherokee")];
+    char unicode_prop_name_pool_str2426[sizeof("inlatinextendedb")];
+    char unicode_prop_name_pool_str2432[sizeof("dashpunctuation")];
+    char unicode_prop_name_pool_str2435[sizeof("dupl")];
+    char unicode_prop_name_pool_str2443[sizeof("inyisyllables")];
+    char unicode_prop_name_pool_str2451[sizeof("georgian")];
+    char unicode_prop_name_pool_str2453[sizeof("rejang")];
+    char unicode_prop_name_pool_str2455[sizeof("oupper")];
+    char unicode_prop_name_pool_str2477[sizeof("aghb")];
+    char unicode_prop_name_pool_str2491[sizeof("khmer")];
+    char unicode_prop_name_pool_str2494[sizeof("grbase")];
+    char unicode_prop_name_pool_str2503[sizeof("currencysymbol")];
+    char unicode_prop_name_pool_str2529[sizeof("incombiningdiacriticalmarksextended")];
+    char unicode_prop_name_pool_str2542[sizeof("spacingmark")];
+    char unicode_prop_name_pool_str2544[sizeof("orkh")];
+    char unicode_prop_name_pool_str2550[sizeof("cwu")];
+    char unicode_prop_name_pool_str2552[sizeof("hebrew")];
+    char unicode_prop_name_pool_str2570[sizeof("insupplementalpunctuation")];
+    char unicode_prop_name_pool_str2581[sizeof("oldnortharabian")];
+    char unicode_prop_name_pool_str2587[sizeof("incjksymbolsandpunctuation")];
+    char unicode_prop_name_pool_str2590[sizeof("othergraphemeextend")];
+    char unicode_prop_name_pool_str2613[sizeof("indevanagariextended")];
+    char unicode_prop_name_pool_str2621[sizeof("tagalog")];
+    char unicode_prop_name_pool_str2628[sizeof("surrogate")];
+    char unicode_prop_name_pool_str2650[sizeof("bopomofo")];
+    char unicode_prop_name_pool_str2679[sizeof("ingeorgiansupplement")];
+    char unicode_prop_name_pool_str2704[sizeof("uppercase")];
+    char unicode_prop_name_pool_str2711[sizeof("unifiedideograph")];
+    char unicode_prop_name_pool_str2742[sizeof("inpaucinhau")];
+    char unicode_prop_name_pool_str2743[sizeof("paucinhau")];
+    char unicode_prop_name_pool_str2774[sizeof("insupplementalsymbolsandpictographs")];
+    char unicode_prop_name_pool_str2792[sizeof("nonspacingmark")];
+    char unicode_prop_name_pool_str2794[sizeof("inhanguljamoextendedb")];
+    char unicode_prop_name_pool_str2802[sizeof("inhighsurrogates")];
+    char unicode_prop_name_pool_str2803[sizeof("punctuation")];
+    char unicode_prop_name_pool_str2834[sizeof("openpunctuation")];
+    char unicode_prop_name_pool_str2835[sizeof("bassavah")];
+    char unicode_prop_name_pool_str2864[sizeof("upper")];
+    char unicode_prop_name_pool_str2878[sizeof("insupplementalarrowsb")];
+    char unicode_prop_name_pool_str2879[sizeof("inkanbun")];
+    char unicode_prop_name_pool_str2918[sizeof("inkangxiradicals")];
+    char unicode_prop_name_pool_str2922[sizeof("inmeroiticcursive")];
+    char unicode_prop_name_pool_str2925[sizeof("signwriting")];
+    char unicode_prop_name_pool_str2928[sizeof("incjkradicalssupplement")];
+    char unicode_prop_name_pool_str2930[sizeof("pahawhhmong")];
+    char unicode_prop_name_pool_str2952[sizeof("inkayahli")];
+    char unicode_prop_name_pool_str2953[sizeof("uppercaseletter")];
+    char unicode_prop_name_pool_str2955[sizeof("batk")];
+    char unicode_prop_name_pool_str2960[sizeof("inbatak")];
+    char unicode_prop_name_pool_str2968[sizeof("incjkcompatibility")];
+    char unicode_prop_name_pool_str2983[sizeof("buhd")];
+    char unicode_prop_name_pool_str2989[sizeof("egyp")];
+    char unicode_prop_name_pool_str3009[sizeof("innoblock")];
+    char unicode_prop_name_pool_str3043[sizeof("inegyptianhieroglyphs")];
+    char unicode_prop_name_pool_str3084[sizeof("grek")];
+    char unicode_prop_name_pool_str3176[sizeof("bugi")];
+    char unicode_prop_name_pool_str3230[sizeof("changeswhenuppercased")];
+    char unicode_prop_name_pool_str3234[sizeof("paragraphseparator")];
+    char unicode_prop_name_pool_str3254[sizeof("buginese")];
+    char unicode_prop_name_pool_str3282[sizeof("guru")];
+    char unicode_prop_name_pool_str3299[sizeof("inbopomofoextended")];
+    char unicode_prop_name_pool_str3312[sizeof("telugu")];
+    char unicode_prop_name_pool_str3343[sizeof("quotationmark")];
+    char unicode_prop_name_pool_str3364[sizeof("inkhudawadi")];
+    char unicode_prop_name_pool_str3370[sizeof("kayahli")];
+    char unicode_prop_name_pool_str3372[sizeof("oldsoutharabian")];
+    char unicode_prop_name_pool_str3396[sizeof("insupplementaryprivateuseareab")];
+    char unicode_prop_name_pool_str3479[sizeof("inhangulcompatibilityjamo")];
+    char unicode_prop_name_pool_str3491[sizeof("zyyy")];
+    char unicode_prop_name_pool_str3555[sizeof("qmark")];
+    char unicode_prop_name_pool_str3566[sizeof("buhid")];
+    char unicode_prop_name_pool_str3567[sizeof("sk")];
+    char unicode_prop_name_pool_str3582[sizeof("unknown")];
+    char unicode_prop_name_pool_str3619[sizeof("khudawadi")];
+    char unicode_prop_name_pool_str3644[sizeof("katakana")];
+    char unicode_prop_name_pool_str3670[sizeof("incjkunifiedideographsextensionc")];
+    char unicode_prop_name_pool_str3673[sizeof("incjkunifiedideographsextensiona")];
+    char unicode_prop_name_pool_str3685[sizeof("incjkunifiedideographs")];
+    char unicode_prop_name_pool_str3700[sizeof("incjkunifiedideographsextensione")];
+    char unicode_prop_name_pool_str3743[sizeof("duployan")];
+    char unicode_prop_name_pool_str3763[sizeof("egyptianhieroglyphs")];
+    char unicode_prop_name_pool_str3853[sizeof("inboxdrawing")];
+    char unicode_prop_name_pool_str4106[sizeof("khojki")];
+    char unicode_prop_name_pool_str4244[sizeof("incjkunifiedideographsextensiond")];
+    char unicode_prop_name_pool_str4722[sizeof("batak")];
+    char unicode_prop_name_pool_str4765[sizeof("incjkunifiedideographsextensionb")];
+    char unicode_prop_name_pool_str4780[sizeof("blank")];
+    char unicode_prop_name_pool_str4851[sizeof("greek")];
+    char unicode_prop_name_pool_str4943[sizeof("grlink")];
+    char unicode_prop_name_pool_str5054[sizeof("gurmukhi")];
+    char unicode_prop_name_pool_str5162[sizeof("graphemelink")];
+  };
+static const struct unicode_prop_name_pool_t unicode_prop_name_pool_contents =
+  {
+    "n",
+    "z",
+    "zzzz",
+    "mn",
+    "cn",
+    "ci",
+    "m",
+    "c",
+    "inmanichaean",
+    "mani",
+    "mc",
+    "cc",
+    "qaai",
+    "qaac",
+    "incham",
+    "mandaic",
+    "sm",
+    "sc",
+    "cans",
+    "ascii",
+    "insamaritan",
+    "incuneiform",
+    "s",
+    "inarmenian",
+    "zs",
+    "cs",
+    "me",
+    "incommonindicnumberforms",
+    "inavestan",
+    "inthai",
+    "inipaextensions",
+    "initialpunctuation",
+    "inancientsymbols",
+    "inthaana",
+    "cf",
+    "incuneiformnumbersandpunctuation",
+    "mtei",
+    "inspecials",
+    "inmusicalsymbols",
+    "inmiscellaneousmathematicalsymbolsa",
+    "lm",
+    "lina",
+    "lc",
+    "inlycian",
+    "lana",
+    "intaixuanjingsymbols",
+    "inmyanmarextendeda",
+    "alnum",
+    "sterm",
+    "intaitham",
+    "intransportandmapsymbols",
+    "taile",
+    "inmalayalam",
+    "inmiscellaneoussymbols",
+    "incontrolpictures",
+    "inmiscellaneoussymbolsandarrows",
+    "inlineara",
+    "inmiscellaneoussymbolsandpictographs",
+    "sinhala",
+    "taiviet",
+    "ext",
+    "latn",
+    "latin",
+    "ital",
+    "intamil",
+    "inmultani",
+    "taml",
+    "inrunic",
+    "incarian",
+    "armn",
+    "armi",
+    "cari",
+    "inlatinextendedc",
+    "armenian",
+    "inmyanmar",
+    "incyrillic",
+    "inlatinextendeda",
+    "carian",
+    "intaile",
+    "tale",
+    "arabic",
+    "l",
+    "nl",
+    "zl",
+    "insyriac",
+    "samr",
+    "merc",
+    "inlinearbideograms",
+    "samaritan",
+    "lt",
+    "insharada",
+    "inmeeteimayekextensions",
+    "inruminumeralsymbols",
+    "miao",
+    "inlatinextendede",
+    "zinh",
+    "inahom",
+    "incherokee",
+    "han",
+    "hani",
+    "inosmanya",
+    "inmiscellaneoustechnical",
+    "cham",
+    "inmahajani",
+    "osma",
+    "manichaean",
+    "term",
+    "sinh",
+    "cntrl",
+    "chakma",
+    "insinhala",
+    "tamil",
+    "inethiopic",
+    "connectorpunctuation",
+    "shavian",
+    "joinc",
+    "inenclosedalphanumerics",
+    "ahex",
+    "inlatinextendedadditional",
+    "lineara",
+    "inenclosedcjklettersandmonths",
+    "hex",
+    "thai",
+    "mahj",
+    "math",
+    "ll",
+    "thaa",
+    "hatran",
+    "mahajani",
+    "insinhalaarchaicnumbers",
+    "taitham",
+    "thaana",
+    "ethi",
+    "inenclosedalphanumericsupplement",
+    "meroiticcursive",
+    "inideographicdescriptioncharacters",
+    "terminalpunctuation",
+    "inemoticons",
+    "intifinagh",
+    "asciihexdigit",
+    "tifinagh",
+    "inearlydynasticcuneiform",
+    "inopticalcharacterrecognition",
+    "loe",
+    "titlecaseletter",
+    "inscriptionalparthian",
+    "oriya",
+    "hira",
+    "sora",
+    "mero",
+    "inarrows",
+    "inhiragana",
+    "no",
+    "inmahjongtiles",
+    "innko",
+    "co",
+    "cher",
+    "inmro",
+    "common",
+    "cwcm",
+    "inmiao",
+    "inscriptionalpahlavi",
+    "inmathematicalalphanumericsymbols",
+    "so",
+    "hano",
+    "tirh",
+    "inhatran",
+    "inolchiki",
+    "ahom",
+    "di",
+    "hatr",
+    "inogham",
+    "intirhuta",
+    "inmodi",
+    "idc",
+    "mand",
+    "inmandaic",
+    "dia",
+    "cwcf",
+    "xidc",
+    "sind",
+    "newline",
+    "mend",
+    "newtailue",
+    "inshorthandformatcontrols",
+    "anatolianhieroglyphs",
+    "xids",
+    "ids",
+    "innewtailue",
+    "insylotinagri",
+    "insundanese",
+    "lo",
+    "indominotiles",
+    "inlao",
+    "lao",
+    "laoo",
+    "mongolian",
+    "cwt",
+    "idst",
+    "format",
+    "lineseparator",
+    "letter",
+    "idcontinue",
+    "inanatolianhieroglyphs",
+    "inlydian",
+    "pi",
+    "nchar",
+    "inspacingmodifierletters",
+    "oalpha",
+    "indeseret",
+    "pc",
+    "xdigit",
+    "inphaistosdisc",
+    "joincontrol",
+    "inlowsurrogates",
+    "mro",
+    "mroo",
+    "xidstart",
+    "wara",
+    "inwarangciti",
+    "ps",
+    "pe",
+    "cwl",
+    "incoptic",
+    "diacritic",
+    "pf",
+    "space",
+    "hanunoo",
+    "incyrillicextendeda",
+    "odi",
+    "modi",
+    "oidc",
+    "incopticepactnumbers",
+    "palm",
+    "insundanesesupplement",
+    "patws",
+    "inolditalic",
+    "inlepcha",
+    "shaw",
+    "omath",
+    "alpha",
+    "oids",
+    "control",
+    "ideo",
+    "lepc",
+    "psalterpahlavi",
+    "dsrt",
+    "otheridcontinue",
+    "inpalmyrene",
+    "decimalnumber",
+    "noncharactercodepoint",
+    "idstart",
+    "otheralphabetic",
+    "letternumber",
+    "dash",
+    "xidcontinue",
+    "finalpunctuation",
+    "extender",
+    "siddham",
+    "inoldturkic",
+    "sharada",
+    "whitespace",
+    "inmodifiertoneletters",
+    "radical",
+    "canadianaboriginal",
+    "inethiopicextendeda",
+    "imperialaramaic",
+    "perm",
+    "deseret",
+    "casedletter",
+    "inimperialaramaic",
+    "otheridstart",
+    "prti",
+    "cprt",
+    "othersymbol",
+    "coptic",
+    "otherlowercase",
+    "phnx",
+    "inphoenician",
+    "incaucasianalbanian",
+    "inlatin1supplement",
+    "xpeo",
+    "ininscriptionalparthian",
+    "ininscriptionalpahlavi",
+    "other",
+    "privateuse",
+    "othernumber",
+    "inenclosedideographicsupplement",
+    "copt",
+    "print",
+    "cuneiform",
+    "olditalic",
+    "xsux",
+    "inmongolian",
+    "inancientgreekmusicalnotation",
+    "sundanese",
+    "inoldnortharabian",
+    "patternsyntax",
+    "inherited",
+    "ingrantha",
+    "inphoneticextensions",
+    "saurashtra",
+    "inancientgreeknumbers",
+    "shrd",
+    "inoldsoutharabian",
+    "innabataean",
+    "inalphabeticpresentationforms",
+    "spaceseparator",
+    "olower",
+    "ingeneralpunctuation",
+    "inunifiedcanadianaboriginalsyllabics",
+    "bamum",
+    "inarabic",
+    "phli",
+    "inphoneticextensionssupplement",
+    "patternwhitespace",
+    "inbasiclatin",
+    "othermath",
+    "idsbinaryoperator",
+    "inmathematicaloperators",
+    "multani",
+    "ingujarati",
+    "inelbasan",
+    "inoldhungarian",
+    "innumberforms",
+    "nd",
+    "yi",
+    "lisu",
+    "yiii",
+    "inpsalterpahlavi",
+    "tagbanwa",
+    "bass",
+    "nbat",
+    "inbyzantinemusicalsymbols",
+    "closepunctuation",
+    "tfng",
+    "otherletter",
+    "sd",
+    "lowercase",
+    "sidd",
+    "nabataean",
+    "lepcha",
+    "inarabicpresentationformsa",
+    "modifierletter",
+    "intags",
+    "mult",
+    "insiddham",
+    "talu",
+    "cased",
+    "intibetan",
+    "separator",
+    "runic",
+    "inmiscellaneousmathematicalsymbolsb",
+    "linb",
+    "inbraillepatterns",
+    "oldpersian",
+    "inugaritic",
+    "telu",
+    "limb",
+    "oldpermic",
+    "bali",
+    "inmyanmarextendedb",
+    "tibt",
+    "saur",
+    "po",
+    "tibetan",
+    "insaurashtra",
+    "inbalinese",
+    "elba",
+    "bengali",
+    "gran",
+    "phoenician",
+    "ingurmukhi",
+    "caseignorable",
+    "lyci",
+    "inyijinghexagramsymbols",
+    "mlym",
+    "lycian",
+    "elbasan",
+    "balinese",
+    "narb",
+    "brai",
+    "insuttonsignwriting",
+    "insorasompeng",
+    "malayalam",
+    "arab",
+    "brahmi",
+    "incountingrodnumerals",
+    "rjng",
+    "mong",
+    "incyrillicsupplement",
+    "ogam",
+    "sarb",
+    "lower",
+    "inrejang",
+    "hmng",
+    "tirhuta",
+    "hang",
+    "wspace",
+    "inlatinextendedd",
+    "invai",
+    "incherokeesupplement",
+    "mymr",
+    "vai",
+    "vaii",
+    "ethiopic",
+    "sylotinagri",
+    "myanmar",
+    "syrc",
+    "inbrahmi",
+    "mathsymbol",
+    "runr",
+    "inshavian",
+    "gothic",
+    "syriac",
+    "p",
+    "zp",
+    "induployan",
+    "vs",
+    "ingreekandcoptic",
+    "ingothic",
+    "lowercaseletter",
+    "inoriya",
+    "grext",
+    "linearb",
+    "inyiradicals",
+    "inethiopicsupplement",
+    "inletterlikesymbols",
+    "ingeometricshapes",
+    "java",
+    "inblockelements",
+    "number",
+    "incombininghalfmarks",
+    "inbassavah",
+    "inlinearbsyllabary",
+    "osmanya",
+    "avst",
+    "hexdigit",
+    "injavanese",
+    "cyrl",
+    "avestan",
+    "intaiviet",
+    "inornamentaldingbats",
+    "tavt",
+    "javanese",
+    "inethiopicextended",
+    "inhalfwidthandfullwidthforms",
+    "ingeorgian",
+    "inarabicmathematicalalphabeticsymbols",
+    "hangul",
+    "insuperscriptsandsubscripts",
+    "inhanunoo",
+    "inhangulsyllables",
+    "inoldpersian",
+    "geor",
+    "otherpunctuation",
+    "inoldpermic",
+    "inalchemicalsymbols",
+    "sylo",
+    "hiragana",
+    "word",
+    "inmeroitichieroglyphs",
+    "insmallformvariants",
+    "sund",
+    "brah",
+    "insupplementalmathematicaloperators",
+    "glagolitic",
+    "braille",
+    "unassigned",
+    "sgnw",
+    "plrd",
+    "hebr",
+    "ogham",
+    "cyrillic",
+    "orya",
+    "grantha",
+    "invariationselectors",
+    "indingbats",
+    "inunifiedcanadianaboriginalsyllabicsextended",
+    "inhanguljamoextendeda",
+    "goth",
+    "graphemebase",
+    "bidic",
+    "ogrext",
+    "idsb",
+    "invariationselectorssupplement",
+    "assigned",
+    "symbol",
+    "ingreekextended",
+    "pauc",
+    "meroitichieroglyphs",
+    "logicalorderexception",
+    "incurrencysymbols",
+    "inarabicextendeda",
+    "insupplementalarrowsc",
+    "insupplementalarrowsa",
+    "inkannada",
+    "kana",
+    "phagspa",
+    "cakm",
+    "digit",
+    "softdotted",
+    "inchakma",
+    "inphagspa",
+    "inhighprivateusesurrogates",
+    "warangciti",
+    "incjkcompatibilityforms",
+    "idstrinaryoperator",
+    "incjkcompatibilityideographs",
+    "inkaithi",
+    "takri",
+    "phlp",
+    "mendekikakui",
+    "punct",
+    "otherdefaultignorablecodepoint",
+    "inkatakana",
+    "graph",
+    "lydi",
+    "pd",
+    "incjkstrokes",
+    "lydian",
+    "sorasompeng",
+    "incjkcompatibilityideographssupplement",
+    "meeteimayek",
+    "otheruppercase",
+    "kali",
+    "inhanguljamo",
+    "ideographic",
+    "inmeeteimayek",
+    "incyrillicextendedb",
+    "hluw",
+    "patsyn",
+    "incombiningdiacriticalmarks",
+    "inarabicsupplement",
+    "inkanasupplement",
+    "deprecated",
+    "inverticalforms",
+    "incombiningdiacriticalmarksforsymbols",
+    "indevanagari",
+    "inbuhid",
+    "alphabetic",
+    "oldhungarian",
+    "mark",
+    "inkharoshthi",
+    "deva",
+    "invedicextensions",
+    "devanagari",
+    "incombiningdiacriticalmarkssupplement",
+    "ingeometricshapesextended",
+    "inkhmer",
+    "changeswhencasemapped",
+    "intakri",
+    "dep",
+    "takr",
+    "changeswhencasefolded",
+    "kaithi",
+    "phag",
+    "inpahawhhmong",
+    "bidicontrol",
+    "inkhojki",
+    "bamu",
+    "inbamum",
+    "changeswhentitlecased",
+    "inkhmersymbols",
+    "uideo",
+    "lu",
+    "kthi",
+    "limbu",
+    "defaultignorablecodepoint",
+    "inplayingcards",
+    "inhebrew",
+    "modifiersymbol",
+    "ugaritic",
+    "inlisu",
+    "inglagolitic",
+    "inprivateusearea",
+    "olck",
+    "inbengali",
+    "olchiki",
+    "caucasianalbanian",
+    "oldturkic",
+    "beng",
+    "intelugu",
+    "hyphen",
+    "inbuginese",
+    "intagalog",
+    "cypriot",
+    "inlimbu",
+    "graphemeextend",
+    "tagb",
+    "incypriotsyllabary",
+    "intagbanwa",
+    "inaegeannumbers",
+    "inkatakanaphoneticextensions",
+    "glag",
+    "combiningmark",
+    "palmyrene",
+    "khmr",
+    "khar",
+    "ugar",
+    "inarabicpresentationformsb",
+    "insupplementaryprivateuseareaa",
+    "variationselector",
+    "nko",
+    "nkoo",
+    "inbamumsupplement",
+    "tglg",
+    "any",
+    "enclosingmark",
+    "gujr",
+    "changeswhenlowercased",
+    "knda",
+    "hung",
+    "gujarati",
+    "bopo",
+    "inmendekikakui",
+    "inbopomofo",
+    "kharoshthi",
+    "kannada",
+    "khoj",
+    "cherokee",
+    "inlatinextendedb",
+    "dashpunctuation",
+    "dupl",
+    "inyisyllables",
+    "georgian",
+    "rejang",
+    "oupper",
+    "aghb",
+    "khmer",
+    "grbase",
+    "currencysymbol",
+    "incombiningdiacriticalmarksextended",
+    "spacingmark",
+    "orkh",
+    "cwu",
+    "hebrew",
+    "insupplementalpunctuation",
+    "oldnortharabian",
+    "incjksymbolsandpunctuation",
+    "othergraphemeextend",
+    "indevanagariextended",
+    "tagalog",
+    "surrogate",
+    "bopomofo",
+    "ingeorgiansupplement",
+    "uppercase",
+    "unifiedideograph",
+    "inpaucinhau",
+    "paucinhau",
+    "insupplementalsymbolsandpictographs",
+    "nonspacingmark",
+    "inhanguljamoextendedb",
+    "inhighsurrogates",
+    "punctuation",
+    "openpunctuation",
+    "bassavah",
+    "upper",
+    "insupplementalarrowsb",
+    "inkanbun",
+    "inkangxiradicals",
+    "inmeroiticcursive",
+    "signwriting",
+    "incjkradicalssupplement",
+    "pahawhhmong",
+    "inkayahli",
+    "uppercaseletter",
+    "batk",
+    "inbatak",
+    "incjkcompatibility",
+    "buhd",
+    "egyp",
+    "innoblock",
+    "inegyptianhieroglyphs",
+    "grek",
+    "bugi",
+    "changeswhenuppercased",
+    "paragraphseparator",
+    "buginese",
+    "guru",
+    "inbopomofoextended",
+    "telugu",
+    "quotationmark",
+    "inkhudawadi",
+    "kayahli",
+    "oldsoutharabian",
+    "insupplementaryprivateuseareab",
+    "inhangulcompatibilityjamo",
+    "zyyy",
+    "qmark",
+    "buhid",
+    "sk",
+    "unknown",
+    "khudawadi",
+    "katakana",
+    "incjkunifiedideographsextensionc",
+    "incjkunifiedideographsextensiona",
+    "incjkunifiedideographs",
+    "incjkunifiedideographsextensione",
+    "duployan",
+    "egyptianhieroglyphs",
+    "inboxdrawing",
+    "khojki",
+    "incjkunifiedideographsextensiond",
+    "batak",
+    "incjkunifiedideographsextensionb",
+    "blank",
+    "greek",
+    "grlink",
+    "gurmukhi",
+    "graphemelink"
+  };
+#define unicode_prop_name_pool ((const char *) &unicode_prop_name_pool_contents)
 #ifdef __GNUC__
 __inline
 #if defined __GNUC_STDC_INLINE__ || defined __GNUC_GNU_INLINE__
 __attribute__ ((__gnu_inline__))
 #endif
 #endif
-const struct PropertyNameCtype *
+const struct PoolPropertyNameCtype *
 unicode_lookup_property_name (register const char *str, register unsigned int len)
 {
-  static const struct PropertyNameCtype wordlist[] =
+  static const struct PoolPropertyNameCtype wordlist[] =
     {
-      {""},
+      {-1},
 
-      {"n",                                  144},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1,                                  144},
+      {-1},
 
-      {"z",                                  234},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3,                                  234},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"zzzz",                               225},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str8,                               225},
 
-      {"mn",                                 138},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str9,                                 138},
 
-      {"cn",                                  51},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str10,                                  51},
+      {-1}, {-1}, {-1},
 
-      {"ci",                                  38},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str14,                                  38},
 
-      {"m",                                  125},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str15,                                  125},
+      {-1},
 
-      {"c",                                   35},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str17,                                   35},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inmanichaean",                       430},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str23,                       430},
 
-      {"mani",                               129},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str24,                               129},
 
-      {"mc",                                 131},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str25,                                 131},
 
-      {"cc",                                  41},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str26,                                  41},
+      {-1},
 
-      {"qaai",                                94},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str28,                                94},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"qaac",                                54},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str34,                                54},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"incham",                             373},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str41,                             373},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"mandaic",                            128},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str46,                            128},
+      {-1}, {-1},
 
-      {"sm",                                 202},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str49,                                 202},
+      {-1},
 
-      {"sc",                                 195},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str51,                                 195},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"cans",                                36},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str56,                                36},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"ascii",                               14},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str61,                               14},
+      {-1}, {-1},
 
-      {"insamaritan",                        255},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str64,                        255},
+      {-1},
 
-      {"incuneiform",                        456},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str66,                        456},
 
-      {"s",                                  191},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str67,                                  191},
 
-      {"inarmenian",                         248},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str68,                         248},
 
-      {"zs",                                 237},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str69,                                 237},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"cs",                                  55},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str76,                                  55},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"me",                                 132},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str85,                                 132},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"incommonindicnumberforms",           364},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str90,           364},
+      {-1}, {-1},
 
-      {"inavestan",                          431},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str93,                          431},
 
-      {"inthai",                             268},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str94,                             268},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inipaextensions",                    242},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str103,                    242},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"initialpunctuation",                 183},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str108,                 183},
+      {-1}, {-1}, {-1},
 
-      {"inancientsymbols",                   402},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str112,                   402},
+      {-1},
 
-      {"inthaana",                           253},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str114,                           253},
+      {-1},
 
-      {"cf",                                  42},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str116,                                  42},
+      {-1},
 
-      {"incuneiformnumbersandpunctuation",   457},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str118,   457},
+      {-1}, {-1}, {-1},
 
-      {"mtei",                               133},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str122,                               133},
+      {-1},
 
-      {"inspecials",                         397},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str124,                         397},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inmusicalsymbols",                   470},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str133,                   470},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inmiscellaneousmathematicalsymbolsa", 323},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str141, 323},
+      {-1}, {-1}, {-1},
 
-      {"lm",                                 117},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str145,                                 117},
 
-      {"lina",                               113},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str146,                               113},
 
-      {"lc",                                 108},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str147,                                 108},
+      {-1},
 
-      {"inlycian",                           404},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str149,                           404},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"lana",                               212},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str155,                               212},
+      {-1},
 
-      {"intaixuanjingsymbols",               472},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str157,               472},
 
-      {"inmyanmarextendeda",                 374},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str158,                 374},
 
-      {"alnum",                               13},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str159,                               13},
+      {-1},
 
-      {"sterm",                              192},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str161,                              192},
 
-      {"intaitham",                          292},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str162,                          292},
 
-      {"intransportandmapsymbols",           486},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str163,           486},
+      {-1},
 
-      {"taile",                              211},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str165,                              211},
+      {-1},
 
-      {"inmalayalam",                        266},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str167,                        266},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inmiscellaneoussymbols",             321},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str176,             321},
 
-      {"incontrolpictures",                  315},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str177,                  315},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inmiscellaneoussymbolsandarrows",    329},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str185,    329},
+      {-1}, {-1}, {-1},
 
-      {"inlineara",                          417},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str189,                          417},
 
-      {"inmiscellaneoussymbolsandpictographs", 483},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str190, 483},
+      {-1}, {-1},
 
-      {"sinhala",                            200},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str193,                            200},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"taiviet",                            213},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str202,                            213},
+      {-1}, {-1},
 
-      {"ext",                                 69},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str205,                                 69},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"latn",                               110},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str215,                               110},
 
-      {"latin",                              110},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str216,                              110},
 
-      {"ital",                               155},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str217,                               155},
 
-      {"intamil",                            263},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str218,                            263},
+      {-1},
 
-      {"inmultani",                          446},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str220,                          446},
+      {-1},
 
-      {"taml",                               215},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str222,                               215},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inrunic",                            279},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str229,                            279},
 
-      {"incarian",                           405},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str230,                           405},
+      {-1},
 
-      {"armn",                                21},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str232,                                21},
+      {-1},
 
-      {"armi",                                93},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str234,                                93},
 
-      {"cari",                                37},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str235,                                37},
 
-      {"inlatinextendedc",                   331},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str236,                   331},
+      {-1},
 
-      {"armenian",                            21},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str238,                            21},
 
-      {"inmyanmar",                          271},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str239,                          271},
 
-      {"incyrillic",                         246},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str240,                         246},
+      {-1},
 
-      {"inlatinextendeda",                   240},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str242,                   240},
+      {-1}, {-1}, {-1},
 
-      {"carian",                              37},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str246,                              37},
+      {-1}, {-1},
 
-      {"intaile",                            288},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str249,                            288},
+      {-1}, {-1}, {-1},
 
-      {"tale",                               211},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str253,                               211},
+      {-1}, {-1},
 
-      {"arabic",                              20},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str256,                              20},
+      {-1}, {-1},
 
-      {"l",                                  107},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str259,                                  107},
 
-      {"nl",                                 149},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str260,                                 149},
 
-      {"zl",                                 235},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str261,                                 235},
+      {-1},
 
-      {"insyriac",                           251},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str263,                           251},
+      {-1},
 
-      {"samr",                               193},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str265,                               193},
+      {-1},
 
-      {"merc",                               135},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str267,                               135},
+      {-1},
 
-      {"inlinearbideograms",                 399},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str269,                 399},
+      {-1}, {-1},
 
-      {"samaritan",                          193},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str272,                          193},
 
-      {"lt",                                 121},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str273,                                 121},
+      {-1}, {-1},
 
-      {"insharada",                          443},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str276,                          443},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inmeeteimayekextensions",            376},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str283,            376},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inruminumeralsymbols",               437},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str292,               437},
+      {-1}, {-1},
 
-      {"miao",                               137},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str295,                               137},
 
-      {"inlatinextendede",                   378},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str296,                   378},
+      {-1}, {-1}, {-1},
 
-      {"zinh",                                94},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str300,                                94},
+      {-1}, {-1}, {-1},
 
-      {"inahom",                             453},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str304,                             453},
+      {-1},
 
-      {"incherokee",                         276},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str306,                         276},
 
-      {"han",                                 80},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str307,                                 80},
+      {-1}, {-1},
 
-      {"hani",                                80},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str310,                                80},
 
-      {"inosmanya",                          414},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str311,                          414},
 
-      {"inmiscellaneoustechnical",           314},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str312,           314},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
 
-      {"cham",                                44},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str323,                                44},
+      {-1},
 
-      {"inmahajani",                         442},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str325,                         442},
 
-      {"osma",                               162},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str326,                               162},
+      {-1}, {-1},
 
-      {"manichaean",                         129},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str329,                         129},
 
-      {"term",                               217},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str330,                               217},
+      {-1},
 
-      {"sinh",                               200},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str332,                               200},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"cntrl",                                3},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str342,                                3},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"chakma",                              43},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str347,                              43},
 
-      {"insinhala",                          267},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str348,                          267},
+      {-1}, {-1}, {-1},
 
-      {"tamil",                              215},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str352,                              215},
 
-      {"inethiopic",                         274},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str353,                         274},
+      {-1}, {-1},
 
-      {"connectorpunctuation",               177},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str356,               177},
 
-      {"shavian",                            197},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str357,                            197},
+      {-1}, {-1}, {-1},
 
-      {"joinc",                               98},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str361,                               98},
 
-      {"inenclosedalphanumerics",            317},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str362,            317},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"ahex",                                15},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str368,                                15},
 
-      {"inlatinextendedadditional",          304},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str369,          304},
 
-      {"lineara",                            113},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str370,                            113},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inenclosedcjklettersandmonths",      350},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str377,      350},
 
-      {"hex",                                 85},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str378,                                 85},
+      {-1}, {-1},
 
-      {"thai",                               219},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str381,                               219},
 
-      {"mahj",                               126},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str382,                               126},
+      {-1}, {-1}, {-1},
 
-      {"math",                               130},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str386,                               130},
+      {-1}, {-1},
 
-      {"ll",                                 116},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str389,                                 116},
 
-      {"thaa",                               218},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str390,                               218},
+      {-1},
 
-      {"hatran",                              83},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str392,                              83},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"mahajani",                           126},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str399,                           126},
 
-      {"insinhalaarchaicnumbers",            444},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str400,            444},
+      {-1},
 
-      {"taitham",                            212},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str402,                            212},
 
-      {"thaana",                             218},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str403,                             218},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"ethi",                                68},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str408,                                68},
 
-      {"inenclosedalphanumericsupplement",   481},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str409,   481},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"meroiticcursive",                    135},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str414,                    135},
 
-      {"inideographicdescriptioncharacters", 340},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str415, 340},
+      {-1}, {-1}, {-1},
 
-      {"terminalpunctuation",                217},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str419,                217},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inemoticons",                        484},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str426,                        484},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"intifinagh",                         334},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str431,                         334},
+      {-1},
 
-      {"asciihexdigit",                       15},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str433,                       15},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"tifinagh",                           221},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str438,                           221},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
 
-      {"inearlydynasticcuneiform",           458},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str451,           458},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inopticalcharacterrecognition",      316},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str457,      316},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
 
-      {"loe",                                119},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str479,                                119},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"titlecaseletter",                    121},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str486,                    121},
+      {-1}, {-1},
 
-      {"inscriptionalparthian",               96},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str489,               96},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1},
 
-      {"oriya",                              161},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str510,                              161},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"hira",                                86},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str520,                                86},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"sora",                               205},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str529,                               205},
 
-      {"mero",                               136},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str530,                               136},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"inarrows",                           312},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str535,                           312},
+      {-1},
 
-      {"inhiragana",                         342},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str537,                         342},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"no",                                 150},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str544,                                 150},
 
-      {"inmahjongtiles",                     478},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str545,                     478},
+      {-1}, {-1}, {-1},
 
-      {"innko",                              254},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str549,                              254},
+      {-1}, {-1},
 
-      {"co",                                  52},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str552,                                  52},
 
-      {"cher",                                50},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str553,                                50},
+      {-1}, {-1},
 
-      {"inmro",                              462},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str556,                              462},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"common",                              53},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str563,                              53},
 
-      {"cwcm",                                46},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str564,                                46},
+      {-1}, {-1}, {-1},
 
-      {"inmiao",                             465},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str568,                             465},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"inscriptionalpahlavi",                95},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str573,                95},
+      {-1}, {-1},
 
-      {"inmathematicalalphanumericsymbols",  474},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str576,  474},
 
-      {"so",                                 203},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str577,                                 203},
+      {-1},
 
-      {"hano",                                82},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str579,                                82},
 
-      {"tirh",                               222},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str580,                               222},
+      {-1}, {-1}, {-1},
 
-      {"inhatran",                           422},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str584,                           422},
 
-      {"inolchiki",                          298},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str585,                          298},
 
-      {"ahom",                                16},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str586,                                16},
+      {-1},
 
-      {"di",                                  60},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str588,                                  60},
 
-      {"hatr",                                83},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str589,                                83},
+      {-1},
 
-      {"inogham",                            278},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str591,                            278},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"intirhuta",                          449},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str596,                          449},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"inmodi",                             451},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str601,                             451},
+      {-1},
 
-      {"idc",                                 90},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str603,                                 90},
 
-      {"mand",                               128},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str604,                               128},
+      {-1}, {-1}, {-1},
 
-      {"inmandaic",                          256},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str608,                          256},
 
-      {"dia",                                 64},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str609,                                 64},
 
-      {"cwcf",                                45},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str610,                                45},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"xidc",                               231},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str618,                               231},
+      {-1}, {-1},
 
-      {"sind",                               106},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str621,                               106},
 
-      {"newline",                              0},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str622,                              0},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"mend",                               134},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str631,                               134},
+      {-1}, {-1}, {-1},
 
-      {"newtailue",                          147},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str635,                          147},
+      {-1}, {-1},
 
-      {"inshorthandformatcontrols",          468},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str638,          468},
+      {-1}, {-1}, {-1},
 
-      {"anatolianhieroglyphs",                18},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str642,                18},
 
-      {"xids",                               232},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str643,                               232},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"ids",                                 91},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str653,                                 91},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"innewtailue",                        289},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str659,                        289},
 
-      {"insylotinagri",                      363},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str660,                      363},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"insundanese",                        295},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str666,                        295},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"lo",                                 118},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str673,                                 118},
+      {-1}, {-1}, {-1},
 
-      {"indominotiles",                      479},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str677,                      479},
 
-      {"inlao",                              269},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str678,                              269},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"lao",                                109},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str685,                                109},
 
-      {"laoo",                               109},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str686,                               109},
 
-      {"mongolian",                          140},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str687,                          140},
+      {-1}, {-1},
 
-      {"cwt",                                 48},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str690,                                 48},
+      {-1},
 
-      {"idst",                                89},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str692,                                89},
 
-      {"format",                              42},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str693,                              42},
+      {-1}, {-1},
 
-      {"lineseparator",                      235},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str696,                      235},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"letter",                             107},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str702,                             107},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"idcontinue",                          90},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str711,                          90},
+      {-1}, {-1},
 
-      {"inanatolianhieroglyphs",             460},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str714,             460},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inlydian",                           424},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str723,                           424},
+      {-1},
 
-      {"pi",                                 183},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str725,                                 183},
 
-      {"nchar",                              151},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str726,                              151},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"inspacingmodifierletters",           243},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str731,           243},
 
-      {"oalpha",                             163},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str732,                             163},
+      {-1}, {-1},
 
-      {"indeseret",                          412},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str735,                          412},
+      {-1},
 
-      {"pc",                                 177},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str737,                                 177},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"xdigit",                              11},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str756,                              11},
+      {-1},
 
-      {"inphaistosdisc",                     403},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str758,                     403},
 
-      {"joincontrol",                         98},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str759,                         98},
 
-      {"inlowsurrogates",                    385},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str760,                    385},
+      {-1},
 
-      {"mro",                                141},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str762,                                141},
 
-      {"mroo",                               141},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str763,                               141},
+      {-1}, {-1}, {-1},
 
-      {"xidstart",                           232},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str767,                           232},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"wara",                               229},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str773,                               229},
+      {-1}, {-1},
 
-      {"inwarangciti",                       454},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str776,                       454},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
 
-      {"ps",                                 185},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str787,                                 185},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"pe",                                 179},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str797,                                 179},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"cwl",                                 47},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str806,                                 47},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"incoptic",                           332},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str816,                           332},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"diacritic",                           64},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str824,                           64},
+      {-1}, {-1},
 
-      {"pf",                                 180},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str827,                                 180},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"space",                                9},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str844,                                9},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"hanunoo",                             82},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str853,                             82},
+      {-1}, {-1},
 
-      {"incyrillicextendeda",                336},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str856,                336},
+      {-1}, {-1}, {-1},
 
-      {"odi",                                164},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str860,                                164},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"modi",                               139},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str866,                               139},
 
-      {"oidc",                               166},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str867,                               166},
 
-      {"incopticepactnumbers",               406},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str868,               406},
+      {-1},
 
-      {"palm",                               173},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str870,                               173},
 
-      {"insundanesesupplement",              299},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str871,              299},
 
-      {"patws",                              175},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str872,                              175},
+      {-1}, {-1}, {-1},
 
-      {"inolditalic",                        407},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str876,                        407},
 
-      {"inlepcha",                           297},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str877,                           297},
 
-      {"shaw",                               197},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str878,                               197},
+      {-1},
 
-      {"omath",                              169},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str880,                              169},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"alpha",                                1},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str886,                                1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"oids",                               167},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str892,                               167},
+      {-1}, {-1}, {-1},
 
-      {"control",                             41},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str896,                             41},
 
-      {"ideo",                                92},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str897,                                92},
 
-      {"lepc",                               111},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str898,                               111},
 
-      {"psalterpahlavi",                     186},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str899,                     186},
 
-      {"dsrt",                                62},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str900,                                62},
+      {-1},
 
-      {"otheridcontinue",                    166},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str902,                    166},
+      {-1}, {-1}, {-1},
 
-      {"inpalmyrene",                        420},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str906,                        420},
 
-      {"decimalnumber",                      146},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str907,                      146},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"noncharactercodepoint",              151},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str915,              151},
 
-      {"idstart",                             91},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str916,                             91},
 
-      {"otheralphabetic",                    163},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str917,                    163},
 
-      {"letternumber",                       149},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str918,                       149},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"dash",                                59},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str923,                                59},
+      {-1}, {-1},
 
-      {"xidcontinue",                        231},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str926,                        231},
+      {-1}, {-1}, {-1},
 
-      {"finalpunctuation",                   180},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str930,                   180},
 
-      {"extender",                            69},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str931,                            69},
+      {-1}, {-1}, {-1},
 
-      {"siddham",                            198},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str935,                            198},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inoldturkic",                        435},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str945,                        435},
+      {-1}, {-1},
 
-      {"sharada",                            196},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str948,                            196},
+      {-1}, {-1},
 
-      {"whitespace",                         230},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str951,                         230},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"inmodifiertoneletters",              361},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str956,              361},
+      {-1},
 
-      {"radical",                            188},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str958,                            188},
+      {-1},
 
-      {"canadianaboriginal",                  36},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str960,                  36},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inethiopicextendeda",                377},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str969,                377},
 
-      {"imperialaramaic",                     93},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str970,                     93},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"perm",                               157},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str978,                               157},
 
-      {"deseret",                             62},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str979,                             62},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"casedletter",                        108},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str984,                        108},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"inimperialaramaic",                  419},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str998,                  419},
+      {-1}, {-1},
 
-      {"otheridstart",                       167},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1001,                       167},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"prti",                                96},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1006,                                96},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"cprt",                                57},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1012,                                57},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"othersymbol",                        203},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1018,                        203},
+      {-1}, {-1}, {-1},
 
-      {"coptic",                              54},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1022,                              54},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"otherlowercase",                     168},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1037,                     168},
 
-      {"phnx",                               182},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1038,                               182},
+      {-1}, {-1}, {-1},
 
-      {"inphoenician",                       423},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1042,                       423},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"incaucasianalbanian",                416},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1049,                416},
 
-      {"inlatin1supplement",                 239},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1050,                 239},
+      {-1}, {-1}, {-1},
 
-      {"xpeo",                               158},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1054,                               158},
+      {-1}, {-1}, {-1},
 
-      {"ininscriptionalparthian",            432},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1058,            432},
 
-      {"ininscriptionalpahlavi",             433},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1059,             433},
 
-      {"other",                               35},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1060,                               35},
 
-      {"privateuse",                          52},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1061,                          52},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"othernumber",                        150},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1066,                        150},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"inenclosedideographicsupplement",    482},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1071,    482},
+      {-1},
 
-      {"copt",                                54},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1073,                                54},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"print",                                7},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1078,                                7},
+      {-1},
 
-      {"cuneiform",                           56},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1080,                           56},
 
-      {"olditalic",                          155},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1081,                          155},
 
-      {"xsux",                                56},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1082,                                56},
+      {-1}, {-1}, {-1},
 
-      {"inmongolian",                        285},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1086,                        285},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"inancientgreekmusicalnotation",      471},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1091,      471},
 
-      {"sundanese",                          206},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1092,                          206},
 
-      {"inoldnortharabian",                  429},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1093,                  429},
+      {-1},
 
-      {"patternsyntax",                      174},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1095,                      174},
+      {-1}, {-1},
 
-      {"inherited",                           94},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1098,                           94},
 
-      {"ingrantha",                          448},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1099,                          448},
 
-      {"inphoneticextensions",               301},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1100,               301},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"saurashtra",                         194},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1110,                         194},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inancientgreeknumbers",              401},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1116,              401},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"shrd",                               196},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1122,                               196},
+      {-1}, {-1}, {-1},
 
-      {"inoldsoutharabian",                  428},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1126,                  428},
 
-      {"innabataean",                        421},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1127,                        421},
 
-      {"inalphabeticpresentationforms",      388},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1128,      388},
 
-      {"spaceseparator",                     237},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1129,                     237},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"olower",                             168},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1135,                             168},
+      {-1},
 
-      {"ingeneralpunctuation",               306},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1137,               306},
 
-      {"inunifiedcanadianaboriginalsyllabics", 277},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1138, 277},
+      {-1},
 
-      {"bamum",                               25},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1140,                               25},
+      {-1}, {-1},
 
-      {"inarabic",                           250},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1143,                           250},
+      {-1}, {-1}, {-1},
 
-      {"phli",                                95},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1147,                                95},
 
-      {"inphoneticextensionssupplement",     302},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1148,     302},
+      {-1},
 
-      {"patternwhitespace",                  175},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1150,                  175},
+      {-1},
 
-      {"inbasiclatin",                       238},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1152,                       238},
+      {-1},
 
-      {"othermath",                          169},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1154,                          169},
 
-      {"idsbinaryoperator",                   88},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1155,                   88},
 
-      {"inmathematicaloperators",            313},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1156,            313},
 
-      {"multani",                            142},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1157,                            142},
 
-      {"ingujarati",                         261},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1158,                         261},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"inelbasan",                          415},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1163,                          415},
 
-      {"inoldhungarian",                     436},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1164,                     436},
 
-      {"innumberforms",                      311},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1165,                      311},
 
-      {"nd",                                 146},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1166,                                 146},
+      {-1},
 
-      {"yi",                                 233},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1168,                                 233},
 
-      {"lisu",                               115},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1169,                               115},
+      {-1}, {-1},
 
-      {"yiii",                               233},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1172,                               233},
+      {-1},
 
-      {"inpsalterpahlavi",                   434},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1174,                   434},
+      {-1}, {-1}, {-1},
 
-      {"tagbanwa",                           210},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1178,                           210},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"bass",                                26},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1184,                                26},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"nbat",                               145},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1189,                               145},
 
-      {"inbyzantinemusicalsymbols",          469},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1190,          469},
+      {-1},
 
-      {"closepunctuation",                   179},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1192,                   179},
+      {-1},
 
-      {"tfng",                               221},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1194,                               221},
 
-      {"otherletter",                        118},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1195,                        118},
+      {-1}, {-1}, {-1},
 
-      {"sd",                                 204},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1199,                                 204},
+      {-1}, {-1},
 
-      {"lowercase",                          120},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1202,                          120},
 
-      {"sidd",                               198},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1203,                               198},
+      {-1},
 
-      {"nabataean",                          145},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1205,                          145},
+      {-1},
 
-      {"lepcha",                             111},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1207,                             111},
 
-      {"inarabicpresentationformsa",         389},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1208,         389},
+      {-1},
 
-      {"modifierletter",                     117},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1210,                     117},
 
-      {"intags",                             496},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1211,                             496},
 
-      {"mult",                               142},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1212,                               142},
+      {-1}, {-1},
 
-      {"insiddham",                          450},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1215,                          450},
 
-      {"talu",                               147},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1216,                               147},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"cased",                               39},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1221,                               39},
+      {-1},
 
-      {"intibetan",                          270},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1223,                          270},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"separator",                          234},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1230,                          234},
+      {-1},
 
-      {"runic",                              190},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1232,                              190},
 
-      {"inmiscellaneousmathematicalsymbolsb", 327},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1233, 327},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"linb",                               114},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1238,                               114},
 
-      {"inbraillepatterns",                  325},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1239,                  325},
 
-      {"oldpersian",                         158},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1240,                         158},
+      {-1},
 
-      {"inugaritic",                         410},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1242,                         410},
 
-      {"telu",                               216},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1243,                               216},
+      {-1},
 
-      {"limb",                               112},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1245,                               112},
+      {-1},
 
-      {"oldpermic",                          157},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1247,                          157},
+      {-1},
 
-      {"bali",                                24},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1249,                                24},
 
-      {"inmyanmarextendedb",                 372},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1250,                 372},
 
-      {"tibt",                               220},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1251,                               220},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"saur",                               194},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1259,                               194},
+      {-1}, {-1}, {-1},
 
-      {"po",                                 184},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1263,                                 184},
+      {-1},
 
-      {"tibetan",                            220},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1265,                            220},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"insaurashtra",                       366},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1280,                       366},
+      {-1}, {-1}, {-1},
 
-      {"inbalinese",                         294},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1284,                         294},
 
-      {"elba",                                67},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1285,                                67},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"bengali",                             28},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1290,                             28},
 
-      {"gran",                                73},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1291,                                73},
+      {-1}, {-1}, {-1},
 
-      {"phoenician",                         182},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1295,                         182},
+      {-1},
 
-      {"ingurmukhi",                         260},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1297,                         260},
+      {-1}, {-1},
 
-      {"caseignorable",                       38},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1300,                       38},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"lyci",                               123},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1305,                               123},
+      {-1},
 
-      {"inyijinghexagramsymbols",            353},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1307,            353},
+      {-1},
 
-      {"mlym",                               127},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1309,                               127},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"lycian",                             123},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1316,                             123},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"elbasan",                             67},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1321,                             67},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"balinese",                            24},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1327,                            24},
 
-      {"narb",                               156},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1328,                               156},
+      {-1},
 
-      {"brai",                                32},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1330,                                32},
+      {-1}, {-1},
 
-      {"insuttonsignwriting",                475},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1333,                475},
+      {-1},
 
-      {"insorasompeng",                      440},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1335,                      440},
 
-      {"malayalam",                          127},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1336,                          127},
+      {-1}, {-1},
 
-      {"arab",                                20},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1339,                                20},
+      {-1},
 
-      {"brahmi",                              31},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1341,                              31},
+      {-1},
 
-      {"incountingrodnumerals",              473},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1343,              473},
+      {-1}, {-1}, {-1},
 
-      {"rjng",                               189},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1347,                               189},
 
-      {"mong",                               140},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1348,                               140},
+      {-1}, {-1}, {-1},
 
-      {"incyrillicsupplement",               247},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1352,               247},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"ogam",                               152},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1359,                               152},
+      {-1},
 
-      {"sarb",                               159},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1361,                               159},
 
-      {"lower",                                6},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1362,                                6},
+      {-1},
 
-      {"inrejang",                           369},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1364,                           369},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"hmng",                               172},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1370,                               172},
+      {-1}, {-1},
 
-      {"tirhuta",                            222},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1373,                            222},
 
-      {"hang",                                81},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1374,                                81},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"wspace",                             230},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1379,                             230},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"inlatinextendedd",                   362},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1384,                   362},
+      {-1}, {-1},
 
-      {"invai",                              358},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1387,                              358},
 
-      {"incherokeesupplement",               379},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1388,               379},
+      {-1},
 
-      {"mymr",                               143},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1390,                               143},
+      {-1}, {-1}, {-1},
 
-      {"vai",                                227},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1394,                                227},
 
-      {"vaii",                               227},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1395,                               227},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
 
-      {"ethiopic",                            68},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1408,                            68},
+      {-1},
 
-      {"sylotinagri",                        207},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1410,                        207},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"myanmar",                            143},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1415,                            143},
+      {-1},
 
-      {"syrc",                               208},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1417,                               208},
+      {-1},
 
-      {"inbrahmi",                           438},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1419,                           438},
+      {-1}, {-1}, {-1},
 
-      {"mathsymbol",                         202},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1423,                         202},
+      {-1},
 
-      {"runr",                               190},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1425,                               190},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inshavian",                          413},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1431,                          413},
 
-      {"gothic",                              72},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1432,                              72},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"syriac",                             208},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1438,                             208},
 
-      {"p",                                  171},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1439,                                  171},
+      {-1},
 
-      {"zp",                                 236},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1441,                                 236},
 
-      {"induployan",                         467},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1442,                         467},
+      {-1},
 
-      {"vs",                                 228},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1444,                                 228},
+      {-1}, {-1},
 
-      {"ingreekandcoptic",                   245},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1447,                   245},
 
-      {"ingothic",                           408},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1448,                           408},
+      {-1}, {-1},
 
-      {"lowercaseletter",                    116},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1451,                    116},
+      {-1}, {-1}, {-1},
 
-      {"inoriya",                            262},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1455,                            262},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"grext",                               75},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1461,                               75},
 
-      {"linearb",                            114},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1462,                            114},
 
-      {"inyiradicals",                       356},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1463,                       356},
+      {-1},
 
-      {"inethiopicsupplement",               275},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1465,               275},
 
-      {"inletterlikesymbols",                310},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1466,                310},
 
-      {"ingeometricshapes",                  320},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1467,                  320},
+      {-1},
 
-      {"java",                                97},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1469,                                97},
 
-      {"inblockelements",                    319},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1470,                    319},
+      {-1},
 
-      {"number",                             144},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1472,                             144},
 
-      {"incombininghalfmarks",               392},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1473,               392},
 
-      {"inbassavah",                         463},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1474,                         463},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inlinearbsyllabary",                 398},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1489,                 398},
+      {-1},
 
-      {"osmanya",                            162},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1491,                            162},
+      {-1}, {-1}, {-1},
 
-      {"avst",                                23},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1495,                                23},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"hexdigit",                            85},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1500,                            85},
+      {-1}, {-1}, {-1},
 
-      {"injavanese",                         371},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1504,                         371},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"cyrl",                                58},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1513,                                58},
 
-      {"avestan",                             23},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1514,                             23},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"intaiviet",                          375},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1531,                          375},
 
-      {"inornamentaldingbats",               485},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1532,               485},
 
-      {"tavt",                               213},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1533,                               213},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"javanese",                            97},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1538,                            97},
 
-      {"inethiopicextended",                 335},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1539,                 335},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
 
-      {"inhalfwidthandfullwidthforms",       396},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1550,       396},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"ingeorgian",                         272},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1559,                         272},
+      {-1},
 
-      {"inarabicmathematicalalphabeticsymbols", 477},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1561, 477},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"hangul",                              81},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1569,                              81},
+      {-1},
 
-      {"insuperscriptsandsubscripts",        307},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1571,        307},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"inhanunoo",                          281},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1576,                          281},
+      {-1},
 
-      {"inhangulsyllables",                  381},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1578,                  381},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inoldpersian",                       411},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1586,                       411},
+      {-1}, {-1},
 
-      {"geor",                                70},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1589,                                70},
+      {-1},
 
-      {"otherpunctuation",                   184},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1591,                   184},
+      {-1},
 
-      {"inoldpermic",                        409},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1593,                        409},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"inalchemicalsymbols",                487},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1598,                487},
 
-      {"sylo",                               207},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1599,                               207},
+      {-1},
 
-      {"hiragana",                            86},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1601,                            86},
+      {-1}, {-1},
 
-      {"word",                                12},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1604,                                12},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inmeroitichieroglyphs",              425},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1612,              425},
+      {-1},
 
-      {"insmallformvariants",                394},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1614,                394},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"sund",                               206},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1620,                               206},
 
-      {"brah",                                31},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1621,                                31},
+      {-1},
 
-      {"insupplementalmathematicaloperators", 328},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1623, 328},
 
-      {"glagolitic",                          71},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1624,                          71},
+      {-1}, {-1},
 
-      {"braille",                             32},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1627,                             32},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1},
 
-      {"unassigned",                          51},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1639,                          51},
 
-      {"sgnw",                               199},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1640,                               199},
+      {-1}, {-1}, {-1},
 
-      {"plrd",                               137},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1644,                               137},
+      {-1}, {-1}, {-1},
 
-      {"hebr",                                84},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1648,                                84},
 
-      {"ogham",                              152},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1649,                              152},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"cyrillic",                            58},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1654,                            58},
+      {-1}, {-1}, {-1},
 
-      {"orya",                               161},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1658,                               161},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
 
-      {"grantha",                             73},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1669,                             73},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"invariationselectors",               390},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1684,               390},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"indingbats",                         322},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1693,                         322},
+      {-1},
 
-      {"inunifiedcanadianaboriginalsyllabicsextended", 286},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1695, 286},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inhanguljamoextendeda",              370},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1702,              370},
+      {-1}, {-1},
 
-      {"goth",                                72},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1705,                                72},
 
-      {"graphemebase",                        74},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1706,                        74},
+      {-1},
 
-      {"bidic",                               29},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1708,                               29},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"ogrext",                             165},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1717,                             165},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"idsb",                                88},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1724,                                88},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"invariationselectorssupplement",     497},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1732,     497},
 
-      {"assigned",                            22},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1733,                            22},
+      {-1}, {-1}, {-1},
 
-      {"symbol",                             191},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1737,                             191},
+      {-1}, {-1}, {-1},
 
-      {"ingreekextended",                    305},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1741,                    305},
+      {-1},
 
-      {"pauc",                               176},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1743,                               176},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"meroitichieroglyphs",                136},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1752,                136},
+      {-1},
 
-      {"logicalorderexception",              119},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1754,              119},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"incurrencysymbols",                  308},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1771,                  308},
+      {-1}, {-1}, {-1},
 
-      {"inarabicextendeda",                  257},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1775,                  257},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"insupplementalarrowsc",              489},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1783,              489},
+      {-1}, {-1},
 
-      {"insupplementalarrowsa",              324},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1786,              324},
+      {-1},
 
-      {"inkannada",                          265},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1788,                          265},
+      {-1}, {-1}, {-1},
 
-      {"kana",                               101},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1792,                               101},
 
-      {"phagspa",                            181},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1793,                            181},
+      {-1}, {-1},
 
-      {"cakm",                                43},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1796,                                43},
 
-      {"digit",                                4},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1797,                                4},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"softdotted",                         204},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1802,                         204},
+      {-1}, {-1}, {-1},
 
-      {"inchakma",                           441},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1806,                           441},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1},
 
-      {"inphagspa",                          365},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1818,                          365},
+      {-1}, {-1}, {-1},
 
-      {"inhighprivateusesurrogates",         384},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1822,         384},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"warangciti",                         229},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1836,                         229},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"incjkcompatibilityforms",            393},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1844,            393},
+      {-1}, {-1},
 
-      {"idstrinaryoperator",                  89},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1847,                  89},
+      {-1},
 
-      {"incjkcompatibilityideographs",       387},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1849,       387},
+      {-1},
 
-      {"inkaithi",                           439},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1851,                           439},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"takri",                              214},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1857,                              214},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"phlp",                               186},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1864,                               186},
 
-      {"mendekikakui",                       134},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1865,                       134},
+      {-1},
 
-      {"punct",                                8},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1867,                                8},
+      {-1}, {-1},
 
-      {"otherdefaultignorablecodepoint",     164},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1870,     164},
 
-      {"inkatakana",                         343},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1871,                         343},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"graph",                                5},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1878,                                5},
 
-      {"lydi",                               124},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1879,                               124},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"pd",                                 178},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1885,                                 178},
+      {-1},
 
-      {"incjkstrokes",                       348},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1887,                       348},
+      {-1}, {-1},
 
-      {"lydian",                             124},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1890,                             124},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"sorasompeng",                        205},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1895,                        205},
+      {-1},
 
-      {"incjkcompatibilityideographssupplement", 495},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1897, 495},
+      {-1}, {-1},
 
-      {"meeteimayek",                        133},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1900,                        133},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"otheruppercase",                     170},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1909,                     170},
+      {-1}, {-1},
 
-      {"kali",                               102},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1912,                               102},
+      {-1}, {-1},
 
-      {"inhanguljamo",                       273},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1915,                       273},
+      {-1},
 
-      {"ideographic",                         92},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1917,                         92},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inmeeteimayek",                      380},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1935,                      380},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
 
-      {"incyrillicextendedb",                359},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1948,                359},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"hluw",                                18},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1964,                                18},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"patsyn",                             174},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1969,                             174},
+      {-1}, {-1},
 
-      {"incombiningdiacriticalmarks",        244},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1972,        244},
 
-      {"inarabicsupplement",                 252},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1973,                 252},
+      {-1},
 
-      {"inkanasupplement",                   466},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1975,                   466},
+      {-1},
 
-      {"deprecated",                          61},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1977,                          61},
 
-      {"inverticalforms",                    391},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1978,                    391},
+      {-1}, {-1}, {-1},
 
-      {"incombiningdiacriticalmarksforsymbols", 309},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1982, 309},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"indevanagari",                       258},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1987,                       258},
+      {-1},
 
-      {"inbuhid",                            282},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1989,                            282},
+      {-1},
 
-      {"alphabetic",                          17},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1991,                          17},
+      {-1}, {-1}, {-1},
 
-      {"oldhungarian",                       154},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1995,                       154},
+      {-1}, {-1},
 
-      {"mark",                               125},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1998,                               125},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inkharoshthi",                       427},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2005,                       427},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"deva",                                63},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2011,                                63},
 
-      {"invedicextensions",                  300},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2012,                  300},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"devanagari",                          63},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2019,                          63},
 
-      {"incombiningdiacriticalmarkssupplement", 303},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2020, 303},
+      {-1}, {-1}, {-1},
 
-      {"ingeometricshapesextended",          488},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2024,          488},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inkhmer",                            284},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2030,                            284},
+      {-1}, {-1}, {-1},
 
-      {"changeswhencasemapped",               46},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2034,               46},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"intakri",                            452},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2058,                            452},
+      {-1}, {-1},
 
-      {"dep",                                 61},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2061,                                 61},
 
-      {"takr",                               214},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2062,                               214},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"changeswhencasefolded",               45},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2080,               45},
+      {-1},
 
-      {"kaithi",                              99},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2082,                              99},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
 
-      {"phag",                               181},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2093,                               181},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
 
-      {"inpahawhhmong",                      464},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2104,                      464},
+      {-1},
 
-      {"bidicontrol",                         29},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2106,                         29},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inkhojki",                           445},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2116,                           445},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"bamu",                                25},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2126,                                25},
 
-      {"inbamum",                            360},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2127,                            360},
 
-      {"changeswhentitlecased",               48},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2128,               48},
+      {-1}, {-1},
 
-      {"inkhmersymbols",                     290},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2131,                     290},
 
-      {"uideo",                              224},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2132,                              224},
 
-      {"lu",                                 122},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2133,                                 122},
+      {-1}, {-1},
 
-      {"kthi",                                99},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2136,                                99},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"limbu",                              112},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2145,                              112},
+      {-1},
 
-      {"defaultignorablecodepoint",           60},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2147,           60},
+      {-1}, {-1}, {-1},
 
-      {"inplayingcards",                     480},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2151,                     480},
+      {-1},
 
-      {"inhebrew",                           249},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2153,                           249},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"modifiersymbol",                     201},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2161,                     201},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"ugaritic",                           223},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2167,                           223},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"inlisu",                             357},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2172,                             357},
 
-      {"inglagolitic",                       330},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2173,                       330},
+      {-1},
 
-      {"inprivateusearea",                   386},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2175,                   386},
+      {-1}, {-1},
 
-      {"olck",                               153},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2178,                               153},
+      {-1}, {-1}, {-1},
 
-      {"inbengali",                          259},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2182,                          259},
+      {-1}, {-1},
 
-      {"olchiki",                            153},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2185,                            153},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"caucasianalbanian",                   40},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2195,                   40},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"oldturkic",                          160},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2210,                          160},
 
-      {"beng",                                28},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2211,                                28},
 
-      {"intelugu",                           264},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2212,                           264},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"hyphen",                              87},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2218,                              87},
+      {-1}, {-1},
 
-      {"inbuginese",                         291},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2221,                         291},
+      {-1}, {-1}, {-1},
 
-      {"intagalog",                          280},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2225,                          280},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"cypriot",                             57},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2240,                             57},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inlimbu",                            287},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2249,                            287},
+      {-1}, {-1},
 
-      {"graphemeextend",                      75},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2252,                      75},
+      {-1}, {-1},
 
-      {"tagb",                               210},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2255,                               210},
+      {-1}, {-1}, {-1},
 
-      {"incypriotsyllabary",                 418},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2259,                 418},
+      {-1}, {-1}, {-1},
 
-      {"intagbanwa",                         283},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2263,                         283},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"inaegeannumbers",                    400},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2268,                    400},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inkatakanaphoneticextensions",       349},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2275,       349},
 
-      {"glag",                                71},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2276,                                71},
 
-      {"combiningmark",                      125},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2277,                      125},
 
-      {"palmyrene",                          173},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2278,                          173},
+      {-1},
 
-      {"khmr",                               104},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2280,                               104},
+      {-1}, {-1}, {-1},
 
-      {"khar",                               103},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2284,                               103},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"ugar",                               223},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2292,                               223},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inarabicpresentationformsb",         395},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2300,         395},
+      {-1}, {-1}, {-1},
 
-      {"insupplementaryprivateuseareaa",     498},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2304,     498},
+      {-1},
 
-      {"variationselector",                  228},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2306,                  228},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"nko",                                148},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2311,                                148},
 
-      {"nkoo",                               148},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2312,                               148},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inbamumsupplement",                  461},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2330,                  461},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"tglg",                               209},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2336,                               209},
+      {-1},
 
-      {"any",                                 19},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2338,                                 19},
 
-      {"enclosingmark",                      132},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2339,                      132},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"gujr",                                78},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2348,                                78},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"changeswhenlowercased",               47},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2358,               47},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"knda",                               100},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2363,                               100},
 
-      {"hung",                               154},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2364,                               154},
 
-      {"gujarati",                            78},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2365,                            78},
+      {-1}, {-1},
 
-      {"bopo",                                30},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2368,                                30},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"inmendekikakui",                     476},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2373,                     476},
+      {-1}, {-1},
 
-      {"inbopomofo",                         344},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2376,                         344},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"kharoshthi",                         103},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2386,                         103},
+      {-1},
 
-      {"kannada",                            100},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2388,                            100},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
 
-      {"khoj",                               105},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2401,                               105},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1},
 
-      {"cherokee",                            50},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2422,                            50},
+      {-1}, {-1}, {-1},
 
-      {"inlatinextendedb",                   241},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2426,                   241},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"dashpunctuation",                    178},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2432,                    178},
+      {-1}, {-1},
 
-      {"dupl",                                65},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2435,                                65},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inyisyllables",                      355},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2443,                      355},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"georgian",                            70},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2451,                            70},
+      {-1},
 
-      {"rejang",                             189},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2453,                             189},
+      {-1},
 
-      {"oupper",                             170},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2455,                             170},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
 
-      {"aghb",                                40},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2477,                                40},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"khmer",                              104},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2491,                              104},
+      {-1}, {-1},
 
-      {"grbase",                              74},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2494,                              74},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"currencysymbol",                     195},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2503,                     195},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"incombiningdiacriticalmarksextended", 293},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2529, 293},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
 
-      {"spacingmark",                        131},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2542,                        131},
+      {-1},
 
-      {"orkh",                               160},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2544,                               160},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"cwu",                                 49},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2550,                                 49},
+      {-1},
 
-      {"hebrew",                              84},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2552,                              84},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"insupplementalpunctuation",          337},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2570,          337},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
 
-      {"oldnortharabian",                    156},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2581,                    156},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"incjksymbolsandpunctuation",         341},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2587,         341},
+      {-1}, {-1},
 
-      {"othergraphemeextend",                165},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2590,                165},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"indevanagariextended",               367},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2613,               367},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"tagalog",                            209},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2621,                            209},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"surrogate",                           55},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2628,                           55},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
 
-      {"bopomofo",                            30},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2650,                            30},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
 
-      {"ingeorgiansupplement",               333},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2679,               333},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"uppercase",                          226},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2704,                          226},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"unifiedideograph",                   224},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2711,                   224},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
 
-      {"inpaucinhau",                        455},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2742,                        455},
 
-      {"paucinhau",                          176},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2743,                          176},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
 
-      {"insupplementalsymbolsandpictographs", 490},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2774, 490},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"nonspacingmark",                     138},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2792,                     138},
+      {-1},
 
-      {"inhanguljamoextendedb",              382},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2794,              382},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inhighsurrogates",                   383},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2802,                   383},
 
-      {"punctuation",                        171},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2803,                        171},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
 
-      {"openpunctuation",                    185},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2834,                    185},
 
-      {"bassavah",                            26},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2835,                            26},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
 
-      {"upper",                               10},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2864,                               10},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"insupplementalarrowsb",              326},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2878,              326},
 
-      {"inkanbun",                           346},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2879,                           346},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1},
 
-      {"inkangxiradicals",                   339},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2918,                   339},
+      {-1}, {-1}, {-1},
 
-      {"inmeroiticcursive",                  426},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2922,                  426},
+      {-1}, {-1},
 
-      {"signwriting",                        199},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2925,                        199},
+      {-1}, {-1},
 
-      {"incjkradicalssupplement",            338},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2928,            338},
+      {-1},
 
-      {"pahawhhmong",                        172},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2930,                        172},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
 
-      {"inkayahli",                          368},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2952,                          368},
 
-      {"uppercaseletter",                    122},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2953,                    122},
+      {-1},
 
-      {"batk",                                27},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2955,                                27},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"inbatak",                            296},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2960,                            296},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"incjkcompatibility",                 351},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2968,                 351},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"buhd",                                34},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2983,                                34},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"egyp",                                66},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2989,                                66},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
 
-      {"innoblock",                          500},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3009,                          500},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inegyptianhieroglyphs",              459},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3043,              459},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1},
 
-      {"grek",                                77},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3084,                                77},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
 
-      {"bugi",                                33},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3176,                                33},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"changeswhenuppercased",               49},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3230,               49},
+      {-1}, {-1}, {-1},
 
-      {"paragraphseparator",                 236},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3234,                 236},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
 
-      {"buginese",                            33},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3254,                            33},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"guru",                                79},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3282,                                79},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inbopomofoextended",                 347},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3299,                 347},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
 
-      {"telugu",                             216},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3312,                             216},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
 
-      {"quotationmark",                      187},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3343,                      187},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1},
 
-      {"inkhudawadi",                        447},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3364,                        447},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"kayahli",                            102},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3370,                            102},
+      {-1},
 
-      {"oldsoutharabian",                    159},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3372,                    159},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"insupplementaryprivateuseareab",     499},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3396,     499},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
 
-      {"inhangulcompatibilityjamo",          345},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3479,          345},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1},
 
-      {"zyyy",                                53},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3491,                                53},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"qmark",                              187},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3555,                              187},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
 
-      {"buhid",                               34},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3566,                               34},
 
-      {"sk",                                 201},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3567,                                 201},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"unknown",                            225},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3582,                            225},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"khudawadi",                          106},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3619,                          106},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"katakana",                           101},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3644,                           101},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"incjkunifiedideographsextensionc",   492},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3670,   492},
+      {-1}, {-1},
 
-      {"incjkunifiedideographsextensiona",   352},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3673,   352},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1},
 
-      {"incjkunifiedideographs",             354},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3685,             354},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"incjkunifiedideographsextensione",   494},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3700,   494},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"duployan",                            65},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3743,                            65},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
 
-      {"egyptianhieroglyphs",                 66},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3763,                 66},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"inboxdrawing",                       318},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3853,                       318},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"khojki",                             105},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str4106,                             105},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1},
 
-      {"incjkunifiedideographsextensiond",   493},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str4244,   493},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"batak",                               27},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str4722,                               27},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"incjkunifiedideographsextensionb",   491},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str4765,   491},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"blank",                                2},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str4780,                                2},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"greek",                               77},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str4851,                               77},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
 
-      {"grlink",                              76},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str4943,                              76},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1},
 
-      {"gurmukhi",                            79},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
-      {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str5054,                            79},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"graphemelink",                        76}
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str5162,                        76}
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
@@ -25295,10 +26724,14 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
 
       if (key <= MAX_HASH_VALUE && key >= 0)
         {
-          register const char *s = wordlist[key].name;
+          register int o = wordlist[key].name;
+          if (o >= 0)
+            {
+              register const char *s = o + unicode_prop_name_pool;
 
-          if ((((unsigned char)*str ^ (unsigned char)*s) & ~32) == 0 && !gperf_case_strncmp (str, s, len) && s[len] == '\0')
-            return &wordlist[key];
+              if ((((unsigned char)*str ^ (unsigned char)*s) & ~32) == 0 && !gperf_case_strncmp (str, s, len) && s[len] == '\0')
+                return &wordlist[key];
+            }
         }
     }
   return 0;

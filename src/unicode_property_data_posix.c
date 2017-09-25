@@ -1,5 +1,5 @@
 /* ANSI-C code produced by gperf version 3.0.4 */
-/* Command-line: gperf -T -C -c -t -j1 -L ANSI-C --ignore-case -N unicode_lookup_property_name --output-file gperf.tmp unicode_property_data_posix.gperf  */
+/* Command-line: gperf -T -C -c -t -j1 -L ANSI-C --ignore-case --pic -Q unicode_prop_name_pool -N unicode_lookup_property_name --output-file gperf.tmp unicode_property_data_posix.gperf  */
 /* Computed positions: -k'1,3' */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
@@ -4879,48 +4879,85 @@ hash (register const char *str, register unsigned int len)
   return len + asso_values[(unsigned char)str[2]] + asso_values[(unsigned char)str[0]];
 }
 
+struct unicode_prop_name_pool_t
+  {
+    char unicode_prop_name_pool_str5[sizeof("print")];
+    char unicode_prop_name_pool_str6[sizeof("punct")];
+    char unicode_prop_name_pool_str7[sizeof("alpha")];
+    char unicode_prop_name_pool_str8[sizeof("alnum")];
+    char unicode_prop_name_pool_str9[sizeof("xdigit")];
+    char unicode_prop_name_pool_str10[sizeof("newline")];
+    char unicode_prop_name_pool_str11[sizeof("upper")];
+    char unicode_prop_name_pool_str12[sizeof("ascii")];
+    char unicode_prop_name_pool_str13[sizeof("cntrl")];
+    char unicode_prop_name_pool_str14[sizeof("space")];
+    char unicode_prop_name_pool_str15[sizeof("word")];
+    char unicode_prop_name_pool_str16[sizeof("lower")];
+    char unicode_prop_name_pool_str17[sizeof("graph")];
+    char unicode_prop_name_pool_str18[sizeof("digit")];
+    char unicode_prop_name_pool_str19[sizeof("blank")];
+  };
+static const struct unicode_prop_name_pool_t unicode_prop_name_pool_contents =
+  {
+    "print",
+    "punct",
+    "alpha",
+    "alnum",
+    "xdigit",
+    "newline",
+    "upper",
+    "ascii",
+    "cntrl",
+    "space",
+    "word",
+    "lower",
+    "graph",
+    "digit",
+    "blank"
+  };
+#define unicode_prop_name_pool ((const char *) &unicode_prop_name_pool_contents)
 #ifdef __GNUC__
 __inline
 #if defined __GNUC_STDC_INLINE__ || defined __GNUC_GNU_INLINE__
 __attribute__ ((__gnu_inline__))
 #endif
 #endif
-const struct PropertyNameCtype *
+const struct PoolPropertyNameCtype *
 unicode_lookup_property_name (register const char *str, register unsigned int len)
 {
-  static const struct PropertyNameCtype wordlist[] =
+  static const struct PoolPropertyNameCtype wordlist[] =
     {
-      {""}, {""}, {""}, {""}, {""},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {"print",                                7},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str5,                                7},
 
-      {"punct",                                8},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str6,                                8},
 
-      {"alpha",                                1},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str7,                                1},
 
-      {"alnum",                               13},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str8,                               13},
 
-      {"xdigit",                              11},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str9,                              11},
 
-      {"newline",                              0},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str10,                              0},
 
-      {"upper",                               10},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str11,                               10},
 
-      {"ascii",                               14},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str12,                               14},
 
-      {"cntrl",                                3},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str13,                                3},
 
-      {"space",                                9},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str14,                                9},
 
-      {"word",                                12},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str15,                                12},
 
-      {"lower",                                6},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str16,                                6},
 
-      {"graph",                                5},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str17,                                5},
 
-      {"digit",                                4},
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str18,                                4},
 
-      {"blank",                                2}
+      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str19,                                2}
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
@@ -4929,10 +4966,14 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
 
       if (key <= MAX_HASH_VALUE && key >= 0)
         {
-          register const char *s = wordlist[key].name;
+          register int o = wordlist[key].name;
+          if (o >= 0)
+            {
+              register const char *s = o + unicode_prop_name_pool;
 
-          if ((((unsigned char)*str ^ (unsigned char)*s) & ~32) == 0 && !gperf_case_strncmp (str, s, len) && s[len] == '\0')
-            return &wordlist[key];
+              if ((((unsigned char)*str ^ (unsigned char)*s) & ~32) == 0 && !gperf_case_strncmp (str, s, len) && s[len] == '\0')
+                return &wordlist[key];
+            }
         }
     }
   return 0;
