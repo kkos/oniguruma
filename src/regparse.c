@@ -4459,20 +4459,91 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       if (!PEND && PPEEK_IS('?') &&
           IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_QMARK_GROUP_EFFECT)) {
         PINC;
-        if (!PEND && PPEEK_IS('#')) {
-          PFETCH(c);
-          while (1) {
-            if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+        if (! PEND) {
+          c = PPEEK;
+          if (c == '#') {
             PFETCH(c);
-            if (c == MC_ESC(syn)) {
-              if (!PEND) PFETCH(c);
+            while (1) {
+              if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+              PFETCH(c);
+              if (c == MC_ESC(syn)) {
+                if (! PEND) PFETCH(c);
+              }
+              else {
+                if (c == ')') break;
+              }
             }
-            else {
-              if (c == ')') break;
+            goto start;
+          }
+          else if (IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_QMARK_PERL_SUBEXP_CALL)) {
+            int gnum;
+            UChar* name;
+            UChar* name_end;
+            enum REF_NUM num_type;
+
+            switch (c) {
+            case '&':
+              {
+                PINC;
+                name = p;
+                r = fetch_name((OnigCodePoint )'(', &p, end, &name_end, env, &gnum,
+                               &num_type, 0);
+                if (r < 0) return r;
+
+                tok->type = TK_CALL;
+                tok->u.call.by_number = 0;
+                tok->u.call.gnum      = 0;
+                tok->u.call.name      = name;
+                tok->u.call.name_end  = name_end;
+              }
+              break;
+
+            case 'R':
+              tok->type = TK_CALL;
+              tok->u.call.by_number = 1;
+              tok->u.call.gnum      = 0;
+              tok->u.call.name      = p;
+              PINC;
+              if (! PPEEK_IS(')')) return ONIGERR_INVALID_GROUP_NAME;
+              tok->u.call.name_end  = p;
+              break;
+
+            case '-':
+            case '+':
+              goto lparen_qmark_num;
+              break;
+            default:
+              if (! ONIGENC_IS_CODE_DIGIT(enc, c)) goto lparen_qmark_end;
+
+            lparen_qmark_num:
+              {
+                name = p;
+                r = fetch_name((OnigCodePoint )'(', &p, end, &name_end, env,
+                               &gnum, &num_type, 1);
+                if (r < 0) return r;
+
+                if (num_type == IS_NOT_NUM) {
+                  return ONIGERR_INVALID_GROUP_NAME;
+                }
+                else {
+                  if (num_type == IS_REL_NUM) {
+                    gnum = backref_rel_to_abs(gnum, env);
+                    if (gnum < 0)
+                      return ONIGERR_UNDEFINED_GROUP_REFERENCE;
+                  }
+                  tok->u.call.by_number = 1;
+                  tok->u.call.gnum      = gnum;
+                }
+
+                tok->type = TK_CALL;
+                tok->u.call.name     = name;
+                tok->u.call.name_end = name_end;
+              }
+              break;
             }
           }
-          goto start;
         }
+      lparen_qmark_end:
         PUNFETCH;
       }
 
