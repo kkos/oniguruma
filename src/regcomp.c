@@ -4946,35 +4946,35 @@ typedef struct {
 typedef struct {
   int left_anchor;
   int right_anchor;
-} OptAncInfo;
+} OptAnc;
 
 typedef struct {
   MinMaxLen  mmd; /* info position */
-  OptAncInfo anc;
+  OptAnc     anc;
 
   int   reach_end;
   int   ignore_case;
   int   len;
   UChar s[OPT_EXACT_MAXLEN];
-} OptExactInfo;
+} OptExact;
 
 typedef struct {
   MinMaxLen mmd; /* info position */
-  OptAncInfo anc;
+  OptAnc anc;
 
   int   value;      /* weighted value */
   UChar map[ONIG_CHAR_TABLE_SIZE];
-} OptMapInfo;
+} OptMap;
 
 typedef struct {
   MinMaxLen    len;
 
-  OptAncInfo   anc;
-  OptExactInfo exb;    /* boundary */
-  OptExactInfo exm;    /* middle */
-  OptExactInfo expr;   /* prec read (?=...) */
+  OptAnc   anc;
+  OptExact exb;    /* boundary */
+  OptExact exm;    /* middle */
+  OptExact expr;   /* prec read (?=...) */
 
-  OptMapInfo   map;   /* boundary */
+  OptMap   map;   /* boundary */
 } NodeOptInfo;
 
 
@@ -5105,20 +5105,20 @@ copy_opt_env(OptEnv* to, OptEnv* from)
 }
 
 static void
-clear_opt_anc_info(OptAncInfo* anc)
+clear_opt_anc_info(OptAnc* anc)
 {
   anc->left_anchor  = 0;
   anc->right_anchor = 0;
 }
 
 static void
-copy_opt_anc_info(OptAncInfo* to, OptAncInfo* from)
+copy_opt_anc_info(OptAnc* to, OptAnc* from)
 {
   *to = *from;
 }
 
 static void
-concat_opt_anc_info(OptAncInfo* to, OptAncInfo* left, OptAncInfo* right,
+concat_opt_anc_info(OptAnc* to, OptAnc* left, OptAnc* right,
 		    OnigLen left_len, OnigLen right_len)
 {
   clear_opt_anc_info(to);
@@ -5149,7 +5149,7 @@ is_left_anchor(int anc)
 }
 
 static int
-is_set_opt_anc_info(OptAncInfo* to, int anc)
+is_set_opt_anc_info(OptAnc* to, int anc)
 {
   if ((to->left_anchor & anc) != 0) return 1;
 
@@ -5157,7 +5157,7 @@ is_set_opt_anc_info(OptAncInfo* to, int anc)
 }
 
 static void
-add_opt_anc_info(OptAncInfo* to, int anc)
+add_opt_anc_info(OptAnc* to, int anc)
 {
   if (is_left_anchor(anc))
     to->left_anchor |= anc;
@@ -5166,7 +5166,7 @@ add_opt_anc_info(OptAncInfo* to, int anc)
 }
 
 static void
-remove_opt_anc_info(OptAncInfo* to, int anc)
+remove_opt_anc_info(OptAnc* to, int anc)
 {
   if (is_left_anchor(anc))
     to->left_anchor &= ~anc;
@@ -5175,20 +5175,20 @@ remove_opt_anc_info(OptAncInfo* to, int anc)
 }
 
 static void
-alt_merge_opt_anc_info(OptAncInfo* to, OptAncInfo* add)
+alt_merge_opt_anc_info(OptAnc* to, OptAnc* add)
 {
   to->left_anchor  &= add->left_anchor;
   to->right_anchor &= add->right_anchor;
 }
 
 static int
-is_full_opt_exact_info(OptExactInfo* ex)
+is_full_opt_exact_info(OptExact* ex)
 {
   return (ex->len >= OPT_EXACT_MAXLEN ? 1 : 0);
 }
 
 static void
-clear_opt_exact_info(OptExactInfo* ex)
+clear_opt_exact_info(OptExact* ex)
 {
   clear_mml(&ex->mmd);
   clear_opt_anc_info(&ex->anc);
@@ -5199,17 +5199,17 @@ clear_opt_exact_info(OptExactInfo* ex)
 }
 
 static void
-copy_opt_exact_info(OptExactInfo* to, OptExactInfo* from)
+copy_opt_exact_info(OptExact* to, OptExact* from)
 {
   *to = *from;
 }
 
 static void
-concat_opt_exact_info(OptExactInfo* to, OptExactInfo* add, OnigEncoding enc)
+concat_opt_exact_info(OptExact* to, OptExact* add, OnigEncoding enc)
 {
   int i, j, len;
   UChar *p, *end;
-  OptAncInfo tanc;
+  OptAnc tanc;
 
   if (! to->ignore_case && add->ignore_case) {
     if (to->len >= add->len) return ;  /* avoid */
@@ -5235,7 +5235,7 @@ concat_opt_exact_info(OptExactInfo* to, OptExactInfo* add, OnigEncoding enc)
 }
 
 static void
-concat_opt_exact_info_str(OptExactInfo* to, UChar* s, UChar* end,
+concat_opt_exact_info_str(OptExact* to, UChar* s, UChar* end,
 			  int raw ARG_UNUSED, OnigEncoding enc)
 {
   int i, j, len;
@@ -5252,7 +5252,7 @@ concat_opt_exact_info_str(OptExactInfo* to, UChar* s, UChar* end,
 }
 
 static void
-alt_merge_opt_exact_info(OptExactInfo* to, OptExactInfo* add, OptEnv* env)
+alt_merge_opt_exact_info(OptExact* to, OptExact* add, OptEnv* env)
 {
   int i, j, len;
 
@@ -5288,7 +5288,7 @@ alt_merge_opt_exact_info(OptExactInfo* to, OptExactInfo* add, OptEnv* env)
 }
 
 static void
-select_opt_exact_info(OnigEncoding enc, OptExactInfo* now, OptExactInfo* alt)
+select_opt_exact_info(OnigEncoding enc, OptExact* now, OptExact* alt)
 {
   int v1, v2;
 
@@ -5319,9 +5319,9 @@ select_opt_exact_info(OnigEncoding enc, OptExactInfo* now, OptExactInfo* alt)
 }
 
 static void
-clear_opt_map_info(OptMapInfo* map)
+clear_opt_map_info(OptMap* map)
 {
-  static const OptMapInfo clean_info = {
+  static const OptMap clean_info = {
     {0, 0}, {0, 0}, 0,
     {
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -5343,17 +5343,17 @@ clear_opt_map_info(OptMapInfo* map)
     }
   };
 
-  xmemcpy(map, &clean_info, sizeof(OptMapInfo));
+  xmemcpy(map, &clean_info, sizeof(OptMap));
 }
 
 static void
-copy_opt_map_info(OptMapInfo* to, OptMapInfo* from)
+copy_opt_map_info(OptMap* to, OptMap* from)
 {
   *to = *from;
 }
 
 static void
-add_char_opt_map_info(OptMapInfo* map, UChar c, OnigEncoding enc)
+add_char_opt_map_info(OptMap* map, UChar c, OnigEncoding enc)
 {
   if (map->map[c] == 0) {
     map->map[c] = 1;
@@ -5362,7 +5362,7 @@ add_char_opt_map_info(OptMapInfo* map, UChar c, OnigEncoding enc)
 }
 
 static int
-add_char_amb_opt_map_info(OptMapInfo* map, UChar* p, UChar* end,
+add_char_amb_opt_map_info(OptMap* map, UChar* p, UChar* end,
                           OnigEncoding enc, OnigCaseFoldType case_fold_flag)
 {
   OnigCaseFoldCodeItem items[ONIGENC_GET_CASE_FOLD_CODES_MAX_NUM];
@@ -5384,7 +5384,7 @@ add_char_amb_opt_map_info(OptMapInfo* map, UChar* p, UChar* end,
 }
 
 static void
-select_opt_map_info(OptMapInfo* now, OptMapInfo* alt)
+select_opt_map_info(OptMap* now, OptMap* alt)
 {
   static int z = 1<<15; /* 32768: something big value */
 
@@ -5403,7 +5403,7 @@ select_opt_map_info(OptMapInfo* now, OptMapInfo* alt)
 }
 
 static int
-comp_opt_exact_or_map_info(OptExactInfo* e, OptMapInfo* m)
+comp_opt_exact_or_map_info(OptExact* e, OptMap* m)
 {
 #define COMP_EM_BASE  20
   int ve, vm;
@@ -5416,7 +5416,7 @@ comp_opt_exact_or_map_info(OptExactInfo* e, OptMapInfo* m)
 }
 
 static void
-alt_merge_opt_map_info(OnigEncoding enc, OptMapInfo* to, OptMapInfo* add)
+alt_merge_opt_map_info(OnigEncoding enc, OptMap* to, OptMap* add)
 {
   int i, val;
 
@@ -5471,7 +5471,7 @@ static void
 concat_left_node_opt_info(OnigEncoding enc, NodeOptInfo* to, NodeOptInfo* add)
 {
   int exb_reach, exm_reach;
-  OptAncInfo tanc;
+  OptAnc tanc;
 
   concat_opt_anc_info(&tanc, &to->anc, &add->anc, to->len.max, add->len.max);
   copy_opt_anc_info(&to->anc, &tanc);
@@ -5908,7 +5908,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
 }
 
 static int
-set_optimize_exact_info(regex_t* reg, OptExactInfo* e)
+set_optimize_exact_info(regex_t* reg, OptExact* e)
 {
   int r;
 
@@ -5955,7 +5955,7 @@ set_optimize_exact_info(regex_t* reg, OptExactInfo* e)
 }
 
 static void
-set_optimize_map_info(regex_t* reg, OptMapInfo* m)
+set_optimize_map_info(regex_t* reg, OptMap* m)
 {
   int i;
 
@@ -5972,7 +5972,7 @@ set_optimize_map_info(regex_t* reg, OptMapInfo* m)
 }
 
 static void
-set_sub_anchor(regex_t* reg, OptAncInfo* anc)
+set_sub_anchor(regex_t* reg, OptAnc* anc)
 {
   reg->sub_anchor |= anc->left_anchor  & ANCHOR_BEGIN_LINE;
   reg->sub_anchor |= anc->right_anchor & ANCHOR_END_LINE;
