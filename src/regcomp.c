@@ -4951,7 +4951,6 @@ typedef struct {
 typedef struct {
   MinMaxLen  mmd; /* info position */
   OptAnc     anc;
-
   int   reach_end;
   int   ignore_case;
   int   len;
@@ -4961,21 +4960,18 @@ typedef struct {
 typedef struct {
   MinMaxLen mmd; /* info position */
   OptAnc anc;
-
   int   value;      /* weighted value */
   UChar map[ONIG_CHAR_TABLE_SIZE];
 } OptMap;
 
 typedef struct {
-  MinMaxLen    len;
-
+  MinMaxLen len;
   OptAnc   anc;
   OptExact exb;    /* boundary */
   OptExact exm;    /* middle */
   OptExact expr;   /* prec read (?=...) */
-
   OptMap   map;   /* boundary */
-} NodeOptInfo;
+} NodeOpt;
 
 
 static int
@@ -5443,7 +5439,7 @@ alt_merge_opt_map_info(OnigEncoding enc, OptMap* to, OptMap* add)
 }
 
 static void
-set_bound_node_opt_info(NodeOptInfo* opt, MinMaxLen* mmd)
+set_bound_node_opt_info(NodeOpt* opt, MinMaxLen* mmd)
 {
   copy_mml(&(opt->exb.mmd),  mmd);
   copy_mml(&(opt->expr.mmd), mmd);
@@ -5451,7 +5447,7 @@ set_bound_node_opt_info(NodeOptInfo* opt, MinMaxLen* mmd)
 }
 
 static void
-clear_node_opt_info(NodeOptInfo* opt)
+clear_node_opt_info(NodeOpt* opt)
 {
   clear_mml(&opt->len);
   clear_opt_anc_info(&opt->anc);
@@ -5462,13 +5458,13 @@ clear_node_opt_info(NodeOptInfo* opt)
 }
 
 static void
-copy_node_opt_info(NodeOptInfo* to, NodeOptInfo* from)
+copy_node_opt_info(NodeOpt* to, NodeOpt* from)
 {
   *to = *from;
 }
 
 static void
-concat_left_node_opt_info(OnigEncoding enc, NodeOptInfo* to, NodeOptInfo* add)
+concat_left_node_opt_info(OnigEncoding enc, NodeOpt* to, NodeOpt* add)
 {
   int exb_reach, exm_reach;
   OptAnc tanc;
@@ -5527,7 +5523,7 @@ concat_left_node_opt_info(OnigEncoding enc, NodeOptInfo* to, NodeOptInfo* add)
 }
 
 static void
-alt_merge_node_opt_info(NodeOptInfo* to, NodeOptInfo* add, OptEnv* env)
+alt_merge_node_opt_info(NodeOpt* to, NodeOpt* add, OptEnv* env)
 {
   alt_merge_opt_anc_info  (&to->anc,  &add->anc);
   alt_merge_opt_exact_info(&to->exb,  &add->exb, env);
@@ -5542,7 +5538,7 @@ alt_merge_node_opt_info(NodeOptInfo* to, NodeOptInfo* add, OptEnv* env)
 #define MAX_NODE_OPT_INFO_REF_COUNT    5
 
 static int
-optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
+optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
 {
   int r = 0;
 
@@ -5553,7 +5549,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
   case NODE_LIST:
     {
       OptEnv nenv;
-      NodeOptInfo nopt;
+      NodeOpt nopt;
       Node* nd = node;
 
       copy_opt_env(&nenv, env);
@@ -5569,7 +5565,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
 
   case NODE_ALT:
     {
-      NodeOptInfo nopt;
+      NodeOpt nopt;
       Node* nd = node;
 
       do {
@@ -5708,7 +5704,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
 
     case ANCHOR_PREC_READ:
       {
-        NodeOptInfo nopt;
+        NodeOpt nopt;
 
         r = optimize_node_left(NODE_BODY(node), &nopt, env);
         if (r == 0) {
@@ -5772,7 +5768,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
     {
       int i;
       OnigLen min, max;
-      NodeOptInfo nopt;
+      NodeOpt nopt;
       QuantNode* qn = QUANT_(node);
 
       r = optimize_node_left(NODE_BODY(node), &nopt, env);
@@ -5867,7 +5863,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
       case ENCLOSURE_IF_ELSE:
         {
           OptEnv nenv;
-          NodeOptInfo nopt;
+          NodeOpt nopt;
 
           copy_opt_env(&nenv, env);
           r = optimize_node_left(NODE_ENCLOSURE_BODY(en), &nopt, &nenv);
@@ -5987,7 +5983,7 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
 {
 
   int r;
-  NodeOptInfo opt;
+  NodeOpt opt;
   OptEnv env;
 
   env.enc            = reg->enc;
