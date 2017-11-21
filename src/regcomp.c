@@ -5315,7 +5315,7 @@ select_opt_exact(OnigEncoding enc, OptExact* now, OptExact* alt)
 }
 
 static void
-clear_opt_map_info(OptMap* map)
+clear_opt_map(OptMap* map)
 {
   static const OptMap clean_info = {
     {0, 0}, {0, 0}, 0,
@@ -5343,13 +5343,13 @@ clear_opt_map_info(OptMap* map)
 }
 
 static void
-copy_opt_map_info(OptMap* to, OptMap* from)
+copy_opt_map(OptMap* to, OptMap* from)
 {
   *to = *from;
 }
 
 static void
-add_char_opt_map_info(OptMap* map, UChar c, OnigEncoding enc)
+add_char_opt_map(OptMap* map, UChar c, OnigEncoding enc)
 {
   if (map->map[c] == 0) {
     map->map[c] = 1;
@@ -5358,14 +5358,14 @@ add_char_opt_map_info(OptMap* map, UChar c, OnigEncoding enc)
 }
 
 static int
-add_char_amb_opt_map_info(OptMap* map, UChar* p, UChar* end,
+add_char_amb_opt_map(OptMap* map, UChar* p, UChar* end,
                           OnigEncoding enc, OnigCaseFoldType case_fold_flag)
 {
   OnigCaseFoldCodeItem items[ONIGENC_GET_CASE_FOLD_CODES_MAX_NUM];
   UChar buf[ONIGENC_CODE_TO_MBC_MAXLEN];
   int i, n;
 
-  add_char_opt_map_info(map, p[0], enc);
+  add_char_opt_map(map, p[0], enc);
 
   case_fold_flag = DISABLE_CASE_FOLD_MULTI_CHAR(case_fold_flag);
   n = ONIGENC_GET_CASE_FOLD_CODES_BY_STR(enc, case_fold_flag, p, end, items);
@@ -5373,14 +5373,14 @@ add_char_amb_opt_map_info(OptMap* map, UChar* p, UChar* end,
 
   for (i = 0; i < n; i++) {
     ONIGENC_CODE_TO_MBC(enc, items[i].code[0], buf);
-    add_char_opt_map_info(map, buf[0], enc);
+    add_char_opt_map(map, buf[0], enc);
   }
 
   return 0;
 }
 
 static void
-select_opt_map_info(OptMap* now, OptMap* alt)
+select_opt_map(OptMap* now, OptMap* alt)
 {
   static int z = 1<<15; /* 32768: something big value */
 
@@ -5388,18 +5388,18 @@ select_opt_map_info(OptMap* now, OptMap* alt)
 
   if (alt->value == 0) return ;
   if (now->value == 0) {
-    copy_opt_map_info(now, alt);
+    copy_opt_map(now, alt);
     return ;
   }
 
   v1 = z / now->value;
   v2 = z / alt->value;
   if (comp_distance_value(&now->mmd, &alt->mmd, v1, v2) > 0)
-    copy_opt_map_info(now, alt);
+    copy_opt_map(now, alt);
 }
 
 static int
-comp_opt_exact_or_map_info(OptExact* e, OptMap* m)
+comp_opt_exact_or_map(OptExact* e, OptMap* m)
 {
 #define COMP_EM_BASE  20
   int ve, vm;
@@ -5412,14 +5412,14 @@ comp_opt_exact_or_map_info(OptExact* e, OptMap* m)
 }
 
 static void
-alt_merge_opt_map_info(OnigEncoding enc, OptMap* to, OptMap* add)
+alt_merge_opt_map(OnigEncoding enc, OptMap* to, OptMap* add)
 {
   int i, val;
 
   /* if (! is_equal_mml(&to->mmd, &add->mmd)) return ; */
   if (to->value == 0) return ;
   if (add->value == 0 || to->mmd.max < add->mmd.min) {
-    clear_opt_map_info(to);
+    clear_opt_map(to);
     return ;
   }
 
@@ -5454,7 +5454,7 @@ clear_node_opt_info(NodeOpt* opt)
   clear_opt_exact(&opt->exb);
   clear_opt_exact(&opt->exm);
   clear_opt_exact(&opt->expr);
-  clear_opt_map_info(&opt->map);
+  clear_opt_map(&opt->map);
 }
 
 static void
@@ -5517,7 +5517,7 @@ concat_left_node_opt_info(OnigEncoding enc, NodeOpt* to, NodeOpt* add)
     copy_opt_exact(&to->expr, &add->expr);
   }
 
-  select_opt_map_info(&to->map, &add->map);
+  select_opt_map(&to->map, &add->map);
 
   add_mml(&to->len, &add->len);
 }
@@ -5529,7 +5529,7 @@ alt_merge_node_opt_info(NodeOpt* to, NodeOpt* add, OptEnv* env)
   alt_merge_opt_exact(&to->exb,  &add->exb, env);
   alt_merge_opt_exact(&to->exm,  &add->exm, env);
   alt_merge_opt_exact(&to->expr, &add->expr, env);
-  alt_merge_opt_map_info(env->enc, &to->map,  &add->map);
+  alt_merge_opt_map(env->enc, &to->map,  &add->map);
 
   alt_merge_mml(&to->len, &add->len);
 }
@@ -5588,7 +5588,7 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
         concat_opt_exact_str(&opt->exb, sn->s, sn->end,
                                   NODE_STRING_IS_RAW(node), env->enc);
         if (slen > 0) {
-          add_char_opt_map_info(&opt->map, *(sn->s), env->enc);
+          add_char_opt_map(&opt->map, *(sn->s), env->enc);
         }
         set_mml(&opt->len, slen, slen);
       }
@@ -5605,7 +5605,7 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
           opt->exb.ignore_case = 1;
 
           if (slen > 0) {
-            r = add_char_amb_opt_map_info(&opt->map, sn->s, sn->end,
+            r = add_char_amb_opt_map(&opt->map, sn->s, sn->end,
                                           env->enc, env->case_fold_flag);
             if (r != 0) break;
           }
@@ -5638,7 +5638,7 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
         for (i = 0; i < SINGLE_BYTE_SIZE; i++) {
           z = BITSET_AT(cc->bs, i);
           if ((z && !IS_NCCLASS_NOT(cc)) || (!z && IS_NCCLASS_NOT(cc))) {
-            add_char_opt_map_info(&opt->map, (UChar )i, env->enc);
+            add_char_opt_map(&opt->map, (UChar )i, env->enc);
           }
         }
         set_mml(&opt->len, 1, 1);
@@ -5665,17 +5665,17 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
           if (CTYPE_(node)->not != 0) {
             for (i = 0; i < range; i++) {
               if (! ONIGENC_IS_CODE_WORD(env->enc, i)) {
-                add_char_opt_map_info(&opt->map, (UChar )i, env->enc);
+                add_char_opt_map(&opt->map, (UChar )i, env->enc);
               }
             }
             for (i = range; i < SINGLE_BYTE_SIZE; i++) {
-              add_char_opt_map_info(&opt->map, (UChar )i, env->enc);
+              add_char_opt_map(&opt->map, (UChar )i, env->enc);
             }
           }
           else {
             for (i = 0; i < range; i++) {
               if (ONIGENC_IS_CODE_WORD(env->enc, i)) {
-                add_char_opt_map_info(&opt->map, (UChar )i, env->enc);
+                add_char_opt_map(&opt->map, (UChar )i, env->enc);
               }
             }
           }
@@ -5716,7 +5716,7 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
           opt->expr.reach_end = 0;
 
           if (nopt.map.value > 0)
-            copy_opt_map_info(&opt->map, &nopt.map);
+            copy_opt_map(&opt->map, &nopt.map);
         }
       }
       break;
@@ -5951,7 +5951,7 @@ set_optimize_exact(regex_t* reg, OptExact* e)
 }
 
 static void
-set_optimize_map_info(regex_t* reg, OptMap* m)
+set_optimize_map(regex_t* reg, OptMap* m)
 {
   int i;
 
@@ -6013,7 +6013,7 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
   if (opt.exb.len > 0 || opt.exm.len > 0) {
     select_opt_exact(reg->enc, &opt.exb, &opt.exm);
     if (opt.map.value > 0 &&
-        comp_opt_exact_or_map_info(&opt.exb, &opt.map) > 0) {
+        comp_opt_exact_or_map(&opt.exb, &opt.map) > 0) {
       goto set_map;
     }
     else {
@@ -6023,7 +6023,7 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
   }
   else if (opt.map.value > 0) {
   set_map:
-    set_optimize_map_info(reg, &opt.map);
+    set_optimize_map(reg, &opt.map);
     set_sub_anchor(reg, &opt.map.anc);
   }
   else {
