@@ -4944,8 +4944,8 @@ typedef struct {
 } OptEnv;
 
 typedef struct {
-  int left_anchor;
-  int right_anchor;
+  int left;
+  int right;
 } OptAnc;
 
 typedef struct {
@@ -5103,8 +5103,8 @@ copy_opt_env(OptEnv* to, OptEnv* from)
 static void
 clear_opt_anc_info(OptAnc* anc)
 {
-  anc->left_anchor  = 0;
-  anc->right_anchor = 0;
+  anc->left  = 0;
+  anc->right = 0;
 }
 
 static void
@@ -5119,22 +5119,22 @@ concat_opt_anc_info(OptAnc* to, OptAnc* left, OptAnc* right,
 {
   clear_opt_anc_info(to);
 
-  to->left_anchor = left->left_anchor;
+  to->left = left->left;
   if (left_len == 0) {
-    to->left_anchor |= right->left_anchor;
+    to->left |= right->left;
   }
 
-  to->right_anchor = right->right_anchor;
+  to->right = right->right;
   if (right_len == 0) {
-    to->right_anchor |= left->right_anchor;
+    to->right |= left->right;
   }
   else {
-    to->right_anchor |= (left->right_anchor & ANCHOR_PREC_READ_NOT);
+    to->right |= (left->right & ANCHOR_PREC_READ_NOT);
   }
 }
 
 static int
-is_left_anchor(int anc)
+is_left(int anc)
 {
   if (anc == ANCHOR_END_BUF || anc == ANCHOR_SEMI_END_BUF ||
       anc == ANCHOR_END_LINE || anc == ANCHOR_PREC_READ ||
@@ -5147,34 +5147,34 @@ is_left_anchor(int anc)
 static int
 is_set_opt_anc_info(OptAnc* to, int anc)
 {
-  if ((to->left_anchor & anc) != 0) return 1;
+  if ((to->left & anc) != 0) return 1;
 
-  return ((to->right_anchor & anc) != 0 ? 1 : 0);
+  return ((to->right & anc) != 0 ? 1 : 0);
 }
 
 static void
 add_opt_anc_info(OptAnc* to, int anc)
 {
-  if (is_left_anchor(anc))
-    to->left_anchor |= anc;
+  if (is_left(anc))
+    to->left |= anc;
   else
-    to->right_anchor |= anc;
+    to->right |= anc;
 }
 
 static void
 remove_opt_anc_info(OptAnc* to, int anc)
 {
-  if (is_left_anchor(anc))
-    to->left_anchor &= ~anc;
+  if (is_left(anc))
+    to->left &= ~anc;
   else
-    to->right_anchor &= ~anc;
+    to->right &= ~anc;
 }
 
 static void
 alt_merge_opt_anc_info(OptAnc* to, OptAnc* add)
 {
-  to->left_anchor  &= add->left_anchor;
-  to->right_anchor &= add->right_anchor;
+  to->left  &= add->left;
+  to->right &= add->right;
 }
 
 static int
@@ -5226,7 +5226,7 @@ concat_opt_exact_info(OptExact* to, OptExact* add, OnigEncoding enc)
   to->reach_end = (p == end ? add->reach_end : 0);
 
   concat_opt_anc_info(&tanc, &to->anc, &add->anc, 1, 1);
-  if (! to->reach_end) tanc.right_anchor = 0;
+  if (! to->reach_end) tanc.right = 0;
   copy_opt_anc_info(&to->anc, &tanc);
 }
 
@@ -5280,7 +5280,7 @@ alt_merge_opt_exact_info(OptExact* to, OptExact* add, OptEnv* env)
   to->ignore_case |= add->ignore_case;
 
   alt_merge_opt_anc_info(&to->anc, &add->anc);
-  if (! to->reach_end) to->anc.right_anchor = 0;
+  if (! to->reach_end) to->anc.right = 0;
 }
 
 static void
@@ -5480,7 +5480,7 @@ concat_left_node_opt_info(OnigEncoding enc, NodeOpt* to, NodeOpt* add)
 
   if (add->map.value > 0 && to->len.max == 0) {
     if (add->map.mmd.max == 0)
-      add->map.anc.left_anchor |= to->anc.left_anchor;
+      add->map.anc.left |= to->anc.left;
   }
 
   exb_reach = to->exb.reach_end;
@@ -5970,8 +5970,8 @@ set_optimize_map_info(regex_t* reg, OptMap* m)
 static void
 set_sub_anchor(regex_t* reg, OptAnc* anc)
 {
-  reg->sub_anchor |= anc->left_anchor  & ANCHOR_BEGIN_LINE;
-  reg->sub_anchor |= anc->right_anchor & ANCHOR_END_LINE;
+  reg->sub_anchor |= anc->left  & ANCHOR_BEGIN_LINE;
+  reg->sub_anchor |= anc->right & ANCHOR_END_LINE;
 }
 
 #if defined(ONIG_DEBUG_COMPILE) || defined(ONIG_DEBUG_MATCH)
@@ -5995,14 +5995,14 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
   r = optimize_node_left(node, &opt, &env);
   if (r != 0) return r;
 
-  reg->anchor = opt.anc.left_anchor & (ANCHOR_BEGIN_BUF |
+  reg->anchor = opt.anc.left & (ANCHOR_BEGIN_BUF |
         ANCHOR_BEGIN_POSITION | ANCHOR_ANYCHAR_STAR | ANCHOR_ANYCHAR_STAR_ML |
         ANCHOR_LOOK_BEHIND);
 
-  if ((opt.anc.left_anchor & (ANCHOR_LOOK_BEHIND | ANCHOR_PREC_READ_NOT)) != 0)
+  if ((opt.anc.left & (ANCHOR_LOOK_BEHIND | ANCHOR_PREC_READ_NOT)) != 0)
     reg->anchor &= ~ANCHOR_ANYCHAR_STAR_ML;
 
-  reg->anchor |= opt.anc.right_anchor & (ANCHOR_END_BUF | ANCHOR_SEMI_END_BUF |
+  reg->anchor |= opt.anc.right & (ANCHOR_END_BUF | ANCHOR_SEMI_END_BUF |
        ANCHOR_PREC_READ_NOT);
 
   if (reg->anchor & (ANCHOR_END_BUF | ANCHOR_SEMI_END_BUF)) {
@@ -6027,9 +6027,9 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
     set_sub_anchor(reg, &opt.map.anc);
   }
   else {
-    reg->sub_anchor |= opt.anc.left_anchor & ANCHOR_BEGIN_LINE;
+    reg->sub_anchor |= opt.anc.left & ANCHOR_BEGIN_LINE;
     if (opt.len.max == 0)
-      reg->sub_anchor |= opt.anc.right_anchor & ANCHOR_END_LINE;
+      reg->sub_anchor |= opt.anc.right & ANCHOR_END_LINE;
   }
 
 #if defined(ONIG_DEBUG_COMPILE) || defined(ONIG_DEBUG_MATCH)
