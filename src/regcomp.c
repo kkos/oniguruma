@@ -5105,7 +5105,7 @@ copy_opt_anc_info(OptAnc* to, OptAnc* from)
 
 static void
 concat_opt_anc_info(OptAnc* to, OptAnc* left, OptAnc* right,
-		    OnigLen left_len, OnigLen right_len)
+		                OnigLen left_len, OnigLen right_len)
 {
   clear_opt_anc_info(to);
 
@@ -5126,7 +5126,7 @@ concat_opt_anc_info(OptAnc* to, OptAnc* left, OptAnc* right,
 static int
 is_left(int anc)
 {
-  if (anc == ANCHOR_END_BUF || anc == ANCHOR_SEMI_END_BUF ||
+  if (anc == ANCHOR_END_BUF  || anc == ANCHOR_SEMI_END_BUF ||
       anc == ANCHOR_END_LINE || anc == ANCHOR_PREC_READ ||
       anc == ANCHOR_PREC_READ_NOT)
     return 0;
@@ -5463,8 +5463,7 @@ concat_left_node_opt_info(OnigEncoding enc, NodeOpt* to, NodeOpt* add)
   copy_opt_anc_info(&to->anc, &tanc);
 
   if (add->exb.len > 0 && to->len.max == 0) {
-    concat_opt_anc_info(&tanc, &to->anc, &add->exb.anc,
-			to->len.max, add->len.max);
+    concat_opt_anc_info(&tanc, &to->anc, &add->exb.anc,	to->len.max, add->len.max);
     copy_opt_anc_info(&add->exb.anc, &tanc);
   }
 
@@ -5508,18 +5507,17 @@ concat_left_node_opt_info(OnigEncoding enc, NodeOpt* to, NodeOpt* add)
   }
 
   select_opt_map(&to->map, &add->map);
-
   add_mml(&to->len, &add->len);
 }
 
 static void
 alt_merge_node_opt_info(NodeOpt* to, NodeOpt* add, OptEnv* env)
 {
-  alt_merge_opt_anc_info  (&to->anc,  &add->anc);
+  alt_merge_opt_anc_info(&to->anc, &add->anc);
   alt_merge_opt_exact(&to->exb,  &add->exb, env);
   alt_merge_opt_exact(&to->exm,  &add->exm, env);
   alt_merge_opt_exact(&to->expr, &add->expr, env);
-  alt_merge_opt_map(env->enc, &to->map,  &add->map);
+  alt_merge_opt_map(env->enc, &to->map, &add->map);
 
   alt_merge_mml(&to->len, &add->len);
 }
@@ -5531,6 +5529,7 @@ static int
 optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
 {
   OnigEncoding enc;
+  int i;
   int r = 0;
 
   enc = env->enc;
@@ -5614,7 +5613,7 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
 
   case NODE_CCLASS:
     {
-      int i, z;
+      int z;
       CClassNode* cc = CCLASS_(node);
 
       /* no need to check ignore case. (set in setup_tree()) */
@@ -5628,7 +5627,7 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
       else {
         for (i = 0; i < SINGLE_BYTE_SIZE; i++) {
           z = BITSET_AT(cc->bs, i);
-          if ((z && !IS_NCCLASS_NOT(cc)) || (!z && IS_NCCLASS_NOT(cc))) {
+          if ((z && ! IS_NCCLASS_NOT(cc)) || (! z && IS_NCCLASS_NOT(cc))) {
             add_char_opt_map(&opt->map, (UChar )i, enc);
           }
         }
@@ -5639,7 +5638,7 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
 
   case NODE_CTYPE:
     {
-      int i, min, max;
+      int min, max;
       int range;
 
       max = ONIGENC_MBC_MAXLEN_DIST(enc);
@@ -5719,7 +5718,6 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
 
   case NODE_BACKREF:
     if (! NODE_IS_CHECKER(node)) {
-      int i;
       int* backs;
       OnigLen min, max, tmin, tmax;
       MemEnv* mem_env = SCANENV_MEMENV(env->scan_env);
@@ -5757,7 +5755,6 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
 
   case NODE_QUANT:
     {
-      int i;
       OnigLen min, max;
       NodeOpt nopt;
       QuantNode* qn = QUANT_(node);
@@ -5779,13 +5776,10 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
           copy_node_opt_info(opt, &nopt);
           if (nopt.exb.len > 0) {
             if (nopt.exb.reach_end) {
-              for (i = 2; i <= qn->lower &&
-                   ! is_full_opt_exact(&opt->exb); i++) {
+              for (i = 2; i <= qn->lower && ! is_full_opt_exact(&opt->exb); i++) {
                 concat_opt_exact(&opt->exb, &nopt.exb, enc);
               }
-              if (i < qn->lower) {
-                opt->exb.reach_end = 0;
-              }
+              if (i < qn->lower) opt->exb.reach_end = 0;
             }
           }
 
@@ -5839,7 +5833,6 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
 #endif
           {
             r = optimize_nodes(NODE_BODY(node), opt, env);
-
             if (is_set_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_STAR_MASK)) {
               if (MEM_STATUS_AT0(env->scan_env->backrefed_mem, en->m.regnum))
                 remove_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_STAR_MASK);
