@@ -4949,7 +4949,7 @@ typedef struct {
 } OptAnc;
 
 typedef struct {
-  MinMaxLen  mmd; /* info position */
+  MinMaxLen  mmd;   /* info position */
   OptAnc     anc;
   int   reach_end;
   int   ignore_case;
@@ -4958,7 +4958,7 @@ typedef struct {
 } OptExact;
 
 typedef struct {
-  MinMaxLen mmd; /* info position */
+  MinMaxLen mmd;    /* info position */
   OptAnc anc;
   int   value;      /* weighted value */
   UChar map[ONIG_CHAR_TABLE_SIZE];
@@ -4967,10 +4967,10 @@ typedef struct {
 typedef struct {
   MinMaxLen len;
   OptAnc   anc;
-  OptExact exb;    /* boundary */
-  OptExact exm;    /* middle */
-  OptExact expr;   /* prec read (?=...) */
-  OptMap   map;   /* boundary */
+  OptExact exb;     /* boundary */
+  OptExact exm;     /* middle */
+  OptExact expr;    /* prec read (?=...) */
+  OptMap   map;     /* boundary */
 } NodeOpt;
 
 
@@ -5050,7 +5050,6 @@ is_equal_mml(MinMaxLen* a, MinMaxLen* b)
   return (a->min == b->min && a->max == b->max) ? 1 : 0;
 }
 
-
 static void
 set_mml(MinMaxLen* mml, OnigLen min, OnigLen max)
 {
@@ -5077,15 +5076,6 @@ add_mml(MinMaxLen* to, MinMaxLen* from)
   to->min = distance_add(to->min, from->min);
   to->max = distance_add(to->max, from->max);
 }
-
-#if 0
-static void
-add_len_mml(MinMaxLen* to, OnigLen len)
-{
-  to->min = distance_add(to->min, len);
-  to->max = distance_add(to->max, len);
-}
-#endif
 
 static void
 alt_merge_mml(MinMaxLen* to, MinMaxLen* from)
@@ -5538,10 +5528,12 @@ alt_merge_node_opt_info(NodeOpt* to, NodeOpt* add, OptEnv* env)
 #define MAX_NODE_OPT_INFO_REF_COUNT    5
 
 static int
-optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
+optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
 {
+  OnigEncoding enc;
   int r = 0;
 
+  enc = env->enc;
   clear_node_opt_info(opt);
   set_bound_node_opt_info(opt, &env->mmd);
 
@@ -5554,10 +5546,10 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
 
       copy_opt_env(&nenv, env);
       do {
-        r = optimize_node_left(NODE_CAR(nd), &nopt, &nenv);
+        r = optimize_nodes(NODE_CAR(nd), &nopt, &nenv);
         if (r == 0) {
           add_mml(&nenv.mmd, &nopt.len);
-          concat_left_node_opt_info(env->enc, opt, &nopt);
+          concat_left_node_opt_info(enc, opt, &nopt);
         }
       } while (r == 0 && IS_NOT_NULL(nd = NODE_CDR(nd)));
     }
@@ -5569,7 +5561,7 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
       Node* nd = node;
 
       do {
-        r = optimize_node_left(NODE_CAR(nd), &nopt, env);
+        r = optimize_nodes(NODE_CAR(nd), &nopt, env);
         if (r == 0) {
           if (nd == node) copy_node_opt_info(opt, &nopt);
           else            alt_merge_node_opt_info(opt, &nopt, env);
@@ -5586,9 +5578,9 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
 
       if (! NODE_STRING_IS_AMBIG(node)) {
         concat_opt_exact_str(&opt->exb, sn->s, sn->end,
-                                  NODE_STRING_IS_RAW(node), env->enc);
+                             NODE_STRING_IS_RAW(node), enc);
         if (slen > 0) {
-          add_char_opt_map(&opt->map, *(sn->s), env->enc);
+          add_char_opt_map(&opt->map, *(sn->s), enc);
         }
         set_mml(&opt->len, slen, slen);
       }
@@ -5596,17 +5588,16 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
         int max;
 
         if (NODE_STRING_IS_DONT_GET_OPT_INFO(node)) {
-          int n = onigenc_strlen(env->enc, sn->s, sn->end);
-          max = ONIGENC_MBC_MAXLEN_DIST(env->enc) * n;
+          int n = onigenc_strlen(enc, sn->s, sn->end);
+          max = ONIGENC_MBC_MAXLEN_DIST(enc) * n;
         }
         else {
-          concat_opt_exact_str(&opt->exb, sn->s, sn->end,
-                                    is_raw, env->enc);
+          concat_opt_exact_str(&opt->exb, sn->s, sn->end, is_raw, enc);
           opt->exb.ignore_case = 1;
 
           if (slen > 0) {
             r = add_char_amb_opt_map(&opt->map, sn->s, sn->end,
-                                          env->enc, env->case_fold_flag);
+                                     enc, env->case_fold_flag);
             if (r != 0) break;
           }
 
@@ -5629,8 +5620,8 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
       /* no need to check ignore case. (set in setup_tree()) */
 
       if (IS_NOT_NULL(cc->mbuf) || IS_NCCLASS_NOT(cc)) {
-        OnigLen min = ONIGENC_MBC_MINLEN(env->enc);
-        OnigLen max = ONIGENC_MBC_MAXLEN_DIST(env->enc);
+        OnigLen min = ONIGENC_MBC_MINLEN(enc);
+        OnigLen max = ONIGENC_MBC_MAXLEN_DIST(enc);
 
         set_mml(&opt->len, min, max);
       }
@@ -5638,7 +5629,7 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
         for (i = 0; i < SINGLE_BYTE_SIZE; i++) {
           z = BITSET_AT(cc->bs, i);
           if ((z && !IS_NCCLASS_NOT(cc)) || (!z && IS_NCCLASS_NOT(cc))) {
-            add_char_opt_map(&opt->map, (UChar )i, env->enc);
+            add_char_opt_map(&opt->map, (UChar )i, enc);
           }
         }
         set_mml(&opt->len, 1, 1);
@@ -5651,7 +5642,7 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
       int i, min, max;
       int range;
 
-      max = ONIGENC_MBC_MAXLEN_DIST(env->enc);
+      max = ONIGENC_MBC_MAXLEN_DIST(enc);
 
       if (max == 1) {
         min = 1;
@@ -5664,18 +5655,18 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
           range = CTYPE_(node)->ascii_mode != 0 ? 128 : SINGLE_BYTE_SIZE;
           if (CTYPE_(node)->not != 0) {
             for (i = 0; i < range; i++) {
-              if (! ONIGENC_IS_CODE_WORD(env->enc, i)) {
-                add_char_opt_map(&opt->map, (UChar )i, env->enc);
+              if (! ONIGENC_IS_CODE_WORD(enc, i)) {
+                add_char_opt_map(&opt->map, (UChar )i, enc);
               }
             }
             for (i = range; i < SINGLE_BYTE_SIZE; i++) {
-              add_char_opt_map(&opt->map, (UChar )i, env->enc);
+              add_char_opt_map(&opt->map, (UChar )i, enc);
             }
           }
           else {
             for (i = 0; i < range; i++) {
-              if (ONIGENC_IS_CODE_WORD(env->enc, i)) {
-                add_char_opt_map(&opt->map, (UChar )i, env->enc);
+              if (ONIGENC_IS_CODE_WORD(enc, i)) {
+                add_char_opt_map(&opt->map, (UChar )i, enc);
               }
             }
           }
@@ -5683,7 +5674,7 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
         }
       }
       else {
-        min = ONIGENC_MBC_MINLEN(env->enc);
+        min = ONIGENC_MBC_MINLEN(enc);
       }
       set_mml(&opt->len, min, max);
     }
@@ -5706,7 +5697,7 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
       {
         NodeOpt nopt;
 
-        r = optimize_node_left(NODE_BODY(node), &nopt, env);
+        r = optimize_nodes(NODE_BODY(node), &nopt, env);
         if (r == 0) {
           if (nopt.exb.len > 0)
             copy_opt_exact(&opt->expr, &nopt.exb);
@@ -5758,7 +5749,7 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
     else {
       OnigOptionType save = env->options;
       env->options = ENCLOSURE_(NODE_BODY(node))->o.options;
-      r = optimize_node_left(NODE_BODY(node), opt, env);
+      r = optimize_nodes(NODE_BODY(node), opt, env);
       env->options = save;
     }
     break;
@@ -5771,7 +5762,7 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
       NodeOpt nopt;
       QuantNode* qn = QUANT_(node);
 
-      r = optimize_node_left(NODE_BODY(node), &nopt, env);
+      r = optimize_nodes(NODE_BODY(node), &nopt, env);
       if (r != 0) break;
 
       if (qn->lower == 0 && IS_REPEAT_INFINITE(qn->upper)) {
@@ -5789,8 +5780,8 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
           if (nopt.exb.len > 0) {
             if (nopt.exb.reach_end) {
               for (i = 2; i <= qn->lower &&
-                     ! is_full_opt_exact(&opt->exb); i++) {
-                concat_opt_exact(&opt->exb, &nopt.exb, env->enc);
+                   ! is_full_opt_exact(&opt->exb); i++) {
+                concat_opt_exact(&opt->exb, &nopt.exb, enc);
               }
               if (i < qn->lower) {
                 opt->exb.reach_end = 0;
@@ -5827,7 +5818,7 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
           OnigOptionType save = env->options;
 
           env->options = en->o.options;
-          r = optimize_node_left(NODE_BODY(node), opt, env);
+          r = optimize_nodes(NODE_BODY(node), opt, env);
           env->options = save;
         }
         break;
@@ -5847,7 +5838,7 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
         else
 #endif
           {
-            r = optimize_node_left(NODE_BODY(node), opt, env);
+            r = optimize_nodes(NODE_BODY(node), opt, env);
 
             if (is_set_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_STAR_MASK)) {
               if (MEM_STATUS_AT0(env->scan_env->backrefed_mem, en->m.regnum))
@@ -5857,7 +5848,7 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
         break;
 
       case ENCLOSURE_STOP_BACKTRACK:
-        r = optimize_node_left(NODE_BODY(node), opt, env);
+        r = optimize_nodes(NODE_BODY(node), opt, env);
         break;
 
       case ENCLOSURE_IF_ELSE:
@@ -5866,19 +5857,19 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
           NodeOpt nopt;
 
           copy_opt_env(&nenv, env);
-          r = optimize_node_left(NODE_ENCLOSURE_BODY(en), &nopt, &nenv);
+          r = optimize_nodes(NODE_ENCLOSURE_BODY(en), &nopt, &nenv);
           if (r == 0) {
             add_mml(&nenv.mmd, &nopt.len);
-            concat_left_node_opt_info(env->enc, opt, &nopt);
+            concat_left_node_opt_info(enc, opt, &nopt);
             if (IS_NOT_NULL(en->te.Then)) {
-              r = optimize_node_left(en->te.Then, &nopt, &nenv);
+              r = optimize_nodes(en->te.Then, &nopt, &nenv);
               if (r == 0) {
-                concat_left_node_opt_info(env->enc, opt, &nopt);
+                concat_left_node_opt_info(enc, opt, &nopt);
               }
             }
 
             if (IS_NOT_NULL(en->te.Else)) {
-              r = optimize_node_left(en->te.Else, &nopt, env);
+              r = optimize_nodes(en->te.Else, &nopt, env);
               if (r == 0)
                 alt_merge_node_opt_info(opt, &nopt, env);
             }
@@ -5894,7 +5885,7 @@ optimize_node_left(Node* node, NodeOpt* opt, OptEnv* env)
 
   default:
 #ifdef ONIG_DEBUG
-    fprintf(stderr, "optimize_node_left: undefined node type %d\n", NODE_TYPE(node));
+    fprintf(stderr, "optimize_nodes: undefined node type %d\n", NODE_TYPE(node));
 #endif
     r = ONIGERR_TYPE_BUG;
     break;
@@ -5981,7 +5972,6 @@ static void print_optimize_info(FILE* f, regex_t* reg);
 static int
 set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
 {
-
   int r;
   NodeOpt opt;
   OptEnv env;
@@ -5989,10 +5979,10 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
   env.enc            = reg->enc;
   env.options        = reg->options;
   env.case_fold_flag = reg->case_fold_flag;
-  env.scan_env   = scan_env;
+  env.scan_env       = scan_env;
   clear_mml(&env.mmd);
 
-  r = optimize_node_left(node, &opt, &env);
+  r = optimize_nodes(node, &opt, &env);
   if (r != 0) return r;
 
   reg->anchor = opt.anc.left & (ANCHOR_BEGIN_BUF |
@@ -6012,8 +6002,7 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
 
   if (opt.exb.len > 0 || opt.exm.len > 0) {
     select_opt_exact(reg->enc, &opt.exb, &opt.exm);
-    if (opt.map.value > 0 &&
-        comp_opt_exact_or_map(&opt.exb, &opt.map) > 0) {
+    if (opt.map.value > 0 && comp_opt_exact_or_map(&opt.exb, &opt.map) > 0) {
       goto set_map;
     }
     else {

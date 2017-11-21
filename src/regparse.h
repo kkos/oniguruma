@@ -256,7 +256,7 @@ typedef struct {
   OnigLen min_len;   /* min length (byte) */
   OnigLen max_len;   /* max length (byte) */
   int char_len;      /* character length  */
-  int opt_count;     /* referenced count in optimize_node_left() */
+  int opt_count;     /* referenced count in optimize_nodes() */
 } EnclosureNode;
 
 #ifdef USE_CALL
