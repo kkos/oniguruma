@@ -26,6 +26,13 @@ Supported character encodings:
 * CP1251:  contributed by Byte
 
 
+New feature of version 6.7.0
+--------------------------
+
+* NEW: hexadecimal codepoint \uHHHH
+* Reduced object size
+
+
 New feature of version 6.6.1
 --------------------------
 
