@@ -1051,6 +1051,9 @@ extern int main(int argc, char* argv[])
 
   n("^\\X.$", "\xE0\xAE\xA8\xE0\xAE\xBF");
 
+  // a + COMBINING GRAVE ACCENT (U+0300)
+  x2("h\\Xllo", "ha\xCC\x80llo", 0, 7);
+
   x2("\\x40", "@", 0, 1);
   x2("\\x1", "\x01", 0, 1);
   x2("\\x{1}", "\x01", 0, 1);
