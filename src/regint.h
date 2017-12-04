@@ -565,15 +565,15 @@ enum OpCode {
   OP_EMPTY_CHECK_END_MEMST, /* null loop checker end (with capture status) */
   OP_EMPTY_CHECK_END_MEMST_PUSH, /* with capture status and push check-end */
 
-  OP_PREC_READ_START,             /* (?=...)  start */
-  OP_PREC_READ_END,              /* (?=...)  end   */
+  OP_PREC_READ_START,       /* (?=...)  start */
+  OP_PREC_READ_END,         /* (?=...)  end   */
   OP_PREC_READ_NOT_START,   /* (?!...)  start */
-  OP_PREC_READ_NOT_END,   /* (?!...)  end   */
-  OP_ATOMIC_START,         /* (?>...)  start */
-  OP_ATOMIC_END,           /* (?>...)  end   */
-  OP_LOOK_BEHIND,          /* (?<=...) start (no needs end opcode) */
-  OP_PUSH_LOOK_BEHIND_NOT, /* (?<!...) start */
-  OP_FAIL_LOOK_BEHIND_NOT, /* (?<!...) end   */
+  OP_PREC_READ_NOT_END,     /* (?!...)  end   */
+  OP_ATOMIC_START,          /* (?>...)  start */
+  OP_ATOMIC_END,            /* (?>...)  end   */
+  OP_LOOK_BEHIND,           /* (?<=...) start (no needs end opcode) */
+  OP_LOOK_BEHIND_NOT_START, /* (?<!...) start */
+  OP_LOOK_BEHIND_NOT_END,   /* (?<!...) end   */
 
   OP_CALL,                 /* \g<name> */
   OP_RETURN,
@@ -680,8 +680,8 @@ typedef int ModeType;
 #define SIZE_OP_EMPTY_CHECK_START       (SIZE_OPCODE + SIZE_MEMNUM)
 #define SIZE_OP_EMPTY_CHECK_END         (SIZE_OPCODE + SIZE_MEMNUM)
 #define SIZE_OP_LOOK_BEHIND            (SIZE_OPCODE + SIZE_LENGTH)
-#define SIZE_OP_PUSH_LOOK_BEHIND_NOT   (SIZE_OPCODE + SIZE_RELADDR + SIZE_LENGTH)
-#define SIZE_OP_FAIL_LOOK_BEHIND_NOT    SIZE_OPCODE
+#define SIZE_OP_LOOK_BEHIND_NOT_START  (SIZE_OPCODE + SIZE_RELADDR + SIZE_LENGTH)
+#define SIZE_OP_LOOK_BEHIND_NOT_END     SIZE_OPCODE
 #define SIZE_OP_CALL                   (SIZE_OPCODE + SIZE_ABSADDR)
 #define SIZE_OP_RETURN                  SIZE_OPCODE
 #define SIZE_OP_PUSH_SAVE_VAL          (SIZE_OPCODE + SIZE_SAVE_TYPE + SIZE_MEMNUM)

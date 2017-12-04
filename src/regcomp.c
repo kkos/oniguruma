@@ -1592,7 +1592,7 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
     len = SIZE_OP_LOOK_BEHIND + tlen;
     break;
   case ANCHOR_LOOK_BEHIND_NOT:
-    len = SIZE_OP_PUSH_LOOK_BEHIND_NOT + tlen + SIZE_OP_FAIL_LOOK_BEHIND_NOT;
+    len = SIZE_OP_LOOK_BEHIND_NOT_START + tlen + SIZE_OP_LOOK_BEHIND_NOT_END;
     break;
 
   case ANCHOR_WORD_BOUNDARY:
@@ -1699,8 +1699,8 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     {
       int n;
       len = compile_length_tree(NODE_ANCHOR_BODY(node), reg);
-      r = add_opcode_rel_addr(reg, OP_PUSH_LOOK_BEHIND_NOT,
-			   len + SIZE_OP_FAIL_LOOK_BEHIND_NOT);
+      r = add_opcode_rel_addr(reg, OP_LOOK_BEHIND_NOT_START,
+			   len + SIZE_OP_LOOK_BEHIND_NOT_END);
       if (r != 0) return r;
       if (node->char_len < 0) {
         r = get_char_length_tree(NODE_ANCHOR_BODY(node), reg, &n);
@@ -1712,7 +1712,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
       if (r != 0) return r;
       r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
       if (r != 0) return r;
-      r = add_opcode(reg, OP_FAIL_LOOK_BEHIND_NOT);
+      r = add_opcode(reg, OP_LOOK_BEHIND_NOT_END);
     }
     break;
 
@@ -6758,8 +6758,8 @@ OnigOpInfoType OnigOpInfo[] = {
   { OP_ATOMIC_START,         "atomic-start",         ARG_NON },
   { OP_ATOMIC_END,           "atomic-end",           ARG_NON },
   { OP_LOOK_BEHIND,          "look-behind",          ARG_SPECIAL },
-  { OP_PUSH_LOOK_BEHIND_NOT, "push-look-behind-not", ARG_SPECIAL },
-  { OP_FAIL_LOOK_BEHIND_NOT, "fail-look-behind-not", ARG_NON },
+  { OP_LOOK_BEHIND_NOT_START, "look-behind-not-start", ARG_SPECIAL },
+  { OP_LOOK_BEHIND_NOT_END,  "look-behind-not-end",  ARG_NON },
   { OP_CALL,                 "call",                 ARG_ABSADDR },
   { OP_RETURN,               "return",               ARG_NON },
   { OP_PUSH_SAVE_VAL,        "push-save-val",        ARG_SPECIAL },
@@ -7055,7 +7055,7 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
       fprintf(f, ":%d", len);
       break;
 
-    case OP_PUSH_LOOK_BEHIND_NOT:
+    case OP_LOOK_BEHIND_NOT_START:
       GET_RELADDR_INC(addr, bp);
       GET_LENGTH_INC(len, bp);
       fprintf(f, ":%d:", len);

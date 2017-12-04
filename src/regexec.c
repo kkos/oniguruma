@@ -2971,7 +2971,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       continue;
       break;
 
-    case OP_PUSH_LOOK_BEHIND_NOT:  MOP_IN(OP_PUSH_LOOK_BEHIND_NOT);
+    case OP_LOOK_BEHIND_NOT_START:  MOP_IN(OP_LOOK_BEHIND_NOT_START);
       GET_RELADDR_INC(addr, p);
       GET_LENGTH_INC(tlen, p);
       q = (UChar* )ONIGENC_STEP_BACK(encode, str, s, (int )tlen);
@@ -2990,7 +2990,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       continue;
       break;
 
-    case OP_FAIL_LOOK_BEHIND_NOT:  MOP_IN(OP_FAIL_LOOK_BEHIND_NOT);
+    case OP_LOOK_BEHIND_NOT_END:  MOP_IN(OP_LOOK_BEHIND_NOT_END);
       STACK_POP_TIL_ALT_LOOK_BEHIND_NOT;
       goto fail;
       break;
