@@ -567,8 +567,8 @@ enum OpCode {
 
   OP_PREC_READ_START,             /* (?=...)  start */
   OP_PREC_READ_END,              /* (?=...)  end   */
-  OP_PUSH_PREC_READ_NOT,   /* (?!...)  start */
-  OP_FAIL_PREC_READ_NOT,   /* (?!...)  end   */
+  OP_PREC_READ_NOT_START,   /* (?!...)  start */
+  OP_PREC_READ_NOT_END,   /* (?!...)  end   */
   OP_ATOMIC_START,         /* (?>...)  start */
   OP_ATOMIC_END,           /* (?>...)  end   */
   OP_LOOK_BEHIND,          /* (?<=...) start (no needs end opcode) */
@@ -663,9 +663,9 @@ typedef int ModeType;
 #define SIZE_OP_REPEAT_INC_NG          (SIZE_OPCODE + SIZE_MEMNUM)
 #define SIZE_OP_WORD_BOUNDARY          (SIZE_OPCODE + SIZE_MODE)
 #define SIZE_OP_PREC_READ_START         SIZE_OPCODE
-#define SIZE_OP_PUSH_PREC_READ_NOT     (SIZE_OPCODE + SIZE_RELADDR)
+#define SIZE_OP_PREC_READ_NOT_START    (SIZE_OPCODE + SIZE_RELADDR)
 #define SIZE_OP_PREC_READ_END           SIZE_OPCODE
-#define SIZE_OP_FAIL_PREC_READ_NOT      SIZE_OPCODE
+#define SIZE_OP_PREC_READ_NOT_END       SIZE_OPCODE
 #define SIZE_OP_SET_OPTION             (SIZE_OPCODE + SIZE_OPTION)
 #define SIZE_OP_SET_OPTION_PUSH        (SIZE_OPCODE + SIZE_OPTION)
 #define SIZE_OP_FAIL                    SIZE_OPCODE

@@ -2938,14 +2938,14 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       continue;
       break;
 
-    case OP_PUSH_PREC_READ_NOT:  MOP_IN(OP_PUSH_PREC_READ_NOT);
+    case OP_PREC_READ_NOT_START:  MOP_IN(OP_PREC_READ_NOT_START);
       GET_RELADDR_INC(addr, p);
       STACK_PUSH_ALT_PREC_READ_NOT(p + addr, s, sprev);
       MOP_OUT;
       continue;
       break;
 
-    case OP_FAIL_PREC_READ_NOT:  MOP_IN(OP_FAIL_PREC_READ_NOT);
+    case OP_PREC_READ_NOT_END:  MOP_IN(OP_PREC_READ_NOT_END);
       STACK_POP_TIL_ALT_PREC_READ_NOT;
       goto fail;
       break;

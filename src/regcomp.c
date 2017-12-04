@@ -1586,7 +1586,7 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
     len = SIZE_OP_PREC_READ_START + tlen + SIZE_OP_PREC_READ_END;
     break;
   case ANCHOR_PREC_READ_NOT:
-    len = SIZE_OP_PUSH_PREC_READ_NOT + tlen + SIZE_OP_FAIL_PREC_READ_NOT;
+    len = SIZE_OP_PREC_READ_NOT_START + tlen + SIZE_OP_PREC_READ_NOT_END;
     break;
   case ANCHOR_LOOK_BEHIND:
     len = SIZE_OP_LOOK_BEHIND + tlen;
@@ -1670,11 +1670,11 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
   case ANCHOR_PREC_READ_NOT:
     len = compile_length_tree(NODE_ANCHOR_BODY(node), reg);
     if (len < 0) return len;
-    r = add_opcode_rel_addr(reg, OP_PUSH_PREC_READ_NOT, len + SIZE_OP_FAIL_PREC_READ_NOT);
+    r = add_opcode_rel_addr(reg, OP_PREC_READ_NOT_START, len + SIZE_OP_PREC_READ_NOT_END);
     if (r != 0) return r;
     r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
     if (r != 0) return r;
-    r = add_opcode(reg, OP_FAIL_PREC_READ_NOT);
+    r = add_opcode(reg, OP_PREC_READ_NOT_END);
     break;
 
   case ANCHOR_LOOK_BEHIND:
@@ -6753,8 +6753,8 @@ OnigOpInfoType OnigOpInfo[] = {
   { OP_EMPTY_CHECK_END_MEMST_PUSH,"empty-check-end-memst-push", ARG_MEMNUM  },
   { OP_PREC_READ_START,      "push-pos",             ARG_NON },
   { OP_PREC_READ_END,        "pop-pos",              ARG_NON },
-  { OP_PUSH_PREC_READ_NOT,   "push-prec-read-not",   ARG_RELADDR },
-  { OP_FAIL_PREC_READ_NOT,   "fail-prec-read-not",   ARG_NON },
+  { OP_PREC_READ_NOT_START,  "prec-read-not-start",  ARG_RELADDR },
+  { OP_PREC_READ_NOT_END,    "prec-read-not-end",    ARG_NON },
   { OP_ATOMIC_START,         "atomic-start",         ARG_NON },
   { OP_ATOMIC_END,           "atomic-end",           ARG_NON },
   { OP_LOOK_BEHIND,          "look-behind",          ARG_SPECIAL },
