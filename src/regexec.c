@@ -374,7 +374,6 @@ typedef struct _StackType {
     } call_frame;
 #endif
     struct {
-      int id;
       enum SaveType type;
       UChar* v;
       UChar* v2;
@@ -782,7 +781,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_SAVE_VAL(sid, stype, sval) do {\
   STACK_ENSURE(1);\
   stk->type = STK_SAVE_VAL;\
-  stk->u.val.id   = (sid);\
+  stk->id   = (sid);\
   stk->u.val.type = (stype);\
   stk->u.val.v    = (UChar* )(sval);\
   STACK_INC;\
@@ -791,7 +790,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_SAVE_VAL_WITH_SPREV(sid, stype, sval) do {\
   STACK_ENSURE(1);\
   stk->type = STK_SAVE_VAL;\
-  stk->u.val.id   = (sid);\
+  stk->id   = (sid);\
   stk->u.val.type = (stype);\
   stk->u.val.v    = (UChar* )(sval);\
   stk->u.val.v2   = sprev;\
@@ -817,7 +816,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
     k--;\
     STACK_BASE_CHECK(k, "STACK_GET_SAVE_VAL_TYPE_LAST_ID"); \
     if (k->type == STK_SAVE_VAL && k->u.val.type == (stype)\
-        && k->u.val.id == (sid)) {\
+        && k->id == (sid)) {\
       if (level == 0) {\
         (sval) = k->u.val.v;\
         break;\
@@ -837,7 +836,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
     k--;\
     STACK_BASE_CHECK(k, "STACK_GET_SAVE_VAL_TYPE_LAST_ID"); \
     if (k->type == STK_SAVE_VAL && k->u.val.type == (stype)\
-        && k->u.val.id == (sid)) {\
+        && k->id == (sid)) {\
       if (level == 0) {\
         (sval) = k->u.val.v;\
         sprev  = k->u.val.v2;\
