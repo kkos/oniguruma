@@ -2,6 +2,7 @@ History
 
 2017/12/26: Version 6.7.0
 
+2017/12/05: restructure StackType
 2017/11/13: implement subexp calls (?R), (?&name), (?-n), (?+n) for Perl syntax
 2017/09/25: use string pool of gperf for Unicode Property lookup function
 2017/09/16: fix #70: an empty greedy regex and a word boundary (.*\b) fails
