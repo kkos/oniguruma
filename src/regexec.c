@@ -370,7 +370,6 @@ typedef struct _StackType {
 #ifdef USE_CALL
     struct {
       UChar *ret_addr;   /* byte code position */
-      int    num;        /* null check id */
       UChar *pstr;       /* string position */
     } call_frame;
 #endif
