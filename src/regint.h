@@ -61,7 +61,6 @@
 #define USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT  /* /(?:()|())*\2/ */
 #define USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE     /* /\n$/ =~ "\n" */
 #define USE_WARNING_REDUNDANT_NESTED_REPEAT_OPERATOR
-/* !!! moved to regenc.h. */ /* #define USE_CRNL_AS_LINE_TERMINATOR */
 
 /* internal config */
 #define USE_OP_PUSH_OR_JUMP_EXACT
@@ -186,6 +185,7 @@ typedef int intptr_t;
 #ifdef MAX
 #undef MAX
 #endif
+
 #define MIN(a,b) (((a)>(b))?(b):(a))
 #define MAX(a,b) (((a)<(b))?(b):(a))
 
@@ -219,8 +219,7 @@ typedef int intptr_t;
 #endif
 
 #define GET_ALIGNMENT_PAD_SIZE(addr,pad_size) do {\
-  (pad_size) = WORD_ALIGNMENT_SIZE \
-               - ((unsigned int )(addr) % WORD_ALIGNMENT_SIZE);\
+  (pad_size) = WORD_ALIGNMENT_SIZE - ((unsigned int )(addr) % WORD_ALIGNMENT_SIZE);\
   if ((pad_size) == WORD_ALIGNMENT_SIZE) (pad_size) = 0;\
 } while (0)
 
@@ -232,7 +231,7 @@ typedef int intptr_t;
 #endif /* PLATFORM_UNALIGNED_WORD_ACCESS */
 
 typedef struct {
-  int num_keeper;
+  int  num_keeper;
   int* keepers;
 } RegExt;
 
@@ -241,9 +240,9 @@ typedef struct {
 
 /* stack pop level */
 enum StackPopLevel {
-  STACK_POP_LEVEL_FREE = 0,
+  STACK_POP_LEVEL_FREE      = 0,
   STACK_POP_LEVEL_MEM_START = 1,
-  STACK_POP_LEVEL_ALL =2
+  STACK_POP_LEVEL_ALL       = 2
 };
 
 /* optimize flags */
@@ -538,7 +537,7 @@ enum OpCode {
   OP_BACKREF_MULTI_IC,
   OP_BACKREF_WITH_LEVEL,        /* \k<xxx+n>, \k<xxx-n> */
   OP_BACKREF_CHECK,             /* (?(n)), (?('name')) */
-  OP_BACKREF_CHECK_WITH_LEVEL,  /* (?(n)), (?('name')) */
+  OP_BACKREF_CHECK_WITH_LEVEL,  /* (?(n-level)), (?('name-level')) */
 
   OP_MEMORY_START,
   OP_MEMORY_START_PUSH,   /* push back-tracker to stack */
@@ -790,16 +789,17 @@ extern int  onig_print_statistics P_((FILE* f));
 #endif
 #endif
 
-extern void onig_warning(const char* s);
+extern void   onig_warning(const char* s);
 extern UChar* onig_error_code_to_format P_((int code));
-extern void  onig_snprintf_with_pattern PV_((UChar buf[], int bufsize, OnigEncoding enc, UChar* pat, UChar* pat_end, const UChar *fmt, ...));
-extern int  onig_bbuf_init P_((BBuf* buf, int size));
-extern int  onig_compile P_((regex_t* reg, const UChar* pattern, const UChar* pattern_end, OnigErrorInfo* einfo));
-extern void onig_transfer P_((regex_t* to, regex_t* from));
-extern int  onig_is_code_in_cc_len P_((int enclen, OnigCodePoint code, void* /* CClassNode* */ cc));
+extern void   onig_snprintf_with_pattern PV_((UChar buf[], int bufsize, OnigEncoding enc, UChar* pat, UChar* pat_end, const UChar *fmt, ...));
+extern int    onig_bbuf_init P_((BBuf* buf, int size));
+extern int    onig_compile P_((regex_t* reg, const UChar* pattern, const UChar* pattern_end, OnigErrorInfo* einfo));
+extern void   onig_transfer P_((regex_t* to, regex_t* from));
+extern int    onig_is_code_in_cc_len P_((int enclen, OnigCodePoint code, void* /* CClassNode* */ cc));
 
 /* strend hash */
 typedef void hash_table_type;
+
 #ifdef _WIN32
 # include <windows.h>
 typedef ULONG_PTR hash_data_type;
