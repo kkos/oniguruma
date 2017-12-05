@@ -365,7 +365,6 @@ typedef struct _StackType {
       StackIndex end;    /* prev. info (for backtrack  "(...)*" ) */
     } mem;
     struct {
-      int num;           /* null check id */
       UChar *pstr;       /* start position */
     } empty_check;
 #ifdef USE_CALL
@@ -756,7 +755,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_EMPTY_CHECK_START(cnum, s) do {\
   STACK_ENSURE(1);\
   stk->type = STK_EMPTY_CHECK_START;\
-  stk->u.empty_check.num  = (cnum);\
+  stk->id   = (cnum);\
   stk->u.empty_check.pstr = (s);\
   STACK_INC;\
 } while(0)
@@ -764,7 +763,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_EMPTY_CHECK_END(cnum) do {\
   STACK_ENSURE(1);\
   stk->type = STK_EMPTY_CHECK_END;\
-  stk->u.empty_check.num  = (cnum);\
+  stk->id   = (cnum);\
   STACK_INC;\
 } while(0)
 
@@ -987,13 +986,13 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_EMPTY_CHECK(isnull,id,s) do {\
+#define STACK_EMPTY_CHECK(isnull,sid,s) do {\
   StackType* k = stk;\
   while (1) {\
     k--;\
     STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK"); \
     if (k->type == STK_EMPTY_CHECK_START) {\
-      if (k->u.empty_check.num == (id)) {\
+      if (k->id == (sid)) {\
         (isnull) = (k->u.empty_check.pstr == (s));\
         break;\
       }\
@@ -1008,7 +1007,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
     k--;\
     STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_MEMST"); \
     if (k->type == STK_EMPTY_CHECK_START) {\
-      if (k->u.empty_check.num == (sid)) {\
+      if (k->id == (sid)) {\
         if (k->u.empty_check.pstr != (s)) {\
           (isnull) = 0;\
           break;\
@@ -1049,7 +1048,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
     k--;\
     STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_MEMST_REC"); \
     if (k->type == STK_EMPTY_CHECK_START) {\
-      if (k->u.empty_check.num == (sid)) {\
+      if (k->id == (sid)) {\
         if (level == 0) {\
           if (k->u.empty_check.pstr != (s)) {\
             (isnull) = 0;\
@@ -1085,7 +1084,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
       }\
     }\
     else if (k->type == STK_EMPTY_CHECK_END) {\
-      if (k->u.empty_check.num == (sid)) level++;\
+      if (k->id == (sid)) level++;\
     }\
   }\
 } while(0)
