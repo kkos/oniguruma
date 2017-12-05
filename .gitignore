@@ -17,6 +17,10 @@ Makefile.in
 *.la
 *.pc
 *.log
+*.dll
+*.lib
+*.exe
+*.exp
 *~
 .libs/
 .deps/
