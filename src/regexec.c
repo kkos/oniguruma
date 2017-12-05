@@ -354,7 +354,6 @@ typedef struct _StackType {
     struct {
       int   count;       /* for OP_REPEAT_INC, OP_REPEAT_INC_NG */
       UChar *pcode;      /* byte code position (head of repeated target) */
-      int   num;         /* repeat id */
     } repeat;
     struct {
       StackIndex si;     /* index of stack */
@@ -674,10 +673,10 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_ALT_LOOK_BEHIND_NOT(pat,s,sprev) \
   STACK_PUSH(STK_ALT_LOOK_BEHIND_NOT,pat,s,sprev)
 
-#define STACK_PUSH_REPEAT(id, pat) do {\
+#define STACK_PUSH_REPEAT(sid, pat) do {\
   STACK_ENSURE(1);\
   stk->type = STK_REPEAT;\
-  stk->u.repeat.num    = (id);\
+  stk->id   = (sid);\
   stk->u.repeat.pcode  = (pat);\
   stk->u.repeat.count  = 0;\
   STACK_INC;\
@@ -1113,7 +1112,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 } while(0)
 #endif /* USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT */
 
-#define STACK_GET_REPEAT(id, k) do {\
+#define STACK_GET_REPEAT(sid, k) do {\
   int level = 0;\
   k = stk;\
   while (1) {\
@@ -1121,7 +1120,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
     STACK_BASE_CHECK(k, "STACK_GET_REPEAT"); \
     if (k->type == STK_REPEAT) {\
       if (level == 0) {\
-        if (k->u.repeat.num == (id)) {\
+        if (k->id == (sid)) {\
           break;\
         }\
       }\
