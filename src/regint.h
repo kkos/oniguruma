@@ -177,7 +177,8 @@
 
 #ifdef _WIN32
 #if defined(_MSC_VER) && (_MSC_VER < 1300)
-typedef int intptr_t;
+typedef int  intptr_t;
+typedef unsigned int  uintptr_t;
 #endif
 #endif
 
