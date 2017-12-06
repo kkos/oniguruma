@@ -138,6 +138,8 @@
 #endif
 
 
+#include <stddef.h>
+
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
