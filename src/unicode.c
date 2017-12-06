@@ -542,7 +542,7 @@ egcb_get_type(OnigCodePoint code)
   OnigCodePoint low, high, x;
   enum EGCB_TYPE type;
 
-  for (low = 0, high = EGCB_RANGE_NUM; low < high; ) {
+  for (low = 0, high = (OnigCodePoint )EGCB_RANGE_NUM; low < high; ) {
     x = (low + high) >> 1;
     if (code > EGCB_RANGES[x].end)
       low = x + 1;
@@ -550,8 +550,10 @@ egcb_get_type(OnigCodePoint code)
       high = x;
   }
 
-  type = (low < EGCB_RANGE_NUM && code >= EGCB_RANGES[low].start) ?
+  type = (low < (OnigCodePoint )EGCB_RANGE_NUM &&
+          code >= EGCB_RANGES[low].start) ?
     EGCB_RANGES[low].type : EGCB_Other;
+
   return type;
 }
 
