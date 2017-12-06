@@ -2,7 +2,7 @@
   regenc.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -780,7 +780,7 @@ onigenc_mb2_code_to_mbc(OnigEncoding enc, OnigCodePoint code, UChar *buf)
   if (enclen(enc, buf) != (p - buf))
     return ONIGERR_INVALID_CODE_POINT_VALUE;
 #endif
-  return p - buf;
+  return (int )(p - buf);
 }
 
 extern int
@@ -803,7 +803,7 @@ onigenc_mb4_code_to_mbc(OnigEncoding enc, OnigCodePoint code, UChar *buf)
   if (enclen(enc, buf) != (p - buf))
     return ONIGERR_INVALID_CODE_POINT_VALUE;
 #endif
-  return p - buf;
+  return (int )(p - buf);
 }
 
 extern int

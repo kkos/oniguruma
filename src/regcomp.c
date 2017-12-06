@@ -129,7 +129,7 @@ static unsigned char PadBuf[WORD_ALIGNMENT_SIZE];
 static UChar*
 str_dup(UChar* s, UChar* end)
 {
-  int len = end - s;
+  int len = (int )(end - s);
 
   if (len > 0) {
     UChar* r = (UChar* )xmalloc(len + 1);
@@ -151,7 +151,7 @@ swap_node(Node* a, Node* b)
   if (NODE_TYPE(a) == NODE_STRING) {
     StrNode* sn = STR_(a);
     if (sn->capa == 0) {
-      int len = sn->end - sn->s;
+      int len = (int )(sn->end - sn->s);
       sn->s   = sn->buf;
       sn->end = sn->s + len;
     }
@@ -160,7 +160,7 @@ swap_node(Node* a, Node* b)
   if (NODE_TYPE(b) == NODE_STRING) {
     StrNode* sn = STR_(b);
     if (sn->capa == 0) {
-      int len = sn->end - sn->s;
+      int len = (int )(sn->end - sn->s);
       sn->s   = sn->buf;
       sn->end = sn->s + len;
     }
@@ -605,7 +605,8 @@ compile_length_string_raw_node(StrNode* sn, regex_t* reg)
   if (sn->end <= sn->s)
     return 0;
 
-  return add_compile_string_length(sn->s, 1 /* sb */, sn->end - sn->s, reg, 0);
+  return add_compile_string_length(sn->s, 1 /* sb */, (int )(sn->end - sn->s),
+                                   reg, 0);
 }
 
 static int
@@ -654,7 +655,7 @@ compile_string_raw_node(StrNode* sn, regex_t* reg)
   if (sn->end <= sn->s)
     return 0;
 
-  return add_compile_string(sn->s, 1 /* sb */, sn->end - sn->s, reg, 0);
+  return add_compile_string(sn->s, 1 /* sb */, (int )(sn->end - sn->s), reg, 0);
 }
 
 static int
@@ -2938,7 +2939,7 @@ tree_min_len(Node* node, ScanEnv* env)
   case NODE_STRING:
     {
       StrNode* sn = STR_(node);
-      len = sn->end - sn->s;
+      len = (int )(sn->end - sn->s);
     }
     break;
 
@@ -2985,7 +2986,7 @@ tree_min_len(Node* node, ScanEnv* env)
         break;
       case ENCLOSURE_IF_ELSE:
         {
-          int elen;
+          OnigLen elen;
 
           len = tree_min_len(NODE_BODY(node), env);
           if (IS_NOT_NULL(en->te.Then))
@@ -3043,7 +3044,7 @@ tree_max_len(Node* node, ScanEnv* env)
   case NODE_STRING:
     {
       StrNode* sn = STR_(node);
-      len = sn->end - sn->s;
+      len = (OnigLen )(sn->end - sn->s);
     }
     break;
 
@@ -3122,7 +3123,7 @@ tree_max_len(Node* node, ScanEnv* env)
         break;
       case ENCLOSURE_IF_ELSE:
         {
-          int tlen, elen;
+          OnigLen tlen, elen;
 
           len = tree_max_len(NODE_BODY(node), env);
           if (IS_NOT_NULL(en->te.Then)) {
@@ -3670,7 +3671,7 @@ update_string_node_case_fold(regex_t* reg, Node *node)
   StrNode* sn = STR_(node);
 
   end = sn->end;
-  sbuf_size = (end - sn->s) * 2;
+  sbuf_size = (int )(end - sn->s) * 2;
   sbuf = (UChar* )xmalloc(sbuf_size);
   CHECK_NULL_RETURN_MEMERR(sbuf);
   ebuf = sbuf + sbuf_size;
@@ -4921,7 +4922,7 @@ set_bm_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED,
 {
   int i, len;
 
-  len = end - s;
+  len = (int )(end - s);
   if (len < ONIG_CHAR_TABLE_SIZE) {
     for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++) skip[i] = len;
 
@@ -5585,7 +5586,7 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
   case NODE_STRING:
     {
       StrNode* sn = STR_(node);
-      int slen = sn->end - sn->s;
+      int slen = (int )(sn->end - sn->s);
       int is_raw = NODE_STRING_IS_RAW(node);
 
       if (! NODE_STRING_IS_AMBIG(node)) {
@@ -5941,7 +5942,7 @@ set_optimize_exact(regex_t* reg, OptExact* e)
   reg->dmax = e->mmd.max;
 
   if (reg->dmin != INFINITE_LEN) {
-    reg->threshold_len = reg->dmin + (reg->exact_end - reg->exact);
+    reg->threshold_len = reg->dmin + (int )(reg->exact_end - reg->exact);
   }
 
   return 0;
@@ -6271,7 +6272,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 #endif
 
   if (reg->alloc == 0) {
-    init_size = (pattern_end - pattern) * 2;
+    init_size = (int )(pattern_end - pattern) * 2;
     if (init_size <= 0) init_size = COMPILE_INIT_SIZE;
     r = BB_INIT(reg, init_size);
     if (r != 0) goto end;

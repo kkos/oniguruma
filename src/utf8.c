@@ -2,7 +2,7 @@
   utf8.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -124,7 +124,7 @@ mbc_to_code(const UChar* p, const UChar* end)
   OnigCodePoint n;
 
   len = mbc_enc_len(p);
-  if (len > end - p) len = end - p;
+  if (len > (int )(end - p)) len = (int )(end - p);
 
   c = *p++;
   if (len > 1) {
@@ -216,7 +216,7 @@ code_to_mbc(OnigCodePoint code, UChar *buf)
     }
 
     *p++ = UTF8_TRAIL0(code);
-    return p - buf;
+    return (int )(p - buf);
   }
 }
 

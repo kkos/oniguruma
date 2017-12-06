@@ -236,7 +236,7 @@ static int to_ascii(OnigEncoding enc, UChar *s, UChar *end,
     *is_over = ((p < end) ? 1 : 0);
   }
   else {
-    len = MIN((end - s), buf_size);
+    len = MIN((int )(end - s), buf_size);
     xmemcpy(buf, s, (size_t )len);
     *is_over = ((buf_size < (end - s)) ? 1 : 0);
   }
@@ -300,7 +300,7 @@ onig_error_code_to_str(s, code, va_alist)
       }
     }
     *p = '\0';
-    len = p - s;
+    len = (int )(p - s);
     break;
 
   default:
@@ -340,7 +340,7 @@ onig_snprintf_with_pattern(buf, bufsize, enc, pat, pat_end, fmt, va_alist)
   n = xvsnprintf((char* )buf, bufsize, (const char* )fmt, args);
   va_end(args);
 
-  need = (pat_end - pat) * 4 + 4;
+  need = (int )(pat_end - pat) * 4 + 4;
 
   if (n + need < bufsize) {
     xstrcat((char* )buf, ": /", bufsize);

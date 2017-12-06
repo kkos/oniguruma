@@ -152,7 +152,7 @@ code_to_mbc(OnigCodePoint code, UChar *buf)
   if (enclen(ONIG_ENCODING_EUC_JP, buf) != (p - buf))
     return ONIGERR_INVALID_CODE_POINT_VALUE;
 #endif  
-  return p - buf;
+  return (int )(p - buf);
 }
 
 static int
@@ -230,7 +230,7 @@ static int
 property_name_to_ctype(OnigEncoding enc, UChar* p, UChar* end)
 {
   struct PropertyNameCtype* pc;
-  int len = end - p;
+  int len = (int )(end - p);
   char q[32];
 
   if (len < sizeof(q) - 1) {

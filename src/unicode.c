@@ -743,7 +743,7 @@ onig_unicode_define_user_property(const char* name, OnigCodePoint* ranges)
   if (UserDefinedPropertyNum >= USER_DEFINED_PROPERTY_MAX_NUM)
     return ONIGERR_TOO_MANY_USER_DEFINED_OBJECTS;
 
-  len = strlen(name);
+  len = (int )strlen(name);
   if (len >= PROPERTY_NAME_MAX_SIZE)
     return ONIGERR_TOO_LONG_PROPERTY_NAME;
 

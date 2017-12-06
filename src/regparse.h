@@ -115,7 +115,7 @@ enum EnclosureType {
 #define STRING_AMBIG              (1<<1)
 #define STRING_DONT_GET_OPT_INFO  (1<<2)
 
-#define NODE_STRING_LEN(node)             ((node)->u.str.end - (node)->u.str.s)
+#define NODE_STRING_LEN(node)            (int )((node)->u.str.end - (node)->u.str.s)
 #define NODE_STRING_SET_RAW(node)          (node)->u.str.flag |= STRING_RAW
 #define NODE_STRING_CLEAR_RAW(node)        (node)->u.str.flag &= ~STRING_RAW
 #define NODE_STRING_SET_AMBIG(node)        (node)->u.str.flag |= STRING_AMBIG

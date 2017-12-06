@@ -282,7 +282,7 @@ onig_strncmp(const UChar* s1, const UChar* s2, int n)
 extern void
 onig_strcpy(UChar* dest, const UChar* src, const UChar* end)
 {
-  int len = end - src;
+  int len = (int )(end - src);
   if (len > 0) {
     xmemcpy(dest, src, len);
     dest[len] = (UChar )0;
@@ -295,7 +295,7 @@ strdup_with_null(OnigEncoding enc, UChar* s, UChar* end)
   int slen, term_len, i;
   UChar *r;
 
-  slen = end - s;
+  slen = (int )(end - s);
   term_len = ONIGENC_MBC_MINLEN(enc);
 
   r = (UChar* )xmalloc(slen + term_len);
@@ -834,7 +834,7 @@ name_add(regex_t* reg, UChar* name, UChar* name_end, int backref, ScanEnv* env)
                               (HashDataType )e);
     if (r < 0) return r;
 
-    e->name_len   = name_end - name;
+    e->name_len   = (int )(name_end - name);
     e->back_num   = 0;
     e->back_alloc = 0;
     e->back_refs  = (int* )NULL;
@@ -2051,10 +2051,10 @@ make_absent_tree(Node** node, Node* absent, Node* expr, int is_range_cutter,
 extern int
 onig_node_str_cat(Node* node, const UChar* s, const UChar* end)
 {
-  int addlen = end - s;
+  int addlen = (int )(end - s);
 
   if (addlen > 0) {
-    int len  = STR_(node)->end - STR_(node)->s;
+    int len  = (int )(STR_(node)->end - STR_(node)->s);
 
     if (STR_(node)->capa > 0 || (len + addlen > NODE_STRING_BUF_SIZE - 1)) {
       UChar* p;
@@ -4819,7 +4819,7 @@ add_ctype_to_cc(CClassNode* cc, int ctype, int not, ScanEnv* env)
   case ONIGENC_CTYPE_ASCII:
   case ONIGENC_CTYPE_ALNUM:
     if (not != 0) {
-      for (c = 0; c < limit; c++) {
+      for (c = 0; c < (int )limit; c++) {
         if (! ONIGENC_IS_CODE_CTYPE(enc, (OnigCodePoint )c, ctype))
           BITSET_SET_BIT(cc->bs, c);
       }
@@ -4830,7 +4830,7 @@ add_ctype_to_cc(CClassNode* cc, int ctype, int not, ScanEnv* env)
       ADD_ALL_MULTI_BYTE_RANGE(enc, cc->mbuf);
     }
     else {
-      for (c = 0; c < limit; c++) {
+      for (c = 0; c < (int )limit; c++) {
         if (ONIGENC_IS_CODE_CTYPE(enc, (OnigCodePoint )c, ctype))
           BITSET_SET_BIT(cc->bs, c);
       }
@@ -4841,7 +4841,7 @@ add_ctype_to_cc(CClassNode* cc, int ctype, int not, ScanEnv* env)
   case ONIGENC_CTYPE_PRINT:
   case ONIGENC_CTYPE_WORD:
     if (not != 0) {
-      for (c = 0; c < limit; c++) {
+      for (c = 0; c < (int )limit; c++) {
         if (ONIGENC_CODE_TO_MBCLEN(enc, c) > 0 /* check invalid code point */
             && ! ONIGENC_IS_CODE_CTYPE(enc, (OnigCodePoint )c, ctype))
           BITSET_SET_BIT(cc->bs, c);
@@ -4852,7 +4852,7 @@ add_ctype_to_cc(CClassNode* cc, int ctype, int not, ScanEnv* env)
       }
     }
     else {
-      for (c = 0; c < limit; c++) {
+      for (c = 0; c < (int )limit; c++) {
         if (ONIGENC_IS_CODE_CTYPE(enc, (OnigCodePoint )c, ctype))
           BITSET_SET_BIT(cc->bs, c);
       }
