@@ -158,26 +158,26 @@ ptest: $(testp)
 	.\$(testp)
 
 $(testc): $(testc).c $(libname)
-	$(CC) -nologo -o $(testc) -DONIG_EXTERN=extern $(testc).c $(libname)
+	$(CC) -nologo /Fe:$(testc) -DONIG_EXTERN=extern $(testc).c $(libname)
 
 $(testp): $(testc).c $(dlllib)
-	$(CC) -nologo -DPOSIX_TEST -o $(testp) $(testc).c $(dlllib)
+	$(CC) -nologo -DPOSIX_TEST /Fe:$(testp) $(testc).c $(dlllib)
 
 #$(testc)u.c: test.rb testconvu.rb
 #	ruby -Ke testconvu.rb test.rb > $@
 
 $(testc)u: $(testc)u.c $(libname)
-	$(CC) -nologo -o $(testc)u -DONIG_EXTERN=extern $(testc)u.c $(libname)
+	$(CC) -nologo /Fe:$(testc)u -DONIG_EXTERN=extern $(testc)u.c $(libname)
 
 clean:
 	del *.obj *.lib *.exp *.dll $(testp).exe $(testc).exe $(testc).obj
 
 
 samples: all
-	$(CC) $(CFLAGS) -I. -o simple  sample\simple.c  $(dlllib)
-	$(CC) $(CFLAGS) -I. -o posix   sample\posix.c   $(dlllib)
-	$(CC) $(CFLAGS) -I. -o names   sample\names.c   $(dlllib)
-	$(CC) $(CFLAGS) -I. -o listcap sample\listcap.c $(dlllib)
-	$(CC) $(CFLAGS) -I. -o sql     sample\sql.c     $(dlllib)
-	$(CC) $(CFLAGS) -I. -o encode  sample\encode.c  $(dlllib)
-	$(CC) $(CFLAGS) -I. -o syntax  sample\syntax.c  $(dlllib)
+	$(CC) $(CFLAGS) -I. /Fe:simple  sample\simple.c  $(dlllib)
+	$(CC) $(CFLAGS) -I. /Fe:posix   sample\posix.c   $(dlllib)
+	$(CC) $(CFLAGS) -I. /Fe:names   sample\names.c   $(dlllib)
+	$(CC) $(CFLAGS) -I. /Fe:listcap sample\listcap.c $(dlllib)
+	$(CC) $(CFLAGS) -I. /Fe:sql     sample\sql.c     $(dlllib)
+	$(CC) $(CFLAGS) -I. /Fe:encode  sample\encode.c  $(dlllib)
+	$(CC) $(CFLAGS) -I. /Fe:syntax  sample\syntax.c  $(dlllib)
