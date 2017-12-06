@@ -224,13 +224,13 @@ typedef unsigned int  uintptr_t;
 #endif
 
 #define GET_ALIGNMENT_PAD_SIZE(addr,pad_size) do {\
-  (pad_size) = WORD_ALIGNMENT_SIZE - ((unsigned int )(addr) % WORD_ALIGNMENT_SIZE);\
+  (pad_size) = WORD_ALIGNMENT_SIZE - ((uintptr_t )(addr) % WORD_ALIGNMENT_SIZE);\
   if ((pad_size) == WORD_ALIGNMENT_SIZE) (pad_size) = 0;\
 } while (0)
 
 #define ALIGNMENT_RIGHT(addr) do {\
   (addr) += (WORD_ALIGNMENT_SIZE - 1);\
-  (addr) -= ((unsigned int )(addr) % WORD_ALIGNMENT_SIZE);\
+  (addr) -= ((uintptr_t )(addr) % WORD_ALIGNMENT_SIZE);\
 } while (0)
 
 #endif /* PLATFORM_UNALIGNED_WORD_ACCESS */
