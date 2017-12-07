@@ -4785,6 +4785,9 @@ const CodeRanges[] = {
   CR_ASCII,
 };
 
+#define pool_offset(s) offsetof(struct unicode_prop_name_pool_t, unicode_prop_name_pool_str##s)
+
+
 #define TOTAL_KEYWORDS 15
 #define MIN_WORD_LENGTH 4
 #define MAX_WORD_LENGTH 7
@@ -4929,35 +4932,35 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
     {
       {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str5,                                7},
+      {pool_offset(5),                                7},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str6,                                8},
+      {pool_offset(6),                                8},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str7,                                1},
+      {pool_offset(7),                                1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str8,                               13},
+      {pool_offset(8),                               13},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str9,                              11},
+      {pool_offset(9),                              11},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str10,                              0},
+      {pool_offset(10),                              0},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str11,                               10},
+      {pool_offset(11),                               10},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str12,                               14},
+      {pool_offset(12),                               14},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str13,                                3},
+      {pool_offset(13),                                3},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str14,                                9},
+      {pool_offset(14),                                9},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str15,                                12},
+      {pool_offset(15),                                12},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str16,                                6},
+      {pool_offset(16),                                6},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str17,                                5},
+      {pool_offset(17),                                5},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str18,                                4},
+      {pool_offset(18),                                4},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str19,                                2}
+      {pool_offset(19),                                2}
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)

@@ -501,11 +501,15 @@ if not(POSIX_ONLY):
     print "  CR_%s," % prop
 
 s = '''};
+
+#define pool_offset(s) offsetof(struct unicode_prop_name_pool_t, unicode_prop_name_pool_str##s)
+
 %}
 struct PoolPropertyNameCtype {
   short int name;
   short int ctype;
 };
+
 %%
 '''
 sys.stdout.write(s)

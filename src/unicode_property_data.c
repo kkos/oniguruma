@@ -22909,6 +22909,9 @@ const CodeRanges[] = {
   CR_In_No_Block,
 };
 
+#define pool_offset(s) offsetof(struct unicode_prop_name_pool_t, unicode_prop_name_pool_str##s)
+
+
 #define TOTAL_KEYWORDS 711
 #define MIN_WORD_LENGTH 1
 #define MAX_WORD_LENGTH 44
@@ -24480,2064 +24483,2064 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
     {
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1,                                  144},
+      {pool_offset(1),                                  144},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3,                                  234},
+      {pool_offset(3),                                  234},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str8,                               225},
+      {pool_offset(8),                               225},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str9,                                 138},
+      {pool_offset(9),                                 138},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str10,                                  51},
+      {pool_offset(10),                                  51},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str14,                                  38},
+      {pool_offset(14),                                  38},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str15,                                  125},
+      {pool_offset(15),                                  125},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str17,                                   35},
+      {pool_offset(17),                                   35},
       {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str23,                       430},
+      {pool_offset(23),                       430},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str24,                               129},
+      {pool_offset(24),                               129},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str25,                                 131},
+      {pool_offset(25),                                 131},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str26,                                  41},
+      {pool_offset(26),                                  41},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str28,                                94},
+      {pool_offset(28),                                94},
       {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str34,                                54},
+      {pool_offset(34),                                54},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str41,                             373},
+      {pool_offset(41),                             373},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str46,                            128},
+      {pool_offset(46),                            128},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str49,                                 202},
+      {pool_offset(49),                                 202},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str51,                                 195},
+      {pool_offset(51),                                 195},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str56,                                36},
+      {pool_offset(56),                                36},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str61,                               14},
+      {pool_offset(61),                               14},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str64,                        255},
+      {pool_offset(64),                        255},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str66,                        456},
+      {pool_offset(66),                        456},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str67,                                  191},
+      {pool_offset(67),                                  191},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str68,                         248},
+      {pool_offset(68),                         248},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str69,                                 237},
+      {pool_offset(69),                                 237},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str76,                                  55},
+      {pool_offset(76),                                  55},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str85,                                 132},
+      {pool_offset(85),                                 132},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str90,           364},
+      {pool_offset(90),           364},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str93,                          431},
+      {pool_offset(93),                          431},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str94,                             268},
+      {pool_offset(94),                             268},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str103,                    242},
+      {pool_offset(103),                    242},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str108,                 183},
+      {pool_offset(108),                 183},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str112,                   402},
+      {pool_offset(112),                   402},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str114,                           253},
+      {pool_offset(114),                           253},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str116,                                  42},
+      {pool_offset(116),                                  42},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str118,   457},
+      {pool_offset(118),   457},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str122,                               133},
+      {pool_offset(122),                               133},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str124,                         397},
+      {pool_offset(124),                         397},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str133,                   470},
+      {pool_offset(133),                   470},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str141, 323},
+      {pool_offset(141), 323},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str145,                                 117},
+      {pool_offset(145),                                 117},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str146,                               113},
+      {pool_offset(146),                               113},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str147,                                 108},
+      {pool_offset(147),                                 108},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str149,                           404},
+      {pool_offset(149),                           404},
       {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str155,                               212},
+      {pool_offset(155),                               212},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str157,               472},
+      {pool_offset(157),               472},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str158,                 374},
+      {pool_offset(158),                 374},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str159,                               13},
+      {pool_offset(159),                               13},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str161,                              192},
+      {pool_offset(161),                              192},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str162,                          292},
+      {pool_offset(162),                          292},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str163,           486},
+      {pool_offset(163),           486},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str165,                              211},
+      {pool_offset(165),                              211},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str167,                        266},
+      {pool_offset(167),                        266},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str176,             321},
+      {pool_offset(176),             321},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str177,                  315},
+      {pool_offset(177),                  315},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str185,    329},
+      {pool_offset(185),    329},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str189,                          417},
+      {pool_offset(189),                          417},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str190, 483},
+      {pool_offset(190), 483},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str193,                            200},
+      {pool_offset(193),                            200},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str202,                            213},
+      {pool_offset(202),                            213},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str205,                                 69},
+      {pool_offset(205),                                 69},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str215,                               110},
+      {pool_offset(215),                               110},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str216,                              110},
+      {pool_offset(216),                              110},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str217,                               155},
+      {pool_offset(217),                               155},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str218,                            263},
+      {pool_offset(218),                            263},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str220,                          446},
+      {pool_offset(220),                          446},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str222,                               215},
+      {pool_offset(222),                               215},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str229,                            279},
+      {pool_offset(229),                            279},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str230,                           405},
+      {pool_offset(230),                           405},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str232,                                21},
+      {pool_offset(232),                                21},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str234,                                93},
+      {pool_offset(234),                                93},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str235,                                37},
+      {pool_offset(235),                                37},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str236,                   331},
+      {pool_offset(236),                   331},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str238,                            21},
+      {pool_offset(238),                            21},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str239,                          271},
+      {pool_offset(239),                          271},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str240,                         246},
+      {pool_offset(240),                         246},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str242,                   240},
+      {pool_offset(242),                   240},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str246,                              37},
+      {pool_offset(246),                              37},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str249,                            288},
+      {pool_offset(249),                            288},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str253,                               211},
+      {pool_offset(253),                               211},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str256,                              20},
+      {pool_offset(256),                              20},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str259,                                  107},
+      {pool_offset(259),                                  107},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str260,                                 149},
+      {pool_offset(260),                                 149},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str261,                                 235},
+      {pool_offset(261),                                 235},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str263,                           251},
+      {pool_offset(263),                           251},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str265,                               193},
+      {pool_offset(265),                               193},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str267,                               135},
+      {pool_offset(267),                               135},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str269,                 399},
+      {pool_offset(269),                 399},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str272,                          193},
+      {pool_offset(272),                          193},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str273,                                 121},
+      {pool_offset(273),                                 121},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str276,                          443},
+      {pool_offset(276),                          443},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str283,            376},
+      {pool_offset(283),            376},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str292,               437},
+      {pool_offset(292),               437},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str295,                               137},
+      {pool_offset(295),                               137},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str296,                   378},
+      {pool_offset(296),                   378},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str300,                                94},
+      {pool_offset(300),                                94},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str304,                             453},
+      {pool_offset(304),                             453},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str306,                         276},
+      {pool_offset(306),                         276},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str307,                                 80},
+      {pool_offset(307),                                 80},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str310,                                80},
+      {pool_offset(310),                                80},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str311,                          414},
+      {pool_offset(311),                          414},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str312,           314},
+      {pool_offset(312),           314},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str323,                                44},
+      {pool_offset(323),                                44},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str325,                         442},
+      {pool_offset(325),                         442},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str326,                               162},
+      {pool_offset(326),                               162},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str329,                         129},
+      {pool_offset(329),                         129},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str330,                               217},
+      {pool_offset(330),                               217},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str332,                               200},
+      {pool_offset(332),                               200},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str342,                                3},
+      {pool_offset(342),                                3},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str347,                              43},
+      {pool_offset(347),                              43},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str348,                          267},
+      {pool_offset(348),                          267},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str352,                              215},
+      {pool_offset(352),                              215},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str353,                         274},
+      {pool_offset(353),                         274},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str356,               177},
+      {pool_offset(356),               177},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str357,                            197},
+      {pool_offset(357),                            197},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str361,                               98},
+      {pool_offset(361),                               98},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str362,            317},
+      {pool_offset(362),            317},
       {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str368,                                15},
+      {pool_offset(368),                                15},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str369,          304},
+      {pool_offset(369),          304},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str370,                            113},
+      {pool_offset(370),                            113},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str377,      350},
+      {pool_offset(377),      350},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str378,                                 85},
+      {pool_offset(378),                                 85},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str381,                               219},
+      {pool_offset(381),                               219},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str382,                               126},
+      {pool_offset(382),                               126},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str386,                               130},
+      {pool_offset(386),                               130},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str389,                                 116},
+      {pool_offset(389),                                 116},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str390,                               218},
+      {pool_offset(390),                               218},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str392,                              83},
+      {pool_offset(392),                              83},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str399,                           126},
+      {pool_offset(399),                           126},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str400,            444},
+      {pool_offset(400),            444},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str402,                            212},
+      {pool_offset(402),                            212},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str403,                             218},
+      {pool_offset(403),                             218},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str408,                                68},
+      {pool_offset(408),                                68},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str409,   481},
+      {pool_offset(409),   481},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str414,                    135},
+      {pool_offset(414),                    135},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str415, 340},
+      {pool_offset(415), 340},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str419,                217},
+      {pool_offset(419),                217},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str426,                        484},
+      {pool_offset(426),                        484},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str431,                         334},
+      {pool_offset(431),                         334},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str433,                       15},
+      {pool_offset(433),                       15},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str438,                           221},
+      {pool_offset(438),                           221},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str451,           458},
+      {pool_offset(451),           458},
       {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str457,      316},
+      {pool_offset(457),      316},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str479,                                119},
+      {pool_offset(479),                                119},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str486,                    121},
+      {pool_offset(486),                    121},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str489,               96},
+      {pool_offset(489),               96},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str510,                              161},
+      {pool_offset(510),                              161},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str520,                                86},
+      {pool_offset(520),                                86},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str529,                               205},
+      {pool_offset(529),                               205},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str530,                               136},
+      {pool_offset(530),                               136},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str535,                           312},
+      {pool_offset(535),                           312},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str537,                         342},
+      {pool_offset(537),                         342},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str544,                                 150},
+      {pool_offset(544),                                 150},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str545,                     478},
+      {pool_offset(545),                     478},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str549,                              254},
+      {pool_offset(549),                              254},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str552,                                  52},
+      {pool_offset(552),                                  52},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str553,                                50},
+      {pool_offset(553),                                50},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str556,                              462},
+      {pool_offset(556),                              462},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str563,                              53},
+      {pool_offset(563),                              53},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str564,                                46},
+      {pool_offset(564),                                46},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str568,                             465},
+      {pool_offset(568),                             465},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str573,                95},
+      {pool_offset(573),                95},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str576,  474},
+      {pool_offset(576),  474},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str577,                                 203},
+      {pool_offset(577),                                 203},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str579,                                82},
+      {pool_offset(579),                                82},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str580,                               222},
+      {pool_offset(580),                               222},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str584,                           422},
+      {pool_offset(584),                           422},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str585,                          298},
+      {pool_offset(585),                          298},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str586,                                16},
+      {pool_offset(586),                                16},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str588,                                  60},
+      {pool_offset(588),                                  60},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str589,                                83},
+      {pool_offset(589),                                83},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str591,                            278},
+      {pool_offset(591),                            278},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str596,                          449},
+      {pool_offset(596),                          449},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str601,                             451},
+      {pool_offset(601),                             451},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str603,                                 90},
+      {pool_offset(603),                                 90},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str604,                               128},
+      {pool_offset(604),                               128},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str608,                          256},
+      {pool_offset(608),                          256},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str609,                                 64},
+      {pool_offset(609),                                 64},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str610,                                45},
+      {pool_offset(610),                                45},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str618,                               231},
+      {pool_offset(618),                               231},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str621,                               106},
+      {pool_offset(621),                               106},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str622,                              0},
+      {pool_offset(622),                              0},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str631,                               134},
+      {pool_offset(631),                               134},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str635,                          147},
+      {pool_offset(635),                          147},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str638,          468},
+      {pool_offset(638),          468},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str642,                18},
+      {pool_offset(642),                18},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str643,                               232},
+      {pool_offset(643),                               232},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str653,                                 91},
+      {pool_offset(653),                                 91},
       {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str659,                        289},
+      {pool_offset(659),                        289},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str660,                      363},
+      {pool_offset(660),                      363},
       {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str666,                        295},
+      {pool_offset(666),                        295},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str673,                                 118},
+      {pool_offset(673),                                 118},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str677,                      479},
+      {pool_offset(677),                      479},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str678,                              269},
+      {pool_offset(678),                              269},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str685,                                109},
+      {pool_offset(685),                                109},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str686,                               109},
+      {pool_offset(686),                               109},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str687,                          140},
+      {pool_offset(687),                          140},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str690,                                 48},
+      {pool_offset(690),                                 48},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str692,                                89},
+      {pool_offset(692),                                89},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str693,                              42},
+      {pool_offset(693),                              42},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str696,                      235},
+      {pool_offset(696),                      235},
       {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str702,                             107},
+      {pool_offset(702),                             107},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str711,                          90},
+      {pool_offset(711),                          90},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str714,             460},
+      {pool_offset(714),             460},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str723,                           424},
+      {pool_offset(723),                           424},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str725,                                 183},
+      {pool_offset(725),                                 183},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str726,                              151},
+      {pool_offset(726),                              151},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str731,           243},
+      {pool_offset(731),           243},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str732,                             163},
+      {pool_offset(732),                             163},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str735,                          412},
+      {pool_offset(735),                          412},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str737,                                 177},
+      {pool_offset(737),                                 177},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str756,                              11},
+      {pool_offset(756),                              11},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str758,                     403},
+      {pool_offset(758),                     403},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str759,                         98},
+      {pool_offset(759),                         98},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str760,                    385},
+      {pool_offset(760),                    385},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str762,                                141},
+      {pool_offset(762),                                141},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str763,                               141},
+      {pool_offset(763),                               141},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str767,                           232},
+      {pool_offset(767),                           232},
       {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str773,                               229},
+      {pool_offset(773),                               229},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str776,                       454},
+      {pool_offset(776),                       454},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str787,                                 185},
+      {pool_offset(787),                                 185},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str797,                                 179},
+      {pool_offset(797),                                 179},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str806,                                 47},
+      {pool_offset(806),                                 47},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str816,                           332},
+      {pool_offset(816),                           332},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str824,                           64},
+      {pool_offset(824),                           64},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str827,                                 180},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str844,                                9},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str853,                             82},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str856,                336},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str860,                                164},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str866,                               139},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str867,                               166},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str868,               406},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str870,                               173},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str871,              299},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str872,                              175},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str876,                        407},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str877,                           297},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str878,                               197},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str880,                              169},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str886,                                1},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str892,                               167},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str896,                             41},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str897,                                92},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str898,                               111},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str899,                     186},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str900,                                62},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str902,                    166},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str906,                        420},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str907,                      146},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str915,              151},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str916,                             91},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str917,                    163},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str918,                       149},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str923,                                59},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str926,                        231},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str930,                   180},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str931,                            69},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str935,                            198},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str945,                        435},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str948,                            196},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str951,                         230},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str956,              361},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str958,                            188},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str960,                  36},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str969,                377},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str970,                     93},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str978,                               157},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str979,                             62},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str984,                        108},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str998,                  419},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1001,                       167},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1006,                                96},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1012,                                57},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1018,                        203},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1022,                              54},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1037,                     168},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1038,                               182},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1042,                       423},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1049,                416},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1050,                 239},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1054,                               158},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1058,            432},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1059,             433},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1060,                               35},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1061,                          52},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1066,                        150},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1071,    482},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1073,                                54},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1078,                                7},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1080,                           56},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1081,                          155},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1082,                                56},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1086,                        285},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1091,      471},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1092,                          206},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1093,                  429},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1095,                      174},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1098,                           94},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1099,                          448},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1100,               301},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1110,                         194},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1116,              401},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1122,                               196},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1126,                  428},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1127,                        421},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1128,      388},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1129,                     237},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1135,                             168},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1137,               306},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1138, 277},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1140,                               25},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1143,                           250},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1147,                                95},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1148,     302},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1150,                  175},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1152,                       238},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1154,                          169},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1155,                   88},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1156,            313},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1157,                            142},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1158,                         261},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1163,                          415},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1164,                     436},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1165,                      311},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1166,                                 146},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1168,                                 233},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1169,                               115},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1172,                               233},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1174,                   434},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1178,                           210},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1184,                                26},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1189,                               145},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1190,          469},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1192,                   179},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1194,                               221},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1195,                        118},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1199,                                 204},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1202,                          120},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1203,                               198},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1205,                          145},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1207,                             111},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1208,         389},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1210,                     117},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1211,                             496},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1212,                               142},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1215,                          450},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1216,                               147},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1221,                               39},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1223,                          270},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1230,                          234},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1232,                              190},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1233, 327},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1238,                               114},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1239,                  325},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1240,                         158},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1242,                         410},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1243,                               216},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1245,                               112},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1247,                          157},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1249,                                24},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1250,                 372},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1251,                               220},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1259,                               194},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1263,                                 184},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1265,                            220},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1280,                       366},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1284,                         294},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1285,                                67},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1290,                             28},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1291,                                73},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1295,                         182},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1297,                         260},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1300,                       38},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1305,                               123},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1307,            353},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1309,                               127},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1316,                             123},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1321,                             67},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1327,                            24},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1328,                               156},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1330,                                32},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1333,                475},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1335,                      440},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1336,                          127},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1339,                                20},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1341,                              31},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1343,              473},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1347,                               189},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1348,                               140},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1352,               247},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1359,                               152},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1361,                               159},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1362,                                6},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1364,                           369},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1370,                               172},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1373,                            222},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1374,                                81},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1379,                             230},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1384,                   362},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1387,                              358},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1388,               379},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1390,                               143},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1394,                                227},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1395,                               227},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1408,                            68},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1410,                        207},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1415,                            143},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1417,                               208},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1419,                           438},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1423,                         202},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1425,                               190},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1431,                          413},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1432,                              72},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1438,                             208},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1439,                                  171},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1441,                                 236},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1442,                         467},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1444,                                 228},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1447,                   245},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1448,                           408},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1451,                    116},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1455,                            262},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1461,                               75},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1462,                            114},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1463,                       356},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1465,               275},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1466,                310},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1467,                  320},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1469,                                97},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1470,                    319},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1472,                             144},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1473,               392},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1474,                         463},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1489,                 398},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1491,                            162},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1495,                                23},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1500,                            85},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1504,                         371},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1513,                                58},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1514,                             23},
+      {pool_offset(827),                                 180},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1531,                          375},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1532,               485},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1533,                               213},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1538,                            97},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1539,                 335},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1550,       396},
+      {pool_offset(844),                                9},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1559,                         272},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1561, 477},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1569,                              81},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1571,        307},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1576,                          281},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1578,                  381},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1586,                       411},
+      {pool_offset(853),                             82},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1589,                                70},
-      {-1},
+      {pool_offset(856),                336},
+      {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1591,                   184},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1593,                        409},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1598,                487},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1599,                               207},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1601,                            86},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1604,                                12},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1612,              425},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1614,                394},
+      {pool_offset(860),                                164},
       {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1620,                               206},
+      {pool_offset(866),                               139},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1621,                                31},
+      {pool_offset(867),                               166},
+
+      {pool_offset(868),               406},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1623, 328},
+      {pool_offset(870),                               173},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1624,                          71},
-      {-1}, {-1},
+      {pool_offset(871),              299},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1627,                             32},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1639,                          51},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1640,                               199},
+      {pool_offset(872),                              175},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1644,                               137},
-      {-1}, {-1}, {-1},
+      {pool_offset(876),                        407},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1648,                                84},
+      {pool_offset(877),                           297},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1649,                              152},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1654,                            58},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1658,                               161},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {pool_offset(878),                               197},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1669,                             73},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {pool_offset(880),                              169},
       {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1684,               390},
+      {pool_offset(886),                                1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(892),                               167},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(896),                             41},
+
+      {pool_offset(897),                                92},
+
+      {pool_offset(898),                               111},
+
+      {pool_offset(899),                     186},
+
+      {pool_offset(900),                                62},
+      {-1},
+
+      {pool_offset(902),                    166},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(906),                        420},
+
+      {pool_offset(907),                      146},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(915),              151},
+
+      {pool_offset(916),                             91},
+
+      {pool_offset(917),                    163},
+
+      {pool_offset(918),                       149},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(923),                                59},
+      {-1}, {-1},
+
+      {pool_offset(926),                        231},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(930),                   180},
+
+      {pool_offset(931),                            69},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(935),                            198},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(945),                        435},
+      {-1}, {-1},
+
+      {pool_offset(948),                            196},
+      {-1}, {-1},
+
+      {pool_offset(951),                         230},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(956),              361},
+      {-1},
+
+      {pool_offset(958),                            188},
+      {-1},
+
+      {pool_offset(960),                  36},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1693,                         322},
-      {-1},
+      {pool_offset(969),                377},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1695, 286},
+      {pool_offset(970),                     93},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(978),                               157},
+
+      {pool_offset(979),                             62},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(984),                        108},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(998),                  419},
+      {-1}, {-1},
+
+      {pool_offset(1001),                       167},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1006),                                96},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1012),                                57},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1018),                        203},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1022),                              54},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1037),                     168},
+
+      {pool_offset(1038),                               182},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1042),                       423},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1702,              370},
-      {-1}, {-1},
+      {pool_offset(1049),                416},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1705,                                72},
+      {pool_offset(1050),                 239},
+      {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1706,                        74},
+      {pool_offset(1054),                               158},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1058),            432},
+
+      {pool_offset(1059),             433},
+
+      {pool_offset(1060),                               35},
+
+      {pool_offset(1061),                          52},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1066),                        150},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1071),    482},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1708,                               29},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {pool_offset(1073),                                54},
+      {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1717,                             165},
+      {pool_offset(1078),                                7},
+      {-1},
+
+      {pool_offset(1080),                           56},
+
+      {pool_offset(1081),                          155},
+
+      {pool_offset(1082),                                56},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1086),                        285},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1091),      471},
+
+      {pool_offset(1092),                          206},
+
+      {pool_offset(1093),                  429},
+      {-1},
+
+      {pool_offset(1095),                      174},
+      {-1}, {-1},
+
+      {pool_offset(1098),                           94},
+
+      {pool_offset(1099),                          448},
+
+      {pool_offset(1100),               301},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1110),                         194},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1116),              401},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1122),                               196},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1126),                  428},
+
+      {pool_offset(1127),                        421},
+
+      {pool_offset(1128),      388},
+
+      {pool_offset(1129),                     237},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1135),                             168},
+      {-1},
+
+      {pool_offset(1137),               306},
+
+      {pool_offset(1138), 277},
+      {-1},
+
+      {pool_offset(1140),                               25},
+      {-1}, {-1},
+
+      {pool_offset(1143),                           250},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1147),                                95},
+
+      {pool_offset(1148),     302},
+      {-1},
+
+      {pool_offset(1150),                  175},
+      {-1},
+
+      {pool_offset(1152),                       238},
+      {-1},
+
+      {pool_offset(1154),                          169},
+
+      {pool_offset(1155),                   88},
+
+      {pool_offset(1156),            313},
+
+      {pool_offset(1157),                            142},
+
+      {pool_offset(1158),                         261},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1163),                          415},
+
+      {pool_offset(1164),                     436},
+
+      {pool_offset(1165),                      311},
+
+      {pool_offset(1166),                                 146},
+      {-1},
+
+      {pool_offset(1168),                                 233},
+
+      {pool_offset(1169),                               115},
+      {-1}, {-1},
+
+      {pool_offset(1172),                               233},
+      {-1},
+
+      {pool_offset(1174),                   434},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1178),                           210},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1184),                                26},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1189),                               145},
+
+      {pool_offset(1190),          469},
+      {-1},
+
+      {pool_offset(1192),                   179},
+      {-1},
+
+      {pool_offset(1194),                               221},
+
+      {pool_offset(1195),                        118},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1199),                                 204},
+      {-1}, {-1},
+
+      {pool_offset(1202),                          120},
+
+      {pool_offset(1203),                               198},
+      {-1},
+
+      {pool_offset(1205),                          145},
+      {-1},
+
+      {pool_offset(1207),                             111},
+
+      {pool_offset(1208),         389},
+      {-1},
+
+      {pool_offset(1210),                     117},
+
+      {pool_offset(1211),                             496},
+
+      {pool_offset(1212),                               142},
+      {-1}, {-1},
+
+      {pool_offset(1215),                          450},
+
+      {pool_offset(1216),                               147},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1221),                               39},
+      {-1},
+
+      {pool_offset(1223),                          270},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1724,                                88},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1732,     497},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1733,                            22},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1737,                             191},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1741,                    305},
+      {pool_offset(1230),                          234},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1743,                               176},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {pool_offset(1232),                              190},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1752,                136},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1754,              119},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1771,                  308},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1775,                  257},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1783,              489},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1786,              324},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1788,                          265},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1792,                               101},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1793,                            181},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1796,                                43},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1797,                                4},
+      {pool_offset(1233), 327},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1802,                         204},
-      {-1}, {-1}, {-1},
+      {pool_offset(1238),                               114},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1806,                           441},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1},
+      {pool_offset(1239),                  325},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1818,                          365},
-      {-1}, {-1}, {-1},
+      {pool_offset(1240),                         158},
+      {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1822,         384},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1},
+      {pool_offset(1242),                         410},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1836,                         229},
+      {pool_offset(1243),                               216},
+      {-1},
+
+      {pool_offset(1245),                               112},
+      {-1},
+
+      {pool_offset(1247),                          157},
+      {-1},
+
+      {pool_offset(1249),                                24},
+
+      {pool_offset(1250),                 372},
+
+      {pool_offset(1251),                               220},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1844,            393},
-      {-1}, {-1},
+      {pool_offset(1259),                               194},
+      {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1847,                  89},
+      {pool_offset(1263),                                 184},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1849,       387},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1851,                           439},
+      {pool_offset(1265),                            220},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1857,                              214},
+      {pool_offset(1280),                       366},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1284),                         294},
+
+      {pool_offset(1285),                                67},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1290),                             28},
+
+      {pool_offset(1291),                                73},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1295),                         182},
+      {-1},
+
+      {pool_offset(1297),                         260},
+      {-1}, {-1},
+
+      {pool_offset(1300),                       38},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1305),                               123},
+      {-1},
+
+      {pool_offset(1307),            353},
+      {-1},
+
+      {pool_offset(1309),                               127},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1864,                               186},
+      {pool_offset(1316),                             123},
+      {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1865,                       134},
+      {pool_offset(1321),                             67},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1327),                            24},
+
+      {pool_offset(1328),                               156},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1867,                                8},
+      {pool_offset(1330),                                32},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1870,     164},
+      {pool_offset(1333),                475},
+      {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1871,                         343},
+      {pool_offset(1335),                      440},
+
+      {pool_offset(1336),                          127},
+      {-1}, {-1},
+
+      {pool_offset(1339),                                20},
+      {-1},
+
+      {pool_offset(1341),                              31},
+      {-1},
+
+      {pool_offset(1343),              473},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1347),                               189},
+
+      {pool_offset(1348),                               140},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1352),               247},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1878,                                5},
+      {pool_offset(1359),                               152},
+      {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1879,                               124},
+      {pool_offset(1361),                               159},
+
+      {pool_offset(1362),                                6},
+      {-1},
+
+      {pool_offset(1364),                           369},
       {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1885,                                 178},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1887,                       348},
+      {pool_offset(1370),                               172},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1890,                             124},
+      {pool_offset(1373),                            222},
+
+      {pool_offset(1374),                                81},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1895,                        205},
+      {pool_offset(1379),                             230},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1384),                   362},
+      {-1}, {-1},
+
+      {pool_offset(1387),                              358},
+
+      {pool_offset(1388),               379},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1897, 495},
-      {-1}, {-1},
+      {pool_offset(1390),                               143},
+      {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1900,                        133},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {pool_offset(1394),                                227},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1909,                     170},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1912,                               102},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1915,                       273},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1917,                         92},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1935,                      380},
+      {pool_offset(1395),                               227},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1948,                359},
+      {pool_offset(1408),                            68},
+      {-1},
+
+      {pool_offset(1410),                        207},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1415),                            143},
+      {-1},
+
+      {pool_offset(1417),                               208},
+      {-1},
+
+      {pool_offset(1419),                           438},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1423),                         202},
+      {-1},
+
+      {pool_offset(1425),                               190},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1431),                          413},
+
+      {pool_offset(1432),                              72},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1438),                             208},
+
+      {pool_offset(1439),                                  171},
+      {-1},
+
+      {pool_offset(1441),                                 236},
+
+      {pool_offset(1442),                         467},
+      {-1},
+
+      {pool_offset(1444),                                 228},
+      {-1}, {-1},
+
+      {pool_offset(1447),                   245},
+
+      {pool_offset(1448),                           408},
+      {-1}, {-1},
+
+      {pool_offset(1451),                    116},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1455),                            262},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1461),                               75},
+
+      {pool_offset(1462),                            114},
+
+      {pool_offset(1463),                       356},
+      {-1},
+
+      {pool_offset(1465),               275},
+
+      {pool_offset(1466),                310},
+
+      {pool_offset(1467),                  320},
+      {-1},
+
+      {pool_offset(1469),                                97},
+
+      {pool_offset(1470),                    319},
+      {-1},
+
+      {pool_offset(1472),                             144},
+
+      {pool_offset(1473),               392},
+
+      {pool_offset(1474),                         463},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1489),                 398},
+      {-1},
+
+      {pool_offset(1491),                            162},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1495),                                23},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1500),                            85},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1504),                         371},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1513),                                58},
+
+      {pool_offset(1514),                             23},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1531),                          375},
+
+      {pool_offset(1532),               485},
+
+      {pool_offset(1533),                               213},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1538),                            97},
+
+      {pool_offset(1539),                 335},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
+
+      {pool_offset(1550),       396},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1559),                         272},
+      {-1},
+
+      {pool_offset(1561), 477},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1569),                              81},
+      {-1},
+
+      {pool_offset(1571),        307},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1576),                          281},
+      {-1},
+
+      {pool_offset(1578),                  381},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1586),                       411},
+      {-1}, {-1},
+
+      {pool_offset(1589),                                70},
+      {-1},
+
+      {pool_offset(1591),                   184},
+      {-1},
+
+      {pool_offset(1593),                        409},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1598),                487},
+
+      {pool_offset(1599),                               207},
+      {-1},
+
+      {pool_offset(1601),                            86},
+      {-1}, {-1},
+
+      {pool_offset(1604),                                12},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1612),              425},
+      {-1},
+
+      {pool_offset(1614),                394},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1620),                               206},
+
+      {pool_offset(1621),                                31},
+      {-1},
+
+      {pool_offset(1623), 328},
+
+      {pool_offset(1624),                          71},
+      {-1}, {-1},
+
+      {pool_offset(1627),                             32},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1},
+
+      {pool_offset(1639),                          51},
+
+      {pool_offset(1640),                               199},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1644),                               137},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1648),                                84},
+
+      {pool_offset(1649),                              152},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1654),                            58},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1658),                               161},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
+
+      {pool_offset(1669),                             73},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1684),               390},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1693),                         322},
+      {-1},
+
+      {pool_offset(1695), 286},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1964,                                18},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1969,                             174},
+      {pool_offset(1702),              370},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1972,        244},
+      {pool_offset(1705),                                72},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1973,                 252},
+      {pool_offset(1706),                        74},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1975,                   466},
-      {-1},
+      {pool_offset(1708),                               29},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1977,                          61},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1978,                    391},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1982, 309},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1987,                       258},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1989,                            282},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1991,                          17},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1995,                       154},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str1998,                               125},
+      {pool_offset(1717),                             165},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2005,                       427},
+      {pool_offset(1724),                                88},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1732),     497},
+
+      {pool_offset(1733),                            22},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1737),                             191},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1741),                    305},
+      {-1},
+
+      {pool_offset(1743),                               176},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1752),                136},
+      {-1},
+
+      {pool_offset(1754),              119},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1771),                  308},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1775),                  257},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1783),              489},
+      {-1}, {-1},
+
+      {pool_offset(1786),              324},
+      {-1},
+
+      {pool_offset(1788),                          265},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1792),                               101},
+
+      {pool_offset(1793),                            181},
+      {-1}, {-1},
+
+      {pool_offset(1796),                                43},
+
+      {pool_offset(1797),                                4},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1802),                         204},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1806),                           441},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1},
+
+      {pool_offset(1818),                          365},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1822),         384},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1836),                         229},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1844),            393},
+      {-1}, {-1},
+
+      {pool_offset(1847),                  89},
+      {-1},
+
+      {pool_offset(1849),       387},
+      {-1},
+
+      {pool_offset(1851),                           439},
       {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2011,                                63},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2012,                  300},
+      {pool_offset(1857),                              214},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2019,                          63},
+      {pool_offset(1864),                               186},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2020, 303},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2024,          488},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2030,                            284},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2034,               46},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2058,                            452},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2061,                                 61},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2062,                               214},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2080,               45},
+      {pool_offset(1865),                       134},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2082,                              99},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2093,                               181},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2104,                      464},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2106,                         29},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2116,                           445},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2126,                                25},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2127,                            360},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2128,               48},
+      {pool_offset(1867),                                8},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2131,                     290},
+      {pool_offset(1870),     164},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2132,                              224},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2133,                                 122},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2136,                                99},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2145,                              112},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2147,           60},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2151,                     480},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2153,                           249},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2161,                     201},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2167,                           223},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2172,                             357},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2173,                       330},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2175,                   386},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2178,                               153},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2182,                          259},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2185,                            153},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2195,                   40},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2210,                          160},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2211,                                28},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2212,                           264},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2218,                              87},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2221,                         291},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2225,                          280},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2240,                             57},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2249,                            287},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2252,                      75},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2255,                               210},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2259,                 418},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2263,                         283},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2268,                    400},
+      {pool_offset(1871),                         343},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2275,       349},
+      {pool_offset(1878),                                5},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2276,                                71},
+      {pool_offset(1879),                               124},
+      {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2277,                      125},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2278,                          173},
+      {pool_offset(1885),                                 178},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2280,                               104},
-      {-1}, {-1}, {-1},
+      {pool_offset(1887),                       348},
+      {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2284,                               103},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2292,                               223},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2300,         395},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2304,     498},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2306,                  228},
+      {pool_offset(1890),                             124},
       {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2311,                                148},
+      {pool_offset(1895),                        205},
+      {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2312,                               148},
+      {pool_offset(1897), 495},
+      {-1}, {-1},
+
+      {pool_offset(1900),                        133},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1909),                     170},
+      {-1}, {-1},
+
+      {pool_offset(1912),                               102},
+      {-1}, {-1},
+
+      {pool_offset(1915),                       273},
+      {-1},
+
+      {pool_offset(1917),                         92},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2330,                  461},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2336,                               209},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2338,                                 19},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2339,                      132},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2348,                                78},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2358,               47},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2363,                               100},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2364,                               154},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2365,                            78},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2368,                                30},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2373,                     476},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2376,                         344},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2386,                         103},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2388,                            100},
+      {pool_offset(1935),                      380},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2401,                               105},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2422,                            50},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2426,                   241},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2432,                    178},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2435,                                65},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2443,                      355},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2451,                            70},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2453,                             189},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2455,                             170},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2477,                                40},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2491,                              104},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2494,                              74},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2503,                     195},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2529, 293},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2542,                        131},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2544,                               160},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2550,                                 49},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2552,                              84},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2570,          337},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2581,                    156},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2587,         341},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2590,                165},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2613,               367},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2621,                            209},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2628,                           55},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2650,                            30},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2679,               333},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2704,                          226},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2711,                   224},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2742,                        455},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2743,                          176},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2774, 490},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2792,                     138},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2794,              382},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2802,                   383},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2803,                        171},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2834,                    185},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2835,                            26},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2864,                               10},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2878,              326},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2879,                           346},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2918,                   339},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2922,                  426},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2925,                        199},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2928,            338},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2930,                        172},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2952,                          368},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2953,                    122},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2955,                                27},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2960,                            296},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2968,                 351},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2983,                                34},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str2989,                                66},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3009,                          500},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3043,              459},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3084,                                77},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3176,                                33},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3230,               49},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3234,                 236},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3254,                            33},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3282,                                79},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3299,                 347},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3312,                             216},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3343,                      187},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3364,                        447},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3370,                            102},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3372,                    159},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3396,     499},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3479,          345},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3491,                                53},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3555,                              187},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3566,                               34},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3567,                                 201},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3582,                            225},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
-
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3619,                          106},
-      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {pool_offset(1948),                359},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3644,                           101},
+      {pool_offset(1964),                                18},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1969),                             174},
+      {-1}, {-1},
+
+      {pool_offset(1972),        244},
+
+      {pool_offset(1973),                 252},
+      {-1},
+
+      {pool_offset(1975),                   466},
+      {-1},
+
+      {pool_offset(1977),                          61},
+
+      {pool_offset(1978),                    391},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1982), 309},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(1987),                       258},
+      {-1},
+
+      {pool_offset(1989),                            282},
+      {-1},
+
+      {pool_offset(1991),                          17},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(1995),                       154},
+      {-1}, {-1},
+
+      {pool_offset(1998),                               125},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2005),                       427},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2011),                                63},
+
+      {pool_offset(2012),                  300},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2019),                          63},
+
+      {pool_offset(2020), 303},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2024),          488},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2030),                            284},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2034),               46},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2058),                            452},
+      {-1}, {-1},
+
+      {pool_offset(2061),                                 61},
+
+      {pool_offset(2062),                               214},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2080),               45},
+      {-1},
+
+      {pool_offset(2082),                              99},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
+
+      {pool_offset(2093),                               181},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
+
+      {pool_offset(2104),                      464},
+      {-1},
+
+      {pool_offset(2106),                         29},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2116),                           445},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2126),                                25},
+
+      {pool_offset(2127),                            360},
+
+      {pool_offset(2128),               48},
+      {-1}, {-1},
+
+      {pool_offset(2131),                     290},
+
+      {pool_offset(2132),                              224},
+
+      {pool_offset(2133),                                 122},
+      {-1}, {-1},
+
+      {pool_offset(2136),                                99},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2145),                              112},
+      {-1},
+
+      {pool_offset(2147),           60},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2151),                     480},
+      {-1},
+
+      {pool_offset(2153),                           249},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2161),                     201},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2167),                           223},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2172),                             357},
+
+      {pool_offset(2173),                       330},
+      {-1},
+
+      {pool_offset(2175),                   386},
+      {-1}, {-1},
+
+      {pool_offset(2178),                               153},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2182),                          259},
+      {-1}, {-1},
+
+      {pool_offset(2185),                            153},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2195),                   40},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2210),                          160},
+
+      {pool_offset(2211),                                28},
+
+      {pool_offset(2212),                           264},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2218),                              87},
+      {-1}, {-1},
+
+      {pool_offset(2221),                         291},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2225),                          280},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2240),                             57},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2249),                            287},
+      {-1}, {-1},
+
+      {pool_offset(2252),                      75},
+      {-1}, {-1},
+
+      {pool_offset(2255),                               210},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2259),                 418},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2263),                         283},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2268),                    400},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2275),       349},
+
+      {pool_offset(2276),                                71},
+
+      {pool_offset(2277),                      125},
+
+      {pool_offset(2278),                          173},
+      {-1},
+
+      {pool_offset(2280),                               104},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2284),                               103},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2292),                               223},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2300),         395},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2304),     498},
+      {-1},
+
+      {pool_offset(2306),                  228},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2311),                                148},
+
+      {pool_offset(2312),                               148},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2330),                  461},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2336),                               209},
+      {-1},
+
+      {pool_offset(2338),                                 19},
+
+      {pool_offset(2339),                      132},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2348),                                78},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2358),               47},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2363),                               100},
+
+      {pool_offset(2364),                               154},
+
+      {pool_offset(2365),                            78},
+      {-1}, {-1},
+
+      {pool_offset(2368),                                30},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2373),                     476},
+      {-1}, {-1},
+
+      {pool_offset(2376),                         344},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2386),                         103},
+      {-1},
+
+      {pool_offset(2388),                            100},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2401),                               105},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1},
+
+      {pool_offset(2422),                            50},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2426),                   241},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2432),                    178},
+      {-1}, {-1},
+
+      {pool_offset(2435),                                65},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2443),                      355},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2451),                            70},
+      {-1},
+
+      {pool_offset(2453),                             189},
+      {-1},
+
+      {pool_offset(2455),                             170},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2477),                                40},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2491),                              104},
+      {-1}, {-1},
+
+      {pool_offset(2494),                              74},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2503),                     195},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3670,   492},
+      {pool_offset(2529), 293},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2542),                        131},
+      {-1},
+
+      {pool_offset(2544),                               160},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2550),                                 49},
+      {-1},
+
+      {pool_offset(2552),                              84},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2570),          337},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
+
+      {pool_offset(2581),                    156},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2587),         341},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3673,   352},
+      {pool_offset(2590),                165},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2613),               367},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2621),                            209},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2628),                           55},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2650),                            30},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
+
+      {pool_offset(2679),               333},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2704),                          226},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2711),                   224},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2742),                        455},
+
+      {pool_offset(2743),                          176},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2774), 490},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2792),                     138},
+      {-1},
+
+      {pool_offset(2794),              382},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2802),                   383},
+
+      {pool_offset(2803),                        171},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2834),                    185},
+
+      {pool_offset(2835),                            26},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
+
+      {pool_offset(2864),                               10},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2878),              326},
+
+      {pool_offset(2879),                           346},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3685,             354},
+      {pool_offset(2918),                   339},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2922),                  426},
+      {-1}, {-1},
+
+      {pool_offset(2925),                        199},
+      {-1}, {-1},
+
+      {pool_offset(2928),            338},
+      {-1},
+
+      {pool_offset(2930),                        172},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(2952),                          368},
+
+      {pool_offset(2953),                    122},
+      {-1},
+
+      {pool_offset(2955),                                27},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2960),                            296},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2968),                 351},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3700,   494},
+      {pool_offset(2983),                                34},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(2989),                                66},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
+
+      {pool_offset(3009),                          500},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(3043),              459},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(3084),                                77},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
+
+      {pool_offset(3176),                                33},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(3230),               49},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(3234),                 236},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
+
+      {pool_offset(3254),                            33},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(3282),                                79},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(3299),                 347},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(3312),                             216},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1},
+
+      {pool_offset(3343),                      187},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1},
+
+      {pool_offset(3364),                        447},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(3370),                            102},
+      {-1},
+
+      {pool_offset(3372),                    159},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(3396),     499},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
+
+      {pool_offset(3479),          345},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1},
+
+      {pool_offset(3491),                                53},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(3555),                              187},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1},
+
+      {pool_offset(3566),                               34},
+
+      {pool_offset(3567),                                 201},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(3582),                            225},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(3619),                          106},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(3644),                           101},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(3670),   492},
+      {-1}, {-1},
+
+      {pool_offset(3673),   352},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1},
+
+      {pool_offset(3685),             354},
+      {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
+      {-1}, {-1}, {-1}, {-1}, {-1},
+
+      {pool_offset(3700),   494},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3743,                            65},
+      {pool_offset(3743),                            65},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3763,                 66},
+      {pool_offset(3763),                 66},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
@@ -26549,7 +26552,7 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str3853,                       318},
+      {pool_offset(3853),                       318},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
@@ -26579,7 +26582,7 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str4106,                             105},
+      {pool_offset(4106),                             105},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
@@ -26597,7 +26600,7 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str4244,   493},
+      {pool_offset(4244),   493},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
@@ -26652,18 +26655,18 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str4722,                               27},
+      {pool_offset(4722),                               27},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str4765,   491},
+      {pool_offset(4765),   491},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str4780,                                2},
+      {pool_offset(4780),                                2},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
@@ -26673,7 +26676,7 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str4851,                               77},
+      {pool_offset(4851),                               77},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
@@ -26686,7 +26689,7 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str4943,                              76},
+      {pool_offset(4943),                              76},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
@@ -26701,7 +26704,7 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str5054,                            79},
+      {pool_offset(5054),                            79},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
@@ -26715,7 +26718,7 @@ unicode_lookup_property_name (register const char *str, register unsigned int le
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
 
-      {(short int)(long)&((struct unicode_prop_name_pool_t *)0)->unicode_prop_name_pool_str5162,                        76}
+      {pool_offset(5162),                        76}
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
