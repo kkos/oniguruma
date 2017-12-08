@@ -238,7 +238,7 @@ extern int
 onig_set_default_syntax(OnigSyntaxType* syntax)
 {
   if (IS_NULL(syntax))
-    syntax = ONIG_SYNTAX_RUBY;
+    syntax = ONIG_SYNTAX_ONIGURUMA;
 
   OnigDefaultSyntax = syntax;
   return 0;

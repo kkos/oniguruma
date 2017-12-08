@@ -432,6 +432,7 @@ ONIG_EXTERN OnigSyntaxType OnigSyntaxJava;
 ONIG_EXTERN OnigSyntaxType OnigSyntaxPerl;
 ONIG_EXTERN OnigSyntaxType OnigSyntaxPerl_NG;
 ONIG_EXTERN OnigSyntaxType OnigSyntaxRuby;
+ONIG_EXTERN OnigSyntaxType OnigSyntaxOniguruma;
 
 /* predefined syntaxes (see regsyntax.c) */
 #define ONIG_SYNTAX_ASIS               (&OnigSyntaxASIS)
@@ -444,6 +445,7 @@ ONIG_EXTERN OnigSyntaxType OnigSyntaxRuby;
 #define ONIG_SYNTAX_PERL               (&OnigSyntaxPerl)
 #define ONIG_SYNTAX_PERL_NG            (&OnigSyntaxPerl_NG)
 #define ONIG_SYNTAX_RUBY               (&OnigSyntaxRuby)
+#define ONIG_SYNTAX_ONIGURUMA          (&OnigSyntaxOniguruma)
 
 /* default syntax */
 ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;

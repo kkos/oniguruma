@@ -40,7 +40,7 @@ extern int main(int argc, char* argv[])
 
   reg_set_encoding(REG_POSIX_ENCODING_ASCII);
 
-  /* default syntax (ONIG_SYNTAX_RUBY) */
+  /* default syntax (ONIG_SYNTAX_ONIGURUMA) */
   pattern = (UChar* )"^a+b{2,7}[c-f]?$|uuu";
   r = regcomp(&reg, (char* )pattern, REG_EXTENDED);
   if (r) {
