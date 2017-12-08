@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.6.0   2017/08/15
+鬼車インターフェース Version 6.7.0   2017/12/08
 
 #include <oniguruma.h>
 
@@ -139,7 +139,8 @@
       ONIG_SYNTAX_PERL              Perl
       ONIG_SYNTAX_PERL_NG           Perl + 名前付き捕獲式集合
       ONIG_SYNTAX_RUBY              Ruby
-      ONIG_SYNTAX_DEFAULT           default (== Ruby)
+      ONIG_SYNTAX_ONIGURUMA         Oniguruma
+      ONIG_SYNTAX_DEFAULT           default (== ONIG_SYNTAX_ONIGURUMA)
                                     onig_set_default_syntax()
 
       または、ユーザが定義したOnigSyntaxTypeデータのアドレス

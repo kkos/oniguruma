@@ -1,6 +1,6 @@
-鬼車 正規表現 Version 6.7.0    2017/09/03
+鬼車 正規表現 Version 6.7.0    2017/12/08
 
-使用文法: ONIG_SYNTAX_RUBY (既定値)
+使用文法: ONIG_SYNTAX_ONIGURUMA (既定値)
 
 
 1. 基本要素
@@ -430,7 +430,7 @@
 -----------------------------
 補記 1. 文法依存オプション
 
-   + ONIG_SYNTAX_RUBY
+   + ONIG_SYNTAX_ONIGURUMA
      (?m): 終止符記号(.)は改行と照合成功
 
    + ONIG_SYNTAX_PERL と ONIG_SYNTAX_JAVA

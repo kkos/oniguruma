@@ -1,4 +1,4 @@
-Oniguruma API  Version 6.6.0  2017/08/15
+Oniguruma API  Version 6.7.0  2017/12/08
 
 #include <oniguruma.h>
 
@@ -140,7 +140,8 @@ Oniguruma API  Version 6.6.0  2017/08/15
       ONIG_SYNTAX_PERL              Perl
       ONIG_SYNTAX_PERL_NG           Perl + named group
       ONIG_SYNTAX_RUBY              Ruby
-      ONIG_SYNTAX_DEFAULT           default (== Ruby)
+      ONIG_SYNTAX_ONIGURUMA         Oniguruma
+      ONIG_SYNTAX_DEFAULT           default (== ONIG_SYNTAX_ONIGURUMA)
                                    onig_set_default_syntax()
 
       or any OnigSyntaxType data address defined by user.

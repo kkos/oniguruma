@@ -1,6 +1,6 @@
-Oniguruma Regular Expressions Version 6.7.0    2017/09/03
+Oniguruma Regular Expressions Version 6.7.0    2017/12/08
 
-syntax: ONIG_SYNTAX_RUBY (default)
+syntax: ONIG_SYNTAX_ONIGURUMA (default)
 
 
 1. Syntax elements
@@ -422,7 +422,7 @@ syntax: ONIG_SYNTAX_RUBY (default)
 -----------------------------
 A-1. Syntax-dependent options
 
-   + ONIG_SYNTAX_RUBY
+   + ONIG_SYNTAX_ONIGURUMA
      (?m): dot (.) also matches newline
 
    + ONIG_SYNTAX_PERL and ONIG_SYNTAX_JAVA
