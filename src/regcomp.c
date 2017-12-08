@@ -1347,7 +1347,7 @@ compile_length_enclosure_node(EnclosureNode* node, regex_t* reg)
         len = SIZE_OP_MEMORY_START;
 
       len += tlen + (MEM_STATUS_AT0(reg->bt_mem_end, node->m.regnum)
-		     ? SIZE_OP_MEMORY_END_PUSH : SIZE_OP_MEMORY_END);
+                     ? SIZE_OP_MEMORY_END_PUSH : SIZE_OP_MEMORY_END);
     }
     break;
 
@@ -1705,7 +1705,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
 
       len = compile_length_tree(NODE_ANCHOR_BODY(node), reg);
       r = add_opcode_rel_addr(reg, OP_LOOK_BEHIND_NOT_START,
-			   len + SIZE_OP_LOOK_BEHIND_NOT_END);
+                              len + SIZE_OP_LOOK_BEHIND_NOT_END);
       if (r != 0) return r;
       if (node->char_len < 0) {
         r = get_char_length_tree(NODE_ANCHOR_BODY(node), reg, &n);
@@ -2714,7 +2714,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
           }
         }
         break;
-	
+
       default:
         break;
       }
@@ -3726,7 +3726,8 @@ expand_case_fold_make_rem_string(Node** rnode, UChar *s, UChar *end, regex_t* re
 
 static int
 expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[],
-			    UChar *p, int slen, UChar *end, regex_t* reg, Node **rnode)
+                            UChar *p, int slen, UChar *end, regex_t* reg,
+                            Node **rnode)
 {
   int r, i, j, len, varlen;
   Node *anode, *var_anode, *snode, *xnode, *an;
@@ -3857,8 +3858,8 @@ expand_case_fold_string(Node* node, regex_t* reg)
   alt_num = 1;
   p = start;
   while (p < end) {
-    n = ONIGENC_GET_CASE_FOLD_CODES_BY_STR(reg->enc, reg->case_fold_flag,
-					   p, end, items);
+    n = ONIGENC_GET_CASE_FOLD_CODES_BY_STR(reg->enc, reg->case_fold_flag, p, end,
+                                           items);
     if (n < 0) {
       r = n;
       goto err;
@@ -5119,7 +5120,7 @@ copy_opt_anc_info(OptAnc* to, OptAnc* from)
 
 static void
 concat_opt_anc_info(OptAnc* to, OptAnc* left, OptAnc* right,
-		                OnigLen left_len, OnigLen right_len)
+                    OnigLen left_len, OnigLen right_len)
 {
   clear_opt_anc_info(to);
 
@@ -5477,7 +5478,7 @@ concat_left_node_opt_info(OnigEncoding enc, NodeOpt* to, NodeOpt* add)
   copy_opt_anc_info(&to->anc, &tanc);
 
   if (add->exb.len > 0 && to->len.max == 0) {
-    concat_opt_anc_info(&tanc, &to->anc, &add->exb.anc,	to->len.max, add->len.max);
+    concat_opt_anc_info(&tanc, &to->anc, &add->exb.anc, to->len.max, add->len.max);
     copy_opt_anc_info(&add->exb.anc, &tanc);
   }
 
@@ -5927,11 +5928,11 @@ set_optimize_exact(regex_t* reg, OptExact* e)
 
     if (e->len >= 3 || (e->len >= 2 && allow_reverse)) {
       r = set_bm_skip(reg->exact, reg->exact_end, reg->enc,
-	              reg->map, &(reg->int_map));
+                      reg->map, &(reg->int_map));
       if (r != 0) return r;
 
       reg->optimize = (allow_reverse != 0
-		       ? ONIG_OPTIMIZE_EXACT_BM : ONIG_OPTIMIZE_EXACT_BM_NOT_REV);
+                       ? ONIG_OPTIMIZE_EXACT_BM : ONIG_OPTIMIZE_EXACT_BM_NOT_REV);
     }
     else {
       reg->optimize = ONIG_OPTIMIZE_EXACT;
@@ -7105,8 +7106,7 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
       break;
 
     default:
-      fprintf(stderr, "onig_print_compiled_byte_code: undefined code %d\n",
-	      *--bp);
+      fprintf(stderr, "onig_print_compiled_byte_code: undefined code %d\n", *--bp);
     }
   }
   if (nextp) *nextp = bp;
@@ -7180,8 +7180,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
     break;
 
   case NODE_STRING:
-    fprintf(f, "<string%s:%p>",
-	    (NODE_STRING_IS_RAW(node) ? "-raw" : ""), node);
+    fprintf(f, "<string%s:%p>", (NODE_STRING_IS_RAW(node) ? "-raw" : ""), node);
     for (p = STR_(node)->s; p < STR_(node)->end; p++) {
       if (*p >= 0x20 && *p < 0x7f)
         fputc(*p, f);
@@ -7295,8 +7294,8 @@ print_indent_tree(FILE* f, Node* node, int indent)
 
   case NODE_QUANT:
     fprintf(f, "<quantifier:%p>{%d,%d}%s\n", node,
-	    QUANT_(node)->lower, QUANT_(node)->upper,
-	    (QUANT_(node)->greedy ? "" : "?"));
+            QUANT_(node)->lower, QUANT_(node)->upper,
+            (QUANT_(node)->greedy ? "" : "?"));
     print_indent_tree(f, NODE_BODY(node), indent + add);
     break;
 

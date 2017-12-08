@@ -365,7 +365,7 @@ save_entry(ScanEnv* env, enum SaveType type, int* id)
 
 static UChar*
 strcat_capa(UChar* dest, UChar* dest_end, const UChar* src, const UChar* src_end,
-	      int capa)
+            int capa)
 {
   UChar* r;
 
@@ -382,7 +382,7 @@ strcat_capa(UChar* dest, UChar* dest_end, const UChar* src, const UChar* src_end
 /* dest on static area */
 static UChar*
 strcat_capa_from_static(UChar* dest, UChar* dest_end,
-			const UChar* src, const UChar* src_end, int capa)
+                        const UChar* src, const UChar* src_end, int capa)
 {
   UChar* r;
 
@@ -450,7 +450,7 @@ onig_st_init_strend_table_with_size(int size)
 
 extern int
 onig_st_lookup_strend(hash_table_type* table, const UChar* str_key,
-		      const UChar* end_key, hash_data_type *value)
+                      const UChar* end_key, hash_data_type *value)
 {
   st_str_end_key key;
 
@@ -462,7 +462,7 @@ onig_st_lookup_strend(hash_table_type* table, const UChar* str_key,
 
 extern int
 onig_st_insert_strend(hash_table_type* table, const UChar* str_key,
-		      const UChar* end_key, hash_data_type value)
+                      const UChar* end_key, hash_data_type value)
 {
   st_str_end_key* key;
   int result;
@@ -919,7 +919,7 @@ name_add(regex_t* reg, UChar* name, UChar* name_end, int backref, ScanEnv* env)
 
 extern int
 onig_name_to_group_numbers(regex_t* reg, const UChar* name,
-			   const UChar* name_end, int** nums)
+                           const UChar* name_end, int** nums)
 {
   NameEntry* e = name_find(reg, name, name_end);
 
@@ -940,7 +940,7 @@ onig_name_to_group_numbers(regex_t* reg, const UChar* name,
 
 extern int
 onig_name_to_backref_number(regex_t* reg, const UChar* name,
-			    const UChar* name_end, OnigRegion *region)
+                            const UChar* name_end, OnigRegion *region)
 {
   int i, n, *nums;
 
@@ -1361,9 +1361,9 @@ onig_node_new_anchor(int type, int ascii_mode)
 static Node*
 node_new_backref(int back_num, int* backrefs, int by_name,
 #ifdef USE_BACKREF_WITH_LEVEL
-		 int exist_level, int nest_level,
+                 int exist_level, int nest_level,
 #endif
-		 ScanEnv* env)
+                 ScanEnv* env)
 {
   int i;
   Node* node = node_new();
@@ -1411,9 +1411,9 @@ node_new_backref(int back_num, int* backrefs, int by_name,
 static Node*
 node_new_backref_checker(int back_num, int* backrefs, int by_name,
 #ifdef USE_BACKREF_WITH_LEVEL
-		 int exist_level, int nest_level,
+                         int exist_level, int nest_level,
 #endif
-		 ScanEnv* env)
+                         ScanEnv* env)
 {
   Node* node;
 
@@ -3484,8 +3484,9 @@ CC_ESC_WARN(ScanEnv* env, UChar *c)
       IS_SYNTAX_BV(env->syntax, ONIG_SYN_BACKSLASH_ESCAPE_IN_CC)) {
     UChar buf[WARN_BUFSIZE];
     onig_snprintf_with_pattern(buf, WARN_BUFSIZE, env->enc,
-		env->pattern, env->pattern_end,
-                (UChar* )"character class has '%s' without escape", c);
+                               env->pattern, env->pattern_end,
+                               (UChar* )"character class has '%s' without escape",
+                               c);
     (*onig_warn)((char* )buf);
   }
 }
@@ -3498,8 +3499,8 @@ CLOSE_BRACKET_WITHOUT_ESC_WARN(ScanEnv* env, UChar* c)
   if (IS_SYNTAX_BV((env)->syntax, ONIG_SYN_WARN_CC_OP_NOT_ESCAPED)) {
     UChar buf[WARN_BUFSIZE];
     onig_snprintf_with_pattern(buf, WARN_BUFSIZE, (env)->enc,
-		(env)->pattern, (env)->pattern_end,
-		(UChar* )"regular expression has '%s' without escape", c);
+                         (env)->pattern, (env)->pattern_end,
+                         (UChar* )"regular expression has '%s' without escape", c);
     (*onig_warn)((char* )buf);
   }
 }
@@ -4560,14 +4561,14 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_LINE_ANCHOR)) break;
       tok->type = TK_ANCHOR;
       tok->u.subtype = (IS_SINGLELINE(env->options)
-			? ANCHOR_BEGIN_BUF : ANCHOR_BEGIN_LINE);
+                        ? ANCHOR_BEGIN_BUF : ANCHOR_BEGIN_LINE);
       break;
 
     case '$':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_LINE_ANCHOR)) break;
       tok->type = TK_ANCHOR;
       tok->u.subtype = (IS_SINGLELINE(env->options)
-			? ANCHOR_SEMI_END_BUF : ANCHOR_END_LINE);
+                        ? ANCHOR_SEMI_END_BUF : ANCHOR_END_LINE);
       break;
 
     case '[':
@@ -5125,8 +5126,7 @@ code_exist_check(OnigCodePoint c, UChar* from, UChar* end, int ignore_escaped,
 }
 
 static int
-parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
-		 ScanEnv* env)
+parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
 {
   int r, neg, len, fetched, and_start;
   OnigCodePoint v, vs;
@@ -5259,7 +5259,7 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
       in_type = (len == 1 ? CCV_SB : CCV_CODE_POINT);
     val_entry2:
       r = next_state_val(cc, &vs, v, &val_israw, in_israw, in_type, &val_type,
-			 &state, env);
+                         &state, env);
       if (r != 0) goto err;
       break;
 
@@ -5348,7 +5348,7 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
           CC_ESC_WARN(env, (UChar* )"-");
           goto range_end_val;
         }
-	
+
         if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_ALLOW_DOUBLE_RANGE_OP_IN_CC)) {
           CC_ESC_WARN(env, (UChar* )"-");
           goto range_end_val;   /* [0-9-a] is allowed as [0-9\-a] */
@@ -5421,7 +5421,7 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end,
 
   if (state == CCS_VALUE) {
     r = next_state_val(cc, &vs, 0, &val_israw, 0, val_type,
-		       &val_type, &state, env);
+                       &val_type, &state, env);
     if (r != 0) goto err;
   }
 
@@ -6141,7 +6141,7 @@ i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[], int to_len, void* arg)
 
     if (onig_is_code_in_cc(env->enc, from, cc)
 #ifdef CASE_FOLD_IS_APPLIED_INSIDE_NEGATIVE_CCLASS
-	&& !IS_NCCLASS_NOT(cc)
+        && !IS_NCCLASS_NOT(cc)
 #endif
         ) {
       for (i = 0; i < to_len; i++) {
@@ -6404,10 +6404,10 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
                   (len > 1 ? tok->u.backref.refs : &(tok->u.backref.ref1)),
                   tok->u.backref.by_name,
 #ifdef USE_BACKREF_WITH_LEVEL
-			   tok->u.backref.exist_level,
-			   tok->u.backref.level,
+                           tok->u.backref.exist_level,
+                           tok->u.backref.level,
 #endif
-			   env);
+                           env);
     CHECK_NULL_RETURN_MEMERR(*np);
     break;
 

@@ -221,7 +221,7 @@ apply_case_fold3(int from, int to, OnigApplyAllCaseFoldFunc f, void* arg)
 
 extern int
 onigenc_unicode_apply_all_case_fold(OnigCaseFoldType flag,
-				    OnigApplyAllCaseFoldFunc f, void* arg)
+                                    OnigApplyAllCaseFoldFunc f, void* arg)
 {
   int r;
 
@@ -863,8 +863,8 @@ onigenc_unicode_property_name_to_ctype(OnigEncoding enc, UChar* name, UChar* end
     UserDefinedPropertyValue* e;
     e = (UserDefinedPropertyValue* )NULL;
     onig_st_lookup_strend(UserDefinedPropertyTable,
-			  (const UChar* )buf, (const UChar* )buf + len,
-			  (hash_data_type* )((void* )(&e)));
+                          (const UChar* )buf, (const UChar* )buf + len,
+                          (hash_data_type* )((void* )(&e)));
     if (e != 0) {
       return e->ctype;
     }

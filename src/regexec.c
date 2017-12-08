@@ -405,7 +405,7 @@ typedef struct _StackType {
 
 #define STATE_CHECK_BUFF_MALLOC_THRESHOLD_SIZE  16
 
-#define STATE_CHECK_BUFF_INIT(msa, str_len, offset, state_num) do {	\
+#define STATE_CHECK_BUFF_INIT(msa, str_len, offset, state_num) do {\
   if ((state_num) > 0 && str_len >= STATE_CHECK_STRING_THRESHOLD_LEN) {\
     unsigned int size = (unsigned int )(((str_len) + 1) * (state_num) + 7) >> 3;\
     offset = ((offset) * (state_num)) >> 3;\
@@ -512,9 +512,8 @@ onig_set_match_stack_limit_size(unsigned int size)
 
 static int
 stack_double(int is_alloca, char** arg_alloc_base,
-	     StackType** arg_stk_base,
-	     StackType** arg_stk_end, StackType** arg_stk,
-	     OnigMatchArg* msa)
+             StackType** arg_stk_base, StackType** arg_stk_end, StackType** arg_stk,
+             OnigMatchArg* msa)
 {
   unsigned int n;
   int used;
@@ -559,13 +558,13 @@ stack_double(int is_alloca, char** arg_alloc_base,
   used = (int )(stk - stk_base);
   *arg_alloc_base = alloc_base;
   *arg_stk_base   = (StackType* )(alloc_base
-		       + (sizeof(StackIndex) * msa->ptr_num));
+                                  + (sizeof(StackIndex) * msa->ptr_num));
   *arg_stk      = *arg_stk_base + used;
   *arg_stk_end  = *arg_stk_base + n;
   return 0;
 }
 
-#define STACK_ENSURE(n)	do {\
+#define STACK_ENSURE(n) do {\
     if ((int )(stk_end - stk) < (n)) {\
     int r = stack_double(is_alloca, &alloc_base, &stk_base, &stk_end, &stk, msa);\
     if (r != 0) { STACK_SAVE; return r; } \
@@ -600,7 +599,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define ELSE_IF_STATE_CHECK_MARK(stk) \
   else if ((stk)->type == STK_STATE_CHECK_MARK) { \
     int x = STATE_CHECK_POS(stk->u.state.pstr, stk->u.state.state_check);\
-    state_check_buff[x/8] |= (1<<(x%8));				\
+    state_check_buff[x/8] |= (1<<(x%8));\
   }
 
 #define STACK_PUSH(stack_type,pat,s,sprev) do {\
@@ -1158,7 +1157,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 } while(0)
 
 static int string_cmp_ic(OnigEncoding enc, int case_fold_flag,
-			 UChar* s1, UChar** ps2, int mblen)
+                         UChar* s1, UChar** ps2, int mblen)
 {
   UChar buf1[ONIGENC_MBC_CASE_FOLD_MAXLEN];
   UChar buf2[ONIGENC_MBC_CASE_FOLD_MAXLEN];
@@ -1270,10 +1269,12 @@ static int mem_is_in_memp(int mem, int num, UChar* memp)
   return 0;
 }
 
-static int backref_match_at_nested_level(regex_t* reg
-	 , StackType* top, StackType* stk_base
-	 , int ignore_case, int case_fold_flag
-	 , int nest, int mem_num, UChar* memp, UChar** s, const UChar* send)
+static int
+backref_match_at_nested_level(regex_t* reg,
+                              StackType* top, StackType* stk_base,
+                              int ignore_case, int case_fold_flag,
+                              int nest, int mem_num, UChar* memp,
+                              UChar** s, const UChar* send)
 {
   UChar *ss, *p, *pstart, *pend = NULL_UCHARP;
   int level;
@@ -1459,9 +1460,9 @@ typedef struct {
 static int
 match_at(regex_t* reg, const UChar* str, const UChar* end,
 #ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
-	 const UChar* in_right_range,
+         const UChar* in_right_range,
 #endif
-	 const UChar* sstart, UChar* sprev, OnigMatchArg* msa)
+         const UChar* sstart, UChar* sprev, OnigMatchArg* msa)
 {
   static UChar FinishCode[] = { OP_FINISH };
 
@@ -1502,7 +1503,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   fprintf(stderr, "match_at: str: %p, end: %p, start: %p, sprev: %p\n",
           str, end, sstart, sprev);
   fprintf(stderr, "size: %d, start offset: %d\n",
-	  (int )(end - str), (int )(sstart - str));
+          (int )(end - str), (int )(sstart - str));
 #endif
 
   STACK_PUSH_ENSURED(STK_ALT, FinishCode);  /* bottom stack */
@@ -2692,7 +2693,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           fprintf(stderr, "EMPTY_CHECK_END_MEMST: skip  id:%d, s:%p\n", (int)mem, s);
 #endif
           if (is_empty == -1) goto fail;
-          goto 	empty_check_found;
+          goto empty_check_found;
         }
       }
       MOP_OUT;
@@ -2718,7 +2719,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
                   (int )mem, s);
 #endif
           if (is_empty == -1) goto fail;
-          goto 	empty_check_found;
+          goto empty_check_found;
         }
         else {
           STACK_PUSH_EMPTY_CHECK_END(mem);
@@ -3117,7 +3118,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
 static UChar*
 slow_search(OnigEncoding enc, UChar* target, UChar* target_end,
-	    const UChar* text, const UChar* text_end, UChar* text_range)
+            const UChar* text, const UChar* text_end, UChar* text_range)
 {
   UChar *t, *p, *s, *end;
 
@@ -3149,7 +3150,7 @@ slow_search(OnigEncoding enc, UChar* target, UChar* target_end,
 static int
 str_lower_case_match(OnigEncoding enc, int case_fold_flag,
                      const UChar* t, const UChar* tend,
-		     const UChar* p, const UChar* end)
+                     const UChar* p, const UChar* end)
 {
   int lowlen;
   UChar *q, lowbuf[ONIGENC_MBC_CASE_FOLD_MAXLEN];
@@ -3158,7 +3159,7 @@ str_lower_case_match(OnigEncoding enc, int case_fold_flag,
     lowlen = ONIGENC_MBC_CASE_FOLD(enc, case_fold_flag, &p, end, lowbuf);
     q = lowbuf;
     while (lowlen > 0) {
-      if (*t++ != *q++)	return 0;
+      if (*t++ != *q++) return 0;
       lowlen--;
     }
   }
@@ -3168,8 +3169,8 @@ str_lower_case_match(OnigEncoding enc, int case_fold_flag,
 
 static UChar*
 slow_search_ic(OnigEncoding enc, int case_fold_flag,
-	       UChar* target, UChar* target_end,
-	       const UChar* text, const UChar* text_end, UChar* text_range)
+               UChar* target, UChar* target_end,
+               const UChar* text, const UChar* text_end, UChar* text_range)
 {
   UChar *s, *end;
 
@@ -3182,7 +3183,7 @@ slow_search_ic(OnigEncoding enc, int case_fold_flag,
 
   while (s < end) {
     if (str_lower_case_match(enc, case_fold_flag, target, target_end,
-			     s, text_end))
+                             s, text_end))
       return s;
 
     s += enclen(enc, s);
@@ -3193,8 +3194,8 @@ slow_search_ic(OnigEncoding enc, int case_fold_flag,
 
 static UChar*
 slow_search_backward(OnigEncoding enc, UChar* target, UChar* target_end,
-		     const UChar* text, const UChar* adjust_text,
-		     const UChar* text_end, const UChar* text_start)
+                     const UChar* text, const UChar* adjust_text,
+                     const UChar* text_end, const UChar* text_start)
 {
   UChar *t, *p, *s;
 
@@ -3225,9 +3226,9 @@ slow_search_backward(OnigEncoding enc, UChar* target, UChar* target_end,
 
 static UChar*
 slow_search_backward_ic(OnigEncoding enc, int case_fold_flag,
-			UChar* target, UChar* target_end,
-			const UChar* text, const UChar* adjust_text,
-			const UChar* text_end, const UChar* text_start)
+                        UChar* target, UChar* target_end,
+                        const UChar* text, const UChar* adjust_text,
+                        const UChar* text_end, const UChar* text_start)
 {
   UChar *s;
 
@@ -3251,8 +3252,8 @@ slow_search_backward_ic(OnigEncoding enc, int case_fold_flag,
 
 static UChar*
 bm_search_notrev(regex_t* reg, const UChar* target, const UChar* target_end,
-		 const UChar* text, const UChar* text_end,
-		 const UChar* text_range)
+                 const UChar* text, const UChar* text_end,
+                 const UChar* text_range)
 {
   const UChar *s, *se, *t, *p, *end;
   const UChar *tail;
@@ -3307,7 +3308,7 @@ bm_search_notrev(regex_t* reg, const UChar* target, const UChar* target_end,
 
 static UChar*
 bm_search(regex_t* reg, const UChar* target, const UChar* target_end,
-	  const UChar* text, const UChar* text_end, const UChar* text_range)
+          const UChar* text, const UChar* text_end, const UChar* text_range)
 {
   const UChar *s, *t, *p, *end;
   const UChar *tail;
@@ -3345,9 +3346,7 @@ bm_search(regex_t* reg, const UChar* target, const UChar* target_end,
 
 #ifdef USE_INT_MAP_BACKWARD
 static int
-set_bm_backward_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED,
-		     int** skip)
-		     
+set_bm_backward_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED, int** skip)
 {
   int i, len;
 
@@ -3368,8 +3367,8 @@ set_bm_backward_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED,
 
 static UChar*
 bm_search_backward(regex_t* reg, const UChar* target, const UChar* target_end,
-		   const UChar* text, const UChar* adjust_text,
-		   const UChar* text_end, const UChar* text_start)
+                   const UChar* text, const UChar* adjust_text,
+                   const UChar* text_end, const UChar* text_start)
 {
   const UChar *s, *t, *p;
 
@@ -3398,7 +3397,7 @@ bm_search_backward(regex_t* reg, const UChar* target, const UChar* target_end,
 
 static UChar*
 map_search(OnigEncoding enc, UChar map[],
-	   const UChar* text, const UChar* text_range)
+           const UChar* text, const UChar* text_range)
 {
   const UChar *s = text;
 
@@ -3412,8 +3411,8 @@ map_search(OnigEncoding enc, UChar map[],
 
 static UChar*
 map_search_backward(OnigEncoding enc, UChar map[],
-		    const UChar* text, const UChar* adjust_text,
-		    const UChar* text_start)
+                    const UChar* text, const UChar* adjust_text,
+                    const UChar* text_start)
 {
   const UChar *s = text_start;
 
@@ -3426,8 +3425,8 @@ map_search_backward(OnigEncoding enc, UChar map[],
 }
 
 extern int
-onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at, OnigRegion* region,
-	    OnigOptionType option)
+onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at,
+           OnigRegion* region, OnigOptionType option)
 {
   int r;
   UChar *prev;
@@ -3462,9 +3461,9 @@ onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at, On
     prev = (UChar* )onigenc_get_prev_char_head(reg->enc, str, at);
     r = match_at(reg, str, end,
 #ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
-		 end,
+                 end,
 #endif
-		 at, prev, &msa);
+                 at, prev, &msa);
   }
 
  end:
@@ -3474,7 +3473,7 @@ onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at, On
 
 static int
 forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
-		     UChar* range, UChar** low, UChar** high, UChar** low_prev)
+                     UChar* range, UChar** low, UChar** high, UChar** low_prev)
 {
   UChar *p, *pprev = (UChar* )NULL;
 
@@ -3598,8 +3597,8 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
 
 #ifdef ONIG_DEBUG_SEARCH
     fprintf(stderr,
-    "forward_search_range success: low: %d, high: %d, dmin: %d, dmax: %d\n",
-	    (int )(*low - str), (int )(*high - str), reg->dmin, reg->dmax);
+            "forward_search_range success: low: %d, high: %d, dmin: %d, dmax: %d\n",
+            (int )(*low - str), (int )(*high - str), reg->dmin, reg->dmax);
 #endif
     return 1; /* success */
   }
@@ -3612,8 +3611,8 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
 
 static int
 backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
-		      UChar* s, const UChar* range, UChar* adjrange,
-		      UChar** low, UChar** high)
+                      UChar* s, const UChar* range, UChar* adjrange,
+                      UChar** low, UChar** high)
 {
   UChar *p;
 
@@ -3625,7 +3624,7 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
   case ONIG_OPTIMIZE_EXACT:
   exact_method:
     p = slow_search_backward(reg->enc, reg->exact, reg->exact_end,
-			     range, adjrange, end, p);
+                             range, adjrange, end, p);
     break;
 
   case ONIG_OPTIMIZE_EXACT_IC:
@@ -3707,7 +3706,7 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
 
 #ifdef ONIG_DEBUG_SEARCH
     fprintf(stderr, "backward_search_range: low: %d, high: %d\n",
-	    (int )(*low - str), (int )(*high - str));
+            (int )(*low - str), (int )(*high - str));
 #endif
     return 1; /* success */
   }
@@ -3722,7 +3721,8 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
 
 extern int
 onig_search(regex_t* reg, const UChar* str, const UChar* end,
-	    const UChar* start, const UChar* range, OnigRegion* region, OnigOptionType option)
+            const UChar* start, const UChar* range, OnigRegion* region,
+            OnigOptionType option)
 {
   int r;
   UChar *s, *prev;
@@ -3915,7 +3915,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 
 #ifdef ONIG_DEBUG_SEARCH
   fprintf(stderr, "onig_search(apply anchor): end: %d, start: %d, range: %d\n",
-	  (int )(end - str), (int )(start - str), (int )(range - str));
+          (int )(end - str), (int )(start - str), (int )(range - str));
 #endif
 
   MATCH_ARG_INIT(msa, reg, option, region, orig_start);
@@ -4104,9 +4104,9 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 
 extern int
 onig_scan(regex_t* reg, const UChar* str, const UChar* end,
-	  OnigRegion* region, OnigOptionType option,
-	  int (*scan_callback)(int, int, OnigRegion*, void*),
-	  void* callback_arg)
+          OnigRegion* region, OnigOptionType option,
+          int (*scan_callback)(int, int, OnigRegion*, void*),
+          void* callback_arg)
 {
   int r;
   int n;
