@@ -1067,6 +1067,7 @@ compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
   int tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
 
   if (tlen < 0) return tlen;
+  if (tlen == 0) return 0;
 
   /* anychar repeat */
   if (is_anychar_infinite_greedy(qn)) {
@@ -1132,6 +1133,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
   int tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
 
   if (tlen < 0) return tlen;
+  if (tlen == 0) return 0;
 
   if (is_anychar_infinite_greedy(qn) &&
       (qn->lower <= 1 || tlen * qn->lower <= QUANTIFIER_EXPAND_LIMIT_SIZE)) {
