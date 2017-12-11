@@ -129,10 +129,12 @@ enum EnclosureType {
 #define BACKREFS_P(br) \
   (IS_NOT_NULL((br)->back_dynamic) ? (br)->back_dynamic : (br)->back_static)
 
-#define QUANT_BODY_IS_NOT_EMPTY    0
-#define QUANT_BODY_IS_EMPTY        1
-#define QUANT_BODY_IS_EMPTY_MEM    2
-#define QUANT_BODY_IS_EMPTY_REC    3
+enum QuantBodyEmpty {
+  QUANT_BODY_IS_NOT_EMPTY = 0,
+  QUANT_BODY_IS_EMPTY     = 1,
+  QUANT_BODY_IS_EMPTY_MEM = 2,
+  QUANT_BODY_IS_EMPTY_REC = 3
+};
 
 /* node status bits */
 #define NST_MIN_FIXED             (1<<0)
@@ -221,7 +223,7 @@ typedef struct {
   int lower;
   int upper;
   int greedy;
-  int body_empty_info;
+  enum QuantBodyEmpty body_empty_info;
   struct _Node* head_exact;
   struct _Node* next_head_exact;
   int is_refered;     /* include called node. don't eliminate even if {0} */
