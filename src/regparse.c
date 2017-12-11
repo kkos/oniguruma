@@ -2853,7 +2853,7 @@ is_invalid_quantifier_target(Node* node)
 
 /* ?:0, *:1, +:2, ??:3, *?:4, +?:5 */
 static int
-popular_quantifier_num(QuantNode* q)
+quantifier_type_num(QuantNode* q)
 {
   if (q->greedy) {
     if (q->lower == 0) {
@@ -2904,8 +2904,8 @@ onig_reduce_nested_quantifier(Node* pnode, Node* cnode)
 
   p = QUANT_(pnode);
   c = QUANT_(cnode);
-  pnum = popular_quantifier_num(p);
-  cnum = popular_quantifier_num(c);
+  pnum = quantifier_type_num(p);
+  cnum = quantifier_type_num(c);
   if (pnum < 0 || cnum < 0) {
     if ((p->lower == p->upper) && ! IS_REPEAT_INFINITE(p->upper)) {
       if ((c->lower == c->upper) && ! IS_REPEAT_INFINITE(c->upper)) {
@@ -6069,8 +6069,8 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
     { /* check redundant double repeat. */
       /* verbose warn (?:.?)? etc... but not warn (.?)? etc... */
       QuantNode* qnt   = QUANT_(target);
-      int nestq_num   = popular_quantifier_num(qn);
-      int targetq_num = popular_quantifier_num(qnt);
+      int nestq_num   = quantifier_type_num(qn);
+      int targetq_num = quantifier_type_num(qnt);
 
 #ifdef USE_WARNING_REDUNDANT_NESTED_REPEAT_OPERATOR
       if (! NODE_IS_BY_NUMBER(qnode) && ! NODE_IS_BY_NUMBER(target) &&
