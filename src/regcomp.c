@@ -121,6 +121,23 @@ onig_set_default_case_fold_flag(OnigCaseFoldType case_fold_flag)
   return 0;
 }
 
+static int
+int_multiply_cmp(int x, int y, int v)
+{
+  if (x == 0 || y == 0) return -1;
+
+  if (x < INT_MAX / y) {
+    int xy = x * y;
+    if (xy > v) return 1;
+    else {
+      if (xy == v) return 0;
+      else return -1;
+    }
+  }
+  else
+    return 1;
+}
+
 
 #ifndef PLATFORM_UNALIGNED_WORD_ACCESS
 static unsigned char PadBuf[WORD_ALIGNMENT_SIZE];
@@ -1071,7 +1088,8 @@ compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
 
   /* anychar repeat */
   if (is_anychar_infinite_greedy(qn)) {
-    if (qn->lower <= 1 || tlen * qn->lower <= QUANTIFIER_EXPAND_LIMIT_SIZE) {
+    if (qn->lower <= 1 ||
+        int_multiply_cmp(tlen, qn->lower, QUANTIFIER_EXPAND_LIMIT_SIZE) <= 0) {
       if (IS_NOT_NULL(qn->next_head_exact))
         return SIZE_OP_ANYCHAR_STAR_PEEK_NEXT + tlen * qn->lower;
       else
@@ -1085,7 +1103,8 @@ compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
     mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
 
   if (infinite &&
-      (qn->lower <= 1 || tlen * qn->lower <= QUANTIFIER_EXPAND_LIMIT_SIZE)) {
+      (qn->lower <= 1 ||
+       int_multiply_cmp(tlen, qn->lower, QUANTIFIER_EXPAND_LIMIT_SIZE) <= 0)) {
     if (qn->lower == 1 && tlen > QUANTIFIER_EXPAND_LIMIT_SIZE) {
       len = SIZE_OP_JUMP;
     }
@@ -1108,8 +1127,9 @@ compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
     len = SIZE_OP_JUMP + tlen;
   }
   else if (!infinite && qn->greedy &&
-           (qn->upper == 1 || (tlen + SIZE_OP_PUSH) * qn->upper
-                                      <= QUANTIFIER_EXPAND_LIMIT_SIZE)) {
+           (qn->upper == 1 ||
+            int_multiply_cmp(tlen + SIZE_OP_PUSH, qn->upper,
+                             QUANTIFIER_EXPAND_LIMIT_SIZE) <= 0)) {
     len = tlen * qn->lower;
     len += (SIZE_OP_PUSH + tlen) * (qn->upper - qn->lower);
   }
@@ -1136,7 +1156,8 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
   if (tlen == 0) return 0;
 
   if (is_anychar_infinite_greedy(qn) &&
-      (qn->lower <= 1 || tlen * qn->lower <= QUANTIFIER_EXPAND_LIMIT_SIZE)) {
+      (qn->lower <= 1 ||
+       int_multiply_cmp(tlen, qn->lower, QUANTIFIER_EXPAND_LIMIT_SIZE) <= 0)) {
     r = compile_tree_n_times(NODE_QUANT_BODY(qn), qn->lower, reg, env);
     if (r != 0) return r;
     if (IS_NOT_NULL(qn->next_head_exact)) {
@@ -1161,7 +1182,8 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
     mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
 
   if (infinite &&
-      (qn->lower <= 1 || tlen * qn->lower <= QUANTIFIER_EXPAND_LIMIT_SIZE)) {
+      (qn->lower <= 1 ||
+       int_multiply_cmp(tlen, qn->lower, QUANTIFIER_EXPAND_LIMIT_SIZE) <= 0)) {
     if (qn->lower == 1 && tlen > QUANTIFIER_EXPAND_LIMIT_SIZE) {
       if (qn->greedy) {
         if (IS_NOT_NULL(qn->head_exact))
@@ -1225,8 +1247,9 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
     r = compile_tree(NODE_QUANT_BODY(qn), reg, env);
   }
   else if (! infinite && qn->greedy &&
-           (qn->upper == 1 || (tlen + SIZE_OP_PUSH) * qn->upper
-                                  <= QUANTIFIER_EXPAND_LIMIT_SIZE)) {
+           (qn->upper == 1 ||
+            int_multiply_cmp(tlen + SIZE_OP_PUSH, qn->upper,
+                             QUANTIFIER_EXPAND_LIMIT_SIZE) <= 0)) {
     int n = qn->upper - qn->lower;
 
     r = compile_tree_n_times(NODE_QUANT_BODY(qn), qn->lower, reg, env);

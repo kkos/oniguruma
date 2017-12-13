@@ -30,10 +30,6 @@
 #include "regparse.h"
 #include "st.h"
 
-#ifdef HAVE_LIMITS_H
-#include <limits.h>
-#endif
-
 #ifdef DEBUG_NODE_FREE
 #include <stdio.h>
 #endif
