@@ -257,12 +257,12 @@ enum StackPopLevel {
 };
 
 /* optimize flags */
-#define ONIG_OPTIMIZE_NONE              0
-#define ONIG_OPTIMIZE_EXACT             1   /* Slow Search */
-#define ONIG_OPTIMIZE_EXACT_BM          2   /* Boyer Moore Search */
-#define ONIG_OPTIMIZE_EXACT_BM_NOT_REV  3   /* BM   (but not simple match) */
-#define ONIG_OPTIMIZE_EXACT_IC          4   /* Slow Search (ignore case) */
-#define ONIG_OPTIMIZE_MAP               5   /* char map */
+#define OPTIMIZE_NONE              0
+#define OPTIMIZE_EXACT             1   /* Slow Search */
+#define OPTIMIZE_EXACT_BM          2   /* Boyer Moore Search */
+#define OPTIMIZE_EXACT_BM_NO_REV   3   /* BM   (but not simple match) */
+#define OPTIMIZE_EXACT_IC          4   /* Slow Search (ignore case) */
+#define OPTIMIZE_MAP               5   /* char map */
 
 /* bit status */
 typedef unsigned int  MemStatusType;

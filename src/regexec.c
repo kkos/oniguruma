@@ -3497,23 +3497,23 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
 
  retry:
   switch (reg->optimize) {
-  case ONIG_OPTIMIZE_EXACT:
+  case OPTIMIZE_EXACT:
     p = slow_search(reg->enc, reg->exact, reg->exact_end, p, end, range);
     break;
-  case ONIG_OPTIMIZE_EXACT_IC:
+  case OPTIMIZE_EXACT_IC:
     p = slow_search_ic(reg->enc, reg->case_fold_flag,
                        reg->exact, reg->exact_end, p, end, range);
     break;
 
-  case ONIG_OPTIMIZE_EXACT_BM:
+  case OPTIMIZE_EXACT_BM:
     p = bm_search(reg, reg->exact, reg->exact_end, p, end, range);
     break;
 
-  case ONIG_OPTIMIZE_EXACT_BM_NOT_REV:
+  case OPTIMIZE_EXACT_BM_NO_REV:
     p = bm_search_notrev(reg, reg->exact, reg->exact_end, p, end, range);
     break;
 
-  case ONIG_OPTIMIZE_MAP:
+  case OPTIMIZE_MAP:
     p = map_search(reg->enc, reg->map, p, range);
     break;
   }
@@ -3621,20 +3621,20 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
 
  retry:
   switch (reg->optimize) {
-  case ONIG_OPTIMIZE_EXACT:
+  case OPTIMIZE_EXACT:
   exact_method:
     p = slow_search_backward(reg->enc, reg->exact, reg->exact_end,
                              range, adjrange, end, p);
     break;
 
-  case ONIG_OPTIMIZE_EXACT_IC:
+  case OPTIMIZE_EXACT_IC:
     p = slow_search_backward_ic(reg->enc, reg->case_fold_flag,
                                 reg->exact, reg->exact_end,
                                 range, adjrange, end, p);
     break;
 
-  case ONIG_OPTIMIZE_EXACT_BM:
-  case ONIG_OPTIMIZE_EXACT_BM_NOT_REV:
+  case OPTIMIZE_EXACT_BM:
+  case OPTIMIZE_EXACT_BM_NO_REV:
 #ifdef USE_INT_MAP_BACKWARD
     if (IS_NULL(reg->int_map_backward)) {
       int r;
@@ -3653,7 +3653,7 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
 #endif
     break;
 
-  case ONIG_OPTIMIZE_MAP:
+  case OPTIMIZE_MAP:
     p = map_search_backward(reg->enc, reg->map, range, adjrange, p);
     break;
   }
@@ -3933,7 +3933,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
     else
       prev = (UChar* )NULL;
 
-    if (reg->optimize != ONIG_OPTIMIZE_NONE) {
+    if (reg->optimize != OPTIMIZE_NONE) {
       UChar *sch_range, *low, *high, *low_prev;
 
       sch_range = (UChar* )range;
@@ -4003,7 +4003,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
       orig_start += enclen(reg->enc, orig_start); /* is upper range */
 #endif
 
-    if (reg->optimize != ONIG_OPTIMIZE_NONE) {
+    if (reg->optimize != OPTIMIZE_NONE) {
       UChar *low, *high, *adjrange, *sch_start;
 
       if (range < end)

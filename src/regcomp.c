@@ -5946,7 +5946,7 @@ set_optimize_exact(regex_t* reg, OptExact* e)
     CHECK_NULL_RETURN_MEMERR(reg->exact);
     xmemcpy(reg->exact, e->s, e->len);
     reg->exact_end = reg->exact + e->len;
-    reg->optimize = ONIG_OPTIMIZE_EXACT_IC;
+    reg->optimize = OPTIMIZE_EXACT_IC;
   }
   else {
     int allow_reverse;
@@ -5964,10 +5964,10 @@ set_optimize_exact(regex_t* reg, OptExact* e)
       if (r != 0) return r;
 
       reg->optimize = (allow_reverse != 0
-                       ? ONIG_OPTIMIZE_EXACT_BM : ONIG_OPTIMIZE_EXACT_BM_NOT_REV);
+                       ? OPTIMIZE_EXACT_BM : OPTIMIZE_EXACT_BM_NO_REV);
     }
     else {
-      reg->optimize = ONIG_OPTIMIZE_EXACT;
+      reg->optimize = OPTIMIZE_EXACT;
     }
   }
 
@@ -5989,7 +5989,7 @@ set_optimize_map(regex_t* reg, OptMap* m)
   for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++)
     reg->map[i] = m->map[i];
 
-  reg->optimize   = ONIG_OPTIMIZE_MAP;
+  reg->optimize   = OPTIMIZE_MAP;
   reg->dmin       = m->mmd.min;
   reg->dmax       = m->mmd.max;
 
@@ -6070,7 +6070,7 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
 static void
 clear_optimize_info(regex_t* reg)
 {
-  reg->optimize      = ONIG_OPTIMIZE_NONE;
+  reg->optimize      = OPTIMIZE_NONE;
   reg->anchor        = 0;
   reg->anchor_dmin   = 0;
   reg->anchor_dmax   = 0;
@@ -6212,7 +6212,7 @@ print_optimize_info(FILE* f, regex_t* reg)
     }
     fprintf(f, "]: length: %ld\n", (reg->exact_end - reg->exact));
   }
-  else if (reg->optimize & ONIG_OPTIMIZE_MAP) {
+  else if (reg->optimize & OPTIMIZE_MAP) {
     int c, i, n = 0;
 
     for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++)
