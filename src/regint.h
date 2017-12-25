@@ -89,7 +89,6 @@
 #define USE_VARIABLE_META_CHARS
 #define USE_POSIX_API_REGION_OPTION
 #define USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
-/* #define USE_COMBINATION_EXPLOSION_CHECK */     /* (X*)* */
 
 #define xmalloc     malloc
 #define xrealloc    realloc
@@ -699,13 +698,6 @@ typedef int ModeType;
 #define SIZE_OP_PUSH_SAVE_VAL          (SIZE_OPCODE + SIZE_SAVE_TYPE + SIZE_MEMNUM)
 #define SIZE_OP_UPDATE_VAR             (SIZE_OPCODE + SIZE_UPDATE_VAR_TYPE + SIZE_MEMNUM)
 
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-#define SIZE_OP_STATE_CHECK            (SIZE_OPCODE + SIZE_STATE_CHECK_NUM)
-#define SIZE_OP_STATE_CHECK_PUSH       (SIZE_OPCODE + SIZE_STATE_CHECK_NUM + SIZE_RELADDR)
-#define SIZE_OP_STATE_CHECK_PUSH_OR_JUMP (SIZE_OPCODE + SIZE_STATE_CHECK_NUM + SIZE_RELADDR)
-#define SIZE_OP_STATE_CHECK_ANYCHAR_STAR (SIZE_OPCODE + SIZE_STATE_CHECK_NUM)
-#endif
-
 #define MC_ESC(syn)               (syn)->meta_char_table.esc
 #define MC_ANYCHAR(syn)           (syn)->meta_char_table.anychar
 #define MC_ANYTIME(syn)           (syn)->meta_char_table.anytime
@@ -767,10 +759,6 @@ typedef struct {
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
   int    best_len;      /* for ONIG_OPTION_FIND_LONGEST */
   UChar* best_s;
-#endif
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-  void* state_check_buff;
-  int   state_check_buff_size;
 #endif
 } OnigMatchArg;
 

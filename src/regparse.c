@@ -1056,12 +1056,6 @@ scan_env_clear(ScanEnv* env)
 
   xmemset(env->mem_env_static, 0, sizeof(env->mem_env_static));
 
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-  env->num_comb_exp_check  = 0;
-  env->comb_exp_max_regnum = 0;
-  env->curr_max_regnum     = 0;
-  env->has_recursion       = 0;
-#endif
   env->parse_depth         = 0;
   env->keep_num            = 0;
   env->save_num            = 0;
@@ -1514,10 +1508,6 @@ node_new_quantifier(int lower, int upper, int by_number)
   QUANT_(node)->is_refered      = 0;
   if (by_number != 0)
     NODE_STATUS_ADD(node, NST_BY_NUMBER);
-
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-  QUANT_(node)->comb_exp_check_num = 0;
-#endif
 
   return node;
 }

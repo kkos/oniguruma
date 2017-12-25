@@ -347,9 +347,6 @@ typedef struct _StackType {
       UChar *pcode;      /* byte code position */
       UChar *pstr;       /* string position */
       UChar *pstr_prev;  /* previous char position of pstr */
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-      unsigned int state_check;
-#endif
     } state;
     struct {
       int   count;       /* for OP_REPEAT_INC, OP_REPEAT_INC_NG */
@@ -401,44 +398,8 @@ typedef struct _StackType {
 } while(0)
 #endif
 
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-
-#define STATE_CHECK_BUFF_MALLOC_THRESHOLD_SIZE  16
-
-#define STATE_CHECK_BUFF_INIT(msa, str_len, offset, state_num) do {\
-  if ((state_num) > 0 && str_len >= STATE_CHECK_STRING_THRESHOLD_LEN) {\
-    unsigned int size = (unsigned int )(((str_len) + 1) * (state_num) + 7) >> 3;\
-    offset = ((offset) * (state_num)) >> 3;\
-    if (size > 0 && offset < size && size < STATE_CHECK_BUFF_MAX_SIZE) {\
-      if (size >= STATE_CHECK_BUFF_MALLOC_THRESHOLD_SIZE) \
-        (msa).state_check_buff = (void* )xmalloc(size);\
-      else \
-        (msa).state_check_buff = (void* )xalloca(size);\
-      xmemset(((char* )((msa).state_check_buff)+(offset)), 0, \
-              (size_t )(size - (offset))); \
-      (msa).state_check_buff_size = size;\
-    }\
-    else {\
-      (msa).state_check_buff = (void* )0;\
-      (msa).state_check_buff_size = 0;\
-    }\
-  }\
-  else {\
-    (msa).state_check_buff = (void* )0;\
-    (msa).state_check_buff_size = 0;\
-  }\
-} while(0)
-
-#define MATCH_ARG_FREE(msa) do {\
-  if ((msa).stack_p) xfree((msa).stack_p);\
-  if ((msa).state_check_buff_size >= STATE_CHECK_BUFF_MALLOC_THRESHOLD_SIZE) { \
-    if ((msa).state_check_buff) xfree((msa).state_check_buff);\
-  }\
-} while(0)
-#else
 #define STATE_CHECK_BUFF_INIT(msa, str_len, offset, state_num)
 #define MATCH_ARG_FREE(msa)  if ((msa).stack_p) xfree((msa).stack_p)
-#endif
 
 
 #define ALLOCA_PTR_NUM_LIMIT   50
@@ -584,63 +545,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
 
 #define IS_TO_VOID_TARGET(stk) (((stk)->type & STK_MASK_TO_VOID_TARGET) != 0)
 
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-#define STATE_CHECK_POS(s,snum) \
-  (((s) - str) * num_comb_exp_check + ((snum) - 1))
-#define STATE_CHECK_VAL(v,snum) do {\
-  if (IS_NOT_NULL(state_check_buff)) {\
-    int x = STATE_CHECK_POS(s,snum);\
-    (v) = state_check_buff[x/8] & (1<<(x%8));\
-  }\
-  else (v) = 0;\
-} while(0)
-
-
-#define ELSE_IF_STATE_CHECK_MARK(stk) \
-  else if ((stk)->type == STK_STATE_CHECK_MARK) { \
-    int x = STATE_CHECK_POS(stk->u.state.pstr, stk->u.state.state_check);\
-    state_check_buff[x/8] |= (1<<(x%8));\
-  }
-
-#define STACK_PUSH(stack_type,pat,s,sprev) do {\
-  STACK_ENSURE(1);\
-  stk->type = (stack_type);\
-  stk->u.state.pcode     = (pat);\
-  stk->u.state.pstr      = (s);\
-  stk->u.state.pstr_prev = (sprev);\
-  stk->u.state.state_check = 0;\
-  STACK_INC;\
-} while(0)
-
-#define STACK_PUSH_ENSURED(stack_type,pat) do {\
-  stk->type = (stack_type);\
-  stk->u.state.pcode = (pat);\
-  stk->u.state.state_check = 0;\
-  STACK_INC;\
-} while(0)
-
-#define STACK_PUSH_ALT_WITH_STATE_CHECK(pat,s,sprev,snum) do {\
-  STACK_ENSURE(1);\
-  stk->type = STK_ALT;\
-  stk->u.state.pcode     = (pat);\
-  stk->u.state.pstr      = (s);\
-  stk->u.state.pstr_prev = (sprev);\
-  stk->u.state.state_check = (IS_NOT_NULL(state_check_buff) ? (snum) : 0);\
-  STACK_INC;\
-} while(0)
-
-#define STACK_PUSH_STATE_CHECK(s,snum) do {\
-  if (IS_NOT_NULL(state_check_buff)) {   \
-    STACK_ENSURE(1);\
-    stk->type = STK_STATE_CHECK_MARK;\
-    stk->u.state.pstr = (s);\
-    stk->u.state.state_check = (snum);\
-    STACK_INC;\
-  }\
-} while(0)
-
-#else /* USE_COMBINATION_EXPLOSION_CHECK */
-
 #define ELSE_IF_STATE_CHECK_MARK(stk)
 
 #define STACK_PUSH(stack_type,pat,s,sprev) do {\
@@ -657,7 +561,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
   stk->u.state.pcode = (pat);\
   STACK_INC;\
 } while(0)
-#endif /* USE_COMBINATION_EXPLOSION_CHECK */
 
 #define STACK_PUSH_ALT(pat,s,sprev)       STACK_PUSH(STK_ALT,pat,s,sprev)
 #define STACK_PUSH_SUPER_ALT(pat,s,sprev) STACK_PUSH(STK_SUPER_ALT,pat,s,sprev)
@@ -1480,11 +1383,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   StackIndex *repeat_stk;
   StackIndex *mem_start_stk, *mem_end_stk;
   UChar* keep;
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-  int scv;
-  unsigned char* state_check_buff = msa->state_check_buff;
-  int num_comb_exp_check = reg->num_comb_exp_check;
-#endif
   UChar *p = reg->p;
   OnigOptionType option = reg->options;
   OnigEncoding encode = reg->enc;
@@ -2091,47 +1989,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       p++;
       MOP_OUT;
       break;
-
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-    case OP_STATE_CHECK_ANYCHAR_STAR:  MOP_IN(OP_STATE_CHECK_ANYCHAR_STAR);
-      GET_STATE_CHECK_NUM_INC(mem, p);
-      while (DATA_ENSURE_CHECK1) {
-        STATE_CHECK_VAL(scv, mem);
-        if (scv) goto fail;
-
-        STACK_PUSH_ALT_WITH_STATE_CHECK(p, s, sprev, mem);
-        n = enclen(encode, s);
-        DATA_ENSURE(n);
-        if (ONIGENC_IS_MBC_NEWLINE(encode, s, end))  goto fail;
-        sprev = s;
-        s += n;
-      }
-      MOP_OUT;
-      break;
-
-    case OP_STATE_CHECK_ANYCHAR_ML_STAR:
-      MOP_IN(OP_STATE_CHECK_ANYCHAR_ML_STAR);
-
-      GET_STATE_CHECK_NUM_INC(mem, p);
-      while (DATA_ENSURE_CHECK1) {
-        STATE_CHECK_VAL(scv, mem);
-        if (scv) goto fail;
-
-        STACK_PUSH_ALT_WITH_STATE_CHECK(p, s, sprev, mem);
-        n = enclen(encode, s);
-        if (n > 1) {
-          DATA_ENSURE(n);
-          sprev = s;
-          s += n;
-        }
-        else {
-          sprev = s;
-          s++;
-        }
-      }
-      MOP_OUT;
-      break;
-#endif /* USE_COMBINATION_EXPLOSION_CHECK */
 
     case OP_WORD:  MOP_IN(OP_WORD);
       DATA_ENSURE(1);
@@ -2752,43 +2609,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       continue;
       break;
 
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-    case OP_STATE_CHECK_PUSH:  MOP_IN(OP_STATE_CHECK_PUSH);
-      GET_STATE_CHECK_NUM_INC(mem, p);
-      STATE_CHECK_VAL(scv, mem);
-      if (scv) goto fail;
-
-      GET_RELADDR_INC(addr, p);
-      STACK_PUSH_ALT_WITH_STATE_CHECK(p + addr, s, sprev, mem);
-      MOP_OUT;
-      continue;
-      break;
-
-    case OP_STATE_CHECK_PUSH_OR_JUMP:  MOP_IN(OP_STATE_CHECK_PUSH_OR_JUMP);
-      GET_STATE_CHECK_NUM_INC(mem, p);
-      GET_RELADDR_INC(addr, p);
-      STATE_CHECK_VAL(scv, mem);
-      if (scv) {
-        p += addr;
-      }
-      else {
-        STACK_PUSH_ALT_WITH_STATE_CHECK(p + addr, s, sprev, mem);
-      }
-      MOP_OUT;
-      continue;
-      break;
-
-    case OP_STATE_CHECK:  MOP_IN(OP_STATE_CHECK);
-      GET_STATE_CHECK_NUM_INC(mem, p);
-      STATE_CHECK_VAL(scv, mem);
-      if (scv) goto fail;
-
-      STACK_PUSH_STATE_CHECK(s, mem);
-      MOP_OUT;
-      continue;
-      break;
-#endif /* USE_COMBINATION_EXPLOSION_CHECK */
-
     case OP_POP:  MOP_IN(OP_POP);
       STACK_POP_ONE;
       MOP_OUT;
@@ -3077,14 +2897,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       p     = stk->u.state.pcode;
       s     = stk->u.state.pstr;
       sprev = stk->u.state.pstr_prev;
-
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-      if (stk->u.state.state_check != 0) {
-        stk->type = STK_STATE_CHECK_MARK;
-        stk++;
-      }
-#endif
-
       MOP_OUT;
       continue;
       break;
@@ -3433,13 +3245,6 @@ onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at,
   OnigMatchArg msa;
 
   MATCH_ARG_INIT(msa, reg, option, region, at);
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-  {
-    int offset = at - str;
-    STATE_CHECK_BUFF_INIT(msa, end - str, offset, reg->num_comb_exp_check);
-  }
-#endif
-
   if (region
 #ifdef USE_POSIX_API_REGION_OPTION
       && !IS_POSIX_REGION(option)
@@ -3903,10 +3708,6 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
       prev = (UChar* )NULL;
 
       MATCH_ARG_INIT(msa, reg, option, region, start);
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-      msa.state_check_buff = (void* )0;
-      msa.state_check_buff_size = 0;   /* NO NEED, for valgrind */
-#endif
       MATCH_AND_RETURN_CHECK(end);
       goto mismatch;
     }
@@ -3919,12 +3720,6 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 #endif
 
   MATCH_ARG_INIT(msa, reg, option, region, orig_start);
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-  {
-    int offset = (MIN(start, range) - str);
-    STATE_CHECK_BUFF_INIT(msa, end - str, offset, reg->num_comb_exp_check);
-  }
-#endif
 
   s = (UChar* )start;
   if (range > start) {   /* forward search */
