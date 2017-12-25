@@ -6397,12 +6397,6 @@ OnigOpInfoType OnigOpInfo[] = {
   { OP_RETURN,               "return",               ARG_NON },
   { OP_PUSH_SAVE_VAL,        "push-save-val",        ARG_SPECIAL },
   { OP_UPDATE_VAR,           "update-var",           ARG_SPECIAL },
-  { OP_STATE_CHECK_PUSH,         "state-check-push",         ARG_SPECIAL },
-  { OP_STATE_CHECK_PUSH_OR_JUMP, "state-check-push-or-jump", ARG_SPECIAL },
-  { OP_STATE_CHECK,              "state-check",              ARG_STATE_CHECK },
-  { OP_STATE_CHECK_ANYCHAR_STAR, "state-check-anychar*",     ARG_STATE_CHECK },
-  { OP_STATE_CHECK_ANYCHAR_ML_STAR,
-    "state-check-anychar-ml*", ARG_STATE_CHECK },
   { -1, "", ARG_NON }
 };
 
@@ -6692,16 +6686,6 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
       GET_RELADDR_INC(addr, bp);
       GET_LENGTH_INC(len, bp);
       fprintf(f, ":%d:", len);
-      p_rel_addr(f, addr, bp, start);
-      break;
-
-    case OP_STATE_CHECK_PUSH:
-    case OP_STATE_CHECK_PUSH_OR_JUMP:
-      scn = *((StateCheckNumType* )bp);
-      bp += SIZE_STATE_CHECK_NUM;
-      addr = *((RelAddrType* )bp);
-      bp += SIZE_RELADDR;
-      fprintf(f, ":%d:", scn);
       p_rel_addr(f, addr, bp, start);
       break;
 

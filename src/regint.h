@@ -591,12 +591,6 @@ enum OpCode {
   OP_PUSH_SAVE_VAL,
   OP_UPDATE_VAR,
 
-  OP_STATE_CHECK_PUSH,         /* combination explosion check and push */
-  OP_STATE_CHECK_PUSH_OR_JUMP, /* check ok -> push, else jump  */
-  OP_STATE_CHECK,              /* check only */
-  OP_STATE_CHECK_ANYCHAR_STAR,
-  OP_STATE_CHECK_ANYCHAR_ML_STAR,
-
   /* no need: IS_DYNAMIC_OPTION() == 0 */
   OP_SET_OPTION_PUSH,    /* set option and push recover option */
   OP_SET_OPTION          /* set option */
