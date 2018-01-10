@@ -2,7 +2,7 @@
   regexec.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2018  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -474,7 +474,7 @@ onig_set_match_stack_limit_size(unsigned int size)
 static int
 stack_double(int is_alloca, char** arg_alloc_base,
              StackType** arg_stk_base, StackType** arg_stk_end, StackType** arg_stk,
-             OnigMatchArg* msa)
+             MatchArg* msa)
 {
   unsigned int n;
   int used;
@@ -1365,7 +1365,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
          const UChar* in_right_range,
 #endif
-         const UChar* sstart, UChar* sprev, OnigMatchArg* msa)
+         const UChar* sstart, UChar* sprev, MatchArg* msa)
 {
   static UChar FinishCode[] = { OP_FINISH };
 
@@ -3242,7 +3242,7 @@ onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at,
 {
   int r;
   UChar *prev;
-  OnigMatchArg msa;
+  MatchArg msa;
 
   MATCH_ARG_INIT(msa, reg, option, region, at);
   if (region
@@ -3531,7 +3531,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 {
   int r;
   UChar *s, *prev;
-  OnigMatchArg msa;
+  MatchArg msa;
   const UChar *orig_start = start;
 #ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
   const UChar *orig_range = range;

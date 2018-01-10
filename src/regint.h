@@ -4,7 +4,7 @@
   regint.h -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2018  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -754,7 +754,7 @@ typedef struct {
   int    best_len;      /* for ONIG_OPTION_FIND_LONGEST */
   UChar* best_s;
 #endif
-} OnigMatchArg;
+} MatchArg;
 
 
 typedef struct OnigEndCallListItem {
