@@ -757,11 +757,6 @@ typedef struct {
 } MatchArg;
 
 
-typedef struct OnigEndCallListItem {
-  struct OnigEndCallListItem* next;
-  void (*func)(void);
-} OnigEndCallListItemType;
-
 extern void onig_add_end_call(void (*func)(void));
 
 
