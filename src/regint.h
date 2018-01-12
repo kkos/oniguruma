@@ -743,20 +743,6 @@ typedef int ModeType;
 #define NCCLASS_CLEAR_NOT(nd)   NCCLASS_FLAG_CLEAR(nd, FLAG_NCCLASS_NOT)
 #define IS_NCCLASS_NOT(nd)      IS_NCCLASS_FLAG_ON(nd, FLAG_NCCLASS_NOT)
 
-typedef struct {
-  void* stack_p;
-  int   stack_n;
-  OnigOptionType options;
-  OnigRegion*    region;
-  int   ptr_num;
-  const UChar* start;   /* search start position (for \G: BEGIN_POSITION) */
-#ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
-  int    best_len;      /* for ONIG_OPTION_FIND_LONGEST */
-  UChar* best_s;
-#endif
-} MatchArg;
-
-
 extern void onig_add_end_call(void (*func)(void));
 
 
