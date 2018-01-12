@@ -6349,6 +6349,8 @@ OpInfoType OnigOpInfo[] = {
   { OP_NO_WORD_BOUNDARY,    "not-word-boundary", ARG_MODE },
   { OP_WORD_BEGIN,          "word-begin",      ARG_MODE },
   { OP_WORD_END,            "word-end",        ARG_MODE },
+  { OP_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY, "extended-grapheme-cluster-boundary", ARG_NON },
+  { OP_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY, "no-extended-grapheme-cluster-boundary", ARG_NON },
   { OP_BEGIN_BUF,           "begin-buf",       ARG_NON },
   { OP_END_BUF,             "end-buf",         ARG_NON },
   { OP_BEGIN_LINE,          "begin-line",      ARG_NON },
