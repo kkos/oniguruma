@@ -6282,6 +6282,13 @@ onig_is_code_in_cc(OnigEncoding enc, OnigCodePoint code, CClassNode* cc)
 #ifdef ONIG_DEBUG_PARSE
 
 static void
+p_string(FILE* f, int len, UChar* s)
+{
+  fputs(":", f);
+  while (len-- > 0) { fputc(*s++, f); }
+}
+
+static void
 Indent(FILE* f, int indent)
 {
   int i;
