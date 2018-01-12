@@ -40,6 +40,470 @@
    ONIGENC_IS_MBC_NEWLINE(enc,(p+enclen(enc,p)),end))
 #endif
 
+
+#ifdef ONIG_DEBUG
+
+/* arguments type */
+#define ARG_SPECIAL     -1
+#define ARG_NON          0
+#define ARG_RELADDR      1
+#define ARG_ABSADDR      2
+#define ARG_LENGTH       3
+#define ARG_MEMNUM       4
+#define ARG_OPTION       5
+#define ARG_STATE_CHECK  6
+#define ARG_MODE         7
+
+OpInfoType OnigOpInfo[] = {
+  { OP_FINISH,            "finish",          ARG_NON },
+  { OP_END,               "end",             ARG_NON },
+  { OP_EXACT1,            "exact1",          ARG_SPECIAL },
+  { OP_EXACT2,            "exact2",          ARG_SPECIAL },
+  { OP_EXACT3,            "exact3",          ARG_SPECIAL },
+  { OP_EXACT4,            "exact4",          ARG_SPECIAL },
+  { OP_EXACT5,            "exact5",          ARG_SPECIAL },
+  { OP_EXACTN,            "exactn",          ARG_SPECIAL },
+  { OP_EXACTMB2N1,        "exactmb2-n1",     ARG_SPECIAL },
+  { OP_EXACTMB2N2,        "exactmb2-n2",     ARG_SPECIAL },
+  { OP_EXACTMB2N3,        "exactmb2-n3",     ARG_SPECIAL },
+  { OP_EXACTMB2N,         "exactmb2-n",      ARG_SPECIAL },
+  { OP_EXACTMB3N,         "exactmb3n"  ,     ARG_SPECIAL },
+  { OP_EXACTMBN,          "exactmbn",        ARG_SPECIAL },
+  { OP_EXACT1_IC,         "exact1-ic",       ARG_SPECIAL },
+  { OP_EXACTN_IC,         "exactn-ic",       ARG_SPECIAL },
+  { OP_CCLASS,            "cclass",          ARG_SPECIAL },
+  { OP_CCLASS_MB,         "cclass-mb",       ARG_SPECIAL },
+  { OP_CCLASS_MIX,        "cclass-mix",      ARG_SPECIAL },
+  { OP_CCLASS_NOT,        "cclass-not",      ARG_SPECIAL },
+  { OP_CCLASS_MB_NOT,     "cclass-mb-not",   ARG_SPECIAL },
+  { OP_CCLASS_MIX_NOT,    "cclass-mix-not",  ARG_SPECIAL },
+#ifdef USE_OP_CCLASS_NODE
+  { OP_CCLASS_NODE,       "cclass-node",     ARG_SPECIAL },
+#endif
+  { OP_ANYCHAR,           "anychar",         ARG_NON },
+  { OP_ANYCHAR_ML,        "anychar-ml",      ARG_NON },
+  { OP_ANYCHAR_STAR,      "anychar*",        ARG_NON },
+  { OP_ANYCHAR_ML_STAR,   "anychar-ml*",     ARG_NON },
+  { OP_ANYCHAR_STAR_PEEK_NEXT, "anychar*-peek-next", ARG_SPECIAL },
+  { OP_ANYCHAR_ML_STAR_PEEK_NEXT, "anychar-ml*-peek-next", ARG_SPECIAL },
+  { OP_WORD,                "word",            ARG_NON },
+  { OP_WORD_ASCII,          "word-ascii",      ARG_NON },
+  { OP_NO_WORD,             "not-word",        ARG_NON },
+  { OP_NO_WORD_ASCII,       "not-word-ascii",  ARG_NON },
+  { OP_WORD_BOUNDARY,       "word-boundary",     ARG_MODE },
+  { OP_NO_WORD_BOUNDARY,    "not-word-boundary", ARG_MODE },
+  { OP_WORD_BEGIN,          "word-begin",      ARG_MODE },
+  { OP_WORD_END,            "word-end",        ARG_MODE },
+  { OP_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY, "extended-grapheme-cluster-boundary", ARG_NON },
+  { OP_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY, "no-extended-grapheme-cluster-boundary", ARG_NON },
+  { OP_BEGIN_BUF,           "begin-buf",       ARG_NON },
+  { OP_END_BUF,             "end-buf",         ARG_NON },
+  { OP_BEGIN_LINE,          "begin-line",      ARG_NON },
+  { OP_END_LINE,            "end-line",        ARG_NON },
+  { OP_SEMI_END_BUF,        "semi-end-buf",    ARG_NON },
+  { OP_BEGIN_POSITION,      "begin-position",  ARG_NON },
+  { OP_BACKREF1,            "backref1",             ARG_NON },
+  { OP_BACKREF2,            "backref2",             ARG_NON },
+  { OP_BACKREF_N,            "backref-n",           ARG_MEMNUM  },
+  { OP_BACKREF_N_IC,         "backref-n-ic",        ARG_SPECIAL },
+  { OP_BACKREF_MULTI,       "backref_multi",        ARG_SPECIAL },
+  { OP_BACKREF_MULTI_IC,    "backref_multi-ic",     ARG_SPECIAL },
+  { OP_BACKREF_WITH_LEVEL,  "backref_with_level",   ARG_SPECIAL },
+  { OP_BACKREF_CHECK,       "backref_check",        ARG_SPECIAL },
+  { OP_BACKREF_CHECK_WITH_LEVEL, "backref_check_with_level", ARG_SPECIAL },
+  { OP_MEMORY_START_PUSH,   "mem-start-push",       ARG_MEMNUM  },
+  { OP_MEMORY_START,        "mem-start",            ARG_MEMNUM  },
+  { OP_MEMORY_END_PUSH,     "mem-end-push",         ARG_MEMNUM  },
+  { OP_MEMORY_END_PUSH_REC, "mem-end-push-rec",     ARG_MEMNUM  },
+  { OP_MEMORY_END,          "mem-end",              ARG_MEMNUM  },
+  { OP_MEMORY_END_REC,      "mem-end-rec",          ARG_MEMNUM  },
+  { OP_SET_OPTION_PUSH,     "set-option-push",      ARG_OPTION  },
+  { OP_SET_OPTION,          "set-option",           ARG_OPTION  },
+  { OP_FAIL,                "fail",                 ARG_NON },
+  { OP_JUMP,                "jump",                 ARG_RELADDR },
+  { OP_PUSH,                "push",                 ARG_RELADDR },
+  { OP_PUSH_SUPER,          "push_SUPER",           ARG_RELADDR },
+  { OP_POP,                 "pop",                  ARG_NON },
+  { OP_PUSH_OR_JUMP_EXACT1, "push-or-jump-e1",      ARG_SPECIAL },
+  { OP_PUSH_IF_PEEK_NEXT,   "push-if-peek-next",    ARG_SPECIAL },
+  { OP_REPEAT,              "repeat",               ARG_SPECIAL },
+  { OP_REPEAT_NG,           "repeat-ng",            ARG_SPECIAL },
+  { OP_REPEAT_INC,          "repeat-inc",           ARG_MEMNUM  },
+  { OP_REPEAT_INC_NG,       "repeat-inc-ng",        ARG_MEMNUM  },
+  { OP_REPEAT_INC_SG,       "repeat-inc-sg",        ARG_MEMNUM  },
+  { OP_REPEAT_INC_NG_SG,    "repeat-inc-ng-sg",     ARG_MEMNUM  },
+  { OP_EMPTY_CHECK_START,   "empty-check-start",    ARG_MEMNUM  },
+  { OP_EMPTY_CHECK_END,     "empty-check-end",      ARG_MEMNUM  },
+  { OP_EMPTY_CHECK_END_MEMST,"empty-check-end-memst", ARG_MEMNUM  },
+  { OP_EMPTY_CHECK_END_MEMST_PUSH,"empty-check-end-memst-push", ARG_MEMNUM  },
+  { OP_PREC_READ_START,      "push-pos",             ARG_NON },
+  { OP_PREC_READ_END,        "pop-pos",              ARG_NON },
+  { OP_PREC_READ_NOT_START,  "prec-read-not-start",  ARG_RELADDR },
+  { OP_PREC_READ_NOT_END,    "prec-read-not-end",    ARG_NON },
+  { OP_ATOMIC_START,         "atomic-start",         ARG_NON },
+  { OP_ATOMIC_END,           "atomic-end",           ARG_NON },
+  { OP_LOOK_BEHIND,          "look-behind",          ARG_SPECIAL },
+  { OP_LOOK_BEHIND_NOT_START, "look-behind-not-start", ARG_SPECIAL },
+  { OP_LOOK_BEHIND_NOT_END,  "look-behind-not-end",  ARG_NON },
+  { OP_CALL,                 "call",                 ARG_ABSADDR },
+  { OP_RETURN,               "return",               ARG_NON },
+  { OP_PUSH_SAVE_VAL,        "push-save-val",        ARG_SPECIAL },
+  { OP_UPDATE_VAR,           "update-var",           ARG_SPECIAL },
+  { -1, "", ARG_NON }
+};
+
+static char*
+op2name(int opcode)
+{
+  int i;
+
+  for (i = 0; OnigOpInfo[i].opcode >= 0; i++) {
+    if (opcode == OnigOpInfo[i].opcode)
+      return OnigOpInfo[i].name;
+  }
+  return "";
+}
+
+static int
+op2arg_type(int opcode)
+{
+  int i;
+
+  for (i = 0; OnigOpInfo[i].opcode >= 0; i++) {
+    if (opcode == OnigOpInfo[i].opcode)
+      return OnigOpInfo[i].arg_type;
+  }
+  return ARG_SPECIAL;
+}
+
+static void
+p_string(FILE* f, int len, UChar* s)
+{
+  fputs(":", f);
+  while (len-- > 0) { fputc(*s++, f); }
+}
+
+static void
+p_len_string(FILE* f, LengthType len, int mb_len, UChar* s)
+{
+  int x = len * mb_len;
+
+  fprintf(f, ":%d:", len);
+  while (x-- > 0) { fputc(*s++, f); }
+}
+
+static void
+p_rel_addr(FILE* f, RelAddrType rel_addr, UChar* p, UChar* start)
+{
+  RelAddrType curr = (RelAddrType )(p - start);
+
+  fprintf(f, "{%d/%d}", rel_addr, curr + rel_addr);
+}
+
+static int
+bitset_on_num(BitSetRef bs)
+{
+  int i, n;
+
+  n = 0;
+  for (i = 0; i < SINGLE_BYTE_SIZE; i++) {
+    if (BITSET_AT(bs, i)) n++;
+  }
+  return n;
+}
+
+extern void
+onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
+                              OnigEncoding enc)
+{
+  int i, n, arg_type;
+  RelAddrType addr;
+  LengthType len;
+  MemNumType mem;
+  StateCheckNumType scn;
+  OnigCodePoint code;
+  OnigOptionType option;
+  ModeType mode;
+  UChar *q;
+
+  fprintf(f, "%s", op2name(*bp));
+  arg_type = op2arg_type(*bp);
+  if (arg_type != ARG_SPECIAL) {
+    bp++;
+    switch (arg_type) {
+    case ARG_NON:
+      break;
+    case ARG_RELADDR:
+      GET_RELADDR_INC(addr, bp);
+      fputc(':', f);
+      p_rel_addr(f, addr, bp, start);
+      break;
+    case ARG_ABSADDR:
+      GET_ABSADDR_INC(addr, bp);
+      fprintf(f, ":{/%d}", addr);
+      break;
+    case ARG_LENGTH:
+      GET_LENGTH_INC(len, bp);
+      fprintf(f, ":%d", len);
+      break;
+    case ARG_MEMNUM:
+      mem = *((MemNumType* )bp);
+      bp += SIZE_MEMNUM;
+      fprintf(f, ":%d", mem);
+      break;
+    case ARG_OPTION:
+      {
+        OnigOptionType option = *((OnigOptionType* )bp);
+        bp += SIZE_OPTION;
+        fprintf(f, ":%d", option);
+      }
+      break;
+
+    case ARG_STATE_CHECK:
+      scn = *((StateCheckNumType* )bp);
+      bp += SIZE_STATE_CHECK_NUM;
+      fprintf(f, ":%d", scn);
+      break;
+
+    case ARG_MODE:
+      mode = *((ModeType* )bp);
+      bp += SIZE_MODE;
+      fprintf(f, ":%d", mode);
+      break;
+    }
+  }
+  else {
+    switch (*bp++) {
+    case OP_EXACT1:
+    case OP_ANYCHAR_STAR_PEEK_NEXT:
+    case OP_ANYCHAR_ML_STAR_PEEK_NEXT:
+      p_string(f, 1, bp++); break;
+    case OP_EXACT2:
+      p_string(f, 2, bp); bp += 2; break;
+    case OP_EXACT3:
+      p_string(f, 3, bp); bp += 3; break;
+    case OP_EXACT4:
+      p_string(f, 4, bp); bp += 4; break;
+    case OP_EXACT5:
+      p_string(f, 5, bp); bp += 5; break;
+    case OP_EXACTN:
+      GET_LENGTH_INC(len, bp);
+      p_len_string(f, len, 1, bp);
+      bp += len;
+      break;
+
+    case OP_EXACTMB2N1:
+      p_string(f, 2, bp); bp += 2; break;
+    case OP_EXACTMB2N2:
+      p_string(f, 4, bp); bp += 4; break;
+    case OP_EXACTMB2N3:
+      p_string(f, 6, bp); bp += 6; break;
+    case OP_EXACTMB2N:
+      GET_LENGTH_INC(len, bp);
+      p_len_string(f, len, 2, bp);
+      bp += len * 2;
+      break;
+    case OP_EXACTMB3N:
+      GET_LENGTH_INC(len, bp);
+      p_len_string(f, len, 3, bp);
+      bp += len * 3;
+      break;
+    case OP_EXACTMBN:
+      {
+        int mb_len;
+
+        GET_LENGTH_INC(mb_len, bp);
+        GET_LENGTH_INC(len, bp);
+        fprintf(f, ":%d:%d:", mb_len, len);
+        n = len * mb_len;
+        while (n-- > 0) { fputc(*bp++, f); }
+      }
+      break;
+
+    case OP_EXACT1_IC:
+      len = enclen(enc, bp);
+      p_string(f, len, bp);
+      bp += len;
+      break;
+    case OP_EXACTN_IC:
+      GET_LENGTH_INC(len, bp);
+      p_len_string(f, len, 1, bp);
+      bp += len;
+      break;
+
+    case OP_CCLASS:
+      n = bitset_on_num((BitSetRef )bp);
+      bp += SIZE_BITSET;
+      fprintf(f, ":%d", n);
+      break;
+
+    case OP_CCLASS_NOT:
+      n = bitset_on_num((BitSetRef )bp);
+      bp += SIZE_BITSET;
+      fprintf(f, ":%d", n);
+      break;
+
+    case OP_CCLASS_MB:
+    case OP_CCLASS_MB_NOT:
+      GET_LENGTH_INC(len, bp);
+      q = bp;
+#ifndef PLATFORM_UNALIGNED_WORD_ACCESS
+      ALIGNMENT_RIGHT(q);
+#endif
+      GET_CODE_POINT(code, q);
+      bp += len;
+      fprintf(f, ":%d:%d", (int )code, len);
+      break;
+
+    case OP_CCLASS_MIX:
+    case OP_CCLASS_MIX_NOT:
+      n = bitset_on_num((BitSetRef )bp);
+      bp += SIZE_BITSET;
+      GET_LENGTH_INC(len, bp);
+      q = bp;
+#ifndef PLATFORM_UNALIGNED_WORD_ACCESS
+      ALIGNMENT_RIGHT(q);
+#endif
+      GET_CODE_POINT(code, q);
+      bp += len;
+      fprintf(f, ":%d:%d:%d", n, (int )code, len);
+      break;
+
+#ifdef USE_OP_CCLASS_NODE
+    case OP_CCLASS_NODE:
+      {
+        CClassNode *cc;
+
+        GET_POINTER_INC(cc, bp);
+        n = bitset_on_num(cc->bs);
+        fprintf(f, ":%p:%d", cc, n);
+      }
+      break;
+#endif
+
+    case OP_BACKREF_N_IC:
+      mem = *((MemNumType* )bp);
+      bp += SIZE_MEMNUM;
+      fprintf(f, ":%d", mem);
+      break;
+
+    case OP_BACKREF_MULTI_IC:
+    case OP_BACKREF_MULTI:
+    case OP_BACKREF_CHECK:
+      fputs(" ", f);
+      GET_LENGTH_INC(len, bp);
+      for (i = 0; i < len; i++) {
+        GET_MEMNUM_INC(mem, bp);
+        if (i > 0) fputs(", ", f);
+        fprintf(f, "%d", mem);
+      }
+      break;
+
+    case OP_BACKREF_WITH_LEVEL:
+      GET_OPTION_INC(option, bp);
+      fprintf(f, ":%d", option);
+      /* fall */
+    case OP_BACKREF_CHECK_WITH_LEVEL:
+      {
+        LengthType level;
+
+        GET_LENGTH_INC(level, bp);
+        fprintf(f, ":%d", level);
+
+        fputs(" ", f);
+        GET_LENGTH_INC(len, bp);
+        for (i = 0; i < len; i++) {
+          GET_MEMNUM_INC(mem, bp);
+          if (i > 0) fputs(", ", f);
+          fprintf(f, "%d", mem);
+        }
+      }
+      break;
+
+    case OP_REPEAT:
+    case OP_REPEAT_NG:
+      {
+        mem = *((MemNumType* )bp);
+        bp += SIZE_MEMNUM;
+        addr = *((RelAddrType* )bp);
+        bp += SIZE_RELADDR;
+        fprintf(f, ":%d:%d", mem, addr);
+      }
+      break;
+
+    case OP_PUSH_OR_JUMP_EXACT1:
+    case OP_PUSH_IF_PEEK_NEXT:
+      addr = *((RelAddrType* )bp);
+      bp += SIZE_RELADDR;
+      fputc(':', f);
+      p_rel_addr(f, addr, bp, start);
+      p_string(f, 1, bp);
+      bp += 1;
+      break;
+
+    case OP_LOOK_BEHIND:
+      GET_LENGTH_INC(len, bp);
+      fprintf(f, ":%d", len);
+      break;
+
+    case OP_LOOK_BEHIND_NOT_START:
+      GET_RELADDR_INC(addr, bp);
+      GET_LENGTH_INC(len, bp);
+      fprintf(f, ":%d:", len);
+      p_rel_addr(f, addr, bp, start);
+      break;
+
+    case OP_PUSH_SAVE_VAL:
+      {
+        SaveType type;
+        GET_SAVE_TYPE_INC(type, bp);
+        GET_MEMNUM_INC(mem, bp);
+        fprintf(f, ":%d:%d", type, mem);
+      }
+      break;
+
+    case OP_UPDATE_VAR:
+      {
+        UpdateVarType type;
+        GET_UPDATE_VAR_TYPE_INC(type, bp);
+        GET_MEMNUM_INC(mem, bp);
+        fprintf(f, ":%d:%d", type, mem);
+      }
+      break;
+
+    default:
+      fprintf(stderr, "onig_print_compiled_byte_code: undefined code %d\n", *--bp);
+    }
+  }
+  if (nextp) *nextp = bp;
+}
+#endif /* ONIG_DEBUG */
+
+#ifdef ONIG_DEBUG_COMPILE
+extern void
+onig_print_compiled_byte_code_list(FILE* f, regex_t* reg)
+{
+  UChar* bp;
+  UChar* start = reg->p;
+  UChar* end   = reg->p + reg->used;
+
+  fprintf(f, "bt_mem_start: 0x%x, bt_mem_end: 0x%x\n",
+          reg->bt_mem_start, reg->bt_mem_end);
+  fprintf(f, "code-length: %d\n", reg->used);
+
+  bp = start;
+  while (bp < end) {
+    int pos = bp - start;
+
+    fprintf(f, "%4d: ", pos);
+    onig_print_compiled_byte_code(f, bp, &bp, start, reg->enc);
+    fprintf(f, "\n");
+  }
+  fprintf(f, "\n");
+}
+#endif
+
+
 #ifdef USE_CAPTURE_HISTORY
 static void history_tree_free(OnigCaptureTreeNode* node);
 
