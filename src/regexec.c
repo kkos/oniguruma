@@ -1032,6 +1032,22 @@ stack_double(int is_alloca, char** arg_alloc_base,
   STACK_INC;\
 } while(0)
 
+#ifdef ONIG_DEBUG_MATCH
+#define STACK_PUSH_BOTTOM(stack_type,pat) do {\
+  stk->type = (stack_type);\
+  stk->u.state.pcode = (pat);\
+  stk->u.state.pstr      = s;\
+  stk->u.state.pstr_prev = sprev;\
+  STACK_INC;\
+} while (0)
+#else
+#define STACK_PUSH_BOTTOM(stack_type,pat) do {\
+  stk->type = (stack_type);\
+  stk->u.state.pcode = (pat);\
+  STACK_INC;\
+} while (0)
+#endif
+
 #define STACK_PUSH_ALT(pat,s,sprev)       STACK_PUSH(STK_ALT,pat,s,sprev)
 #define STACK_PUSH_SUPER_ALT(pat,s,sprev) STACK_PUSH(STK_SUPER_ALT,pat,s,sprev)
 #define STACK_PUSH_POS(s,sprev) \
@@ -1874,9 +1890,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           (int )(end - str), (int )(sstart - str));
 #endif
 
-  STACK_PUSH_ENSURED(STK_ALT, FinishCode);  /* bottom stack */
   best_len = ONIG_MISMATCH;
   keep = s = (UChar* )sstart;
+  STACK_PUSH_BOTTOM(STK_ALT, FinishCode);  /* bottom stack */
   INIT_RIGHT_RANGE;
 
   while (1) {
