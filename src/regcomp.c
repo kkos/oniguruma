@@ -6309,7 +6309,7 @@ onig_is_code_in_cc(OnigEncoding enc, OnigCodePoint code, CClassNode* cc)
 #define ARG_STATE_CHECK  6
 #define ARG_MODE         7
 
-OnigOpInfoType OnigOpInfo[] = {
+OpInfoType OnigOpInfo[] = {
   { OP_FINISH,            "finish",          ARG_NON },
   { OP_END,               "end",             ARG_NON },
   { OP_EXACT1,            "exact1",          ARG_SPECIAL },

@@ -766,9 +766,9 @@ typedef struct {
   short int opcode;
   char*     name;
   short int arg_type;
-} OnigOpInfoType;
+} OpInfoType;
 
-extern OnigOpInfoType OnigOpInfo[];
+extern OpInfoType OnigOpInfo[];
 
 
 extern void onig_print_compiled_byte_code P_((FILE* f, UChar* bp, UChar** nextp, UChar* start, OnigEncoding enc));
