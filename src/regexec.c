@@ -1930,7 +1930,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       fputs((char* )buf, stderr);
 
       for (i = 0; i < 20 - (bp - buf); i++) fputc(' ', stderr);
-      fprintf(stderr, "%4d: ", (int )(p - reg->p));
+      if (p == FinishCode)
+        fprintf(stderr, "----: ");
+      else
+        fprintf(stderr, "%4d: ", (int )(p - reg->p));
       onig_print_compiled_byte_code(stderr, p, NULL, reg->p, encode);
       fprintf(stderr, "\n");
     }
