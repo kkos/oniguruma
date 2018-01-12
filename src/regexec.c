@@ -54,7 +54,13 @@
 #define ARG_STATE_CHECK  6
 #define ARG_MODE         7
 
-OpInfoType OnigOpInfo[] = {
+typedef struct {
+  short int opcode;
+  char*     name;
+  short int arg_type;
+} OpInfoType;
+
+static OpInfoType OpInfo[] = {
   { OP_FINISH,            "finish",          ARG_NON },
   { OP_END,               "end",             ARG_NON },
   { OP_EXACT1,            "exact1",          ARG_SPECIAL },
@@ -157,9 +163,9 @@ op2name(int opcode)
 {
   int i;
 
-  for (i = 0; OnigOpInfo[i].opcode >= 0; i++) {
-    if (opcode == OnigOpInfo[i].opcode)
-      return OnigOpInfo[i].name;
+  for (i = 0; OpInfo[i].opcode >= 0; i++) {
+    if (opcode == OpInfo[i].opcode)
+      return OpInfo[i].name;
   }
   return "";
 }
@@ -169,9 +175,9 @@ op2arg_type(int opcode)
 {
   int i;
 
-  for (i = 0; OnigOpInfo[i].opcode >= 0; i++) {
-    if (opcode == OnigOpInfo[i].opcode)
-      return OnigOpInfo[i].arg_type;
+  for (i = 0; OpInfo[i].opcode >= 0; i++) {
+    if (opcode == OpInfo[i].opcode)
+      return OpInfo[i].arg_type;
   }
   return ARG_SPECIAL;
 }
@@ -1789,9 +1795,9 @@ onig_print_statistics(FILE* f)
   r = fprintf(f, "   count      prev        time\n");
   if (r < 0) return -1;
 
-  for (i = 0; OnigOpInfo[i].opcode >= 0; i++) {
+  for (i = 0; OpInfo[i].opcode >= 0; i++) {
     r = fprintf(f, "%8d: %8d: %10ld: %s\n",
-                OpCounter[i], OpPrevCounter[i], OpTime[i], OnigOpInfo[i].name);
+                OpCounter[i], OpPrevCounter[i], OpTime[i], OpInfo[i].name);
     if (r < 0) return -1;
   }
   r = fprintf(f, "\nmax stack depth: %d\n", MaxStackDepth);

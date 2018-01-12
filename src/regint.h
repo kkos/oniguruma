@@ -762,15 +762,6 @@ extern void onig_add_end_call(void (*func)(void));
 
 #ifdef ONIG_DEBUG
 
-typedef struct {
-  short int opcode;
-  char*     name;
-  short int arg_type;
-} OpInfoType;
-
-extern OpInfoType OnigOpInfo[];
-
-
 #ifdef ONIG_DEBUG_COMPILE
 extern void onig_print_compiled_byte_code_list(FILE* f, regex_t* reg);
 #endif
