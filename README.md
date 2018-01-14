@@ -8,10 +8,22 @@ FIXED Security Issues:
   **CVE-2017-9224, CVE-2017-9225, CVE-2017-9226**
   **CVE-2017-9227, CVE-2017-9228, CVE-2017-9229**
 
+Oniguruma is a modern and flexible regular expressions library. It
+encompasses features from different regular expression implementations
+that traditionally exist in different languages. It comes close to
+being a complete superset of all regular expression features found
+in other regular expression implementations.
 
-Oniguruma is a regular expressions library.
-The characteristics of this library is that different character encoding
-for every regular expression object can be specified.
+Its features include:
+* Character encoding can be specified per regular expression object.
+* Several regular expression types are supported:
+  * POSIX
+  * Grep
+  * GNU Regex
+  * Perl
+  * Java
+  * Ruby
+  * Emacs
 
 Supported character encodings:
 
