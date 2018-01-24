@@ -954,6 +954,34 @@ onig_set_match_stack_limit_size(unsigned int size)
   return 0;
 }
 
+#ifdef USE_TRY_IN_MATCH_LIMIT
+
+static unsigned long TryInMatchLimit = DEFAULT_TRY_IN_MATCH_LIMIT;
+
+extern unsigned long
+onig_get_try_in_match_limit(void)
+{
+  return TryInMatchLimit;
+}
+
+extern int
+onig_set_try_in_match_limit(unsigned long size)
+{
+  TryInMatchLimit = size;
+  return 0;
+}
+
+#define CHECK_TRY_IN_MATCH_LIMIT  do {\
+  if (try_in_match_counter++ > TryInMatchLimit) goto try_in_match_limit_over;\
+} while (0)
+
+#else
+
+#define CHECK_TRY_IN_MATCH_LIMIT
+
+#endif /* USE_TRY_IN_MATCH_LIMIT */
+
+
 static int
 stack_double(int is_alloca, char** arg_alloc_base,
              StackType** arg_stk_base, StackType** arg_stk_end, StackType** arg_stk,
@@ -1882,6 +1910,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   StackIndex *repeat_stk;
   StackIndex *mem_start_stk, *mem_end_stk;
   UChar* keep;
+#ifdef USE_TRY_IN_MATCH_LIMIT
+  unsigned long try_in_match_counter;
+#endif
   UChar *p = reg->p;
   OnigOptionType option = reg->options;
   OnigEncoding encode = reg->enc;
@@ -1907,6 +1938,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   keep = s = (UChar* )sstart;
   STACK_PUSH_BOTTOM(STK_ALT, FinishCode);  /* bottom stack */
   INIT_RIGHT_RANGE;
+
+#ifdef USE_TRY_IN_MATCH_LIMIT
+  try_in_match_counter = 0;
+#endif
 
   while (1) {
 #ifdef ONIG_DEBUG_MATCH
@@ -2582,8 +2617,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         GET_MODE_INC(mode, p); // ascii_mode
 
         if (DATA_ENSURE_CHECK1 && IS_MBC_WORD_ASCII_MODE(encode, s, end, mode)) {
-          if (ON_STR_BEGIN(s) ||
-              ! IS_MBC_WORD_ASCII_MODE(encode, sprev, end, mode)) {
+          if (ON_STR_BEGIN(s) || !IS_MBC_WORD_ASCII_MODE(encode, sprev, end, mode)) {
             MOP_OUT;
             continue;
           }
@@ -3196,6 +3230,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         p = stkp->u.repeat.pcode;
       }
       STACK_PUSH_REPEAT_INC(si);
+      CHECK_TRY_IN_MATCH_LIMIT;
       MOP_OUT;
       CHECK_INTERRUPT_IN_MATCH_AT;
       continue;
@@ -3230,6 +3265,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       else if (stkp->u.repeat.count == reg->repeat_range[mem].upper) {
         STACK_PUSH_REPEAT_INC(si);
       }
+      CHECK_TRY_IN_MATCH_LIMIT;
       MOP_OUT;
       CHECK_INTERRUPT_IN_MATCH_AT;
       continue;
@@ -3399,6 +3435,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       p     = stk->u.state.pcode;
       s     = stk->u.state.pstr;
       sprev = stk->u.state.pstr_prev;
+      CHECK_TRY_IN_MATCH_LIMIT;
       MOP_OUT;
       continue;
       break;
@@ -3427,6 +3464,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
  unexpected_bytecode_error:
   STACK_SAVE;
   return ONIGERR_UNEXPECTED_BYTECODE;
+
+#ifdef USE_TRY_IN_MATCH_LIMIT
+ try_in_match_limit_over:
+  STACK_SAVE;
+  return ONIGERR_TRY_IN_MATCH_LIMIT_OVER;
+#endif
 }
 
 

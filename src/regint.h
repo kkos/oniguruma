@@ -61,6 +61,7 @@
 #define USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT  /* /(?:()|())*\2/ */
 #define USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE     /* /\n$/ =~ "\n" */
 #define USE_WARNING_REDUNDANT_NESTED_REPEAT_OPERATOR
+#define USE_TRY_IN_MATCH_LIMIT
 
 /* internal config */
 #define USE_OP_PUSH_OR_JUMP_EXACT
@@ -69,6 +70,7 @@
 
 #define INIT_MATCH_STACK_SIZE                     160
 #define DEFAULT_MATCH_STACK_LIMIT_SIZE              0 /* unlimited */
+#define DEFAULT_TRY_IN_MATCH_LIMIT           10000000
 #define DEFAULT_PARSE_DEPTH_LIMIT                4096
 
 #if defined(__GNUC__)
