@@ -40,6 +40,8 @@
    ONIGENC_IS_MBC_NEWLINE(enc,(p+enclen(enc,p)),end))
 #endif
 
+#define CHECK_INTERRUPT_IN_MATCH
+
 typedef struct {
   void* stack_p;
   int   stack_n;
@@ -3127,7 +3129,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       GET_RELADDR_INC(addr, p);
       p += addr;
       MOP_OUT;
-      CHECK_INTERRUPT_IN_MATCH_AT;
+      CHECK_INTERRUPT_IN_MATCH;
       continue;
       break;
 
@@ -3232,7 +3234,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       STACK_PUSH_REPEAT_INC(si);
       CHECK_TRY_IN_MATCH_LIMIT;
       MOP_OUT;
-      CHECK_INTERRUPT_IN_MATCH_AT;
+      CHECK_INTERRUPT_IN_MATCH;
       continue;
       break;
 
@@ -3267,7 +3269,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       }
       CHECK_TRY_IN_MATCH_LIMIT;
       MOP_OUT;
-      CHECK_INTERRUPT_IN_MATCH_AT;
+      CHECK_INTERRUPT_IN_MATCH;
       continue;
       break;
 

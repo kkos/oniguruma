@@ -97,8 +97,6 @@
 #define xcalloc     calloc
 #define xfree       free
 
-#define CHECK_INTERRUPT_IN_MATCH_AT
-
 #define st_init_table                  onig_st_init_table
 #define st_init_table_with_size        onig_st_init_table_with_size
 #define st_init_numtable               onig_st_init_numtable
