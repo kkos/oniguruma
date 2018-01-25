@@ -952,19 +952,6 @@ onig_set_match_stack_limit_size(unsigned int size)
 
 static unsigned long TryInMatchLimit = DEFAULT_TRY_IN_MATCH_LIMIT;
 
-extern unsigned long
-onig_get_try_in_match_limit(void)
-{
-  return TryInMatchLimit;
-}
-
-extern int
-onig_set_try_in_match_limit(unsigned long size)
-{
-  TryInMatchLimit = size;
-  return 0;
-}
-
 #define CHECK_TRY_IN_MATCH_LIMIT  do {\
   if (try_in_match_counter++ > TryInMatchLimit) goto try_in_match_limit_over;\
 } while (0)
@@ -974,6 +961,28 @@ onig_set_try_in_match_limit(unsigned long size)
 #define CHECK_TRY_IN_MATCH_LIMIT
 
 #endif /* USE_TRY_IN_MATCH_LIMIT */
+
+extern unsigned long
+onig_get_try_in_match_limit(void)
+{
+#ifdef USE_TRY_IN_MATCH_LIMIT
+  return TryInMatchLimit;
+#else
+  //return ONIG_NO_SUPPORT_CONFIG;
+  return 0;
+#endif
+}
+
+extern int
+onig_set_try_in_match_limit(unsigned long size)
+{
+#ifdef USE_TRY_IN_MATCH_LIMIT
+  TryInMatchLimit = size;
+  return 0;
+#else
+  return ONIG_NO_SUPPORT_CONFIG;
+#endif
+}
 
 
 static int
