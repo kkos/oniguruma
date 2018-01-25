@@ -26,6 +26,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+
 #include "regparse.h"
 #include "st.h"
 
@@ -188,6 +189,16 @@ onig_set_parse_depth_limit(unsigned int depth)
   return 0;
 }
 
+static int
+positive_int_multiply(int x, int y)
+{
+  if (x == 0 || y == 0) return 0;
+
+  if (x < INT_MAX / y)
+    return x * y;
+  else
+    return -1;
+}
 
 static void
 bbuf_free(BBuf* bbuf)
@@ -1045,12 +1056,6 @@ scan_env_clear(ScanEnv* env)
 
   xmemset(env->mem_env_static, 0, sizeof(env->mem_env_static));
 
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-  env->num_comb_exp_check  = 0;
-  env->comb_exp_max_regnum = 0;
-  env->curr_max_regnum     = 0;
-  env->has_recursion       = 0;
-#endif
   env->parse_depth         = 0;
   env->keep_num            = 0;
   env->save_num            = 0;
@@ -1503,10 +1508,6 @@ node_new_quantifier(int lower, int upper, int by_number)
   QUANT_(node)->is_refered      = 0;
   if (by_number != 0)
     NODE_STATUS_ADD(node, NST_BY_NUMBER);
-
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-  QUANT_(node)->comb_exp_check_num = 0;
-#endif
 
   return node;
 }
@@ -2838,7 +2839,7 @@ is_invalid_quantifier_target(Node* node)
 
 /* ?:0, *:1, +:2, ??:3, *?:4, +?:5 */
 static int
-popular_quantifier_num(QuantNode* q)
+quantifier_type_num(QuantNode* q)
 {
   if (q->greedy) {
     if (q->lower == 0) {
@@ -2889,9 +2890,22 @@ onig_reduce_nested_quantifier(Node* pnode, Node* cnode)
 
   p = QUANT_(pnode);
   c = QUANT_(cnode);
-  pnum = popular_quantifier_num(p);
-  cnum = popular_quantifier_num(c);
-  if (pnum < 0 || cnum < 0) return ;
+  pnum = quantifier_type_num(p);
+  cnum = quantifier_type_num(c);
+  if (pnum < 0 || cnum < 0) {
+    if ((p->lower == p->upper) && ! IS_REPEAT_INFINITE(p->upper)) {
+      if ((c->lower == c->upper) && ! IS_REPEAT_INFINITE(c->upper)) {
+        int n = positive_int_multiply(p->lower, c->lower);
+        if (n >= 0) {
+          p->lower = p->upper = n;
+          NODE_BODY(pnode) = NODE_BODY(cnode);
+          goto remove_cnode;
+        }
+      }
+    }
+
+    return ;
+  }
 
   switch(ReduceTypeTable[cnum][pnum]) {
   case RQ_DEL:
@@ -2927,6 +2941,7 @@ onig_reduce_nested_quantifier(Node* pnode, Node* cnode)
     break;
   }
 
+ remove_cnode:
   NODE_BODY(cnode) = NULL_NODE;
   onig_node_free(cnode);
 }
@@ -6040,8 +6055,8 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
     { /* check redundant double repeat. */
       /* verbose warn (?:.?)? etc... but not warn (.?)? etc... */
       QuantNode* qnt   = QUANT_(target);
-      int nestq_num   = popular_quantifier_num(qn);
-      int targetq_num = popular_quantifier_num(qnt);
+      int nestq_num   = quantifier_type_num(qn);
+      int targetq_num = quantifier_type_num(qnt);
 
 #ifdef USE_WARNING_REDUNDANT_NESTED_REPEAT_OPERATOR
       if (! NODE_IS_BY_NUMBER(qnode) && ! NODE_IS_BY_NUMBER(target) &&
@@ -6078,17 +6093,18 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
 
     warn_exit:
 #endif
-      if (targetq_num >= 0) {
-        if (nestq_num >= 0) {
-          onig_reduce_nested_quantifier(qnode, target);
-          goto q_exit;
-        }
-        else if (targetq_num == 1 || targetq_num == 2) { /* * or + */
+      if (targetq_num >= 0 && nestq_num < 0) {
+        if (targetq_num == 1 || targetq_num == 2) { /* * or + */
           /* (?:a*){n,m}, (?:a+){n,m} => (?:a*){n,n}, (?:a+){n,n} */
           if (! IS_REPEAT_INFINITE(qn->upper) && qn->upper > 1 && qn->greedy) {
             qn->upper = (qn->lower == 0 ? 1 : qn->lower);
           }
         }
+      }
+      else {
+        NODE_BODY(qnode) = target;
+        onig_reduce_nested_quantifier(qnode, target);
+        goto q_exit;
       }
     }
     break;

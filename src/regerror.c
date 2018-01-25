@@ -2,7 +2,7 @@
   regerror.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2018  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,8 @@ onig_error_code_to_format(int code)
     p = "match-stack limit over"; break;
   case ONIGERR_PARSE_DEPTH_LIMIT_OVER:
     p = "parse depth limit over"; break;
+  case ONIGERR_TRY_IN_MATCH_LIMIT_OVER:
+    p = "try-in-match limit over"; break;
   case ONIGERR_TYPE_BUG:
     p = "undefined type (bug)"; break;
   case ONIGERR_PARSER_BUG:

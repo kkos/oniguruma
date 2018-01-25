@@ -129,10 +129,12 @@ enum EnclosureType {
 #define BACKREFS_P(br) \
   (IS_NOT_NULL((br)->back_dynamic) ? (br)->back_dynamic : (br)->back_static)
 
-#define QUANT_BODY_IS_NOT_EMPTY    0
-#define QUANT_BODY_IS_EMPTY        1
-#define QUANT_BODY_IS_EMPTY_MEM    2
-#define QUANT_BODY_IS_EMPTY_REC    3
+enum QuantBodyEmpty {
+  QUANT_BODY_IS_NOT_EMPTY = 0,
+  QUANT_BODY_IS_EMPTY     = 1,
+  QUANT_BODY_IS_EMPTY_MEM = 2,
+  QUANT_BODY_IS_EMPTY_REC = 3
+};
 
 /* node status bits */
 #define NST_MIN_FIXED             (1<<0)
@@ -221,13 +223,10 @@ typedef struct {
   int lower;
   int upper;
   int greedy;
-  int body_empty_info;
+  enum QuantBodyEmpty body_empty_info;
   struct _Node* head_exact;
   struct _Node* next_head_exact;
   int is_refered;     /* include called node. don't eliminate even if {0} */
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-  int comb_exp_check_num;  /* 1,2,3...: check,  0: no check  */
-#endif
 } QuantNode;
 
 typedef struct {
@@ -398,15 +397,9 @@ typedef struct {
   int              num_mem;
   int              num_named;
   int              mem_alloc;
-  MemEnv            mem_env_static[SCANENV_MEMENV_SIZE];
-  MemEnv*           mem_env_dynamic;
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-  int num_comb_exp_check;
-  int comb_exp_max_regnum;
-  int curr_max_regnum;
-  int has_recursion;
-#endif
-  unsigned int parse_depth;
+  MemEnv           mem_env_static[SCANENV_MEMENV_SIZE];
+  MemEnv*          mem_env_dynamic;
+  unsigned int     parse_depth;
 
   int keep_num;
   int save_num;

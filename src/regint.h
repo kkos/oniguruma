@@ -4,7 +4,7 @@
   regint.h -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2018  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,12 @@
 #endif
 #endif
 
+#ifdef EXPORT
+#ifndef ONIGURUMA_EXPORT
+#define ONIGURUMA_EXPORT
+#endif
+#endif
+
 #if defined(__i386) || defined(__i386__) || defined(_M_IX86) || \
     (defined(__ppc__) && defined(__APPLE__)) || \
     defined(__x86_64) || defined(__x86_64__) || \
@@ -62,6 +68,13 @@
 #define USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE     /* /\n$/ =~ "\n" */
 #define USE_WARNING_REDUNDANT_NESTED_REPEAT_OPERATOR
 
+//#define USE_TRY_IN_MATCH_LIMIT
+#ifdef USE_COMBINATION_EXPLOSION_CHECK
+#ifndef USE_TRY_IN_MATCH_LIMIT
+#define USE_TRY_IN_MATCH_LIMIT
+#endif
+#endif
+
 /* internal config */
 #define USE_OP_PUSH_OR_JUMP_EXACT
 #define USE_QUANT_PEEK_NEXT
@@ -69,6 +82,7 @@
 
 #define INIT_MATCH_STACK_SIZE                     160
 #define DEFAULT_MATCH_STACK_LIMIT_SIZE              0 /* unlimited */
+#define DEFAULT_TRY_IN_MATCH_LIMIT           10000000
 #define DEFAULT_PARSE_DEPTH_LIMIT                4096
 
 #if defined(__GNUC__)
@@ -89,14 +103,11 @@
 #define USE_VARIABLE_META_CHARS
 #define USE_POSIX_API_REGION_OPTION
 #define USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
-/* #define USE_COMBINATION_EXPLOSION_CHECK */     /* (X*)* */
 
 #define xmalloc     malloc
 #define xrealloc    realloc
 #define xcalloc     calloc
 #define xfree       free
-
-#define CHECK_INTERRUPT_IN_MATCH_AT
 
 #define st_init_table                  onig_st_init_table
 #define st_init_table_with_size        onig_st_init_table_with_size
@@ -118,9 +129,6 @@
 /* */
 #define onig_st_is_member              st_is_member
 
-#define STATE_CHECK_STRING_THRESHOLD_LEN             7
-#define STATE_CHECK_BUFF_MAX_SIZE               0x4000
-
 #define xmemset     memset
 #define xmemcpy     memcpy
 #define xmemmove    memmove
@@ -139,6 +147,10 @@
 
 
 #include <stddef.h>
+
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -253,12 +265,14 @@ enum StackPopLevel {
 };
 
 /* optimize flags */
-#define ONIG_OPTIMIZE_NONE              0
-#define ONIG_OPTIMIZE_EXACT             1   /* Slow Search */
-#define ONIG_OPTIMIZE_EXACT_BM          2   /* Boyer Moore Search */
-#define ONIG_OPTIMIZE_EXACT_BM_NOT_REV  3   /* BM   (but not simple match) */
-#define ONIG_OPTIMIZE_EXACT_IC          4   /* Slow Search (ignore case) */
-#define ONIG_OPTIMIZE_MAP               5   /* char map */
+enum OptimizeType {
+  OPTIMIZE_NONE            = 0,
+  OPTIMIZE_EXACT           = 1,  /* Slow Search */
+  OPTIMIZE_EXACT_BM        = 2,  /* Boyer Moore Search */
+  OPTIMIZE_EXACT_BM_NO_REV = 3,  /* BM   (but not simple match) */
+  OPTIMIZE_EXACT_IC        = 4,  /* Slow Search (ignore case) */
+  OPTIMIZE_MAP             = 5   /* char map */
+};
 
 /* bit status */
 typedef unsigned int  MemStatusType;
@@ -586,12 +600,6 @@ enum OpCode {
   OP_PUSH_SAVE_VAL,
   OP_UPDATE_VAR,
 
-  OP_STATE_CHECK_PUSH,         /* combination explosion check and push */
-  OP_STATE_CHECK_PUSH_OR_JUMP, /* check ok -> push, else jump  */
-  OP_STATE_CHECK,              /* check only */
-  OP_STATE_CHECK_ANYCHAR_STAR,
-  OP_STATE_CHECK_ANYCHAR_ML_STAR,
-
   /* no need: IS_DYNAMIC_OPTION() == 0 */
   OP_SET_OPTION_PUSH,    /* set option and push recover option */
   OP_SET_OPTION          /* set option */
@@ -627,7 +635,6 @@ typedef int ModeType;
 #define SIZE_ABSADDR          sizeof(AbsAddrType)
 #define SIZE_LENGTH           sizeof(LengthType)
 #define SIZE_MEMNUM           sizeof(MemNumType)
-#define SIZE_STATE_CHECK_NUM  sizeof(StateCheckNumType)
 #define SIZE_REPEATNUM        sizeof(RepeatNumType)
 #define SIZE_OPTION           sizeof(OnigOptionType)
 #define SIZE_CODE_POINT       sizeof(OnigCodePoint)
@@ -643,7 +650,6 @@ typedef int ModeType;
 #define GET_REPEATNUM_INC(num,p)   PLATFORM_GET_INC(num,    p, RepeatNumType)
 #define GET_OPTION_INC(option,p)   PLATFORM_GET_INC(option, p, OnigOptionType)
 #define GET_POINTER_INC(ptr,p)     PLATFORM_GET_INC(ptr,    p, PointerType)
-#define GET_STATE_CHECK_NUM_INC(num,p)  PLATFORM_GET_INC(num, p, StateCheckNumType)
 #define GET_SAVE_TYPE_INC(type,p)       PLATFORM_GET_INC(type, p, SaveType)
 #define GET_UPDATE_VAR_TYPE_INC(type,p) PLATFORM_GET_INC(type, p, UpdateVarType)
 #define GET_MODE_INC(mode,p)            PLATFORM_GET_INC(mode, p, ModeType)
@@ -692,13 +698,6 @@ typedef int ModeType;
 #define SIZE_OP_RETURN                  SIZE_OPCODE
 #define SIZE_OP_PUSH_SAVE_VAL          (SIZE_OPCODE + SIZE_SAVE_TYPE + SIZE_MEMNUM)
 #define SIZE_OP_UPDATE_VAR             (SIZE_OPCODE + SIZE_UPDATE_VAR_TYPE + SIZE_MEMNUM)
-
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-#define SIZE_OP_STATE_CHECK            (SIZE_OPCODE + SIZE_STATE_CHECK_NUM)
-#define SIZE_OP_STATE_CHECK_PUSH       (SIZE_OPCODE + SIZE_STATE_CHECK_NUM + SIZE_RELADDR)
-#define SIZE_OP_STATE_CHECK_PUSH_OR_JUMP (SIZE_OPCODE + SIZE_STATE_CHECK_NUM + SIZE_RELADDR)
-#define SIZE_OP_STATE_CHECK_ANYCHAR_STAR (SIZE_OPCODE + SIZE_STATE_CHECK_NUM)
-#endif
 
 #define MC_ESC(syn)               (syn)->meta_char_table.esc
 #define MC_ANYCHAR(syn)           (syn)->meta_char_table.anychar
@@ -751,44 +750,14 @@ typedef int ModeType;
 #define NCCLASS_CLEAR_NOT(nd)   NCCLASS_FLAG_CLEAR(nd, FLAG_NCCLASS_NOT)
 #define IS_NCCLASS_NOT(nd)      IS_NCCLASS_FLAG_ON(nd, FLAG_NCCLASS_NOT)
 
-typedef struct {
-  void* stack_p;
-  int   stack_n;
-  OnigOptionType options;
-  OnigRegion*    region;
-  int   ptr_num;
-  const UChar* start;   /* search start position (for \G: BEGIN_POSITION) */
-#ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
-  int    best_len;      /* for ONIG_OPTION_FIND_LONGEST */
-  UChar* best_s;
-#endif
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-  void* state_check_buff;
-  int   state_check_buff_size;
-#endif
-} OnigMatchArg;
-
-
-typedef struct OnigEndCallListItem {
-  struct OnigEndCallListItem* next;
-  void (*func)(void);
-} OnigEndCallListItemType;
-
 extern void onig_add_end_call(void (*func)(void));
 
 
 #ifdef ONIG_DEBUG
 
-typedef struct {
-  short int opcode;
-  char*     name;
-  short int arg_type;
-} OnigOpInfoType;
-
-extern OnigOpInfoType OnigOpInfo[];
-
-
-extern void onig_print_compiled_byte_code P_((FILE* f, UChar* bp, UChar** nextp, UChar* start, OnigEncoding enc));
+#ifdef ONIG_DEBUG_COMPILE
+extern void onig_print_compiled_byte_code_list(FILE* f, regex_t* reg);
+#endif
 
 #ifdef ONIG_DEBUG_STATISTICS
 extern void onig_statistics_init P_((void));

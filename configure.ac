@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(onig, 6.7.0)
+AC_INIT(onig, 6.7.1)
 
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -44,7 +44,7 @@ dnl Checks for libraries.
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(stdlib.h string.h strings.h sys/time.h unistd.h sys/times.h)
+AC_CHECK_HEADERS(stdlib.h string.h strings.h limits.h sys/time.h unistd.h sys/times.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_SIZEOF(int, 4)

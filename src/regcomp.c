@@ -2,7 +2,7 @@
   regcomp.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2018  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -121,6 +121,23 @@ onig_set_default_case_fold_flag(OnigCaseFoldType case_fold_flag)
   return 0;
 }
 
+static int
+int_multiply_cmp(int x, int y, int v)
+{
+  if (x == 0 || y == 0) return -1;
+
+  if (x < INT_MAX / y) {
+    int xy = x * y;
+    if (xy > v) return 1;
+    else {
+      if (xy == v) return 0;
+      else return -1;
+    }
+  }
+  else
+    return 1;
+}
+
 
 #ifndef PLATFORM_UNALIGNED_WORD_ACCESS
 static unsigned char PadBuf[WORD_ALIGNMENT_SIZE];
@@ -200,20 +217,6 @@ bitset_is_empty(BitSetRef bs)
   return 1;
 }
 
-#ifdef ONIG_DEBUG
-static int
-bitset_on_num(BitSetRef bs)
-{
-  int i, n;
-
-  n = 0;
-  for (i = 0; i < SINGLE_BYTE_SIZE; i++) {
-    if (BITSET_AT(bs, i)) n++;
-  }
-  return n;
-}
-#endif
-
 extern int
 onig_bbuf_init(BBuf* buf, int size)
 {
@@ -281,17 +284,6 @@ add_opcode(regex_t* reg, int opcode)
   BB_ADD1(reg, opcode);
   return 0;
 }
-
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-static int
-add_state_check_num(regex_t* reg, int num)
-{
-  StateCheckNumType n = (StateCheckNumType )num;
-
-  BB_ADD(reg, &n, SIZE_STATE_CHECK_NUM);
-  return 0;
-}
-#endif
 
 static int
 add_rel_addr(regex_t* reg, int addr)
@@ -811,7 +803,7 @@ compile_range_repeat_node(QuantNode* qn, int target_len, int empty_info,
 }
 
 static int
-is_anychar_star_quantifier(QuantNode* qn)
+is_anychar_infinite_greedy(QuantNode* qn)
 {
   if (qn->greedy && IS_REPEAT_INFINITE(qn->upper) &&
       NODE_IS_ANYCHAR(NODE_QUANT_BODY(qn)))
@@ -823,254 +815,21 @@ is_anychar_star_quantifier(QuantNode* qn)
 #define QUANTIFIER_EXPAND_LIMIT_SIZE   50
 #define CKN_ON   (ckn > 0)
 
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-
-static int
-compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
-{
-  int len, mod_tlen, cklen;
-  int ckn;
-  int infinite = IS_REPEAT_INFINITE(qn->upper);
-  int empty_info = qn->body_empty_info;
-  int tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
-
-  if (tlen < 0) return tlen;
-
-  ckn = ((reg->num_comb_exp_check > 0) ? qn->comb_exp_check_num : 0);
-
-  cklen = (CKN_ON ? SIZE_STATE_CHECK_NUM: 0);
-
-  /* anychar repeat */
-  if (NODE_IS_ANYCHAR(NODE_QUANT_BODY(qn))) {
-    if (qn->greedy && infinite) {
-      if (IS_NOT_NULL(qn->next_head_exact) && !CKN_ON)
-        return SIZE_OP_ANYCHAR_STAR_PEEK_NEXT + tlen * qn->lower + cklen;
-      else
-        return SIZE_OP_ANYCHAR_STAR + tlen * qn->lower + cklen;
-    }
-  }
-
-  if (empty_info == QUANT_BODY_IS_NOT_EMPTY)
-    mod_tlen = tlen;
-  else
-    mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
-
-  if (infinite && qn->lower <= 1) {
-    if (qn->greedy) {
-      if (qn->lower == 1)
-        len = SIZE_OP_JUMP;
-      else
-        len = 0;
-
-      len += SIZE_OP_PUSH + cklen + mod_tlen + SIZE_OP_JUMP;
-    }
-    else {
-      if (qn->lower == 0)
-        len = SIZE_OP_JUMP;
-      else
-        len = 0;
-
-      len += mod_tlen + SIZE_OP_PUSH + cklen;
-    }
-  }
-  else if (qn->upper == 0) {
-    if (qn->is_refered != 0) /* /(?<n>..){0}/ */
-      len = SIZE_OP_JUMP + tlen;
-    else
-      len = 0;
-  }
-  else if (qn->upper == 1 && qn->greedy) {
-    if (qn->lower == 0) {
-      if (CKN_ON) {
-        len = SIZE_OP_STATE_CHECK_PUSH + tlen;
-      }
-      else {
-        len = SIZE_OP_PUSH + tlen;
-      }
-    }
-    else {
-      len = tlen;
-    }
-  }
-  else if (!qn->greedy && qn->upper == 1 && qn->lower == 0) { /* '??' */
-    len = SIZE_OP_PUSH + cklen + SIZE_OP_JUMP + tlen;
-  }
-  else {
-    len = SIZE_OP_REPEAT_INC + mod_tlen + SIZE_OPCODE + SIZE_RELADDR + SIZE_MEMNUM;
-    if (CKN_ON)
-      len += SIZE_OP_STATE_CHECK;
-  }
-
-  return len;
-}
-
-static int
-compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
-{
-  int r, mod_tlen;
-  int ckn;
-  int infinite = IS_REPEAT_INFINITE(qn->upper);
-  int empty_info = qn->body_empty_info;
-  int tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
-
-  if (tlen < 0) return tlen;
-
-  ckn = ((reg->num_comb_exp_check > 0) ? qn->comb_exp_check_num : 0);
-
-  if (is_anychar_star_quantifier(qn)) {
-    r = compile_tree_n_times(NODE_QUANT_BODY(qn), qn->lower, reg, env);
-    if (r != 0) return r;
-    if (IS_NOT_NULL(qn->next_head_exact) && !CKN_ON) {
-      if (IS_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), reg)))
-        r = add_opcode(reg, OP_ANYCHAR_ML_STAR_PEEK_NEXT);
-      else
-        r = add_opcode(reg, OP_ANYCHAR_STAR_PEEK_NEXT);
-      if (r != 0) return r;
-      if (CKN_ON) {
-        r = add_state_check_num(reg, ckn);
-        if (r != 0) return r;
-      }
-
-      return add_bytes(reg, STR_(qn->next_head_exact)->s, 1);
-    }
-    else {
-      if (IS_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), reg))) {
-        r = add_opcode(reg, (CKN_ON ?
-                             OP_STATE_CHECK_ANYCHAR_ML_STAR
-                             : OP_ANYCHAR_ML_STAR));
-      }
-      else {
-        r = add_opcode(reg, (CKN_ON ?
-                             OP_STATE_CHECK_ANYCHAR_STAR
-                             : OP_ANYCHAR_STAR));
-      }
-      if (r != 0) return r;
-      if (CKN_ON)
-        r = add_state_check_num(reg, ckn);
-
-      return r;
-    }
-  }
-
-  if (empty_info == QUANT_BODY_IS_NOT_EMPTY)
-    mod_tlen = tlen;
-  else
-    mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
-
-  if (infinite && qn->lower <= 1) {
-    if (qn->greedy) {
-      if (qn->lower == 1) {
-        r = add_opcode_rel_addr(reg, OP_JUMP,
-                       (CKN_ON ? SIZE_OP_STATE_CHECK_PUSH : SIZE_OP_PUSH));
-        if (r != 0) return r;
-      }
-
-      if (CKN_ON) {
-        r = add_opcode(reg, OP_STATE_CHECK_PUSH);
-        if (r != 0) return r;
-        r = add_state_check_num(reg, ckn);
-        if (r != 0) return r;
-        r = add_rel_addr(reg, mod_tlen + SIZE_OP_JUMP);
-      }
-      else {
-        r = add_opcode_rel_addr(reg, OP_PUSH, mod_tlen + SIZE_OP_JUMP);
-      }
-      if (r != 0) return r;
-      r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, empty_info, env);
-      if (r != 0) return r;
-      r = add_opcode_rel_addr(reg, OP_JUMP,
-                -(mod_tlen + (int )SIZE_OP_JUMP
-                + (int )(CKN_ON ? SIZE_OP_STATE_CHECK_PUSH : SIZE_OP_PUSH)));
-    }
-    else {
-      if (qn->lower == 0) {
-        r = add_opcode_rel_addr(reg, OP_JUMP, mod_tlen);
-        if (r != 0) return r;
-      }
-      r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, empty_info, env);
-      if (r != 0) return r;
-      if (CKN_ON) {
-        r = add_opcode(reg, OP_STATE_CHECK_PUSH_OR_JUMP);
-        if (r != 0) return r;
-        r = add_state_check_num(reg, ckn);
-        if (r != 0) return r;
-        r = add_rel_addr(reg,
-                         -(mod_tlen + (int )SIZE_OP_STATE_CHECK_PUSH_OR_JUMP));
-      }
-      else
-        r = add_opcode_rel_addr(reg, OP_PUSH, -(mod_tlen + (int )SIZE_OP_PUSH));
-    }
-  }
-  else if (qn->upper == 0) {
-    if (qn->is_refered != 0) { /* /(?<n>..){0}/ */
-      r = add_opcode_rel_addr(reg, OP_JUMP, tlen);
-      if (r != 0) return r;
-      r = compile_tree(NODE_QUANT_BODY(qn), reg, env);
-    }
-    else
-      r = 0;
-  }
-  else if (qn->upper == 1 && qn->greedy) {
-    if (qn->lower == 0) {
-      if (CKN_ON) {
-        r = add_opcode(reg, OP_STATE_CHECK_PUSH);
-        if (r != 0) return r;
-        r = add_state_check_num(reg, ckn);
-        if (r != 0) return r;
-        r = add_rel_addr(reg, tlen);
-      }
-      else {
-        r = add_opcode_rel_addr(reg, OP_PUSH, tlen);
-      }
-      if (r != 0) return r;
-    }
-
-    r = compile_tree(NODE_QUANT_BODY(qn), reg, env);
-  }
-  else if (!qn->greedy && qn->upper == 1 && qn->lower == 0) { /* '??' */
-    if (CKN_ON) {
-      r = add_opcode(reg, OP_STATE_CHECK_PUSH);
-      if (r != 0) return r;
-      r = add_state_check_num(reg, ckn);
-      if (r != 0) return r;
-      r = add_rel_addr(reg, SIZE_OP_JUMP);
-    }
-    else {
-      r = add_opcode_rel_addr(reg, OP_PUSH, SIZE_OP_JUMP);
-    }
-
-    if (r != 0) return r;
-    r = add_opcode_rel_addr(reg, OP_JUMP, tlen);
-    if (r != 0) return r;
-    r = compile_tree(NODE_QUANT_BODY(qn), reg, env);
-  }
-  else {
-    r = compile_range_repeat_node(qn, mod_tlen, empty_info, reg, env);
-    if (CKN_ON) {
-      if (r != 0) return r;
-      r = add_opcode(reg, OP_STATE_CHECK);
-      if (r != 0) return r;
-      r = add_state_check_num(reg, ckn);
-    }
-  }
-  return r;
-}
-
-#else /* USE_COMBINATION_EXPLOSION_CHECK */
-
 static int
 compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
 {
   int len, mod_tlen;
   int infinite = IS_REPEAT_INFINITE(qn->upper);
-  int empty_info = qn->body_empty_info;
+  enum QuantBodyEmpty empty_info = qn->body_empty_info;
   int tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
 
   if (tlen < 0) return tlen;
+  if (tlen == 0) return 0;
 
   /* anychar repeat */
-  if (is_anychar_star_quantifier(qn)) {
-    if (qn->lower <= 1 || tlen * qn->lower <= QUANTIFIER_EXPAND_LIMIT_SIZE) {
+  if (is_anychar_infinite_greedy(qn)) {
+    if (qn->lower <= 1 ||
+        int_multiply_cmp(tlen, qn->lower, QUANTIFIER_EXPAND_LIMIT_SIZE) <= 0) {
       if (IS_NOT_NULL(qn->next_head_exact))
         return SIZE_OP_ANYCHAR_STAR_PEEK_NEXT + tlen * qn->lower;
       else
@@ -1084,7 +843,8 @@ compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
     mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
 
   if (infinite &&
-      (qn->lower <= 1 || tlen * qn->lower <= QUANTIFIER_EXPAND_LIMIT_SIZE)) {
+      (qn->lower <= 1 ||
+       int_multiply_cmp(tlen, qn->lower, QUANTIFIER_EXPAND_LIMIT_SIZE) <= 0)) {
     if (qn->lower == 1 && tlen > QUANTIFIER_EXPAND_LIMIT_SIZE) {
       len = SIZE_OP_JUMP;
     }
@@ -1107,8 +867,9 @@ compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
     len = SIZE_OP_JUMP + tlen;
   }
   else if (!infinite && qn->greedy &&
-           (qn->upper == 1 || (tlen + SIZE_OP_PUSH) * qn->upper
-                                      <= QUANTIFIER_EXPAND_LIMIT_SIZE)) {
+           (qn->upper == 1 ||
+            int_multiply_cmp(tlen + SIZE_OP_PUSH, qn->upper,
+                             QUANTIFIER_EXPAND_LIMIT_SIZE) <= 0)) {
     len = tlen * qn->lower;
     len += (SIZE_OP_PUSH + tlen) * (qn->upper - qn->lower);
   }
@@ -1128,13 +889,15 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
 {
   int i, r, mod_tlen;
   int infinite = IS_REPEAT_INFINITE(qn->upper);
-  int empty_info = qn->body_empty_info;
+  enum QuantBodyEmpty empty_info = qn->body_empty_info;
   int tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
 
   if (tlen < 0) return tlen;
+  if (tlen == 0) return 0;
 
-  if (is_anychar_star_quantifier(qn) &&
-      (qn->lower <= 1 || tlen * qn->lower <= QUANTIFIER_EXPAND_LIMIT_SIZE)) {
+  if (is_anychar_infinite_greedy(qn) &&
+      (qn->lower <= 1 ||
+       int_multiply_cmp(tlen, qn->lower, QUANTIFIER_EXPAND_LIMIT_SIZE) <= 0)) {
     r = compile_tree_n_times(NODE_QUANT_BODY(qn), qn->lower, reg, env);
     if (r != 0) return r;
     if (IS_NOT_NULL(qn->next_head_exact)) {
@@ -1159,7 +922,8 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
     mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
 
   if (infinite &&
-      (qn->lower <= 1 || tlen * qn->lower <= QUANTIFIER_EXPAND_LIMIT_SIZE)) {
+      (qn->lower <= 1 ||
+       int_multiply_cmp(tlen, qn->lower, QUANTIFIER_EXPAND_LIMIT_SIZE) <= 0)) {
     if (qn->lower == 1 && tlen > QUANTIFIER_EXPAND_LIMIT_SIZE) {
       if (qn->greedy) {
         if (IS_NOT_NULL(qn->head_exact))
@@ -1223,8 +987,9 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
     r = compile_tree(NODE_QUANT_BODY(qn), reg, env);
   }
   else if (! infinite && qn->greedy &&
-           (qn->upper == 1 || (tlen + SIZE_OP_PUSH) * qn->upper
-                                  <= QUANTIFIER_EXPAND_LIMIT_SIZE)) {
+           (qn->upper == 1 ||
+            int_multiply_cmp(tlen + SIZE_OP_PUSH, qn->upper,
+                             QUANTIFIER_EXPAND_LIMIT_SIZE) <= 0)) {
     int n = qn->upper - qn->lower;
 
     r = compile_tree_n_times(NODE_QUANT_BODY(qn), qn->lower, reg, env);
@@ -1250,7 +1015,6 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
   }
   return r;
 }
-#endif /* USE_COMBINATION_EXPLOSION_CHECK */
 
 static int
 compile_length_option_node(EnclosureNode* node, regex_t* reg)
@@ -3972,145 +3736,8 @@ expand_case_fold_string(Node* node, regex_t* reg)
   return r;
 }
 
-
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-
-#define CEC_THRES_NUM_BIG_REPEAT         512
-#define CEC_INFINITE_NUM          0x7fffffff
-
-#define CEC_IN_INFINITE_REPEAT    (1<<0)
-#define CEC_IN_FINITE_REPEAT      (1<<1)
-#define CEC_CONT_BIG_REPEAT       (1<<2)
-
-static int
-setup_comb_exp_check(Node* node, int state, ScanEnv* env)
-{
-  int r = state;
-
-  switch (NODE_TYPE(node)) {
-  case NODE_LIST:
-    {
-      do {
-        r = setup_comb_exp_check(NODE_CAR(node), r, env);
-      } while (r >= 0 && IS_NOT_NULL(node = NODE_CDR(node)));
-    }
-    break;
-
-  case NODE_ALT:
-    {
-      int ret;
-      do {
-        ret = setup_comb_exp_check(NODE_CAR(node), state, env);
-        r |= ret;
-      } while (ret >= 0 && IS_NOT_NULL(node = NODE_CDR(node)));
-    }
-    break;
-
-  case NODE_QUANT:
-    {
-      int var_num;
-      int child_state = state;
-      int add_state = 0;
-      QuantNode* qn = QUANT_(node);
-      Node* target = NODE_QUANT_BODY(qn);
-
-      if (! IS_REPEAT_INFINITE(qn->upper)) {
-        if (qn->upper > 1) {
-          /* {0,1}, {1,1} are allowed */
-          child_state |= CEC_IN_FINITE_REPEAT;
-
-          /* check (a*){n,m}, (a+){n,m} => (a*){n,n}, (a+){n,n} */
-          if (env->backrefed_mem == 0) {
-            if (NODE_TYPE(NODE_QUANT_BODY(qn)) == NODE_ENCLOSURE) {
-              EnclosureNode* en = ENCLOSURE_(NODE_QUANT_BODY(qn));
-              if (en->type == ENCLOSURE_MEMORY) {
-                if (NODE_TYPE(NODE_ENCLOSURE_BODY(en)) == NODE_QUANT) {
-                  QuantNode* q = QUANT_(NODE_ENCLOSURE_BODY(en));
-                  if (IS_REPEAT_INFINITE(q->upper)
-                      && q->greedy == qn->greedy) {
-                    qn->upper = (qn->lower == 0 ? 1 : qn->lower);
-                    if (qn->upper == 1)
-                      child_state = state;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
-      if (state & CEC_IN_FINITE_REPEAT) {
-        qn->comb_exp_check_num = -1;
-      }
-      else {
-        if (IS_REPEAT_INFINITE(qn->upper)) {
-          var_num = CEC_INFINITE_NUM;
-          child_state |= CEC_IN_INFINITE_REPEAT;
-        }
-        else {
-          var_num = qn->upper - qn->lower;
-        }
-
-        if (var_num >= CEC_THRES_NUM_BIG_REPEAT)
-          add_state |= CEC_CONT_BIG_REPEAT;
-
-        if (((state & CEC_IN_INFINITE_REPEAT) != 0 && var_num != 0) ||
-            ((state & CEC_CONT_BIG_REPEAT) != 0 &&
-             var_num >= CEC_THRES_NUM_BIG_REPEAT)) {
-          if (qn->comb_exp_check_num == 0) {
-            env->num_comb_exp_check++;
-            qn->comb_exp_check_num = env->num_comb_exp_check;
-            if (env->curr_max_regnum > env->comb_exp_max_regnum)
-              env->comb_exp_max_regnum = env->curr_max_regnum;
-          }
-        }
-      }
-
-      r = setup_comb_exp_check(target, child_state, env);
-      r |= add_state;
-    }
-    break;
-
-  case NODE_ENCLOSURE:
-    {
-      EnclosureNode* en = ENCLOSURE_(node);
-
-      switch (en->type) {
-      case ENCLOSURE_MEMORY:
-        {
-          if (env->curr_max_regnum < en->m.regnum)
-            env->curr_max_regnum = en->m.regnum;
-
-          r = setup_comb_exp_check(NODE_ENCLOSURE_BODY(en), state, env);
-        }
-        break;
-
-      default:
-        r = setup_comb_exp_check(NODE_ENCLOSURE_BODY(en), state, env);
-        break;
-      }
-    }
-    break;
-
-#ifdef USE_CALL
-  case NODE_CALL:
-    if (NODE_IS_RECURSION(node))
-      env->has_recursion = 1;
-    else
-      r = setup_comb_exp_check(NODE_BODY(node), state, env);
-    break;
-#endif
-
-  default:
-    break;
-  }
-
-  return r;
-}
-#endif
-
 #ifdef USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT
-static int
+static enum QuantBodyEmpty
 quantifiers_memory_node_info(Node* node)
 {
   int r = QUANT_BODY_IS_EMPTY;
@@ -4765,7 +4392,7 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
   }
 
 #ifdef USE_OP_PUSH_OR_JUMP_EXACT
-  if (qn->greedy && (qn->body_empty_info != 0)) {
+  if (qn->greedy && (qn->body_empty_info != QUANT_BODY_IS_NOT_EMPTY)) {
     if (NODE_TYPE(body) == NODE_QUANT) {
       QuantNode* tqn = QUANT_(body);
       if (IS_NOT_NULL(tqn->head_exact)) {
@@ -5205,24 +4832,28 @@ copy_opt_exact(OptExact* to, OptExact* from)
   *to = *from;
 }
 
-static void
+static int
 concat_opt_exact(OptExact* to, OptExact* add, OnigEncoding enc)
 {
-  int i, j, len;
+  int i, j, len, r;
   UChar *p, *end;
   OptAnc tanc;
 
   if (! to->ignore_case && add->ignore_case) {
-    if (to->len >= add->len) return ;  /* avoid */
+    if (to->len >= add->len) return 0;  /* avoid */
 
     to->ignore_case = 1;
   }
 
+  r = 0;
   p = add->s;
   end = p + add->len;
   for (i = to->len; p < end; ) {
     len = enclen(enc, p);
-    if (i + len > OPT_EXACT_MAXLEN) break;
+    if (i + len > OPT_EXACT_MAXLEN) {
+      r = 1; /* 1:full */
+      break;
+    }
     for (j = 0; j < len && p < end; j++)
       to->s[i++] = *p++;
   }
@@ -5233,6 +4864,8 @@ concat_opt_exact(OptExact* to, OptExact* add, OnigEncoding enc)
   concat_opt_anc_info(&tanc, &to->anc, &add->anc, 1, 1);
   if (! to->reach_end) tanc.right = 0;
   copy_opt_anc_info(&to->anc, &tanc);
+
+  return r;
 }
 
 static void
@@ -5792,7 +5425,8 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
           if (nopt.exb.len > 0) {
             if (nopt.exb.reach_end) {
               for (i = 2; i <= qn->lower && ! is_full_opt_exact(&opt->exb); i++) {
-                concat_opt_exact(&opt->exb, &nopt.exb, enc);
+                int rc = concat_opt_exact(&opt->exb, &nopt.exb, enc);
+                if (rc > 0) break;
               }
               if (i < qn->lower) opt->exb.reach_end = 0;
             }
@@ -5914,7 +5548,7 @@ set_optimize_exact(regex_t* reg, OptExact* e)
     CHECK_NULL_RETURN_MEMERR(reg->exact);
     xmemcpy(reg->exact, e->s, e->len);
     reg->exact_end = reg->exact + e->len;
-    reg->optimize = ONIG_OPTIMIZE_EXACT_IC;
+    reg->optimize = OPTIMIZE_EXACT_IC;
   }
   else {
     int allow_reverse;
@@ -5932,10 +5566,10 @@ set_optimize_exact(regex_t* reg, OptExact* e)
       if (r != 0) return r;
 
       reg->optimize = (allow_reverse != 0
-                       ? ONIG_OPTIMIZE_EXACT_BM : ONIG_OPTIMIZE_EXACT_BM_NOT_REV);
+                       ? OPTIMIZE_EXACT_BM : OPTIMIZE_EXACT_BM_NO_REV);
     }
     else {
-      reg->optimize = ONIG_OPTIMIZE_EXACT;
+      reg->optimize = OPTIMIZE_EXACT;
     }
   }
 
@@ -5957,7 +5591,7 @@ set_optimize_map(regex_t* reg, OptMap* m)
   for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++)
     reg->map[i] = m->map[i];
 
-  reg->optimize   = ONIG_OPTIMIZE_MAP;
+  reg->optimize   = OPTIMIZE_MAP;
   reg->dmin       = m->mmd.min;
   reg->dmax       = m->mmd.max;
 
@@ -6038,7 +5672,7 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
 static void
 clear_optimize_info(regex_t* reg)
 {
-  reg->optimize      = ONIG_OPTIMIZE_NONE;
+  reg->optimize      = OPTIMIZE_NONE;
   reg->anchor        = 0;
   reg->anchor_dmin   = 0;
   reg->anchor_dmax   = 0;
@@ -6180,7 +5814,7 @@ print_optimize_info(FILE* f, regex_t* reg)
     }
     fprintf(f, "]: length: %ld\n", (reg->exact_end - reg->exact));
   }
-  else if (reg->optimize & ONIG_OPTIMIZE_MAP) {
+  else if (reg->optimize & OPTIMIZE_MAP) {
     int c, i, n = 0;
 
     for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++)
@@ -6245,9 +5879,6 @@ onig_transfer(regex_t* to, regex_t* from)
 }
 
 
-#ifdef ONIG_DEBUG_COMPILE
-static void print_compiled_byte_code_list P_((FILE* f, regex_t* reg));
-#endif
 #ifdef ONIG_DEBUG_PARSE
 static void print_tree P_((FILE* f, Node* node));
 #endif
@@ -6286,9 +5917,6 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   reg->num_null_check     = 0;
   reg->repeat_range_alloc = 0;
   reg->repeat_range       = (OnigRepeatRange* )NULL;
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-  reg->num_comb_exp_check = 0;
-#endif
 
   r = onig_parse_tree(&root, pattern, pattern_end, reg, &scan_env);
   if (r != 0) goto err;
@@ -6346,33 +5974,6 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   }
   reg->bt_mem_start |= reg->bt_mem_end;
 
-#ifdef USE_COMBINATION_EXPLOSION_CHECK
-  if (scan_env.backrefed_mem == 0
-#ifdef USE_CALL
-      || scan_env.num_call == 0
-#endif
-      ) {
-    setup_comb_exp_check(root, 0, &scan_env);
-#ifdef USE_CALL
-    if (scan_env.has_recursion != 0) {
-      scan_env.num_comb_exp_check = 0;
-    }
-    else
-#endif
-    if (scan_env.comb_exp_max_regnum > 0) {
-      int i;
-      for (i = 1; i <= scan_env.comb_exp_max_regnum; i++) {
-        if (MEM_STATUS_AT(scan_env.backrefed_mem, i) != 0) {
-          scan_env.num_comb_exp_check = 0;
-          break;
-        }
-      }
-    }
-  }
-
-  reg->num_comb_exp_check = scan_env.num_comb_exp_check;
-#endif
-
   clear_optimize_info(reg);
 #ifndef ONIG_DONT_OPTIMIZE
   r = set_optimize_info_from_tree(root, reg, &scan_env);
@@ -6422,7 +6023,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 
 #ifdef ONIG_DEBUG_COMPILE
   onig_print_names(stderr, reg);
-  print_compiled_byte_code_list(stderr, reg);
+  onig_print_compiled_byte_code_list(stderr, reg);
 #endif
 
  end:
@@ -6572,13 +6173,18 @@ onig_initialize(OnigEncoding encodings[], int n)
   return 0;
 }
 
-static OnigEndCallListItemType* EndCallTop;
+typedef struct EndCallListItem {
+  struct EndCallListItem* next;
+  void (*func)(void);
+} EndCallListItemType;
+
+static EndCallListItemType* EndCallTop;
 
 extern void onig_add_end_call(void (*func)(void))
 {
-  OnigEndCallListItemType* item;
+  EndCallListItemType* item;
 
-  item = (OnigEndCallListItemType* )xmalloc(sizeof(*item));
+  item = (EndCallListItemType* )xmalloc(sizeof(*item));
   if (item == 0) return ;
 
   item->next = EndCallTop;
@@ -6590,7 +6196,7 @@ extern void onig_add_end_call(void (*func)(void))
 static void
 exec_end_call_list(void)
 {
-  OnigEndCallListItemType* prev;
+  EndCallListItemType* prev;
   void (*func)(void);
 
   while (EndCallTop != 0) {
@@ -6673,144 +6279,7 @@ onig_is_code_in_cc(OnigEncoding enc, OnigCodePoint code, CClassNode* cc)
 }
 
 
-#ifdef ONIG_DEBUG
-
-/* arguments type */
-#define ARG_SPECIAL     -1
-#define ARG_NON          0
-#define ARG_RELADDR      1
-#define ARG_ABSADDR      2
-#define ARG_LENGTH       3
-#define ARG_MEMNUM       4
-#define ARG_OPTION       5
-#define ARG_STATE_CHECK  6
-#define ARG_MODE         7
-
-OnigOpInfoType OnigOpInfo[] = {
-  { OP_FINISH,            "finish",          ARG_NON },
-  { OP_END,               "end",             ARG_NON },
-  { OP_EXACT1,            "exact1",          ARG_SPECIAL },
-  { OP_EXACT2,            "exact2",          ARG_SPECIAL },
-  { OP_EXACT3,            "exact3",          ARG_SPECIAL },
-  { OP_EXACT4,            "exact4",          ARG_SPECIAL },
-  { OP_EXACT5,            "exact5",          ARG_SPECIAL },
-  { OP_EXACTN,            "exactn",          ARG_SPECIAL },
-  { OP_EXACTMB2N1,        "exactmb2-n1",     ARG_SPECIAL },
-  { OP_EXACTMB2N2,        "exactmb2-n2",     ARG_SPECIAL },
-  { OP_EXACTMB2N3,        "exactmb2-n3",     ARG_SPECIAL },
-  { OP_EXACTMB2N,         "exactmb2-n",      ARG_SPECIAL },
-  { OP_EXACTMB3N,         "exactmb3n"  ,     ARG_SPECIAL },
-  { OP_EXACTMBN,          "exactmbn",        ARG_SPECIAL },
-  { OP_EXACT1_IC,         "exact1-ic",       ARG_SPECIAL },
-  { OP_EXACTN_IC,         "exactn-ic",       ARG_SPECIAL },
-  { OP_CCLASS,            "cclass",          ARG_SPECIAL },
-  { OP_CCLASS_MB,         "cclass-mb",       ARG_SPECIAL },
-  { OP_CCLASS_MIX,        "cclass-mix",      ARG_SPECIAL },
-  { OP_CCLASS_NOT,        "cclass-not",      ARG_SPECIAL },
-  { OP_CCLASS_MB_NOT,     "cclass-mb-not",   ARG_SPECIAL },
-  { OP_CCLASS_MIX_NOT,    "cclass-mix-not",  ARG_SPECIAL },
-#ifdef USE_OP_CCLASS_NODE
-  { OP_CCLASS_NODE,       "cclass-node",     ARG_SPECIAL },
-#endif
-  { OP_ANYCHAR,           "anychar",         ARG_NON },
-  { OP_ANYCHAR_ML,        "anychar-ml",      ARG_NON },
-  { OP_ANYCHAR_STAR,      "anychar*",        ARG_NON },
-  { OP_ANYCHAR_ML_STAR,   "anychar-ml*",     ARG_NON },
-  { OP_ANYCHAR_STAR_PEEK_NEXT, "anychar*-peek-next", ARG_SPECIAL },
-  { OP_ANYCHAR_ML_STAR_PEEK_NEXT, "anychar-ml*-peek-next", ARG_SPECIAL },
-  { OP_WORD,                "word",            ARG_NON },
-  { OP_WORD_ASCII,          "word-ascii",      ARG_NON },
-  { OP_NO_WORD,             "not-word",        ARG_NON },
-  { OP_NO_WORD_ASCII,       "not-word-ascii",  ARG_NON },
-  { OP_WORD_BOUNDARY,       "word-boundary",     ARG_MODE },
-  { OP_NO_WORD_BOUNDARY,    "not-word-boundary", ARG_MODE },
-  { OP_WORD_BEGIN,          "word-begin",      ARG_MODE },
-  { OP_WORD_END,            "word-end",        ARG_MODE },
-  { OP_BEGIN_BUF,           "begin-buf",       ARG_NON },
-  { OP_END_BUF,             "end-buf",         ARG_NON },
-  { OP_BEGIN_LINE,          "begin-line",      ARG_NON },
-  { OP_END_LINE,            "end-line",        ARG_NON },
-  { OP_SEMI_END_BUF,        "semi-end-buf",    ARG_NON },
-  { OP_BEGIN_POSITION,      "begin-position",  ARG_NON },
-  { OP_BACKREF1,            "backref1",             ARG_NON },
-  { OP_BACKREF2,            "backref2",             ARG_NON },
-  { OP_BACKREF_N,            "backref-n",           ARG_MEMNUM  },
-  { OP_BACKREF_N_IC,         "backref-n-ic",        ARG_SPECIAL },
-  { OP_BACKREF_MULTI,       "backref_multi",        ARG_SPECIAL },
-  { OP_BACKREF_MULTI_IC,    "backref_multi-ic",     ARG_SPECIAL },
-  { OP_BACKREF_WITH_LEVEL,  "backref_with_level",   ARG_SPECIAL },
-  { OP_BACKREF_CHECK,       "backref_check",        ARG_SPECIAL },
-  { OP_BACKREF_CHECK_WITH_LEVEL, "backref_check_with_level", ARG_SPECIAL },
-  { OP_MEMORY_START_PUSH,   "mem-start-push",       ARG_MEMNUM  },
-  { OP_MEMORY_START,        "mem-start",            ARG_MEMNUM  },
-  { OP_MEMORY_END_PUSH,     "mem-end-push",         ARG_MEMNUM  },
-  { OP_MEMORY_END_PUSH_REC, "mem-end-push-rec",     ARG_MEMNUM  },
-  { OP_MEMORY_END,          "mem-end",              ARG_MEMNUM  },
-  { OP_MEMORY_END_REC,      "mem-end-rec",          ARG_MEMNUM  },
-  { OP_SET_OPTION_PUSH,     "set-option-push",      ARG_OPTION  },
-  { OP_SET_OPTION,          "set-option",           ARG_OPTION  },
-  { OP_FAIL,                "fail",                 ARG_NON },
-  { OP_JUMP,                "jump",                 ARG_RELADDR },
-  { OP_PUSH,                "push",                 ARG_RELADDR },
-  { OP_PUSH_SUPER,          "push_SUPER",           ARG_RELADDR },
-  { OP_POP,                 "pop",                  ARG_NON },
-  { OP_PUSH_OR_JUMP_EXACT1, "push-or-jump-e1",      ARG_SPECIAL },
-  { OP_PUSH_IF_PEEK_NEXT,   "push-if-peek-next",    ARG_SPECIAL },
-  { OP_REPEAT,              "repeat",               ARG_SPECIAL },
-  { OP_REPEAT_NG,           "repeat-ng",            ARG_SPECIAL },
-  { OP_REPEAT_INC,          "repeat-inc",           ARG_MEMNUM  },
-  { OP_REPEAT_INC_NG,       "repeat-inc-ng",        ARG_MEMNUM  },
-  { OP_REPEAT_INC_SG,       "repeat-inc-sg",        ARG_MEMNUM  },
-  { OP_REPEAT_INC_NG_SG,    "repeat-inc-ng-sg",     ARG_MEMNUM  },
-  { OP_EMPTY_CHECK_START,   "empty-check-start",    ARG_MEMNUM  },
-  { OP_EMPTY_CHECK_END,     "empty-check-end",      ARG_MEMNUM  },
-  { OP_EMPTY_CHECK_END_MEMST,"empty-check-end-memst", ARG_MEMNUM  },
-  { OP_EMPTY_CHECK_END_MEMST_PUSH,"empty-check-end-memst-push", ARG_MEMNUM  },
-  { OP_PREC_READ_START,      "push-pos",             ARG_NON },
-  { OP_PREC_READ_END,        "pop-pos",              ARG_NON },
-  { OP_PREC_READ_NOT_START,  "prec-read-not-start",  ARG_RELADDR },
-  { OP_PREC_READ_NOT_END,    "prec-read-not-end",    ARG_NON },
-  { OP_ATOMIC_START,         "atomic-start",         ARG_NON },
-  { OP_ATOMIC_END,           "atomic-end",           ARG_NON },
-  { OP_LOOK_BEHIND,          "look-behind",          ARG_SPECIAL },
-  { OP_LOOK_BEHIND_NOT_START, "look-behind-not-start", ARG_SPECIAL },
-  { OP_LOOK_BEHIND_NOT_END,  "look-behind-not-end",  ARG_NON },
-  { OP_CALL,                 "call",                 ARG_ABSADDR },
-  { OP_RETURN,               "return",               ARG_NON },
-  { OP_PUSH_SAVE_VAL,        "push-save-val",        ARG_SPECIAL },
-  { OP_UPDATE_VAR,           "update-var",           ARG_SPECIAL },
-  { OP_STATE_CHECK_PUSH,         "state-check-push",         ARG_SPECIAL },
-  { OP_STATE_CHECK_PUSH_OR_JUMP, "state-check-push-or-jump", ARG_SPECIAL },
-  { OP_STATE_CHECK,              "state-check",              ARG_STATE_CHECK },
-  { OP_STATE_CHECK_ANYCHAR_STAR, "state-check-anychar*",     ARG_STATE_CHECK },
-  { OP_STATE_CHECK_ANYCHAR_ML_STAR,
-    "state-check-anychar-ml*", ARG_STATE_CHECK },
-  { -1, "", ARG_NON }
-};
-
-static char*
-op2name(int opcode)
-{
-  int i;
-
-  for (i = 0; OnigOpInfo[i].opcode >= 0; i++) {
-    if (opcode == OnigOpInfo[i].opcode)
-      return OnigOpInfo[i].name;
-  }
-  return "";
-}
-
-static int
-op2arg_type(int opcode)
-{
-  int i;
-
-  for (i = 0; OnigOpInfo[i].opcode >= 0; i++) {
-    if (opcode == OnigOpInfo[i].opcode)
-      return OnigOpInfo[i].arg_type;
-  }
-  return ARG_SPECIAL;
-}
+#ifdef ONIG_DEBUG_PARSE
 
 static void
 p_string(FILE* f, int len, UChar* s)
@@ -6818,326 +6287,6 @@ p_string(FILE* f, int len, UChar* s)
   fputs(":", f);
   while (len-- > 0) { fputc(*s++, f); }
 }
-
-static void
-p_len_string(FILE* f, LengthType len, int mb_len, UChar* s)
-{
-  int x = len * mb_len;
-
-  fprintf(f, ":%d:", len);
-  while (x-- > 0) { fputc(*s++, f); }
-}
-
-static void
-p_rel_addr(FILE* f, RelAddrType rel_addr, UChar* p, UChar* start)
-{
-  RelAddrType curr = (RelAddrType )(p - start);
-
-  fprintf(f, "{%d/%d}", rel_addr, curr + rel_addr);
-}
-
-extern void
-onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
-                              OnigEncoding enc)
-{
-  int i, n, arg_type;
-  RelAddrType addr;
-  LengthType len;
-  MemNumType mem;
-  StateCheckNumType scn;
-  OnigCodePoint code;
-  OnigOptionType option;
-  ModeType mode;
-  UChar *q;
-
-  fprintf(f, "%s", op2name(*bp));
-  arg_type = op2arg_type(*bp);
-  if (arg_type != ARG_SPECIAL) {
-    bp++;
-    switch (arg_type) {
-    case ARG_NON:
-      break;
-    case ARG_RELADDR:
-      GET_RELADDR_INC(addr, bp);
-      fputc(':', f);
-      p_rel_addr(f, addr, bp, start);
-      break;
-    case ARG_ABSADDR:
-      GET_ABSADDR_INC(addr, bp);
-      fprintf(f, ":{/%d}", addr);
-      break;
-    case ARG_LENGTH:
-      GET_LENGTH_INC(len, bp);
-      fprintf(f, ":%d", len);
-      break;
-    case ARG_MEMNUM:
-      mem = *((MemNumType* )bp);
-      bp += SIZE_MEMNUM;
-      fprintf(f, ":%d", mem);
-      break;
-    case ARG_OPTION:
-      {
-        OnigOptionType option = *((OnigOptionType* )bp);
-        bp += SIZE_OPTION;
-        fprintf(f, ":%d", option);
-      }
-      break;
-
-    case ARG_STATE_CHECK:
-      scn = *((StateCheckNumType* )bp);
-      bp += SIZE_STATE_CHECK_NUM;
-      fprintf(f, ":%d", scn);
-      break;
-
-    case ARG_MODE:
-      mode = *((ModeType* )bp);
-      bp += SIZE_MODE;
-      fprintf(f, ":%d", mode);
-      break;
-    }
-  }
-  else {
-    switch (*bp++) {
-    case OP_EXACT1:
-    case OP_ANYCHAR_STAR_PEEK_NEXT:
-    case OP_ANYCHAR_ML_STAR_PEEK_NEXT:
-      p_string(f, 1, bp++); break;
-    case OP_EXACT2:
-      p_string(f, 2, bp); bp += 2; break;
-    case OP_EXACT3:
-      p_string(f, 3, bp); bp += 3; break;
-    case OP_EXACT4:
-      p_string(f, 4, bp); bp += 4; break;
-    case OP_EXACT5:
-      p_string(f, 5, bp); bp += 5; break;
-    case OP_EXACTN:
-      GET_LENGTH_INC(len, bp);
-      p_len_string(f, len, 1, bp);
-      bp += len;
-      break;
-    
-    case OP_EXACTMB2N1:
-      p_string(f, 2, bp); bp += 2; break;
-    case OP_EXACTMB2N2:
-      p_string(f, 4, bp); bp += 4; break;
-    case OP_EXACTMB2N3:
-      p_string(f, 6, bp); bp += 6; break;
-    case OP_EXACTMB2N:
-      GET_LENGTH_INC(len, bp);
-      p_len_string(f, len, 2, bp);
-      bp += len * 2;
-      break;
-    case OP_EXACTMB3N:
-      GET_LENGTH_INC(len, bp);
-      p_len_string(f, len, 3, bp);
-      bp += len * 3;
-      break;
-    case OP_EXACTMBN:
-      {
-        int mb_len;
-      
-        GET_LENGTH_INC(mb_len, bp);
-        GET_LENGTH_INC(len, bp);
-        fprintf(f, ":%d:%d:", mb_len, len);
-        n = len * mb_len;
-        while (n-- > 0) { fputc(*bp++, f); }
-      }
-      break;
-
-    case OP_EXACT1_IC:
-      len = enclen(enc, bp);
-      p_string(f, len, bp);
-      bp += len;
-      break;
-    case OP_EXACTN_IC:
-      GET_LENGTH_INC(len, bp);
-      p_len_string(f, len, 1, bp);
-      bp += len;
-      break;
-
-    case OP_CCLASS:
-      n = bitset_on_num((BitSetRef )bp);
-      bp += SIZE_BITSET;
-      fprintf(f, ":%d", n);
-      break;
-
-    case OP_CCLASS_NOT:
-      n = bitset_on_num((BitSetRef )bp);
-      bp += SIZE_BITSET;
-      fprintf(f, ":%d", n);
-      break;
-
-    case OP_CCLASS_MB:
-    case OP_CCLASS_MB_NOT:
-      GET_LENGTH_INC(len, bp);
-      q = bp;
-#ifndef PLATFORM_UNALIGNED_WORD_ACCESS
-      ALIGNMENT_RIGHT(q);
-#endif
-      GET_CODE_POINT(code, q);
-      bp += len;
-      fprintf(f, ":%d:%d", (int )code, len);
-      break;
-
-    case OP_CCLASS_MIX:
-    case OP_CCLASS_MIX_NOT:
-      n = bitset_on_num((BitSetRef )bp);
-      bp += SIZE_BITSET;
-      GET_LENGTH_INC(len, bp);
-      q = bp;
-#ifndef PLATFORM_UNALIGNED_WORD_ACCESS
-      ALIGNMENT_RIGHT(q);
-#endif
-      GET_CODE_POINT(code, q);
-      bp += len;
-      fprintf(f, ":%d:%d:%d", n, (int )code, len);
-      break;
-
-#ifdef USE_OP_CCLASS_NODE
-    case OP_CCLASS_NODE:
-      {
-        CClassNode *cc;
-
-        GET_POINTER_INC(cc, bp);
-        n = bitset_on_num(cc->bs);
-        fprintf(f, ":%p:%d", cc, n);
-      }
-      break;
-#endif
-
-    case OP_BACKREF_N_IC:
-      mem = *((MemNumType* )bp);
-      bp += SIZE_MEMNUM;
-      fprintf(f, ":%d", mem);
-      break;
-
-    case OP_BACKREF_MULTI_IC:
-    case OP_BACKREF_MULTI:
-    case OP_BACKREF_CHECK:
-      fputs(" ", f);
-      GET_LENGTH_INC(len, bp);
-      for (i = 0; i < len; i++) {
-        GET_MEMNUM_INC(mem, bp);
-        if (i > 0) fputs(", ", f);
-        fprintf(f, "%d", mem);
-      }
-      break;
-
-    case OP_BACKREF_WITH_LEVEL:
-      GET_OPTION_INC(option, bp);
-      fprintf(f, ":%d", option);
-      /* fall */
-    case OP_BACKREF_CHECK_WITH_LEVEL:
-      {
-        LengthType level;
-
-        GET_LENGTH_INC(level, bp);
-        fprintf(f, ":%d", level);
-
-        fputs(" ", f);
-        GET_LENGTH_INC(len, bp);
-        for (i = 0; i < len; i++) {
-          GET_MEMNUM_INC(mem, bp);
-          if (i > 0) fputs(", ", f);
-          fprintf(f, "%d", mem);
-        }
-      }
-      break;
-
-    case OP_REPEAT:
-    case OP_REPEAT_NG:
-      {
-        mem = *((MemNumType* )bp);
-        bp += SIZE_MEMNUM;
-        addr = *((RelAddrType* )bp);
-        bp += SIZE_RELADDR;
-        fprintf(f, ":%d:%d", mem, addr);
-      }
-      break;
-
-    case OP_PUSH_OR_JUMP_EXACT1:
-    case OP_PUSH_IF_PEEK_NEXT:
-      addr = *((RelAddrType* )bp);
-      bp += SIZE_RELADDR;
-      fputc(':', f);
-      p_rel_addr(f, addr, bp, start);
-      p_string(f, 1, bp);
-      bp += 1;
-      break;
-
-    case OP_LOOK_BEHIND:
-      GET_LENGTH_INC(len, bp);
-      fprintf(f, ":%d", len);
-      break;
-
-    case OP_LOOK_BEHIND_NOT_START:
-      GET_RELADDR_INC(addr, bp);
-      GET_LENGTH_INC(len, bp);
-      fprintf(f, ":%d:", len);
-      p_rel_addr(f, addr, bp, start);
-      break;
-
-    case OP_STATE_CHECK_PUSH:
-    case OP_STATE_CHECK_PUSH_OR_JUMP:
-      scn = *((StateCheckNumType* )bp);
-      bp += SIZE_STATE_CHECK_NUM;
-      addr = *((RelAddrType* )bp);
-      bp += SIZE_RELADDR;
-      fprintf(f, ":%d:", scn);
-      p_rel_addr(f, addr, bp, start);
-      break;
-
-    case OP_PUSH_SAVE_VAL:
-      {
-        SaveType type;
-        GET_SAVE_TYPE_INC(type, bp);
-        GET_MEMNUM_INC(mem, bp);
-        fprintf(f, ":%d:%d", type, mem);
-      }
-      break;
-
-    case OP_UPDATE_VAR:
-      {
-        UpdateVarType type;
-        GET_UPDATE_VAR_TYPE_INC(type, bp);
-        GET_MEMNUM_INC(mem, bp);
-        fprintf(f, ":%d:%d", type, mem);
-      }
-      break;
-
-    default:
-      fprintf(stderr, "onig_print_compiled_byte_code: undefined code %d\n", *--bp);
-    }
-  }
-  if (nextp) *nextp = bp;
-}
-#endif /* ONIG_DEBUG */
-
-#ifdef ONIG_DEBUG_COMPILE
-static void
-print_compiled_byte_code_list(FILE* f, regex_t* reg)
-{
-  UChar* bp;
-  UChar* start = reg->p;
-  UChar* end   = reg->p + reg->used;
-
-  fprintf(f, "bt_mem_start: 0x%x, bt_mem_end: 0x%x\n",
-          reg->bt_mem_start, reg->bt_mem_end);
-  fprintf(f, "code-length: %d\n", reg->used);
-
-  bp = start;
-  while (bp < end) {
-    int pos = bp - start;
-
-    fprintf(f, "%4d: ", pos);
-    onig_print_compiled_byte_code(f, bp, &bp, start, reg->enc);
-    fprintf(f, "\n");
-  }
-  fprintf(f, "\n");
-}
-#endif
-
-#ifdef ONIG_DEBUG_PARSE
 
 static void
 Indent(FILE* f, int indent)

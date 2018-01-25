@@ -15,7 +15,7 @@ LINKFLAGS = -link -incremental:no -pdb:none
 INSTALL = install -c
 CP      = copy
 CC = cl
-DEFS = -DHAVE_CONFIG_H -DNOT_RUBY -DEXPORT
+DEFS = -DHAVE_CONFIG_H -DNOT_RUBY -DONIGURUMA_EXPORT
 RUBYDIR = ..
 
 subdirs = 
@@ -170,7 +170,7 @@ $(testc)u: $(testc)u.c $(libname)
 	$(CC) -nologo -o $(testc)u -DONIG_EXTERN=extern $(testc)u.c $(libname)
 
 clean:
-	del $(BUILD_DIR)/*.obj $(BUILD_DIR)/*.lib $(BUILD_DIR)/*.exp $(BUILD_DIR)/*.dll $(BUILD_DIR)/$(testp).exe $(BUILD_DIR)/$(testc).exe $(BUILD_DIR)/$(testc).obj
+	del $(BUILD_DIR)\*.obj $(BUILD_DIR)\*.lib $(BUILD_DIR)\*.exp $(BUILD_DIR)\*.dll $(BUILD_DIR)\$(testp).exe $(BUILD_DIR)\$(testc).exe $(BUILD_DIR)\$(testc).obj
 
 
 samples: all
