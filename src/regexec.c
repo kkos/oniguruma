@@ -798,7 +798,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_MEM_START              0x0100
 #define STK_MEM_END                0x8200
 #define STK_REPEAT_INC             0x0300
-#define STK_STATE_CHECK_MARK       0x1000
+//#define STK_STATE_CHECK_MARK       0x1000
 /* avoided by normal-POP */
 #define STK_VOID                   0x0000  /* for fill a blank */
 #define STK_EMPTY_CHECK_START      0x3000
@@ -1058,8 +1058,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
 } while(0)
 
 #define IS_TO_VOID_TARGET(stk) (((stk)->type & STK_MASK_TO_VOID_TARGET) != 0)
-
-#define ELSE_IF_STATE_CHECK_MARK(stk)
 
 #define STACK_PUSH(stack_type,pat,s,sprev) do {\
   STACK_ENSURE(1);\
@@ -1324,7 +1322,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
       stk--;\
       STACK_BASE_CHECK(stk, "STACK_POP"); \
       if ((stk->type & STK_MASK_POP_USED) != 0)  break;\
-      ELSE_IF_STATE_CHECK_MARK(stk);\
     }\
     break;\
   case STACK_POP_LEVEL_MEM_START:\
@@ -1336,7 +1333,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
         mem_start_stk[stk->id] = stk->u.mem.start;\
         mem_end_stk[stk->id]   = stk->u.mem.end;\
       }\
-      ELSE_IF_STATE_CHECK_MARK(stk);\
     }\
     break;\
   default:\
@@ -1355,7 +1351,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
         mem_start_stk[stk->id] = stk->u.mem.start;\
         mem_end_stk[stk->id]   = stk->u.mem.end;\
       }\
-      ELSE_IF_STATE_CHECK_MARK(stk);\
     }\
     break;\
   }\
@@ -1377,7 +1372,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
       mem_start_stk[stk->id] = stk->u.mem.start;\
       mem_end_stk[stk->id]   = stk->u.mem.end;\
     }\
-    ELSE_IF_STATE_CHECK_MARK(stk);\
   }\
 } while(0)
 
@@ -1397,7 +1391,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
       mem_start_stk[stk->id] = stk->u.mem.start;\
       mem_end_stk[stk->id]   = stk->u.mem.end;\
     }\
-    ELSE_IF_STATE_CHECK_MARK(stk);\
   }\
 } while(0)
 
