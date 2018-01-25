@@ -1,5 +1,15 @@
 History
 
+2018/01/26: Version 6.7.1
+
+2018/01/25: disable USE_TRY_IN_MATCH_LIMIT by default
+2018/01/24: implement mechanism of try-in-match-limit
+2018/01/24: #76: rename EXPORT to ONIGURUMA_EXPORT
+2018/01/15: #73: update for automake 1.15.1
+2018/01/14: #74: update description of README
+2018/01/10: #72: Correct spelling and grammar in FAQ (English)
+2017/12/25: remove USE_COMBINATION_EXPLOSION_CHECK codes
+
 2017/12/11: Version 6.7.0
 
 2017/12/08: Disable \N and \O on ONIG_SYNTAX_RUBY

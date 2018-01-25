@@ -38,6 +38,12 @@ Supported character encodings:
 * CP1251:  contributed by Byte
 
 
+New feature of version 6.7.1
+--------------------------
+
+* NEW: Mechanism of try-in-match-limit (* disabled by default)
+
+
 New feature of version 6.7.0
 --------------------------
 
