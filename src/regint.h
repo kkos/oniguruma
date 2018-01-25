@@ -117,9 +117,6 @@
 /* */
 #define onig_st_is_member              st_is_member
 
-#define STATE_CHECK_STRING_THRESHOLD_LEN             7
-#define STATE_CHECK_BUFF_MAX_SIZE               0x4000
-
 #define xmemset     memset
 #define xmemcpy     memcpy
 #define xmemmove    memmove
@@ -626,7 +623,6 @@ typedef int ModeType;
 #define SIZE_ABSADDR          sizeof(AbsAddrType)
 #define SIZE_LENGTH           sizeof(LengthType)
 #define SIZE_MEMNUM           sizeof(MemNumType)
-#define SIZE_STATE_CHECK_NUM  sizeof(StateCheckNumType)
 #define SIZE_REPEATNUM        sizeof(RepeatNumType)
 #define SIZE_OPTION           sizeof(OnigOptionType)
 #define SIZE_CODE_POINT       sizeof(OnigCodePoint)
@@ -642,7 +638,6 @@ typedef int ModeType;
 #define GET_REPEATNUM_INC(num,p)   PLATFORM_GET_INC(num,    p, RepeatNumType)
 #define GET_OPTION_INC(option,p)   PLATFORM_GET_INC(option, p, OnigOptionType)
 #define GET_POINTER_INC(ptr,p)     PLATFORM_GET_INC(ptr,    p, PointerType)
-#define GET_STATE_CHECK_NUM_INC(num,p)  PLATFORM_GET_INC(num, p, StateCheckNumType)
 #define GET_SAVE_TYPE_INC(type,p)       PLATFORM_GET_INC(type, p, SaveType)
 #define GET_UPDATE_VAR_TYPE_INC(type,p) PLATFORM_GET_INC(type, p, UpdateVarType)
 #define GET_MODE_INC(mode,p)            PLATFORM_GET_INC(mode, p, ModeType)

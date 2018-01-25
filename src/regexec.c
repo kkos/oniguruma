@@ -66,8 +66,7 @@ typedef struct {
 #define ARG_LENGTH       3
 #define ARG_MEMNUM       4
 #define ARG_OPTION       5
-#define ARG_STATE_CHECK  6
-#define ARG_MODE         7
+#define ARG_MODE         6
 
 typedef struct {
   short int opcode;
@@ -278,12 +277,6 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
         bp += SIZE_OPTION;
         fprintf(f, ":%d", option);
       }
-      break;
-
-    case ARG_STATE_CHECK:
-      scn = *((StateCheckNumType* )bp);
-      bp += SIZE_STATE_CHECK_NUM;
-      fprintf(f, ":%d", scn);
       break;
 
     case ARG_MODE:
@@ -883,7 +876,6 @@ typedef struct _StackType {
 } while(0)
 #endif
 
-#define STATE_CHECK_BUFF_INIT(msa, str_len, offset, state_num)
 #define MATCH_ARG_FREE(msa)  if ((msa).stack_p) xfree((msa).stack_p)
 
 
