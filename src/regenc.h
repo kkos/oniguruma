@@ -33,10 +33,7 @@
 #define ONIGURUMA_EXPORT
 #endif
 
-#ifndef PACKAGE
-/* PACKAGE is defined in config.h */
 #include "config.h"
-#endif
 
 #ifdef ONIG_ESCAPE_UCHAR_COLLISION
 #undef ONIG_ESCAPE_UCHAR_COLLISION

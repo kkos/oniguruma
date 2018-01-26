@@ -74,6 +74,9 @@
 #define USE_QUANT_PEEK_NEXT
 #define USE_ST_LIBRARY
 
+#include "regenc.h"
+
+
 #define INIT_MATCH_STACK_SIZE                     160
 #define DEFAULT_MATCH_STACK_LIMIT_SIZE              0 /* unlimited */
 #define DEFAULT_TRY_IN_MATCH_LIMIT           10000000
@@ -87,7 +90,6 @@
 
 /* */
 /* escape other system UChar definition */
-#include "config.h"
 #ifdef ONIG_ESCAPE_UCHAR_COLLISION
 #undef ONIG_ESCAPE_UCHAR_COLLISION
 #endif
@@ -189,8 +191,6 @@ typedef int  intptr_t;
 typedef unsigned int  uintptr_t;
 #endif
 #endif
-
-#include "regenc.h"
 
 #ifdef MIN
 #undef MIN
