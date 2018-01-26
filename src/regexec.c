@@ -142,8 +142,8 @@ static OpInfoType OpInfo[] = {
   { OP_FAIL,                "fail",                 ARG_NON },
   { OP_JUMP,                "jump",                 ARG_RELADDR },
   { OP_PUSH,                "push",                 ARG_RELADDR },
-  { OP_PUSH_SUPER,          "push_SUPER",           ARG_RELADDR },
-  { OP_POP,                 "pop",                  ARG_NON },
+  { OP_PUSH_SUPER,          "push-super",           ARG_RELADDR },
+  { OP_POP_OUT,             "pop-out",              ARG_NON },
   { OP_PUSH_OR_JUMP_EXACT1, "push-or-jump-e1",      ARG_SPECIAL },
   { OP_PUSH_IF_PEEK_NEXT,   "push-if-peek-next",    ARG_SPECIAL },
   { OP_REPEAT,              "repeat",               ARG_SPECIAL },
@@ -3141,7 +3141,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       continue;
       break;
 
-    case OP_POP:  SOP_IN(OP_POP);
+    case OP_POP_OUT:  SOP_IN(OP_POP_OUT);
       STACK_POP_ONE;
       // for stop backtrack
       //CHECK_TRY_IN_MATCH_LIMIT;

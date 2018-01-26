@@ -1122,7 +1122,7 @@ compile_length_enclosure_node(EnclosureNode* node, regex_t* reg)
       if (tlen < 0) return tlen;
 
       len = tlen * qn->lower
-        + SIZE_OP_PUSH + tlen + SIZE_OP_POP + SIZE_OP_JUMP;
+        + SIZE_OP_PUSH + tlen + SIZE_OP_POP_OUT + SIZE_OP_JUMP;
     }
     else {
       len = SIZE_OP_ATOMIC_START + tlen + SIZE_OP_ATOMIC_END;
@@ -1269,14 +1269,14 @@ compile_enclosure_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
       len = compile_length_tree(NODE_QUANT_BODY(qn), reg);
       if (len < 0) return len;
 
-      r = add_opcode_rel_addr(reg, OP_PUSH, len + SIZE_OP_POP + SIZE_OP_JUMP);
+      r = add_opcode_rel_addr(reg, OP_PUSH, len + SIZE_OP_POP_OUT + SIZE_OP_JUMP);
       if (r != 0) return r;
       r = compile_tree(NODE_QUANT_BODY(qn), reg, env);
       if (r != 0) return r;
-      r = add_opcode(reg, OP_POP);
+      r = add_opcode(reg, OP_POP_OUT);
       if (r != 0) return r;
       r = add_opcode_rel_addr(reg, OP_JUMP,
-             -((int )SIZE_OP_PUSH + len + (int )SIZE_OP_POP + (int )SIZE_OP_JUMP));
+           -((int )SIZE_OP_PUSH + len + (int )SIZE_OP_POP_OUT + (int )SIZE_OP_JUMP));
     }
     else {
       r = add_opcode(reg, OP_ATOMIC_START);

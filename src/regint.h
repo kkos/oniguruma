@@ -565,7 +565,7 @@ enum OpCode {
   OP_JUMP,
   OP_PUSH,
   OP_PUSH_SUPER,
-  OP_POP,
+  OP_POP_OUT,
   OP_PUSH_OR_JUMP_EXACT1,  /* if match exact then push, else jump. */
   OP_PUSH_IF_PEEK_NEXT,    /* if match exact then push, else none. */
   OP_REPEAT,               /* {n,m} */
@@ -662,7 +662,7 @@ typedef int ModeType;
 #define SIZE_OP_JUMP                   (SIZE_OPCODE + SIZE_RELADDR)
 #define SIZE_OP_PUSH                   (SIZE_OPCODE + SIZE_RELADDR)
 #define SIZE_OP_PUSH_SUPER             (SIZE_OPCODE + SIZE_RELADDR)
-#define SIZE_OP_POP                     SIZE_OPCODE
+#define SIZE_OP_POP_OUT                 SIZE_OPCODE
 #define SIZE_OP_PUSH_OR_JUMP_EXACT1    (SIZE_OPCODE + SIZE_RELADDR + 1)
 #define SIZE_OP_PUSH_IF_PEEK_NEXT      (SIZE_OPCODE + SIZE_RELADDR + 1)
 #define SIZE_OP_REPEAT_INC             (SIZE_OPCODE + SIZE_MEMNUM)
