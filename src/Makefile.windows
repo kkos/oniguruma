@@ -16,7 +16,6 @@ INSTALL = install -c
 CP      = copy
 CC = cl
 DEFS = -DHAVE_CONFIG_H -DONIGURUMA_EXPORT
-RUBYDIR = ..
 
 subdirs = 
 
@@ -62,7 +61,6 @@ onigsources  = $(ONIG_DIR)/regerror.c $(ONIG_DIR)/regparse.c $(ONIG_DIR)/regext.
 	       $(ONIG_DIR)/regsyntax.c $(ONIG_DIR)/regtrav.c $(ONIG_DIR)/regversion.c $(ONIG_DIR)/reggnu.c $(ONIG_DIR)/st.c
 posixsources = $(ONIG_DIR)/regposix.c $(ONIG_DIR)/regposerr.c
 libsources   = $(posixsources) $(onigsources)
-rubysources  = $(onigsources)
 
 patchfiles   = re.c.168.patch re.c.181.patch
 distfiles    = README COPYING HISTORY \
@@ -162,9 +160,6 @@ $(testc): $(testc).c $(libname)
 
 $(testp): $(testc).c $(dlllib)
 	$(CC) -nologo -DPOSIX_TEST -o $(testp) $(testc).c $(dlllib)
-
-#$(testc)u.c: test.rb testconvu.rb
-#	ruby -Ke testconvu.rb test.rb > $@
 
 $(testc)u: $(testc)u.c $(libname)
 	$(CC) -nologo -o $(testc)u -DONIG_EXTERN=extern $(testc)u.c $(libname)
