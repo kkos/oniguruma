@@ -15,7 +15,7 @@ LINKFLAGS = -link -incremental:no -pdb:none
 INSTALL = install -c
 CP      = copy
 CC = cl
-DEFS = -DHAVE_CONFIG_H -DNOT_RUBY -DONIGURUMA_EXPORT
+DEFS = -DHAVE_CONFIG_H -DONIGURUMA_EXPORT
 RUBYDIR = ..
 
 subdirs = 
