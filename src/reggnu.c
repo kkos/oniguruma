@@ -2,7 +2,7 @@
   reggnu.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2018  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,10 +28,7 @@
  */
 
 #include "regint.h"
-
-#ifndef ONIGGNU_H
 #include "oniggnu.h"
-#endif
 
 extern void
 re_free_registers(OnigRegion* r)
