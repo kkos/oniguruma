@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.7.0   2017/12/08
+鬼車インターフェース Version 6.7.1   2018/01/26
 
 #include <oniguruma.h>
 
@@ -627,6 +627,27 @@
   (size = 0: 無制限)
 
   正常終了戻り値: ONIG_NORMAL
+
+
+# unsigned long onig_get_try_in_match_limit(void)
+
+  マッチング関数内でのトライ数の制限値を返す。
+  (デフォルト: 10000000)
+
+  正常終了戻り値:      制限値 (> 0)
+  エラー(無効な構成):  0
+
+  * この関数は src/regint.hの中のUSE_TRY_IN_MATCH_LIMITが有効でなければ機能しない
+
+
+# int onig_set_try_in_match_limit(unsigned long n)
+
+  マッチング関数内でのトライ数の制限値を指定する。
+
+  正常終了戻り値:     ONIG_NORMAL
+  エラー(無効な構成): ONIG_NO_SUPPORT_CONFIG
+
+  * この関数は src/regint.hの中のUSE_TRY_IN_MATCH_LIMITが有効でなければ機能しない
 
 
 # int onig_unicode_define_user_property(const char* name, OnigCodePoint* ranges))

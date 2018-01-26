@@ -1,4 +1,4 @@
-Oniguruma API  Version 6.7.0  2017/12/08
+Oniguruma API  Version 6.7.1  2018/01/26
 
 #include <oniguruma.h>
 
@@ -621,6 +621,27 @@ Oniguruma API  Version 6.7.0  2017/12/08
   (size = 0: unlimited)
 
   normal return: ONIG_NORMAL
+
+
+# unsigned long onig_get_try_in_match_limit(void)
+
+  Return the limit of try counts in matching process.
+  (default: 10000000)
+
+  normal return: limit value (> 0)
+  disabled:      0
+
+  * This function works if USE_TRY_IN_MATCH_LIMIT in src/regint.h is enabled.
+
+
+# int onig_set_try_in_match_limit(unsigned long n)
+
+  Set the limit of try counts in matching process.
+
+  normal return: ONIG_NORMAL
+  disabled:      ONIG_NO_SUPPORT_CONFIG
+
+  * This function works if USE_TRY_IN_MATCH_LIMIT in src/regint.h is enabled.
 
 
 # int onig_unicode_define_user_property(const char* name, OnigCodePoint* ranges))
