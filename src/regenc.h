@@ -29,6 +29,10 @@
  * SUCH DAMAGE.
  */
 
+#ifndef ONIGURUMA_EXPORT
+#define ONIGURUMA_EXPORT
+#endif
+
 #ifndef PACKAGE
 /* PACKAGE is defined in config.h */
 #include "config.h"
