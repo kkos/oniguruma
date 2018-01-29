@@ -47,8 +47,10 @@ typedef struct {
   int   stack_n;
   OnigOptionType options;
   OnigRegion*    region;
-  int   ptr_num;
-  const UChar* start;   /* search start position (for \G: BEGIN_POSITION) */
+  int            ptr_num;
+  const UChar*   start;   /* search start position (for \G: BEGIN_POSITION) */
+  unsigned int   match_stack_limit;
+  unsigned long  try_in_match_limit;
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
   int    best_len;      /* for ONIG_OPTION_FIND_LONGEST */
   UChar* best_s;
@@ -858,20 +860,24 @@ typedef struct _StackType {
 
 
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
-#define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start) do {\
+#define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start, mp) do { \
   (msa).stack_p  = (void* )0;\
   (msa).options  = (arg_option);\
   (msa).region   = (arg_region);\
   (msa).start    = (arg_start);\
+  (msa).match_stack_limit  = (mp)->match_stack_limit;\
+  (msa).try_in_match_limit = (mp)->try_in_match_limit;\
   (msa).best_len = ONIG_MISMATCH;\
   (msa).ptr_num  = (reg)->num_repeat + ((reg)->num_mem + 1) * 2; \
 } while(0)
 #else
-#define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start) do {\
+#define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start, mp) do { \
   (msa).stack_p  = (void* )0;\
   (msa).options  = (arg_option);\
   (msa).region   = (arg_region);\
   (msa).start    = (arg_start);\
+  (msa).match_stack_limit  = (mp)->match_stack_limit;\
+  (msa).try_in_match_limit = (mp)->try_in_match_limit;\
   (msa).ptr_num  = (reg)->num_repeat + ((reg)->num_mem + 1) * 2; \
 } while(0)
 #endif
@@ -953,7 +959,7 @@ onig_set_match_stack_limit_size(unsigned int size)
 static unsigned long TryInMatchLimit = DEFAULT_TRY_IN_MATCH_LIMIT;
 
 #define CHECK_TRY_IN_MATCH_LIMIT  do {\
-  if (try_in_match_counter++ > TryInMatchLimit) goto try_in_match_limit_over;\
+  if (try_in_match_counter++ > try_in_match_limit) goto try_in_match_limit_over;\
 } while (0)
 
 #else
@@ -1016,11 +1022,11 @@ stack_double(int is_alloca, char** arg_alloc_base,
     xmemcpy(new_alloc_base, alloc_base, size);
   }
   else {
-    if (MatchStackLimitSize != 0 && n > MatchStackLimitSize) {
-      if ((unsigned int )(stk_end - stk_base) == MatchStackLimitSize)
+    if (msa->match_stack_limit != 0 && n > msa->match_stack_limit) {
+      if ((unsigned int )(stk_end - stk_base) == msa->match_stack_limit)
         return ONIGERR_MATCH_STACK_LIMIT_OVER;
       else
-        n = MatchStackLimitSize;
+        n = msa->match_stack_limit;
     }
     new_alloc_base = (char* )xrealloc(alloc_base, new_size);
     if (IS_NULL(new_alloc_base)) {
@@ -1907,6 +1913,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   StackIndex *mem_start_stk, *mem_end_stk;
   UChar* keep;
 #ifdef USE_TRY_IN_MATCH_LIMIT
+  unsigned long try_in_match_limit;
   unsigned long try_in_match_counter;
 #endif
   UChar *p = reg->p;
@@ -1914,6 +1921,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   OnigEncoding encode = reg->enc;
   OnigCaseFoldType case_fold_flag = reg->case_fold_flag;
 
+#ifdef USE_TRY_IN_MATCH_LIMIT
+  try_in_match_limit = msa->try_in_match_limit;
+#endif
   //n = reg->num_repeat + reg->num_mem * 2;
   pop_level = reg->stack_pop_level;
   num_mem = reg->num_mem;
@@ -3778,16 +3788,30 @@ map_search_backward(OnigEncoding enc, UChar map[],
   }
   return (UChar* )NULL;
 }
-
 extern int
 onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at,
            OnigRegion* region, OnigOptionType option)
+{
+  OnigMatchParams mp;
+
+  mp.match_stack_limit = MatchStackLimitSize;
+#ifdef USE_TRY_IN_MATCH_LIMIT
+  mp.try_in_match_limit = TryInMatchLimit;
+#endif
+
+  return onig_match_with_params(reg, str, end, at, region, option, &mp);
+}
+
+extern int
+onig_match_with_params(regex_t* reg, const UChar* str, const UChar* end,
+                       const UChar* at, OnigRegion* region, OnigOptionType option,
+                       OnigMatchParams* mp)
 {
   int r;
   UChar *prev;
   MatchArg msa;
 
-  MATCH_ARG_INIT(msa, reg, option, region, at);
+  MATCH_ARG_INIT(msa, reg, option, region, at, mp);
   if (region
 #ifdef USE_POSIX_API_REGION_OPTION
       && !IS_POSIX_REGION(option)
@@ -4072,6 +4096,21 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
             const UChar* start, const UChar* range, OnigRegion* region,
             OnigOptionType option)
 {
+  OnigMatchParams mp;
+
+  mp.match_stack_limit = MatchStackLimitSize;
+#ifdef USE_TRY_IN_MATCH_LIMIT
+  mp.try_in_match_limit = TryInMatchLimit;
+#endif
+
+  return onig_search_with_params(reg, str, end, start, range, region, option, &mp);
+}
+
+extern int
+onig_search_with_params(regex_t* reg, const UChar* str, const UChar* end,
+                        const UChar* start, const UChar* range, OnigRegion* region,
+                        OnigOptionType option, OnigMatchParams* mp)
+{
   int r;
   UChar *s, *prev;
   MatchArg msa;
@@ -4250,7 +4289,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
       s = (UChar* )start;
       prev = (UChar* )NULL;
 
-      MATCH_ARG_INIT(msa, reg, option, region, start);
+      MATCH_ARG_INIT(msa, reg, option, region, start, mp);
       MATCH_AND_RETURN_CHECK(end);
       goto mismatch;
     }
@@ -4262,7 +4301,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
           (int )(end - str), (int )(start - str), (int )(range - str));
 #endif
 
-  MATCH_ARG_INIT(msa, reg, option, region, orig_start);
+  MATCH_ARG_INIT(msa, reg, option, region, orig_start, mp);
 
   s = (UChar* )start;
   if (range > start) {   /* forward search */

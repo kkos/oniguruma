@@ -737,6 +737,11 @@ typedef struct {
   OnigCaseFoldType   case_fold_flag;
 } OnigCompileInfo;
 
+typedef struct {
+  unsigned int  match_stack_limit;
+  unsigned long try_in_match_limit;
+} OnigMatchParams;
+
 /* Oniguruma Native API */
 
 ONIG_EXTERN
@@ -766,7 +771,11 @@ int onig_scan(regex_t* reg, const OnigUChar* str, const OnigUChar* end, OnigRegi
 ONIG_EXTERN
 int onig_search P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegion* region, OnigOptionType option));
 ONIG_EXTERN
+int onig_search_with_params P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegion* region, OnigOptionType option, OnigMatchParams* mp));
+ONIG_EXTERN
 int onig_match P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option));
+ONIG_EXTERN
+int onig_match_with_params P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option, OnigMatchParams* mp));
 ONIG_EXTERN
 OnigRegion* onig_region_new P_((void));
 ONIG_EXTERN
