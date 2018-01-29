@@ -1,4 +1,4 @@
-Oniguruma API  Version 6.7.1  2018/01/26
+Oniguruma API  Version 6.7.2  2018/01/29
 
 #include <oniguruma.h>
 
@@ -246,8 +246,17 @@ Oniguruma API  Version 6.7.1  2018/01/26
     ONIG_OPTION_POSIX_REGION  region argument is regmatch_t[] of POSIX API.
 
 
+# int onig_search_with_params(regex_t* reg, const UChar* str, const UChar* end,
+                   const UChar* start, const UChar* range, OnigRegion* region,
+                   OnigOptionType option, OnigMatchParams* mp)
+
+   arguments
+   1-7:  same as onig_search()
+   8 mp: match parameter values (match_stack_limit, try_in_match_limit)
+
+
 # int onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at,
-		 OnigRegion* region, OnigOptionType option)
+                 OnigRegion* region, OnigOptionType option)
 
   Match string and return result and matching region.
 
@@ -265,6 +274,15 @@ Oniguruma API  Version 6.7.1  2018/01/26
     ONIG_OPTION_NOTBOL       string head(str) isn't considered as begin of line
     ONIG_OPTION_NOTEOL       string end (end) isn't considered as end of line
     ONIG_OPTION_POSIX_REGION region argument is regmatch_t[] type of POSIX API.
+
+
+# int onig_match_with_params(regex_t* reg, const UChar* str, const UChar* end,
+                             const UChar* at, OnigRegion* region,
+                             OnigOptionType option, OnigMatchParams* mp)
+
+   arguments
+   1-6:  same as onig_match()
+   7 mp: match parameter values (match_stack_limit, try_in_match_limit)
 
 
 # int onig_scan(regex_t* reg, const UChar* str, const UChar* end,
@@ -628,10 +646,7 @@ Oniguruma API  Version 6.7.1  2018/01/26
   Return the limit of try counts in matching process.
   (default: 10000000)
 
-  normal return: limit value (> 0)
-  disabled:      0
-
-  * This function works if USE_TRY_IN_MATCH_LIMIT in src/regint.h is enabled.
+  normal return: limit value
 
 
 # int onig_set_try_in_match_limit(unsigned long n)
@@ -639,9 +654,6 @@ Oniguruma API  Version 6.7.1  2018/01/26
   Set the limit of try counts in matching process.
 
   normal return: ONIG_NORMAL
-  disabled:      ONIG_NO_SUPPORT_CONFIG
-
-  * This function works if USE_TRY_IN_MATCH_LIMIT in src/regint.h is enabled.
 
 
 # int onig_unicode_define_user_property(const char* name, OnigCodePoint* ranges))
