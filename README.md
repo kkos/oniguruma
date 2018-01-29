@@ -38,6 +38,13 @@ Supported character encodings:
 * CP1251:  contributed by Byte
 
 
+New feature of version 6.7.2
+--------------------------
+
+* Enabled try-in-match-limit
+* NEW API: onig_search_with_params(), onig_match_with_params()
+
+
 New feature of version 6.7.1
 --------------------------
 
