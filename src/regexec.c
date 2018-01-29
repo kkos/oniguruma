@@ -939,18 +939,18 @@ typedef struct _StackType {
   mem_end_stk   = mem_start_stk + num_mem + 1;\
 } while(0)
 
-static unsigned int MatchStackLimitSize = DEFAULT_MATCH_STACK_LIMIT_SIZE;
+static unsigned int MatchStackLimit = DEFAULT_MATCH_STACK_LIMIT_SIZE;
 
 extern unsigned int
 onig_get_match_stack_limit_size(void)
 {
-  return MatchStackLimitSize;
+  return MatchStackLimit;
 }
 
 extern int
 onig_set_match_stack_limit_size(unsigned int size)
 {
-  MatchStackLimitSize = size;
+  MatchStackLimit = size;
   return 0;
 }
 
@@ -3794,7 +3794,7 @@ onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at,
 {
   OnigMatchParams mp;
 
-  mp.match_stack_limit = MatchStackLimitSize;
+  mp.match_stack_limit = MatchStackLimit;
 #ifdef USE_TRY_IN_MATCH_LIMIT
   mp.try_in_match_limit = TryInMatchLimit;
 #endif
@@ -4098,7 +4098,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 {
   OnigMatchParams mp;
 
-  mp.match_stack_limit = MatchStackLimitSize;
+  mp.match_stack_limit = MatchStackLimit;
 #ifdef USE_TRY_IN_MATCH_LIMIT
   mp.try_in_match_limit = TryInMatchLimit;
 #endif
