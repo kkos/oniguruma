@@ -3238,7 +3238,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         p = stkp->u.repeat.pcode;
       }
       STACK_PUSH_REPEAT_INC(si);
-      CHECK_TRY_IN_MATCH_LIMIT;
       SOP_OUT;
       CHECK_INTERRUPT_IN_MATCH;
       continue;
@@ -3273,7 +3272,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       else if (stkp->u.repeat.count == reg->repeat_range[mem].upper) {
         STACK_PUSH_REPEAT_INC(si);
       }
-      CHECK_TRY_IN_MATCH_LIMIT;
       SOP_OUT;
       CHECK_INTERRUPT_IN_MATCH;
       continue;
