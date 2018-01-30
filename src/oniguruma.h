@@ -737,9 +737,27 @@ typedef struct {
   OnigCaseFoldType   case_fold_flag;
 } OnigCompileInfo;
 
+
 typedef struct {
-  unsigned int  match_stack_limit;
-  unsigned long try_in_match_limit;
+  OnigUChar*   content;
+  OnigUChar*   name;
+  regex_t*     reg;
+  const UChar* str;
+  const UChar* end;
+  UChar* right_range;
+  const UChar* sstart;
+  UChar* s;  // current matching position
+  unsigned long try_in_match_counter;
+} OnigCalloutArgs;
+
+typedef int (*OnigCalloutFunc)(OnigCalloutArgs* args, void* user_data);
+
+typedef struct {
+  unsigned int    match_stack_limit;
+  unsigned long   try_in_match_limit;
+  OnigCalloutFunc callout;
+  OnigCalloutFunc retraction_callout;
+  void* callout_user_data;
 } OnigMatchParams;
 
 /* Oniguruma Native API */
@@ -776,6 +794,9 @@ ONIG_EXTERN
 int onig_match P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option));
 ONIG_EXTERN
 int onig_match_with_params P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option, OnigMatchParams* mp));
+ONIG_EXTERN
+void onig_initialize_match_params P_((OnigMatchParams* mp));
+
 ONIG_EXTERN
 OnigRegion* onig_region_new P_((void));
 ONIG_EXTERN

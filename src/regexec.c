@@ -990,6 +990,18 @@ onig_set_try_in_match_limit(unsigned long size)
 #endif
 }
 
+extern void
+onig_initialize_match_params(OnigMatchParams* mp)
+{
+  mp->match_stack_limit  = MatchStackLimit;
+#ifdef USE_TRY_IN_MATCH_LIMIT
+  mp->try_in_match_limit = TryInMatchLimit;
+#endif
+  mp->callout            = 0;
+  mp->retraction_callout = 0;
+  mp->callout_user_data  = 0;
+}
+
 
 static int
 stack_double(int is_alloca, char** arg_alloc_base,
@@ -3792,11 +3804,7 @@ onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at,
 {
   OnigMatchParams mp;
 
-  mp.match_stack_limit = MatchStackLimit;
-#ifdef USE_TRY_IN_MATCH_LIMIT
-  mp.try_in_match_limit = TryInMatchLimit;
-#endif
-
+  onig_initialize_match_params(&mp);
   return onig_match_with_params(reg, str, end, at, region, option, &mp);
 }
 
@@ -4096,11 +4104,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 {
   OnigMatchParams mp;
 
-  mp.match_stack_limit = MatchStackLimit;
-#ifdef USE_TRY_IN_MATCH_LIMIT
-  mp.try_in_match_limit = TryInMatchLimit;
-#endif
-
+  onig_initialize_match_params(&mp);
   return onig_search_with_params(reg, str, end, start, range, region, option, &mp);
 }
 
