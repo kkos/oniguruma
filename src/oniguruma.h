@@ -38,6 +38,8 @@ extern "C" {
 #define ONIGURUMA_VERSION_MINOR   7
 #define ONIGURUMA_VERSION_TEENY   1
 
+#define ONIGURUMA_VERSION_INT     60701
+
 #ifdef __cplusplus
 # ifndef  HAVE_PROTOTYPES
 #  define HAVE_PROTOTYPES 1
