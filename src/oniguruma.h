@@ -740,15 +740,16 @@ typedef struct {
 } OnigCompileInfo;
 
 
+/* types for callout */
 typedef struct {
-  OnigUChar*   content;
-  OnigUChar*   name;
-  regex_t*     reg;
-  const UChar* str;
-  const UChar* end;
-  UChar* right_range;
-  const UChar* sstart;
-  UChar* s;  // current matching position
+  const OnigUChar* content;
+  const OnigUChar* content_end;
+  regex_t* reg;
+  const OnigUChar* str;
+  const OnigUChar* end;
+  const OnigUChar* right_range;
+  const OnigUChar* sstart;
+  const OnigUChar* s;  // current matching position
   unsigned long try_in_match_counter;
 } OnigCalloutArgs;
 
