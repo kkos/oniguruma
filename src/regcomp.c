@@ -5842,6 +5842,52 @@ print_optimize_info(FILE* f, regex_t* reg)
 #endif
 
 
+extern RegexExt*
+onig_get_regex_ext(regex_t* reg)
+{
+  if (IS_NULL(REG_EXTP(reg))) {
+    RegexExt* ext = (RegexExt* )xmalloc(sizeof(*ext));
+    if (IS_NULL(ext)) return 0;
+
+    ext->pattern     = 0;
+    ext->pattern_end = 0;
+
+    REG_EXTPL(reg) = (void* )ext;
+  }
+
+  return REG_EXTP(reg);
+}
+
+static void
+free_regex_ext(RegexExt* ext)
+{
+  if (IS_NOT_NULL(ext)) {
+    if (IS_NOT_NULL(ext->pattern))
+      xfree(ext->pattern);
+
+    xfree(ext);
+  }
+}
+
+extern int
+onig_ext_set_pattern(regex_t* reg, UChar* pattern, UChar* pattern_end)
+{
+  RegexExt* ext;
+  UChar* s;
+
+  ext = onig_get_regex_ext(reg);
+  CHECK_NULL_RETURN_MEMERR(ext);
+
+  s = str_dup(pattern, pattern_end);
+  CHECK_NULL_RETURN_MEMERR(s);
+
+  ext->pattern     = s;
+  ext->pattern_end = s + (pattern_end - pattern);
+
+  return ONIG_NORMAL;
+}
+
+
 extern void
 onig_free_body(regex_t* reg)
 {
@@ -5851,7 +5897,7 @@ onig_free_body(regex_t* reg)
     if (IS_NOT_NULL(reg->int_map))          xfree(reg->int_map);
     if (IS_NOT_NULL(reg->int_map_backward)) xfree(reg->int_map_backward);
     if (IS_NOT_NULL(reg->repeat_range))     xfree(reg->repeat_range);
-    if (IS_NOT_NULL(REG_EXTP(reg)))         xfree(REG_EXTP(reg));
+    if (IS_NOT_NULL(REG_EXTP(reg)))         free_regex_ext(REG_EXTP(reg));
 
     onig_names_free(reg);
   }
