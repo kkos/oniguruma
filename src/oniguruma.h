@@ -551,6 +551,7 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIG_NORMAL                                            0
 #define ONIG_MISMATCH                                         -1
 #define ONIG_NO_SUPPORT_CONFIG                                -2
+#define ONIG_ABORT                                            -3
 
 /* internal error */
 #define ONIGERR_MEMORY                                         -5
