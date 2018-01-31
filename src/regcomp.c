@@ -144,15 +144,24 @@ static unsigned char PadBuf[WORD_ALIGNMENT_SIZE];
 #endif
 
 static UChar*
-str_dup(const UChar* s, const UChar* end)
+str_dup(OnigEncoding enc, const UChar* s, const UChar* end)
 {
-  int len = (int )(end - s);
+  int len;
+
+  len = (int )(end - s);
 
   if (len > 0) {
-    UChar* r = (UChar* )xmalloc(len + 1);
+    int min;
+    int i;
+    UChar* r;
+
+    min = ONIGENC_MBC_MINLEN(enc);
+    r = (UChar* )xmalloc(len + min);
     CHECK_NULL_RETURN(r);
     xmemcpy(r, s, len);
-    r[len] = (UChar )0;
+    for (i = len; i < len + min; i++)
+      r[i] = (UChar )0;
+
     return r;
   }
   else return NULL;
@@ -5553,7 +5562,7 @@ set_optimize_exact(regex_t* reg, OptExact* e)
   else {
     int allow_reverse;
 
-    reg->exact = str_dup(e->s, e->s + e->len);
+    reg->exact = str_dup(reg->enc, e->s, e->s + e->len);
     CHECK_NULL_RETURN_MEMERR(reg->exact);
     reg->exact_end = reg->exact + e->len;
  
@@ -5878,7 +5887,7 @@ onig_ext_set_pattern(regex_t* reg, const UChar* pattern, const UChar* pattern_en
   ext = onig_get_regex_ext(reg);
   CHECK_NULL_RETURN_MEMERR(ext);
 
-  s = str_dup(pattern, pattern_end);
+  s = str_dup(reg->enc, pattern, pattern_end);
   CHECK_NULL_RETURN_MEMERR(s);
 
   ext->pattern     = s;
