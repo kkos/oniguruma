@@ -144,7 +144,7 @@ static unsigned char PadBuf[WORD_ALIGNMENT_SIZE];
 #endif
 
 static UChar*
-str_dup(UChar* s, UChar* end)
+str_dup(const UChar* s, const UChar* end)
 {
   int len = (int )(end - s);
 
@@ -5870,7 +5870,7 @@ free_regex_ext(RegexExt* ext)
 }
 
 extern int
-onig_ext_set_pattern(regex_t* reg, UChar* pattern, UChar* pattern_end)
+onig_ext_set_pattern(regex_t* reg, const UChar* pattern, const UChar* pattern_end)
 {
   RegexExt* ext;
   UChar* s;

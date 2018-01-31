@@ -766,7 +766,7 @@ extern int    onig_bbuf_init P_((BBuf* buf, int size));
 extern int    onig_compile P_((regex_t* reg, const UChar* pattern, const UChar* pattern_end, OnigErrorInfo* einfo));
 extern void   onig_transfer P_((regex_t* to, regex_t* from));
 extern int    onig_is_code_in_cc_len P_((int enclen, OnigCodePoint code, void* /* CClassNode* */ cc));
-extern int    onig_ext_set_pattern(regex_t* reg, UChar* pattern, UChar* pattern_end);
+extern int    onig_ext_set_pattern(regex_t* reg, const UChar* pattern, const UChar* pattern_end);
 
 /* strend hash */
 typedef void hash_table_type;
