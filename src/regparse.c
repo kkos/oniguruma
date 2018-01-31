@@ -2,7 +2,7 @@
   regparse.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2018  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,6 +51,7 @@ OnigSyntaxType OnigSyntaxOniguruma = {
       ONIG_SYN_OP2_QMARK_LT_NAMED_GROUP | ONIG_SYN_OP2_ESC_K_NAMED_BACKREF |
       ONIG_SYN_OP2_QMARK_LPAREN_IF_ELSE |
       ONIG_SYN_OP2_QMARK_TILDE_ABSENT_GROUP |
+      ONIG_SYN_OP2_QMARK_BRACE_CALLOUT |
       ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER |
       ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE |
       ONIG_SYN_OP2_ESC_CAPITAL_N_O_SUPER_DOT |
@@ -1642,6 +1643,23 @@ node_new_keep(Node** node, ScanEnv* env)
   env->keep_num++;
   return ONIG_NORMAL;
 }
+
+static int
+node_new_callout(Node** node, enum CalloutType callout_type, ScanEnv* env)
+{
+  *node = node_new();
+  CHECK_NULL_RETURN_MEMERR(*node);
+
+  NODE_SET_TYPE(*node, NODE_GIMMICK);
+  GIMMICK_(*node)->id   = 0;
+  GIMMICK_(*node)->type = GIMMICK_CALLOUT;
+  GIMMICK_(*node)->detail_type = (int )callout_type;
+  GIMMICK_(*node)->start = -1;
+  GIMMICK_(*node)->end   = -1;
+
+  return ONIG_NORMAL;
+}
+
 
 static int
 make_extended_grapheme_cluster(Node** node, ScanEnv* env)
@@ -5523,6 +5541,58 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end, ScanEnv* en
 static int parse_subexp(Node** top, OnigToken* tok, int term,
                         UChar** src, UChar* end, ScanEnv* env);
 
+/* (?{...}) (?{{...}}) */
+static int
+parse_code_callout(Node** np, int term, UChar** src, UChar* end, ScanEnv* env)
+{
+  int r;
+  OnigCodePoint c;
+  UChar* code_start;
+  UChar* code_end;
+  int double_brace;
+  OnigEncoding enc = env->enc;
+  UChar* p = *src;
+
+  //PFETCH_READY;
+
+  if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+  if (PPEEK_IS('{')) { /* double brace start */
+    PINC_S;
+    if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+    double_brace = 1;
+  }
+  else
+    double_brace = 0;
+
+  code_start = p;
+  while (1) {
+    code_end = p;
+    PFETCH_S(c);
+    if (c == '}') {
+      if (double_brace == 0) break;
+      if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+      PFETCH_S(c);
+      if (c == '}') break;
+    }
+
+    if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+  }
+
+  if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+  PFETCH_S(c);
+  if (c != term)
+    return ONIGERR_INVALID_CALLOUT_PATTERN;
+
+  r = node_new_callout(np, CALLOUT_CODE, env);
+  if (r != 0) return r;
+
+  GIMMICK_(*np)->start = code_start - env->pattern;
+  GIMMICK_(*np)->end   = code_end   - env->pattern;
+
+  *src = p;
+  return 0;
+}
+
 static int
 parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
                 ScanEnv* env)
@@ -5686,6 +5756,17 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
       else {
         return ONIGERR_UNDEFINED_GROUP_OPTION;
       }
+      break;
+
+    case '{':
+      if (! IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_BRACE_CALLOUT))
+        return ONIGERR_UNDEFINED_GROUP_OPTION;
+
+      /* (?{...}) (?{{...}}) */
+      r = parse_code_callout(np, term, &p, end, env);
+      if (r != 0) return r;
+
+      goto end;
       break;
 
     case '(':
