@@ -246,9 +246,9 @@ typedef unsigned int  uintptr_t;
 typedef struct {
   int  num_keeper;
   int* keepers;
-} RegExt;
+} RegexExt;
 
-#define REG_EXTP(reg)      (RegExt* )((reg)->chain)
+#define REG_EXTP(reg)      (RegexExt* )((reg)->chain)
 #define REG_EXTPL(reg)     ((reg)->chain)
 
 /* stack pop level */
