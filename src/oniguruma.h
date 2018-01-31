@@ -757,6 +757,14 @@ typedef struct {
 
 typedef int (*OnigCalloutFunc)(OnigCalloutArgs* args, void* user_data);
 
+/* callout function return values (less than -1: error code) */
+enum {
+  ONIG_CALLOUT_RETURN_FAIL    = -1,
+  ONIG_CALLOUT_RETURN_SUCCESS =  0,
+  ONIG_CALLOUT_RETURN_ABORT   =  1
+};
+
+
 typedef struct {
   unsigned int    match_stack_limit;
   unsigned long   try_in_match_limit;
