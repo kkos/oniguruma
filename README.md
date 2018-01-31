@@ -17,6 +17,7 @@ in other regular expression implementations.
 Its features include:
 * Character encoding can be specified per regular expression object.
 * Several regular expression types are supported:
+  * Oniguruma (native)
   * POSIX
   * Grep
   * GNU Regex
