@@ -4,7 +4,7 @@
   regparse.h -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2018  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,6 +51,12 @@ enum GimmickType {
   GIMMICK_KEEP = 1,
   GIMMICK_SAVE = 2,
   GIMMICK_UPDATE_VAR = 3,
+  GIMMICK_CALLOUT = 4,
+};
+
+enum CalloutType {
+  CALLOUT_CODE = 0,
+  CALLOUT_NAME = 1,
 };
 
 /* node type bit */
@@ -330,6 +336,8 @@ typedef struct {
   enum GimmickType type;
   int  detail_type;
   int  id;
+  int  start; /* code start position index */
+  int  end;   /* code end   position index */
 } GimmickNode;
 
 typedef struct _Node {
