@@ -744,7 +744,7 @@ typedef struct {
 typedef struct {
   const OnigUChar* content;
   const OnigUChar* content_end;
-  regex_t* reg;
+  OnigRegex reg;
   const OnigUChar* str;
   const OnigUChar* end;
   const OnigUChar* right_range;
