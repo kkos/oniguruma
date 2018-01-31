@@ -51,6 +51,7 @@ typedef struct {
   const UChar*   start;   /* search start position (for \G: BEGIN_POSITION) */
   unsigned int   match_stack_limit;
   unsigned long  try_in_match_limit;
+  OnigMatchParams* mp;
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
   int    best_len;      /* for ONIG_OPTION_FIND_LONGEST */
   UChar* best_s;
@@ -171,6 +172,7 @@ static OpInfoType OpInfo[] = {
   { OP_RETURN,               "return",               ARG_NON },
   { OP_PUSH_SAVE_VAL,        "push-save-val",        ARG_SPECIAL },
   { OP_UPDATE_VAR,           "update-var",           ARG_SPECIAL },
+  { OP_CALLOUT_CODE,         "callout-code",         ARG_SPECIAL },
   { -1, "", ARG_NON }
 };
 
@@ -484,6 +486,18 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
         GET_UPDATE_VAR_TYPE_INC(type, bp);
         GET_MEMNUM_INC(mem, bp);
         fprintf(f, ":%d:%d", type, mem);
+      }
+      break;
+
+    case OP_CALLOUT_CODE:
+      {
+        UChar* code_start;
+        UChar* code_end;
+
+        GET_POINTER_INC(code_start, bp);
+        GET_POINTER_INC(code_end,   bp);
+
+        fprintf(f, ":%p:%p", code_start, code_end);
       }
       break;
 
@@ -867,6 +881,7 @@ typedef struct _StackType {
   (msa).start    = (arg_start);\
   (msa).match_stack_limit  = (mp)->match_stack_limit;\
   (msa).try_in_match_limit = (mp)->try_in_match_limit;\
+  (msa).mp = mp;\
   (msa).best_len = ONIG_MISMATCH;\
   (msa).ptr_num  = (reg)->num_repeat + ((reg)->num_mem + 1) * 2; \
 } while(0)
@@ -878,6 +893,7 @@ typedef struct _StackType {
   (msa).start    = (arg_start);\
   (msa).match_stack_limit  = (mp)->match_stack_limit;\
   (msa).try_in_match_limit = (mp)->try_in_match_limit;\
+  (msa).mp = mp;\
   (msa).ptr_num  = (reg)->num_repeat + ((reg)->num_mem + 1) * 2; \
 } while(0)
 #endif
@@ -3435,6 +3451,53 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         case UPDATE_VAR_RIGHT_RANGE_INIT:
           INIT_RIGHT_RANGE;
           break;
+        }
+      }
+      SOP_OUT;
+      continue;
+      break;
+
+    case OP_CALLOUT_CODE: SOP_IN(OP_CALLOUT_CODE);
+      {
+        UChar* content_start;
+        UChar* content_end;
+        int call_result;
+        OnigCalloutArgs args;
+
+        GET_POINTER_INC(content_start, p);
+        GET_POINTER_INC(content_end,   p);
+
+        if (IS_NOT_NULL(msa->mp->callout)) {
+          args.content     = content_start;
+          args.content_end = content_end;
+          args.reg         = reg;
+          args.str         = str;
+          args.end         = end;
+#ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
+          args.right_range = in_right_range;
+#else
+          args.right_range = end;
+#endif
+          args.sstart      = sstart;
+          args.s           = s;
+          args.try_in_match_counter = try_in_match_counter;
+
+          call_result = (msa->mp->callout)(&args, msa->mp->callout_user_data);
+          switch (call_result) {
+          case ONIG_CALLOUT_RETURN_FAIL:
+            goto fail;
+            break;
+          case ONIG_CALLOUT_RETURN_SUCCESS:
+            break;
+          case ONIG_CALLOUT_RETURN_ABORT:
+            best_len = ONIG_ABORT;
+            goto finish;
+            break;
+          default: /* error code */
+            best_len = call_result;
+            goto finish;
+            break;
+          }
         }
       }
       SOP_OUT;

@@ -589,10 +589,11 @@ enum OpCode {
   OP_LOOK_BEHIND_NOT_START, /* (?<!...) start */
   OP_LOOK_BEHIND_NOT_END,   /* (?<!...) end   */
 
-  OP_CALL,                 /* \g<name> */
+  OP_CALL,                  /* \g<name> */
   OP_RETURN,
   OP_PUSH_SAVE_VAL,
   OP_UPDATE_VAR,
+  OP_CALLOUT_CODE,          /* (?{...}) (?{{...}}) */
 
   /* no need: IS_DYNAMIC_OPTION() == 0 */
   OP_SET_OPTION_PUSH,    /* set option and push recover option */
@@ -692,6 +693,7 @@ typedef int ModeType;
 #define SIZE_OP_RETURN                  SIZE_OPCODE
 #define SIZE_OP_PUSH_SAVE_VAL          (SIZE_OPCODE + SIZE_SAVE_TYPE + SIZE_MEMNUM)
 #define SIZE_OP_UPDATE_VAR             (SIZE_OPCODE + SIZE_UPDATE_VAR_TYPE + SIZE_MEMNUM)
+#define SIZE_OP_CALLOUT_CODE           (SIZE_OPCODE + SIZE_POINTER + SIZE_POINTER)
 
 #define MC_ESC(syn)               (syn)->meta_char_table.esc
 #define MC_ANYCHAR(syn)           (syn)->meta_char_table.anychar
