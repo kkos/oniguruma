@@ -760,9 +760,9 @@ typedef int (*OnigCalloutFunc)(OnigCalloutArgs* args, void* user_data);
 
 /* callout function return values (less than -1: error code) */
 enum {
-  ONIG_CALLOUT_RETURN_FAIL    = -1,
-  ONIG_CALLOUT_RETURN_SUCCESS =  0,
-  ONIG_CALLOUT_RETURN_ABORT   =  ONIG_ABORT /* == -3 */
+  ONIG_CALLOUT_FAIL    = -1,
+  ONIG_CALLOUT_SUCCESS =  0,
+  ONIG_CALLOUT_ABORT   =  ONIG_ABORT /* == -3 */
 };
 
 

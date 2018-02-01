@@ -3484,12 +3484,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
           call_result = (msa->mp->callout)(&args, msa->mp->callout_user_data);
           switch (call_result) {
-          case ONIG_CALLOUT_RETURN_FAIL:
+          case ONIG_CALLOUT_FAIL:
             goto fail;
             break;
-          case ONIG_CALLOUT_RETURN_SUCCESS:
+          case ONIG_CALLOUT_SUCCESS:
             break;
-          case ONIG_CALLOUT_RETURN_ABORT: /* == ONIG_ABORT */
+          case ONIG_CALLOUT_ABORT: /* == ONIG_ABORT */
             /* fall */
           default: /* error code */
             best_len = call_result;
