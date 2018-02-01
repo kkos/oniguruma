@@ -872,6 +872,25 @@ typedef struct _StackType {
   } u;
 } StackType;
 
+/* Synchronize visible part of the type with OnigCalloutArgs */
+typedef struct {
+  const OnigUChar* content;
+  const OnigUChar* content_end;
+  OnigRegex        reg;
+  const OnigUChar* str;
+  const OnigUChar* end;
+  const OnigUChar* right_range;
+  const OnigUChar* sstart;
+  const OnigUChar* s;  // current matching position
+  unsigned long    try_in_match_counter;
+
+  /* invisible to users */
+  StackType*  stk_base;
+  StackType*  stk;
+  StackIndex* mem_start_stk;
+  StackIndex* mem_end_stk;
+} CalloutArgs;
+
 
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
 #define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start, mp) do { \
