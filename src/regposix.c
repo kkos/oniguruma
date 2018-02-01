@@ -58,6 +58,7 @@ onig2posix_error_code(int code)
   static const O2PERR o2p[] = {
     { ONIG_MISMATCH,                                      REG_NOMATCH },
     { ONIG_NO_SUPPORT_CONFIG,                             REG_EONIG_INTERNAL },
+    { ONIG_ABORT,                                         REG_EONIG_INTERNAL },
     { ONIGERR_MEMORY,                                     REG_ESPACE  },
     { ONIGERR_MATCH_STACK_LIMIT_OVER,                     REG_EONIG_INTERNAL },
     { ONIGERR_TRY_IN_MATCH_LIMIT_OVER,                    REG_EONIG_INTERNAL },
