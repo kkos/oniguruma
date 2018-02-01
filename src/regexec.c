@@ -3489,10 +3489,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
             break;
           case ONIG_CALLOUT_RETURN_SUCCESS:
             break;
-          case ONIG_CALLOUT_RETURN_ABORT:
-            best_len = ONIG_ABORT;
-            goto finish;
-            break;
+          case ONIG_CALLOUT_RETURN_ABORT: /* == ONIG_ABORT */
+            /* fall */
           default: /* error code */
             best_len = call_result;
             goto finish;
