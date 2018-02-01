@@ -3512,6 +3512,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           case ONIG_CALLOUT_ABORT: /* == ONIG_ABORT */
             /* fall */
           default: /* error code */
+            if (call_result > 0) {
+              call_result = ONIGERR_INVALID_ARGUMENT;
+            }
             best_len = call_result;
             goto finish;
             break;
