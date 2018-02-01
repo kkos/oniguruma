@@ -330,7 +330,6 @@ add_mem_num(regex_t* reg, int num)
   return 0;
 }
 
-#if 0
 static int
 add_pointer(regex_t* reg, void* addr)
 {
@@ -339,7 +338,6 @@ add_pointer(regex_t* reg, void* addr)
   BB_ADD(reg, &ptr, SIZE_POINTER);
   return 0;
 }
-#endif
 
 static int
 add_option(regex_t* reg, OnigOptionType option)
@@ -1535,6 +1533,34 @@ compile_gimmick_node(GimmickNode* node, regex_t* reg)
     if (r != 0) return r;
     r = add_mem_num(reg, node->id);
     break;
+
+  case GIMMICK_CALLOUT:
+    switch (node->detail_type) {
+    case CALLOUT_CODE:
+      {
+        RegexExt* ext;
+        UChar* pattern;
+
+        ext = onig_get_regex_ext(reg);
+        CHECK_NULL_RETURN_MEMERR(ext);
+        pattern = ext->pattern;
+        if (IS_NULL(pattern))
+          return ONIGERR_PARSER_BUG;
+
+        r = add_opcode(reg, OP_CALLOUT_CODE);
+        if (r != 0) return r;
+        r = add_pointer(reg, pattern + node->start);
+        if (r != 0) return r;
+        r = add_pointer(reg, pattern + node->end);
+        if (r != 0) return r;
+      }
+      break;
+
+    case CALLOUT_NAME:
+    default:
+      r = ONIGERR_TYPE_BUG;
+      break;
+    }
   }
 
   return r;
@@ -1558,6 +1584,19 @@ compile_length_gimmick_node(GimmickNode* node, regex_t* reg)
   case GIMMICK_UPDATE_VAR:
     len = SIZE_OP_UPDATE_VAR;
     break;
+
+  case GIMMICK_CALLOUT:
+    switch (node->detail_type) {
+    case CALLOUT_CODE:
+      len = SIZE_OP_CALLOUT_CODE;
+      break;
+
+    case CALLOUT_NAME:
+    default:
+      len = ONIGERR_TYPE_BUG;
+      break;
+    }
+
   }
 
   return len;
@@ -6538,6 +6577,16 @@ print_indent_tree(FILE* f, Node* node, int indent)
     case GIMMICK_UPDATE_VAR:
       fprintf(f, "update_var:%d:%d", GIMMICK_(node)->detail_type, GIMMICK_(node)->id);
       break;
+    case GIMMICK_CALLOUT:
+      switch (GIMMICK_(node)->detail_type) {
+      case CALLOUT_CODE:
+        fprintf(f, "callout:code:%d:%d",
+                GIMMICK_(node)->start, GIMMICK_(node)->end);
+        break;
+      case CALLOUT_NAME:
+        fprintf(f, "callout:name");
+        break;
+      }
     }
     break;
 

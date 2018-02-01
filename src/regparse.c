@@ -1647,6 +1647,16 @@ node_new_keep(Node** node, ScanEnv* env)
 static int
 node_new_callout(Node** node, enum CalloutType callout_type, ScanEnv* env)
 {
+  int r;
+  RegexExt* ext;
+
+  ext = onig_get_regex_ext(env->reg);
+  CHECK_NULL_RETURN_MEMERR(ext);
+  if (IS_NULL(ext->pattern)) {
+    r = onig_ext_set_pattern(env->reg, env->pattern, env->pattern_end);
+    if (r != ONIG_NORMAL) return r;
+  }
+
   *node = node_new();
   CHECK_NULL_RETURN_MEMERR(*node);
 
