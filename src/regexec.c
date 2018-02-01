@@ -3473,11 +3473,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           args.reg         = reg;
           args.str         = str;
           args.end         = end;
-#ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
-          args.right_range = in_right_range;
-#else
-          args.right_range = end;
-#endif
+          args.right_range = right_range;
           args.sstart      = sstart;
           args.s           = s;
           args.try_in_match_counter = try_in_match_counter;
