@@ -3481,23 +3481,28 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         UChar* content_start;
         UChar* content_end;
         int call_result;
-        OnigCalloutArgs args;
+        CalloutArgs args;
 
         GET_POINTER_INC(content_start, p);
         GET_POINTER_INC(content_end,   p);
 
         if (IS_NOT_NULL(msa->mp->callout)) {
-          args.content     = content_start;
-          args.content_end = content_end;
-          args.reg         = reg;
-          args.str         = str;
-          args.end         = end;
-          args.right_range = right_range;
-          args.sstart      = sstart;
-          args.s           = s;
+          args.content       = content_start;
+          args.content_end   = content_end;
+          args.reg           = reg;
+          args.str           = str;
+          args.end           = end;
+          args.right_range   = right_range;
+          args.sstart        = sstart;
+          args.s             = s;
           args.try_in_match_counter = try_in_match_counter;
+          args.stk_base      = stk_base;
+          args.stk           = stk;
+          args.mem_start_stk = mem_start_stk;
+          args.mem_end_stk   = mem_end_stk;
 
-          call_result = (msa->mp->callout)(&args, msa->mp->callout_user_data);
+          call_result = (msa->mp->callout)((OnigCalloutArgs* )&args,
+                                           msa->mp->callout_user_data);
           switch (call_result) {
           case ONIG_CALLOUT_FAIL:
             goto fail;
