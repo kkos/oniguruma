@@ -176,6 +176,8 @@ onig_error_code_to_format(int code)
     p = "invalid absent group pattern"; break;
   case ONIGERR_INVALID_ABSENT_GROUP_GENERATOR_PATTERN:
     p = "invalid absent group generator pattern"; break;
+  case ONIGERR_INVALID_CALLOUT_PATTERN:
+    p = "invalid callout pattern"; break;
   case ONIGERR_NOT_SUPPORTED_ENCODING_COMBINATION:
     p = "not supported encoding combination"; break;
   case ONIGERR_INVALID_COMBINATION_OF_OPTIONS:
