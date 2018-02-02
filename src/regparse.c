@@ -5556,36 +5556,41 @@ static int
 parse_code_callout(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
 {
   int r;
+  int i;
   OnigCodePoint c;
   UChar* code_start;
   UChar* code_end;
-  int double_brace;
+  int brace_nest;
   OnigEncoding enc = env->enc;
   UChar* p = *src;
 
   //PFETCH_READY;
 
-  if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
-  if (PPEEK_IS('{')) { /* double brace start */
+  if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
+
+  brace_nest = 0;
+  while (PPEEK_IS('{')) {
+    brace_nest++;
     PINC_S;
-    if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
-    double_brace = 1;
+    if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
   }
-  else
-    double_brace = 0;
 
   code_start = p;
   while (1) {
+    if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
+
     code_end = p;
     PFETCH_S(c);
     if (c == '}') {
-      if (double_brace == 0) break;
-      if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
-      PFETCH_S(c);
-      if (c == '}') break;
+      i = brace_nest;
+      while (i > 0) {
+        if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
+        PFETCH_S(c);
+        if (c == '}') i--;
+        else break;
+      }
+      if (i == 0) break;
     }
-
-    if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
   }
 
   if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
