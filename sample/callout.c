@@ -9,6 +9,9 @@
 static int
 callout_func(OnigCalloutArgs* args, void* user_data)
 {
+  int r;
+  int i;
+  int begin, end;
   int len;
   UChar* content;
 
@@ -17,9 +20,16 @@ callout_func(OnigCalloutArgs* args, void* user_data)
 
   fprintf(stdout, "CALLOUT: content: \"%s\", start: \"%s\", current: \"%s\"\n",
           content, args->start, args->current);
-  fflush(stdout);
   free(content);
 
+  for (i = 1; i <= args->regex->num_mem; i++) {
+    r = onig_get_capture_range_in_callout(args, i, &begin, &end);
+    if (r != ONIG_NORMAL) return r;
+
+    fprintf(stdout, "capture %d: (%d-%d)\n", i, begin, end);
+  }
+
+  fflush(stdout);
   return ONIG_CALLOUT_SUCCESS;
 }
 
@@ -86,7 +96,7 @@ extern int main(int argc, char* argv[])
 
   test("a+(?{foo bar baz...})$", "aaab");
   test("(?{{!{}#$%&'()=-~^|[_]`@*:+;<>?/.\\,}})c", "abc");
-  test("\\A(?{{{booooooooooooo{{ooo}}ooooooooooz}}})", "aaab");
+  test("\\A(...)(?{{{booooooooooooo{{ooo}}ooooooooooz}}})", "aaab");
 
   onig_end();
   return 0;
