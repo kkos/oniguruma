@@ -5553,7 +5553,7 @@ static int parse_subexp(Node** top, OnigToken* tok, int term,
 
 /* (?{...}) (?{{...}}) */
 static int
-parse_code_callout(Node** np, int term, UChar** src, UChar* end, ScanEnv* env)
+parse_code_callout(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
 {
   int r;
   OnigCodePoint c;
@@ -5590,7 +5590,7 @@ parse_code_callout(Node** np, int term, UChar** src, UChar* end, ScanEnv* env)
 
   if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
   PFETCH_S(c);
-  if (c != term)
+  if (c != cterm)
     return ONIGERR_INVALID_CALLOUT_PATTERN;
 
   r = node_new_callout(np, CALLOUT_CODE, env);
@@ -5773,7 +5773,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
         return ONIGERR_UNDEFINED_GROUP_OPTION;
 
       /* (?{...}) (?{{...}}) */
-      r = parse_code_callout(np, term, &p, end, env);
+      r = parse_code_callout(np, ')', &p, end, env);
       if (r != 0) return r;
 
       goto end;
