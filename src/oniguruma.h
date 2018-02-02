@@ -747,12 +747,12 @@ typedef struct {
 typedef struct {
   const OnigUChar* content;
   const OnigUChar* content_end;
-  OnigRegex reg;
-  const OnigUChar* str;
-  const OnigUChar* end;
+  OnigRegex        regex;
+  const OnigUChar* subject;
+  const OnigUChar* subject_end;
+  const OnigUChar* start;
   const OnigUChar* right_range;
-  const OnigUChar* sstart;
-  const OnigUChar* s;  // current matching position
+  const OnigUChar* current;  // current matching position
   unsigned long try_in_match_counter;
 
   /* elements invisible to users */

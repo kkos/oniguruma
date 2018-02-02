@@ -876,12 +876,12 @@ typedef struct _StackType {
 typedef struct {
   const OnigUChar* content;
   const OnigUChar* content_end;
-  OnigRegex        reg;
-  const OnigUChar* str;
-  const OnigUChar* end;
+  OnigRegex        regex;
+  const OnigUChar* subject;
+  const OnigUChar* subject_end;
+  const OnigUChar* start;
   const OnigUChar* right_range;
-  const OnigUChar* sstart;
-  const OnigUChar* s;  // current matching position
+  const OnigUChar* current;  // current matching position
   unsigned long    try_in_match_counter;
 
   /* invisible to users */
@@ -3489,12 +3489,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         if (IS_NOT_NULL(msa->mp->callout)) {
           args.content       = content_start;
           args.content_end   = content_end;
-          args.reg           = reg;
-          args.str           = str;
-          args.end           = end;
+          args.regex         = reg;
+          args.subject       = str;
+          args.subject_end   = end;
+          args.start         = sstart;
           args.right_range   = right_range;
-          args.sstart        = sstart;
-          args.s             = s;
+          args.current       = s;
           args.try_in_match_counter = try_in_match_counter;
           args.stk_base      = stk_base;
           args.stk           = stk;
