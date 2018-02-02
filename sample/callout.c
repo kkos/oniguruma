@@ -23,7 +23,8 @@ callout_func(OnigCalloutArgs* args, void* user_data)
   return ONIG_CALLOUT_SUCCESS;
 }
 
-extern int main(int argc, char* argv[])
+static int
+test(char* in_pattern, char* in_str)
 {
   int r;
   unsigned char *start, *range, *end;
@@ -31,12 +32,11 @@ extern int main(int argc, char* argv[])
   OnigErrorInfo einfo;
   OnigRegion *region;
   OnigMatchParams mparams;
+  UChar* pattern;
+  UChar* str;
 
-  static UChar* pattern = (UChar* )"a+(?{foo bar baz...})$";
-  static UChar* str     = (UChar* )"aaab";
-
-  OnigEncoding use_encs[] = { ONIG_ENCODING_ASCII };
-  onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
+  pattern = (UChar* )in_pattern;
+  str = (UChar* )in_str;
 
   r = onig_new(&reg, pattern, pattern + strlen((char* )pattern),
 	ONIG_OPTION_DEFAULT, ONIG_ENCODING_ASCII, ONIG_SYNTAX_DEFAULT, &einfo);
@@ -77,6 +77,18 @@ extern int main(int argc, char* argv[])
 
   onig_region_free(region, 1 /* 1:free self, 0:free contents only */);
   onig_free(reg);
+  return 0;
+}
+
+extern int main(int argc, char* argv[])
+{
+  OnigEncoding use_encs[] = { ONIG_ENCODING_UTF8 };
+  onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
+
+  test("a+(?{foo bar baz...})$", "aaab");
+  test("(?{{!{}#$%&'()=-~^|[_]`@*:+;<>?/.\\,}})c", "abc");
+  test("\\A(?{{{booooooooooooo{{ooo}}ooooooooooz}}})", "aaab");
+
   onig_end();
   return 0;
 }
