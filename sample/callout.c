@@ -72,12 +72,11 @@ test(char* in_pattern, char* in_str)
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
     onig_error_code_to_str(s, r);
     fprintf(stderr, "SEARCH ERROR: %d: %s\n", r, s);
-    return -1;
   }
 
   onig_region_free(region, 1 /* 1:free self, 0:free contents only */);
   onig_free(reg);
-  return 0;
+  return r;
 }
 
 extern int main(int argc, char* argv[])
