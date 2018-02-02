@@ -908,6 +908,10 @@ const char* onig_version P_((void));
 ONIG_EXTERN
 const char* onig_copyright P_((void));
 
+/* for callout functions */
+ONIG_EXTERN
+int onig_get_capture_range_in_callout P_((OnigCalloutArgs* args, int mem_num, int* begin, int* end));
+
 #ifdef __cplusplus
 }
 #endif
