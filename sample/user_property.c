@@ -39,7 +39,7 @@ main(int argc, char* argv[])
   }
   else {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
-    onig_error_code_to_str(s, r);
+    onig_error_code_to_str((UChar* )s, r);
     fprintf(stderr, "ERROR: %s\n", s);
     return -1;
   }
@@ -51,7 +51,7 @@ main(int argc, char* argv[])
   }
   else {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
-    onig_error_code_to_str(s, r, &einfo);
+    onig_error_code_to_str((UChar* )s, r, &einfo);
     fprintf(stderr, "onig_new: ERROR: %s\n", s);
     return -1;
   }
@@ -75,7 +75,7 @@ main(int argc, char* argv[])
   }
   else { /* error */
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
-    onig_error_code_to_str(s, r);
+    onig_error_code_to_str((UChar* )s, r);
     fprintf(stderr, "ERROR: %s\n", s);
     return -1;
   }

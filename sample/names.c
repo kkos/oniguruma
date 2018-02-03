@@ -42,7 +42,7 @@ extern int main(int argc, char* argv[])
 	ONIG_OPTION_DEFAULT, ONIG_ENCODING_ASCII, ONIG_SYNTAX_DEFAULT, &einfo);
   if (r != ONIG_NORMAL) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
-    onig_error_code_to_str(s, r, &einfo);
+    onig_error_code_to_str((UChar* )s, r, &einfo);
     fprintf(stderr, "ERROR: %s\n", s);
     return -1;
   }
@@ -64,7 +64,7 @@ extern int main(int argc, char* argv[])
   }
   else { /* error */
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
-    onig_error_code_to_str(s, r);
+    onig_error_code_to_str((UChar* )s, r);
     return -1;
   }
 

@@ -31,7 +31,7 @@ search(regex_t* reg, unsigned char* str, unsigned char* end)
   }
   else { /* error */
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
-    onig_error_code_to_str(s, r);
+    onig_error_code_to_str((UChar* )s, r);
     fprintf(stderr, "ERROR: %s\n", s);
     fprintf(stderr, "  (%s)\n", ONIGENC_NAME(onig_get_encoding(reg)));
     return -1;
@@ -59,7 +59,7 @@ exec(OnigEncoding enc, OnigOptionType options,
                options, enc, ONIG_SYNTAX_DEFAULT, &einfo);
   if (r != ONIG_NORMAL) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
-    onig_error_code_to_str(s, r, &einfo);
+    onig_error_code_to_str((UChar* )s, r, &einfo);
     fprintf(stderr, "ERROR: %s\n", s);
     return -1;
   }
@@ -108,7 +108,7 @@ exec_deluxe(OnigEncoding pattern_enc, OnigEncoding str_enc,
                       &ci, &einfo);
   if (r != ONIG_NORMAL) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
-    onig_error_code_to_str(s, r, &einfo);
+    onig_error_code_to_str((UChar* )s, r, &einfo);
     fprintf(stderr, "ERROR: %s\n", s);
     return -1;
   }
