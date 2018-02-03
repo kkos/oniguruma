@@ -2,7 +2,7 @@
 lib_onig = ../src/libonig.la
 
 AM_LDFLAGS  = -L$(prefix)/lib
-AM_CFLAGS =
+AM_CFLAGS = -Wall -Wno-invalid-source-encoding
 AM_CPPFLAGS = -I$(top_srcdir)/src -I$(includedir)
 
 TESTS = test_utf8 testc testp testcu
@@ -27,7 +27,8 @@ testc_LDADD = $(lib_onig)
 
 testp_SOURCES = testc.c
 testp_LDADD = $(lib_onig)
-testp_CFLAGS = -DPOSIX_TEST
+testp_CFLAGS = -DPOSIX_TEST -Wall -Wno-invalid-source-encoding
+
 
 testcu_SOURCES = testu.c
 testcu_LDADD = $(lib_onig)
