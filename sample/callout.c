@@ -17,7 +17,7 @@ callout_func(OnigCalloutArgs* args, void* user_data)
   UChar* content;
 
   len = args->content_end - args->content;
-  content = strndup(args->content, len);
+  content = (UChar* )strndup((const char* )args->content, len);
 
   fprintf(stdout, "CALLOUT: content: \"%s\", start: \"%s\", current: \"%s\"\n",
           content, args->start, args->current);
@@ -54,7 +54,7 @@ test(char* in_pattern, char* in_str)
 	ONIG_OPTION_DEFAULT, ONIG_ENCODING_ASCII, ONIG_SYNTAX_DEFAULT, &einfo);
   if (r != ONIG_NORMAL) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
-    onig_error_code_to_str(s, r, &einfo);
+    onig_error_code_to_str((UChar* )s, r, &einfo);
     fprintf(stderr, "COMPILE ERROR: %d: %s\n", r, s);
     return -1;
   }
@@ -82,7 +82,7 @@ test(char* in_pattern, char* in_str)
   }
   else { /* error */
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
-    onig_error_code_to_str(s, r);
+    onig_error_code_to_str((UChar* )s, r);
     fprintf(stderr, "SEARCH ERROR: %d: %s\n", r, s);
   }
 
