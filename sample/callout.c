@@ -11,6 +11,7 @@ callout_func(OnigCalloutArgs* args, void* user_data)
 {
   int r;
   int i;
+  int n;
   int begin, end;
   int len;
   UChar* content;
@@ -22,7 +23,8 @@ callout_func(OnigCalloutArgs* args, void* user_data)
           content, args->start, args->current);
   free(content);
 
-  for (i = 1; i <= args->regex->num_mem; i++) {
+  n = onig_number_of_captures(args->regex);
+  for (i = 1; i <= n; i++) {
     r = onig_get_capture_range_in_callout(args, i, &begin, &end);
     if (r != ONIG_NORMAL) return r;
 
