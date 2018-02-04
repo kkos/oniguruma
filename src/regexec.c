@@ -29,8 +29,6 @@
 
 #include "regint.h"
 
-#define USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
-
 #define IS_MBC_WORD_ASCII_MODE(enc,s,end,mode) \
   ((mode) == 0 ? ONIGENC_IS_MBC_WORD(enc,s,end) : ONIGENC_IS_MBC_WORD_ASCII(enc,s,end))
 
@@ -1687,11 +1685,7 @@ static int string_cmp_ic(OnigEncoding enc, int case_fold_flag,
 #define DATA_ENSURE_CHECK(n)   (s + (n) <= right_range)
 #define DATA_ENSURE(n)         if (s + (n) > right_range) goto fail
 
-#ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
 #define INIT_RIGHT_RANGE    right_range = (UChar* )in_right_range
-#else
-#define INIT_RIGHT_RANGE    right_range = (UChar* )end
-#endif
 
 #ifdef USE_CAPTURE_HISTORY
 static int
@@ -1938,10 +1932,8 @@ typedef struct {
 /* if sstart == str then set sprev to NULL. */
 static int
 match_at(regex_t* reg, const UChar* str, const UChar* end,
-#ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
-         const UChar* in_right_range,
-#endif
-         const UChar* sstart, UChar* sprev, MatchArg* msa)
+         const UChar* in_right_range, const UChar* sstart, UChar* sprev,
+	 MatchArg* msa)
 {
   static UChar FinishCode[] = { OP_FINISH };
 
@@ -3921,11 +3913,7 @@ onig_match_with_params(regex_t* reg, const UChar* str, const UChar* end,
     }
 
     prev = (UChar* )onigenc_get_prev_char_head(reg->enc, str, at);
-    r = match_at(reg, str, end,
-#ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
-                 end,
-#endif
-                 at, prev, &msa);
+    r = match_at(reg, str, end, end, at, prev, &msa);
   }
 
  end:
@@ -4201,9 +4189,7 @@ onig_search_with_params(regex_t* reg, const UChar* str, const UChar* end,
   UChar *s, *prev;
   MatchArg msa;
   const UChar *orig_start = start;
-#ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
   const UChar *orig_range = range;
-#endif
 
 #ifdef ONIG_DEBUG_SEARCH
   fprintf(stderr,
@@ -4230,7 +4216,6 @@ onig_search_with_params(regex_t* reg, const UChar* str, const UChar* end,
   }
 
 
-#ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
 #define MATCH_AND_RETURN_CHECK(upper_range) \
   r = match_at(reg, str, end, (upper_range), s, prev, &msa); \
@@ -4252,29 +4237,6 @@ onig_search_with_params(regex_t* reg, const UChar* str, const UChar* end,
     else goto finish; /* error */ \
   }
 #endif /* USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE */
-#else
-#ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
-#define MATCH_AND_RETURN_CHECK(none) \
-  r = match_at(reg, str, end, s, prev, &msa);\
-  if (r != ONIG_MISMATCH) {\
-    if (r >= 0) {\
-      if (! IS_FIND_LONGEST(reg->options)) {\
-        goto match;\
-      }\
-    }\
-    else goto finish; /* error */ \
-  }
-#else
-#define MATCH_AND_RETURN_CHECK(none) \
-  r = match_at(reg, str, end, s, prev, &msa);\
-  if (r != ONIG_MISMATCH) {\
-    if (r >= 0) {\
-      goto match;\
-    }\
-    else goto finish; /* error */ \
-  }
-#endif /* USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE */
-#endif /* USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE */
 
 
   /* anchor optimize: resume search range */
@@ -4461,10 +4423,8 @@ onig_search_with_params(regex_t* reg, const UChar* str, const UChar* end,
     }
   }
   else {  /* backward search */
-#ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
     if (orig_start < end)
       orig_start += enclen(reg->enc, orig_start); /* is upper range */
-#endif
 
     if (reg->optimize != OPTIMIZE_NONE) {
       UChar *low, *high, *adjrange, *sch_start;
