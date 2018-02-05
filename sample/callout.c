@@ -7,7 +7,7 @@
 #include "oniguruma.h"
 
 static int
-callout_body(char* title, OnigCalloutArgs* args, void* user_data)
+callout_body(OnigCalloutArgs* args, void* user_data)
 {
   int r;
   int i;
@@ -23,7 +23,8 @@ callout_body(char* title, OnigCalloutArgs* args, void* user_data)
 
   fprintf(stdout,
           "%s: id: %d, content: \"%s\", start: \"%s\", current: \"%s\"\n",
-          title, args->id, content, args->start, args->current);
+          args->direction == ONIG_CALLOUT_DIRECTION_NORMAL ? "NORMAL" : "RETRACTION",
+          args->id, content, args->start, args->current);
   free(content);
 
   (void )onig_get_used_stack_size_in_callout(args, &used_num, &used_bytes);
@@ -44,13 +45,13 @@ callout_body(char* title, OnigCalloutArgs* args, void* user_data)
 static int
 normal_callout_func(OnigCalloutArgs* args, void* user_data)
 {
-  return callout_body("NORMAL", args, user_data);
+  return callout_body(args, user_data);
 }
 
 static int
 retraction_callout_func(OnigCalloutArgs* args, void* user_data)
 {
-  return callout_body("RETRACTION", args, user_data);
+  return callout_body(args, user_data);
 }
 
 
