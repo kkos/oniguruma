@@ -744,7 +744,13 @@ typedef struct {
 
 
 /* types for callout */
+enum {
+  ONIG_CALLOUT_DIRECTION_NORMAL     = 0,
+  ONIG_CALLOUT_DIRECTION_RETRACTION = 1,
+};
+
 typedef struct {
+  int   direction;
   int   id;
   const OnigUChar* content;
   const OnigUChar* content_end;
