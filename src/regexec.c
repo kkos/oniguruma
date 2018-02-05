@@ -1466,11 +1466,11 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_POP_TIL_ALT_PREC_READ_NOT  do {\
+#define POP_TIL_BODY(aname, til_type) do {\
   while (1) {\
     stk--;\
-    STACK_BASE_CHECK(stk, "STACK_POP_TIL_ALT_PREC_READ_NOT"); \
-    if (stk->type == STK_ALT_PREC_READ_NOT) break;\
+    STACK_BASE_CHECK(stk, (aname));\
+    if (stk->type == (til_type)) break;\
     else if (stk->type == STK_MEM_START) {\
       mem_start_stk[stk->id] = stk->u.mem.start;\
       mem_end_stk[stk->id]   = stk->u.mem.end;\
@@ -1485,24 +1485,14 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_POP_TIL_ALT_LOOK_BEHIND_NOT  do {\
-  while (1) {\
-    stk--;\
-    STACK_BASE_CHECK(stk, "STACK_POP_TIL_ALT_LOOK_BEHIND_NOT"); \
-    if (stk->type == STK_ALT_LOOK_BEHIND_NOT) break;\
-    else if (stk->type == STK_MEM_START) {\
-      mem_start_stk[stk->id] = stk->u.mem.start;\
-      mem_end_stk[stk->id]   = stk->u.mem.end;\
-    }\
-    else if (stk->type == STK_REPEAT_INC) {\
-      STACK_AT(stk->u.repeat_inc.si)->u.repeat.count--;\
-    }\
-    else if (stk->type == STK_MEM_END) {\
-      mem_start_stk[stk->id] = stk->u.mem.start;\
-      mem_end_stk[stk->id]   = stk->u.mem.end;\
-    }\
-  }\
+#define STACK_POP_TIL_ALT_PREC_READ_NOT  do {\
+  POP_TIL_BODY("STACK_POP_TIL_ALT_PREC_READ_NOT", STK_ALT_PREC_READ_NOT);\
 } while(0)
+
+#define STACK_POP_TIL_ALT_LOOK_BEHIND_NOT  do {\
+  POP_TIL_BODY("STACK_POP_TIL_ALT_LOOK_BEHIND_NOT", STK_ALT_LOOK_BEHIND_NOT);\
+} while(0)
+
 
 #define STACK_EXEC_TO_VOID(k) do {\
   k = stk;\
