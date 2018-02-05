@@ -1426,6 +1426,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
   STACK_BASE_CHECK(stk, "STACK_POP_ONE"); \
 } while(0)
 
+
 #define STACK_POP  do {\
   switch (pop_level) {\
   case STACK_POP_LEVEL_FREE:\
@@ -1478,16 +1479,19 @@ stack_double(int is_alloca, char** arg_alloc_base,
     STACK_BASE_CHECK(stk, (aname));\
     if ((stk->type & STK_MASK_POP_HANDLED_TIL) != 0) {\
       if (stk->type == (til_type)) break;\
-      else if (stk->type == STK_MEM_START) {\
-        mem_start_stk[stk->zid] = stk->u.mem.start;\
-        mem_end_stk[stk->zid]   = stk->u.mem.end;\
-      }\
-      else if (stk->type == STK_REPEAT_INC) {\
-        STACK_AT(stk->u.repeat_inc.si)->u.repeat.count--;\
-      }\
-      else if (stk->type == STK_MEM_END) {\
-        mem_start_stk[stk->zid] = stk->u.mem.start;\
-        mem_end_stk[stk->zid]   = stk->u.mem.end;\
+      else {\
+        if (stk->type == STK_MEM_START) {\
+          mem_start_stk[stk->zid] = stk->u.mem.start;\
+          mem_end_stk[stk->zid]   = stk->u.mem.end;\
+        }\
+        else if (stk->type == STK_REPEAT_INC) {\
+          STACK_AT(stk->u.repeat_inc.si)->u.repeat.count--;\
+        }\
+        else if (stk->type == STK_MEM_END) {\
+          mem_start_stk[stk->zid] = stk->u.mem.start;\
+          mem_end_stk[stk->zid]   = stk->u.mem.end;\
+        }\
+        /* Don't call callout here because negation of total success by (?!..) (?<!..) */\
       }\
     }\
   }\
