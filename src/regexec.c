@@ -856,7 +856,7 @@ typedef intptr_t StackIndex;
 
 typedef struct _StackType {
   unsigned int type;
-  int id;
+  int zid;
   union {
     struct {
       UChar *pcode;      /* byte code position */
@@ -1183,7 +1183,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_REPEAT(sid, pat) do {\
   STACK_ENSURE(1);\
   stk->type = STK_REPEAT;\
-  stk->id   = (sid);\
+  stk->zid  = (sid);\
   stk->u.repeat.pcode  = (pat);\
   stk->u.repeat.count  = 0;\
   STACK_INC;\
@@ -1199,7 +1199,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_MEM_START(mnum, s) do {\
   STACK_ENSURE(1);\
   stk->type = STK_MEM_START;\
-  stk->id   = (mnum);\
+  stk->zid  = (mnum);\
   stk->u.mem.pstr     = (s);\
   stk->u.mem.start    = mem_start_stk[mnum];\
   stk->u.mem.end      = mem_end_stk[mnum];\
@@ -1211,7 +1211,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_MEM_END(mnum, s) do {\
   STACK_ENSURE(1);\
   stk->type = STK_MEM_END;\
-  stk->id   = (mnum);\
+  stk->zid  = (mnum);\
   stk->u.mem.pstr   = (s);\
   stk->u.mem.start  = mem_start_stk[mnum];\
   stk->u.mem.end    = mem_end_stk[mnum];\
@@ -1222,7 +1222,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_MEM_END_MARK(mnum) do {\
   STACK_ENSURE(1);\
   stk->type = STK_MEM_END_MARK;\
-  stk->id   = (mnum);\
+  stk->zid  = (mnum);\
   STACK_INC;\
 } while(0)
 
@@ -1232,10 +1232,10 @@ stack_double(int is_alloca, char** arg_alloc_base,
   while (k > stk_base) {\
     k--;\
     if ((k->type & STK_MASK_MEM_END_OR_MARK) != 0 \
-      && k->id == (mnum)) {\
+      && k->zid == (mnum)) {\
       level++;\
     }\
-    else if (k->type == STK_MEM_START && k->id == (mnum)) {\
+    else if (k->type == STK_MEM_START && k->zid == (mnum)) {\
       if (level == 0) break;\
       level--;\
     }\
@@ -1263,7 +1263,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_EMPTY_CHECK_START(cnum, s) do {\
   STACK_ENSURE(1);\
   stk->type = STK_EMPTY_CHECK_START;\
-  stk->id   = (cnum);\
+  stk->zid  = (cnum);\
   stk->u.empty_check.pstr = (s);\
   STACK_INC;\
 } while(0)
@@ -1271,7 +1271,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_EMPTY_CHECK_END(cnum) do {\
   STACK_ENSURE(1);\
   stk->type = STK_EMPTY_CHECK_END;\
-  stk->id   = (cnum);\
+  stk->zid  = (cnum);\
   STACK_INC;\
 } while(0)
 
@@ -1291,7 +1291,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_SAVE_VAL(sid, stype, sval) do {\
   STACK_ENSURE(1);\
   stk->type = STK_SAVE_VAL;\
-  stk->id   = (sid);\
+  stk->zid  = (sid);\
   stk->u.val.type = (stype);\
   stk->u.val.v    = (UChar* )(sval);\
   STACK_INC;\
@@ -1300,7 +1300,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_SAVE_VAL_WITH_SPREV(sid, stype, sval) do {\
   STACK_ENSURE(1);\
   stk->type = STK_SAVE_VAL;\
-  stk->id   = (sid);\
+  stk->zid  = (sid);\
   stk->u.val.type = (stype);\
   stk->u.val.v    = (UChar* )(sval);\
   stk->u.val.v2   = sprev;\
@@ -1326,7 +1326,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
     k--;\
     STACK_BASE_CHECK(k, "STACK_GET_SAVE_VAL_TYPE_LAST_ID"); \
     if (k->type == STK_SAVE_VAL && k->u.val.type == (stype)\
-        && k->id == (sid)) {\
+        && k->zid == (sid)) {\
       if (level == 0) {\
         (sval) = k->u.val.v;\
         break;\
@@ -1346,7 +1346,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
     k--;\
     STACK_BASE_CHECK(k, "STACK_GET_SAVE_VAL_TYPE_LAST_ID"); \
     if (k->type == STK_SAVE_VAL && k->u.val.type == (stype)\
-        && k->id == (sid)) {\
+        && k->zid == (sid)) {\
       if (level == 0) {\
         (sval) = k->u.val.v;\
         sprev  = k->u.val.v2;\
@@ -1383,7 +1383,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_CALLOUT_CODE(sid, xcontent, xcontent_end) do { \
   STACK_ENSURE(1);\
   stk->type = STK_CALLOUT_CODE;\
-  stk->id   = (sid);\
+  stk->zid  = (sid);\
   stk->u.callout_code.content     = (xcontent);\
   stk->u.callout_code.content_end = (xcontent_end);\
   STACK_INC;\
@@ -1419,8 +1419,8 @@ stack_double(int is_alloca, char** arg_alloc_base,
       STACK_BASE_CHECK(stk, "STACK_POP 2"); \
       if ((stk->type & STK_MASK_POP_USED) != 0)  break;\
       else if (stk->type == STK_MEM_START) {\
-        mem_start_stk[stk->id] = stk->u.mem.start;\
-        mem_end_stk[stk->id]   = stk->u.mem.end;\
+        mem_start_stk[stk->zid] = stk->u.mem.start;\
+        mem_end_stk[stk->zid]   = stk->u.mem.end;\
       }\
     }\
     break;\
@@ -1431,20 +1431,20 @@ stack_double(int is_alloca, char** arg_alloc_base,
       if ((stk->type & STK_MASK_POP_USED) != 0)  break;\
       else if ((stk->type & STK_MASK_POP_HANDLED) != 0) {\
         if (stk->type == STK_MEM_START) {\
-          mem_start_stk[stk->id] = stk->u.mem.start;\
-          mem_end_stk[stk->id]   = stk->u.mem.end;\
+          mem_start_stk[stk->zid] = stk->u.mem.start;\
+          mem_end_stk[stk->zid]   = stk->u.mem.end;\
         }\
         else if (stk->type == STK_REPEAT_INC) {\
           STACK_AT(stk->u.repeat_inc.si)->u.repeat.count--;\
         }\
         else if (stk->type == STK_MEM_END) {\
-          mem_start_stk[stk->id] = stk->u.mem.start;\
-          mem_end_stk[stk->id]   = stk->u.mem.end;\
+          mem_start_stk[stk->zid] = stk->u.mem.start;\
+          mem_end_stk[stk->zid]   = stk->u.mem.end;\
         }\
         else if (stk->type == STK_CALLOUT_CODE) {\
           int result;\
           CalloutArgs args;\
-          CALLOUT_CODE_BODY(msa->mp->retraction_callout, ONIG_CALLOUT_DIRECTION_RETRACTION, args, stk->id, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data, result); \
+          CALLOUT_CODE_BODY(msa->mp->retraction_callout, ONIG_CALLOUT_DIRECTION_RETRACTION, args, stk->zid, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data, result); \
           switch (result) {\
           case ONIG_CALLOUT_FAIL:\
             goto fail;\
@@ -1474,15 +1474,15 @@ stack_double(int is_alloca, char** arg_alloc_base,
     if ((stk->type & STK_MASK_POP_HANDLED_TIL) != 0) {\
       if (stk->type == (til_type)) break;\
       else if (stk->type == STK_MEM_START) {\
-        mem_start_stk[stk->id] = stk->u.mem.start;\
-        mem_end_stk[stk->id]   = stk->u.mem.end;\
+        mem_start_stk[stk->zid] = stk->u.mem.start;\
+        mem_end_stk[stk->zid]   = stk->u.mem.end;\
       }\
       else if (stk->type == STK_REPEAT_INC) {\
         STACK_AT(stk->u.repeat_inc.si)->u.repeat.count--;\
       }\
       else if (stk->type == STK_MEM_END) {\
-        mem_start_stk[stk->id] = stk->u.mem.start;\
-        mem_end_stk[stk->id]   = stk->u.mem.end;\
+        mem_start_stk[stk->zid] = stk->u.mem.start;\
+        mem_end_stk[stk->zid]   = stk->u.mem.end;\
       }\
     }\
   }\
@@ -1518,7 +1518,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
     k--;\
     STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK"); \
     if (k->type == STK_EMPTY_CHECK_START) {\
-      if (k->id == (sid)) {\
+      if (k->zid == (sid)) {\
         (isnull) = (k->u.empty_check.pstr == (s));\
         break;\
       }\
@@ -1533,7 +1533,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
     k--;\
     STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_MEMST"); \
     if (k->type == STK_EMPTY_CHECK_START) {\
-      if (k->id == (sid)) {\
+      if (k->zid == (sid)) {\
         if (k->u.empty_check.pstr != (s)) {\
           (isnull) = 0;\
           break;\
@@ -1546,7 +1546,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
               if (k->u.mem.end == INVALID_STACK_INDEX) {\
                 (isnull) = 0; break;\
               }\
-              if (MEM_STATUS_AT(reg->bt_mem_end, k->id))\
+              if (MEM_STATUS_AT(reg->bt_mem_end, k->zid))\
                 endp = STACK_AT(k->u.mem.end)->u.mem.pstr;\
               else\
                 endp = (UChar* )k->u.mem.end;\
@@ -1574,7 +1574,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
     k--;\
     STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_MEMST_REC"); \
     if (k->type == STK_EMPTY_CHECK_START) {\
-      if (k->id == (sid)) {\
+      if (k->zid == (sid)) {\
         if (level == 0) {\
           if (k->u.empty_check.pstr != (s)) {\
             (isnull) = 0;\
@@ -1588,7 +1588,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
                 if (k->u.mem.end == INVALID_STACK_INDEX) {\
                   (isnull) = 0; break;\
                 }\
-                if (MEM_STATUS_AT(reg->bt_mem_end, k->id))\
+                if (MEM_STATUS_AT(reg->bt_mem_end, k->zid))\
                   endp = STACK_AT(k->u.mem.end)->u.mem.pstr;\
                 else\
                   endp = (UChar* )k->u.mem.end;\
@@ -1610,7 +1610,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
       }\
     }\
     else if (k->type == STK_EMPTY_CHECK_END) {\
-      if (k->id == (sid)) level++;\
+      if (k->zid == (sid)) level++;\
     }\
   }\
 } while(0)
@@ -1645,7 +1645,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
     STACK_BASE_CHECK(k, "STACK_GET_REPEAT"); \
     if (k->type == STK_REPEAT) {\
       if (level == 0) {\
-        if (k->id == (sid)) {\
+        if (k->zid == (sid)) {\
           break;\
         }\
       }\
@@ -1750,7 +1750,7 @@ make_capture_history_tree(OnigCaptureTreeNode* node, StackType** kp,
 
   while (k < stk_top) {
     if (k->type == STK_MEM_START) {
-      n = k->id;
+      n = k->zid;
       if (n <= ONIG_MAX_CAPTURE_HISTORY_GROUP &&
           MEM_STATUS_AT(reg->capture_history, n) != 0) {
         child = history_node_new();
@@ -1768,7 +1768,7 @@ make_capture_history_tree(OnigCaptureTreeNode* node, StackType** kp,
       }
     }
     else if (k->type == STK_MEM_END) {
-      if (k->id == node->group) {
+      if (k->zid == node->group) {
         node->end = (int )(k->u.mem.pstr - str);
         *kp = k;
         return 0;
@@ -1817,7 +1817,7 @@ backref_match_at_nested_level(regex_t* reg,
     }
     else if (level == nest) {
       if (k->type == STK_MEM_START) {
-        if (mem_is_in_memp(k->id, mem_num, memp)) {
+        if (mem_is_in_memp(k->zid, mem_num, memp)) {
           pstart = k->u.mem.pstr;
           if (IS_NOT_NULL(pend)) {
             if (pend - pstart > send - *s) return 0; /* or goto next_mem; */
@@ -1841,7 +1841,7 @@ backref_match_at_nested_level(regex_t* reg,
         }
       }
       else if (k->type == STK_MEM_END) {
-        if (mem_is_in_memp(k->id, mem_num, memp)) {
+        if (mem_is_in_memp(k->zid, mem_num, memp)) {
           pend = k->u.mem.pstr;
         }
       }
@@ -1872,7 +1872,7 @@ backref_check_at_nested_level(regex_t* reg,
     }
     else if (level == nest) {
       if (k->type == STK_MEM_END) {
-        if (mem_is_in_memp(k->id, mem_num, memp)) {
+        if (mem_is_in_memp(k->zid, mem_num, memp)) {
           return 1;
         }
       }
