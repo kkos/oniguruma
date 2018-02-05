@@ -816,6 +816,28 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   result = (func)((OnigCalloutArgs* )&args, user);\
 } while (0)
 
+#define RETRACTION_CALLOUT(func, dir, sid, cstart, cend, user) do {\
+  int result;\
+  CalloutArgs args;\
+  CALLOUT_CODE_BODY(func, dir, args, sid, cstart, cend, user, result);\
+  switch (result) {\
+  case ONIG_CALLOUT_FAIL:\
+    goto fail;\
+    break;\
+  case ONIG_CALLOUT_SUCCESS:\
+    break;\
+  case ONIG_CALLOUT_ABORT:\
+  default:\
+    if (result > 0) {\
+      result = ONIGERR_INVALID_ARGUMENT;\
+    }\
+    best_len = result;\
+    goto finish;\
+    break;\
+  }\
+} while(0)
+
+
 /** stack **/
 #define INVALID_STACK_INDEX   -1
 
@@ -1442,24 +1464,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
           mem_end_stk[stk->zid]   = stk->u.mem.end;\
         }\
         else if (stk->type == STK_CALLOUT_CODE) {\
-          int result;\
-          CalloutArgs args;\
-          CALLOUT_CODE_BODY(msa->mp->retraction_callout, ONIG_CALLOUT_DIRECTION_RETRACTION, args, stk->zid, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data, result); \
-          switch (result) {\
-          case ONIG_CALLOUT_FAIL:\
-            goto fail;\
-            break;\
-          case ONIG_CALLOUT_SUCCESS:\
-            break;\
-          case ONIG_CALLOUT_ABORT:\
-          default:\
-            if (result > 0) {\
-              result = ONIGERR_INVALID_ARGUMENT;\
-            }\
-            best_len = result;\
-            goto finish;\
-            break;\
-          }\
+          RETRACTION_CALLOUT(msa->mp->retraction_callout, ONIG_CALLOUT_DIRECTION_RETRACTION, stk->zid, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data);\
         }\
       }\
     }\
