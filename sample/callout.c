@@ -21,8 +21,9 @@ callout_func(OnigCalloutArgs* args, void* user_data)
   len = args->content_end - args->content;
   content = (UChar* )strndup((const char* )args->content, len);
 
-  fprintf(stdout, "CALLOUT: content: \"%s\", start: \"%s\", current: \"%s\"\n",
-          content, args->start, args->current);
+  fprintf(stdout,
+          "CALLOUT: id: %d, content: \"%s\", start: \"%s\", current: \"%s\"\n",
+          args->id, content, args->start, args->current);
   free(content);
 
   (void )onig_get_used_stack_size_in_callout(args, &used_num, &used_bytes);
