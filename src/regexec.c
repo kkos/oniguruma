@@ -1471,16 +1471,18 @@ stack_double(int is_alloca, char** arg_alloc_base,
     stk--;\
     STACK_BASE_CHECK(stk, (aname));\
     if (stk->type == (til_type)) break;\
-    else if (stk->type == STK_MEM_START) {\
-      mem_start_stk[stk->id] = stk->u.mem.start;\
-      mem_end_stk[stk->id]   = stk->u.mem.end;\
-    }\
-    else if (stk->type == STK_REPEAT_INC) {\
-      STACK_AT(stk->u.repeat_inc.si)->u.repeat.count--;\
-    }\
-    else if (stk->type == STK_MEM_END) {\
-      mem_start_stk[stk->id] = stk->u.mem.start;\
-      mem_end_stk[stk->id]   = stk->u.mem.end;\
+    else if ((stk->type & STK_MASK_POP_HANDLED) != 0) {\
+      if (stk->type == STK_MEM_START) {\
+        mem_start_stk[stk->id] = stk->u.mem.start;\
+        mem_end_stk[stk->id]   = stk->u.mem.end;\
+      }\
+      else if (stk->type == STK_REPEAT_INC) {\
+        STACK_AT(stk->u.repeat_inc.si)->u.repeat.count--;\
+      }\
+      else if (stk->type == STK_MEM_END) {\
+        mem_start_stk[stk->id] = stk->u.mem.start;\
+        mem_end_stk[stk->id]   = stk->u.mem.end;\
+      }\
     }\
   }\
 } while(0)
