@@ -797,7 +797,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #endif
 }
 
-#define CALLOUT_CODE_BODY(func, dir, args, sid, cstart, cend, user, result) do {\
+#define CALLOUT_CODE_BODY(func, dir, sid, cstart, cend, user, args, result) do { \
   args.direction     = dir;\
   args.id            = sid;\
   args.content       = cstart;\
@@ -819,7 +819,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define RETRACTION_CALLOUT(func, dir, sid, cstart, cend, user) do {\
   int result;\
   CalloutArgs args;\
-  CALLOUT_CODE_BODY(func, dir, args, sid, cstart, cend, user, result);\
+  CALLOUT_CODE_BODY(func, dir, sid, cstart, cend, user, args, result);\
   switch (result) {\
   case ONIG_CALLOUT_FAIL:\
     goto fail;\
@@ -3539,8 +3539,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
         if (IS_NOT_NULL(msa->mp->callout)) {
           CALLOUT_CODE_BODY(msa->mp->callout, ONIG_CALLOUT_DIRECTION_NORMAL,
-                            args, id, content_start, content_end,
-                            msa->mp->callout_user_data, call_result);
+                            id, content_start, content_end,
+                            msa->mp->callout_user_data, args, call_result);
           switch (call_result) {
           case ONIG_CALLOUT_FAIL:
             goto fail;
