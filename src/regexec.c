@@ -829,26 +829,26 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_ALT_LOOK_BEHIND_NOT   (0x0006 | STK_ALT_FLAG)
 
 /* handled by normal-POP */
-#define STK_MEM_START              0x0100
-#define STK_MEM_END                0x8300
-#define STK_REPEAT_INC             0x0500
-#define STK_CALLOUT_CODE           0x0700
+#define STK_MEM_START              0x0010
+#define STK_MEM_END                0x8030
+#define STK_REPEAT_INC             0x0050
+#define STK_CALLOUT_CODE           0x0070
 
 /* avoided by normal-POP */
 #define STK_VOID                   0x0000  /* for fill a blank */
 #define STK_EMPTY_CHECK_START      0x3000
 #define STK_EMPTY_CHECK_END        0x5000  /* for recursive call */
-#define STK_MEM_END_MARK           0x8200
-#define STK_TO_VOID_START          0x1400  /* mark for "(?>...)" */
-#define STK_REPEAT                 0x0600
-#define STK_CALL_FRAME             0x0800
-#define STK_RETURN                 0x0a00
-#define STK_SAVE_VAL               0x0c00
+#define STK_MEM_END_MARK           0x8100
+#define STK_TO_VOID_START          0x1200  /* mark for "(?>...)" */
+#define STK_REPEAT                 0x0300
+#define STK_CALL_FRAME             0x0400
+#define STK_RETURN                 0x0500
+#define STK_SAVE_VAL               0x0600
 
 /* stack type check mask */
 #define STK_MASK_POP_USED          STK_ALT_FLAG
-#define STK_MASK_POP_HANDLED       0x0100
-#define STK_MASK_TO_VOID_TARGET    0x10fe
+#define STK_MASK_POP_HANDLED       0x0010
+#define STK_MASK_TO_VOID_TARGET    0x100e
 #define STK_MASK_MEM_END_OR_MARK   0x8000  /* MEM_END or MEM_END_MARK */
 
 typedef intptr_t StackIndex;
