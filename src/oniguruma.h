@@ -745,6 +745,7 @@ typedef struct {
 
 /* types for callout */
 typedef struct {
+  int   id;
   const OnigUChar* content;
   const OnigUChar* content_end;
   OnigRegex        regex;

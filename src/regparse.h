@@ -412,6 +412,7 @@ typedef struct {
   int keep_num;
   int save_num;
   int save_alloc_num;
+  int callout_num;
   SaveItem* saves;
 } ScanEnv;
 

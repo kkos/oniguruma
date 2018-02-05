@@ -1062,6 +1062,7 @@ scan_env_clear(ScanEnv* env)
   env->save_num            = 0;
   env->save_alloc_num      = 0;
   env->saves               = 0;
+  env->callout_num         = 0;
 }
 
 static int
@@ -1648,6 +1649,7 @@ static int
 node_new_callout(Node** node, enum CalloutType callout_type, ScanEnv* env)
 {
   int r;
+  int id;
   RegexExt* ext;
 
   ext = onig_get_regex_ext(env->reg);
@@ -1660,8 +1662,10 @@ node_new_callout(Node** node, enum CalloutType callout_type, ScanEnv* env)
   *node = node_new();
   CHECK_NULL_RETURN_MEMERR(*node);
 
+  id = ++env->callout_num;
+
   NODE_SET_TYPE(*node, NODE_GIMMICK);
-  GIMMICK_(*node)->id   = 0;
+  GIMMICK_(*node)->id   = id;
   GIMMICK_(*node)->type = GIMMICK_CALLOUT;
   GIMMICK_(*node)->detail_type = (int )callout_type;
   GIMMICK_(*node)->start = -1;

@@ -492,10 +492,11 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
         UChar* code_start;
         UChar* code_end;
 
+        GET_MEMNUM_INC(mem, bp);
         GET_POINTER_INC(code_start, bp);
         GET_POINTER_INC(code_end,   bp);
 
-        fprintf(f, ":%p:%p", code_start, code_end);
+        fprintf(f, ":%d:%p:%p", mem, code_start, code_end);
       }
       break;
 
@@ -872,6 +873,7 @@ typedef struct _StackType {
 
 /* Synchronize visible part of the type with OnigCalloutArgs */
 typedef struct {
+  int   id;
   const OnigUChar* content;
   const OnigUChar* content_end;
   OnigRegex        regex;
@@ -3473,12 +3475,15 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         UChar* content_start;
         UChar* content_end;
         int call_result;
+        int id;
         CalloutArgs args;
 
+        GET_MEMNUM_INC(id, p);
         GET_POINTER_INC(content_start, p);
         GET_POINTER_INC(content_end,   p);
 
         if (IS_NOT_NULL(msa->mp->callout)) {
+          args.id            = id;
           args.content       = content_start;
           args.content_end   = content_end;
           args.regex         = reg;
