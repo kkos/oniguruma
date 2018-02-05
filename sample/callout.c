@@ -120,6 +120,8 @@ extern int main(int argc, char* argv[])
   test("a+(?{foo bar baz...})$", "aaab");
   test("(?{{!{}#$%&'()=-~^|[_]`@*:+;<>?/.\\,}})c", "abc");
   test("\\A(...)(?{{{booooooooooooo{{ooo}}ooooooooooz}}})", "aaab");
+  test("\\A(?!a(?{foo})b)", "ac");
+  test("(?<!a(?{bar})b)c", "abc");
 
   onig_end();
   return 0;
