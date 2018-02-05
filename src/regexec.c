@@ -4670,5 +4670,23 @@ onig_get_capture_range_in_callout(OnigCalloutArgs* args, int mem_num, int* begin
   else
     return ONIGERR_INVALID_ARGUMENT;
 
-  return 0;
+  return ONIG_NORMAL;
+}
+
+extern int
+onig_get_used_stack_size_in_callout(OnigCalloutArgs* args, int* used_num, int* used_bytes)
+{
+  CalloutArgs* a;
+  int n;
+
+  a = (CalloutArgs* )args;
+  n = (int )(a->stk - a->stk_base);
+
+  if (used_num != 0)
+    *used_num = n;
+
+  if (used_bytes != 0)
+    *used_bytes = n * sizeof(StackType);
+
+  return ONIG_NORMAL;
 }

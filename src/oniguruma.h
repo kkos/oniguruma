@@ -911,6 +911,8 @@ const char* onig_copyright P_((void));
 /* for callout functions */
 ONIG_EXTERN
 int onig_get_capture_range_in_callout P_((OnigCalloutArgs* args, int mem_num, int* begin, int* end));
+ONIG_EXTERN
+int onig_get_used_stack_size_in_callout P_((OnigCalloutArgs* args, int* used_num, int* used_bytes));
 
 #ifdef __cplusplus
 }
