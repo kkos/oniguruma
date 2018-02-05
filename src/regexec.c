@@ -809,21 +809,23 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_ALT                   (0x0002 | STK_ALT_FLAG)
 #define STK_ALT_PREC_READ_NOT     (0x0004 | STK_ALT_FLAG)
 #define STK_ALT_LOOK_BEHIND_NOT   (0x0006 | STK_ALT_FLAG)
+
 /* handled by normal-POP */
 #define STK_MEM_START              0x0100
 #define STK_MEM_END                0x8200
 #define STK_REPEAT_INC             0x0300
-//#define STK_STATE_CHECK_MARK       0x1000
+#define STK_CALLOUT_CODE           0x0400
+
 /* avoided by normal-POP */
 #define STK_VOID                   0x0000  /* for fill a blank */
 #define STK_EMPTY_CHECK_START      0x3000
 #define STK_EMPTY_CHECK_END        0x5000  /* for recursive call */
-#define STK_MEM_END_MARK           0x8400
-#define STK_TO_VOID_START          0x0500  /* mark for "(?>...)" */
-#define STK_REPEAT                 0x0600
-#define STK_CALL_FRAME             0x0700
-#define STK_RETURN                 0x0800
-#define STK_SAVE_VAL               0x0900
+#define STK_MEM_END_MARK           0x8500
+#define STK_TO_VOID_START          0x0600  /* mark for "(?>...)" */
+#define STK_REPEAT                 0x0700
+#define STK_CALL_FRAME             0x0800
+#define STK_RETURN                 0x0900
+#define STK_SAVE_VAL               0x0a00
 
 /* stack type check mask */
 #define STK_MASK_POP_USED          STK_ALT_FLAG
@@ -868,6 +870,10 @@ typedef struct _StackType {
       UChar* v;
       UChar* v2;
     } val;
+    struct {
+      UChar* content;
+      UChar* content_end;
+    } callout_code;
   } u;
 } StackType;
 
@@ -1352,6 +1358,15 @@ stack_double(int is_alloca, char** arg_alloc_base,
     k--;\
   }\
 } while (0)
+
+#define STACK_PUSH_CALLOUT_CODE(sid, xcontent, xcontent_end) do { \
+  STACK_ENSURE(1);\
+  stk->type = STK_CALLOUT_CODE;\
+  stk->id   = (sid);\
+  stk->u.callout_code.content     = (xcontent);\
+  stk->u.callout_code.content_end = (xcontent_end);\
+  STACK_INC;\
+} while(0)
 
 #ifdef ONIG_DEBUG
 #define STACK_BASE_CHECK(p, at) \
@@ -3505,6 +3520,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
             goto fail;
             break;
           case ONIG_CALLOUT_SUCCESS:
+            STACK_PUSH_CALLOUT_CODE(id, content_start, content_end);
             break;
           case ONIG_CALLOUT_ABORT: /* == ONIG_ABORT */
             /* fall */
