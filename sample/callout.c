@@ -7,7 +7,7 @@
 #include "oniguruma.h"
 
 static int
-callout_func(OnigCalloutArgs* args, void* user_data)
+callout_body(char* title, OnigCalloutArgs* args, void* user_data)
 {
   int r;
   int i;
@@ -22,8 +22,8 @@ callout_func(OnigCalloutArgs* args, void* user_data)
   content = (UChar* )strndup((const char* )args->content, len);
 
   fprintf(stdout,
-          "CALLOUT: id: %d, content: \"%s\", start: \"%s\", current: \"%s\"\n",
-          args->id, content, args->start, args->current);
+          "%s: id: %d, content: \"%s\", start: \"%s\", current: \"%s\"\n",
+          title, args->id, content, args->start, args->current);
   free(content);
 
   (void )onig_get_used_stack_size_in_callout(args, &used_num, &used_bytes);
@@ -40,6 +40,19 @@ callout_func(OnigCalloutArgs* args, void* user_data)
   fflush(stdout);
   return ONIG_CALLOUT_SUCCESS;
 }
+
+static int
+normal_callout_func(OnigCalloutArgs* args, void* user_data)
+{
+  return callout_body("NORMAL", args, user_data);
+}
+
+static int
+retraction_callout_func(OnigCalloutArgs* args, void* user_data)
+{
+  return callout_body("RETRACTION", args, user_data);
+}
+
 
 static int
 test(char* in_pattern, char* in_str)
@@ -68,7 +81,8 @@ test(char* in_pattern, char* in_str)
   region = onig_region_new();
 
   onig_initialize_match_params(&mparams);
-  mparams.callout = callout_func;
+  mparams.callout = normal_callout_func;
+  mparams.retraction_callout = retraction_callout_func;
 
   end   = str + strlen((char* )str);
   start = str;
