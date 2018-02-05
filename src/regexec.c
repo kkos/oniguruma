@@ -830,20 +830,20 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 
 /* handled by normal-POP */
 #define STK_MEM_START              0x0100
-#define STK_MEM_END                0x8200
-#define STK_REPEAT_INC             0x0300
-#define STK_CALLOUT_CODE           0x0400
+#define STK_MEM_END                0x8300
+#define STK_REPEAT_INC             0x0500
+#define STK_CALLOUT_CODE           0x0700
 
 /* avoided by normal-POP */
 #define STK_VOID                   0x0000  /* for fill a blank */
 #define STK_EMPTY_CHECK_START      0x3000
 #define STK_EMPTY_CHECK_END        0x5000  /* for recursive call */
-#define STK_MEM_END_MARK           0x8500
-#define STK_TO_VOID_START          0x1600  /* mark for "(?>...)" */
-#define STK_REPEAT                 0x0700
+#define STK_MEM_END_MARK           0x8200
+#define STK_TO_VOID_START          0x1400  /* mark for "(?>...)" */
+#define STK_REPEAT                 0x0600
 #define STK_CALL_FRAME             0x0800
-#define STK_RETURN                 0x0900
-#define STK_SAVE_VAL               0x0a00
+#define STK_RETURN                 0x0a00
+#define STK_SAVE_VAL               0x0c00
 
 /* stack type check mask */
 #define STK_MASK_POP_USED          STK_ALT_FLAG
