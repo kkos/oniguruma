@@ -839,7 +839,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_EMPTY_CHECK_START      0x3000
 #define STK_EMPTY_CHECK_END        0x5000  /* for recursive call */
 #define STK_MEM_END_MARK           0x8500
-#define STK_TO_VOID_START          0x0600  /* mark for "(?>...)" */
+#define STK_TO_VOID_START          0x1600  /* mark for "(?>...)" */
 #define STK_REPEAT                 0x0700
 #define STK_CALL_FRAME             0x0800
 #define STK_RETURN                 0x0900
@@ -1507,11 +1507,11 @@ stack_double(int is_alloca, char** arg_alloc_base,
     k--;\
     STACK_BASE_CHECK(k, "STACK_EXEC_TO_VOID"); \
     if (IS_TO_VOID_TARGET(k)) {\
+      if (k->type == STK_TO_VOID_START) {\
+        k->type = STK_VOID;\
+        break;\
+      }\
       k->type = STK_VOID;\
-    }\
-    else if (k->type == STK_TO_VOID_START) {\
-      k->type = STK_VOID;\
-      break;\
     }\
   }\
 } while(0)
