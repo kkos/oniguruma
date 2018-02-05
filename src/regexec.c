@@ -797,6 +797,23 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #endif
 }
 
+#define CALLOUT_CODE_BODY(func, args, sid, xcont, xcont_end, user, result) do {\
+  args.id            = sid;\
+  args.content       = xcont;\
+  args.content_end   = xcont_end;\
+  args.regex         = reg;\
+  args.subject       = str;\
+  args.subject_end   = end;\
+  args.start         = sstart;\
+  args.right_range   = right_range;\
+  args.current       = s;\
+  args.try_in_match_counter = try_in_match_counter;\
+  args.stk_base      = stk_base;\
+  args.stk           = stk;\
+  args.mem_start_stk = mem_start_stk;\
+  args.mem_end_stk   = mem_end_stk;\
+  result = (func)((OnigCalloutArgs* )&args, user);\
+} while (0)
 
 /** stack **/
 #define INVALID_STACK_INDEX   -1
@@ -1418,6 +1435,26 @@ stack_double(int is_alloca, char** arg_alloc_base,
       else if (stk->type == STK_MEM_END) {\
         mem_start_stk[stk->id] = stk->u.mem.start;\
         mem_end_stk[stk->id]   = stk->u.mem.end;\
+      }\
+      else if (stk->type == STK_CALLOUT_CODE) {\
+        int result;\
+        CalloutArgs args;\
+        CALLOUT_CODE_BODY(msa->mp->retraction_callout, args, stk->id, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data, result);\
+        switch (result) {\
+        case ONIG_CALLOUT_FAIL:\
+          goto fail;\
+          break;\
+        case ONIG_CALLOUT_SUCCESS:\
+          break;\
+        case ONIG_CALLOUT_ABORT:\
+        default:\
+          if (result > 0) {\
+            result = ONIGERR_INVALID_ARGUMENT;\
+          }\
+          best_len = result;\
+          goto finish;\
+          break;\
+        }\
       }\
     }\
     break;\
@@ -3520,7 +3557,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
             goto fail;
             break;
           case ONIG_CALLOUT_SUCCESS:
-            STACK_PUSH_CALLOUT_CODE(id, content_start, content_end);
+            if (IS_NOT_NULL(msa->mp->retraction_callout)) {
+              STACK_PUSH_CALLOUT_CODE(id, content_start, content_end);
+            }
             break;
           case ONIG_CALLOUT_ABORT: /* == ONIG_ABORT */
             /* fall */

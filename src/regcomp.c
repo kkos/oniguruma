@@ -6101,7 +6101,8 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
     }
 #endif
 
-    if ((reg->num_repeat != 0) || (reg->bt_mem_end != 0))
+    if ((reg->num_repeat != 0) || (reg->bt_mem_end != 0) ||
+        scan_env.callout_num != 0)
       reg->stack_pop_level = STACK_POP_LEVEL_ALL;
     else {
       if (reg->bt_mem_start != 0)
