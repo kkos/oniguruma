@@ -816,7 +816,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   result = (func)((OnigCalloutArgs* )&args, user);\
 } while (0)
 
-#define RETRACTION_CALLOUT(func, dir, sid, cstart, cend, user) do {\
+#define RETRACTION_CALLOUT_CODE(func, dir, sid, cstart, cend, user) do {\
   int result;\
   CalloutArgs args;\
   CALLOUT_CODE_BODY(func, dir, sid, cstart, cend, user, args, result);\
@@ -1464,7 +1464,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
           mem_end_stk[stk->zid]   = stk->u.mem.end;\
         }\
         else if (stk->type == STK_CALLOUT_CODE) {\
-          RETRACTION_CALLOUT(msa->mp->retraction_callout, ONIG_CALLOUT_DIRECTION_RETRACTION, stk->zid, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data);\
+          RETRACTION_CALLOUT_CODE(msa->mp->retraction_callout, ONIG_CALLOUT_DIRECTION_RETRACTION, stk->zid, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data);\
         }\
       }\
     }\
