@@ -14,6 +14,8 @@ callout_func(OnigCalloutArgs* args, void* user_data)
   int n;
   int begin, end;
   int len;
+  int used_num;
+  int used_bytes;
   UChar* content;
 
   len = args->content_end - args->content;
@@ -22,6 +24,9 @@ callout_func(OnigCalloutArgs* args, void* user_data)
   fprintf(stdout, "CALLOUT: content: \"%s\", start: \"%s\", current: \"%s\"\n",
           content, args->start, args->current);
   free(content);
+
+  (void )onig_get_used_stack_size_in_callout(args, &used_num, &used_bytes);
+  fprintf(stdout, "stack: used_num: %d, used_bytes: %d\n", used_num, used_bytes);
 
   n = onig_number_of_captures(args->regex);
   for (i = 1; i <= n; i++) {
