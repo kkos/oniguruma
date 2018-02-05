@@ -847,6 +847,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 
 /* stack type check mask */
 #define STK_MASK_POP_USED          STK_ALT_FLAG
+#define STK_MASK_POP_HANDLED       0x0100
 #define STK_MASK_TO_VOID_TARGET    0x10fe
 #define STK_MASK_MEM_END_OR_MARK   0x8000  /* MEM_END or MEM_END_MARK */
 
@@ -1427,35 +1428,37 @@ stack_double(int is_alloca, char** arg_alloc_base,
       stk--;\
       STACK_BASE_CHECK(stk, "STACK_POP 3"); \
       if ((stk->type & STK_MASK_POP_USED) != 0)  break;\
-      else if (stk->type == STK_MEM_START) {\
-        mem_start_stk[stk->id] = stk->u.mem.start;\
-        mem_end_stk[stk->id]   = stk->u.mem.end;\
-      }\
-      else if (stk->type == STK_REPEAT_INC) {\
-        STACK_AT(stk->u.repeat_inc.si)->u.repeat.count--;\
-      }\
-      else if (stk->type == STK_MEM_END) {\
-        mem_start_stk[stk->id] = stk->u.mem.start;\
-        mem_end_stk[stk->id]   = stk->u.mem.end;\
-      }\
-      else if (stk->type == STK_CALLOUT_CODE) {\
-        int result;\
-        CalloutArgs args;\
-        CALLOUT_CODE_BODY(msa->mp->retraction_callout, ONIG_CALLOUT_DIRECTION_RETRACTION, args, stk->id, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data, result); \
-        switch (result) {\
-        case ONIG_CALLOUT_FAIL:\
-          goto fail;\
-          break;\
-        case ONIG_CALLOUT_SUCCESS:\
-          break;\
-        case ONIG_CALLOUT_ABORT:\
-        default:\
-          if (result > 0) {\
-            result = ONIGERR_INVALID_ARGUMENT;\
+      else if ((stk->type & STK_MASK_POP_HANDLED) != 0) {\
+        if (stk->type == STK_MEM_START) {\
+          mem_start_stk[stk->id] = stk->u.mem.start;\
+          mem_end_stk[stk->id]   = stk->u.mem.end;\
+        }\
+        else if (stk->type == STK_REPEAT_INC) {\
+          STACK_AT(stk->u.repeat_inc.si)->u.repeat.count--;\
+        }\
+        else if (stk->type == STK_MEM_END) {\
+          mem_start_stk[stk->id] = stk->u.mem.start;\
+          mem_end_stk[stk->id]   = stk->u.mem.end;\
+        }\
+        else if (stk->type == STK_CALLOUT_CODE) {\
+          int result;\
+          CalloutArgs args;\
+          CALLOUT_CODE_BODY(msa->mp->retraction_callout, ONIG_CALLOUT_DIRECTION_RETRACTION, args, stk->id, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data, result); \
+          switch (result) {\
+          case ONIG_CALLOUT_FAIL:\
+            goto fail;\
+            break;\
+          case ONIG_CALLOUT_SUCCESS:\
+            break;\
+          case ONIG_CALLOUT_ABORT:\
+          default:\
+            if (result > 0) {\
+              result = ONIGERR_INVALID_ARGUMENT;\
+            }\
+            best_len = result;\
+            goto finish;\
+            break;\
           }\
-          best_len = result;\
-          goto finish;\
-          break;\
         }\
       }\
     }\
