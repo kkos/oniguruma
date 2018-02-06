@@ -2151,7 +2151,7 @@ disable_noname_group_capture(Node** root, regex_t* reg, ScanEnv* env)
 
 #ifdef USE_CALL
 static int
-unset_addr_list_fix(UnsetAddrList* uslist, regex_t* reg)
+fix_unset_addr_list(UnsetAddrList* uslist, regex_t* reg)
 {
   int i, offset;
   EnclosureNode* en;
@@ -3539,11 +3539,12 @@ expand_case_fold_make_rem_string(Node** rnode, UChar *s, UChar *end, regex_t* re
 }
 
 static int
-expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[],
-                            UChar *p, int slen, UChar *end, regex_t* reg,
-                            Node **rnode)
+expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[], UChar *p,
+                            int slen, UChar *end, regex_t* reg, Node **rnode)
 {
-  int r, i, j, len, varlen;
+  int r, i, j;
+  int len;
+  int varlen;
   Node *anode, *var_anode, *snode, *xnode, *an;
   UChar buf[ONIGENC_CODE_TO_MBC_MAXLEN];
 
@@ -6095,7 +6096,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
     r = add_opcode(reg, OP_END);
 #ifdef USE_CALL
     if (scan_env.num_call > 0) {
-      r = unset_addr_list_fix(&uslist, reg);
+      r = fix_unset_addr_list(&uslist, reg);
       unset_addr_list_end(&uslist);
       if (r != 0) goto err;
     }

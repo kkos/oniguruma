@@ -549,6 +549,8 @@ typedef struct {
 
 #ifdef USE_ST_LIBRARY
 
+#define INIT_NAMES_ALLOC_NUM    5
+
 typedef st_table  NameTable;
 typedef st_data_t HashDataType;   /* 1.6 st.h doesn't define st_data_t type */
 
@@ -874,7 +876,7 @@ name_add(regex_t* reg, UChar* name, UChar* name_end, int backref, ScanEnv* env)
   if (IS_NULL(e)) {
 #ifdef USE_ST_LIBRARY
     if (IS_NULL(t)) {
-      t = onig_st_init_strend_table_with_size(5);
+      t = onig_st_init_strend_table_with_size(INIT_NAMES_ALLOC_NUM);
       reg->name_table = (void* )t;
     }
     e = (NameEntry* )xmalloc(sizeof(NameEntry));

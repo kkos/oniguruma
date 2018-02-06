@@ -784,13 +784,13 @@ typedef struct {
   unsigned long   try_in_match_limit;
   OnigCalloutFunc callout_by_code;
   OnigCalloutFunc retraction_callout_by_code;
-  void* callout_user_data;
+  void*           callout_user_data;
 } OnigMatchParams;
 
 /* Oniguruma Native API */
 
 ONIG_EXTERN
-int onig_initialize P_((OnigEncoding encodings[], int n));
+int onig_initialize P_((OnigEncoding encodings[], int number_of_encodings));
 /* onig_init(): deprecated function. Use onig_initialize(). */
 ONIG_EXTERN
 int onig_init P_((void));
