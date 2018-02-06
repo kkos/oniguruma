@@ -750,8 +750,14 @@ enum {
   ONIG_CALLOUT_DIRECTION_RETRACTION = 1,
 };
 
+enum {
+  ONIG_CALLOUT_BY_CODE = 0,
+  ONIG_CALLOUT_BY_NAME = 1,
+};
+
 typedef struct {
   int   direction;
+  int   by;
   int   id;
   const OnigUChar* content;
   const OnigUChar* content_end;

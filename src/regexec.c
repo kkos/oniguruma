@@ -799,6 +799,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 
 #define CALLOUT_CODE_BODY(func, dir, sid, cstart, cend, user, args, result) do { \
   args.direction     = dir;\
+  args.by            = ONIG_CALLOUT_BY_CODE;\
   args.id            = sid;\
   args.content       = cstart;\
   args.content_end   = cend;\
@@ -922,6 +923,7 @@ typedef struct _StackType {
 /* Synchronize visible part of the type with OnigCalloutArgs */
 typedef struct {
   int   direction;
+  int   by;
   int   id;
   const OnigUChar* content;
   const OnigUChar* content_end;
