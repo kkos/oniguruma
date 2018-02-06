@@ -51,7 +51,7 @@ OnigSyntaxType OnigSyntaxOniguruma = {
       ONIG_SYN_OP2_QMARK_LT_NAMED_GROUP | ONIG_SYN_OP2_ESC_K_NAMED_BACKREF |
       ONIG_SYN_OP2_QMARK_LPAREN_IF_ELSE |
       ONIG_SYN_OP2_QMARK_TILDE_ABSENT_GROUP |
-      ONIG_SYN_OP2_QMARK_BRACE_CALLOUT |
+      ONIG_SYN_OP2_QMARK_BRACE_CALLOUT_CODE |
       ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER |
       ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE |
       ONIG_SYN_OP2_ESC_CAPITAL_N_O_SUPER_DOT |
@@ -5778,7 +5778,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
       break;
 
     case '{':
-      if (! IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_BRACE_CALLOUT))
+      if (! IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_BRACE_CALLOUT_CODE))
         return ONIGERR_UNDEFINED_GROUP_OPTION;
 
       /* (?{...}) (?{{...}}) */
