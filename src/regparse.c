@@ -1034,6 +1034,149 @@ onig_noname_group_capture_is_active(regex_t* reg)
 }
 
 
+typedef struct {
+  UChar* name;
+  int    name_len;   /* byte length */
+  int    id;
+  OnigCalloutFunc func;
+} CalloutNameEntry;
+
+#ifdef USE_ST_LIBRARY
+typedef st_table  CalloutNameTable;
+#else
+typedef struct {
+  CalloutNameEntry* e;
+  int               num;
+  int               alloc;
+} CalloutNameTable;
+#endif
+
+static CalloutNameTable* CalloutNames;
+static int CalloutNameIDCounter;
+
+#ifdef USE_ST_LIBRARY
+
+static CalloutNameEntry*
+callout_name_find(const UChar* name, const UChar* name_end)
+{
+  CalloutNameEntry* e;
+  CalloutNameTable* t = CalloutNames;
+
+  e = (CalloutNameEntry* )NULL;
+  if (IS_NOT_NULL(t)) {
+    onig_st_lookup_strend(t, name, name_end, (HashDataType* )((void* )(&e)));
+  }
+  return e;
+}
+
+#else
+
+static CalloutNameEntry*
+callout_name_find(UChar* name, UChar* name_end)
+{
+  int i, len;
+  CalloutNameEntry* e;
+  CalloutNameTable* t = Calloutnames;
+
+  if (IS_NOT_NULL(t)) {
+    len = name_end - name;
+    for (i = 0; i < t->num; i++) {
+      e = &(t->e[i]);
+      if (len == e->name_len && onig_strncmp(name, e->name, len) == 0)
+        return e;
+    }
+  }
+  return (CalloutNameEntry* )NULL;
+}
+
+#endif
+
+static int
+callout_name_add(OnigEncoding enc, UChar* name, UChar* name_end,
+                 OnigCalloutFunc func)
+{
+  int r;
+  CalloutNameEntry* e;
+  CalloutNameTable* t = CalloutNames;
+
+  if (name_end - name <= 0)
+    return ONIGERR_INVALID_CALLOUT_NAME;
+
+  e = callout_name_find(name, name_end);
+  if (IS_NULL(e)) {
+#ifdef USE_ST_LIBRARY
+    if (IS_NULL(t)) {
+      t = onig_st_init_strend_table_with_size(INIT_NAMES_ALLOC_NUM);
+      CalloutNames = t;
+    }
+    e = (CalloutNameEntry* )xmalloc(sizeof(CalloutNameEntry));
+    CHECK_NULL_RETURN_MEMERR(e);
+
+    e->name = strdup_with_null(enc, name, name_end);
+    if (IS_NULL(e->name)) {
+      xfree(e);  return ONIGERR_MEMORY;
+    }
+    r = onig_st_insert_strend(t, e->name, (e->name + (name_end - name)),
+                              (HashDataType )e);
+    if (r < 0) return r;
+
+    e->func = 0;
+
+#else
+
+    int alloc;
+
+    if (IS_NULL(t)) {
+      alloc = INIT_NAMES_ALLOC_NUM;
+      t = (CalloutNameTable* )xmalloc(sizeof(CalloutNameTable));
+      CHECK_NULL_RETURN_MEMERR(t);
+      t->e     = NULL;
+      t->alloc = 0;
+      t->num   = 0;
+
+      t->e = (CalloutNameEntry* )xmalloc(sizeof(CalloutNameEntry) * alloc);
+      if (IS_NULL(t->e)) {
+        xfree(t);
+        return ONIGERR_MEMORY;
+      }
+      t->alloc = alloc;
+      CalloutNames = t;
+      goto clear;
+    }
+    else if (t->num == t->alloc) {
+      int i;
+
+      alloc = t->alloc * 2;
+      t->e = (NameEntry* )xrealloc(t->e, sizeof(NameEntry) * alloc);
+      CHECK_NULL_RETURN_MEMERR(t->e);
+      t->alloc = alloc;
+
+    clear:
+      for (i = t->num; i < t->alloc; i++) {
+        t->e[i].name       = NULL;
+        t->e[i].name_len   = 0;
+        t->e[i].id         = 0;
+        t->e[i].func       = 0;
+      }
+    }
+    e = &(t->e[t->num]);
+    t->num++;
+    e->name = strdup_with_null(enc, name, name_end);
+    if (IS_NULL(e->name)) return ONIGERR_MEMORY;
+#endif
+
+    CalloutNameIDCounter--;
+    e->id = CalloutNameIDCounter;
+  }
+
+  e->name_len = (int )(name_end - name);
+  e->func     = func;
+
+  return 0;
+}
+
+
+
 #define INIT_SCANENV_MEMENV_ALLOC_SIZE   16
 
 static void
