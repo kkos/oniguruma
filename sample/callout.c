@@ -114,11 +114,11 @@ extern int main(int argc, char* argv[])
   (void)onig_set_callout_by_code(normal_callout_func);
   (void)onig_set_retraction_callout_by_code(retraction_callout_func);
 
-  test("a+(?{foo bar baz...})$", "aaab");
+  test("a+(?{foo bar baz...}+)$", "aaab");
   test("(?{{!{}#$%&'()=-~^|[_]`@*:+;<>?/.\\,}})c", "abc");
-  test("\\A(...)(?{{{booooooooooooo{{ooo}}ooooooooooz}}})", "aaab");
-  test("\\A(?!a(?{prec-read-not})b)", "ac");
-  test("(?<!a(?{look-behind-not})c)c", "abc");
+  test("\\A(...)(?{{{booooooooooooo{{ooo}}ooooooooooz}}}-)", "aaab");
+  test("\\A(?!a(?{prec-read-not}+)b)", "ac");
+  test("(?<!a(?{look-behind-not}+)c)c", "abc");
 
   onig_end();
   return 0;
