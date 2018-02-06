@@ -1084,8 +1084,8 @@ onig_initialize_match_params(OnigMatchParams* mp)
 #ifdef USE_TRY_IN_MATCH_LIMIT
   mp->try_in_match_limit = TryInMatchLimit;
 #endif
-  mp->callout            = DefaultCallout;
-  mp->retraction_callout = DefaultRetractionCallout;
+  mp->callout_by_code            = DefaultCallout;
+  mp->retraction_callout_by_code = DefaultRetractionCallout;
   mp->callout_user_data  = 0;
 }
 
@@ -1468,7 +1468,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
           mem_end_stk[stk->zid]   = stk->u.mem.end;\
         }\
         else if (stk->type == STK_CALLOUT_CODE) {\
-          RETRACTION_CALLOUT_CODE(msa->mp->retraction_callout, ONIG_CALLOUT_DIRECTION_RETRACTION, stk->zid, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data);\
+          RETRACTION_CALLOUT_CODE(msa->mp->retraction_callout_by_code, ONIG_CALLOUT_DIRECTION_RETRACTION, stk->zid, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data);\
         }\
       }\
     }\
@@ -3544,8 +3544,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         GET_POINTER_INC(content_start, p);
         GET_POINTER_INC(content_end,   p);
 
-        if (IS_NOT_NULL(msa->mp->callout)) {
-          CALLOUT_CODE_BODY(msa->mp->callout, ONIG_CALLOUT_DIRECTION_NORMAL,
+        if (IS_NOT_NULL(msa->mp->callout_by_code)) {
+          CALLOUT_CODE_BODY(msa->mp->callout_by_code, ONIG_CALLOUT_DIRECTION_NORMAL,
                             id, content_start, content_end,
                             msa->mp->callout_user_data, args, call_result);
           switch (call_result) {
@@ -3553,7 +3553,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
             goto fail;
             break;
           case ONIG_CALLOUT_SUCCESS:
-            if (IS_NOT_NULL(msa->mp->retraction_callout)) {
+            if (IS_NOT_NULL(msa->mp->retraction_callout_by_code)) {
               STACK_PUSH_CALLOUT_CODE(id, content_start, content_end);
             }
             break;

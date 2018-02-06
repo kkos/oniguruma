@@ -782,8 +782,8 @@ enum {
 typedef struct {
   unsigned int    match_stack_limit;
   unsigned long   try_in_match_limit;
-  OnigCalloutFunc callout;
-  OnigCalloutFunc retraction_callout;
+  OnigCalloutFunc callout_by_code;
+  OnigCalloutFunc retraction_callout_by_code;
   void* callout_user_data;
 } OnigMatchParams;
 
