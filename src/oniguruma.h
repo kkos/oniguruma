@@ -917,6 +917,15 @@ const char* onig_copyright P_((void));
 
 /* for callout functions */
 ONIG_EXTERN
+OnigCalloutFunc onig_get_callout_by_code P_((void));
+ONIG_EXTERN
+int onig_set_callout_by_code P_((OnigCalloutFunc f));
+ONIG_EXTERN
+OnigCalloutFunc onig_get_retraction_callout_by_code P_((void));
+ONIG_EXTERN
+int onig_set_retraction_callout_by_code P_((OnigCalloutFunc f));
+
+ONIG_EXTERN
 int onig_get_capture_range_in_callout P_((OnigCalloutArgs* args, int mem_num, int* begin, int* end));
 ONIG_EXTERN
 int onig_get_used_stack_size_in_callout P_((OnigCalloutArgs* args, int* used_num, int* used_bytes));

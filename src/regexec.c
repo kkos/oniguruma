@@ -1074,6 +1074,9 @@ onig_set_try_in_match_limit(unsigned long size)
 #endif
 }
 
+static OnigCalloutFunc DefaultCallout;
+static OnigCalloutFunc DefaultRetractionCallout;
+
 extern void
 onig_initialize_match_params(OnigMatchParams* mp)
 {
@@ -1081,8 +1084,8 @@ onig_initialize_match_params(OnigMatchParams* mp)
 #ifdef USE_TRY_IN_MATCH_LIMIT
   mp->try_in_match_limit = TryInMatchLimit;
 #endif
-  mp->callout            = 0;
-  mp->retraction_callout = 0;
+  mp->callout            = DefaultCallout;
+  mp->retraction_callout = DefaultRetractionCallout;
   mp->callout_user_data  = 0;
 }
 
@@ -4682,6 +4685,32 @@ onig_copy_encoding(OnigEncoding to, OnigEncoding from)
 
 
 /* for callout functions */
+extern OnigCalloutFunc
+onig_get_callout_by_code(void)
+{
+  return DefaultCallout;
+}
+
+extern int
+onig_set_callout_by_code(OnigCalloutFunc f)
+{
+  DefaultCallout = f;
+  return ONIG_NORMAL;
+}
+
+extern OnigCalloutFunc
+onig_get_retraction_callout_by_code(void)
+{
+  return DefaultRetractionCallout;
+}
+
+extern int
+onig_set_retraction_callout_by_code(OnigCalloutFunc f)
+{
+  DefaultRetractionCallout = f;
+  return ONIG_NORMAL;
+}
+
 extern int
 onig_get_capture_range_in_callout(OnigCalloutArgs* args, int mem_num, int* begin, int* end)
 {
