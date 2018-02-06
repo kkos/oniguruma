@@ -1551,6 +1551,8 @@ compile_gimmick_node(GimmickNode* node, regex_t* reg)
         if (r != 0) return r;
         r = add_mem_num(reg, node->id);
         if (r != 0) return r;
+        r = add_mem_num(reg, node->dirs);
+        if (r != 0) return r;
         r = add_pointer(reg, pattern + node->start);
         if (r != 0) return r;
         r = add_pointer(reg, pattern + node->end);
@@ -6584,8 +6586,8 @@ print_indent_tree(FILE* f, Node* node, int indent)
     case GIMMICK_CALLOUT:
       switch (GIMMICK_(node)->detail_type) {
       case CALLOUT_CODE:
-        fprintf(f, "callout:code:%d:%d:%d",
-                GIMMICK_(node)->id, GIMMICK_(node)->start, GIMMICK_(node)->end);
+        fprintf(f, "callout:code:%d:%d:%d:%d",
+                GIMMICK_(node)->id, GIMMICK_(node)->dirs, GIMMICK_(node)->start, GIMMICK_(node)->end);
         break;
       case CALLOUT_NAME:
         fprintf(f, "callout:name");

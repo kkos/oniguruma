@@ -489,14 +489,16 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
 
     case OP_CALLOUT_CODE:
       {
+        int dirs;
         UChar* code_start;
         UChar* code_end;
 
-        GET_MEMNUM_INC(mem, bp);
+        GET_MEMNUM_INC(mem,  bp);
+        GET_MEMNUM_INC(dirs, bp);
         GET_POINTER_INC(code_start, bp);
         GET_POINTER_INC(code_end,   bp);
 
-        fprintf(f, ":%d:%p:%p", mem, code_start, code_end);
+        fprintf(f, ":%d:%d:%p:%p", mem, dirs, code_start, code_end);
       }
       break;
 
@@ -3540,13 +3542,16 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         UChar* content_end;
         int call_result;
         int id;
+        int dirs;
         CalloutArgs args;
 
-        GET_MEMNUM_INC(id, p);
+        GET_MEMNUM_INC(id,   p);
+        GET_MEMNUM_INC(dirs, p);
         GET_POINTER_INC(content_start, p);
         GET_POINTER_INC(content_end,   p);
 
-        if (IS_NOT_NULL(msa->mp->callout_by_code)) {
+        if (IS_NOT_NULL(msa->mp->callout_by_code) &&
+            (dirs & CALLOUT_DIRECTION_NORMAL) != 0) {
           CALLOUT_CODE_BODY(msa->mp->callout_by_code, ONIG_CALLOUT_DIRECTION_NORMAL,
                             id, content_start, content_end,
                             msa->mp->callout_user_data, args, call_result);
@@ -3555,9 +3560,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
             goto fail;
             break;
           case ONIG_CALLOUT_SUCCESS:
-            if (IS_NOT_NULL(msa->mp->retraction_callout_by_code)) {
-              STACK_PUSH_CALLOUT_CODE(id, content_start, content_end);
-            }
+            goto retraction_callout;
             break;
           case ONIG_CALLOUT_ABORT: /* == ONIG_ABORT */
             /* fall */
@@ -3568,6 +3571,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
             best_len = call_result;
             goto finish;
             break;
+          }
+        }
+        else {
+        retraction_callout:
+          if ((dirs & CALLOUT_DIRECTION_RETRACTION) != 0 &&
+              IS_NOT_NULL(msa->mp->retraction_callout_by_code)) {
+            STACK_PUSH_CALLOUT_CODE(id, content_start, content_end);
           }
         }
       }

@@ -1791,7 +1791,7 @@ node_new_keep(Node** node, ScanEnv* env)
 }
 
 static int
-node_new_callout(Node** node, enum CalloutType callout_type, ScanEnv* env)
+node_new_callout(Node** node, enum CalloutType callout_type, int dirs, ScanEnv* env)
 {
   int r;
   int id;
@@ -1813,6 +1813,7 @@ node_new_callout(Node** node, enum CalloutType callout_type, ScanEnv* env)
   GIMMICK_(*node)->id   = id;
   GIMMICK_(*node)->type = GIMMICK_CALLOUT;
   GIMMICK_(*node)->detail_type = (int )callout_type;
+  GIMMICK_(*node)->dirs  = dirs;
   GIMMICK_(*node)->start = -1;
   GIMMICK_(*node)->end   = -1;
 
@@ -5706,6 +5707,7 @@ parse_code_callout(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
 {
   int r;
   int i;
+  int dirs;
   OnigCodePoint c;
   UChar* code_start;
   UChar* code_end;
@@ -5724,6 +5726,7 @@ parse_code_callout(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
     if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
   }
 
+  dirs = CALLOUT_DIRECTION_NORMAL;
   code_start = p;
   while (1) {
     if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
@@ -5744,10 +5747,21 @@ parse_code_callout(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
 
   if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
   PFETCH_S(c);
+  if (c == '+') {
+    dirs |= CALLOUT_DIRECTION_RETRACTION;
+    if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+    PFETCH_S(c);
+  }
+  else if (c == '-') {
+    dirs = CALLOUT_DIRECTION_RETRACTION;
+    if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+    PFETCH_S(c);
+  }
+
   if (c != cterm)
     return ONIGERR_INVALID_CALLOUT_PATTERN;
 
-  r = node_new_callout(np, CALLOUT_CODE, env);
+  r = node_new_callout(np, CALLOUT_CODE, dirs, env);
   if (r != 0) return r;
 
   GIMMICK_(*np)->start = code_start - env->pattern;
