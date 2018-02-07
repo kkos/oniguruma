@@ -769,11 +769,7 @@ typedef struct {
   const OnigUChar* current;  // current matching position
   unsigned long try_in_match_counter;
 
-  /* elements invisible to users */
-  void* invisible1_;
-  void* invisible2_;
-  void* invisible3_;
-  void* invisible4_;
+  /* HERE: elements invisible to users */
 } OnigCalloutArgs;
 
 typedef int (*OnigCalloutFunc)(OnigCalloutArgs* args, void* user_data);
