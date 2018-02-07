@@ -54,7 +54,7 @@ enum GimmickType {
   GIMMICK_CALLOUT = 4,
 };
 
-enum CalloutType {
+enum CalloutOf {
   CALLOUT_OF_CODE = 0,
   CALLOUT_OF_NAME = 1,
 };

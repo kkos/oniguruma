@@ -1791,7 +1791,7 @@ node_new_keep(Node** node, ScanEnv* env)
 }
 
 static int
-node_new_callout(Node** node, enum CalloutType callout_type, int dirs, ScanEnv* env)
+node_new_callout(Node** node, enum CalloutOf callout_of, int dirs, ScanEnv* env)
 {
   int r;
   int id;
@@ -1812,7 +1812,7 @@ node_new_callout(Node** node, enum CalloutType callout_type, int dirs, ScanEnv* 
   NODE_SET_TYPE(*node, NODE_GIMMICK);
   GIMMICK_(*node)->id   = id;
   GIMMICK_(*node)->type = GIMMICK_CALLOUT;
-  GIMMICK_(*node)->detail_type = (int )callout_type;
+  GIMMICK_(*node)->detail_type = (int )callout_of;
   GIMMICK_(*node)->dirs  = dirs;
   GIMMICK_(*node)->start = -1;
   GIMMICK_(*node)->end   = -1;
