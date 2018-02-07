@@ -171,6 +171,7 @@ static OpInfoType OpInfo[] = {
   { OP_PUSH_SAVE_VAL,        "push-save-val",        ARG_SPECIAL },
   { OP_UPDATE_VAR,           "update-var",           ARG_SPECIAL },
   { OP_CALLOUT_CODE,         "callout-code",         ARG_SPECIAL },
+  { OP_CALLOUT_NAME,         "callout-name",         ARG_SPECIAL },
   { -1, "", ARG_NON }
 };
 
@@ -493,12 +494,29 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
         UChar* code_start;
         UChar* code_end;
 
-        GET_MEMNUM_INC(mem,  bp);
+        GET_MEMNUM_INC(mem,  bp); // number
         GET_MEMNUM_INC(dirs, bp);
         GET_POINTER_INC(code_start, bp);
         GET_POINTER_INC(code_end,   bp);
 
         fprintf(f, ":%d:%d:%p:%p", mem, dirs, code_start, code_end);
+      }
+      break;
+
+    case OP_CALLOUT_NAME:
+      {
+        int dirs;
+        int id;
+        UChar* code_start;
+        UChar* code_end;
+
+        GET_MEMNUM_INC(id,   bp); // id
+        GET_MEMNUM_INC(mem,  bp); // number
+        GET_MEMNUM_INC(dirs, bp);
+        GET_POINTER_INC(code_start, bp);
+        GET_POINTER_INC(code_end,   bp);
+
+        fprintf(f, ":%d:%d:%d:%p:%p", id, mem, dirs, code_start, code_end);
       }
       break;
 
@@ -820,10 +838,31 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   result = (func)((OnigCalloutArgs* )&args, user);\
 } while (0)
 
-#define RETRACTION_CALLOUT_CODE(func, anum, cstart, cend, user) do {\
+#define CALLOUT_BODY(func, ain, aof, aid, anum, cstart, cend, user, args, result) do { \
+  args.in            = (ain);\
+  args.of            = (aof);\
+  args.id            = (aid);\
+  args.num           = anum;\
+  args.content       = cstart;\
+  args.content_end   = cend;\
+  args.regex         = reg;\
+  args.subject       = str;\
+  args.subject_end   = end;\
+  args.start         = sstart;\
+  args.right_range   = right_range;\
+  args.current       = s;\
+  args.try_in_match_counter = try_in_match_counter;\
+  args.stk_base      = stk_base;\
+  args.stk           = stk;\
+  args.mem_start_stk = mem_start_stk;\
+  args.mem_end_stk   = mem_end_stk;\
+  result = (func)((OnigCalloutArgs* )&args, user);\
+} while (0)
+
+#define RETRACTION_CALLOUT(func, aof, aid, anum, cstart, cend, user) do {\
   int result;\
   CalloutArgs args;\
-  CALLOUT_CODE_BODY(func, ONIG_CALLOUT_IN_RETRACTION, anum, cstart, cend, user, args, result);\
+  CALLOUT_BODY(func, ONIG_CALLOUT_IN_RETRACTION, aof, aid, anum, cstart, cend, user, args, result);\
   switch (result) {\
   case ONIG_CALLOUT_FAIL:\
     goto fail;\
@@ -1412,9 +1451,20 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while (0)
 
-#define STACK_PUSH_CALLOUT_CODE(aid, anum, xcontent, xcontent_end) do {\
+#define STACK_PUSH_CALLOUT_CODE(anum, xcontent, xcontent_end) do {\
   STACK_ENSURE(1);\
   stk->type = STK_CALLOUT_CODE;\
+  stk->zid  = -1;\
+  stk->u.callout_code.num         = (anum);\
+  stk->u.callout_code.content     = (xcontent);\
+  stk->u.callout_code.content_end = (xcontent_end);\
+  STACK_INC;\
+} while(0)
+
+#define STACK_PUSH_CALLOUT_NAME(aid, anum, xcontent, xcontent_end) do {\
+  STACK_ENSURE(1);\
+  stk->type = STK_CALLOUT_CODE;\
+  stk->zid  = (aid);\
   stk->u.callout_code.num         = (anum);\
   stk->u.callout_code.content     = (xcontent);\
   stk->u.callout_code.content_end = (xcontent_end);\
@@ -1475,7 +1525,17 @@ stack_double(int is_alloca, char** arg_alloc_base,
           mem_end_stk[stk->zid]   = stk->u.mem.end;\
         }\
         else if (stk->type == STK_CALLOUT_CODE) {\
-          RETRACTION_CALLOUT_CODE(msa->mp->retraction_callout_of_code, stk->u.callout_code.num, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data);\
+          int aof;\
+          OnigCalloutFunc func;\
+          if (stk->zid < 0) {\
+            aof = ONIG_CALLOUT_OF_CODE;\
+            func = msa->mp->retraction_callout_of_code;\
+          }\
+          else {\
+            aof = ONIG_CALLOUT_OF_NAME;\
+            func = onig_get_retraction_callout_func_from_id(stk->zid);\
+          }\
+          RETRACTION_CALLOUT(func, aof, stk->zid, stk->u.callout_code.num, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data);\
         }\
       }\
     }\
@@ -3580,7 +3640,74 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         retraction_callout:
           if ((dirs & CALLOUT_IN_RETRACTION) != 0 &&
               IS_NOT_NULL(msa->mp->retraction_callout_of_code)) {
-            STACK_PUSH_CALLOUT_CODE(-1, num, content_start, content_end);
+            STACK_PUSH_CALLOUT_CODE(num, content_start, content_end);
+          }
+        }
+      }
+      SOP_OUT;
+      continue;
+      break;
+
+    case OP_CALLOUT_NAME: SOP_IN(OP_CALLOUT_NAME);
+      {
+        int id;
+        int of;
+        OnigCalloutFunc func;
+
+        UChar* content_start;
+        UChar* content_end;
+        int call_result;
+        int num;
+        int dirs;
+        CalloutArgs args;
+
+        of = ONIG_CALLOUT_OF_NAME;
+        GET_MEMNUM_INC(id,   p);
+        func = onig_get_callout_func_from_id(id);
+
+      callout_common_entry:
+        GET_MEMNUM_INC(num,  p);
+        GET_MEMNUM_INC(dirs, p);
+        GET_POINTER_INC(content_start, p);
+        GET_POINTER_INC(content_end,   p);
+
+        if (IS_NOT_NULL(func) && (dirs & CALLOUT_IN_PROGRESS) != 0) {
+          CALLOUT_BODY(func, ONIG_CALLOUT_IN_PROGRESS, of, id,
+                       num, content_start, content_end,
+                       msa->mp->callout_user_data, args, call_result);
+          switch (call_result) {
+          case ONIG_CALLOUT_FAIL:
+            goto fail;
+            break;
+          case ONIG_CALLOUT_SUCCESS:
+            goto retraction_callout2;
+            break;
+          case ONIG_CALLOUT_ABORT: /* == ONIG_ABORT */
+            /* fall */
+          default: /* error code */
+            if (call_result > 0) {
+              call_result = ONIGERR_INVALID_ARGUMENT;
+            }
+            best_len = call_result;
+            goto finish;
+            break;
+          }
+        }
+        else {
+        retraction_callout2:
+          if ((dirs & CALLOUT_IN_RETRACTION) != 0) {
+            if (of == ONIG_CALLOUT_OF_NAME) {
+              func = onig_get_retraction_callout_func_from_id(id);
+              if (IS_NOT_NULL(func)) {
+                STACK_PUSH_CALLOUT_NAME(id, num, content_start, content_end);
+              }
+            }
+            else {
+              func = msa->mp->retraction_callout_of_code;
+              if (IS_NOT_NULL(func)) {
+                STACK_PUSH_CALLOUT_CODE(num, content_start, content_end);
+              }
+            }
           }
         }
       }

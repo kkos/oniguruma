@@ -594,6 +594,7 @@ enum OpCode {
   OP_PUSH_SAVE_VAL,
   OP_UPDATE_VAR,
   OP_CALLOUT_CODE,          /* (?{...}) (?{{...}}) */
+  OP_CALLOUT_NAME,          /* (*NAME) (*NAME:...) */
 
   /* no need: IS_DYNAMIC_OPTION() == 0 */
   OP_SET_OPTION_PUSH,    /* set option and push recover option */
@@ -699,6 +700,7 @@ typedef int ModeType;
 #define SIZE_OP_PUSH_SAVE_VAL          (SIZE_OPCODE + SIZE_SAVE_TYPE + SIZE_MEMNUM)
 #define SIZE_OP_UPDATE_VAR             (SIZE_OPCODE + SIZE_UPDATE_VAR_TYPE + SIZE_MEMNUM)
 #define SIZE_OP_CALLOUT_CODE           (SIZE_OPCODE + SIZE_MEMNUM + SIZE_MEMNUM + SIZE_POINTER + SIZE_POINTER)
+#define SIZE_OP_CALLOUT_NAME           (SIZE_OPCODE + SIZE_MEMNUM + SIZE_MEMNUM + SIZE_MEMNUM + SIZE_POINTER + SIZE_POINTER)
 
 #define MC_ESC(syn)               (syn)->meta_char_table.esc
 #define MC_ANYCHAR(syn)           (syn)->meta_char_table.anychar
@@ -775,6 +777,9 @@ extern void   onig_transfer P_((regex_t* to, regex_t* from));
 extern int    onig_is_code_in_cc_len P_((int enclen, OnigCodePoint code, void* /* CClassNode* */ cc));
 extern RegexExt* onig_get_regex_ext(regex_t* reg);
 extern int    onig_ext_set_pattern(regex_t* reg, const UChar* pattern, const UChar* pattern_end);
+
+extern OnigCalloutFunc onig_get_callout_func_from_id(int id);
+extern OnigCalloutFunc onig_get_retraction_callout_func_from_id(int id);
 
 /* strend hash */
 typedef void hash_table_type;
