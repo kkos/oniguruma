@@ -111,8 +111,8 @@ extern int main(int argc, char* argv[])
   OnigEncoding use_encs[] = { ONIG_ENCODING_UTF8 };
   onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
 
-  (void)onig_set_callout_by_code(normal_callout_func);
-  (void)onig_set_retraction_callout_by_code(retraction_callout_func);
+  (void)onig_set_callout_of_code(normal_callout_func);
+  (void)onig_set_retraction_callout_of_code(retraction_callout_func);
 
   test("a+(?{foo bar baz...}+)$", "aaab");
   test("(?{{!{}#$%&'()=-~^|[_]`@*:+;<>?/.\\,}})c", "abc");

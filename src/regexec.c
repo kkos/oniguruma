@@ -801,7 +801,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 
 #define CALLOUT_CODE_BODY(func, dir, sid, cstart, cend, user, args, result) do { \
   args.direction     = dir;\
-  args.by            = ONIG_CALLOUT_BY_CODE;\
+  args.of            = ONIG_CALLOUT_OF_CODE;\
   args.id            = sid;\
   args.content       = cstart;\
   args.content_end   = cend;\
@@ -925,7 +925,7 @@ typedef struct _StackType {
 /* Synchronize visible part of the type with OnigCalloutArgs */
 typedef struct {
   int   direction;
-  int   by;
+  int   of;
   int   id;
   const OnigUChar* content;
   const OnigUChar* content_end;
@@ -1088,8 +1088,8 @@ onig_initialize_match_params(OnigMatchParams* mp)
 #ifdef USE_TRY_IN_MATCH_LIMIT
   mp->try_in_match_limit = TryInMatchLimit;
 #endif
-  mp->callout_by_code            = DefaultCallout;
-  mp->retraction_callout_by_code = DefaultRetractionCallout;
+  mp->callout_of_code            = DefaultCallout;
+  mp->retraction_callout_of_code = DefaultRetractionCallout;
   mp->callout_user_data  = 0;
 }
 
@@ -1472,7 +1472,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
           mem_end_stk[stk->zid]   = stk->u.mem.end;\
         }\
         else if (stk->type == STK_CALLOUT_CODE) {\
-          RETRACTION_CALLOUT_CODE(msa->mp->retraction_callout_by_code, stk->zid, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data);\
+          RETRACTION_CALLOUT_CODE(msa->mp->retraction_callout_of_code, stk->zid, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data);\
         }\
       }\
     }\
@@ -3550,9 +3550,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         GET_POINTER_INC(content_start, p);
         GET_POINTER_INC(content_end,   p);
 
-        if (IS_NOT_NULL(msa->mp->callout_by_code) &&
+        if (IS_NOT_NULL(msa->mp->callout_of_code) &&
             (dirs & CALLOUT_DIRECTION_NORMAL) != 0) {
-          CALLOUT_CODE_BODY(msa->mp->callout_by_code, ONIG_CALLOUT_DIRECTION_NORMAL,
+          CALLOUT_CODE_BODY(msa->mp->callout_of_code, ONIG_CALLOUT_DIRECTION_NORMAL,
                             id, content_start, content_end,
                             msa->mp->callout_user_data, args, call_result);
           switch (call_result) {
@@ -3576,7 +3576,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         else {
         retraction_callout:
           if ((dirs & CALLOUT_DIRECTION_RETRACTION) != 0 &&
-              IS_NOT_NULL(msa->mp->retraction_callout_by_code)) {
+              IS_NOT_NULL(msa->mp->retraction_callout_of_code)) {
             STACK_PUSH_CALLOUT_CODE(id, content_start, content_end);
           }
         }
@@ -4698,26 +4698,26 @@ onig_copy_encoding(OnigEncoding to, OnigEncoding from)
 
 /* for callout functions */
 extern OnigCalloutFunc
-onig_get_callout_by_code(void)
+onig_get_callout_of_code(void)
 {
   return DefaultCallout;
 }
 
 extern int
-onig_set_callout_by_code(OnigCalloutFunc f)
+onig_set_callout_of_code(OnigCalloutFunc f)
 {
   DefaultCallout = f;
   return ONIG_NORMAL;
 }
 
 extern OnigCalloutFunc
-onig_get_retraction_callout_by_code(void)
+onig_get_retraction_callout_of_code(void)
 {
   return DefaultRetractionCallout;
 }
 
 extern int
-onig_set_retraction_callout_by_code(OnigCalloutFunc f)
+onig_set_retraction_callout_of_code(OnigCalloutFunc f)
 {
   DefaultRetractionCallout = f;
   return ONIG_NORMAL;

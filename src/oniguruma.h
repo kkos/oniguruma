@@ -751,13 +751,13 @@ enum {
 };
 
 enum {
-  ONIG_CALLOUT_BY_CODE = 0,
-  ONIG_CALLOUT_BY_NAME = 1,
+  ONIG_CALLOUT_OF_CODE = 0,
+  ONIG_CALLOUT_OF_NAME = 1,
 };
 
 typedef struct {
   int   direction;
-  int   by;
+  int   of;
   int   id;
   const OnigUChar* content;
   const OnigUChar* content_end;
@@ -789,8 +789,8 @@ enum {
 typedef struct {
   unsigned int    match_stack_limit;
   unsigned long   try_in_match_limit;
-  OnigCalloutFunc callout_by_code;
-  OnigCalloutFunc retraction_callout_by_code;
+  OnigCalloutFunc callout_of_code;
+  OnigCalloutFunc retraction_callout_of_code;
   void*           callout_user_data;
 } OnigMatchParams;
 
@@ -924,13 +924,13 @@ const char* onig_copyright P_((void));
 
 /* for callout functions */
 ONIG_EXTERN
-OnigCalloutFunc onig_get_callout_by_code P_((void));
+OnigCalloutFunc onig_get_callout_of_code P_((void));
 ONIG_EXTERN
-int onig_set_callout_by_code P_((OnigCalloutFunc f));
+int onig_set_callout_of_code P_((OnigCalloutFunc f));
 ONIG_EXTERN
-OnigCalloutFunc onig_get_retraction_callout_by_code P_((void));
+OnigCalloutFunc onig_get_retraction_callout_of_code P_((void));
 ONIG_EXTERN
-int onig_set_retraction_callout_by_code P_((OnigCalloutFunc f));
+int onig_set_retraction_callout_of_code P_((OnigCalloutFunc f));
 
 ONIG_EXTERN
 int onig_get_capture_range_in_callout P_((OnigCalloutArgs* args, int mem_num, int* begin, int* end));
