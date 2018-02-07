@@ -615,8 +615,8 @@ enum UpdateVarType {
 };
 
 enum CalloutDirectionFlagType {
-  CALLOUT_DIRECTION_NORMAL     = 1,  /* == 1<<0 */
-  CALLOUT_DIRECTION_RETRACTION = 2   /* == 1<<1 */
+  CALLOUT_IN_PROGRESS   = 1,  /* == 1<<ONIG_CALLOUT_IN_PROGRESS */
+  CALLOUT_IN_RETRACTION = 2   /* == 1<<ONIG_CALLOUT_IN_RETRACTION */
 };
 
 typedef int RelAddrType;

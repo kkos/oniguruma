@@ -799,8 +799,8 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #endif
 }
 
-#define CALLOUT_CODE_BODY(func, dir, sid, cstart, cend, user, args, result) do { \
-  args.direction     = dir;\
+#define CALLOUT_CODE_BODY(func, ain, sid, cstart, cend, user, args, result) do { \
+  args.in            = ain;\
   args.of            = ONIG_CALLOUT_OF_CODE;\
   args.id            = sid;\
   args.content       = cstart;\
@@ -822,7 +822,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define RETRACTION_CALLOUT_CODE(func, sid, cstart, cend, user) do {\
   int result;\
   CalloutArgs args;\
-  CALLOUT_CODE_BODY(func, ONIG_CALLOUT_DIRECTION_RETRACTION, sid, cstart, cend, user, args, result);\
+  CALLOUT_CODE_BODY(func, ONIG_CALLOUT_IN_RETRACTION, sid, cstart, cend, user, args, result);\
   switch (result) {\
   case ONIG_CALLOUT_FAIL:\
     goto fail;\
@@ -924,7 +924,7 @@ typedef struct _StackType {
 
 /* Synchronize visible part of the type with OnigCalloutArgs */
 typedef struct {
-  int   direction;
+  int   in;
   int   of;
   int   id;
   const OnigUChar* content;
@@ -3551,8 +3551,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         GET_POINTER_INC(content_end,   p);
 
         if (IS_NOT_NULL(msa->mp->callout_of_code) &&
-            (dirs & CALLOUT_DIRECTION_NORMAL) != 0) {
-          CALLOUT_CODE_BODY(msa->mp->callout_of_code, ONIG_CALLOUT_DIRECTION_NORMAL,
+            (dirs & CALLOUT_IN_PROGRESS) != 0) {
+          CALLOUT_CODE_BODY(msa->mp->callout_of_code, ONIG_CALLOUT_IN_PROGRESS,
                             id, content_start, content_end,
                             msa->mp->callout_user_data, args, call_result);
           switch (call_result) {
@@ -3575,7 +3575,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         }
         else {
         retraction_callout:
-          if ((dirs & CALLOUT_DIRECTION_RETRACTION) != 0 &&
+          if ((dirs & CALLOUT_IN_RETRACTION) != 0 &&
               IS_NOT_NULL(msa->mp->retraction_callout_of_code)) {
             STACK_PUSH_CALLOUT_CODE(id, content_start, content_end);
           }

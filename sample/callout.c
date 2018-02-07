@@ -23,7 +23,7 @@ callout_body(OnigCalloutArgs* args, void* user_data)
 
   fprintf(stdout,
           "%s: id: %d, content: \"%s\", start: \"%s\", current: \"%s\"\n",
-          args->direction == ONIG_CALLOUT_DIRECTION_NORMAL ? "NORMAL" : "RETRACTION",
+          args->in == ONIG_CALLOUT_IN_PROGRESS ? "PROGRESS" : "RETRACTION",
           args->id, content, args->start, args->current);
   free(content);
 

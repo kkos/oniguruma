@@ -5726,7 +5726,7 @@ parse_code_callout(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
     if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
   }
 
-  dirs = CALLOUT_DIRECTION_NORMAL;
+  dirs = CALLOUT_IN_PROGRESS;
   code_start = p;
   while (1) {
     if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
@@ -5748,12 +5748,12 @@ parse_code_callout(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
   if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
   PFETCH_S(c);
   if (c == '+') {
-    dirs |= CALLOUT_DIRECTION_RETRACTION;
+    dirs |= CALLOUT_IN_RETRACTION;
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
     PFETCH_S(c);
   }
   else if (c == '-') {
-    dirs = CALLOUT_DIRECTION_RETRACTION;
+    dirs = CALLOUT_IN_RETRACTION;
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
     PFETCH_S(c);
   }
