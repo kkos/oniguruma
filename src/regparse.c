@@ -6078,8 +6078,8 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
   if (PEND) return ONIGERR_END_PATTERN_WITH_UNMATCHED_PARENTHESIS;
 
   option = env->options;
-  if (PPEEK_IS('?') &&
-      IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_GROUP_EFFECT)) {
+  c = PPEEK;
+  if (c == '?' && IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_GROUP_EFFECT)) {
     PINC;
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
 
