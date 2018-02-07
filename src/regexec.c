@@ -817,26 +817,6 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #endif
 }
 
-#define CALLOUT_CODE_BODY(func, ain, anum, cstart, cend, user, args, result) do { \
-  args.in            = ain;\
-  args.of            = ONIG_CALLOUT_OF_CODE;\
-  args.id            = -1;\
-  args.num           = anum;\
-  args.content       = cstart;\
-  args.content_end   = cend;\
-  args.regex         = reg;\
-  args.subject       = str;\
-  args.subject_end   = end;\
-  args.start         = sstart;\
-  args.right_range   = right_range;\
-  args.current       = s;\
-  args.try_in_match_counter = try_in_match_counter;\
-  args.stk_base      = stk_base;\
-  args.stk           = stk;\
-  args.mem_start_stk = mem_start_stk;\
-  args.mem_end_stk   = mem_end_stk;\
-  result = (func)((OnigCalloutArgs* )&args, user);\
-} while (0)
 
 #define CALLOUT_BODY(func, ain, aof, aid, anum, cstart, cend, user, args, result) do { \
   args.in            = (ain);\
@@ -897,7 +877,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_MEM_START              0x0010
 #define STK_MEM_END                0x8030
 #define STK_REPEAT_INC             0x0050
-#define STK_CALLOUT_CODE           0x0070
+#define STK_CALLOUT                0x0070
 
 /* avoided by normal-POP */
 #define STK_VOID                   0x0000  /* for fill a blank */
@@ -1453,7 +1433,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 
 #define STACK_PUSH_CALLOUT_CODE(anum, xcontent, xcontent_end) do {\
   STACK_ENSURE(1);\
-  stk->type = STK_CALLOUT_CODE;\
+  stk->type = STK_CALLOUT;\
   stk->zid  = -1;\
   stk->u.callout_code.num         = (anum);\
   stk->u.callout_code.content     = (xcontent);\
@@ -1463,7 +1443,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 
 #define STACK_PUSH_CALLOUT_NAME(aid, anum, xcontent, xcontent_end) do {\
   STACK_ENSURE(1);\
-  stk->type = STK_CALLOUT_CODE;\
+  stk->type = STK_CALLOUT;\
   stk->zid  = (aid);\
   stk->u.callout_code.num         = (anum);\
   stk->u.callout_code.content     = (xcontent);\
@@ -1524,7 +1504,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
           mem_start_stk[stk->zid] = stk->u.mem.start;\
           mem_end_stk[stk->zid]   = stk->u.mem.end;\
         }\
-        else if (stk->type == STK_CALLOUT_CODE) {\
+        else if (stk->type == STK_CALLOUT) {\
           int aof;\
           OnigCalloutFunc func;\
           if (stk->zid < 0) {\
@@ -2086,6 +2066,11 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   unsigned long try_in_match_limit;
   unsigned long try_in_match_counter;
 #endif
+
+  /* for OP_CALLOUT_CODE/NAME */
+  int id, of;
+  OnigCalloutFunc func;
+
   UChar *p = reg->p;
   OnigOptionType option = reg->options;
   OnigEncoding encode = reg->enc;
@@ -3601,48 +3586,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     case OP_CALLOUT_CODE: SOP_IN(OP_CALLOUT_CODE);
       {
-        UChar* content_start;
-        UChar* content_end;
-        int call_result;
-        int num;
-        int dirs;
-        CalloutArgs args;
-
-        GET_MEMNUM_INC(num,  p);
-        GET_MEMNUM_INC(dirs, p);
-        GET_POINTER_INC(content_start, p);
-        GET_POINTER_INC(content_end,   p);
-
-        if (IS_NOT_NULL(msa->mp->callout_of_code) &&
-            (dirs & CALLOUT_IN_PROGRESS) != 0) {
-          CALLOUT_CODE_BODY(msa->mp->callout_of_code, ONIG_CALLOUT_IN_PROGRESS,
-                            num, content_start, content_end,
-                            msa->mp->callout_user_data, args, call_result);
-          switch (call_result) {
-          case ONIG_CALLOUT_FAIL:
-            goto fail;
-            break;
-          case ONIG_CALLOUT_SUCCESS:
-            goto retraction_callout;
-            break;
-          case ONIG_CALLOUT_ABORT: /* == ONIG_ABORT */
-            /* fall */
-          default: /* error code */
-            if (call_result > 0) {
-              call_result = ONIGERR_INVALID_ARGUMENT;
-            }
-            best_len = call_result;
-            goto finish;
-            break;
-          }
-        }
-        else {
-        retraction_callout:
-          if ((dirs & CALLOUT_IN_RETRACTION) != 0 &&
-              IS_NOT_NULL(msa->mp->retraction_callout_of_code)) {
-            STACK_PUSH_CALLOUT_CODE(num, content_start, content_end);
-          }
-        }
+        of = ONIG_CALLOUT_OF_CODE;
+        id = -1;
+        func = msa->mp->callout_of_code;
+        goto callout_common_entry;
       }
       SOP_OUT;
       continue;
@@ -3650,10 +3597,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     case OP_CALLOUT_NAME: SOP_IN(OP_CALLOUT_NAME);
       {
-        int id;
-        int of;
-        OnigCalloutFunc func;
-
         UChar* content_start;
         UChar* content_end;
         int call_result;
