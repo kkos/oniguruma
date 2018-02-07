@@ -55,8 +55,8 @@ enum GimmickType {
 };
 
 enum CalloutType {
-  CALLOUT_CODE = 0,
-  CALLOUT_NAME = 1,
+  CALLOUT_OF_CODE = 0,
+  CALLOUT_OF_NAME = 1,
 };
 
 /* node type bit */

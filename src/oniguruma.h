@@ -755,6 +755,7 @@ enum {
   ONIG_CALLOUT_OF_NAME = 1,
 };
 
+/* Synchronize CalloutArgs definition in src/regexec.c */
 typedef struct {
   int   in;
   int   of;

@@ -5761,7 +5761,7 @@ parse_code_callout(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
   if (c != cterm)
     return ONIGERR_INVALID_CALLOUT_PATTERN;
 
-  r = node_new_callout(np, CALLOUT_CODE, dirs, env);
+  r = node_new_callout(np, CALLOUT_OF_CODE, dirs, env);
   if (r != 0) return r;
 
   GIMMICK_(*np)->start = code_start - env->pattern;

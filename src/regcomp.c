@@ -1536,7 +1536,7 @@ compile_gimmick_node(GimmickNode* node, regex_t* reg)
 
   case GIMMICK_CALLOUT:
     switch (node->detail_type) {
-    case CALLOUT_CODE:
+    case CALLOUT_OF_CODE:
       {
         RegexExt* ext;
         UChar* pattern;
@@ -1560,7 +1560,7 @@ compile_gimmick_node(GimmickNode* node, regex_t* reg)
       }
       break;
 
-    case CALLOUT_NAME:
+    case CALLOUT_OF_NAME:
     default:
       r = ONIGERR_TYPE_BUG;
       break;
@@ -1591,11 +1591,11 @@ compile_length_gimmick_node(GimmickNode* node, regex_t* reg)
 
   case GIMMICK_CALLOUT:
     switch (node->detail_type) {
-    case CALLOUT_CODE:
+    case CALLOUT_OF_CODE:
       len = SIZE_OP_CALLOUT_CODE;
       break;
 
-    case CALLOUT_NAME:
+    case CALLOUT_OF_NAME:
     default:
       len = ONIGERR_TYPE_BUG;
       break;
