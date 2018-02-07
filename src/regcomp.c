@@ -6313,6 +6313,7 @@ extern int
 onig_end(void)
 {
   exec_end_call_list();
+  onig_callout_names_free();
 
   onig_inited = 0;
 

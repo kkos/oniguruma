@@ -362,6 +362,65 @@ strdup_with_null(OnigEncoding enc, UChar* s, UChar* end)
   return r;
 }
 
+static UChar*
+strdup_with_null1(UChar* s, UChar* end)
+{
+  int slen;
+  UChar *r;
+
+  slen = (int )(end - s);
+
+  r = (UChar* )xmalloc(slen + 1);
+  CHECK_NULL_RETURN(r);
+  xmemcpy(r, s, slen);
+
+  r[slen] = (UChar )0;
+
+  return r;
+}
+
+static int
+str_reduce_to_single_byte_code(OnigEncoding enc, UChar* s, UChar* end,
+                               UChar** rs, UChar** rend)
+{
+  int n;
+  UChar* p;
+  UChar* q;
+  OnigCodePoint code;
+
+  n = 0;
+  p = s;
+  while (p < end) {
+    n = ONIGENC_MBC_ENC_LEN(enc, p);
+    if (n > 1) break;
+  }
+
+  if (n < 2) {
+    *rs   = s;
+    *rend = end;
+    return ONIG_NORMAL;
+  }
+
+  *rs = q = (UChar* )xmalloc((size_t )(end - s + 1));
+  CHECK_NULL_RETURN_MEMERR(q);
+
+  p = s;
+  while (p < end) {
+    code = ONIGENC_MBC_TO_CODE(enc, p, end);
+    if (code > 0xff) {
+      xfree(*rs);
+      return ONIGERR_NOT_SUPPORTED_ENCODING_COMBINATION;
+    }
+
+    *q++ = (UChar )code;
+    p += ONIGENC_MBC_ENC_LEN(enc, p);
+  }
+  *q = '\0';
+  *rend = q;
+
+  return ONIG_NORMAL;
+}
+
 static int
 save_entry(ScanEnv* env, enum SaveType type, int* id)
 {
@@ -1035,6 +1094,67 @@ onig_noname_group_capture_is_active(regex_t* reg)
 
 
 typedef struct {
+  int  n;
+  int  alloc;
+  OnigCalloutFunc* v;
+} CalloutFuncList;
+
+static CalloutFuncList* CalloutNameFuncList;
+
+static int
+make_callout_func_list(CalloutFuncList** rs, int init_size)
+{
+  CalloutFuncList* s;
+  OnigCalloutFunc* v;
+
+  *rs = 0;
+
+  s = xmalloc(sizeof(*s));
+  if (IS_NULL(s)) return ONIGERR_MEMORY;
+
+  v = (OnigCalloutFunc* )xmalloc(sizeof(OnigCalloutFunc) * init_size);
+  if (IS_NULL(v)) {
+    xfree(s);
+    return ONIGERR_MEMORY;
+  }
+
+  s->n = 0;
+  s->alloc = init_size;
+  s->v = v;
+
+  *rs = s;
+  return ONIG_NORMAL;
+}
+
+static void
+free_callout_func_list(CalloutFuncList* s)
+{
+  if (IS_NOT_NULL(s)) {
+    if (IS_NOT_NULL(s->v))
+      xfree(s->v);
+    xfree(s);
+  }
+}
+
+static int
+callout_func_list_add(CalloutFuncList* s, OnigCalloutFunc f)
+{
+  if (s->n >= s->alloc) {
+    int new_size = s->alloc * 2;
+    OnigCalloutFunc* nv = (OnigCalloutFunc* )xrealloc(s->v, new_size);
+    if (IS_NULL(nv)) return ONIGERR_MEMORY;
+
+    s->alloc = new_size;
+    s->v = nv;
+  }
+
+  s->v[s->n] = f;
+  s->n++;
+  return ONIG_NORMAL;
+}
+
+
+typedef struct {
   UChar* name;
   int    name_len;   /* byte length */
   int    id;
@@ -1056,6 +1176,38 @@ static int CalloutNameIDCounter;
 
 #ifdef USE_ST_LIBRARY
 
+static int
+i_free_callout_name_entry(UChar* key, CalloutNameEntry* e, void* arg ARG_UNUSED)
+{
+  xfree(e->name);
+  xfree(key);
+  xfree(e);
+  return ST_DELETE;
+}
+
+static int
+callout_names_clear(CalloutNameTable* t)
+{
+  if (IS_NOT_NULL(t)) {
+    onig_st_foreach(t, i_free_callout_name_entry, 0);
+  }
+  return 0;
+}
+
+static int
+callout_names_free(void)
+{
+  if (IS_NOT_NULL(CalloutNames)) {
+    int r = callout_names_clear(CalloutNames);
+    if (r != 0) return r;
+
+    onig_st_free_table(CalloutNames);
+    CalloutNames = 0;
+  }
+
+  return 0;
+}
+
 static CalloutNameEntry*
 callout_name_find(const UChar* name, const UChar* name_end)
 {
@@ -1070,6 +1222,45 @@ callout_name_find(const UChar* name, const UChar* name_end)
 }
 
 #else
+
+static int
+callout_names_clear(CalloutNameTable* t)
+{
+  int i;
+  CalloutNameEntry* e;
+
+  if (IS_NOT_NULL(t)) {
+    for (i = 0; i < t->num; i++) {
+      e = &(t->e[i]);
+      if (IS_NOT_NULL(e->name)) {
+        xfree(e->name);
+        e->name     = NULL;
+        e->name_len = 0;
+        e->id       = 0;
+        e->func     = 0;
+      }
+    }
+    if (IS_NOT_NULL(t->e)) {
+      xfree(t->e);
+      t->e = NULL;
+    }
+    t->num = 0;
+  }
+  return 0;
+}
+
+static int
+callout_names_free(void)
+{
+  if (IS_NOT_NULL(CalloutNames)) {
+    int r = callout_names_clear(CalloutNames);
+    if (r != 0) return r;
+
+    xfree(CalloutNames);
+    CalloutNames = 0;
+  }
+  return 0;
+}
 
 static CalloutNameEntry*
 callout_name_find(UChar* name, UChar* name_end)
@@ -1091,9 +1282,9 @@ callout_name_find(UChar* name, UChar* name_end)
 
 #endif
 
+/* name string must be single byte char string. */
 static int
-callout_name_add(OnigEncoding enc, UChar* name, UChar* name_end,
-                 OnigCalloutFunc func)
+callout_name_entry(UChar* name, UChar* name_end, OnigCalloutFunc func)
 {
   int r;
   CalloutNameEntry* e;
@@ -1112,7 +1303,7 @@ callout_name_add(OnigEncoding enc, UChar* name, UChar* name_end,
     e = (CalloutNameEntry* )xmalloc(sizeof(CalloutNameEntry));
     CHECK_NULL_RETURN_MEMERR(e);
 
-    e->name = strdup_with_null(enc, name, name_end);
+    e->name = strdup_with_null1(name, name_end);
     if (IS_NULL(e->name)) {
       xfree(e);  return ONIGERR_MEMORY;
     }
@@ -1161,20 +1352,97 @@ callout_name_add(OnigEncoding enc, UChar* name, UChar* name_end,
     }
     e = &(t->e[t->num]);
     t->num++;
-    e->name = strdup_with_null(enc, name, name_end);
+    e->name = strdup_with_null1(name, name_end);
     if (IS_NULL(e->name)) return ONIGERR_MEMORY;
 #endif
 
-    CalloutNameIDCounter--;
+    CalloutNameIDCounter++;
     e->id = CalloutNameIDCounter;
   }
 
   e->name_len = (int )(name_end - name);
   e->func     = func;
 
-  return 0;
+  return e->id;
 }
 
+
+extern int
+onig_set_callout_of_name(OnigEncoding enc, UChar* name, UChar* name_end,
+                         OnigCalloutFunc f)
+{
+  int r;
+  int id;
+  UChar* save_name = name;
+
+  if (enc != 0) {
+    r = str_reduce_to_single_byte_code(enc, name, name_end, &name, &name_end);
+    if (r < 0) return r;
+  }
+
+  r = callout_name_entry(name, name_end, f);
+  if (r < 0) goto end;
+
+  id = r;
+
+  r = ONIG_NORMAL;
+  if (IS_NULL(CalloutNameFuncList)) {
+    r = make_callout_func_list(&CalloutNameFuncList, 10);
+    if (r != ONIG_NORMAL) goto end;
+  }
+
+  while (id >= CalloutNameFuncList->n) {
+    r = callout_func_list_add(CalloutNameFuncList, 0);
+    if (r != ONIG_NORMAL) goto end;
+  }
+
+  CalloutNameFuncList->v[id] = f;
+
+ end:
+  if (save_name != name) xfree(name);
+  return r;
+}
+
+extern int
+onig_get_callout_id_from_name(OnigEncoding enc, UChar* name, UChar* name_end,
+                              int* rid)
+{
+  int r;
+  CalloutNameEntry* e;
+  UChar* save_name = name;
+
+  if (enc != 0) {
+    r = str_reduce_to_single_byte_code(enc, name, name_end, &name, &name_end);
+    if (r < 0) return r;
+  }
+
+  e = callout_name_find(name, name_end);
+  if (IS_NULL(e)) {
+    r = ONIGERR_INVALID_CALLOUT_NAME;
+    goto end;
+  }
+
+  r = ONIG_NORMAL;
+  *rid = e->id;
+
+ end:
+  if (save_name != name) xfree(name);
+  return r;
+}
+
+extern OnigCalloutFunc
+onig_get_callout_func_from_id(int id)
+{
+  return CalloutNameFuncList->v[id];
+}
+
+extern int
+onig_callout_names_free(void)
+{
+  free_callout_func_list(CalloutNameFuncList);
+  callout_names_free();
+  return ONIG_NORMAL;
+}
 
 
 #define INIT_SCANENV_MEMENV_ALLOC_SIZE   16

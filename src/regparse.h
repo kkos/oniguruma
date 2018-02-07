@@ -451,6 +451,7 @@ extern int    onig_parse_tree P_((Node** root, const UChar* pattern, const UChar
 extern int    onig_free_shared_cclass_table P_((void));
 extern int    onig_is_code_in_cc P_((OnigEncoding enc, OnigCodePoint code, CClassNode* cc));
 extern OnigLen onig_get_tiny_min_len(Node* node, unsigned int inhibit_node_types, int* invalid_node);
+extern int onig_callout_names_free(void);
 
 #ifdef ONIG_DEBUG
 extern int onig_print_names(FILE*, regex_t*);
