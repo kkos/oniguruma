@@ -335,8 +335,10 @@ typedef struct {
 
   enum GimmickType type;
   int  detail_type;
-  int  id;
+  int  num;
   int  dirs;
+  int  id;
+  OnigCalloutFunc func; // ONLY for callout of name CASE
   int  start; /* code start position index */
   int  end;   /* code end   position index */
 } GimmickNode;

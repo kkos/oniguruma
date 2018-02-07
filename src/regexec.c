@@ -799,10 +799,11 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #endif
 }
 
-#define CALLOUT_CODE_BODY(func, ain, sid, cstart, cend, user, args, result) do { \
+#define CALLOUT_CODE_BODY(func, ain, anum, cstart, cend, user, args, result) do { \
   args.in            = ain;\
   args.of            = ONIG_CALLOUT_OF_CODE;\
-  args.id            = sid;\
+  args.id            = -1;\
+  args.num           = anum;\
   args.content       = cstart;\
   args.content_end   = cend;\
   args.regex         = reg;\
@@ -819,10 +820,10 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   result = (func)((OnigCalloutArgs* )&args, user);\
 } while (0)
 
-#define RETRACTION_CALLOUT_CODE(func, sid, cstart, cend, user) do {\
+#define RETRACTION_CALLOUT_CODE(func, anum, cstart, cend, user) do {\
   int result;\
   CalloutArgs args;\
-  CALLOUT_CODE_BODY(func, ONIG_CALLOUT_IN_RETRACTION, sid, cstart, cend, user, args, result);\
+  CALLOUT_CODE_BODY(func, ONIG_CALLOUT_IN_RETRACTION, anum, cstart, cend, user, args, result);\
   switch (result) {\
   case ONIG_CALLOUT_FAIL:\
     goto fail;\
@@ -916,6 +917,7 @@ typedef struct _StackType {
       UChar* v2;
     } val;
     struct {
+      int    num;
       UChar* content;
       UChar* content_end;
     } callout_code;
@@ -926,7 +928,8 @@ typedef struct _StackType {
 typedef struct {
   int   in;
   int   of;
-  int   id;
+  int   id;   /* name id or -1 (callout of code) */
+  int   num;
   const OnigUChar* content;
   const OnigUChar* content_end;
   OnigRegex        regex;
@@ -1409,10 +1412,10 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while (0)
 
-#define STACK_PUSH_CALLOUT_CODE(sid, xcontent, xcontent_end) do { \
+#define STACK_PUSH_CALLOUT_CODE(aid, anum, xcontent, xcontent_end) do {\
   STACK_ENSURE(1);\
   stk->type = STK_CALLOUT_CODE;\
-  stk->zid  = (sid);\
+  stk->u.callout_code.num         = (anum);\
   stk->u.callout_code.content     = (xcontent);\
   stk->u.callout_code.content_end = (xcontent_end);\
   STACK_INC;\
@@ -1472,7 +1475,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
           mem_end_stk[stk->zid]   = stk->u.mem.end;\
         }\
         else if (stk->type == STK_CALLOUT_CODE) {\
-          RETRACTION_CALLOUT_CODE(msa->mp->retraction_callout_of_code, stk->zid, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data);\
+          RETRACTION_CALLOUT_CODE(msa->mp->retraction_callout_of_code, stk->u.callout_code.num, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data);\
         }\
       }\
     }\
@@ -3541,11 +3544,11 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         UChar* content_start;
         UChar* content_end;
         int call_result;
-        int id;
+        int num;
         int dirs;
         CalloutArgs args;
 
-        GET_MEMNUM_INC(id,   p);
+        GET_MEMNUM_INC(num,  p);
         GET_MEMNUM_INC(dirs, p);
         GET_POINTER_INC(content_start, p);
         GET_POINTER_INC(content_end,   p);
@@ -3553,7 +3556,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         if (IS_NOT_NULL(msa->mp->callout_of_code) &&
             (dirs & CALLOUT_IN_PROGRESS) != 0) {
           CALLOUT_CODE_BODY(msa->mp->callout_of_code, ONIG_CALLOUT_IN_PROGRESS,
-                            id, content_start, content_end,
+                            num, content_start, content_end,
                             msa->mp->callout_user_data, args, call_result);
           switch (call_result) {
           case ONIG_CALLOUT_FAIL:
@@ -3577,7 +3580,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         retraction_callout:
           if ((dirs & CALLOUT_IN_RETRACTION) != 0 &&
               IS_NOT_NULL(msa->mp->retraction_callout_of_code)) {
-            STACK_PUSH_CALLOUT_CODE(id, content_start, content_end);
+            STACK_PUSH_CALLOUT_CODE(-1, num, content_start, content_end);
           }
         }
       }

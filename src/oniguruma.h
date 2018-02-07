@@ -759,7 +759,8 @@ enum {
 typedef struct {
   int   in;
   int   of;
-  int   id;
+  int   id;   /* name id or -1 (callout of code) */
+  int   num;
   const OnigUChar* content;
   const OnigUChar* content_end;
   OnigRegex        regex;
