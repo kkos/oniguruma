@@ -38,6 +38,9 @@
 
 #define CASE_FOLD_IS_APPLIED_INSIDE_NEGATIVE_CCLASS
 
+#define IS_ALLOWED_CODE_IN_CALLOUT_NAME(c) \
+  ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' || c == '!')
+
 
 OnigSyntaxType OnigSyntaxOniguruma = {
   (( SYN_GNU_REGEX_OP | ONIG_SYN_OP_QMARK_NON_GREEDY |
@@ -1380,6 +1383,20 @@ callout_name_entry(UChar* name, UChar* name_end,
   return e->id;
 }
 
+extern int
+is_allowed_callout_name(UChar* name, UChar* name_end)
+{
+  UChar* p = name;
+
+  while (p < name_end) {
+    OnigCodePoint c = (OnigCodePoint )*p;
+    if (! IS_ALLOWED_CODE_IN_CALLOUT_NAME(c))
+      return 0;
+    p++;
+  }
+
+  return 1;
+}
 
 extern int
 onig_set_callout_of_name(OnigEncoding enc, UChar* name, UChar* name_end,
@@ -1392,6 +1409,11 @@ onig_set_callout_of_name(OnigEncoding enc, UChar* name, UChar* name_end,
   if (enc != 0) {
     r = str_reduce_to_single_byte_code(enc, name, name_end, &name, &name_end);
     if (r < 0) return r;
+  }
+
+  if (! is_allowed_callout_name(name, name_end)) {
+    r = ONIGERR_INVALID_CALLOUT_NAME;
+    goto end;
   }
 
   r = callout_name_entry(name, name_end, callout, retraction_callout);
@@ -1429,6 +1451,11 @@ onig_get_callout_id_from_name(OnigEncoding enc, UChar* name, UChar* name_end,
   if (enc != 0) {
     r = str_reduce_to_single_byte_code(enc, name, name_end, &name, &name_end);
     if (r < 0) return r;
+  }
+
+  if (! is_allowed_callout_name(name, name_end)) {
+    r = ONIGERR_INVALID_CALLOUT_NAME;
+    goto end;
   }
 
   e = callout_name_find(name, name_end);
@@ -6100,6 +6127,10 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     else if (c == cterm || c == ':') break;
     else if (c > 255)
       return ONIGERR_INVALID_CALLOUT_NAME;
+    else {
+      if (! IS_ALLOWED_CODE_IN_CALLOUT_NAME(c))
+        return ONIGERR_INVALID_CALLOUT_NAME;
+    }
   }
 
   if (c == ':') {
