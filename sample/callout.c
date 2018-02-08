@@ -155,6 +155,8 @@ extern int main(int argc, char* argv[])
 
   // callout of name
   test("\\A(*FOO)abc", "abc");
+  test("abc(?:(*FAIL)|$)", "abcabc");
+  test("abc(?:(*ABORT)|$)", "abcabc");
 
   onig_end();
   return 0;
