@@ -5992,7 +5992,7 @@ static int parse_subexp(Node** top, OnigToken* tok, int term,
 
 /* (?{...}) (?{{...}}) */
 static int
-parse_code_callout(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
+parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
 {
   int r;
   int i;
@@ -6298,7 +6298,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
         return ONIGERR_UNDEFINED_GROUP_OPTION;
 
       /* (?{...}) (?{{...}}) */
-      r = parse_code_callout(np, ')', &p, end, env);
+      r = parse_callout_of_code(np, ')', &p, end, env);
       if (r != 0) return r;
 
       goto end;
