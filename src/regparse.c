@@ -1398,9 +1398,10 @@ is_allowed_callout_name(UChar* name, UChar* name_end)
   return 1;
 }
 
-extern int
-onig_set_callout_of_name(OnigEncoding enc, UChar* name, UChar* name_end,
-                         OnigCalloutFunc callout, OnigCalloutFunc retraction_callout)
+static int
+set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
+                             OnigCalloutFunc callout,
+                             OnigCalloutFunc retraction_callout)
 {
   int r;
   int id;
@@ -1442,6 +1443,13 @@ onig_set_callout_of_name(OnigEncoding enc, UChar* name, UChar* name_end,
  end:
   if (save_name != name) xfree(name);
   return r;
+}
+
+extern int
+onig_set_callout_of_name(UChar* name, UChar* name_end,
+                         OnigCalloutFunc callout, OnigCalloutFunc retraction_callout)
+{
+  return set_callout_of_name_with_enc(0, name, name_end, callout, retraction_callout);
 }
 
 extern int

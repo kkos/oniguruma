@@ -128,16 +128,15 @@ extern int main(int argc, char* argv[])
 {
   int r;
   UChar* name;
-  OnigEncoding enc;
   OnigEncoding use_encs[1];
 
-  use_encs[0] = enc = ONIG_ENCODING_UTF8;
+  use_encs[0] = ONIG_ENCODING_UTF8;
 
   onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
 
   onig_initialize_builtin_callouts();
   name = (UChar* )"FOO";
-  r = onig_set_callout_of_name(enc, name, name + strlen(name),
+  r = onig_set_callout_of_name(name, name + strlen(name),
                                callout_foo, retraction_callout_foo);
   if (r != ONIG_NORMAL) {
     fprintf(stderr, "ERROR: fail to set callout of name: %s\n", name);

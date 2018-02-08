@@ -4874,7 +4874,7 @@ extern int
 onig_initialize_builtin_callouts(void)
 {
 #define B1(name, func)  do {\
-  r = onig_set_callout_of_name(0, (UChar* )#name, (UChar* )(#name + strlen(#name)),\
+  r = onig_set_callout_of_name((UChar* )#name, (UChar* )(#name + strlen(#name)),\
                                onig_builtin_ ## func, 0);\
   if (r != ONIG_NORMAL) return r;\
 } while(0)
