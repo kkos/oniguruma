@@ -924,6 +924,8 @@ const char* onig_copyright P_((void));
 
 /* for callout functions */
 ONIG_EXTERN
+int onig_initialize_builtin_callouts P_((void));
+ONIG_EXTERN
 OnigCalloutFunc onig_get_callout_of_code P_((void));
 ONIG_EXTERN
 int onig_set_callout_of_code P_((OnigCalloutFunc f));
