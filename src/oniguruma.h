@@ -931,6 +931,8 @@ ONIG_EXTERN
 OnigCalloutFunc onig_get_retraction_callout_of_code P_((void));
 ONIG_EXTERN
 int onig_set_retraction_callout_of_code P_((OnigCalloutFunc f));
+ONIG_EXTERN
+int onig_set_callout_of_name P_((OnigEncoding enc, UChar* name, UChar* name_end, OnigCalloutFunc callout, OnigCalloutFunc retraction_callout));
 
 ONIG_EXTERN
 int onig_get_capture_range_in_callout P_((OnigCalloutArgs* args, int mem_num, int* begin, int* end));
