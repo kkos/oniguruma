@@ -18,14 +18,20 @@ callout_body(OnigCalloutArgs* args, void* user_data)
   int used_bytes;
   UChar* content;
 
-  len = args->content_end - args->content;
-  content = (UChar* )strndup((const char* )args->content, len);
+  if (args->content != 0) {
+    len = args->content_end - args->content;
+    content = (UChar* )strndup((const char* )args->content, len);
+  }
+  else
+    content = 0;
 
   fprintf(stdout,
-          "%s: id: %d, content: \"%s\", start: \"%s\", current: \"%s\"\n",
+          "%s %s: id: %d, content: \"%s\", start: \"%s\", current: \"%s\"\n",
+          args->of == ONIG_CALLOUT_OF_CODE ? "CODE" : "NAME",
           args->in == ONIG_CALLOUT_IN_PROGRESS ? "PROGRESS" : "RETRACTION",
           args->id, content, args->start, args->current);
-  free(content);
+
+  if (content != 0) free(content);
 
   (void )onig_get_used_stack_size_in_callout(args, &used_num, &used_bytes);
   fprintf(stdout, "stack: used_num: %d, used_bytes: %d\n", used_num, used_bytes);
@@ -43,13 +49,25 @@ callout_body(OnigCalloutArgs* args, void* user_data)
 }
 
 static int
-normal_callout_func(OnigCalloutArgs* args, void* user_data)
+progress_callout_func(OnigCalloutArgs* args, void* user_data)
 {
   return callout_body(args, user_data);
 }
 
 static int
 retraction_callout_func(OnigCalloutArgs* args, void* user_data)
+{
+  return callout_body(args, user_data);
+}
+
+static int
+callout_foo(OnigCalloutArgs* args, void* user_data)
+{
+  return callout_body(args, user_data);
+}
+
+static int
+retraction_callout_foo(OnigCalloutArgs* args, void* user_data)
 {
   return callout_body(args, user_data);
 }
@@ -108,17 +126,33 @@ test(char* in_pattern, char* in_str)
 
 extern int main(int argc, char* argv[])
 {
-  OnigEncoding use_encs[] = { ONIG_ENCODING_UTF8 };
+  int r;
+  UChar* name;
+  OnigEncoding enc;
+  OnigEncoding use_encs[1];
+
+  use_encs[0] = enc = ONIG_ENCODING_UTF8;
+
   onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
 
-  (void)onig_set_callout_of_code(normal_callout_func);
+  (void)onig_set_callout_of_code(progress_callout_func);
   (void)onig_set_retraction_callout_of_code(retraction_callout_func);
 
+  name = (UChar* )"FOO";
+  r = onig_set_callout_of_name(enc, name, name + strlen(name),
+                               callout_foo, retraction_callout_foo);
+
+
+  // callout of code
   test("a+(?{foo bar baz...}+)$", "aaab");
   test("(?{{!{}#$%&'()=-~^|[_]`@*:+;<>?/.\\,}})c", "abc");
   test("\\A(...)(?{{{booooooooooooo{{ooo}}ooooooooooz}}}-)", "aaab");
   test("\\A(?!a(?{prec-read-not}+)b)", "ac");
   test("(?<!a(?{look-behind-not}+)c)c", "abc");
+
+
+  // callout of name
+  test("\\A(*FOO)abc", "abc");
 
   onig_end();
   return 0;
