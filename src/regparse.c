@@ -414,7 +414,7 @@ str_reduce_to_single_byte_code(OnigEncoding enc, UChar* s, UChar* end,
     code = ONIGENC_MBC_TO_CODE(enc, p, end);
     if (code > 0xff) {
       xfree(*rs);
-      return ONIGERR_NOT_SUPPORTED_ENCODING_COMBINATION;
+      return ONIGERR_INVALID_CODE_POINT_VALUE;
     }
 
     *q++ = (UChar )code;
@@ -1408,7 +1408,11 @@ onig_set_callout_of_name(OnigEncoding enc, UChar* name, UChar* name_end,
 
   if (enc != 0) {
     r = str_reduce_to_single_byte_code(enc, name, name_end, &name, &name_end);
-    if (r < 0) return r;
+    if (r != ONIG_NORMAL) {
+      if (r == ONIGERR_INVALID_CODE_POINT_VALUE)
+        r = ONIGERR_INVALID_CALLOUT_NAME;
+      return r;
+    }
   }
 
   if (! is_allowed_callout_name(name, name_end)) {
@@ -1450,7 +1454,11 @@ onig_get_callout_id_from_name(OnigEncoding enc, UChar* name, UChar* name_end,
 
   if (enc != 0) {
     r = str_reduce_to_single_byte_code(enc, name, name_end, &name, &name_end);
-    if (r < 0) return r;
+    if (r != ONIG_NORMAL) {
+      if (r == ONIGERR_INVALID_CODE_POINT_VALUE)
+        r = ONIGERR_INVALID_CALLOUT_NAME;
+      return r;
+    }
   }
 
   if (! is_allowed_callout_name(name, name_end)) {
