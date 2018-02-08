@@ -4646,33 +4646,33 @@ typedef struct {
 typedef struct {
   MinMaxLen  mmd;   /* info position */
   OptAnc     anc;
-  int   reach_end;
-  int   ignore_case;
-  int   len;
-  UChar s[OPT_EXACT_MAXLEN];
+  int        reach_end;
+  int        ignore_case;
+  int        len;
+  UChar      s[OPT_EXACT_MAXLEN];
 } OptExact;
 
 typedef struct {
   MinMaxLen mmd;    /* info position */
-  OptAnc anc;
-  int   value;      /* weighted value */
-  UChar map[ONIG_CHAR_TABLE_SIZE];
+  OptAnc    anc;
+  int       value;      /* weighted value */
+  UChar     map[ONIG_CHAR_TABLE_SIZE];
 } OptMap;
 
 typedef struct {
   MinMaxLen len;
-  OptAnc   anc;
-  OptExact exb;     /* boundary */
-  OptExact exm;     /* middle */
-  OptExact expr;    /* prec read (?=...) */
-  OptMap   map;     /* boundary */
+  OptAnc    anc;
+  OptExact  exb;     /* boundary */
+  OptExact  exm;     /* middle */
+  OptExact  expr;    /* prec read (?=...) */
+  OptMap    map;     /* boundary */
 } NodeOpt;
 
 
 static int
 map_position_value(OnigEncoding enc, int i)
 {
-  static const short int ByteValTable[] = {
+  static const short int Vals[] = {
      5,  1,  1,  1,  1,  1,  1,  1,  1, 10, 10,  1,  1, 10,  1,  1,
      1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
     12,  4,  7,  4,  4,  4,  4,  4,  4,  5,  5,  5,  5,  5,  5,  5,
@@ -4683,11 +4683,11 @@ map_position_value(OnigEncoding enc, int i)
      6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  5,  5,  5,  5,  1
   };
 
-  if (i < (int )(sizeof(ByteValTable)/sizeof(ByteValTable[0]))) {
+  if (i < (int )(sizeof(Vals)/sizeof(Vals[0]))) {
     if (i == 0 && ONIGENC_MBC_MINLEN(enc) > 1)
       return 20;
     else
-      return (int )ByteValTable[i];
+      return (int )Vals[i];
   }
   else
     return 4;   /* Take it easy. */
@@ -4746,16 +4746,16 @@ is_equal_mml(MinMaxLen* a, MinMaxLen* b)
 }
 
 static void
-set_mml(MinMaxLen* mml, OnigLen min, OnigLen max)
+set_mml(MinMaxLen* l, OnigLen min, OnigLen max)
 {
-  mml->min = min;
-  mml->max = max;
+  l->min = min;
+  l->max = max;
 }
 
 static void
-clear_mml(MinMaxLen* mml)
+clear_mml(MinMaxLen* l)
 {
-  mml->min = mml->max = 0;
+  l->min = l->max = 0;
 }
 
 static void
@@ -4786,10 +4786,10 @@ copy_opt_env(OptEnv* to, OptEnv* from)
 }
 
 static void
-clear_opt_anc_info(OptAnc* anc)
+clear_opt_anc_info(OptAnc* a)
 {
-  anc->left  = 0;
-  anc->right = 0;
+  a->left  = 0;
+  a->right = 0;
 }
 
 static void
@@ -4819,11 +4819,10 @@ concat_opt_anc_info(OptAnc* to, OptAnc* left, OptAnc* right,
 }
 
 static int
-is_left(int anc)
+is_left(int a)
 {
-  if (anc == ANCHOR_END_BUF  || anc == ANCHOR_SEMI_END_BUF ||
-      anc == ANCHOR_END_LINE || anc == ANCHOR_PREC_READ ||
-      anc == ANCHOR_PREC_READ_NOT)
+  if (a == ANCHOR_END_BUF  || a == ANCHOR_SEMI_END_BUF ||
+      a == ANCHOR_END_LINE || a == ANCHOR_PREC_READ || a == ANCHOR_PREC_READ_NOT)
     return 0;
 
   return 1;
@@ -4863,20 +4862,20 @@ alt_merge_opt_anc_info(OptAnc* to, OptAnc* add)
 }
 
 static int
-is_full_opt_exact(OptExact* ex)
+is_full_opt_exact(OptExact* e)
 {
-  return (ex->len >= OPT_EXACT_MAXLEN ? 1 : 0);
+  return (e->len >= OPT_EXACT_MAXLEN ? 1 : 0);
 }
 
 static void
-clear_opt_exact(OptExact* ex)
+clear_opt_exact(OptExact* e)
 {
-  clear_mml(&ex->mmd);
-  clear_opt_anc_info(&ex->anc);
-  ex->reach_end   = 0;
-  ex->ignore_case = 0;
-  ex->len         = 0;
-  ex->s[0]        = '\0';
+  clear_mml(&e->mmd);
+  clear_opt_anc_info(&e->anc);
+  e->reach_end   = 0;
+  e->ignore_case = 0;
+  e->len         = 0;
+  e->s[0]        = '\0';
 }
 
 static void
@@ -4922,8 +4921,7 @@ concat_opt_exact(OptExact* to, OptExact* add, OnigEncoding enc)
 }
 
 static void
-concat_opt_exact_str(OptExact* to, UChar* s, UChar* end,
-                     int raw ARG_UNUSED, OnigEncoding enc)
+concat_opt_exact_str(OptExact* to, UChar* s, UChar* end, OnigEncoding enc)
 {
   int i, j, len;
   UChar *p;
@@ -4977,31 +4975,31 @@ alt_merge_opt_exact(OptExact* to, OptExact* add, OptEnv* env)
 static void
 select_opt_exact(OnigEncoding enc, OptExact* now, OptExact* alt)
 {
-  int v1, v2;
+  int vn, va;
 
-  v1 = now->len;
-  v2 = alt->len;
+  vn = now->len;
+  va = alt->len;
 
-  if (v2 == 0) {
+  if (va == 0) {
     return ;
   }
-  else if (v1 == 0) {
+  else if (vn == 0) {
     copy_opt_exact(now, alt);
     return ;
   }
-  else if (v1 <= 2 && v2 <= 2) {
+  else if (vn <= 2 && va <= 2) {
     /* ByteValTable[x] is big value --> low price */
-    v2 = map_position_value(enc, now->s[0]);
-    v1 = map_position_value(enc, alt->s[0]);
+    va = map_position_value(enc, now->s[0]);
+    vn = map_position_value(enc, alt->s[0]);
 
-    if (now->len > 1) v1 += 5;
-    if (alt->len > 1) v2 += 5;
+    if (now->len > 1) vn += 5;
+    if (alt->len > 1) va += 5;
   }
 
-  if (now->ignore_case == 0) v1 *= 2;
-  if (alt->ignore_case == 0) v2 *= 2;
+  if (now->ignore_case == 0) vn *= 2;
+  if (alt->ignore_case == 0) va *= 2;
 
-  if (comp_distance_value(&now->mmd, &alt->mmd, v1, v2) > 0)
+  if (comp_distance_value(&now->mmd, &alt->mmd, vn, va) > 0)
     copy_opt_exact(now, alt);
 }
 
@@ -5040,17 +5038,17 @@ copy_opt_map(OptMap* to, OptMap* from)
 }
 
 static void
-add_char_opt_map(OptMap* map, UChar c, OnigEncoding enc)
+add_char_opt_map(OptMap* m, UChar c, OnigEncoding enc)
 {
-  if (map->map[c] == 0) {
-    map->map[c] = 1;
-    map->value += map_position_value(enc, c);
+  if (m->map[c] == 0) {
+    m->map[c] = 1;
+    m->value += map_position_value(enc, c);
   }
 }
 
 static int
 add_char_amb_opt_map(OptMap* map, UChar* p, UChar* end,
-                     OnigEncoding enc, OnigCaseFoldType case_fold_flag)
+                     OnigEncoding enc, OnigCaseFoldType fold_flag)
 {
   OnigCaseFoldCodeItem items[ONIGENC_GET_CASE_FOLD_CODES_MAX_NUM];
   UChar buf[ONIGENC_CODE_TO_MBC_MAXLEN];
@@ -5058,8 +5056,8 @@ add_char_amb_opt_map(OptMap* map, UChar* p, UChar* end,
 
   add_char_opt_map(map, p[0], enc);
 
-  case_fold_flag = DISABLE_CASE_FOLD_MULTI_CHAR(case_fold_flag);
-  n = ONIGENC_GET_CASE_FOLD_CODES_BY_STR(enc, case_fold_flag, p, end, items);
+  fold_flag = DISABLE_CASE_FOLD_MULTI_CHAR(fold_flag);
+  n = ONIGENC_GET_CASE_FOLD_CODES_BY_STR(enc, fold_flag, p, end, items);
   if (n < 0) return n;
 
   for (i = 0; i < n; i++) {
@@ -5075,7 +5073,7 @@ select_opt_map(OptMap* now, OptMap* alt)
 {
   static int z = 1<<15; /* 32768: something big value */
 
-  int v1, v2;
+  int vn, va;
 
   if (alt->value == 0) return ;
   if (now->value == 0) {
@@ -5083,9 +5081,9 @@ select_opt_map(OptMap* now, OptMap* alt)
     return ;
   }
 
-  v1 = z / now->value;
-  v2 = z / alt->value;
-  if (comp_distance_value(&now->mmd, &alt->mmd, v1, v2) > 0)
+  vn = z / now->value;
+  va = z / alt->value;
+  if (comp_distance_value(&now->mmd, &alt->mmd, vn, va) > 0)
     copy_opt_map(now, alt);
 }
 
@@ -5093,13 +5091,13 @@ static int
 comp_opt_exact_or_map(OptExact* e, OptMap* m)
 {
 #define COMP_EM_BASE  20
-  int ve, vm;
+  int ae, am;
 
   if (m->value <= 0) return -1;
 
-  ve = COMP_EM_BASE * e->len * (e->ignore_case ? 1 : 2);
-  vm = COMP_EM_BASE * 5 * 2 / m->value;
-  return comp_distance_value(&e->mmd, &m->mmd, ve, vm);
+  ae = COMP_EM_BASE * e->len * (e->ignore_case ? 1 : 2);
+  am = COMP_EM_BASE * 5 * 2 / m->value;
+  return comp_distance_value(&e->mmd, &m->mmd, ae, am);
 }
 
 static void
@@ -5130,11 +5128,11 @@ alt_merge_opt_map(OnigEncoding enc, OptMap* to, OptMap* add)
 }
 
 static void
-set_bound_node_opt_info(NodeOpt* opt, MinMaxLen* mmd)
+set_bound_node_opt_info(NodeOpt* opt, MinMaxLen* plen)
 {
-  copy_mml(&(opt->exb.mmd),  mmd);
-  copy_mml(&(opt->expr.mmd), mmd);
-  copy_mml(&(opt->map.mmd),  mmd);
+  copy_mml(&(opt->exb.mmd),  plen);
+  copy_mml(&(opt->expr.mmd), plen);
+  copy_mml(&(opt->map.mmd),  plen);
 }
 
 static void
@@ -5274,11 +5272,10 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
     {
       StrNode* sn = STR_(node);
       int slen = (int )(sn->end - sn->s);
-      int is_raw = NODE_STRING_IS_RAW(node);
+      /* int is_raw = NODE_STRING_IS_RAW(node); */
 
       if (! NODE_STRING_IS_AMBIG(node)) {
-        concat_opt_exact_str(&opt->exb, sn->s, sn->end,
-                             NODE_STRING_IS_RAW(node), enc);
+        concat_opt_exact_str(&opt->exb, sn->s, sn->end, enc);
         if (slen > 0) {
           add_char_opt_map(&opt->map, *(sn->s), enc);
         }
@@ -5292,7 +5289,7 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
           max = ONIGENC_MBC_MAXLEN_DIST(enc) * n;
         }
         else {
-          concat_opt_exact_str(&opt->exb, sn->s, sn->end, is_raw, enc);
+          concat_opt_exact_str(&opt->exb, sn->s, sn->end, enc);
           opt->exb.ignore_case = 1;
 
           if (slen > 0) {
