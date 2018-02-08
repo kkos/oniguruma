@@ -2125,7 +2125,7 @@ node_new_keep(Node** node, ScanEnv* env)
 }
 
 static int
-node_new_callout(Node** node, enum CalloutOf callout_of, int id, int dirs,
+node_new_callout(Node** node, enum OnigCalloutOf callout_of, int id, int dirs,
                  ScanEnv* env)
 {
   int r;
@@ -6097,7 +6097,7 @@ parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   if (c != cterm)
     return ONIGERR_INVALID_CALLOUT_PATTERN;
 
-  r = node_new_callout(np, CALLOUT_OF_CODE, -1, dirs, env);
+  r = node_new_callout(np, ONIG_CALLOUT_OF_CODE, -1, dirs, env);
   if (r != 0) return r;
 
   GIMMICK_(*np)->start = code_start - env->pattern;
@@ -6169,7 +6169,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   r = onig_get_callout_id_from_name(enc, name_start, name_end, &id);
   if (r != ONIG_NORMAL) return r;
 
-  r = node_new_callout(np, CALLOUT_OF_NAME, id, dirs, env);
+  r = node_new_callout(np, ONIG_CALLOUT_OF_NAME, id, dirs, env);
   if (r != ONIG_NORMAL) return r;
 
   GIMMICK_(*np)->start = code_start - env->pattern;

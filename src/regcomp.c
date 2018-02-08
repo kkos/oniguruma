@@ -1536,8 +1536,8 @@ compile_gimmick_node(GimmickNode* node, regex_t* reg)
 
   case GIMMICK_CALLOUT:
     switch (node->detail_type) {
-    case CALLOUT_OF_CODE:
-    case CALLOUT_OF_NAME:
+    case ONIG_CALLOUT_OF_CODE:
+    case ONIG_CALLOUT_OF_NAME:
       {
         RegexExt* ext;
         UChar* pattern;
@@ -1548,10 +1548,10 @@ compile_gimmick_node(GimmickNode* node, regex_t* reg)
         if (IS_NULL(pattern))
           return ONIGERR_PARSER_BUG;
 
-        r = add_opcode(reg, (node->detail_type == CALLOUT_OF_CODE) ?
+        r = add_opcode(reg, (node->detail_type == ONIG_CALLOUT_OF_CODE) ?
                                   OP_CALLOUT_CODE : OP_CALLOUT_NAME);
         if (r != 0) return r;
-        if (node->detail_type == CALLOUT_OF_NAME) {
+        if (node->detail_type == ONIG_CALLOUT_OF_NAME) {
           r = add_mem_num(reg, node->id);
           if (r != 0) return r;
         }
@@ -1596,10 +1596,10 @@ compile_length_gimmick_node(GimmickNode* node, regex_t* reg)
 
   case GIMMICK_CALLOUT:
     switch (node->detail_type) {
-    case CALLOUT_OF_CODE:
+    case ONIG_CALLOUT_OF_CODE:
       len = SIZE_OP_CALLOUT_CODE;
       break;
-    case CALLOUT_OF_NAME:
+    case ONIG_CALLOUT_OF_NAME:
       len = SIZE_OP_CALLOUT_NAME;
       break;
 

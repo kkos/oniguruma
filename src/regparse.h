@@ -54,10 +54,6 @@ enum GimmickType {
   GIMMICK_CALLOUT = 4,
 };
 
-enum CalloutOf {
-  CALLOUT_OF_CODE = 0,
-  CALLOUT_OF_NAME = 1,
-};
 
 /* node type bit */
 #define NODE_TYPE2BIT(type)      (1<<(type))
