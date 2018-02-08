@@ -61,13 +61,13 @@ retraction_callout_func(OnigCalloutArgs* args, void* user_data)
 }
 
 static int
-callout_foo(OnigCalloutArgs* args, void* user_data)
+FOO(OnigCalloutArgs* args, void* user_data)
 {
   return callout_body(args, user_data);
 }
 
 static int
-retraction_callout_foo(OnigCalloutArgs* args, void* user_data)
+retraction_FOO(OnigCalloutArgs* args, void* user_data)
 {
   return callout_body(args, user_data);
 }
@@ -136,8 +136,7 @@ extern int main(int argc, char* argv[])
 
   onig_initialize_builtin_callouts();
   name = (UChar* )"FOO";
-  r = onig_set_callout_of_name(name, name + strlen(name),
-                               callout_foo, retraction_callout_foo);
+  r = onig_set_callout_of_name(name, name + strlen(name), FOO, retraction_FOO);
   if (r != ONIG_NORMAL) {
     fprintf(stderr, "ERROR: fail to set callout of name: %s\n", name);
   }
@@ -158,6 +157,7 @@ extern int main(int argc, char* argv[])
   test("\\A(*FOO)abc", "abc");
   test("abc(?:(*FAIL)|$)", "abcabc");
   test("abc(?:(*ABORT)|$)", "abcabc");
+  test("ab(*FOO+:foo will be fail.)(*FAIL)", "abc");
 
   onig_end();
   return 0;
