@@ -4857,3 +4857,25 @@ onig_get_used_stack_size_in_callout(OnigCalloutArgs* args, int* used_num, int* u
 
   return ONIG_NORMAL;
 }
+
+extern int
+onig_builtin_fail(OnigCalloutArgs* args, void* user_data)
+{
+  return ONIG_CALLOUT_FAIL;
+}
+
+extern int
+onig_initialize_callout(void)
+{
+#define B1(name, func)  do {\
+  r = onig_set_callout_of_name(0, (UChar* )#name, (UChar* )(#name + strlen(#name)),\
+                               onig_builtin_ ## func, 0);\
+  if (r != ONIG_NORMAL) return r;\
+} while(0)
+
+  int r;
+
+  B1(FAIL, fail);
+
+  return ONIG_NORMAL;
+}

@@ -6274,7 +6274,8 @@ onig_initialize(OnigEncoding encodings[], int n)
       return r;
   }
 
-  return 0;
+  r = onig_initialize_callout();
+  return r;
 }
 
 typedef struct EndCallListItem {

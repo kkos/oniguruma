@@ -780,6 +780,7 @@ extern int    onig_ext_set_pattern(regex_t* reg, const UChar* pattern, const UCh
 
 extern OnigCalloutFunc onig_get_callout_func_from_id(int id);
 extern OnigCalloutFunc onig_get_retraction_callout_func_from_id(int id);
+extern int onig_initialize_callout(void);
 
 /* strend hash */
 typedef void hash_table_type;
