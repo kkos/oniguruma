@@ -747,12 +747,12 @@ typedef struct {
 
 
 /* types for callout */
-enum {
+enum OnigCalloutIn {
   ONIG_CALLOUT_IN_PROGRESS   = 0,
   ONIG_CALLOUT_IN_RETRACTION = 1,
 };
 
-enum {
+enum OnigCalloutOf {
   ONIG_CALLOUT_OF_CODE = 0,
   ONIG_CALLOUT_OF_NAME = 1,
 };
@@ -779,7 +779,7 @@ typedef struct {
 typedef int (*OnigCalloutFunc)(OnigCalloutArgs* args, void* user_data);
 
 /* callout function return values (less than -1: error code) */
-enum {
+enum OnigCalloutResult {
   ONIG_CALLOUT_FAIL    = -1,
   ONIG_CALLOUT_SUCCESS =  0,
   ONIG_CALLOUT_ABORT   =  ONIG_ABORT /* == -3 */
