@@ -135,12 +135,14 @@ extern int main(int argc, char* argv[])
 
   onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
 
-  (void)onig_set_callout_of_code(progress_callout_func);
-  (void)onig_set_retraction_callout_of_code(retraction_callout_func);
-
+  onig_initialize_builtin_callouts();
   name = (UChar* )"FOO";
   r = onig_set_callout_of_name(enc, name, name + strlen(name),
                                callout_foo, retraction_callout_foo);
+
+
+  (void)onig_set_callout_of_code(progress_callout_func);
+  (void)onig_set_retraction_callout_of_code(retraction_callout_func);
 
 
   // callout of code
