@@ -620,6 +620,7 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIGERR_INVALID_ABSENT_GROUP_GENERATOR_PATTERN       -226
 #define ONIGERR_INVALID_CALLOUT_PATTERN                      -227
 #define ONIGERR_INVALID_CALLOUT_NAME                         -228
+#define ONIGERR_UNDEFINED_CALLOUT_NAME                       -229
 #define ONIGERR_INVALID_CODE_POINT_VALUE                     -400
 #define ONIGERR_INVALID_WIDE_CHAR_VALUE                      -400
 #define ONIGERR_TOO_BIG_WIDE_CHAR_VALUE                      -401
