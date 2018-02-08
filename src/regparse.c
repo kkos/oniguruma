@@ -6060,6 +6060,74 @@ parse_code_callout(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
   return 0;
 }
 
+/* (*NAME[+-]) (*NAME[+-]:...) */
+static int
+parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
+{
+  int r;
+  int dirs;
+  int id;
+  OnigCodePoint c;
+  UChar* name_start;
+  UChar* name_end;
+  UChar* code_start;
+  UChar* code_end;
+  OnigEncoding enc = env->enc;
+  UChar* p = *src;
+
+  //PFETCH_READY;
+  if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
+
+  dirs = CALLOUT_IN_PROGRESS;
+  name_start = p;
+  while (! PEND) {
+    name_end = p;
+    PFETCH_S(c);
+    if (c == '+' || c == '-') {
+      if (c == '+') dirs |= CALLOUT_IN_RETRACTION;
+      else          dirs  = CALLOUT_IN_RETRACTION;
+
+      if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+      PFETCH_S(c);
+      if (c == cterm || c == ':') break;
+      else
+        return ONIGERR_INVALID_CALLOUT_PATTERN;
+    }
+    else if (c == cterm || c == ':') break;
+    else if (c > 255)
+      return ONIGERR_INVALID_CALLOUT_NAME;
+  }
+
+  if (c == ':') {
+    if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
+    code_start = p;
+    while (! PEND) {
+      code_end = p;
+      PFETCH_S(c);
+      if (c == cterm) break;
+    }
+    if (c != cterm) return ONIGERR_END_PATTERN_IN_GROUP;
+  }
+  else {
+    code_start = code_end = 0;
+  }
+
+  if (c != cterm)
+    return ONIGERR_INVALID_CALLOUT_PATTERN;
+
+  r = onig_get_callout_id_from_name(env->enc, name_start, name_end, &id);
+  if (r != ONIG_NORMAL) return r;
+
+  r = node_new_callout(np, CALLOUT_OF_NAME, id, dirs, env);
+  if (r != ONIG_NORMAL) return r;
+
+  GIMMICK_(*np)->start = code_start - env->pattern;
+  GIMMICK_(*np)->end   = code_end   - env->pattern;
+
+  *src = p;
+  return 0;
+}
+
 static int
 parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
                 ScanEnv* env)
@@ -6532,6 +6600,14 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
     default:
       return ONIGERR_UNDEFINED_GROUP_OPTION;
     }
+  }
+  else if (c == '*' &&
+           IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_ASTERISK_CALLOUT_NAME)) {
+    PINC;
+    r = parse_callout_of_name(np, ')', &p, end, env);
+    if (r != 0) return r;
+
+    goto end;
   }
   else {
     if (ONIG_IS_OPTION_ON(env->options, ONIG_OPTION_DONT_CAPTURE_GROUP))
