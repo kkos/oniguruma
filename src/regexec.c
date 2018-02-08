@@ -4865,6 +4865,12 @@ onig_builtin_fail(OnigCalloutArgs* args, void* user_data)
 }
 
 extern int
+onig_builtin_abort(OnigCalloutArgs* args, void* user_data)
+{
+  return ONIG_CALLOUT_ABORT;
+}
+
+extern int
 onig_initialize_builtin_callouts(void)
 {
 #define B1(name, func)  do {\
@@ -4875,7 +4881,8 @@ onig_initialize_builtin_callouts(void)
 
   int r;
 
-  B1(FAIL, fail);
+  B1(FAIL,  fail);
+  B1(ABORT, abort);
 
   return ONIG_NORMAL;
 }
