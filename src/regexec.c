@@ -4865,7 +4865,7 @@ onig_builtin_fail(OnigCalloutArgs* args, void* user_data)
 }
 
 extern int
-onig_initialize_callout(void)
+onig_initialize_builtin_callouts(void)
 {
 #define B1(name, func)  do {\
   r = onig_set_callout_of_name(0, (UChar* )#name, (UChar* )(#name + strlen(#name)),\
