@@ -1461,6 +1461,8 @@ extern int
 onig_callout_names_free(void)
 {
   free_callout_func_list(CalloutNameFuncList);
+  CalloutNameFuncList = 0;
+
   callout_names_free();
   return ONIG_NORMAL;
 }
