@@ -394,6 +394,7 @@ str_reduce_to_single_byte_code(OnigEncoding enc, UChar* s, UChar* end,
   while (p < end) {
     n = ONIGENC_MBC_ENC_LEN(enc, p);
     if (n > 1) break;
+    p += n;
   }
 
   if (n < 2) {
@@ -6116,7 +6117,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   if (c != cterm)
     return ONIGERR_INVALID_CALLOUT_PATTERN;
 
-  r = onig_get_callout_id_from_name(env->enc, name_start, name_end, &id);
+  r = onig_get_callout_id_from_name(enc, name_start, name_end, &id);
   if (r != ONIG_NORMAL) return r;
 
   r = node_new_callout(np, CALLOUT_OF_NAME, id, dirs, env);
