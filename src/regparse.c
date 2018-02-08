@@ -1433,7 +1433,7 @@ onig_get_callout_id_from_name(OnigEncoding enc, UChar* name, UChar* name_end,
 
   e = callout_name_find(name, name_end);
   if (IS_NULL(e)) {
-    r = ONIGERR_INVALID_CALLOUT_NAME;
+    r = ONIGERR_UNDEFINED_CALLOUT_NAME;
     goto end;
   }
 
