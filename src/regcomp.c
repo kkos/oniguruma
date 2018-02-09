@@ -6590,11 +6590,11 @@ print_indent_tree(FILE* f, Node* node, int indent)
       break;
     case GIMMICK_CALLOUT:
       switch (GIMMICK_(node)->detail_type) {
-      case CALLOUT_CODE:
+      case ONIG_CALLOUT_OF_CODE:
         fprintf(f, "callout:code:%d:%d:%d:%d",
                 GIMMICK_(node)->id, GIMMICK_(node)->dirs, GIMMICK_(node)->start, GIMMICK_(node)->end);
         break;
-      case CALLOUT_NAME:
+      case ONIG_CALLOUT_OF_NAME:
         fprintf(f, "callout:name");
         break;
       }
