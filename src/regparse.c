@@ -1100,6 +1100,7 @@ onig_noname_group_capture_is_active(regex_t* reg)
 typedef struct {
   OnigCalloutFunc callout;
   OnigCalloutFunc retraction_callout;
+  UChar*          name; /* reference to CalloutNames entry: e->name */
 } CalloutFuncListEntry;
 
 typedef struct {
@@ -1297,13 +1298,14 @@ callout_name_find(UChar* name, UChar* name_end)
 
 /* name string must be single byte char string. */
 static int
-callout_name_entry(UChar* name, UChar* name_end,
+callout_name_entry(CalloutNameEntry** rentry, UChar* name, UChar* name_end,
                    OnigCalloutFunc callout, OnigCalloutFunc retraction_callout)
 {
   int r;
   CalloutNameEntry* e;
   CalloutNameTable* t = CalloutNames;
 
+  *rentry = 0;
   if (name_end - name <= 0)
     return ONIGERR_INVALID_CALLOUT_NAME;
 
@@ -1380,6 +1382,7 @@ callout_name_entry(UChar* name, UChar* name_end,
   e->callout            = callout;
   e->retraction_callout = retraction_callout;
 
+  *rentry = e;
   return e->id;
 }
 
@@ -1405,6 +1408,7 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
 {
   int r;
   int id;
+  CalloutNameEntry* e;
   UChar* save_name = name;
 
   if (enc != 0) {
@@ -1421,7 +1425,7 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
     goto end;
   }
 
-  r = callout_name_entry(name, name_end, callout, retraction_callout);
+  r = callout_name_entry(&e, name, name_end, callout, retraction_callout);
   if (r < 0) goto end;
 
   id = r;
@@ -1439,6 +1443,7 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
 
   CalloutNameFuncList->v[id].callout            = callout;
   CalloutNameFuncList->v[id].retraction_callout = retraction_callout;
+  CalloutNameFuncList->v[id].name               = e->name;
 
  end:
   if (save_name != name) xfree(name);
