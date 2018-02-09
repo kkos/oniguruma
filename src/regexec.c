@@ -4883,19 +4883,19 @@ onig_get_used_stack_size_in_callout(OnigCalloutArgs* args, int* used_num, int* u
 }
 
 extern int
-onig_builtin_fail(OnigCalloutArgs* args, void* user_data)
+onig_builtin_fail(OnigCalloutArgs* args ARG_UNUSED, void* user_data ARG_UNUSED)
 {
   return ONIG_CALLOUT_FAIL;
 }
 
 extern int
-onig_builtin_abort(OnigCalloutArgs* args, void* user_data)
+onig_builtin_abort(OnigCalloutArgs* args ARG_UNUSED, void* user_data ARG_UNUSED)
 {
   return ONIG_CALLOUT_ABORT;
 }
 
 extern int
-onig_builtin_success(OnigCalloutArgs* args, void* user_data)
+onig_builtin_success(OnigCalloutArgs* args ARG_UNUSED, void* user_data ARG_UNUSED)
 {
   return ONIG_CALLOUT_SUCCESS;
 }
@@ -4917,9 +4917,9 @@ onig_initialize_builtin_callouts(void)
 
   int r;
 
-  B1(FAIL,  fail);
+  B1(FAIL,    fail);
   B1(SUCCESS, success);
-  B1(ABORT, abort);
+  B1(ABORT,   abort);
 
   return ONIG_NORMAL;
 #endif /* USE_CALLOUT */
