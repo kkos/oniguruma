@@ -330,6 +330,7 @@ add_mem_num(regex_t* reg, int num)
   return 0;
 }
 
+#ifdef USE_CALLOUT
 static int
 add_pointer(regex_t* reg, void* addr)
 {
@@ -338,6 +339,7 @@ add_pointer(regex_t* reg, void* addr)
   BB_ADD(reg, &ptr, SIZE_POINTER);
   return 0;
 }
+#endif
 
 static int
 add_option(regex_t* reg, OnigOptionType option)
@@ -1534,6 +1536,7 @@ compile_gimmick_node(GimmickNode* node, regex_t* reg)
     r = add_mem_num(reg, node->id);
     break;
 
+#ifdef USE_CALLOUT
   case GIMMICK_CALLOUT:
     switch (node->detail_type) {
     case ONIG_CALLOUT_OF_CODE:
@@ -1570,6 +1573,7 @@ compile_gimmick_node(GimmickNode* node, regex_t* reg)
       r = ONIGERR_TYPE_BUG;
       break;
     }
+#endif
   }
 
   return r;
@@ -1594,6 +1598,7 @@ compile_length_gimmick_node(GimmickNode* node, regex_t* reg)
     len = SIZE_OP_UPDATE_VAR;
     break;
 
+#ifdef USE_CALLOUT
   case GIMMICK_CALLOUT:
     switch (node->detail_type) {
     case ONIG_CALLOUT_OF_CODE:
@@ -1607,7 +1612,8 @@ compile_length_gimmick_node(GimmickNode* node, regex_t* reg)
       len = ONIGERR_TYPE_BUG;
       break;
     }
-
+    break;
+#endif
   }
 
   return len;
@@ -6108,8 +6114,11 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
     }
 #endif
 
-    if ((reg->num_repeat != 0) || (reg->bt_mem_end != 0) ||
-        scan_env.callout_num != 0)
+    if ((reg->num_repeat != 0) || (reg->bt_mem_end != 0)
+#ifdef USE_CALLOUT
+        || scan_env.callout_num != 0
+#endif
+        )
       reg->stack_pop_level = STACK_POP_LEVEL_ALL;
     else {
       if (reg->bt_mem_start != 0)
@@ -6317,7 +6326,10 @@ extern int
 onig_end(void)
 {
   exec_end_call_list();
+
+#ifdef USE_CALLOUT
   onig_callout_names_free();
+#endif
 
   onig_inited = 0;
 

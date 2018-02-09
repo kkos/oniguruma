@@ -57,6 +57,7 @@
 /* config */
 /* spec. config */
 #define USE_CALL
+#define USE_CALLOUT
 #define USE_BACKREF_WITH_LEVEL        /* \k<name+n>, \k<name-n> */
 #define USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT  /* /(?:()|())*\2/ */
 #define USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE     /* /\n$/ =~ "\n" */
@@ -593,8 +594,10 @@ enum OpCode {
   OP_RETURN,
   OP_PUSH_SAVE_VAL,
   OP_UPDATE_VAR,
+#ifdef USE_CALLOUT
   OP_CALLOUT_CODE,          /* (?{...}) (?{{...}}) */
   OP_CALLOUT_NAME,          /* (*NAME) (*NAME:...) */
+#endif
 
   /* no need: IS_DYNAMIC_OPTION() == 0 */
   OP_SET_OPTION_PUSH,    /* set option and push recover option */
@@ -615,10 +618,12 @@ enum UpdateVarType {
   UPDATE_VAR_RIGHT_RANGE_INIT         = 4,
 };
 
+#ifdef USE_CALLOUT
 enum CalloutDirectionFlagType {
   CALLOUT_IN_PROGRESS   = 1,  /* == 1<<ONIG_CALLOUT_IN_PROGRESS */
   CALLOUT_IN_RETRACTION = 2   /* == 1<<ONIG_CALLOUT_IN_RETRACTION */
 };
+#endif
 
 typedef int RelAddrType;
 typedef int AbsAddrType;
@@ -699,8 +704,11 @@ typedef int ModeType;
 #define SIZE_OP_RETURN                  SIZE_OPCODE
 #define SIZE_OP_PUSH_SAVE_VAL          (SIZE_OPCODE + SIZE_SAVE_TYPE + SIZE_MEMNUM)
 #define SIZE_OP_UPDATE_VAR             (SIZE_OPCODE + SIZE_UPDATE_VAR_TYPE + SIZE_MEMNUM)
+
+#ifdef USE_CALLOUT
 #define SIZE_OP_CALLOUT_CODE           (SIZE_OPCODE + SIZE_MEMNUM + SIZE_MEMNUM + SIZE_POINTER + SIZE_POINTER)
 #define SIZE_OP_CALLOUT_NAME           (SIZE_OPCODE + SIZE_MEMNUM + SIZE_MEMNUM + SIZE_MEMNUM + SIZE_POINTER + SIZE_POINTER)
+#endif
 
 #define MC_ESC(syn)               (syn)->meta_char_table.esc
 #define MC_ANYCHAR(syn)           (syn)->meta_char_table.anychar
@@ -778,8 +786,10 @@ extern int    onig_is_code_in_cc_len P_((int enclen, OnigCodePoint code, void* /
 extern RegexExt* onig_get_regex_ext(regex_t* reg);
 extern int    onig_ext_set_pattern(regex_t* reg, const UChar* pattern, const UChar* pattern_end);
 
+#ifdef USE_CALLOUT
 extern OnigCalloutFunc onig_get_callout_func_from_id(int id);
 extern OnigCalloutFunc onig_get_retraction_callout_func_from_id(int id);
+#endif
 
 /* strend hash */
 typedef void hash_table_type;

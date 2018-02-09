@@ -1552,7 +1552,9 @@ scan_env_clear(ScanEnv* env)
   env->save_num            = 0;
   env->save_alloc_num      = 0;
   env->saves               = 0;
+#ifdef USE_CALLOUT
   env->callout_num         = 0;
+#endif
 }
 
 static int
@@ -2135,6 +2137,7 @@ node_new_keep(Node** node, ScanEnv* env)
   return ONIG_NORMAL;
 }
 
+#ifdef USE_CALLOUT
 static int
 node_new_callout(Node** node, enum OnigCalloutOf callout_of, int id, int dirs,
                  ScanEnv* env)
@@ -2166,7 +2169,7 @@ node_new_callout(Node** node, enum OnigCalloutOf callout_of, int id, int dirs,
 
   return ONIG_NORMAL;
 }
-
+#endif
 
 static int
 make_extended_grapheme_cluster(Node** node, ScanEnv* env)
@@ -6048,6 +6051,7 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end, ScanEnv* en
 static int parse_subexp(Node** top, OnigToken* tok, int term,
                         UChar** src, UChar* end, ScanEnv* env);
 
+#ifdef USE_CALLOUT
 /* (?{...}) (?{{...}}) */
 static int
 parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
@@ -6189,6 +6193,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   *src = p;
   return 0;
 }
+#endif
 
 static int
 parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
@@ -6355,6 +6360,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
       }
       break;
 
+#ifdef USE_CALLOUT
     case '{':
       if (! IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_BRACE_CALLOUT_CODE))
         return ONIGERR_UNDEFINED_GROUP_OPTION;
@@ -6365,6 +6371,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 
       goto end;
       break;
+#endif
 
     case '(':
       /* (?()...) */
@@ -6663,6 +6670,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
       return ONIGERR_UNDEFINED_GROUP_OPTION;
     }
   }
+#ifdef USE_CALLOUT
   else if (c == '*' &&
            IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_ASTERISK_CALLOUT_NAME)) {
     PINC;
@@ -6671,6 +6679,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 
     goto end;
   }
+#endif
   else {
     if (ONIG_IS_OPTION_ON(env->options, ONIG_OPTION_DONT_CAPTURE_GROUP))
       goto group;

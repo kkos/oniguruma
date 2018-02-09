@@ -170,8 +170,10 @@ static OpInfoType OpInfo[] = {
   { OP_RETURN,               "return",               ARG_NON },
   { OP_PUSH_SAVE_VAL,        "push-save-val",        ARG_SPECIAL },
   { OP_UPDATE_VAR,           "update-var",           ARG_SPECIAL },
+#ifdef USE_CALLOUT
   { OP_CALLOUT_CODE,         "callout-code",         ARG_SPECIAL },
   { OP_CALLOUT_NAME,         "callout-name",         ARG_SPECIAL },
+#endif
   { -1, "", ARG_NON }
 };
 
@@ -487,6 +489,7 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
       }
       break;
 
+#ifdef USE_CALLOUT
     case OP_CALLOUT_CODE:
       {
         int dirs;
@@ -518,6 +521,7 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
         fprintf(f, ":%d:%d:%d:%p:%p", id, mem, dirs, code_start, code_end);
       }
       break;
+#endif
 
     default:
       fprintf(stderr, "onig_print_compiled_byte_code: undefined code %d\n", *--bp);
@@ -816,7 +820,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #endif
 }
 
-
+#ifdef USE_CALLOUT
 #define CALLOUT_BODY(func, ain, aof, aid, anum, cstart, cend, user, args, result) do { \
   args.in            = (ain);\
   args.of            = (aof);\
@@ -858,6 +862,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
     break;\
   }\
 } while(0)
+#endif
 
 
 /** stack **/
@@ -876,7 +881,9 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_MEM_START              0x0010
 #define STK_MEM_END                0x8030
 #define STK_REPEAT_INC             0x0050
+#ifdef USE_CALLOUT
 #define STK_CALLOUT                0x0070
+#endif
 
 /* avoided by normal-POP */
 #define STK_VOID                   0x0000  /* for fill a blank */
@@ -934,14 +941,17 @@ typedef struct _StackType {
       UChar* v;
       UChar* v2;
     } val;
+#ifdef USE_CALLOUT
     struct {
       int    num;
       UChar* content;
       UChar* content_end;
     } callout_code;
+#endif
   } u;
 } StackType;
 
+#ifdef USE_CALLOUT
 /* Synchronize visible part of the type with OnigCalloutArgs */
 typedef struct {
   int   in;
@@ -964,6 +974,7 @@ typedef struct {
   StackIndex* mem_start_stk;
   StackIndex* mem_end_stk;
 } CalloutArgs;
+#endif
 
 
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
@@ -1466,6 +1477,25 @@ stack_double(int is_alloca, char** arg_alloc_base,
 } while(0)
 
 
+#ifdef USE_CALLOUT
+#define POP_CALLOUT_CASE \
+  else if (stk->type == STK_CALLOUT) {\
+    int aof;\
+    OnigCalloutFunc func;\
+    if (stk->zid < 0) {\
+      aof = ONIG_CALLOUT_OF_CODE;\
+      func = msa->mp->retraction_callout_of_code;\
+    }\
+    else {\
+      aof = ONIG_CALLOUT_OF_NAME;\
+      func = onig_get_retraction_callout_func_from_id(stk->zid);\
+    }\
+    RETRACTION_CALLOUT(func, aof, stk->zid, stk->u.callout_code.num, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data);\
+  }
+#else
+#define POP_CALLOUT_CASE
+#endif
+
 #define STACK_POP  do {\
   switch (pop_level) {\
   case STACK_POP_LEVEL_FREE:\
@@ -1503,19 +1533,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
           mem_start_stk[stk->zid] = stk->u.mem.start;\
           mem_end_stk[stk->zid]   = stk->u.mem.end;\
         }\
-        else if (stk->type == STK_CALLOUT) {\
-          int aof;\
-          OnigCalloutFunc func;\
-          if (stk->zid < 0) {\
-            aof = ONIG_CALLOUT_OF_CODE;\
-            func = msa->mp->retraction_callout_of_code;\
-          }\
-          else {\
-            aof = ONIG_CALLOUT_OF_NAME;\
-            func = onig_get_retraction_callout_func_from_id(stk->zid);\
-          }\
-          RETRACTION_CALLOUT(func, aof, stk->zid, stk->u.callout_code.num, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data);\
-        }\
+        POP_CALLOUT_CASE\
       }\
     }\
     break;\
@@ -2066,9 +2084,11 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   unsigned long try_in_match_counter;
 #endif
 
+#ifdef USE_CALLOUT
   /* for OP_CALLOUT_CODE/NAME */
   int id, of;
   OnigCalloutFunc func;
+#endif
 
   UChar *p = reg->p;
   OnigOptionType option = reg->options;
@@ -3583,6 +3603,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       continue;
       break;
 
+#ifdef USE_CALLOUT
     case OP_CALLOUT_CODE: SOP_IN(OP_CALLOUT_CODE);
       {
         of = ONIG_CALLOUT_OF_CODE;
@@ -3656,6 +3677,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       SOP_OUT;
       continue;
       break;
+#endif
 
     case OP_FINISH:
       goto finish;
@@ -4769,6 +4791,9 @@ onig_copy_encoding(OnigEncoding to, OnigEncoding from)
 
 
 /* for callout functions */
+
+#ifdef USE_CALLOUT
+
 extern OnigCalloutFunc
 onig_get_callout_of_code(void)
 {
@@ -4875,10 +4900,15 @@ onig_builtin_success(OnigCalloutArgs* args, void* user_data)
   return ONIG_CALLOUT_SUCCESS;
 }
 
+#endif /* USE_CALLOUT */
 
 extern int
 onig_initialize_builtin_callouts(void)
 {
+#ifndef USE_CALLOUT
+  return ONIG_NO_SUPPORT_CONFIG;
+#else
+
 #define B1(name, func)  do {\
   r = onig_set_callout_of_name((UChar* )#name, (UChar* )(#name + strlen(#name)),\
                                onig_builtin_ ## func, 0);\
@@ -4892,4 +4922,5 @@ onig_initialize_builtin_callouts(void)
   B1(ABORT, abort);
 
   return ONIG_NORMAL;
+#endif /* USE_CALLOUT */
 }
