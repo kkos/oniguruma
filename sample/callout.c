@@ -25,11 +25,15 @@ callout_body(OnigCalloutArgs* args, void* user_data)
   else
     content = 0;
 
+  if (args->id > 0) {
+    UChar* name = onig_get_callout_name_from_id(args->id);
+    fprintf(stdout, "id: %d: name: %s\n", args->id, name);
+  }
   fprintf(stdout,
-          "%s %s: id: %d, content: \"%s\", start: \"%s\", current: \"%s\"\n",
+          "%s %s: content: \"%s\", start: \"%s\", current: \"%s\"\n",
           args->of == ONIG_CALLOUT_OF_CODE ? "CODE" : "NAME",
           args->in == ONIG_CALLOUT_IN_PROGRESS ? "PROGRESS" : "RETRACTION",
-          args->id, content, args->start, args->current);
+          content, args->start, args->current);
 
   if (content != 0) free(content);
 
