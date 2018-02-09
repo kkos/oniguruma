@@ -1425,10 +1425,11 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
     goto end;
   }
 
-  r = callout_name_entry(&e, name, name_end, callout, retraction_callout);
-  if (r < 0) goto end;
-
-  id = r;
+  id = callout_name_entry(&e, name, name_end, callout, retraction_callout);
+  if (id < 0) {
+    r = id;
+    goto end;
+  }
 
   r = ONIG_NORMAL;
   if (IS_NULL(CalloutNameFuncList)) {
@@ -1444,6 +1445,7 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
   CalloutNameFuncList->v[id].callout            = callout;
   CalloutNameFuncList->v[id].retraction_callout = retraction_callout;
   CalloutNameFuncList->v[id].name               = e->name;
+  r = id; // return id
 
  end:
   if (save_name != name) xfree(name);

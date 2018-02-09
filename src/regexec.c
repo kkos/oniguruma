@@ -4910,12 +4910,12 @@ onig_initialize_builtin_callouts(void)
 #else
 
 #define B1(name, func)  do {\
-  r = onig_set_callout_of_name((UChar* )#name, (UChar* )(#name + strlen(#name)),\
+  id = onig_set_callout_of_name((UChar* )#name, (UChar* )(#name + strlen(#name)),\
                                onig_builtin_ ## func, 0);\
-  if (r != ONIG_NORMAL) return r;\
+  if (id < 0) return id;\
 } while(0)
 
-  int r;
+  int id;
 
   B1(FAIL,    fail);
   B1(SUCCESS, success);

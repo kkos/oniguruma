@@ -131,6 +131,7 @@ test(char* in_pattern, char* in_str)
 extern int main(int argc, char* argv[])
 {
   int r;
+  int id;
   UChar* name;
   OnigEncoding use_encs[1];
 
@@ -143,10 +144,11 @@ extern int main(int argc, char* argv[])
   if (r != ONIG_NORMAL) return -r;
 
   name = (UChar* )"foo";
-  r = onig_set_callout_of_name(name, name + strlen((char* )name),
+  id = onig_set_callout_of_name(name, name + strlen((char* )name),
 			       foo, retraction_foo);
-  if (r != ONIG_NORMAL) {
+  if (id < 0) {
     fprintf(stderr, "ERROR: fail to set callout of name: %s\n", name);
+    //return -1;
   }
 
   (void)onig_set_callout_of_code(progress_callout_func);
