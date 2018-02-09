@@ -42,7 +42,7 @@ Supported character encodings:
 New feature of version 6.8.0
 --------------------------
 
-* Enabled try-in-match-limit functions
+* Enabled retry-limit-in-match function
 * NEW API: onig_search_with_params(), onig_match_with_params()
 * NEW: Callouts of code (?{....}) (?{{....}})
 * NEW: Callouts of name (*NAME) (*NAME:....)
@@ -52,7 +52,7 @@ New feature of version 6.8.0
 New feature of version 6.7.1
 --------------------------
 
-* NEW: Mechanism of try-in-match-limit (* disabled by default)
+* NEW: Mechanism of retry-limit-in-match (* disabled by default)
 
 
 New feature of version 6.7.0

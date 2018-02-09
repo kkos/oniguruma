@@ -48,7 +48,7 @@ typedef struct {
   int            ptr_num;
   const UChar*   start;   /* search start position (for \G: BEGIN_POSITION) */
   unsigned int   match_stack_limit;
-  unsigned long  try_in_match_limit;
+  unsigned long  retry_limit_in_match;
   OnigMatchParams* mp;
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
   int    best_len;      /* for ONIG_OPTION_FIND_LONGEST */
@@ -834,7 +834,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   args.start         = sstart;\
   args.right_range   = right_range;\
   args.current       = s;\
-  args.try_in_match_counter = try_in_match_counter;\
+  args.retry_in_match_counter = retry_in_match_counter;\
   args.stk_base      = stk_base;\
   args.stk           = stk;\
   args.mem_start_stk = mem_start_stk;\
@@ -966,7 +966,7 @@ typedef struct {
   const OnigUChar* start;
   const OnigUChar* right_range;
   const OnigUChar* current;  // current matching position
-  unsigned long    try_in_match_counter;
+  unsigned long    retry_in_match_counter;
 
   /* invisible to users */
   StackType*  stk_base;
@@ -984,7 +984,7 @@ typedef struct {
   (msa).region   = (arg_region);\
   (msa).start    = (arg_start);\
   (msa).match_stack_limit  = (mp)->match_stack_limit;\
-  (msa).try_in_match_limit = (mp)->try_in_match_limit;\
+  (msa).retry_limit_in_match = (mp)->retry_limit_in_match;\
   (msa).mp = mp;\
   (msa).best_len = ONIG_MISMATCH;\
   (msa).ptr_num  = (reg)->num_repeat + ((reg)->num_mem + 1) * 2; \
@@ -996,7 +996,7 @@ typedef struct {
   (msa).region   = (arg_region);\
   (msa).start    = (arg_start);\
   (msa).match_stack_limit  = (mp)->match_stack_limit;\
-  (msa).try_in_match_limit = (mp)->try_in_match_limit;\
+  (msa).retry_limit_in_match = (mp)->retry_limit_in_match;\
   (msa).mp = mp;\
   (msa).ptr_num  = (reg)->num_repeat + ((reg)->num_mem + 1) * 2; \
 } while(0)
@@ -1074,25 +1074,25 @@ onig_set_match_stack_limit_size(unsigned int size)
   return 0;
 }
 
-#ifdef USE_TRY_IN_MATCH_LIMIT
+#ifdef USE_RETRY_LIMIT_IN_MATCH
 
-static unsigned long TryInMatchLimit = DEFAULT_TRY_IN_MATCH_LIMIT;
+static unsigned long RetryLimitInMatch = DEFAULT_RETRY_LIMIT_IN_MATCH;
 
-#define CHECK_TRY_IN_MATCH_LIMIT  do {\
-  if (try_in_match_counter++ > try_in_match_limit) goto try_in_match_limit_over;\
+#define CHECK_RETRY_LIMIT_IN_MATCH  do {\
+  if (retry_in_match_counter++ > retry_limit_in_match) goto retry_limit_in_match_over;\
 } while (0)
 
 #else
 
-#define CHECK_TRY_IN_MATCH_LIMIT
+#define CHECK_RETRY_LIMIT_IN_MATCH
 
-#endif /* USE_TRY_IN_MATCH_LIMIT */
+#endif /* USE_RETRY_LIMIT_IN_MATCH */
 
 extern unsigned long
-onig_get_try_in_match_limit(void)
+onig_get_retry_limit_in_match(void)
 {
-#ifdef USE_TRY_IN_MATCH_LIMIT
-  return TryInMatchLimit;
+#ifdef USE_RETRY_LIMIT_IN_MATCH
+  return RetryLimitInMatch;
 #else
   //return ONIG_NO_SUPPORT_CONFIG;
   return 0;
@@ -1100,10 +1100,10 @@ onig_get_try_in_match_limit(void)
 }
 
 extern int
-onig_set_try_in_match_limit(unsigned long size)
+onig_set_retry_limit_in_match(unsigned long size)
 {
-#ifdef USE_TRY_IN_MATCH_LIMIT
-  TryInMatchLimit = size;
+#ifdef USE_RETRY_LIMIT_IN_MATCH
+  RetryLimitInMatch = size;
   return 0;
 #else
   return ONIG_NO_SUPPORT_CONFIG;
@@ -1117,8 +1117,8 @@ extern void
 onig_initialize_match_params(OnigMatchParams* mp)
 {
   mp->match_stack_limit  = MatchStackLimit;
-#ifdef USE_TRY_IN_MATCH_LIMIT
-  mp->try_in_match_limit = TryInMatchLimit;
+#ifdef USE_RETRY_LIMIT_IN_MATCH
+  mp->retry_limit_in_match = RetryLimitInMatch;
 #endif
   mp->callout_of_code            = DefaultCallout;
   mp->retraction_callout_of_code = DefaultRetractionCallout;
@@ -2079,9 +2079,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   StackIndex *repeat_stk;
   StackIndex *mem_start_stk, *mem_end_stk;
   UChar* keep;
-#ifdef USE_TRY_IN_MATCH_LIMIT
-  unsigned long try_in_match_limit;
-  unsigned long try_in_match_counter;
+#ifdef USE_RETRY_LIMIT_IN_MATCH
+  unsigned long retry_limit_in_match;
+  unsigned long retry_in_match_counter;
 #endif
 
 #ifdef USE_CALLOUT
@@ -2095,8 +2095,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   OnigEncoding encode = reg->enc;
   OnigCaseFoldType case_fold_flag = reg->case_fold_flag;
 
-#ifdef USE_TRY_IN_MATCH_LIMIT
-  try_in_match_limit = msa->try_in_match_limit;
+#ifdef USE_RETRY_LIMIT_IN_MATCH
+  retry_limit_in_match = msa->retry_limit_in_match;
 #endif
   //n = reg->num_repeat + reg->num_mem * 2;
   pop_level = reg->stack_pop_level;
@@ -2119,8 +2119,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   STACK_PUSH_BOTTOM(STK_ALT, FinishCode);  /* bottom stack */
   INIT_RIGHT_RANGE;
 
-#ifdef USE_TRY_IN_MATCH_LIMIT
-  try_in_match_counter = 0;
+#ifdef USE_RETRY_LIMIT_IN_MATCH
+  retry_in_match_counter = 0;
 #endif
 
   while (1) {
@@ -3328,7 +3328,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     case OP_POP_OUT:  SOP_IN(OP_POP_OUT);
       STACK_POP_ONE;
       // for stop backtrack
-      //CHECK_TRY_IN_MATCH_LIMIT;
+      //CHECK_RETRY_LIMIT_IN_MATCH;
       SOP_OUT;
       continue;
       break;
@@ -3691,7 +3691,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       p     = stk->u.state.pcode;
       s     = stk->u.state.pstr;
       sprev = stk->u.state.pstr_prev;
-      CHECK_TRY_IN_MATCH_LIMIT;
+      CHECK_RETRY_LIMIT_IN_MATCH;
       SOP_OUT;
       continue;
       break;
@@ -3721,10 +3721,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   STACK_SAVE;
   return ONIGERR_UNEXPECTED_BYTECODE;
 
-#ifdef USE_TRY_IN_MATCH_LIMIT
- try_in_match_limit_over:
+#ifdef USE_RETRY_LIMIT_IN_MATCH
+ retry_limit_in_match_over:
   STACK_SAVE;
-  return ONIGERR_TRY_IN_MATCH_LIMIT_OVER;
+  return ONIGERR_RETRY_LIMIT_IN_MATCH_OVER;
 #endif
 }
 

@@ -61,7 +61,7 @@ onig2posix_error_code(int code)
     { ONIG_ABORT,                                         REG_EONIG_INTERNAL },
     { ONIGERR_MEMORY,                                     REG_ESPACE  },
     { ONIGERR_MATCH_STACK_LIMIT_OVER,                     REG_EONIG_INTERNAL },
-    { ONIGERR_TRY_IN_MATCH_LIMIT_OVER,                    REG_EONIG_INTERNAL },
+    { ONIGERR_RETRY_LIMIT_IN_MATCH_OVER,                  REG_EONIG_INTERNAL },
     { ONIGERR_TYPE_BUG,                                   REG_EONIG_INTERNAL },
     { ONIGERR_PARSER_BUG,                                 REG_EONIG_INTERNAL },
     { ONIGERR_STACK_BUG,                                  REG_EONIG_INTERNAL },

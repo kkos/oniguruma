@@ -1,4 +1,4 @@
-Oniguruma API  Version 6.7.2  2018/01/30
+Oniguruma API  Version 6.7.2  2018/02/09
 
 #include <oniguruma.h>
 
@@ -261,7 +261,7 @@ Oniguruma API  Version 6.7.2  2018/01/30
 
    arguments
    1-7:  same as onig_search()
-   8 mp: match parameter values (match_stack_limit, try_in_match_limit)
+   8 mp: match parameter values (match_stack_limit, retry_limit_in_match)
 
 
 # int onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at,
@@ -291,7 +291,7 @@ Oniguruma API  Version 6.7.2  2018/01/30
 
    arguments
    1-6:  same as onig_match()
-   7 mp: match parameter values (match_stack_limit, try_in_match_limit)
+   7 mp: match parameter values (match_stack_limit, retry_limit_in_match)
 
 
 # int onig_scan(regex_t* reg, const UChar* str, const UChar* end,
@@ -650,17 +650,17 @@ Oniguruma API  Version 6.7.2  2018/01/30
   normal return: ONIG_NORMAL
 
 
-# unsigned long onig_get_try_in_match_limit(void)
+# unsigned long onig_get_retry_limit_in_match(void)
 
-  Return the limit of try counts in matching process.
+  Return the limit of retry counts in matching process.
   (default: 10000000)
 
   normal return: limit value
 
 
-# int onig_set_try_in_match_limit(unsigned long n)
+# int onig_set_retry_limit_in_match(unsigned long n)
 
-  Set the limit of try counts in matching process.
+  Set the limit of retry counts in matching process.
 
   normal return: ONIG_NORMAL
 

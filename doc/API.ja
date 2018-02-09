@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.7.2   2018/01/30
+鬼車インターフェース Version 6.7.2   2018/02/09
 
 #include <oniguruma.h>
 
@@ -260,7 +260,7 @@
 
   引数
   1-7:  onig_search()と同じ
-  8 mp: マッチパラメタ値 (match_stack_limit, try_in_match_limit)
+  8 mp: マッチパラメタ値 (match_stack_limit, retry_limit_in_match)
 
 
 # int onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at,
@@ -290,7 +290,7 @@
 
   引数
   1-6:  onig_match()と同じ
-  7 mp: マッチパラメタ値 (match_stack_limit, try_in_match_limit)
+  7 mp: マッチパラメタ値 (match_stack_limit, retry_limit_in_match)
 
 
 # int onig_scan(regex_t* reg, const UChar* str, const UChar* end,
@@ -656,17 +656,17 @@
   正常終了戻り値: ONIG_NORMAL
 
 
-# unsigned long onig_get_try_in_match_limit(void)
+# unsigned long onig_get_retry_limit_in_match(void)
 
-  マッチング関数内でのトライ数の制限値を返す。
+  マッチング関数内でのリトライ数の制限値を返す。
   (デフォルト: 10000000)
 
   正常終了戻り値: 制限値
 
 
-# int onig_set_try_in_match_limit(unsigned long n)
+# int onig_set_retry_limit_in_match(unsigned long n)
 
-  マッチング関数内でのトライ数の制限値を指定する。
+  マッチング関数内でのリトライ数の制限値を指定する。
 
   正常終了戻り値: ONIG_NORMAL
 
