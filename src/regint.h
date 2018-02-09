@@ -83,12 +83,6 @@
 #define DEFAULT_TRY_IN_MATCH_LIMIT           10000000
 #define DEFAULT_PARSE_DEPTH_LIMIT                4096
 
-#if defined(__GNUC__)
-#  define ARG_UNUSED  __attribute__ ((unused))
-#else
-#  define ARG_UNUSED
-#endif
-
 /* */
 /* escape other system UChar definition */
 #ifdef ONIG_ESCAPE_UCHAR_COLLISION
