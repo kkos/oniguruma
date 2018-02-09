@@ -4641,10 +4641,10 @@ set_bm_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED,
 typedef struct {
   OnigLen min;  /* min byte length */
   OnigLen max;  /* max byte length */
-} MinMaxLen;
+} MinMax;
 
 typedef struct {
-  MinMaxLen        mmd;
+  MinMax           mmd;
   OnigEncoding     enc;
   OnigOptionType   options;
   OnigCaseFoldType case_fold_flag;
@@ -4657,7 +4657,7 @@ typedef struct {
 } OptAnc;
 
 typedef struct {
-  MinMaxLen  mmd;   /* info position */
+  MinMax     mmd;   /* position */
   OptAnc     anc;
   int        reach_end;
   int        ignore_case;
@@ -4666,14 +4666,14 @@ typedef struct {
 } OptExact;
 
 typedef struct {
-  MinMaxLen mmd;    /* info position */
+  MinMax    mmd;    /* position */
   OptAnc    anc;
-  int       value;      /* weighted value */
+  int       value;  /* weighted value */
   UChar     map[ONIG_CHAR_TABLE_SIZE];
 } OptMap;
 
 typedef struct {
-  MinMaxLen len;
+  MinMax    len;
   OptAnc    anc;
   OptExact  exb;     /* boundary */
   OptExact  exm;     /* middle */
@@ -4707,7 +4707,7 @@ map_position_value(OnigEncoding enc, int i)
 }
 
 static int
-distance_value(MinMaxLen* mm)
+distance_value(MinMax* mm)
 {
   /* 1000 / (min-max-dist + 1) */
   static const short int dist_vals[] = {
@@ -4736,7 +4736,7 @@ distance_value(MinMaxLen* mm)
 }
 
 static int
-comp_distance_value(MinMaxLen* d1, MinMaxLen* d2, int v1, int v2)
+comp_distance_value(MinMax* d1, MinMax* d2, int v1, int v2)
 {
   if (v2 <= 0) return -1;
   if (v1 <= 0) return  1;
@@ -4753,40 +4753,40 @@ comp_distance_value(MinMaxLen* d1, MinMaxLen* d2, int v1, int v2)
 }
 
 static int
-is_equal_mml(MinMaxLen* a, MinMaxLen* b)
+is_equal_mml(MinMax* a, MinMax* b)
 {
   return (a->min == b->min && a->max == b->max) ? 1 : 0;
 }
 
 static void
-set_mml(MinMaxLen* l, OnigLen min, OnigLen max)
+set_mml(MinMax* l, OnigLen min, OnigLen max)
 {
   l->min = min;
   l->max = max;
 }
 
 static void
-clear_mml(MinMaxLen* l)
+clear_mml(MinMax* l)
 {
   l->min = l->max = 0;
 }
 
 static void
-copy_mml(MinMaxLen* to, MinMaxLen* from)
+copy_mml(MinMax* to, MinMax* from)
 {
   to->min = from->min;
   to->max = from->max;
 }
 
 static void
-add_mml(MinMaxLen* to, MinMaxLen* from)
+add_mml(MinMax* to, MinMax* from)
 {
   to->min = distance_add(to->min, from->min);
   to->max = distance_add(to->max, from->max);
 }
 
 static void
-alt_merge_mml(MinMaxLen* to, MinMaxLen* from)
+alt_merge_mml(MinMax* to, MinMax* from)
 {
   if (to->min > from->min) to->min = from->min;
   if (to->max < from->max) to->max = from->max;
@@ -5141,7 +5141,7 @@ alt_merge_opt_map(OnigEncoding enc, OptMap* to, OptMap* add)
 }
 
 static void
-set_bound_node_opt_info(NodeOpt* opt, MinMaxLen* plen)
+set_bound_node_opt_info(NodeOpt* opt, MinMax* plen)
 {
   copy_mml(&(opt->exb.mmd),  plen);
   copy_mml(&(opt->expr.mmd), plen);
