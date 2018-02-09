@@ -1505,6 +1505,12 @@ onig_get_retraction_callout_func_from_id(int id)
   return CalloutNameFuncList->v[id].retraction_callout;
 }
 
+extern UChar*
+onig_get_callout_name_from_id(int id)
+{
+  return CalloutNameFuncList->v[id].name;
+}
+
 extern int
 onig_callout_names_free(void)
 {
