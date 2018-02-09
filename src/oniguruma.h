@@ -757,11 +757,13 @@ enum OnigCalloutOf {
   ONIG_CALLOUT_OF_NAME = 1,
 };
 
+#define ONIG_NO_NAME_ID   -1
+
 /* Synchronize CalloutArgs definition in src/regexec.c */
 typedef struct {
   int   in;
   int   of;
-  int   id;   /* name id or -1 (callout of code) */
+  int   name_id;   /* name id or -1 */
   int   num;
   const OnigUChar* content;
   const OnigUChar* content_end;
