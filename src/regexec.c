@@ -243,7 +243,6 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
   RelAddrType addr;
   LengthType len;
   MemNumType mem;
-  StateCheckNumType scn;
   OnigCodePoint code;
   OnigOptionType option;
   ModeType mode;
