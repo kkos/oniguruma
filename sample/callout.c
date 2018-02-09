@@ -136,9 +136,12 @@ extern int main(int argc, char* argv[])
 
   use_encs[0] = ONIG_ENCODING_UTF8;
 
-  onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
+  r = onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
+  if (r != ONIG_NORMAL) return -r;
 
-  onig_initialize_builtin_callouts();
+  r = onig_initialize_builtin_callouts();
+  if (r != ONIG_NORMAL) return -r;
+
   name = (UChar* )"foo";
   r = onig_set_callout_of_name(name, name + strlen(name), foo, retraction_foo);
   if (r != ONIG_NORMAL) {
