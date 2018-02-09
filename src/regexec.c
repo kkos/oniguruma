@@ -946,7 +946,7 @@ typedef struct _StackType {
       int    num;
       UChar* content;
       UChar* content_end;
-    } callout_code;
+    } callout;
 #endif
   } u;
 } StackType;
@@ -1445,9 +1445,9 @@ stack_double(int is_alloca, char** arg_alloc_base,
   STACK_ENSURE(1);\
   stk->type = STK_CALLOUT;\
   stk->zid  = -1;\
-  stk->u.callout_code.num         = (anum);\
-  stk->u.callout_code.content     = (xcontent);\
-  stk->u.callout_code.content_end = (xcontent_end);\
+  stk->u.callout.num         = (anum);\
+  stk->u.callout.content     = (xcontent);\
+  stk->u.callout.content_end = (xcontent_end);\
   STACK_INC;\
 } while(0)
 
@@ -1455,9 +1455,9 @@ stack_double(int is_alloca, char** arg_alloc_base,
   STACK_ENSURE(1);\
   stk->type = STK_CALLOUT;\
   stk->zid  = (aid);\
-  stk->u.callout_code.num         = (anum);\
-  stk->u.callout_code.content     = (xcontent);\
-  stk->u.callout_code.content_end = (xcontent_end);\
+  stk->u.callout.num         = (anum);\
+  stk->u.callout.content     = (xcontent);\
+  stk->u.callout.content_end = (xcontent_end);\
   STACK_INC;\
 } while(0)
 
@@ -1490,7 +1490,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
       aof = ONIG_CALLOUT_OF_NAME;\
       func = onig_get_retraction_callout_func_from_id(stk->zid);\
     }\
-    RETRACTION_CALLOUT(func, aof, stk->zid, stk->u.callout_code.num, stk->u.callout_code.content, stk->u.callout_code.content_end, msa->mp->callout_user_data);\
+    RETRACTION_CALLOUT(func, aof, stk->zid, stk->u.callout.num, stk->u.callout.content, stk->u.callout.content_end, msa->mp->callout_user_data);\
   }
 #else
 #define POP_CALLOUT_CASE
