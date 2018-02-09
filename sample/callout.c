@@ -27,7 +27,7 @@ callout_body(OnigCalloutArgs* args, void* user_data)
 
   if (args->id > 0) {
     UChar* name = onig_get_callout_name_from_id(args->id);
-    fprintf(stdout, "id: %d: name: %s\n", args->id, name);
+    fprintf(stdout, "name: %s\n", name);
   }
   fprintf(stdout,
           "%s %s: content: \"%s\", start: \"%s\", current: \"%s\"\n",
@@ -159,6 +159,7 @@ extern int main(int argc, char* argv[])
 
   // callout of name
   test("\\A(*FOO)abc", "abc");
+  test("abc(*SUCCESS)", "abcabc");
   test("abc(?:(*FAIL)|$)", "abcabc");
   test("abc(?:(*ABORT)|$)", "abcabc");
   test("ab(*FOO+:foo will be fail.)(*FAIL)", "abc");
