@@ -1444,7 +1444,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_CALLOUT_CODE(anum, xcontent, xcontent_end) do {\
   STACK_ENSURE(1);\
   stk->type = STK_CALLOUT;\
-  stk->zid  = -1;\
+  stk->zid  = ONIG_NO_NAME_ID;\
   stk->u.callout.num         = (anum);\
   stk->u.callout.content     = (xcontent);\
   stk->u.callout.content_end = (xcontent_end);\
@@ -3607,7 +3607,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     case OP_CALLOUT_CODE: SOP_IN(OP_CALLOUT_CODE);
       {
         of = ONIG_CALLOUT_OF_CODE;
-        name_id = -1;
+        name_id = ONIG_NO_NAME_ID;
         func = msa->mp->callout_of_code;
         goto callout_common_entry;
       }
