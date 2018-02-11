@@ -4900,6 +4900,21 @@ onig_builtin_success(OnigCalloutArgs* args ARG_UNUSED, void* user_data ARG_UNUSE
   return ONIG_CALLOUT_SUCCESS;
 }
 
+extern int
+onig_builtin_error(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
+{
+  long n;
+
+  if (args->content != 0 && args->content_end > args->content) {
+    n = strtol((char* )args->content, 0, 10);
+  }
+  else {
+    n = ONIG_CALLOUT_FAIL;
+  }
+
+  return (int )n;
+}
+
 #endif /* USE_CALLOUT */
 
 extern int
@@ -4920,6 +4935,7 @@ onig_initialize_builtin_callouts(void)
   B1(FAIL,    fail);
   B1(SUCCESS, success);
   B1(ABORT,   abort);
+  B1(ERROR,   error);
 
   return ONIG_NORMAL;
 #endif /* USE_CALLOUT */
