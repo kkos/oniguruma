@@ -222,6 +222,12 @@ Oniguruma API  Version 6.8.0  2018/02/13
   1 reg: regex object.
 
 
+# OnigMatchParam* onig_new_match_param()
+
+  Create a OnigMatchParam object and initialize the contents by
+  onig_initialize_match_param().
+
+
 # void onig_initialize_match_param(OnigMatchParam* mp)
 
   Set match-param fields to default values.

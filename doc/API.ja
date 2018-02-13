@@ -220,6 +220,12 @@
   1 reg: 正規表現オブジェクト
 
 
+# OnigMatchParam* onig_new_match_param()
+
+  OnigMatchParamオブジェクトを生成し、onig_initialize_match_param()を使用して
+  中身を初期化する。
+
+
 # void onig_initialize_match_param(OnigMatchParam* mp)
 
   マッチパラメタ構造体にデフォルト値をセットする。
