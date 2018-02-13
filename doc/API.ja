@@ -226,6 +226,14 @@
   中身を初期化する。
 
 
+# void onig_free_match_param(OnigMatchParam* mp)
+
+  OnigMatchParamオブジェクトで使用しているメモリを開放する。
+
+  引数
+  1 mp: OnigMatchParamオブジェクト
+
+
 # void onig_initialize_match_param(OnigMatchParam* mp)
 
   マッチパラメタ構造体にデフォルト値をセットする。

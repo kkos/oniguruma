@@ -228,6 +228,14 @@ Oniguruma API  Version 6.8.0  2018/02/13
   onig_initialize_match_param().
 
 
+# void onig_free_match_param(OnigMatchParam* mp)
+
+  Free memory used by a OnigMatchParam object.
+
+  arguments
+  1 mp: OnigMatchParam object
+
+
 # void onig_initialize_match_param(OnigMatchParam* mp)
 
   Set match-param fields to default values.
