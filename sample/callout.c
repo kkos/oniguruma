@@ -16,31 +16,48 @@ callout_body(OnigCalloutArgs* args, void* user_data)
   int len;
   int used_num;
   int used_bytes;
+  enum OnigCalloutIn in;
+  enum OnigCalloutOf of;
+  int name_id;
   UChar* content;
+  const UChar* acontent;
+  const UChar* acontent_end;
+  const UChar* start;
+  const UChar* current;
+  regex_t* regex;
 
-  if (args->content != 0) {
-    len = args->content_end - args->content;
-    content = (UChar* )strndup((const char* )args->content, len);
+  in           = onig_get_callout_in_of_callout_args(args);
+  of           = onig_get_callout_of_of_callout_args(args);
+  name_id      = onig_get_name_id_of_callout_args(args);
+  acontent     = onig_get_content_of_callout_args(args);
+  acontent_end = onig_get_content_end_of_callout_args(args);
+  start        = onig_get_start_of_callout_args(args);
+  current      = onig_get_current_of_callout_args(args);
+  regex        = onig_get_regex_of_callout_args(args);
+
+  if (acontent != 0) {
+    len = acontent_end - acontent;
+    content = (UChar* )strndup((const char* )acontent, len);
   }
   else
     content = 0;
 
-  if (args->name_id != ONIG_NO_NAME_ID) {
-    UChar* name = onig_get_callout_name_from_id(args->name_id);
+  if (name_id != ONIG_NO_NAME_ID) {
+    UChar* name = onig_get_callout_name_from_id(name_id);
     fprintf(stdout, "name: %s\n", name);
   }
   fprintf(stdout,
           "%s %s: content: \"%s\", start: \"%s\", current: \"%s\"\n",
-          args->of == ONIG_CALLOUT_OF_CODE ? "CODE" : "NAME",
-          args->in == ONIG_CALLOUT_IN_PROGRESS ? "PROGRESS" : "RETRACTION",
-          content, args->start, args->current);
+          of == ONIG_CALLOUT_OF_CODE ? "CODE" : "NAME",
+          in == ONIG_CALLOUT_IN_PROGRESS ? "PROGRESS" : "RETRACTION",
+          content, start, current);
 
   if (content != 0) free(content);
 
   (void )onig_get_used_stack_size_in_callout(args, &used_num, &used_bytes);
   fprintf(stdout, "stack: used_num: %d, used_bytes: %d\n", used_num, used_bytes);
 
-  n = onig_number_of_captures(args->regex);
+  n = onig_number_of_captures(regex);
   for (i = 1; i <= n; i++) {
     r = onig_get_capture_range_in_callout(args, i, &begin, &end);
     if (r != ONIG_NORMAL) return r;
