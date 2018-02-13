@@ -4907,6 +4907,9 @@ onig_builtin_error(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 
   if (args->content != 0 && args->content_end > args->content) {
     n = strtol((char* )args->content, 0, 10);
+    if (n >= 0) {
+      n = ONIGERR_INVALID_CALLOUT_BODY;
+    }
   }
   else {
     n = ONIG_CALLOUT_FAIL;
