@@ -943,6 +943,8 @@ const OnigUChar* onig_get_content_end_of_callout_args P_((OnigCalloutArgs* args)
 ONIG_EXTERN
 const OnigUChar* onig_get_start_of_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
+const OnigUChar* onig_get_right_range_of_callout_args P_((OnigCalloutArgs* args));
+ONIG_EXTERN
 const OnigUChar* onig_get_current_of_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
 OnigRegex onig_get_regex_of_callout_args P_((OnigCalloutArgs* args));

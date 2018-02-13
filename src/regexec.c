@@ -4929,6 +4929,13 @@ onig_get_start_of_callout_args(OnigCalloutArgs* args)
 }
 
 extern const UChar*
+onig_get_right_range_of_callout_args(OnigCalloutArgs* args)
+{
+  CalloutArgs* a = (CalloutArgs* )args;
+  return a->right_range;
+}
+
+extern const UChar*
 onig_get_current_of_callout_args(OnigCalloutArgs* args)
 {
   CalloutArgs* a = (CalloutArgs* )args;
