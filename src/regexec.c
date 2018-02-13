@@ -40,6 +40,14 @@
 
 #define CHECK_INTERRUPT_IN_MATCH
 
+struct OnigMatchParamStruct {
+  unsigned int    match_stack_limit;
+  unsigned long   retry_limit_in_match;
+  OnigCalloutFunc callout_of_code;
+  OnigCalloutFunc retraction_callout_of_code;
+  void*           callout_user_data;
+};
+
 typedef struct {
   void* stack_p;
   int   stack_n;
@@ -49,7 +57,7 @@ typedef struct {
   const UChar*   start;   /* search start position (for \G: BEGIN_POSITION) */
   unsigned int   match_stack_limit;
   unsigned long  retry_limit_in_match;
-  OnigMatchParams* mp;
+  OnigMatchParam* mp;
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
   int    best_len;      /* for ONIG_OPTION_FIND_LONGEST */
   UChar* best_s;
@@ -1114,7 +1122,7 @@ static OnigCalloutFunc DefaultCallout;
 static OnigCalloutFunc DefaultRetractionCallout;
 
 extern void
-onig_initialize_match_params(OnigMatchParams* mp)
+onig_initialize_match_params(OnigMatchParam* mp)
 {
   mp->match_stack_limit  = MatchStackLimit;
 #ifdef USE_RETRY_LIMIT_IN_MATCH
@@ -4040,7 +4048,7 @@ extern int
 onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at,
            OnigRegion* region, OnigOptionType option)
 {
-  OnigMatchParams mp;
+  OnigMatchParam mp;
 
   onig_initialize_match_params(&mp);
   return onig_match_with_params(reg, str, end, at, region, option, &mp);
@@ -4049,7 +4057,7 @@ onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at,
 extern int
 onig_match_with_params(regex_t* reg, const UChar* str, const UChar* end,
                        const UChar* at, OnigRegion* region, OnigOptionType option,
-                       OnigMatchParams* mp)
+                       OnigMatchParam* mp)
 {
   int r;
   UChar *prev;
@@ -4336,7 +4344,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
             const UChar* start, const UChar* range, OnigRegion* region,
             OnigOptionType option)
 {
-  OnigMatchParams mp;
+  OnigMatchParam mp;
 
   onig_initialize_match_params(&mp);
   return onig_search_with_params(reg, str, end, start, range, region, option, &mp);
@@ -4345,7 +4353,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 extern int
 onig_search_with_params(regex_t* reg, const UChar* str, const UChar* end,
                         const UChar* start, const UChar* range, OnigRegion* region,
-                        OnigOptionType option, OnigMatchParams* mp)
+                        OnigOptionType option, OnigMatchParam* mp)
 {
   int r;
   UChar *s, *prev;

@@ -772,14 +772,9 @@ enum OnigCalloutResult {
   ONIG_CALLOUT_ABORT   =  ONIG_ABORT /* == -3 */
 };
 
+struct OnigMatchParamStruct;
+typedef struct OnigMatchParamStruct OnigMatchParam;
 
-typedef struct {
-  unsigned int    match_stack_limit;
-  unsigned long   retry_limit_in_match;
-  OnigCalloutFunc callout_of_code;
-  OnigCalloutFunc retraction_callout_of_code;
-  void*           callout_user_data;
-} OnigMatchParams;
 
 /* Oniguruma Native API */
 
@@ -810,13 +805,13 @@ int onig_scan(regex_t* reg, const OnigUChar* str, const OnigUChar* end, OnigRegi
 ONIG_EXTERN
 int onig_search P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegion* region, OnigOptionType option));
 ONIG_EXTERN
-int onig_search_with_params P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegion* region, OnigOptionType option, OnigMatchParams* mp));
+int onig_search_with_params P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegion* region, OnigOptionType option, OnigMatchParam* mp));
 ONIG_EXTERN
 int onig_match P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option));
 ONIG_EXTERN
-int onig_match_with_params P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option, OnigMatchParams* mp));
+int onig_match_with_params P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option, OnigMatchParam* mp));
 ONIG_EXTERN
-void onig_initialize_match_params P_((OnigMatchParams* mp));
+void onig_initialize_match_params P_((OnigMatchParam* mp));
 
 ONIG_EXTERN
 OnigRegion* onig_region_new P_((void));
