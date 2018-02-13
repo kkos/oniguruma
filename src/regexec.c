@@ -952,7 +952,7 @@ typedef struct _StackType {
 } StackType;
 
 #ifdef USE_CALLOUT
-/* Synchronize visible part of the type with OnigCalloutArgs */
+
 typedef struct {
   int   in;
   int   of;
@@ -4904,9 +4904,12 @@ extern int
 onig_builtin_error(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 {
   long n;
+  CalloutArgs* a;
 
-  if (args->content != 0 && args->content_end > args->content) {
-    n = strtol((char* )args->content, 0, 10);
+  a = (CalloutArgs* )args;
+
+  if (a->content != 0 && a->content_end > a->content) {
+    n = strtol((char* )a->content, 0, 10);
     if (n >= 0) {
       n = ONIGERR_INVALID_CALLOUT_BODY;
     }
