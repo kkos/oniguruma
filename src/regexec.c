@@ -1156,7 +1156,7 @@ static OnigCalloutFunc DefaultCallout;
 static OnigCalloutFunc DefaultRetractionCallout;
 
 extern void
-onig_initialize_match_params(OnigMatchParam* mp)
+onig_initialize_match_param(OnigMatchParam* mp)
 {
   mp->match_stack_limit  = MatchStackLimit;
 #ifdef USE_RETRY_LIMIT_IN_MATCH
@@ -4084,14 +4084,14 @@ onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at,
 {
   OnigMatchParam mp;
 
-  onig_initialize_match_params(&mp);
-  return onig_match_with_params(reg, str, end, at, region, option, &mp);
+  onig_initialize_match_param(&mp);
+  return onig_match_with_param(reg, str, end, at, region, option, &mp);
 }
 
 extern int
-onig_match_with_params(regex_t* reg, const UChar* str, const UChar* end,
-                       const UChar* at, OnigRegion* region, OnigOptionType option,
-                       OnigMatchParam* mp)
+onig_match_with_param(regex_t* reg, const UChar* str, const UChar* end,
+                      const UChar* at, OnigRegion* region, OnigOptionType option,
+                      OnigMatchParam* mp)
 {
   int r;
   UChar *prev;
@@ -4380,14 +4380,14 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 {
   OnigMatchParam mp;
 
-  onig_initialize_match_params(&mp);
-  return onig_search_with_params(reg, str, end, start, range, region, option, &mp);
+  onig_initialize_match_param(&mp);
+  return onig_search_with_param(reg, str, end, start, range, region, option, &mp);
 }
 
 extern int
-onig_search_with_params(regex_t* reg, const UChar* str, const UChar* end,
-                        const UChar* start, const UChar* range, OnigRegion* region,
-                        OnigOptionType option, OnigMatchParam* mp)
+onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
+                       const UChar* start, const UChar* range, OnigRegion* region,
+                       OnigOptionType option, OnigMatchParam* mp)
 {
   int r;
   UChar *s, *prev;

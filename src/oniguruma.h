@@ -805,11 +805,11 @@ int onig_scan(regex_t* reg, const OnigUChar* str, const OnigUChar* end, OnigRegi
 ONIG_EXTERN
 int onig_search P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegion* region, OnigOptionType option));
 ONIG_EXTERN
-int onig_search_with_params P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegion* region, OnigOptionType option, OnigMatchParam* mp));
+int onig_search_with_param P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegion* region, OnigOptionType option, OnigMatchParam* mp));
 ONIG_EXTERN
 int onig_match P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option));
 ONIG_EXTERN
-int onig_match_with_params P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option, OnigMatchParam* mp));
+int onig_match_with_param P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option, OnigMatchParam* mp));
 ONIG_EXTERN
 OnigRegion* onig_region_new P_((void));
 ONIG_EXTERN
@@ -903,7 +903,7 @@ const char* onig_copyright P_((void));
 
 /* for OnigMatchParam */
 ONIG_EXTERN
-void onig_initialize_match_params P_((OnigMatchParam* mp));
+void onig_initialize_match_param P_((OnigMatchParam* mp));
 ONIG_EXTERN
 int onig_set_match_stack_limit_size_of_match_param P_((OnigMatchParam* param, unsigned int limit));
 ONIG_EXTERN
