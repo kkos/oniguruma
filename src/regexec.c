@@ -881,12 +881,12 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   args.stk           = stk;\
   args.mem_start_stk = mem_start_stk;\
   args.mem_end_stk   = mem_end_stk;\
-  result = (func)((OnigCalloutArgs* )&args, user);\
+  result = (func)(&args, user);\
 } while (0)
 
 #define RETRACTION_CALLOUT(func, aof, aname_id, anum, cstart, cend, user) do {\
   int result;\
-  CalloutArgs args;\
+  OnigCalloutArgs args;\
   CALLOUT_BODY(func, ONIG_CALLOUT_IN_RETRACTION, aof, aname_id, anum, cstart, cend, user, args, result);\
   switch (result) {\
   case ONIG_CALLOUT_FAIL:\
@@ -995,7 +995,7 @@ typedef struct _StackType {
 
 #ifdef USE_CALLOUT
 
-typedef struct {
+struct OnigCalloutArgsStruct {
   enum OnigCalloutIn in;
   enum OnigCalloutOf of;
   int   name_id;   /* name id or ONIG_NO_NAME_ID */
@@ -1015,7 +1015,8 @@ typedef struct {
   StackType*  stk;
   StackIndex* mem_start_stk;
   StackIndex* mem_end_stk;
-} CalloutArgs;
+};
+
 #endif
 
 
@@ -3664,7 +3665,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         int call_result;
         int num;
         int dirs;
-        CalloutArgs args;
+        OnigCalloutArgs args;
 
         of = ONIG_CALLOUT_OF_NAME;
         GET_MEMNUM_INC(name_id, p);
@@ -4863,16 +4864,16 @@ onig_set_retraction_callout_of_code(OnigCalloutFunc f)
 }
 
 #if 0
-typedef struct {
+struct {
   enum OnigCalloutIn in;
   enum OnigCalloutOf of;
   int   name_id;   /* name id or ONIG_NO_NAME_ID */
-  int   num;
+int   num;
   const OnigUChar* content;
   const OnigUChar* content_end;
   OnigRegex        regex;
-  const OnigUChar* subject;
-  const OnigUChar* subject_end;
+const OnigUChar* subject;
+const OnigUChar* subject_end;
   const OnigUChar* start;
   const OnigUChar* right_range;
   const OnigUChar* current;  // current matching position
@@ -4883,91 +4884,79 @@ typedef struct {
   StackType*  stk;
   StackIndex* mem_start_stk;
   StackIndex* mem_end_stk;
-} CalloutArgs;
+};
 #endif
 
 extern enum OnigCalloutIn
 onig_get_callout_in_of_callout_args(OnigCalloutArgs* args)
 {
-  CalloutArgs* a = (CalloutArgs* )args;
-  return a->in;
+  return args->in;
 }
 
 extern enum OnigCalloutOf
 onig_get_callout_of_of_callout_args(OnigCalloutArgs* args)
 {
-  CalloutArgs* a = (CalloutArgs* )args;
-  return a->of;
+  return args->of;
 }
 
 extern int
 onig_get_name_id_of_callout_args(OnigCalloutArgs* args)
 {
-  CalloutArgs* a = (CalloutArgs* )args;
-  return a->name_id;
+  return args->name_id;
 }
 
 extern const UChar*
 onig_get_content_of_callout_args(OnigCalloutArgs* args)
 {
-  CalloutArgs* a = (CalloutArgs* )args;
-  return a->content;
+  return args->content;
 }
 
 extern const UChar*
 onig_get_content_end_of_callout_args(OnigCalloutArgs* args)
 {
-  CalloutArgs* a = (CalloutArgs* )args;
-  return a->content_end;
+  return args->content_end;
 }
 
 extern const UChar*
 onig_get_start_of_callout_args(OnigCalloutArgs* args)
 {
-  CalloutArgs* a = (CalloutArgs* )args;
-  return a->start;
+  return args->start;
 }
 
 extern const UChar*
 onig_get_right_range_of_callout_args(OnigCalloutArgs* args)
 {
-  CalloutArgs* a = (CalloutArgs* )args;
-  return a->right_range;
+  return args->right_range;
 }
 
 extern const UChar*
 onig_get_current_of_callout_args(OnigCalloutArgs* args)
 {
-  CalloutArgs* a = (CalloutArgs* )args;
-  return a->current;
+  return args->current;
 }
 
 extern OnigRegex
 onig_get_regex_of_callout_args(OnigCalloutArgs* args)
 {
-  CalloutArgs* a = (CalloutArgs* )args;
-  return a->regex;
+  return args->regex;
 }
 
 extern unsigned long
 onig_get_retry_counter_of_callout_args(OnigCalloutArgs* args)
 {
-  CalloutArgs* a = (CalloutArgs* )args;
-  return a->retry_in_match_counter;
+  return args->retry_in_match_counter;
 }
 
 
 extern int
-onig_get_capture_range_in_callout(OnigCalloutArgs* args, int mem_num, int* begin, int* end)
+onig_get_capture_range_in_callout(OnigCalloutArgs* a, int mem_num, int* begin, int* end)
 {
-  CalloutArgs* a;
   OnigRegex    reg;
   const UChar* str;
   StackType*   stk_base;
   int i;
 
   i = mem_num;
-  a = (CalloutArgs* )args;
   reg = a->regex;
   str = a->subject;
   stk_base = a->stk_base;
@@ -5002,12 +4991,10 @@ onig_get_capture_range_in_callout(OnigCalloutArgs* args, int mem_num, int* begin
 }
 
 extern int
-onig_get_used_stack_size_in_callout(OnigCalloutArgs* args, int* used_num, int* used_bytes)
+onig_get_used_stack_size_in_callout(OnigCalloutArgs* a, int* used_num, int* used_bytes)
 {
-  CalloutArgs* a;
   int n;
 
-  a = (CalloutArgs* )args;
   n = (int )(a->stk - a->stk_base);
 
   if (used_num != 0)
@@ -5038,12 +5025,9 @@ onig_builtin_success(OnigCalloutArgs* args ARG_UNUSED, void* user_data ARG_UNUSE
 }
 
 extern int
-onig_builtin_error(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
+onig_builtin_error(OnigCalloutArgs* a, void* user_data ARG_UNUSED)
 {
   long n;
-  CalloutArgs* a;
-
-  a = (CalloutArgs* )args;
 
   if (a->content != 0 && a->content_end > a->content) {
     n = strtol((char* )a->content, 0, 10);
