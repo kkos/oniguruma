@@ -1170,6 +1170,12 @@ onig_new_match_param(void)
 }
 
 extern void
+onig_free_match_param(OnigMatchParam* p)
+{
+  if (IS_NOT_NULL(p)) xfree(p);
+}
+
+extern void
 onig_initialize_match_param(OnigMatchParam* mp)
 {
   mp->match_stack_limit  = MatchStackLimit;
