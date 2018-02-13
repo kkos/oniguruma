@@ -4949,6 +4949,13 @@ onig_get_regex_of_callout_args(OnigCalloutArgs* args)
   return a->regex;
 }
 
+extern unsigned long
+onig_get_retry_counter_of_callout_args(OnigCalloutArgs* args)
+{
+  CalloutArgs* a = (CalloutArgs* )args;
+  return a->retry_in_match_counter;
+}
+
 
 extern int
 onig_get_capture_range_in_callout(OnigCalloutArgs* args, int mem_num, int* begin, int* end)

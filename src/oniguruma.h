@@ -948,6 +948,8 @@ ONIG_EXTERN
 const OnigUChar* onig_get_current_of_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
 OnigRegex onig_get_regex_of_callout_args P_((OnigCalloutArgs* args));
+ONIG_EXTERN
+unsigned long onig_get_retry_counter_of_callout_args P_((OnigCalloutArgs* args));
 
 
 ONIG_EXTERN
