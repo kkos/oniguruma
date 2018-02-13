@@ -954,8 +954,8 @@ typedef struct _StackType {
 #ifdef USE_CALLOUT
 
 typedef struct {
-  int   in;
-  int   of;
+  enum OnigCalloutIn in;
+  enum OnigCalloutOf of;
   int   name_id;   /* name id or ONIG_NO_NAME_ID */
   int   num;
   const OnigUChar* content;
@@ -4822,8 +4822,8 @@ onig_set_retraction_callout_of_code(OnigCalloutFunc f)
 
 #if 0
 typedef struct {
-  int   in;
-  int   of;
+  enum OnigCalloutIn in;
+  enum OnigCalloutOf of;
   int   name_id;   /* name id or ONIG_NO_NAME_ID */
   int   num;
   const OnigUChar* content;
@@ -4843,6 +4843,20 @@ typedef struct {
   StackIndex* mem_end_stk;
 } CalloutArgs;
 #endif
+
+extern enum OnigCalloutIn
+onig_get_callout_in_of_callout_args(OnigCalloutArgs* args)
+{
+  CalloutArgs* a = (CalloutArgs* )args;
+  return a->in;
+}
+
+extern enum OnigCalloutOf
+onig_get_callout_of_of_callout_args(OnigCalloutArgs* args)
+{
+  CalloutArgs* a = (CalloutArgs* )args;
+  return a->of;
+}
 
 extern int
 onig_get_name_id_of_callout_args(OnigCalloutArgs* args)
@@ -4864,6 +4878,28 @@ onig_get_content_end_of_callout_args(OnigCalloutArgs* args)
   CalloutArgs* a = (CalloutArgs* )args;
   return a->content_end;
 }
+
+extern const UChar*
+onig_get_start_of_callout_args(OnigCalloutArgs* args)
+{
+  CalloutArgs* a = (CalloutArgs* )args;
+  return a->start;
+}
+
+extern const UChar*
+onig_get_current_of_callout_args(OnigCalloutArgs* args)
+{
+  CalloutArgs* a = (CalloutArgs* )args;
+  return a->current;
+}
+
+extern OnigRegex
+onig_get_regex_of_callout_args(OnigCalloutArgs* args)
+{
+  CalloutArgs* a = (CalloutArgs* )args;
+  return a->regex;
+}
+
 
 extern int
 onig_get_capture_range_in_callout(OnigCalloutArgs* args, int mem_num, int* begin, int* end)

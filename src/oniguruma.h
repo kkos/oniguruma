@@ -927,11 +927,21 @@ OnigUChar* onig_get_callout_name_from_id P_((int id));
 
 /* used in callout functions */
 ONIG_EXTERN
+enum OnigCalloutIn onig_get_callout_in_of_callout_args P_((OnigCalloutArgs* args));
+ONIG_EXTERN
+enum OnigCalloutOf onig_get_callout_of_of_callout_args P_((OnigCalloutArgs* args));
+ONIG_EXTERN
 int onig_get_name_id_of_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
 const OnigUChar* onig_get_content_of_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
 const OnigUChar* onig_get_content_end_of_callout_args P_((OnigCalloutArgs* args));
+ONIG_EXTERN
+const OnigUChar* onig_get_start_of_callout_args P_((OnigCalloutArgs* args));
+ONIG_EXTERN
+const OnigUChar* onig_get_current_of_callout_args P_((OnigCalloutArgs* args));
+ONIG_EXTERN
+OnigRegex onig_get_regex_of_callout_args P_((OnigCalloutArgs* args));
 
 
 ONIG_EXTERN
