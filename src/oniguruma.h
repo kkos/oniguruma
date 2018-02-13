@@ -811,9 +811,6 @@ int onig_match P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const 
 ONIG_EXTERN
 int onig_match_with_params P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option, OnigMatchParam* mp));
 ONIG_EXTERN
-void onig_initialize_match_params P_((OnigMatchParam* mp));
-
-ONIG_EXTERN
 OnigRegion* onig_region_new P_((void));
 ONIG_EXTERN
 void onig_region_init P_((OnigRegion* region));
@@ -903,6 +900,18 @@ ONIG_EXTERN
 const char* onig_version P_((void));
 ONIG_EXTERN
 const char* onig_copyright P_((void));
+
+/* for OnigMatchParam */
+ONIG_EXTERN
+void onig_initialize_match_params P_((OnigMatchParam* mp));
+ONIG_EXTERN
+int onig_set_match_stack_limit_size_of_match_param P_((OnigMatchParam* param, unsigned int limit));
+ONIG_EXTERN
+int onig_set_retry_limit_in_match_of_match_param P_((OnigMatchParam* param, unsigned long limit));
+ONIG_EXTERN
+int onig_set_callout_of_code_of_match_param P_((OnigMatchParam* param, OnigCalloutFunc f));
+ONIG_EXTERN
+int onig_set_retraction_callout_of_code_of_match_param P_((OnigMatchParam* param, OnigCalloutFunc f));
 
 /* for callout functions */
 ONIG_EXTERN

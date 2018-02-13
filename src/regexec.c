@@ -40,6 +40,7 @@
 
 #define CHECK_INTERRUPT_IN_MATCH
 
+
 struct OnigMatchParamStruct {
   unsigned int    match_stack_limit;
   unsigned long   retry_limit_in_match;
@@ -47,6 +48,39 @@ struct OnigMatchParamStruct {
   OnigCalloutFunc retraction_callout_of_code;
   void*           callout_user_data;
 };
+
+extern int
+onig_set_match_stack_limit_size_of_match_param(OnigMatchParam* param,
+                                               unsigned int limit)
+{
+  param->match_stack_limit = limit;
+  return ONIG_NORMAL;
+}
+
+extern int
+onig_set_retry_limit_in_match_of_match_param(OnigMatchParam* param,
+                                             unsigned long limit)
+{
+  param->retry_limit_in_match = limit;
+  return ONIG_NORMAL;
+}
+
+extern int
+onig_set_callout_of_code_of_match_param(OnigMatchParam* param, OnigCalloutFunc f)
+{
+  param->callout_of_code = f;
+  return ONIG_NORMAL;
+}
+
+extern int
+onig_set_retraction_callout_of_code_of_match_param(OnigMatchParam* param,
+                                                   OnigCalloutFunc f)
+{
+  param->retraction_callout_of_code = f;
+  return ONIG_NORMAL;
+}
+
+
 
 typedef struct {
   void* stack_p;
