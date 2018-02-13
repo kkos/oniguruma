@@ -4820,6 +4820,51 @@ onig_set_retraction_callout_of_code(OnigCalloutFunc f)
   return ONIG_NORMAL;
 }
 
+#if 0
+typedef struct {
+  int   in;
+  int   of;
+  int   name_id;   /* name id or ONIG_NO_NAME_ID */
+  int   num;
+  const OnigUChar* content;
+  const OnigUChar* content_end;
+  OnigRegex        regex;
+  const OnigUChar* subject;
+  const OnigUChar* subject_end;
+  const OnigUChar* start;
+  const OnigUChar* right_range;
+  const OnigUChar* current;  // current matching position
+  unsigned long    retry_in_match_counter;
+
+  /* invisible to users */
+  StackType*  stk_base;
+  StackType*  stk;
+  StackIndex* mem_start_stk;
+  StackIndex* mem_end_stk;
+} CalloutArgs;
+#endif
+
+extern int
+onig_get_name_id_of_callout_args(OnigCalloutArgs* args)
+{
+  CalloutArgs* a = (CalloutArgs* )args;
+  return a->name_id;
+}
+
+extern const UChar*
+onig_get_content_of_callout_args(OnigCalloutArgs* args)
+{
+  CalloutArgs* a = (CalloutArgs* )args;
+  return a->content;
+}
+
+extern const UChar*
+onig_get_content_end_of_callout_args(OnigCalloutArgs* args)
+{
+  CalloutArgs* a = (CalloutArgs* )args;
+  return a->content_end;
+}
+
 extern int
 onig_get_capture_range_in_callout(OnigCalloutArgs* args, int mem_num, int* begin, int* end)
 {

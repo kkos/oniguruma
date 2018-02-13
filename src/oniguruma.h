@@ -921,11 +921,19 @@ OnigCalloutFunc onig_get_retraction_callout_of_code P_((void));
 ONIG_EXTERN
 int onig_set_retraction_callout_of_code P_((OnigCalloutFunc f));
 ONIG_EXTERN
-int onig_set_callout_of_name P_((UChar* name, UChar* name_end, OnigCalloutFunc callout, OnigCalloutFunc retraction_callout)); /* name: single-byte string */
+int onig_set_callout_of_name P_((OnigUChar* name, OnigUChar* name_end, OnigCalloutFunc callout, OnigCalloutFunc retraction_callout)); /* name: single-byte string */
 ONIG_EXTERN
-UChar* onig_get_callout_name_from_id P_((int id));
+OnigUChar* onig_get_callout_name_from_id P_((int id));
 
 /* used in callout functions */
+ONIG_EXTERN
+int onig_get_name_id_of_callout_args P_((OnigCalloutArgs* args));
+ONIG_EXTERN
+const OnigUChar* onig_get_content_of_callout_args P_((OnigCalloutArgs* args));
+ONIG_EXTERN
+const OnigUChar* onig_get_content_end_of_callout_args P_((OnigCalloutArgs* args));
+
+
 ONIG_EXTERN
 int onig_get_capture_range_in_callout P_((OnigCalloutArgs* args, int mem_num, int* begin, int* end));
 ONIG_EXTERN
