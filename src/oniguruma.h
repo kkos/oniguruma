@@ -760,24 +760,8 @@ enum OnigCalloutOf {
 
 #define ONIG_NO_NAME_ID   -1
 
-/* Synchronize CalloutArgs definition in src/regexec.c */
-typedef struct {
-  int   in;
-  int   of;
-  int   name_id;   /* name id or -1 */
-  int   num;
-  const OnigUChar* content;
-  const OnigUChar* content_end;
-  OnigRegex        regex;
-  const OnigUChar* subject;
-  const OnigUChar* subject_end;
-  const OnigUChar* start;
-  const OnigUChar* right_range;
-  const OnigUChar* current;  // current matching position
-  unsigned long    retry_in_match_counter;
-
-  /* HERE: elements invisible to users */
-} OnigCalloutArgs;
+struct OnigCalloutArgsStruct;
+typedef struct OnigCalloutArgsStruct OnigCalloutArgs;
 
 typedef int (*OnigCalloutFunc)(OnigCalloutArgs* args, void* user_data);
 
