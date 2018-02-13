@@ -122,6 +122,7 @@ onig2posix_error_code(int code)
     { ONIGERR_INVALID_CALLOUT_PATTERN,                    REG_BADPAT },
     { ONIGERR_INVALID_CALLOUT_NAME,                       REG_BADPAT },
     { ONIGERR_UNDEFINED_CALLOUT_NAME,                     REG_BADPAT },
+    { ONIGERR_INVALID_CALLOUT_BODY,                       REG_BADPAT },
     { ONIGERR_NOT_SUPPORTED_ENCODING_COMBINATION,         REG_EONIG_BADARG },
     { ONIGERR_LIBRARY_IS_NOT_INITIALIZED,                 REG_EONIG_INTERNAL }
   };
