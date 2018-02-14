@@ -14,6 +14,19 @@ AC_ARG_WITH(statistics,
 	[ STATISTICS=-DONIG_DEBUG_STATISTICS ])
 AC_SUBST(STATISTICS)
 
+
+AC_ARG_ENABLE(posix-api,
+[  --enable-posix-api      turn on to include POSIX API [[default=yes]]],
+[\
+case "${enableval}" in
+ yes) enable_posix_api=yes ;;
+ no)  enable_posix_api=no ;;
+ *)   AC_MSG_ERROR(bad value for --enable-posix-api) ;;
+esac],
+enable_posix_api=yes)
+AM_CONDITIONAL(ENABLE_POSIX_API, test x"${enable_posix_api}" = xyes)
+
+
 dnl check for COMBINATION_EXPLOSION
 AC_ARG_ENABLE(combination-explosion-check,
 	[  --enable-combination-explosion-check   deprecated],
