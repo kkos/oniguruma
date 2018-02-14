@@ -2168,6 +2168,8 @@ node_new_callout(Node** node, enum OnigCalloutOf callout_of, int id, int dirs,
   GIMMICK_(*node)->dirs        = dirs;
   GIMMICK_(*node)->code_start  = -1;
   GIMMICK_(*node)->code_end    = -1;
+  GIMMICK_(*node)->tag_start   = -1;
+  GIMMICK_(*node)->tag_end     = -1;
 
   return ONIG_NORMAL;
 }
@@ -6054,7 +6056,8 @@ static int parse_subexp(Node** top, OnigToken* tok, int term,
                         UChar** src, UChar* end, ScanEnv* env);
 
 #ifdef USE_CALLOUT
-/* (?{...}) (?{{...}}) */
+
+/* (?{...}[+-]) (?{{...}}[+-]) */
 static int
 parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
 {
@@ -6117,14 +6120,16 @@ parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   r = node_new_callout(np, ONIG_CALLOUT_OF_CODE, -1, dirs, env);
   if (r != 0) return r;
 
-  GIMMICK_(*np)->code_start = (int )(code_start - env->pattern);
-  GIMMICK_(*np)->code_end   = (int )(code_end   - env->pattern);
+  if (code_start != code_end) {
+    GIMMICK_(*np)->code_start = (int )(code_start - env->pattern);
+    GIMMICK_(*np)->code_end   = (int )(code_end   - env->pattern);
+  }
 
   *src = p;
   return 0;
 }
 
-/* (*NAME[+-]) (*NAME[+-]:...) */
+/* (*NAME[+-][TAG]) (*NAME[+-][TAG]{...}) */
 static int
 parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
 {
@@ -6136,6 +6141,8 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   UChar* name_end;
   UChar* code_start;
   UChar* code_end;
+  UChar* tag_start;
+  UChar* tag_end;
   OnigEncoding enc = env->enc;
   UChar* p = *src;
 
@@ -6153,11 +6160,11 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
 
       if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
       PFETCH_S(c);
-      if (c == cterm || c == ':') break;
+      if (c == cterm || c == '[' || c == '{') break;
       else
         return ONIGERR_INVALID_CALLOUT_PATTERN;
     }
-    else if (c == cterm || c == ':') break;
+    else if (c == cterm || c == '[' || c == '{') break;
     else if (c > 255)
       return ONIGERR_INVALID_CALLOUT_NAME;
     else {
@@ -6166,15 +6173,39 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     }
   }
 
-  if (c == ':') {
-    if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
+  if (c == '[') {
+    if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+    tag_start = p;
+    while (! PEND) {
+      tag_end = p;
+      PFETCH_S(c);
+      if (c == ']') break;
+      if (c > 255) return ONIGERR_INVALID_CALLOUT_TAG_NAME;
+      if (! ONIGENC_IS_CODE_ALNUM(enc, c) && c != '_')
+        return ONIGERR_INVALID_CALLOUT_TAG_NAME;
+    }
+    if (c != ']') return ONIGERR_END_PATTERN_IN_GROUP;
+
+    if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+    PFETCH_S(c);
+  }
+  else {
+    tag_start = tag_end = 0;
+  }
+
+  if (c == '{') {
+    if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+    
     code_start = p;
     while (! PEND) {
       code_end = p;
       PFETCH_S(c);
-      if (c == cterm) break;
+      if (c == '}') break;
     }
-    if (c != cterm) return ONIGERR_END_PATTERN_IN_GROUP;
+    if (c != '}') return ONIGERR_END_PATTERN_IN_GROUP;
+
+    if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+    PFETCH_S(c);
   }
   else {
     code_start = code_end = 0;
@@ -6189,8 +6220,15 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   r = node_new_callout(np, ONIG_CALLOUT_OF_NAME, id, dirs, env);
   if (r != ONIG_NORMAL) return r;
 
-  GIMMICK_(*np)->code_start = (int )(code_start - env->pattern);
-  GIMMICK_(*np)->code_end   = (int )(code_end   - env->pattern);
+  if (code_start != code_end) {
+    GIMMICK_(*np)->code_start = (int )(code_start - env->pattern);
+    GIMMICK_(*np)->code_end   = (int )(code_end   - env->pattern);
+  }
+
+  if (tag_start != tag_end) {
+    GIMMICK_(*np)->tag_start = (int )(tag_start - env->pattern);
+    GIMMICK_(*np)->tag_end   = (int )(tag_end   - env->pattern);
+  }
 
   *src = p;
   return 0;

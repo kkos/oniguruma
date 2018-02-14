@@ -338,6 +338,8 @@ typedef struct {
   int  id;
   int  code_start;  /* code start position index */
   int  code_end;    /* code end   position index */
+  int  tag_start;   /* -1: NO tag */
+  int  tag_end;
 } GimmickNode;
 
 typedef struct _Node {
