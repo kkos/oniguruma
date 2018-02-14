@@ -47,6 +47,7 @@ New feature of version 6.8.0
 * NEW: Callouts of code (?{....}) (?{{....}})
 * NEW: Callouts of name (*NAME) (*NAME:....)
 * NEW: Builtin callout functions  (*FAIL) (*SUCCESS) (*ABORT) (*ERROR:n)
+* NEW: configure option --enable-posix-api  (* enabled by default)
 
 
 New feature of version 6.7.1
@@ -81,7 +82,7 @@ New feature of version 6.5.0
 * NEW: \O (true anychar)
 * NEW: if-then-else syntax   (?(...)...\|...)
 * NEW: Backreference validity checker (?(xxx)) (*original)
-* NEW: Absent repeater (?~absent)  [is equal to (?~\|absent|\O*)]
+* NEW: Absent repeater (?~absent)  [is equal to (?\~\|absent|\O*)]
 * NEW: Absent expression   (?~|absent|expr)  (*original)
 * NEW: Absent stopper (?~|absent)     (*original)
 
