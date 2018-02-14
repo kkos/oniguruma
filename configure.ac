@@ -15,6 +15,7 @@ AC_ARG_WITH(statistics,
 AC_SUBST(STATISTICS)
 
 
+dnl check for POSIX API
 AC_ARG_ENABLE(posix-api,
 [  --enable-posix-api      turn on to include POSIX API [[default=yes]]],
 [\
@@ -26,14 +27,6 @@ esac],
 enable_posix_api=yes)
 AM_CONDITIONAL(ENABLE_POSIX_API, test x"${enable_posix_api}" = xyes)
 
-
-dnl check for COMBINATION_EXPLOSION
-AC_ARG_ENABLE(combination-explosion-check,
-	[  --enable-combination-explosion-check   deprecated],
-	[comb_expl_check=$enableval])
-if test "${comb_expl_check}" = yes; then
-  AC_DEFINE(USE_COMBINATION_EXPLOSION_CHECK,1,[Define if combination explosion check])
-fi
 
 dnl check for CRNL_AS_LINE_TERMINATOR
 AC_ARG_ENABLE(crnl-as-line-terminator,
