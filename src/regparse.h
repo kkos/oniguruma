@@ -336,8 +336,8 @@ typedef struct {
   int  num;
   int  dirs;
   int  id;
-  int  start; /* code start position index */
-  int  end;   /* code end   position index */
+  int  code_start;  /* code start position index */
+  int  code_end;    /* code end   position index */
 } GimmickNode;
 
 typedef struct _Node {

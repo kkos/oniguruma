@@ -2161,13 +2161,13 @@ node_new_callout(Node** node, enum OnigCalloutOf callout_of, int id, int dirs,
   num = ++env->callout_num;
 
   NODE_SET_TYPE(*node, NODE_GIMMICK);
-  GIMMICK_(*node)->id   = id;
-  GIMMICK_(*node)->num  = num;
-  GIMMICK_(*node)->type = GIMMICK_CALLOUT;
+  GIMMICK_(*node)->id          = id;
+  GIMMICK_(*node)->num         = num;
+  GIMMICK_(*node)->type        = GIMMICK_CALLOUT;
   GIMMICK_(*node)->detail_type = (int )callout_of;
-  GIMMICK_(*node)->dirs  = dirs;
-  GIMMICK_(*node)->start = -1;
-  GIMMICK_(*node)->end   = -1;
+  GIMMICK_(*node)->dirs        = dirs;
+  GIMMICK_(*node)->code_start  = -1;
+  GIMMICK_(*node)->code_end    = -1;
 
   return ONIG_NORMAL;
 }
@@ -6117,8 +6117,8 @@ parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   r = node_new_callout(np, ONIG_CALLOUT_OF_CODE, -1, dirs, env);
   if (r != 0) return r;
 
-  GIMMICK_(*np)->start = (int )(code_start - env->pattern);
-  GIMMICK_(*np)->end   = (int )(code_end   - env->pattern);
+  GIMMICK_(*np)->code_start = (int )(code_start - env->pattern);
+  GIMMICK_(*np)->code_end   = (int )(code_end   - env->pattern);
 
   *src = p;
   return 0;
@@ -6189,8 +6189,8 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   r = node_new_callout(np, ONIG_CALLOUT_OF_NAME, id, dirs, env);
   if (r != ONIG_NORMAL) return r;
 
-  GIMMICK_(*np)->start = (int )(code_start - env->pattern);
-  GIMMICK_(*np)->end   = (int )(code_end   - env->pattern);
+  GIMMICK_(*np)->code_start = (int )(code_start - env->pattern);
+  GIMMICK_(*np)->code_end   = (int )(code_end   - env->pattern);
 
   *src = p;
   return 0;

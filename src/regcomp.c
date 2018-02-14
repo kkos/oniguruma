@@ -1562,9 +1562,9 @@ compile_gimmick_node(GimmickNode* node, regex_t* reg)
         if (r != 0) return r;
         r = add_mem_num(reg, node->dirs);
         if (r != 0) return r;
-        r = add_pointer(reg, pattern + node->start);
+        r = add_pointer(reg, pattern + node->code_start);
         if (r != 0) return r;
-        r = add_pointer(reg, pattern + node->end);
+        r = add_pointer(reg, pattern + node->code_end);
         if (r != 0) return r;
       }
       break;
