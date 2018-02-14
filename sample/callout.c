@@ -185,8 +185,8 @@ extern int main(int argc, char* argv[])
   test("abc(*SUCCESS)", "abcabc");
   test("abc(?:(*FAIL)|$)", "abcabc");
   test("abc(?:(*ABORT)|$)", "abcabc");
-  test("ab(*foo+:will be fail.)(*FAIL)", "abc");
-  test("abc(d|(*ERROR:-999))", "abc");
+  test("ab(*foo+{will be fail.})(*FAIL)", "abc");
+  test("abc(d|(*ERROR{-999}))", "abc");
 
   onig_end();
   return 0;
