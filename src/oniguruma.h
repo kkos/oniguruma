@@ -767,7 +767,7 @@ void onig_set_verb_warn_func P_((OnigWarnFunc f));
 ONIG_EXTERN
 int onig_new P_((OnigRegex*, const OnigUChar* pattern, const OnigUChar* pattern_end, OnigOptionType option, OnigEncoding enc, OnigSyntaxType* syntax, OnigErrorInfo* einfo));
 ONIG_EXTERN
-int  onig_reg_init P_((regex_t* reg, OnigOptionType option, OnigCaseFoldType case_fold_flag, OnigEncoding enc, OnigSyntaxType* syntax));
+int  onig_reg_init P_((OnigRegex reg, OnigOptionType option, OnigCaseFoldType case_fold_flag, OnigEncoding enc, OnigSyntaxType* syntax));
 int onig_new_without_alloc P_((OnigRegex, const OnigUChar* pattern, const OnigUChar* pattern_end, OnigOptionType option, OnigEncoding enc, OnigSyntaxType* syntax, OnigErrorInfo* einfo));
 ONIG_EXTERN
 int onig_new_deluxe P_((OnigRegex* reg, const OnigUChar* pattern, const OnigUChar* pattern_end, OnigCompileInfo* ci, OnigErrorInfo* einfo));
@@ -776,7 +776,7 @@ void onig_free P_((OnigRegex));
 ONIG_EXTERN
 void onig_free_body P_((OnigRegex));
 ONIG_EXTERN
-int onig_scan(regex_t* reg, const OnigUChar* str, const OnigUChar* end, OnigRegion* region, OnigOptionType option, int (*scan_callback)(int, int, OnigRegion*, void*), void* callback_arg);
+int onig_scan(OnigRegex reg, const OnigUChar* str, const OnigUChar* end, OnigRegion* region, OnigOptionType option, int (*scan_callback)(int, int, OnigRegion*, void*), void* callback_arg);
 ONIG_EXTERN
 int onig_search P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegion* region, OnigOptionType option));
 ONIG_EXTERN
@@ -930,7 +930,7 @@ OnigRegex onig_get_regex_of_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
 unsigned long onig_get_retry_counter_of_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
-int onig_callout_tag_is_exist_at_num P_((regex_t* reg, int callout_num));
+int onig_callout_tag_is_exist_at_num P_((OnigRegex reg, int callout_num));
 
 
 ONIG_EXTERN
