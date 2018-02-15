@@ -34,6 +34,8 @@
 #include <stdio.h>
 #endif
 
+#define INIT_TAG_NAMES_ALLOC_NUM   5
+
 #define WARN_BUFSIZE    256
 
 #define CASE_FOLD_IS_APPLIED_INSIDE_NEGATIVE_CCLASS
@@ -1523,6 +1525,121 @@ onig_callout_names_free(void)
   return ONIG_NORMAL;
 }
 
+
+typedef st_table   CalloutTagTable;
+typedef int        CalloutTagVal;
+
+static int
+i_free_callout_tag_entry(UChar* key, CalloutTagVal e, void* arg ARG_UNUSED)
+{
+  xfree(key);
+  return ST_DELETE;
+}
+
+static int
+callout_tag_table_clear(CalloutTagTable* t)
+{
+  if (IS_NOT_NULL(t)) {
+    onig_st_foreach(t, i_free_callout_tag_entry, 0);
+  }
+  return 0;
+}
+
+extern int
+onig_callout_tag_table_free(void* table)
+{
+  CalloutTagTable* t = (CalloutTagTable* )table;
+
+  if (IS_NOT_NULL(t)) {
+    int r = callout_tag_table_clear(t);
+    if (r != 0) return r;
+
+    onig_st_free_table(t);
+  }
+
+  return 0;
+}
+
+static CalloutTagVal
+callout_tag_find(CalloutTagTable* t, const UChar* name, const UChar* name_end)
+{
+  CalloutTagVal e;
+
+  e = -1;
+  if (IS_NOT_NULL(t)) {
+    onig_st_lookup_strend(t, name, name_end, (HashDataType* )((void* )(&e)));
+  }
+  return e;
+}
+
+static int
+callout_tag_table_new(CalloutTagTable** rt)
+{
+  CalloutTagTable* t;
+
+  *rt = 0;
+  t = onig_st_init_strend_table_with_size(INIT_TAG_NAMES_ALLOC_NUM);
+  CHECK_NULL_RETURN_MEMERR(t);
+
+  *rt = t;
+  return ONIG_NORMAL;
+}
+
+static int
+callout_tag_entry_raw(CalloutTagTable* t, UChar* name, UChar* name_end,
+                      CalloutTagVal entry_val)
+{
+  int r;
+  CalloutTagVal val;
+
+  if (name_end - name <= 0)
+    return ONIGERR_INVALID_CALLOUT_TAG_NAME;
+
+  val = callout_tag_find(t, name, name_end);
+  if (val >= 0)
+    return ONIGERR_MULTIPLEX_DEFINED_NAME;
+
+  r = onig_st_insert_strend(t, name, name_end, (HashDataType )entry_val);
+  if (r < 0) return r;
+
+  return ONIG_NORMAL;
+}
+
+static int
+ext_ensure_tag_table(regex_t* reg)
+{
+  int r;
+  RegexExt* ext;
+  CalloutTagTable* t;
+
+  ext = onig_get_regex_ext(reg);
+  CHECK_NULL_RETURN_MEMERR(ext);
+
+  if (IS_NULL(ext->tag_table)) {
+    r = callout_tag_table_new(&t);
+    if (r != ONIG_NORMAL) return r;
+
+    ext->tag_table = t;
+  }
+
+  return ONIG_NORMAL;
+}
+
+static int
+callout_tag_entry(regex_t* reg, UChar* name, UChar* name_end,
+                  CalloutTagVal entry_val)
+{
+  int r;
+  RegexExt* ext;
+
+  r = ext_ensure_tag_table(reg);
+  if (r != ONIG_NORMAL) return r;
+
+  ext = onig_get_regex_ext(reg);
+  r = callout_tag_entry_raw(ext->tag_table, name, name_end, entry_val);
+
+  return r;
+}
 
 #define INIT_SCANENV_MEMENV_ALLOC_SIZE   16
 
@@ -6143,12 +6260,14 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   UChar* code_end;
   UChar* tag_start;
   UChar* tag_end;
+  Node*  node;
   OnigEncoding enc = env->enc;
   UChar* p = *src;
 
   //PFETCH_READY;
   if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
 
+  node = 0;
   dirs = CALLOUT_IN_PROGRESS;
   name_start = p;
   while (! PEND) {
@@ -6217,19 +6336,26 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   r = onig_get_callout_id_from_name(enc, name_start, name_end, &id);
   if (r != ONIG_NORMAL) return r;
 
-  r = node_new_callout(np, ONIG_CALLOUT_OF_NAME, id, dirs, env);
+  r = node_new_callout(&node, ONIG_CALLOUT_OF_NAME, id, dirs, env);
   if (r != ONIG_NORMAL) return r;
 
   if (code_start != code_end) {
-    GIMMICK_(*np)->code_start = (int )(code_start - env->pattern);
-    GIMMICK_(*np)->code_end   = (int )(code_end   - env->pattern);
+    GIMMICK_(node)->code_start = (int )(code_start - env->pattern);
+    GIMMICK_(node)->code_end   = (int )(code_end   - env->pattern);
   }
 
   if (tag_start != tag_end) {
-    GIMMICK_(*np)->tag_start = (int )(tag_start - env->pattern);
-    GIMMICK_(*np)->tag_end   = (int )(tag_end   - env->pattern);
+    GIMMICK_(node)->tag_start = (int )(tag_start - env->pattern);
+    GIMMICK_(node)->tag_end   = (int )(tag_end   - env->pattern);
+
+    r = callout_tag_entry(env->reg, tag_start, tag_end, GIMMICK_(node)->num);
+    if (r != ONIG_NORMAL) {
+      onig_node_free(node);
+      return r;
+    }
   }
 
+  *np = node;
   *src = p;
   return 0;
 }

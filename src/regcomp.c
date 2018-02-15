@@ -5922,6 +5922,7 @@ onig_get_regex_ext(regex_t* reg)
 
     ext->pattern     = 0;
     ext->pattern_end = 0;
+    ext->tag_table   = 0;
 
     REG_EXTPL(reg) = (void* )ext;
   }
@@ -5935,6 +5936,9 @@ free_regex_ext(RegexExt* ext)
   if (IS_NOT_NULL(ext)) {
     if (IS_NOT_NULL(ext->pattern))
       xfree(ext->pattern);
+
+    if (IS_NOT_NULL(ext->tag_table))
+      onig_callout_tag_table_free(ext->tag_table);
 
     xfree(ext);
   }
