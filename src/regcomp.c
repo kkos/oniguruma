@@ -5939,11 +5939,13 @@ free_regex_ext(RegexExt* ext)
     if (IS_NOT_NULL(ext->pattern))
       xfree(ext->pattern);
 
+#ifdef USE_CALLOUT
     if (IS_NOT_NULL(ext->tag_table))
       onig_callout_tag_table_free(ext->tag_table);
 
     if (IS_NOT_NULL(ext->tag_list))
       xfree(ext->tag_list);
+#endif
 
     xfree(ext);
   }

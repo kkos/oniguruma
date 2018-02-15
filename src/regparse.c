@@ -368,6 +368,8 @@ strdup_with_null(OnigEncoding enc, UChar* s, UChar* end)
   return r;
 }
 
+#ifdef USE_CALLOUT
+
 static UChar*
 strdup_with_null1(UChar* s, UChar* end)
 {
@@ -427,6 +429,8 @@ str_reduce_to_single_byte_code(OnigEncoding enc, UChar* s, UChar* end,
 
   return ONIG_NORMAL;
 }
+
+#endif
 
 static int
 save_entry(ScanEnv* env, enum SaveType type, int* id)
