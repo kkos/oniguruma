@@ -40,25 +40,6 @@ extern "C" {
 
 #define ONIGURUMA_VERSION_INT     60701
 
-#ifdef __cplusplus
-# ifndef  HAVE_STDARG_PROTOTYPES
-#  define HAVE_STDARG_PROTOTYPES 1
-# endif
-#endif
-
-/* escape Mac OS X/Xcode 2.4/gcc 4.0.1 problem */
-#if defined(__APPLE__) && defined(__GNUC__) && __GNUC__ >= 4
-# ifndef  HAVE_STDARG_PROTOTYPES
-#  define HAVE_STDARG_PROTOTYPES 1
-# endif
-#endif
-
-#ifdef HAVE_STDARG_H
-# ifndef  HAVE_STDARG_PROTOTYPES
-#  define HAVE_STDARG_PROTOTYPES 1
-# endif
-#endif
-
 #ifndef P_
 #if defined(__STDC__) || defined(_WIN32)
 # define P_(args) args
