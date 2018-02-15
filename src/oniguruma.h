@@ -929,6 +929,8 @@ ONIG_EXTERN
 OnigRegex onig_get_regex_of_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
 unsigned long onig_get_retry_counter_of_callout_args P_((OnigCalloutArgs* args));
+ONIG_EXTERN
+int onig_callout_tag_is_exist_at_num P_((regex_t* reg, int callout_num));
 
 
 ONIG_EXTERN
