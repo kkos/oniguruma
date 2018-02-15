@@ -71,11 +71,7 @@ extern "C" {
 #endif
 
 #ifndef PV_
-#ifdef HAVE_STDARG_PROTOTYPES
 # define PV_(args) args
-#else
-# define PV_(args) ()
-#endif
 #endif
 
 #ifndef ONIG_EXTERN
