@@ -261,6 +261,8 @@ typedef struct {
   UChar* pattern;
   UChar* pattern_end;
   void*  tag_table;
+  int    max_tag_num;
+  int*   tag_list;    /* index: from 0 to max_tag_num */
 } RegexExt;
 
 #define REG_EXTP(reg)      ((RegexExt* )((reg)->chain))
