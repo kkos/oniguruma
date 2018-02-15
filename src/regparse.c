@@ -1099,6 +1099,7 @@ onig_noname_group_capture_is_active(regex_t* reg)
   return 1;
 }
 
+#ifdef USE_CALLOUT
 typedef struct {
   OnigCalloutFunc callout;
   OnigCalloutFunc retraction_callout;
@@ -1669,6 +1670,9 @@ callout_tag_entry(regex_t* reg, UChar* name, UChar* name_end,
 
   return r;
 }
+
+#endif /* USE_CALLOUT */
+
 
 #define INIT_SCANENV_MEMENV_ALLOC_SIZE   16
 
