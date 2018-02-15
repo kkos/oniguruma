@@ -1673,6 +1673,7 @@ scan_env_clear(ScanEnv* env)
   env->saves               = 0;
 #ifdef USE_CALLOUT
   env->callout_num         = 0;
+  env->max_tag_num         = 0;
 #endif
 }
 
@@ -2259,7 +2260,7 @@ node_new_keep(Node** node, ScanEnv* env)
 #ifdef USE_CALLOUT
 static int
 node_new_callout(Node** node, enum OnigCalloutOf callout_of, int id, int dirs,
-                 ScanEnv* env)
+                 int with_tag, ScanEnv* env)
 {
   int r;
   int num;
@@ -2276,6 +2277,7 @@ node_new_callout(Node** node, enum OnigCalloutOf callout_of, int id, int dirs,
   CHECK_NULL_RETURN_MEMERR(*node);
 
   num = ++env->callout_num;
+  if (with_tag != 0) env->max_tag_num = num;
 
   NODE_SET_TYPE(*node, NODE_GIMMICK);
   GIMMICK_(*node)->id          = id;
@@ -6234,7 +6236,7 @@ parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   if (c != cterm)
     return ONIGERR_INVALID_CALLOUT_PATTERN;
 
-  r = node_new_callout(np, ONIG_CALLOUT_OF_CODE, -1, dirs, env);
+  r = node_new_callout(np, ONIG_CALLOUT_OF_CODE, -1, dirs, 0, env);
   if (r != 0) return r;
 
   if (code_start != code_end) {
@@ -6253,6 +6255,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   int r;
   int dirs;
   int id;
+  int with_tag;
   OnigCodePoint c;
   UChar* name_start;
   UChar* name_end;
@@ -6336,7 +6339,8 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   r = onig_get_callout_id_from_name(enc, name_start, name_end, &id);
   if (r != ONIG_NORMAL) return r;
 
-  r = node_new_callout(&node, ONIG_CALLOUT_OF_NAME, id, dirs, env);
+  with_tag = (tag_start != tag_end) ? 1 : 0;
+  r = node_new_callout(&node, ONIG_CALLOUT_OF_NAME, id, dirs, with_tag, env);
   if (r != ONIG_NORMAL) return r;
 
   if (code_start != code_end) {
