@@ -724,13 +724,13 @@ typedef struct {
 
 /* types for callout */
 enum OnigCalloutIn {
-  ONIG_CALLOUT_IN_PROGRESS   = 0,
-  ONIG_CALLOUT_IN_RETRACTION = 1,
+  ONIG_CALLOUT_IN_PROGRESS   = 1, /* 1<<0 */
+  ONIG_CALLOUT_IN_RETRACTION = 2  /* 1<<1 */
 };
 
 enum OnigCalloutOf {
   ONIG_CALLOUT_OF_CODE = 0,
-  ONIG_CALLOUT_OF_NAME = 1,
+  ONIG_CALLOUT_OF_NAME = 1
 };
 
 #define ONIG_NO_NAME_ID   -1

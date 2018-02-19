@@ -3696,7 +3696,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         GET_POINTER_INC(content_start, p);
         GET_POINTER_INC(content_end,   p);
 
-        if (IS_NOT_NULL(func) && (dirs & CALLOUT_IN_PROGRESS) != 0) {
+        if (IS_NOT_NULL(func) && (dirs & ONIG_CALLOUT_IN_PROGRESS) != 0) {
           CALLOUT_BODY(func, ONIG_CALLOUT_IN_PROGRESS, of, name_id,
                        num, content_start, content_end,
                        msa->mp->callout_user_data, args, call_result);
@@ -3720,7 +3720,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         }
         else {
         retraction_callout2:
-          if ((dirs & CALLOUT_IN_RETRACTION) != 0) {
+          if ((dirs & ONIG_CALLOUT_IN_RETRACTION) != 0) {
             if (of == ONIG_CALLOUT_OF_NAME) {
               func = onig_get_callout_func_from_id(name_id);
               if (IS_NOT_NULL(func)) {

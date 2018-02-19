@@ -629,13 +629,6 @@ enum UpdateVarType {
   UPDATE_VAR_RIGHT_RANGE_INIT         = 4,
 };
 
-#ifdef USE_CALLOUT
-enum CalloutDirectionFlagType {
-  CALLOUT_IN_PROGRESS   = 1,  /* == 1<<ONIG_CALLOUT_IN_PROGRESS */
-  CALLOUT_IN_RETRACTION = 2   /* == 1<<ONIG_CALLOUT_IN_RETRACTION */
-};
-#endif
-
 typedef int RelAddrType;
 typedef int AbsAddrType;
 typedef int LengthType;
