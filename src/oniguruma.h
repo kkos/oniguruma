@@ -747,6 +747,22 @@ enum OnigCalloutResult {
   ONIG_CALLOUT_ABORT   =  ONIG_ABORT /* == -3 */
 };
 
+enum OnigType {
+  ONIG_TYPE_VOID       = 0,
+  ONIG_TYPE_INT        = 1,
+  ONIG_TYPE_CODE_POINT = 2,
+  ONIG_TYPE_STRING     = 3,
+};
+
+typedef union {
+  int i;
+  OnigCodePoint cp;
+  struct {
+    OnigUChar* s;
+    OnigUChar* end;
+  };
+} OnigValue;
+
 struct OnigMatchParamStruct;
 typedef struct OnigMatchParamStruct OnigMatchParam;
 
