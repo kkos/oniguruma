@@ -1550,7 +1550,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
     }\
     else {\
       aof = ONIG_CALLOUT_OF_NAME;\
-      func = onig_get_retraction_callout_func_from_id(stk->zid);\
+      func = onig_get_callout_func_from_id(stk->zid);\
     }\
     RETRACTION_CALLOUT(func, aof, stk->zid, stk->u.callout.num, stk->u.callout.content, stk->u.callout.content_end, msa->mp->callout_user_data);\
   }
@@ -3722,7 +3722,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         retraction_callout2:
           if ((dirs & CALLOUT_IN_RETRACTION) != 0) {
             if (of == ONIG_CALLOUT_OF_NAME) {
-              func = onig_get_retraction_callout_func_from_id(name_id);
+              func = onig_get_callout_func_from_id(name_id);
               if (IS_NOT_NULL(func)) {
                 STACK_PUSH_CALLOUT_NAME(name_id, num, content_start, content_end);
               }
@@ -5072,7 +5072,7 @@ onig_initialize_builtin_callouts(void)
 
 #define B1(name, func)  do {\
   id = onig_set_callout_of_name((UChar* )#name, (UChar* )(#name + strlen(#name)),\
-                               onig_builtin_ ## func, 0);\
+                               onig_builtin_ ## func);\
   if (id < 0) return id;\
 } while(0)
 

@@ -1106,7 +1106,6 @@ onig_noname_group_capture_is_active(regex_t* reg)
 #ifdef USE_CALLOUT
 typedef struct {
   OnigCalloutFunc callout;
-  OnigCalloutFunc retraction_callout;
   UChar*          name; /* reference to CalloutNames entry: e->name */
 } CalloutFuncListEntry;
 
@@ -1154,8 +1153,7 @@ free_callout_func_list(CalloutFuncList* s)
 }
 
 static int
-callout_func_list_add(CalloutFuncList* s,
-                      OnigCalloutFunc callout, OnigCalloutFunc retraction_callout)
+callout_func_list_add(CalloutFuncList* s, OnigCalloutFunc callout)
 {
   if (s->n >= s->alloc) {
     int new_size = s->alloc * 2;
@@ -1168,7 +1166,6 @@ callout_func_list_add(CalloutFuncList* s,
   }
 
   s->v[s->n].callout = callout;
-  s->v[s->n].retraction_callout = retraction_callout;
   s->n++;
   return ONIG_NORMAL;
 }
@@ -1179,7 +1176,6 @@ typedef struct {
   int    name_len;   /* byte length */
   int    id;
   OnigCalloutFunc callout;
-  OnigCalloutFunc retraction_callout;
 } CalloutNameEntry;
 
 #ifdef USE_ST_LIBRARY
@@ -1306,7 +1302,7 @@ callout_name_find(UChar* name, UChar* name_end)
 /* name string must be single byte char string. */
 static int
 callout_name_entry(CalloutNameEntry** rentry, UChar* name, UChar* name_end,
-                   OnigCalloutFunc callout, OnigCalloutFunc retraction_callout)
+                   OnigCalloutFunc callout)
 {
   int r;
   CalloutNameEntry* e;
@@ -1335,7 +1331,6 @@ callout_name_entry(CalloutNameEntry** rentry, UChar* name, UChar* name_end,
     if (r < 0) return r;
 
     e->callout = 0;
-    e->retraction_callout = 0;
 
 #else
 
@@ -1385,9 +1380,8 @@ callout_name_entry(CalloutNameEntry** rentry, UChar* name, UChar* name_end,
     e->id = CalloutNameIDCounter;
   }
 
-  e->name_len           = (int )(name_end - name);
-  e->callout            = callout;
-  e->retraction_callout = retraction_callout;
+  e->name_len = (int )(name_end - name);
+  e->callout  = callout;
 
   *rentry = e;
   return e->id;
@@ -1410,8 +1404,7 @@ is_allowed_callout_name(UChar* name, UChar* name_end)
 
 static int
 set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
-                             OnigCalloutFunc callout,
-                             OnigCalloutFunc retraction_callout)
+                             OnigCalloutFunc callout)
 {
   int r;
   int id;
@@ -1432,7 +1425,7 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
     goto end;
   }
 
-  id = callout_name_entry(&e, name, name_end, callout, retraction_callout);
+  id = callout_name_entry(&e, name, name_end, callout);
   if (id < 0) {
     r = id;
     goto end;
@@ -1445,12 +1438,11 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
   }
 
   while (id >= CalloutNameFuncList->n) {
-    r = callout_func_list_add(CalloutNameFuncList, 0, 0);
+    r = callout_func_list_add(CalloutNameFuncList, 0);
     if (r != ONIG_NORMAL) goto end;
   }
 
   CalloutNameFuncList->v[id].callout            = callout;
-  CalloutNameFuncList->v[id].retraction_callout = retraction_callout;
   CalloutNameFuncList->v[id].name               = e->name;
   r = id; // return id
 
@@ -1460,10 +1452,9 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
 }
 
 extern int
-onig_set_callout_of_name(UChar* name, UChar* name_end,
-                         OnigCalloutFunc callout, OnigCalloutFunc retraction_callout)
+onig_set_callout_of_name(UChar* name, UChar* name_end, OnigCalloutFunc callout)
 {
-  return set_callout_of_name_with_enc(0, name, name_end, callout, retraction_callout);
+  return set_callout_of_name_with_enc(0, name, name_end, callout);
 }
 
 extern int
@@ -1506,12 +1497,6 @@ extern OnigCalloutFunc
 onig_get_callout_func_from_id(int id)
 {
   return CalloutNameFuncList->v[id].callout;
-}
-
-extern OnigCalloutFunc
-onig_get_retraction_callout_func_from_id(int id)
-{
-  return CalloutNameFuncList->v[id].retraction_callout;
 }
 
 extern UChar*

@@ -87,12 +87,6 @@ foo(OnigCalloutArgs* args, void* user_data)
   return callout_body(args, user_data);
 }
 
-static int
-retraction_foo(OnigCalloutArgs* args, void* user_data)
-{
-  return callout_body(args, user_data);
-}
-
 
 static int
 test(char* in_pattern, char* in_str)
@@ -161,8 +155,7 @@ extern int main(int argc, char* argv[])
   if (r != ONIG_NORMAL) return -r;
 
   name = (UChar* )"foo";
-  id = onig_set_callout_of_name(name, name + strlen((char* )name),
-			       foo, retraction_foo);
+  id = onig_set_callout_of_name(name, name + strlen((char* )name), foo);
   if (id < 0) {
     fprintf(stderr, "ERROR: fail to set callout of name: %s\n", name);
     //return -1;
