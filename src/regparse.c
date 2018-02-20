@@ -1114,12 +1114,12 @@ typedef struct {
   OnigType        arg_types[ONIG_CALLOUT_MAX_ARG_NUM];
   OnigValue       opt_defaults[ONIG_CALLOUT_MAX_ARG_NUM];
   UChar*          name; /* reference to CalloutNames entry: e->name */
-} CalloutFuncListEntry;
+} CalloutNameListEntry;
 
 typedef struct {
   int  n;
   int  alloc;
-  CalloutFuncListEntry* v;
+  CalloutNameListEntry* v;
 } CalloutFuncList;
 
 static CalloutFuncList* CalloutNameFuncList;
@@ -1128,14 +1128,14 @@ static int
 make_callout_func_list(CalloutFuncList** rs, int init_size)
 {
   CalloutFuncList* s;
-  CalloutFuncListEntry* v;
+  CalloutNameListEntry* v;
 
   *rs = 0;
 
   s = xmalloc(sizeof(*s));
   if (IS_NULL(s)) return ONIGERR_MEMORY;
 
-  v = (CalloutFuncListEntry* )xmalloc(sizeof(CalloutFuncListEntry) * init_size);
+  v = (CalloutNameListEntry* )xmalloc(sizeof(CalloutNameListEntry) * init_size);
   if (IS_NULL(v)) {
     xfree(s);
     return ONIGERR_MEMORY;
@@ -1164,8 +1164,8 @@ callout_func_list_add(CalloutFuncList* s, int* rid)
 {
   if (s->n >= s->alloc) {
     int new_size = s->alloc * 2;
-    CalloutFuncListEntry* nv = (CalloutFuncListEntry* )
-      xrealloc(s->v, sizeof(CalloutFuncListEntry) * new_size);
+    CalloutNameListEntry* nv = (CalloutNameListEntry* )
+      xrealloc(s->v, sizeof(CalloutNameListEntry) * new_size);
     if (IS_NULL(nv)) return ONIGERR_MEMORY;
 
     s->alloc = new_size;
@@ -1416,7 +1416,7 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
   int i;
   int id;
   CalloutNameEntry* e;
-  CalloutFuncListEntry* fe;
+  CalloutNameListEntry* fe;
   UChar* save_name = name;
 
   if (arg_num < 0 || arg_num > ONIG_CALLOUT_MAX_ARG_NUM)
