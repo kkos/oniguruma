@@ -1120,14 +1120,14 @@ typedef struct {
   int  n;
   int  alloc;
   CalloutNameListEntry* v;
-} CalloutFuncList;
+} CalloutNameListType;
 
-static CalloutFuncList* CalloutNameFuncList;
+static CalloutNameListType* CalloutNameList;
 
 static int
-make_callout_func_list(CalloutFuncList** rs, int init_size)
+make_callout_func_list(CalloutNameListType** rs, int init_size)
 {
-  CalloutFuncList* s;
+  CalloutNameListType* s;
   CalloutNameListEntry* v;
 
   *rs = 0;
@@ -1150,7 +1150,7 @@ make_callout_func_list(CalloutFuncList** rs, int init_size)
 }
 
 static void
-free_callout_func_list(CalloutFuncList* s)
+free_callout_func_list(CalloutNameListType* s)
 {
   if (IS_NOT_NULL(s)) {
     if (IS_NOT_NULL(s->v))
@@ -1160,7 +1160,7 @@ free_callout_func_list(CalloutFuncList* s)
 }
 
 static int
-callout_func_list_add(CalloutFuncList* s, int* rid)
+callout_func_list_add(CalloutNameListType* s, int* rid)
 {
   if (s->n >= s->alloc) {
     int new_size = s->alloc * 2;
@@ -1457,18 +1457,18 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
   }
 
   r = ONIG_NORMAL;
-  if (IS_NULL(CalloutNameFuncList)) {
-    r = make_callout_func_list(&CalloutNameFuncList, 10);
+  if (IS_NULL(CalloutNameList)) {
+    r = make_callout_func_list(&CalloutNameList, 10);
     if (r != ONIG_NORMAL) goto end;
   }
 
-  while (id >= CalloutNameFuncList->n) {
+  while (id >= CalloutNameList->n) {
     int rid;
-    r = callout_func_list_add(CalloutNameFuncList, &rid);
+    r = callout_func_list_add(CalloutNameList, &rid);
     if (r != ONIG_NORMAL) goto end;
   }
 
-  fe = CalloutNameFuncList->v + id;
+  fe = CalloutNameList->v + id;
   fe->type         = type;
   fe->in           = in;
   fe->start_func   = start_func;
@@ -1544,62 +1544,62 @@ onig_get_callout_id_from_name(OnigEncoding enc, UChar* name, UChar* name_end,
 extern CalloutType
 onig_get_callout_type_from_name_id(int name_id)
 {
-  return CalloutNameFuncList->v[name_id].type;
+  return CalloutNameList->v[name_id].type;
 }
 
 extern OnigCalloutFunc
 onig_get_callout_start_func_from_name_id(int name_id)
 {
-  return CalloutNameFuncList->v[name_id].start_func;
+  return CalloutNameList->v[name_id].start_func;
 }
 
 extern OnigCalloutFunc
 onig_get_callout_end_func_from_name_id(int name_id)
 {
-  return CalloutNameFuncList->v[name_id].end_func;
+  return CalloutNameList->v[name_id].end_func;
 }
 
 extern int
 onig_get_callout_in_from_name_id(int name_id)
 {
-  return CalloutNameFuncList->v[name_id].in;
+  return CalloutNameList->v[name_id].in;
 }
 
 static int
 get_callout_arg_num_from_name_id(int name_id)
 {
-  return CalloutNameFuncList->v[name_id].arg_num;
+  return CalloutNameList->v[name_id].arg_num;
 }
 
 static int
 get_callout_opt_arg_num_from_name_id(int name_id)
 {
-  return CalloutNameFuncList->v[name_id].opt_arg_num;
+  return CalloutNameList->v[name_id].opt_arg_num;
 }
 
 static OnigType
 get_callout_arg_type_from_name_id(int name_id, int index)
 {
-  return CalloutNameFuncList->v[name_id].arg_types[index];
+  return CalloutNameList->v[name_id].arg_types[index];
 }
 
 static OnigValue
 get_callout_opt_default_from_name_id(int name_id, int index)
 {
-  return CalloutNameFuncList->v[name_id].opt_defaults[index];
+  return CalloutNameList->v[name_id].opt_defaults[index];
 }
 
 extern UChar*
 onig_get_callout_name_from_name_id(int name_id)
 {
-  return CalloutNameFuncList->v[name_id].name;
+  return CalloutNameList->v[name_id].name;
 }
 
 extern int
 onig_callout_names_free(void)
 {
-  free_callout_func_list(CalloutNameFuncList);
-  CalloutNameFuncList = 0;
+  free_callout_func_list(CalloutNameList);
+  CalloutNameList = 0;
 
   callout_names_free();
   return ONIG_NORMAL;
