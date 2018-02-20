@@ -735,6 +735,8 @@ enum OnigCalloutOf {
 
 #define ONIG_NO_NAME_ID   -1
 
+#define ONIG_CALLOUT_MAX_ARG_NUM  4
+
 struct OnigCalloutArgsStruct;
 typedef struct OnigCalloutArgsStruct OnigCalloutArgs;
 
