@@ -1417,6 +1417,23 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
   CalloutFuncListEntry* fe;
   UChar* save_name = name;
 
+  if (arg_num < 0 || arg_num > ONIG_CALLOUT_MAX_ARG_NUM)
+    return ONIGERR_INVALID_CALLOUT_ARG;
+
+  if (opt_arg_num < 0 || opt_arg_num > arg_num)
+    return ONIGERR_INVALID_CALLOUT_ARG;
+
+  if (start_func == 0 && end_func == 0)
+    return ONIGERR_INVALID_CALLOUT_ARG;
+
+  if ((in & ONIG_CALLOUT_IN_PROGRESS) == 0 && (in & ONIG_CALLOUT_IN_RETRACTION) == 0)
+    return ONIGERR_INVALID_CALLOUT_ARG;
+
+  for (i = 0; i < arg_num; i++) {
+    if (arg_types[i] <= ONIG_TYPE_VOID || arg_types[i] > ONIG_TYPE_MAX)
+      return ONIGERR_INVALID_CALLOUT_ARG;
+  }
+
   if (enc != 0) {
     r = str_reduce_to_single_byte_code(enc, name, name_end, &name, &name_end);
     if (r != ONIG_NORMAL) {

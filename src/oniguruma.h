@@ -759,6 +759,8 @@ typedef enum {
   ONIG_TYPE_STRING     = 3,
 } OnigType;
 
+#define ONIG_TYPE_MAX   ONIG_TYPE_STRING
+
 typedef union {
   int i;
   OnigCodePoint cp;
