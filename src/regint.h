@@ -518,8 +518,8 @@ typedef struct _BBuf {
 #define ANCHOR_NO_WORD_BOUNDARY (1<<11)
 #define ANCHOR_WORD_BEGIN       (1<<12)
 #define ANCHOR_WORD_END         (1<<13)
-#define ANCHOR_ANYCHAR_INF      (1<<14)   /* ".*" optimize info */
-#define ANCHOR_ANYCHAR_INF_ML   (1<<15)   /* ".*" optimize info (multi-line) */
+#define ANCHOR_ANYCHAR_INF      (1<<14)
+#define ANCHOR_ANYCHAR_INF_ML   (1<<15)
 #define ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY    (1<<16)
 #define ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY (1<<17)
 
