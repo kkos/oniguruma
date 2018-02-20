@@ -2286,7 +2286,7 @@ node_new_keep(Node** node, ScanEnv* env)
 
 #ifdef USE_CALLOUT
 static int
-node_new_callout(Node** node, enum OnigCalloutOf callout_of, int id, int dirs,
+node_new_callout(Node** node, OnigCalloutOf callout_of, int id, int dirs,
                  int with_tag, ScanEnv* env)
 {
   int r;

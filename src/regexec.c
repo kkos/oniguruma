@@ -996,8 +996,8 @@ typedef struct _StackType {
 #ifdef USE_CALLOUT
 
 struct OnigCalloutArgsStruct {
-  enum OnigCalloutIn in;
-  enum OnigCalloutOf of;
+  OnigCalloutIn in;
+  OnigCalloutOf of;
   int   name_id;   /* name id or ONIG_NO_NAME_ID */
   int   num;
   const OnigUChar* content;
@@ -4906,13 +4906,13 @@ const OnigUChar* subject_end;
 };
 #endif
 
-extern enum OnigCalloutIn
+extern OnigCalloutIn
 onig_get_callout_in_of_callout_args(OnigCalloutArgs* args)
 {
   return args->in;
 }
 
-extern enum OnigCalloutOf
+extern OnigCalloutOf
 onig_get_callout_of_of_callout_args(OnigCalloutArgs* args)
 {
   return args->of;

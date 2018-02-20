@@ -723,17 +723,17 @@ typedef struct {
 
 
 /* types for callout */
-enum OnigCalloutIn {
+typedef enum {
   ONIG_CALLOUT_IN_PROGRESS   = 1, /* 1<<0 */
   ONIG_CALLOUT_IN_RETRACTION = 2  /* 1<<1 */
-};
+} OnigCalloutIn;
 
 #define ONIG_CALLOUT_IN_BOTH  (ONIG_CALLOUT_IN_PROGRESS | ONIG_CALLOUT_IN_RETRACTION)
 
-enum OnigCalloutOf {
+typedef enum {
   ONIG_CALLOUT_OF_CODE = 0,
   ONIG_CALLOUT_OF_NAME = 1
-};
+} OnigCalloutOf;
 
 #define ONIG_NO_NAME_ID   -1
 
@@ -745,11 +745,11 @@ typedef struct OnigCalloutArgsStruct OnigCalloutArgs;
 typedef int (*OnigCalloutFunc)(OnigCalloutArgs* args, void* user_data);
 
 /* callout function return values (less than -1: error code) */
-enum OnigCalloutResult {
+typedef enum {
   ONIG_CALLOUT_FAIL    = -1,
   ONIG_CALLOUT_SUCCESS =  0,
   ONIG_CALLOUT_ABORT   =  ONIG_ABORT /* == -3 */
-};
+} OnigCalloutResult;
 
 typedef enum {
   ONIG_TYPE_VOID       = 0,
@@ -931,9 +931,9 @@ OnigUChar* onig_get_callout_name_from_id P_((int id));
 
 /* used in callout functions */
 ONIG_EXTERN
-enum OnigCalloutIn onig_get_callout_in_of_callout_args P_((OnigCalloutArgs* args));
+OnigCalloutIn onig_get_callout_in_of_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
-enum OnigCalloutOf onig_get_callout_of_of_callout_args P_((OnigCalloutArgs* args));
+OnigCalloutOf onig_get_callout_of_of_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
 int onig_get_name_id_of_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN

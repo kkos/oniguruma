@@ -16,8 +16,8 @@ callout_body(OnigCalloutArgs* args, void* user_data)
   int len;
   int used_num;
   int used_bytes;
-  enum OnigCalloutIn in;
-  enum OnigCalloutOf of;
+  OnigCalloutIn in;
+  OnigCalloutOf of;
   int name_id;
   UChar* content;
   const UChar* acontent;
