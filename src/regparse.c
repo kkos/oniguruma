@@ -1175,7 +1175,6 @@ typedef struct {
   UChar* name;
   int    name_len;   /* byte length */
   int    id;
-  OnigCalloutFunc callout;
 } CalloutNameEntry;
 
 #ifdef USE_ST_LIBRARY
@@ -1330,8 +1329,6 @@ callout_name_entry(CalloutNameEntry** rentry, UChar* name, UChar* name_end,
                               (HashDataType )e);
     if (r < 0) return r;
 
-    e->callout = 0;
-
 #else
 
     int alloc;
@@ -1357,7 +1354,7 @@ callout_name_entry(CalloutNameEntry** rentry, UChar* name, UChar* name_end,
       int i;
 
       alloc = t->alloc * 2;
-      t->e = (NameEntry* )xrealloc(t->e, sizeof(NameEntry) * alloc);
+      t->e = (CalloutNameEntry* )xrealloc(t->e, sizeof(CalloutNameEntry) * alloc);
       CHECK_NULL_RETURN_MEMERR(t->e);
       t->alloc = alloc;
 
@@ -1366,8 +1363,6 @@ callout_name_entry(CalloutNameEntry** rentry, UChar* name, UChar* name_end,
         t->e[i].name       = NULL;
         t->e[i].name_len   = 0;
         t->e[i].id         = 0;
-        t->e[i].callout    = 0;
-        t->e[i].retraction_callout = 0;
       }
     }
     e = &(t->e[t->num]);
@@ -1381,7 +1376,6 @@ callout_name_entry(CalloutNameEntry** rentry, UChar* name, UChar* name_end,
   }
 
   e->name_len = (int )(name_end - name);
-  e->callout  = callout;
 
   *rentry = e;
   return e->id;
@@ -1404,7 +1398,11 @@ is_allowed_callout_name(UChar* name, UChar* name_end)
 
 static int
 set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
-                             OnigCalloutFunc callout)
+                             int in,
+                             OnigCalloutFunc start_callout,
+                             OnigCalloutFunc end_callout,
+                             int arg_num, OnigType arg_types[],
+                             int opt_arg_num, OnigValue opt_defaults[])
 {
   int r;
   int id;
@@ -1425,7 +1423,7 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
     goto end;
   }
 
-  id = callout_name_entry(&e, name, name_end, callout);
+  id = callout_name_entry(&e, name, name_end, start_callout);
   if (id < 0) {
     r = id;
     goto end;
@@ -1442,7 +1440,7 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
     if (r != ONIG_NORMAL) goto end;
   }
 
-  CalloutNameFuncList->v[id].callout            = callout;
+  CalloutNameFuncList->v[id].callout            = start_callout;
   CalloutNameFuncList->v[id].name               = e->name;
   r = id; // return id
 
@@ -1454,12 +1452,12 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
 /* name: single-byte string */
 extern int
 onig_set_callout_of_name(OnigUChar* name, OnigUChar* name_end,
-                         int callout_in,
-                         OnigCalloutFunc callout,
+                         int in, OnigCalloutFunc callout,
                          int arg_num, OnigType arg_types[],
-                         int optional_arg_num, OnigValue arg_defaults[])
+                         int opt_arg_num, OnigValue opt_defaults[])
 {
-  return set_callout_of_name_with_enc(0, name, name_end, callout);
+  return set_callout_of_name_with_enc(0, name, name_end, in, callout, 0,
+                                      arg_num, arg_types, opt_arg_num, opt_defaults);
 }
 
 extern int
