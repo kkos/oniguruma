@@ -1536,9 +1536,45 @@ onig_get_callout_id_from_name(OnigEncoding enc, UChar* name, UChar* name_end,
 }
 
 extern OnigCalloutFunc
-onig_get_callout_start_func_from_id(int id)
+onig_get_callout_start_func_from_id(int name_id)
 {
-  return CalloutNameFuncList->v[id].start_func;
+  return CalloutNameFuncList->v[name_id].start_func;
+}
+
+extern OnigCalloutFunc
+onig_get_callout_end_func_from_name_id(int name_id)
+{
+  return CalloutNameFuncList->v[name_id].end_func;
+}
+
+extern int
+onig_get_callout_in_from_name_id(int name_id)
+{
+  return CalloutNameFuncList->v[name_id].in;
+}
+
+static int
+get_callout_arg_num_from_name_id(int name_id)
+{
+  return CalloutNameFuncList->v[name_id].arg_num;
+}
+
+static int
+get_callout_opt_arg_num_from_name_id(int name_id)
+{
+  return CalloutNameFuncList->v[name_id].opt_arg_num;
+}
+
+static OnigType
+get_callout_arg_type_from_name_id(int name_id, int index)
+{
+  return CalloutNameFuncList->v[name_id].arg_types[index];
+}
+
+static OnigValue
+get_callout_opt_default_from_name_id(int name_id, int index)
+{
+  return CalloutNameFuncList->v[name_id].opt_defaults[index];
 }
 
 extern UChar*

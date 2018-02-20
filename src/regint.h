@@ -800,6 +800,7 @@ typedef enum {
 } CalloutType;
 
 extern OnigCalloutFunc onig_get_callout_start_func_from_id(int id);
+extern OnigCalloutFunc onig_get_callout_end_func_from_name_id(int id);
 extern int onig_callout_tag_table_free(void* table);
 #endif
 
