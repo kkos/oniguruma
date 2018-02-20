@@ -5485,9 +5485,9 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
         if (env->mmd.max == 0 &&
             NODE_IS_ANYCHAR(NODE_BODY(node)) && qn->greedy != 0) {
           if (IS_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), env)))
-            add_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_STAR_ML);
+            add_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_INF_ML);
           else
-            add_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_STAR);
+            add_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_INF);
         }
       }
       else {
@@ -5553,9 +5553,9 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
 #endif
           {
             r = optimize_nodes(NODE_BODY(node), opt, env);
-            if (is_set_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_STAR_MASK)) {
+            if (is_set_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_INF_MASK)) {
               if (MEM_STATUS_AT0(env->scan_env->backrefed_mem, en->m.regnum))
-                remove_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_STAR_MASK);
+                remove_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_INF_MASK);
             }
           }
         break;
@@ -5699,11 +5699,11 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
   if (r != 0) return r;
 
   reg->anchor = opt.anc.left & (ANCHOR_BEGIN_BUF |
-        ANCHOR_BEGIN_POSITION | ANCHOR_ANYCHAR_STAR | ANCHOR_ANYCHAR_STAR_ML |
+        ANCHOR_BEGIN_POSITION | ANCHOR_ANYCHAR_INF | ANCHOR_ANYCHAR_INF_ML |
         ANCHOR_LOOK_BEHIND);
 
   if ((opt.anc.left & (ANCHOR_LOOK_BEHIND | ANCHOR_PREC_READ_NOT)) != 0)
-    reg->anchor &= ~ANCHOR_ANYCHAR_STAR_ML;
+    reg->anchor &= ~ANCHOR_ANYCHAR_INF_ML;
 
   reg->anchor |= opt.anc.right & (ANCHOR_END_BUF | ANCHOR_SEMI_END_BUF |
        ANCHOR_PREC_READ_NOT);
@@ -5846,14 +5846,14 @@ print_anchor(FILE* f, int anchor)
     q = 1;
     fprintf(f, "end-line");
   }
-  if (anchor & ANCHOR_ANYCHAR_STAR) {
+  if (anchor & ANCHOR_ANYCHAR_INF) {
     if (q) fprintf(f, ", ");
     q = 1;
-    fprintf(f, "anychar-star");
+    fprintf(f, "anychar-inf");
   }
-  if (anchor & ANCHOR_ANYCHAR_STAR_ML) {
+  if (anchor & ANCHOR_ANYCHAR_INF_ML) {
     if (q) fprintf(f, ", ");
-    fprintf(f, "anychar-star-ml");
+    fprintf(f, "anychar-inf-ml");
   }
 
   fprintf(f, "]");

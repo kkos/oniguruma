@@ -4545,7 +4545,7 @@ onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
         goto end_buf;
       }
     }
-    else if ((reg->anchor & ANCHOR_ANYCHAR_STAR_ML)) {
+    else if ((reg->anchor & ANCHOR_ANYCHAR_INF_ML)) {
       goto begin_position;
     }
   }
@@ -4618,7 +4618,7 @@ onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
         if (! forward_search_range(reg, str, end, s, sch_range,
                                    &low, &high, (UChar** )NULL)) goto mismatch;
 
-        if ((reg->anchor & ANCHOR_ANYCHAR_STAR) != 0) {
+        if ((reg->anchor & ANCHOR_ANYCHAR_INF) != 0) {
           do {
             MATCH_AND_RETURN_CHECK(orig_range);
             prev = s;
