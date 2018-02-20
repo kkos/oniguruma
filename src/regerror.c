@@ -186,6 +186,8 @@ onig_error_code_to_format(int code)
     p = "invalid callout body"; break;
   case ONIGERR_INVALID_CALLOUT_TAG_NAME:
     p = "invalid callout tag name"; break;
+  case ONIGERR_INVALID_CALLOUT_ARG:
+    p = "invalid callout arg"; break;
   case ONIGERR_NOT_SUPPORTED_ENCODING_COMBINATION:
     p = "not supported encoding combination"; break;
   case ONIGERR_INVALID_COMBINATION_OF_OPTIONS:

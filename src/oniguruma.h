@@ -486,7 +486,7 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER   (1U<<26) /* \X \y \Y */
 #define ONIG_SYN_OP2_QMARK_PERL_SUBEXP_CALL     (1U<<27) /* (?R), (?&name)... */
 #define ONIG_SYN_OP2_QMARK_BRACE_CALLOUT_CODE   (1U<<28) /* (?{...}) (?{{...}}) */
-#define ONIG_SYN_OP2_ASTERISK_CALLOUT_NAME      (1U<<29) /* (*NAME) (*NAME:...) */
+#define ONIG_SYN_OP2_ASTERISK_CALLOUT_NAME      (1U<<29) /* (*name) (*name(a,b)) */
 
 /* syntax (behavior) */
 #define ONIG_SYN_CONTEXT_INDEP_ANCHORS           (1U<<31) /* not implemented */
@@ -597,6 +597,7 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIGERR_UNDEFINED_CALLOUT_NAME                       -229
 #define ONIGERR_INVALID_CALLOUT_BODY                         -230
 #define ONIGERR_INVALID_CALLOUT_TAG_NAME                     -231
+#define ONIGERR_INVALID_CALLOUT_ARG                          -232
 #define ONIGERR_INVALID_CODE_POINT_VALUE                     -400
 #define ONIGERR_INVALID_WIDE_CHAR_VALUE                      -400
 #define ONIGERR_TOO_BIG_WIDE_CHAR_VALUE                      -401
