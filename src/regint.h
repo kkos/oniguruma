@@ -252,12 +252,43 @@ typedef unsigned int  uintptr_t;
 
 #endif /* PLATFORM_UNALIGNED_WORD_ACCESS */
 
+
+#ifdef USE_CALLOUT
+
+typedef enum {
+  CALLOUT_TYPE_SINGLE              = 0,
+  CALLOUT_TYPE_START_CALL          = 1,
+  CALLOUT_TYPE_BOTH_CALL           = 2,
+  CALLOUT_TYPE_START_MARK_END_CALL = 3,
+} CalloutType;
+
+typedef struct {
+  int           flag;
+  OnigCalloutOf of;
+  int           in;
+  CalloutType   type;
+  union {
+    struct {
+      UChar* start;
+      UChar* end;
+    } content;
+    struct {
+      int num;   /* real passed num */
+      OnigValue vals[ONIG_CALLOUT_MAX_ARG_NUM];
+    } arg;
+  } u;
+} CalloutListEntry;
+
+#endif
+
 typedef struct {
   UChar* pattern;
   UChar* pattern_end;
+#ifdef USE_CALLOUT
   void*  tag_table;
   int    max_tag_num;
-  int*   tag_list;    /* index: from 0 to max_tag_num */
+  CalloutListEntry* callout_list;    /* index: callout num */
+#endif
 } RegexExt;
 
 #define REG_EXTP(reg)      ((RegexExt* )((reg)->chain))
@@ -791,13 +822,6 @@ extern RegexExt* onig_get_regex_ext(regex_t* reg);
 extern int    onig_ext_set_pattern(regex_t* reg, const UChar* pattern, const UChar* pattern_end);
 
 #ifdef USE_CALLOUT
-
-typedef enum {
-  CALLOUT_TYPE_SINGLE              = 0,
-  CALLOUT_TYPE_START_CALL          = 1,
-  CALLOUT_TYPE_BOTH_CALL           = 2,
-  CALLOUT_TYPE_START_MARK_END_CALL = 3,
-} CalloutType;
 
 extern CalloutType     onig_get_callout_type_from_name_id(int name_id);
 extern OnigCalloutFunc onig_get_callout_start_func_from_name_id(int id);

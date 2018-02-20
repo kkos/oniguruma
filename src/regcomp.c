@@ -5920,11 +5920,13 @@ onig_get_regex_ext(regex_t* reg)
     RegexExt* ext = (RegexExt* )xmalloc(sizeof(*ext));
     if (IS_NULL(ext)) return 0;
 
-    ext->pattern     = 0;
-    ext->pattern_end = 0;
-    ext->tag_table   = 0;
-    ext->max_tag_num = 0;
-    ext->tag_list    = 0;
+    ext->pattern      = 0;
+    ext->pattern_end  = 0;
+#ifdef USE_CALLOUT
+    ext->tag_table    = 0;
+    ext->max_tag_num  = 0;
+    ext->callout_list = 0;
+#endif
 
     REG_EXTPL(reg) = (void* )ext;
   }
@@ -5943,8 +5945,8 @@ free_regex_ext(RegexExt* ext)
     if (IS_NOT_NULL(ext->tag_table))
       onig_callout_tag_table_free(ext->tag_table);
 
-    if (IS_NOT_NULL(ext->tag_list))
-      xfree(ext->tag_list);
+    if (IS_NOT_NULL(ext->callout_list))
+      xfree(ext->callout_list);
 #endif
 
     xfree(ext);

@@ -1612,19 +1612,21 @@ typedef int        CalloutTagVal;
 #define CALLOUT_TAG_LIST_FLAG_TAG_EXIST     (1<<0)
 
 static int
-i_callout_tag_list_set(UChar* key, CalloutTagVal e, void* arg)
+i_callout_callout_list_set(UChar* key, CalloutTagVal e, void* arg)
 {
   RegexExt* ext = (RegexExt* )arg;
 
-  ext->tag_list[e] |= CALLOUT_TAG_LIST_FLAG_TAG_EXIST;
+  ext->callout_list[e].flag |= CALLOUT_TAG_LIST_FLAG_TAG_EXIST;
   return ST_CONTINUE;
 }
 
 static void
-set_callout_tag_list_values(RegexExt* ext)
+set_callout_callout_list_values(RegexExt* ext)
 {
-  onig_st_foreach((CalloutTagTable *)ext->tag_table, i_callout_tag_list_set,
-                  (st_data_t )ext);
+  if (IS_NOT_NULL(ext->tag_table)) {
+    onig_st_foreach((CalloutTagTable *)ext->tag_table, i_callout_callout_list_set,
+                    (st_data_t )ext);
+  }
 }
 
 extern int
@@ -1632,10 +1634,11 @@ onig_callout_tag_is_exist_at_num(regex_t* reg, int callout_num)
 {
   RegexExt* ext = REG_EXTP(reg);
 
-  if (IS_NULL(ext) || IS_NULL(ext->tag_list)) return 0;
+  if (IS_NULL(ext) || IS_NULL(ext->callout_list)) return 0;
   if (callout_num > ext->max_tag_num) return 0;
 
-  return (ext->tag_list[callout_num] & CALLOUT_TAG_LIST_FLAG_TAG_EXIST) != 0 ? 1 : 0;
+  return (ext->callout_list[callout_num].flag &
+          CALLOUT_TAG_LIST_FLAG_TAG_EXIST) != 0  ? 1 : 0;
 }
 
 static int
@@ -7748,17 +7751,17 @@ onig_parse_tree(Node** root, const UChar* pattern, const UChar* end,
   reg->num_mem = env->num_mem;
 
 #ifdef USE_CALLOUT
-  if (env->max_tag_num > 0) {
+  if (env->callout_num > 0) {
     ext = onig_get_regex_ext(env->reg);
     CHECK_NULL_RETURN_MEMERR(ext);
 
     ext->max_tag_num = env->max_tag_num;
 
-    size_t n = sizeof(*(ext->tag_list)) * (ext->max_tag_num + 1);
-    ext->tag_list = xmalloc(n);
-    CHECK_NULL_RETURN_MEMERR(ext->tag_list);
-    xmemset(ext->tag_list, 0, n);
-    set_callout_tag_list_values(ext);
+    size_t n = sizeof(*(ext->callout_list)) * (env->callout_num + 1);
+    ext->callout_list = xmalloc(n);
+    CHECK_NULL_RETURN_MEMERR(ext->callout_list);
+    xmemset(ext->callout_list, 0, n);
+    set_callout_callout_list_values(ext);
   }
 #endif
 
