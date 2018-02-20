@@ -155,7 +155,8 @@ extern int main(int argc, char* argv[])
   if (r != ONIG_NORMAL) return -r;
 
   name = (UChar* )"foo";
-  id = onig_set_callout_of_name(name, name + strlen((char* )name), foo);
+  id = onig_set_callout_of_name(name, name + strlen((char* )name),
+                                ONIG_CALLOUT_IN_BOTH, foo, 0, 0, 0, 0);
   if (id < 0) {
     fprintf(stderr, "ERROR: fail to set callout of name: %s\n", name);
     //return -1;

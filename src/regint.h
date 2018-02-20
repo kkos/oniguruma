@@ -791,6 +791,14 @@ extern RegexExt* onig_get_regex_ext(regex_t* reg);
 extern int    onig_ext_set_pattern(regex_t* reg, const UChar* pattern, const UChar* pattern_end);
 
 #ifdef USE_CALLOUT
+
+typedef enum {
+  CALLOUT_TYPE_SINGLE              = 0,
+  CALLOUT_TYPE_START_CALL          = 1,
+  CALLOUT_TYPE_BOTH_CALL           = 2,
+  CALLOUT_TYPE_START_MARK_END_CALL = 3,
+} CalloutType;
+
 extern OnigCalloutFunc onig_get_callout_func_from_id(int id);
 extern int onig_callout_tag_table_free(void* table);
 #endif

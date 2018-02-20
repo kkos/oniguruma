@@ -1451,8 +1451,13 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
   return r;
 }
 
+/* name: single-byte string */
 extern int
-onig_set_callout_of_name(UChar* name, UChar* name_end, OnigCalloutFunc callout)
+onig_set_callout_of_name(OnigUChar* name, OnigUChar* name_end,
+                         int callout_in,
+                         OnigCalloutFunc callout,
+                         int arg_num, OnigType arg_types[],
+                         int optional_arg_num, OnigValue arg_defaults[])
 {
   return set_callout_of_name_with_enc(0, name, name_end, callout);
 }

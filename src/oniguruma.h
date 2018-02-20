@@ -728,6 +728,8 @@ enum OnigCalloutIn {
   ONIG_CALLOUT_IN_RETRACTION = 2  /* 1<<1 */
 };
 
+#define ONIG_CALLOUT_IN_BOTH  (ONIG_CALLOUT_IN_PROGRESS | ONIG_CALLOUT_IN_RETRACTION)
+
 enum OnigCalloutOf {
   ONIG_CALLOUT_OF_CODE = 0,
   ONIG_CALLOUT_OF_NAME = 1
@@ -749,12 +751,12 @@ enum OnigCalloutResult {
   ONIG_CALLOUT_ABORT   =  ONIG_ABORT /* == -3 */
 };
 
-enum OnigType {
+typedef enum {
   ONIG_TYPE_VOID       = 0,
   ONIG_TYPE_INT        = 1,
   ONIG_TYPE_CODE_POINT = 2,
   ONIG_TYPE_STRING     = 3,
-};
+} OnigType;
 
 typedef union {
   int i;
@@ -764,6 +766,7 @@ typedef union {
     OnigUChar* end;
   };
 } OnigValue;
+
 
 struct OnigMatchParamStruct;
 typedef struct OnigMatchParamStruct OnigMatchParam;
@@ -922,7 +925,7 @@ OnigCalloutFunc onig_get_retraction_callout_of_code P_((void));
 ONIG_EXTERN
 int onig_set_retraction_callout_of_code P_((OnigCalloutFunc f));
 ONIG_EXTERN
-int onig_set_callout_of_name P_((OnigUChar* name, OnigUChar* name_end, OnigCalloutFunc callout)); /* name: single-byte string */
+int onig_set_callout_of_name P_((OnigUChar* name, OnigUChar* name_end, int callout_in, OnigCalloutFunc callout, int arg_num, OnigType arg_types[], int optional_arg_num, OnigValue arg_defaults[])); /* name: single-byte string */
 ONIG_EXTERN
 OnigUChar* onig_get_callout_name_from_id P_((int id));
 

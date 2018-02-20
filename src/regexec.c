@@ -5072,7 +5072,8 @@ onig_initialize_builtin_callouts(void)
 
 #define B1(name, func)  do {\
   id = onig_set_callout_of_name((UChar* )#name, (UChar* )(#name + strlen(#name)),\
-                               onig_builtin_ ## func);\
+                                ONIG_CALLOUT_IN_BOTH,\
+                                onig_builtin_ ## func, 0, 0, 0, 0);\
   if (id < 0) return id;\
 } while(0)
 
