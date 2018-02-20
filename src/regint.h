@@ -799,9 +799,10 @@ typedef enum {
   CALLOUT_TYPE_START_MARK_END_CALL = 3,
 } CalloutType;
 
+extern CalloutType     onig_get_callout_type_from_name_id(int name_id);
 extern OnigCalloutFunc onig_get_callout_start_func_from_name_id(int id);
 extern OnigCalloutFunc onig_get_callout_end_func_from_name_id(int id);
-extern int onig_callout_tag_table_free(void* table);
+extern int             onig_callout_tag_table_free(void* table);
 #endif
 
 /* strend hash */

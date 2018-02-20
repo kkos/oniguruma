@@ -1105,6 +1105,7 @@ onig_noname_group_capture_is_active(regex_t* reg)
 
 #ifdef USE_CALLOUT
 typedef struct {
+  CalloutType     type;
   int             in;
   OnigCalloutFunc start_func;
   OnigCalloutFunc end_func;
@@ -1404,6 +1405,7 @@ is_allowed_callout_name(UChar* name, UChar* name_end)
 
 static int
 set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
+                             CalloutType type,
                              int in,
                              OnigCalloutFunc start_func,
                              OnigCalloutFunc end_func,
@@ -1467,6 +1469,7 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
   }
 
   fe = CalloutNameFuncList->v + id;
+  fe->type         = type;
   fe->in           = in;
   fe->start_func   = start_func;
   fe->end_func     = end_func;
@@ -1495,7 +1498,9 @@ onig_set_callout_of_name(OnigUChar* name, OnigUChar* name_end,
                          int arg_num, OnigType arg_types[],
                          int opt_arg_num, OnigValue opt_defaults[])
 {
-  return set_callout_of_name_with_enc(0, name, name_end, in, callout, 0,
+  return set_callout_of_name_with_enc(0, name, name_end,
+                                      CALLOUT_TYPE_SINGLE,
+                                      in, callout, 0,
                                       arg_num, arg_types, opt_arg_num, opt_defaults);
 }
 
@@ -1533,6 +1538,13 @@ onig_get_callout_id_from_name(OnigEncoding enc, UChar* name, UChar* name_end,
  end:
   if (save_name != name) xfree(name);
   return r;
+}
+
+
+extern CalloutType
+onig_get_callout_type_from_name_id(int name_id)
+{
+  return CalloutNameFuncList->v[name_id].type;
 }
 
 extern OnigCalloutFunc
