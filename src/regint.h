@@ -270,8 +270,8 @@ typedef struct {
   CalloutType   type;
   union {
     struct {
-      int start;
-      int end;
+      UChar* start;
+      UChar* end;
     } content;
     struct {
       int max_num;

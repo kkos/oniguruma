@@ -2459,16 +2459,6 @@ static int
 node_new_callout(Node** node, OnigCalloutOf callout_of, int num,
                  int id, int dirs, int with_tag, ScanEnv* env)
 {
-  int r;
-  RegexExt* ext;
-
-  ext = onig_get_regex_ext(env->reg);
-  CHECK_NULL_RETURN_MEMERR(ext);
-  if (IS_NULL(ext->pattern)) {
-    r = onig_ext_set_pattern(env->reg, env->pattern, env->pattern_end);
-    if (r != ONIG_NORMAL) return r;
-  }
-
   *node = node_new();
   CHECK_NULL_RETURN_MEMERR(*node);
 
@@ -6382,6 +6372,7 @@ parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   UChar* code_end;
   int brace_nest;
   CalloutListEntry* e;
+  RegexExt* ext;
   OnigEncoding enc = env->enc;
   UChar* p = *src;
 
@@ -6440,12 +6431,19 @@ parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     GIMMICK_(*np)->code_end   = (int )(code_end   - env->pattern);
   }
 
+  ext = onig_get_regex_ext(env->reg);
+  CHECK_NULL_RETURN_MEMERR(ext);
+  if (IS_NULL(ext->pattern)) {
+    r = onig_ext_set_pattern(env->reg, env->pattern, env->pattern_end);
+    if (r != ONIG_NORMAL) return r;
+  }
+
   e = reg_callout_list_at(env, num);
   e->of      = ONIG_CALLOUT_OF_CODE;
   e->in      = in;
   e->name_id = ONIG_NO_NAME_ID;
-  e->u.content.start = (int )(code_start - env->pattern);
-  e->u.content.end   = (int )(code_end   - env->pattern);
+  e->u.content.start = ext->pattern + (code_start - env->pattern);
+  e->u.content.end   = ext->pattern + (code_end   - env->pattern);
 
   *src = p;
   return 0;
@@ -6592,6 +6590,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   UChar* tag_end;
   Node*  node;
   CalloutListEntry* e;
+  RegexExt* ext;
   OnigType  types[ONIG_CALLOUT_MAX_ARG_NUM];
   OnigValue vals[ONIG_CALLOUT_MAX_ARG_NUM];
   OnigEncoding enc = env->enc;
@@ -6682,6 +6681,13 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
       onig_node_free(node);
       return r;
     }
+  }
+
+  ext = onig_get_regex_ext(env->reg);
+  CHECK_NULL_RETURN_MEMERR(ext);
+  if (IS_NULL(ext->pattern)) {
+    r = onig_ext_set_pattern(env->reg, env->pattern, env->pattern_end);
+    if (r != ONIG_NORMAL) return r;
   }
 
   e = reg_callout_list_at(env, num);
