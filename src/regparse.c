@@ -6342,16 +6342,15 @@ parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
 {
   int r;
   int i;
-  int dirs;
+  int in;
   int num;
   OnigCodePoint c;
   UChar* code_start;
   UChar* code_end;
   int brace_nest;
+  CalloutListEntry* e;
   OnigEncoding enc = env->enc;
   UChar* p = *src;
-
-  //PFETCH_READY;
 
   if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
 
@@ -6362,7 +6361,7 @@ parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
   }
 
-  dirs = ONIG_CALLOUT_IN_PROGRESS;
+  in = ONIG_CALLOUT_IN_PROGRESS;
   code_start = p;
   while (1) {
     if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
@@ -6384,12 +6383,12 @@ parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
   PFETCH_S(c);
   if (c == '+') {
-    dirs |= ONIG_CALLOUT_IN_RETRACTION;
+    in |= ONIG_CALLOUT_IN_RETRACTION;
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
     PFETCH_S(c);
   }
   else if (c == '-') {
-    dirs = ONIG_CALLOUT_IN_RETRACTION;
+    in = ONIG_CALLOUT_IN_RETRACTION;
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
     PFETCH_S(c);
   }
@@ -6400,13 +6399,19 @@ parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   r = reg_callout_list_entry(env, &num);
   if (r != 0) return r;
 
-  r = node_new_callout(np, ONIG_CALLOUT_OF_CODE, num, -1, dirs, 0, env);
+  r = node_new_callout(np, ONIG_CALLOUT_OF_CODE, num, ONIG_NO_NAME_ID, in, 0, env);
   if (r != 0) return r;
 
   if (code_start != code_end) {
     GIMMICK_(*np)->code_start = (int )(code_start - env->pattern);
     GIMMICK_(*np)->code_end   = (int )(code_end   - env->pattern);
   }
+
+  e = reg_callout_list_at(env, num);
+  e->of = ONIG_CALLOUT_OF_CODE;
+  e->in = in;
+  e->u.content.start = (int )(code_start - env->pattern);
+  e->u.content.end   = (int )(code_end   - env->pattern);
 
   *src = p;
   return 0;

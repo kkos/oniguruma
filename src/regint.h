@@ -269,11 +269,12 @@ typedef struct {
   CalloutType   type;
   union {
     struct {
-      UChar* start;
-      UChar* end;
+      int start;
+      int end;
     } content;
     struct {
       int num;   /* real passed num */
+      OnigType  types[ONIG_CALLOUT_MAX_ARG_NUM];
       OnigValue vals[ONIG_CALLOUT_MAX_ARG_NUM];
     } arg;
   } u;
