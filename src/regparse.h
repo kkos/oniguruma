@@ -414,9 +414,6 @@ typedef struct {
   int keep_num;
   int save_num;
   int save_alloc_num;
-#ifdef USE_CALLOUT
-  int callout_num;
-#endif
   SaveItem* saves;
 } ScanEnv;
 

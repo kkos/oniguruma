@@ -1786,9 +1786,6 @@ scan_env_clear(ScanEnv* env)
   env->save_num            = 0;
   env->save_alloc_num      = 0;
   env->saves               = 0;
-#ifdef USE_CALLOUT
-  env->callout_num         = 0;
-#endif
 }
 
 static int
@@ -7808,12 +7805,8 @@ onig_parse_tree(Node** root, const UChar* pattern, const UChar* end,
   reg->num_mem = env->num_mem;
 
 #ifdef USE_CALLOUT
-  ext = onig_get_regex_ext(env->reg);
+  ext = REG_EXTP(reg);
   if (IS_NOT_NULL(ext) && ext->callout_num > 0) {
-    ext = onig_get_regex_ext(env->reg);
-    CHECK_NULL_RETURN_MEMERR(ext);
-
-    env->callout_num = ext->callout_num;
     set_callout_callout_list_values(ext);
   }
 #endif
