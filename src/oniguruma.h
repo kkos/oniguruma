@@ -767,7 +767,7 @@ typedef union {
   struct {
     OnigUChar* start;
     OnigUChar* end;
-  };
+  } s;
 } OnigValue;
 
 

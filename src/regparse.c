@@ -2370,6 +2370,28 @@ node_new_keep(Node** node, ScanEnv* env)
 
 #ifdef USE_CALLOUT
 
+extern void
+onig_free_callout_list(int n, CalloutListEntry* list)
+{
+  int i;
+  int j;
+
+  if (IS_NULL(list)) return ;
+
+  for (i = 0; i < n; i++) {
+    if (list[i].of == ONIG_CALLOUT_OF_NAME) {
+      for (j = 0; j < list[i].u.arg.max_num; j++) {
+        if (list[i].u.arg.types[j] == ONIG_TYPE_STRING) {
+          if (IS_NOT_NULL(list[i].u.arg.vals[j].s.start))
+            xfree(list[i].u.arg.vals[j].s.start);
+        }
+      }
+    }
+  }
+
+  xfree(list);
+}
+
 static CalloutListEntry*
 reg_callout_list_at(ScanEnv* env, int num)
 {
@@ -2391,6 +2413,7 @@ reg_callout_list_entry(ScanEnv* env, int* rnum)
 
   int num;
   CalloutListEntry* list;
+  CalloutListEntry* e;
   RegexExt* ext;
 
   ext = onig_get_regex_ext(env->reg);
@@ -2411,9 +2434,19 @@ reg_callout_list_entry(ScanEnv* env, int* rnum)
     list = (CalloutListEntry* )xrealloc(ext->callout_list,
                                         sizeof(CalloutListEntry) * alloc);
     CHECK_NULL_RETURN_MEMERR(list);
+
     ext->callout_list       = list;
     ext->callout_list_alloc = alloc;
   }
+
+  e = ext->callout_list + num;
+
+  e->flag = 0;
+  e->of   = 0;
+  e->in   = ONIG_CALLOUT_OF_CODE;
+  e->type = 0;
+  e->u.arg.max_num    = 0;
+  e->u.arg.passed_num = 0;
 
   ext->callout_num = num;
   *rnum = num;
@@ -6417,23 +6450,149 @@ parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   return 0;
 }
 
-/* (*NAME[+-][TAG]) (*NAME[+-][TAG]{...}) */
+static int
+parse_int(OnigEncoding enc, UChar* s, UChar* end, int* ri)
+{
+  int v;
+  int d;
+  UChar* p;
+  OnigCodePoint c;
+
+  v = 0;
+  p = s;
+  while (p < end) {
+    c = ONIGENC_MBC_TO_CODE(enc, p, end);
+    p += ONIGENC_MBC_ENC_LEN(enc, p);
+    if (c >= '0' && c <= '9') {
+      d = c - '0';
+      if (v > (INT_MAX - d) / 10)
+        return ONIGERR_INVALID_CALLOUT_ARG;
+
+      v = v * 10 + d;
+    }
+    else
+      return ONIGERR_INVALID_CALLOUT_ARG;
+  }
+
+  *ri = v;
+  return ONIG_NORMAL;
+}
+
+static int
+parse_callout_args(int cterm, UChar** src, UChar* end, int max_arg_num,
+                   OnigType types[], OnigValue vals[], ScanEnv* env)
+{
+#define MAX_CALLOUT_ARG_STRING_LENGTH   256
+
+  int r;
+  int n;
+  int esc;
+  int cn;
+  UChar* s;
+  UChar* e;
+  OnigCodePoint c;
+  UChar* bufend;
+  UChar buf[MAX_CALLOUT_ARG_STRING_LENGTH];
+  OnigEncoding enc = env->enc;
+  UChar* p = *src;
+
+  if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
+
+  n = 0;
+  while (n < ONIG_CALLOUT_MAX_ARG_NUM) {
+    cn  = 0;
+    esc = 0;
+    bufend = buf;
+    s = p;
+    while (! PEND) {
+      e = p;
+      PFETCH_S(c);
+      if (esc != 0) {
+        esc = 0;
+        if (c == '\\' || c == cterm || c == ',') {
+          goto add_char;
+        }
+        else
+          return ONIGERR_INVALID_CALLOUT_ARG; /* invalid escape */
+      }
+      else {
+        if (c == '\\') {
+          esc = 1;
+        }
+        else if (c == cterm || c == ',')
+          break;
+        else {
+          size_t clen;
+
+        add_char:
+          clen = p - e;
+          if (bufend + clen > buf + MAX_CALLOUT_ARG_STRING_LENGTH)
+            return ONIGERR_INVALID_CALLOUT_ARG; /* too long argument */
+
+          xmemcpy(bufend, e, clen);
+          bufend += clen;
+          cn++;
+        }
+      }
+    }
+    if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
+
+    switch (types[n]) {
+    case ONIG_TYPE_INT:
+      if (cn == 0) return ONIGERR_INVALID_CALLOUT_ARG;
+      r = parse_int(enc, buf, bufend, &(vals[n].i));
+      if (r != ONIG_NORMAL) return r;
+      break;
+
+    case ONIG_TYPE_CODE_POINT:
+      if (cn != 1) return ONIGERR_INVALID_CALLOUT_ARG;
+      vals[n].cp = ONIGENC_MBC_TO_CODE(enc, buf, bufend);
+      break;
+
+    case ONIG_TYPE_STRING:
+      {
+        UChar* rs = strdup_with_null(enc, buf, bufend);
+        CHECK_NULL_RETURN_MEMERR(rs);
+        vals[n].s.start = rs;
+        vals[n].s.end   = rs + (e - s);
+      }
+      break;
+    default:
+      break;
+    }
+    n++;
+
+    if (c == cterm) break;
+  }
+
+  if (c != cterm) return ONIGERR_INVALID_CALLOUT_PATTERN;
+
+  *src = p;
+  return n;
+}
+
+/* (*name[TAG]) (*name[TAG](a,b,..)) */
 static int
 parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
 {
   int r;
-  int dirs;
+  int i;
+  int in;
   int num;
-  int id;
+  int name_id;
+  int arg_num;
+  int max_arg_num;
+  int opt_arg_num;
   int with_tag;
   OnigCodePoint c;
   UChar* name_start;
   UChar* name_end;
-  UChar* code_start;
-  UChar* code_end;
   UChar* tag_start;
   UChar* tag_end;
   Node*  node;
+  CalloutListEntry* e;
+  OnigType  types[ONIG_CALLOUT_MAX_ARG_NUM];
+  OnigValue vals[ONIG_CALLOUT_MAX_ARG_NUM];
   OnigEncoding enc = env->enc;
   UChar* p = *src;
 
@@ -6441,22 +6600,11 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
 
   node = 0;
-  dirs = ONIG_CALLOUT_IN_PROGRESS;
   name_start = p;
   while (! PEND) {
     name_end = p;
     PFETCH_S(c);
-    if (c == '+' || c == '-') {
-      if (c == '+') dirs |= ONIG_CALLOUT_IN_RETRACTION;
-      else          dirs  = ONIG_CALLOUT_IN_RETRACTION;
-
-      if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
-      PFETCH_S(c);
-      if (c == cterm || c == '[' || c == '{') break;
-      else
-        return ONIGERR_INVALID_CALLOUT_PATTERN;
-    }
-    else if (c == cterm || c == '[' || c == '{') break;
+    if (c == cterm || c == '[' || c == '(') break;
     else if (c > 255)
       return ONIGERR_INVALID_CALLOUT_NAME;
     else {
@@ -6464,6 +6612,9 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
         return ONIGERR_INVALID_CALLOUT_NAME;
     }
   }
+
+  r = onig_get_callout_id_from_name(enc, name_start, name_end, &name_id);
+  if (r != ONIG_NORMAL) return r;
 
   if (c == '[') {
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
@@ -6485,42 +6636,41 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     tag_start = tag_end = 0;
   }
 
-  if (c == '{') {
+  in = onig_get_callout_in_from_name_id(name_id);
+  max_arg_num = get_callout_arg_num_from_name_id(name_id);
+  opt_arg_num = get_callout_opt_arg_num_from_name_id(name_id);
+
+  for (i = 0; i < max_arg_num; i++) {
+    types[i] = get_callout_arg_type_from_name_id(name_id, i);
+  }
+
+  if (c == '(') {
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
-    
-    code_start = p;
-    while (! PEND) {
-      code_end = p;
-      PFETCH_S(c);
-      if (c == '}') break;
-    }
-    if (c != '}') return ONIGERR_END_PATTERN_IN_GROUP;
+
+    arg_num = parse_callout_args(')', &p, end, max_arg_num, types, vals, env);
+    if (arg_num < 0) return arg_num;
+
+    if (arg_num > max_arg_num || arg_num < (max_arg_num - opt_arg_num))
+      return ONIGERR_INVALID_CALLOUT_ARG;
 
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
     PFETCH_S(c);
   }
   else {
-    code_start = code_end = 0;
+    arg_num = 0;
   }
 
   if (c != cterm)
     return ONIGERR_INVALID_CALLOUT_PATTERN;
-
-  r = onig_get_callout_id_from_name(enc, name_start, name_end, &id);
-  if (r != ONIG_NORMAL) return r;
 
   with_tag = (tag_start != tag_end) ? 1 : 0;
 
   r = reg_callout_list_entry(env, &num);
   if (r != 0) return r;
 
-  r = node_new_callout(&node, ONIG_CALLOUT_OF_NAME, num, id, dirs, with_tag, env);
+  r = node_new_callout(&node, ONIG_CALLOUT_OF_NAME, num, name_id,
+                       in, with_tag, env);
   if (r != ONIG_NORMAL) return r;
-
-  if (code_start != code_end) {
-    GIMMICK_(node)->code_start = (int )(code_start - env->pattern);
-    GIMMICK_(node)->code_end   = (int )(code_end   - env->pattern);
-  }
 
   if (tag_start != tag_end) {
     GIMMICK_(node)->tag_start = (int )(tag_start - env->pattern);
@@ -6531,6 +6681,20 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
       onig_node_free(node);
       return r;
     }
+  }
+
+  e = reg_callout_list_at(env, num);
+  e->of   = ONIG_CALLOUT_OF_NAME;
+  e->in   = in;
+  e->type = onig_get_callout_type_from_name_id(name_id);
+  e->u.arg.max_num    = max_arg_num;
+  e->u.arg.passed_num = arg_num;
+  for (i = 0; i < max_arg_num; i++) {
+    e->u.arg.types[i] = types[i];
+    if (i < arg_num)
+      e->u.arg.vals[i] = vals[i];
+    else
+      e->u.arg.vals[i] = get_callout_opt_default_from_name_id(name_id, i);
   }
 
   *np = node;

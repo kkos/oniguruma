@@ -273,7 +273,8 @@ typedef struct {
       int end;
     } content;
     struct {
-      int num;   /* real passed num */
+      int max_num;
+      int passed_num;
       OnigType  types[ONIG_CALLOUT_MAX_ARG_NUM];
       OnigValue vals[ONIG_CALLOUT_MAX_ARG_NUM];
     } arg;
@@ -829,6 +830,8 @@ extern CalloutType     onig_get_callout_type_from_name_id(int name_id);
 extern OnigCalloutFunc onig_get_callout_start_func_from_name_id(int id);
 extern OnigCalloutFunc onig_get_callout_end_func_from_name_id(int id);
 extern int             onig_callout_tag_table_free(void* table);
+extern void            onig_free_callout_list(int n, CalloutListEntry* list);
+
 #endif
 
 /* strend hash */
