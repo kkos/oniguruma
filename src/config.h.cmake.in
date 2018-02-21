@@ -67,9 +67,6 @@
 /* Define to 1 if you have the ANSI C header files. */
 #cmakedefine STDC_HEADERS  ${STDC_HEADERS}
 
-/* Define if combination explosion check */
-#cmakedefine USE_COMBINATION_EXPLOSION_CHECK  ${USE_COMBINATION_EXPLOSION_CHECK}
-
 /* Define if enable CR+NL as line terminator */
 #cmakedefine USE_CRNL_AS_LINE_TERMINATOR  ${USE_CRNL_AS_LINE_TERMINATOR}
 
