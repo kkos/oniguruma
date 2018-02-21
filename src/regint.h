@@ -286,7 +286,8 @@ typedef struct {
   UChar* pattern_end;
 #ifdef USE_CALLOUT
   void*  tag_table;
-  int    max_tag_num;
+  int    callout_num;
+  int    callout_list_alloc;
   CalloutListEntry* callout_list;    /* index: callout num */
 #endif
 } RegexExt;

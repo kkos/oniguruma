@@ -26,7 +26,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
 #include "regint.h"
 
 #define IS_MBC_WORD_ASCII_MODE(enc,s,end,mode) \

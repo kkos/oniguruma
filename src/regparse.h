@@ -416,7 +416,6 @@ typedef struct {
   int save_alloc_num;
 #ifdef USE_CALLOUT
   int callout_num;
-  int max_tag_num;
 #endif
   SaveItem* saves;
 } ScanEnv;

@@ -1635,7 +1635,7 @@ onig_callout_tag_is_exist_at_num(regex_t* reg, int callout_num)
   RegexExt* ext = REG_EXTP(reg);
 
   if (IS_NULL(ext) || IS_NULL(ext->callout_list)) return 0;
-  if (callout_num > ext->max_tag_num) return 0;
+  if (callout_num > ext->callout_num) return 0;
 
   return (ext->callout_list[callout_num].flag &
           CALLOUT_TAG_LIST_FLAG_TAG_EXIST) != 0  ? 1 : 0;
@@ -1788,7 +1788,6 @@ scan_env_clear(ScanEnv* env)
   env->saves               = 0;
 #ifdef USE_CALLOUT
   env->callout_num         = 0;
-  env->max_tag_num         = 0;
 #endif
 }
 
@@ -2373,12 +2372,64 @@ node_new_keep(Node** node, ScanEnv* env)
 }
 
 #ifdef USE_CALLOUT
+
+static CalloutListEntry*
+reg_callout_list_at(ScanEnv* env, int num)
+{
+  RegexExt* ext;
+
+  ext = onig_get_regex_ext(env->reg);
+  CHECK_NULL_RETURN(ext);
+
+  if (num < 0 || num > ext->callout_num)
+    return 0;
+
+  return ext->callout_list + num;
+}
+
 static int
-node_new_callout(Node** node, OnigCalloutOf callout_of, int id, int dirs,
-                 int with_tag, ScanEnv* env)
+reg_callout_list_entry(ScanEnv* env, int* rnum)
+{
+#define INIT_CALLOUT_LIST_NUM  4
+
+  int num;
+  CalloutListEntry* list;
+  RegexExt* ext;
+
+  ext = onig_get_regex_ext(env->reg);
+  CHECK_NULL_RETURN_MEMERR(ext);
+
+  if (IS_NULL(ext->callout_list)) {
+    list = (CalloutListEntry* )xmalloc(sizeof(*list) * INIT_CALLOUT_LIST_NUM);
+    CHECK_NULL_RETURN_MEMERR(list);
+
+    ext->callout_list = list;
+    ext->callout_list_alloc = INIT_CALLOUT_LIST_NUM;
+    ext->callout_num = 0;
+  }
+
+  num = ext->callout_num + 1;
+  if (num >= ext->callout_list_alloc) {
+    int alloc = ext->callout_list_alloc * 2;
+    list = (CalloutListEntry* )xrealloc(ext->callout_list,
+                                        sizeof(CalloutListEntry) * alloc);
+    CHECK_NULL_RETURN_MEMERR(list);
+    ext->callout_list       = list;
+    ext->callout_list_alloc = alloc;
+  }
+
+  ext->callout_num = num;
+  *rnum = num;
+  return ONIG_NORMAL;
+}
+
+#include <stdio.h>
+
+static int
+node_new_callout(Node** node, OnigCalloutOf callout_of, int num,
+                 int id, int dirs, int with_tag, ScanEnv* env)
 {
   int r;
-  int num;
   RegexExt* ext;
 
   ext = onig_get_regex_ext(env->reg);
@@ -2390,9 +2441,6 @@ node_new_callout(Node** node, OnigCalloutOf callout_of, int id, int dirs,
 
   *node = node_new();
   CHECK_NULL_RETURN_MEMERR(*node);
-
-  num = ++env->callout_num;
-  if (with_tag != 0) env->max_tag_num = num;
 
   NODE_SET_TYPE(*node, NODE_GIMMICK);
   GIMMICK_(*node)->id          = id;
@@ -6298,6 +6346,7 @@ parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   int r;
   int i;
   int dirs;
+  int num;
   OnigCodePoint c;
   UChar* code_start;
   UChar* code_end;
@@ -6351,7 +6400,10 @@ parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   if (c != cterm)
     return ONIGERR_INVALID_CALLOUT_PATTERN;
 
-  r = node_new_callout(np, ONIG_CALLOUT_OF_CODE, -1, dirs, 0, env);
+  r = reg_callout_list_entry(env, &num);
+  if (r != 0) return r;
+
+  r = node_new_callout(np, ONIG_CALLOUT_OF_CODE, num, -1, dirs, 0, env);
   if (r != 0) return r;
 
   if (code_start != code_end) {
@@ -6369,6 +6421,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
 {
   int r;
   int dirs;
+  int num;
   int id;
   int with_tag;
   OnigCodePoint c;
@@ -6455,7 +6508,11 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   if (r != ONIG_NORMAL) return r;
 
   with_tag = (tag_start != tag_end) ? 1 : 0;
-  r = node_new_callout(&node, ONIG_CALLOUT_OF_NAME, id, dirs, with_tag, env);
+
+  r = reg_callout_list_entry(env, &num);
+  if (r != 0) return r;
+
+  r = node_new_callout(&node, ONIG_CALLOUT_OF_NAME, num, id, dirs, with_tag, env);
   if (r != ONIG_NORMAL) return r;
 
   if (code_start != code_end) {
@@ -7751,16 +7808,12 @@ onig_parse_tree(Node** root, const UChar* pattern, const UChar* end,
   reg->num_mem = env->num_mem;
 
 #ifdef USE_CALLOUT
-  if (env->callout_num > 0) {
+  ext = onig_get_regex_ext(env->reg);
+  if (IS_NOT_NULL(ext) && ext->callout_num > 0) {
     ext = onig_get_regex_ext(env->reg);
     CHECK_NULL_RETURN_MEMERR(ext);
 
-    ext->max_tag_num = env->max_tag_num;
-
-    size_t n = sizeof(*(ext->callout_list)) * (env->callout_num + 1);
-    ext->callout_list = xmalloc(n);
-    CHECK_NULL_RETURN_MEMERR(ext->callout_list);
-    xmemset(ext->callout_list, 0, n);
+    env->callout_num = ext->callout_num;
     set_callout_callout_list_values(ext);
   }
 #endif
