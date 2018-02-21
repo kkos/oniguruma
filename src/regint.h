@@ -642,7 +642,7 @@ enum OpCode {
   OP_UPDATE_VAR,
 #ifdef USE_CALLOUT
   OP_CALLOUT_CODE,          /* (?{...}) (?{{...}}) */
-  OP_CALLOUT_NAME,          /* (*NAME) (*NAME:...) */
+  OP_CALLOUT_NAME,          /* (*name) (*name[tag](args...)) */
 #endif
 
   /* no need: IS_DYNAMIC_OPTION() == 0 */
@@ -745,8 +745,8 @@ typedef int ModeType;
 #define SIZE_OP_UPDATE_VAR             (SIZE_OPCODE + SIZE_UPDATE_VAR_TYPE + SIZE_MEMNUM)
 
 #ifdef USE_CALLOUT
-#define SIZE_OP_CALLOUT_CODE           (SIZE_OPCODE + SIZE_MEMNUM + SIZE_MEMNUM + SIZE_POINTER + SIZE_POINTER)
-#define SIZE_OP_CALLOUT_NAME           (SIZE_OPCODE + SIZE_MEMNUM + SIZE_MEMNUM + SIZE_MEMNUM + SIZE_POINTER + SIZE_POINTER)
+#define SIZE_OP_CALLOUT_CODE           (SIZE_OPCODE + SIZE_MEMNUM + SIZE_MEMNUM)
+#define SIZE_OP_CALLOUT_NAME           (SIZE_OPCODE + SIZE_MEMNUM + SIZE_MEMNUM + SIZE_MEMNUM)
 #endif
 
 #define MC_ESC(syn)               (syn)->meta_char_table.esc
@@ -832,6 +832,7 @@ extern OnigCalloutFunc onig_get_callout_start_func_from_name_id(int id);
 extern OnigCalloutFunc onig_get_callout_end_func_from_name_id(int id);
 extern int             onig_callout_tag_table_free(void* table);
 extern void            onig_free_callout_list(int n, CalloutListEntry* list);
+extern CalloutListEntry* onig_reg_callout_list_at(regex_t* reg, int num);
 
 #endif
 

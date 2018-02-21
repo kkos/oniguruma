@@ -330,7 +330,7 @@ add_mem_num(regex_t* reg, int num)
   return 0;
 }
 
-#ifdef USE_CALLOUT
+#if 0
 static int
 add_pointer(regex_t* reg, void* addr)
 {
@@ -1542,15 +1542,6 @@ compile_gimmick_node(GimmickNode* node, regex_t* reg)
     case ONIG_CALLOUT_OF_CODE:
     case ONIG_CALLOUT_OF_NAME:
       {
-        RegexExt* ext;
-        UChar* pattern;
-
-        ext = onig_get_regex_ext(reg);
-        CHECK_NULL_RETURN_MEMERR(ext);
-        pattern = ext->pattern;
-        if (IS_NULL(pattern))
-          return ONIGERR_PARSER_BUG;
-
         r = add_opcode(reg, (node->detail_type == ONIG_CALLOUT_OF_CODE) ?
                                   OP_CALLOUT_CODE : OP_CALLOUT_NAME);
         if (r != 0) return r;
@@ -1562,18 +1553,6 @@ compile_gimmick_node(GimmickNode* node, regex_t* reg)
         if (r != 0) return r;
         r = add_mem_num(reg, node->dirs);
         if (r != 0) return r;
-        if (node->code_start >= 0) {
-          r = add_pointer(reg, pattern + node->code_start);
-          if (r != 0) return r;
-          r = add_pointer(reg, pattern + node->code_end);
-          if (r != 0) return r;
-        }
-        else {
-          r = add_pointer(reg, 0);
-          if (r != 0) return r;
-          r = add_pointer(reg, 0);
-          if (r != 0) return r;
-        }
       }
       break;
 

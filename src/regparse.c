@@ -2392,12 +2392,12 @@ onig_free_callout_list(int n, CalloutListEntry* list)
   xfree(list);
 }
 
-static CalloutListEntry*
-reg_callout_list_at(ScanEnv* env, int num)
+extern CalloutListEntry*
+onig_reg_callout_list_at(regex_t* reg, int num)
 {
   RegexExt* ext;
 
-  ext = onig_get_regex_ext(env->reg);
+  ext = onig_get_regex_ext(reg);
   CHECK_NULL_RETURN(ext);
 
   if (num < 0 || num > ext->callout_num)
@@ -6438,7 +6438,7 @@ parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     if (r != ONIG_NORMAL) return r;
   }
 
-  e = reg_callout_list_at(env, num);
+  e = onig_reg_callout_list_at(env->reg, num);
   e->of      = ONIG_CALLOUT_OF_CODE;
   e->in      = in;
   e->name_id = ONIG_NO_NAME_ID;
@@ -6690,7 +6690,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     if (r != ONIG_NORMAL) return r;
   }
 
-  e = reg_callout_list_at(env, num);
+  e = onig_reg_callout_list_at(env->reg, num);
   e->of      = ONIG_CALLOUT_OF_NAME;
   e->in      = in;
   e->name_id = name_id;

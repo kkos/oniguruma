@@ -534,15 +534,11 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
     case OP_CALLOUT_CODE:
       {
         int dirs;
-        UChar* code_start;
-        UChar* code_end;
 
         GET_MEMNUM_INC(mem,  bp); // number
         GET_MEMNUM_INC(dirs, bp);
-        GET_POINTER_INC(code_start, bp);
-        GET_POINTER_INC(code_end,   bp);
 
-        fprintf(f, ":%d:%d:%p:%p", mem, dirs, code_start, code_end);
+        fprintf(f, ":%d:%d", mem, dirs);
       }
       break;
 
@@ -550,16 +546,12 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
       {
         int dirs;
         int id;
-        UChar* code_start;
-        UChar* code_end;
 
         GET_MEMNUM_INC(id,   bp); // id
         GET_MEMNUM_INC(mem,  bp); // number
         GET_MEMNUM_INC(dirs, bp);
-        GET_POINTER_INC(code_start, bp);
-        GET_POINTER_INC(code_end,   bp);
 
-        fprintf(f, ":%d:%d:%d:%p:%p", id, mem, dirs, code_start, code_end);
+        fprintf(f, ":%d:%d:%d:%p:%p", id, mem, dirs);
       }
       break;
 #endif
@@ -862,13 +854,11 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 }
 
 #ifdef USE_CALLOUT
-#define CALLOUT_BODY(func, ain, aof, aname_id, anum, cstart, cend, user, args, result) do { \
+#define CALLOUT_BODY(func, ain, aof, aname_id, anum, user, args, result) do { \
   args.in            = (ain);\
   args.of            = (aof);\
   args.name_id       = (aname_id);\
   args.num           = anum;\
-  args.content       = cstart;\
-  args.content_end   = cend;\
   args.regex         = reg;\
   args.subject       = str;\
   args.subject_end   = end;\
@@ -883,10 +873,10 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   result = (func)(&args, user);\
 } while (0)
 
-#define RETRACTION_CALLOUT(func, aof, aname_id, anum, cstart, cend, user) do {\
+#define RETRACTION_CALLOUT(func, aof, aname_id, anum, user) do {\
   int result;\
   OnigCalloutArgs args;\
-  CALLOUT_BODY(func, ONIG_CALLOUT_IN_RETRACTION, aof, aname_id, anum, cstart, cend, user, args, result);\
+  CALLOUT_BODY(func, ONIG_CALLOUT_IN_RETRACTION, aof, aname_id, anum, user, args, result);\
   switch (result) {\
   case ONIG_CALLOUT_FAIL:\
     goto fail;\
@@ -999,8 +989,6 @@ struct OnigCalloutArgsStruct {
   OnigCalloutOf of;
   int   name_id;   /* name id or ONIG_NO_NAME_ID */
   int   num;
-  const OnigUChar* content;
-  const OnigUChar* content_end;
   OnigRegex        regex;
   const OnigUChar* subject;
   const OnigUChar* subject_end;
@@ -1502,23 +1490,19 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while (0)
 
-#define STACK_PUSH_CALLOUT_CODE(anum, xcontent, xcontent_end) do {\
+#define STACK_PUSH_CALLOUT_CODE(anum) do {\
   STACK_ENSURE(1);\
   stk->type = STK_CALLOUT;\
   stk->zid  = ONIG_NO_NAME_ID;\
-  stk->u.callout.num         = (anum);\
-  stk->u.callout.content     = (xcontent);\
-  stk->u.callout.content_end = (xcontent_end);\
+  stk->u.callout.num = (anum);\
   STACK_INC;\
 } while(0)
 
-#define STACK_PUSH_CALLOUT_NAME(aid, anum, xcontent, xcontent_end) do {\
+#define STACK_PUSH_CALLOUT_NAME(aid, anum) do {\
   STACK_ENSURE(1);\
   stk->type = STK_CALLOUT;\
   stk->zid  = (aid);\
-  stk->u.callout.num         = (anum);\
-  stk->u.callout.content     = (xcontent);\
-  stk->u.callout.content_end = (xcontent_end);\
+  stk->u.callout.num = (anum);\
   STACK_INC;\
 } while(0)
 
@@ -1551,7 +1535,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
       aof = ONIG_CALLOUT_OF_NAME;\
       func = onig_get_callout_start_func_from_name_id(stk->zid);\
     }\
-    RETRACTION_CALLOUT(func, aof, stk->zid, stk->u.callout.num, stk->u.callout.content, stk->u.callout.content_end, msa->mp->callout_user_data);\
+    RETRACTION_CALLOUT(func, aof, stk->zid, stk->u.callout.num, msa->mp->callout_user_data);\
   }
 #else
 #define POP_CALLOUT_CASE
@@ -3678,8 +3662,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     case OP_CALLOUT_NAME: SOP_IN(OP_CALLOUT_NAME);
       {
-        UChar* content_start;
-        UChar* content_end;
         int call_result;
         int num;
         int dirs;
@@ -3692,13 +3674,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       callout_common_entry:
         GET_MEMNUM_INC(num,  p);
         GET_MEMNUM_INC(dirs, p);
-        GET_POINTER_INC(content_start, p);
-        GET_POINTER_INC(content_end,   p);
 
         if (IS_NOT_NULL(func) && (dirs & ONIG_CALLOUT_IN_PROGRESS) != 0) {
           CALLOUT_BODY(func, ONIG_CALLOUT_IN_PROGRESS, of, name_id,
-                       num, content_start, content_end,
-                       msa->mp->callout_user_data, args, call_result);
+                       num, msa->mp->callout_user_data, args, call_result);
           switch (call_result) {
           case ONIG_CALLOUT_FAIL:
             goto fail;
@@ -3723,13 +3702,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
             if (of == ONIG_CALLOUT_OF_NAME) {
               func = onig_get_callout_start_func_from_name_id(name_id);
               if (IS_NOT_NULL(func)) {
-                STACK_PUSH_CALLOUT_NAME(name_id, num, content_start, content_end);
+                STACK_PUSH_CALLOUT_NAME(name_id, num);
               }
             }
             else {
               func = msa->mp->retraction_callout_of_code;
               if (IS_NOT_NULL(func)) {
-                STACK_PUSH_CALLOUT_CODE(num, content_start, content_end);
+                STACK_PUSH_CALLOUT_CODE(num);
               }
             }
           }
@@ -4926,13 +4905,29 @@ onig_get_name_id_of_callout_args(OnigCalloutArgs* args)
 extern const UChar*
 onig_get_content_of_callout_args(OnigCalloutArgs* args)
 {
-  return args->content;
+  int num;
+  CalloutListEntry* e;
+
+  num = args->num;
+  e = onig_reg_callout_list_at(args->regex, num);
+  if (IS_NULL(e)) return 0;
+  if (e->of == ONIG_CALLOUT_OF_NAME) return 0;
+
+  return e->u.content.start;
 }
 
 extern const UChar*
 onig_get_content_end_of_callout_args(OnigCalloutArgs* args)
 {
-  return args->content_end;
+  int num;
+  CalloutListEntry* e;
+
+  num = args->num;
+  e = onig_reg_callout_list_at(args->regex, num);
+  if (IS_NULL(e)) return 0;
+  if (e->of == ONIG_CALLOUT_OF_NAME) return 0;
+
+  return e->u.content.end;
 }
 
 extern const UChar*
@@ -5043,12 +5038,19 @@ onig_builtin_success(OnigCalloutArgs* args ARG_UNUSED, void* user_data ARG_UNUSE
 }
 
 extern int
-onig_builtin_error(OnigCalloutArgs* a, void* user_data ARG_UNUSED)
+onig_builtin_error(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 {
-  long n;
+  int n;
+  int num;
+  CalloutListEntry* e;
 
-  if (a->content != 0 && a->content_end > a->content) {
-    n = strtol((char* )a->content, 0, 10);
+  num = args->num;
+  e = onig_reg_callout_list_at(args->regex, num);
+  if (IS_NULL(e)) return 0;
+  //if (e->of != ONIG_CALLOUT_OF_NAME) return 0;
+
+  if (e->u.arg.types[0] == ONIG_TYPE_INT) {
+    n = e->u.arg.vals[0].i;
     if (n >= 0) {
       n = ONIGERR_INVALID_CALLOUT_BODY;
     }
@@ -5057,7 +5059,7 @@ onig_builtin_error(OnigCalloutArgs* a, void* user_data ARG_UNUSED)
     n = ONIG_CALLOUT_FAIL;
   }
 
-  return (int )n;
+  return n;
 }
 
 #endif /* USE_CALLOUT */
@@ -5069,19 +5071,30 @@ onig_initialize_builtin_callouts(void)
   return ONIG_NO_SUPPORT_CONFIG;
 #else
 
-#define B1(name, func)  do {\
+#define B0(name, func)  do {\
   id = onig_set_callout_of_name((UChar* )#name, (UChar* )(#name + strlen(#name)),\
                                 ONIG_CALLOUT_IN_BOTH,\
                                 onig_builtin_ ## func, 0, 0, 0, 0);\
   if (id < 0) return id;\
 } while(0)
 
-  int id;
+#define B1(name, func, ts)  do {\
+  id = onig_set_callout_of_name((UChar* )#name, (UChar* )(#name + strlen(#name)),\
+                                ONIG_CALLOUT_IN_PROGRESS,\
+                                onig_builtin_ ## func, 1, (ts), 0, 0);\
+  if (id < 0) return id;\
+} while(0)
 
-  B1(FAIL,    fail);
-  B1(SUCCESS, success);
-  B1(ABORT,   abort);
-  B1(ERROR,   error);
+  int id;
+  OnigType t_int;
+
+  t_int = ONIG_TYPE_INT;
+
+  B0(FAIL,    fail);
+  B0(SUCCESS, success);
+  B0(ABORT,   abort);
+
+  B1(ERROR, error, &t_int);
 
   return ONIG_NORMAL;
 #endif /* USE_CALLOUT */
