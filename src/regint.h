@@ -266,6 +266,7 @@ typedef struct {
   int           flag;
   OnigCalloutOf of;
   int           in;
+  int           name_id;
   CalloutType   type;
   union {
     struct {

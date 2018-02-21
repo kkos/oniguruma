@@ -6441,8 +6441,9 @@ parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   }
 
   e = reg_callout_list_at(env, num);
-  e->of = ONIG_CALLOUT_OF_CODE;
-  e->in = in;
+  e->of      = ONIG_CALLOUT_OF_CODE;
+  e->in      = in;
+  e->name_id = ONIG_NO_NAME_ID;
   e->u.content.start = (int )(code_start - env->pattern);
   e->u.content.end   = (int )(code_end   - env->pattern);
 
@@ -6684,9 +6685,10 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   }
 
   e = reg_callout_list_at(env, num);
-  e->of   = ONIG_CALLOUT_OF_NAME;
-  e->in   = in;
-  e->type = onig_get_callout_type_from_name_id(name_id);
+  e->of      = ONIG_CALLOUT_OF_NAME;
+  e->in      = in;
+  e->name_id = name_id;
+  e->type    = onig_get_callout_type_from_name_id(name_id);
   e->u.arg.max_num    = max_arg_num;
   e->u.arg.passed_num = arg_num;
   for (i = 0; i < max_arg_num; i++) {
