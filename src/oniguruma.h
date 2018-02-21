@@ -765,7 +765,7 @@ typedef union {
   int i;
   OnigCodePoint cp;
   struct {
-    OnigUChar* s;
+    OnigUChar* start;
     OnigUChar* end;
   };
 } OnigValue;
