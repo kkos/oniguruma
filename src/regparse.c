@@ -2453,8 +2453,6 @@ reg_callout_list_entry(ScanEnv* env, int* rnum)
   return ONIG_NORMAL;
 }
 
-#include <stdio.h>
-
 static int
 node_new_callout(Node** node, OnigCalloutOf callout_of, int num,
                  int id, int dirs, int with_tag, ScanEnv* env)
@@ -6454,9 +6452,15 @@ parse_int(OnigEncoding enc, UChar* s, UChar* end, int* ri)
 {
   int v;
   int d;
+  int flag;
+  int first;
   UChar* p;
   OnigCodePoint c;
 
+  if (s >= end) return ONIGERR_INVALID_CALLOUT_ARG;
+
+  first = 1;
+  flag  = 1;
   v = 0;
   p = s;
   while (p < end) {
@@ -6469,11 +6473,16 @@ parse_int(OnigEncoding enc, UChar* s, UChar* end, int* ri)
 
       v = v * 10 + d;
     }
+    else if (first != 0 && (c == '-' || c == '+')) {
+      if (c == '-') flag = -1;
+    }
     else
       return ONIGERR_INVALID_CALLOUT_ARG;
+
+    first = 0;
   }
 
-  *ri = v;
+  *ri = flag * v;
   return ONIG_NORMAL;
 }
 
@@ -6499,11 +6508,14 @@ parse_callout_args(int cterm, UChar** src, UChar* end, int max_arg_num,
 
   n = 0;
   while (n < ONIG_CALLOUT_MAX_ARG_NUM) {
+    c   = 0;
     cn  = 0;
     esc = 0;
     bufend = buf;
-    s = p;
-    while (! PEND) {
+    s = e = p;
+    while (1) {
+      if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
+
       e = p;
       PFETCH_S(c);
       if (esc != 0) {
@@ -6535,33 +6547,35 @@ parse_callout_args(int cterm, UChar** src, UChar* end, int max_arg_num,
       }
     }
 
-    if (c == cterm) break;
-    if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
+    if (cn != 0) {
+      switch (types[n]) {
+      case ONIG_TYPE_INT:
+        if (cn == 0) return ONIGERR_INVALID_CALLOUT_ARG;
+        r = parse_int(enc, buf, bufend, &(vals[n].i));
+        if (r != ONIG_NORMAL) return r;
+        break;
 
-    switch (types[n]) {
-    case ONIG_TYPE_INT:
-      if (cn == 0) return ONIGERR_INVALID_CALLOUT_ARG;
-      r = parse_int(enc, buf, bufend, &(vals[n].i));
-      if (r != ONIG_NORMAL) return r;
-      break;
+      case ONIG_TYPE_CODE_POINT:
+        if (cn != 1) return ONIGERR_INVALID_CALLOUT_ARG;
+        vals[n].cp = ONIGENC_MBC_TO_CODE(enc, buf, bufend);
+        break;
 
-    case ONIG_TYPE_CODE_POINT:
-      if (cn != 1) return ONIGERR_INVALID_CALLOUT_ARG;
-      vals[n].cp = ONIGENC_MBC_TO_CODE(enc, buf, bufend);
-      break;
-
-    case ONIG_TYPE_STRING:
-      {
-        UChar* rs = strdup_with_null(enc, buf, bufend);
-        CHECK_NULL_RETURN_MEMERR(rs);
-        vals[n].s.start = rs;
-        vals[n].s.end   = rs + (e - s);
+      case ONIG_TYPE_STRING:
+        {
+          UChar* rs = strdup_with_null(enc, buf, bufend);
+          CHECK_NULL_RETURN_MEMERR(rs);
+          vals[n].s.start = rs;
+          vals[n].s.end   = rs + (e - s);
+        }
+        break;
+      default:
+        return ONIGERR_PARSER_BUG;
+        break;
       }
-      break;
-    default:
-      break;
+      n++;
     }
-    n++;
+
+    if (c == cterm) break;
   }
 
   if (c != cterm) return ONIGERR_INVALID_CALLOUT_PATTERN;
