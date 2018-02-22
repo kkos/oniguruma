@@ -6448,19 +6448,17 @@ parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
 }
 
 static int
-parse_int(OnigEncoding enc, UChar* s, UChar* end, int* ri)
+parse_int(OnigEncoding enc, UChar* s, UChar* end, int sign_on, int* ri)
 {
   int v;
   int d;
   int flag;
-  int first;
   UChar* p;
   OnigCodePoint c;
 
   if (s >= end) return ONIGERR_INVALID_CALLOUT_ARG;
 
-  first = 1;
-  flag  = 1;
+  flag = 1;
   v = 0;
   p = s;
   while (p < end) {
@@ -6473,13 +6471,13 @@ parse_int(OnigEncoding enc, UChar* s, UChar* end, int* ri)
 
       v = v * 10 + d;
     }
-    else if (first != 0 && (c == '-' || c == '+')) {
+    else if (sign_on != 0 && (c == '-' || c == '+')) {
       if (c == '-') flag = -1;
     }
     else
       return ONIGERR_INVALID_CALLOUT_ARG;
 
-    first = 0;
+    sign_on = 0;
   }
 
   *ri = flag * v;
@@ -6551,7 +6549,7 @@ parse_callout_args(int cterm, UChar** src, UChar* end, int max_arg_num,
       switch (types[n]) {
       case ONIG_TYPE_INT:
         if (cn == 0) return ONIGERR_INVALID_CALLOUT_ARG;
-        r = parse_int(enc, buf, bufend, &(vals[n].i));
+        r = parse_int(enc, buf, bufend, 1, &(vals[n].i));
         if (r != ONIG_NORMAL) return r;
         break;
 
