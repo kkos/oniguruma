@@ -295,6 +295,7 @@ extern int main(int argc, char* argv[])
   x2("(?m:a.)", "a\n", 0, 2);
   x2("(?m:.b)", "a\nb", 1, 3);
   x2(".*abc", "dddabdd\nddabc", 8, 13);
+  x2(".+abc", "dddabdd\nddabcaa\naaaabc", 8, 13);
   x2("(?m:.*abc)", "dddabddabc", 0, 10);
   n("(?i)(?-i)a", "A");
   n("(?i)(?-i:a)", "A");
