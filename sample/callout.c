@@ -19,40 +19,41 @@ callout_body(OnigCalloutArgs* args, void* user_data)
   OnigCalloutIn in;
   OnigCalloutOf of;
   int name_id;
-  UChar* content;
-  const UChar* acontent;
-  const UChar* acontent_end;
+  UChar* contents;
+  const UChar* acontents;
+  const UChar* acontents_end;
   const UChar* start;
   const UChar* current;
   regex_t* regex;
 
-  in           = onig_get_callout_in_of_callout_args(args);
-  of           = onig_get_callout_of_of_callout_args(args);
-  name_id      = onig_get_name_id_of_callout_args(args);
-  acontent     = onig_get_content_of_callout_args(args);
-  acontent_end = onig_get_content_end_of_callout_args(args);
-  start        = onig_get_start_of_callout_args(args);
-  current      = onig_get_current_of_callout_args(args);
-  regex        = onig_get_regex_of_callout_args(args);
+  in            = onig_get_callout_in_of_callout_args(args);
+  of            = onig_get_callout_of_of_callout_args(args);
+  name_id       = onig_get_name_id_of_callout_args(args);
+  start         = onig_get_start_of_callout_args(args);
+  current       = onig_get_current_of_callout_args(args);
+  regex         = onig_get_regex_of_callout_args(args);
 
-  if (acontent != 0) {
-    len = acontent_end - acontent;
-    content = (UChar* )strndup((const char* )acontent, len);
+  contents = 0;
+  if (of == ONIG_CALLOUT_OF_CONTENTS) {
+    acontents     = onig_get_contents_of_callout_args(args);
+    acontents_end = onig_get_contents_end_of_callout_args(args);
+    if (acontents != 0) {
+      len = acontents_end - acontents;
+      contents = (UChar* )strndup((const char* )acontents, len);
+    }
   }
-  else
-    content = 0;
 
   if (name_id != ONIG_NO_NAME_ID) {
     UChar* name = onig_get_callout_name_from_name_id(name_id);
     fprintf(stdout, "name: %s\n", name);
   }
   fprintf(stdout,
-          "%s %s: content: \"%s\", start: \"%s\", current: \"%s\"\n",
+          "%s %s: contents: \"%s\", start: \"%s\", current: \"%s\"\n",
           of == ONIG_CALLOUT_OF_CONTENTS ? "CONTENTS" : "NAME",
           in == ONIG_CALLOUT_IN_PROGRESS ? "PROGRESS" : "RETRACTION",
-          content, start, current);
+          contents, start, current);
 
-  if (content != 0) free(content);
+  if (contents != 0) free(contents);
 
   (void )onig_get_used_stack_size_in_callout(args, &used_num, &used_bytes);
   fprintf(stdout, "stack: used_num: %d, used_bytes: %d\n", used_num, used_bytes);
