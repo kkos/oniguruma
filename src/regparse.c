@@ -1505,8 +1505,8 @@ onig_set_callout_of_name(OnigUChar* name, OnigUChar* name_end,
                                       arg_num, arg_types, opt_arg_num, opt_defaults);
 }
 
-extern int
-onig_get_callout_id_from_name(OnigEncoding enc, UChar* name, UChar* name_end,
+static int
+get_callout_name_id_from_name(OnigEncoding enc, UChar* name, UChar* name_end,
                               int* rid)
 {
   int r;
@@ -6616,7 +6616,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     }
   }
 
-  r = onig_get_callout_id_from_name(enc, name_start, name_end, &name_id);
+  r = get_callout_name_id_from_name(enc, name_start, name_end, &name_id);
   if (r != ONIG_NORMAL) return r;
 
   if (c == '[') {
