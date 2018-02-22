@@ -2444,7 +2444,7 @@ reg_callout_list_entry(ScanEnv* env, int* rnum)
   e->of   = 0;
   e->in   = ONIG_CALLOUT_OF_CONTENTS;
   e->type = 0;
-  e->u.arg.max_num    = 0;
+  e->u.arg.num        = 0;
   e->u.arg.passed_num = 0;
 
   ext->callout_num = num;
@@ -6697,7 +6697,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   e->in      = in;
   e->name_id = name_id;
   e->type    = onig_get_callout_type_from_name_id(name_id);
-  e->u.arg.max_num    = max_arg_num;
+  e->u.arg.num        = max_arg_num;
   e->u.arg.passed_num = arg_num;
   for (i = 0; i < max_arg_num; i++) {
     e->u.arg.types[i] = types[i];

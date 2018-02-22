@@ -274,7 +274,7 @@ typedef struct {
       UChar* end;
     } content;
     struct {
-      int max_num;
+      int num;
       int passed_num;
       OnigType  types[ONIG_CALLOUT_MAX_ARG_NUM];
       OnigValue vals[ONIG_CALLOUT_MAX_ARG_NUM];
