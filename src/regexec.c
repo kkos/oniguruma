@@ -4927,6 +4927,38 @@ onig_get_contents_end_of_callout_args(OnigCalloutArgs* args)
 }
 
 extern int
+onig_get_arg_num_of_callout_args(OnigCalloutArgs* args)
+{
+  int num;
+  CalloutListEntry* e;
+
+  num = args->num;
+  e = onig_reg_callout_list_at(args->regex, num);
+  if (IS_NULL(e)) return 0;
+  if (e->of == ONIG_CALLOUT_OF_NAME) {
+    return e->u.arg.num;
+  }
+
+  return ONIGERR_INVALID_ARGUMENT;
+}
+
+extern int
+onig_get_passed_arg_num_of_callout_args(OnigCalloutArgs* args)
+{
+  int num;
+  CalloutListEntry* e;
+
+  num = args->num;
+  e = onig_reg_callout_list_at(args->regex, num);
+  if (IS_NULL(e)) return 0;
+  if (e->of == ONIG_CALLOUT_OF_NAME) {
+    return e->u.arg.passed_num;
+  }
+
+  return ONIGERR_INVALID_ARGUMENT;
+}
+
+extern int
 onig_get_arg_of_callout_args(OnigCalloutArgs* args, int index,
                              OnigType* type, OnigValue* val)
 {
