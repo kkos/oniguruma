@@ -6481,7 +6481,7 @@ static int
 parse_callout_args(int cterm, UChar** src, UChar* end, int max_arg_num,
                    OnigType types[], OnigValue vals[], ScanEnv* env)
 {
-#define MAX_CALLOUT_ARG_STRING_LENGTH   256
+#define MAX_CALLOUT_ARG_BYTE_LENGTH   128
 
   int r;
   int n;
@@ -6491,7 +6491,7 @@ parse_callout_args(int cterm, UChar** src, UChar* end, int max_arg_num,
   UChar* e;
   OnigCodePoint c;
   UChar* bufend;
-  UChar buf[MAX_CALLOUT_ARG_STRING_LENGTH];
+  UChar buf[MAX_CALLOUT_ARG_BYTE_LENGTH];
   OnigEncoding enc = env->enc;
   UChar* p = *src;
 
@@ -6525,7 +6525,7 @@ parse_callout_args(int cterm, UChar** src, UChar* end, int max_arg_num,
 
         add_char:
           clen = p - e;
-          if (bufend + clen > buf + MAX_CALLOUT_ARG_STRING_LENGTH)
+          if (bufend + clen > buf + MAX_CALLOUT_ARG_BYTE_LENGTH)
             return ONIGERR_INVALID_CALLOUT_ARG; /* too long argument */
 
           xmemcpy(bufend, e, clen);
@@ -6534,6 +6534,8 @@ parse_callout_args(int cterm, UChar** src, UChar* end, int max_arg_num,
         }
       }
     }
+
+    if (c == cterm) break;
     if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
 
     switch (types[n]) {
@@ -6560,8 +6562,6 @@ parse_callout_args(int cterm, UChar** src, UChar* end, int max_arg_num,
       break;
     }
     n++;
-
-    if (c == cterm) break;
   }
 
   if (c != cterm) return ONIGERR_INVALID_CALLOUT_PATTERN;
