@@ -6653,15 +6653,15 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     arg_num = parse_callout_args(')', &p, end, max_arg_num, types, vals, env);
     if (arg_num < 0) return arg_num;
 
-    if (arg_num > max_arg_num || arg_num < (max_arg_num - opt_arg_num))
-      return ONIGERR_INVALID_CALLOUT_ARG;
-
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
     PFETCH_S(c);
   }
   else {
     arg_num = 0;
   }
+
+  if (arg_num > max_arg_num || arg_num < (max_arg_num - opt_arg_num))
+    return ONIGERR_INVALID_CALLOUT_ARG;
 
   if (c != cterm)
     return ONIGERR_INVALID_CALLOUT_PATTERN;
