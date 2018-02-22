@@ -6,6 +6,8 @@
 #include <string.h>
 #include "oniguruma.h"
 
+OnigEncoding ENC = ONIG_ENCODING_UTF8;
+
 static int
 callout_body(OnigCalloutArgs* args, void* user_data)
 {
@@ -88,6 +90,46 @@ foo(OnigCalloutArgs* args, void* user_data)
   return callout_body(args, user_data);
 }
 
+static int
+bar(OnigCalloutArgs* args, void* user_data)
+{
+  int r;
+  int i;
+  int n;
+  OnigType type;
+  OnigValue val;
+
+  fprintf(stdout, "bar called.\n");
+
+  n = onig_get_arg_num_of_callout_args(args);
+  if (n < 0) {
+    fprintf(stderr, "FAIL: onig_get_arg_num_of_callout_args(): %d\n", n);
+    return n;
+  }
+
+  for (i = 0; i < n; i++) {
+    r = onig_get_arg_of_callout_args(args, i, &type, &val);
+    if (r != 0) {
+      fprintf(stderr, "FAIL: onig_get_arg_of_callout_args(): %d\n", r);
+      return r;
+    }
+
+    fprintf(stdout, "arg[%d]: ", i);
+    switch (type) {
+    case ONIG_TYPE_INT:
+      fprintf(stdout, "%d\n", val.i);
+      break;
+    case ONIG_TYPE_CODE_POINT:
+      fprintf(stdout, "0x%06x\n", val.cp);
+      break;
+    case ONIG_TYPE_STRING:
+      fprintf(stdout, "'%s'\n", val.s.start);
+      break;
+    };
+  }
+
+  return ONIG_CALLOUT_SUCCESS;
+}
 
 static int
 test(char* in_pattern, char* in_str)
@@ -104,7 +146,7 @@ test(char* in_pattern, char* in_str)
   str = (UChar* )in_str;
 
   r = onig_new(&reg, pattern, pattern + strlen((char* )pattern),
-	ONIG_OPTION_DEFAULT, ONIG_ENCODING_ASCII, ONIG_SYNTAX_DEFAULT, &einfo);
+	ONIG_OPTION_DEFAULT, ENC, ONIG_SYNTAX_DEFAULT, &einfo);
   if (r != ONIG_NORMAL) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
     onig_error_code_to_str((UChar* )s, r, &einfo);
@@ -146,8 +188,9 @@ extern int main(int argc, char* argv[])
   int id;
   UChar* name;
   OnigEncoding use_encs[1];
+  OnigType arg_types[3];
 
-  use_encs[0] = ONIG_ENCODING_UTF8;
+  use_encs[0] = ENC;
 
   r = onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
   if (r != ONIG_NORMAL) return -1;
@@ -161,6 +204,17 @@ extern int main(int argc, char* argv[])
   name = (UChar* )"foo";
   id = onig_set_callout_of_name(name, name + strlen((char* )name),
                                 ONIG_CALLOUT_IN_BOTH, foo, 0, 0, 0, 0);
+  if (id < 0) {
+    fprintf(stderr, "ERROR: fail to set callout of name: %s\n", name);
+    //return -1;
+  }
+
+  name = (UChar* )"bar";
+  arg_types[0] = ONIG_TYPE_INT;
+  arg_types[1] = ONIG_TYPE_STRING;
+  arg_types[2] = ONIG_TYPE_CODE_POINT;
+  id = onig_set_callout_of_name(name, name + strlen((char* )name),
+                                ONIG_CALLOUT_IN_PROGRESS, bar, 3, arg_types, 0, 0);
   if (id < 0) {
     fprintf(stderr, "ERROR: fail to set callout of name: %s\n", name);
     //return -1;
@@ -185,6 +239,7 @@ extern int main(int argc, char* argv[])
   test("abc(?:(*ABORT)|$)", "abcabc");
   test("ab(*foo())(*FAIL)", "abc");
   test("abc(d|(*ERROR(-999)))", "abc");
+  test("ab(*bar(372,I am a bar's argument,あ))c(*FAIL)", "abc");
 
   onig_end();
   return 0;
