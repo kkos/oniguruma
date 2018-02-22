@@ -188,7 +188,8 @@ extern int main(int argc, char* argv[])
   int id;
   UChar* name;
   OnigEncoding use_encs[1];
-  OnigType arg_types[3];
+  OnigType arg_types[4];
+  OnigValue opt_defaults[4];
 
   use_encs[0] = ENC;
 
@@ -213,8 +214,14 @@ extern int main(int argc, char* argv[])
   arg_types[0] = ONIG_TYPE_INT;
   arg_types[1] = ONIG_TYPE_STRING;
   arg_types[2] = ONIG_TYPE_CODE_POINT;
+  opt_defaults[0].s.start = "I am a option argument's default value.";
+  opt_defaults[0].s.end   = opt_defaults[0].s.start +
+                                strlen((char* )opt_defaults[0].s.start);
+  opt_defaults[1].cp = 0x4422;
+
   id = onig_set_callout_of_name(name, name + strlen((char* )name),
-                                ONIG_CALLOUT_IN_PROGRESS, bar, 3, arg_types, 0, 0);
+                                ONIG_CALLOUT_IN_PROGRESS, bar,
+                                3, arg_types, 2, opt_defaults);
   if (id < 0) {
     fprintf(stderr, "ERROR: fail to set callout of name: %s\n", name);
     //return -1;
@@ -240,6 +247,7 @@ extern int main(int argc, char* argv[])
   test("ab(*foo())(*FAIL)", "abc");
   test("abc(d|(*ERROR(-999)))", "abc");
   test("ab(*bar(372,I am a bar's argument,あ))c(*FAIL)", "abc");
+  test("ab(*bar(1234567890))", "abc");
 
   onig_end();
   return 0;
