@@ -1415,6 +1415,7 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
 {
   int r;
   int i;
+  int j;
   int id;
   CalloutNameEntry* e;
   CalloutNameListEntry* fe;
@@ -1481,8 +1482,8 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
   for (i = 0; i < arg_num; i++) {
     fe->arg_types[i] = arg_types[i];
   }
-  for (i = arg_num - opt_arg_num; i < arg_num; i++) {
-    fe->opt_defaults[i] = opt_defaults[i];
+  for (i = arg_num - opt_arg_num, j = 0; i < arg_num; i++, j++) {
+    fe->opt_defaults[i] = opt_defaults[j];
   }
 
   r = id; // return id
