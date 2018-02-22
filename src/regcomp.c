@@ -5227,10 +5227,12 @@ alt_merge_node_opt_info(NodeOpt* to, NodeOpt* add, OptEnv* env)
 static int
 optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
 {
-  OnigEncoding enc;
   int i;
-  int r = 0;
+  int r;
+  NodeOpt xo;
+  OnigEncoding enc;
 
+  r = 0;
   enc = env->enc;
   clear_node_opt_info(opt);
   set_bound_node_opt_info(opt, &env->mmd);
@@ -5239,15 +5241,14 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
   case NODE_LIST:
     {
       OptEnv nenv;
-      NodeOpt nopt;
       Node* nd = node;
 
       copy_opt_env(&nenv, env);
       do {
-        r = optimize_nodes(NODE_CAR(nd), &nopt, &nenv);
+        r = optimize_nodes(NODE_CAR(nd), &xo, &nenv);
         if (r == 0) {
-          add_mml(&nenv.mmd, &nopt.len);
-          concat_left_node_opt_info(enc, opt, &nopt);
+          add_mml(&nenv.mmd, &xo.len);
+          concat_left_node_opt_info(enc, opt, &xo);
         }
       } while (r == 0 && IS_NOT_NULL(nd = NODE_CDR(nd)));
     }
@@ -5255,14 +5256,13 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
 
   case NODE_ALT:
     {
-      NodeOpt nopt;
       Node* nd = node;
 
       do {
-        r = optimize_nodes(NODE_CAR(nd), &nopt, env);
+        r = optimize_nodes(NODE_CAR(nd), &xo, env);
         if (r == 0) {
-          if (nd == node) copy_node_opt_info(opt, &nopt);
-          else            alt_merge_node_opt_info(opt, &nopt, env);
+          if (nd == node) copy_node_opt_info(opt, &xo);
+          else            alt_merge_node_opt_info(opt, &xo, env);
         }
       } while ((r == 0) && IS_NOT_NULL(nd = NODE_CDR(nd)));
     }
@@ -5392,19 +5392,17 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
 
     case ANCHOR_PREC_READ:
       {
-        NodeOpt nopt;
-
-        r = optimize_nodes(NODE_BODY(node), &nopt, env);
+        r = optimize_nodes(NODE_BODY(node), &xo, env);
         if (r == 0) {
-          if (nopt.exb.len > 0)
-            copy_opt_exact(&opt->expr, &nopt.exb);
-          else if (nopt.exm.len > 0)
-            copy_opt_exact(&opt->expr, &nopt.exm);
+          if (xo.exb.len > 0)
+            copy_opt_exact(&opt->expr, &xo.exb);
+          else if (xo.exm.len > 0)
+            copy_opt_exact(&opt->expr, &xo.exm);
 
           opt->expr.reach_end = 0;
 
-          if (nopt.map.value > 0)
-            copy_opt_map(&opt->map, &nopt.map);
+          if (xo.map.value > 0)
+            copy_opt_map(&opt->map, &xo.map);
         }
       }
       break;
@@ -5454,13 +5452,32 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
   case NODE_QUANT:
     {
       OnigLen min, max;
-      NodeOpt nopt;
       QuantNode* qn = QUANT_(node);
 
-      r = optimize_nodes(NODE_BODY(node), &nopt, env);
+      r = optimize_nodes(NODE_BODY(node), &xo, env);
       if (r != 0) break;
 
-      if (qn->lower == 0 && IS_REPEAT_INFINITE(qn->upper)) {
+      if (qn->lower > 0) {
+        copy_node_opt_info(opt, &xo);
+        if (xo.exb.len > 0) {
+          if (xo.exb.reach_end) {
+            for (i = 2; i <= qn->lower && ! is_full_opt_exact(&opt->exb); i++) {
+              int rc = concat_opt_exact(&opt->exb, &xo.exb, enc);
+              if (rc > 0) break;
+            }
+            if (i < qn->lower) opt->exb.reach_end = 0;
+          }
+        }
+
+        if (qn->lower != qn->upper) {
+          opt->exb.reach_end = 0;
+          opt->exm.reach_end = 0;
+        }
+        if (qn->lower > 1)
+          opt->exm.reach_end = 0;
+      }
+
+      if (IS_REPEAT_INFINITE(qn->upper)) {
         if (env->mmd.max == 0 &&
             NODE_IS_ANYCHAR(NODE_BODY(node)) && qn->greedy != 0) {
           if (IS_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), env)))
@@ -5468,35 +5485,14 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
           else
             add_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_INF);
         }
+
+        max = (xo.len.max > 0 ? INFINITE_LEN : 0);
       }
       else {
-        if (qn->lower > 0) {
-          copy_node_opt_info(opt, &nopt);
-          if (nopt.exb.len > 0) {
-            if (nopt.exb.reach_end) {
-              for (i = 2; i <= qn->lower && ! is_full_opt_exact(&opt->exb); i++) {
-                int rc = concat_opt_exact(&opt->exb, &nopt.exb, enc);
-                if (rc > 0) break;
-              }
-              if (i < qn->lower) opt->exb.reach_end = 0;
-            }
-          }
-
-          if (qn->lower != qn->upper) {
-            opt->exb.reach_end = 0;
-            opt->exm.reach_end = 0;
-          }
-          if (qn->lower > 1)
-            opt->exm.reach_end = 0;
-        }
+        max = distance_multiply(xo.len.max, qn->upper);
       }
 
-      min = distance_multiply(nopt.len.min, qn->lower);
-      if (IS_REPEAT_INFINITE(qn->upper))
-        max = (nopt.len.max > 0 ? INFINITE_LEN : 0);
-      else
-        max = distance_multiply(nopt.len.max, qn->upper);
-
+      min = distance_multiply(xo.len.min, qn->lower);
       set_mml(&opt->len, min, max);
     }
     break;
@@ -5546,24 +5542,23 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
       case ENCLOSURE_IF_ELSE:
         {
           OptEnv nenv;
-          NodeOpt nopt;
 
           copy_opt_env(&nenv, env);
-          r = optimize_nodes(NODE_ENCLOSURE_BODY(en), &nopt, &nenv);
+          r = optimize_nodes(NODE_ENCLOSURE_BODY(en), &xo, &nenv);
           if (r == 0) {
-            add_mml(&nenv.mmd, &nopt.len);
-            concat_left_node_opt_info(enc, opt, &nopt);
+            add_mml(&nenv.mmd, &xo.len);
+            concat_left_node_opt_info(enc, opt, &xo);
             if (IS_NOT_NULL(en->te.Then)) {
-              r = optimize_nodes(en->te.Then, &nopt, &nenv);
+              r = optimize_nodes(en->te.Then, &xo, &nenv);
               if (r == 0) {
-                concat_left_node_opt_info(enc, opt, &nopt);
+                concat_left_node_opt_info(enc, opt, &xo);
               }
             }
 
             if (IS_NOT_NULL(en->te.Else)) {
-              r = optimize_nodes(en->te.Else, &nopt, env);
+              r = optimize_nodes(en->te.Else, &xo, env);
               if (r == 0)
-                alt_merge_node_opt_info(opt, &nopt, env);
+                alt_merge_node_opt_info(opt, &xo, env);
             }
           }
         }
