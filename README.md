@@ -44,9 +44,9 @@ New feature of version 6.8.0
 
 * Enabled retry-limit-in-match function
 * NEW API: onig_search_with_param(), onig_match_with_param()
-* NEW: Callouts of code (?{....}) (?{{....}})
-* NEW: Callouts of name (*NAME) (*NAME:....)
-* NEW: Builtin callout functions  (*FAIL) (*SUCCESS) (*ABORT) (*ERROR:n)
+* NEW: Callouts of contents  (?{....}) (?{{....}})
+* NEW: Callouts of name      (*name) (*name[tag](a,b...))
+* NEW: Builtin callout functions  (*FAIL) (*SUCCESS) (*ABORT) (*ERROR(n))
 * NEW: configure option --enable-posix-api  (* enabled by default)
 
 
@@ -80,7 +80,7 @@ New feature of version 6.5.0
 * NEW: \K (keep)
 * NEW: \R (general newline) \N (no newline)
 * NEW: \O (true anychar)
-* NEW: if-then-else syntax   (?(...)...\|...)
+* NEW: if-then-else   (?(...)...\|...)
 * NEW: Backreference validity checker (?(xxx)) (*original)
 * NEW: Absent repeater (?~absent)  [is equal to (?\~\|absent|\O*)]
 * NEW: Absent expression   (?~|absent|expr)  (*original)
@@ -210,6 +210,7 @@ Sample Programs
 |sample/scan.c         |example of using onig_scan().             |
 |sample/sql.c          |example of the variable meta characters.  |
 |sample/user_property.c|example of user defined Unicode property. |
+|sample/callout.c      |example of callouts.                      |
 
 
 Test Programs
