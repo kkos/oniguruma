@@ -2371,7 +2371,7 @@ node_new_keep(Node** node, ScanEnv* env)
 #ifdef USE_CALLOUT
 
 extern void
-onig_free_callout_list(int n, CalloutListEntry* list)
+onig_free_reg_callout_list(int n, CalloutListEntry* list)
 {
   int i;
   int j;

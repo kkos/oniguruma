@@ -5926,7 +5926,7 @@ free_regex_ext(RegexExt* ext)
       onig_callout_tag_table_free(ext->tag_table);
 
     if (IS_NOT_NULL(ext->callout_list))
-      onig_free_callout_list(ext->callout_num, ext->callout_list);
+      onig_free_reg_callout_list(ext->callout_num, ext->callout_list);
 #endif
 
     xfree(ext);

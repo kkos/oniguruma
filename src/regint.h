@@ -831,7 +831,7 @@ extern CalloutType     onig_get_callout_type_from_name_id(int name_id);
 extern OnigCalloutFunc onig_get_callout_start_func_from_name_id(int id);
 extern OnigCalloutFunc onig_get_callout_end_func_from_name_id(int id);
 extern int             onig_callout_tag_table_free(void* table);
-extern void            onig_free_callout_list(int n, CalloutListEntry* list);
+extern void            onig_free_reg_callout_list(int n, CalloutListEntry* list);
 extern CalloutListEntry* onig_reg_callout_list_at(regex_t* reg, int num);
 
 #endif
