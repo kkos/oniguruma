@@ -4903,9 +4903,11 @@ onig_get_contents_of_callout_args(OnigCalloutArgs* args)
   num = args->num;
   e = onig_reg_callout_list_at(args->regex, num);
   if (IS_NULL(e)) return 0;
-  if (e->of == ONIG_CALLOUT_OF_NAME) return 0;
+  if (e->of == ONIG_CALLOUT_OF_CONTENTS) {
+    return e->u.content.start;
+  }
 
-  return e->u.content.start;
+  return 0;
 }
 
 extern const UChar*
@@ -4917,9 +4919,30 @@ onig_get_contents_end_of_callout_args(OnigCalloutArgs* args)
   num = args->num;
   e = onig_reg_callout_list_at(args->regex, num);
   if (IS_NULL(e)) return 0;
-  if (e->of == ONIG_CALLOUT_OF_NAME) return 0;
+  if (e->of == ONIG_CALLOUT_OF_CONTENTS) {
+    return e->u.content.end;
+  }
 
-  return e->u.content.end;
+  return 0;
+}
+
+extern int
+onig_get_arg_of_callout_args(OnigCalloutArgs* args, int index,
+                             OnigType* type, OnigValue* val)
+{
+  int num;
+  CalloutListEntry* e;
+
+  num = args->num;
+  e = onig_reg_callout_list_at(args->regex, num);
+  if (IS_NULL(e)) return 0;
+  if (e->of == ONIG_CALLOUT_OF_NAME) {
+    *type = e->u.arg.types[index];
+    *val  = e->u.arg.vals[index];
+    return ONIG_NORMAL;
+  }
+
+  return ONIGERR_INVALID_ARGUMENT;
 }
 
 extern const UChar*
