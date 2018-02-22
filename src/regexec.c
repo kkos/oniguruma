@@ -968,7 +968,7 @@ typedef struct _StackType {
     } val;
 #ifdef USE_CALLOUT
     struct {
-      int    num;
+      int num;
     } callout;
 #endif
   } u;
@@ -977,10 +977,10 @@ typedef struct _StackType {
 #ifdef USE_CALLOUT
 
 struct OnigCalloutArgsStruct {
-  OnigCalloutIn in;
-  OnigCalloutOf of;
-  int   name_id;   /* name id or ONIG_NO_NAME_ID */
-  int   num;
+  OnigCalloutIn    in;
+  OnigCalloutOf    of;
+  int              name_id;   /* name id or ONIG_NO_NAME_ID */
+  int              num;
   OnigRegex        regex;
   const OnigUChar* subject;
   const OnigUChar* subject_end;
@@ -5097,7 +5097,6 @@ onig_builtin_error(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   num = args->num;
   e = onig_reg_callout_list_at(args->regex, num);
   if (IS_NULL(e)) return 0;
-  //if (e->of != ONIG_CALLOUT_OF_NAME) return 0;
 
   if (e->u.arg.types[0] == ONIG_TYPE_INT) {
     n = e->u.arg.vals[0].i;
