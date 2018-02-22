@@ -533,25 +533,19 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
 #ifdef USE_CALLOUT
     case OP_CALLOUT_CODE:
       {
-        int dirs;
-
         GET_MEMNUM_INC(mem,  bp); // number
-        GET_MEMNUM_INC(dirs, bp);
-
-        fprintf(f, ":%d:%d", mem, dirs);
+        fprintf(f, ":%d", mem);
       }
       break;
 
     case OP_CALLOUT_NAME:
       {
-        int dirs;
         int id;
 
         GET_MEMNUM_INC(id,   bp); // id
         GET_MEMNUM_INC(mem,  bp); // number
-        GET_MEMNUM_INC(dirs, bp);
 
-        fprintf(f, ":%d:%d:%d:%p:%p", id, mem, dirs);
+        fprintf(f, ":%d:%d", id, mem);
       }
       break;
 #endif
@@ -3664,7 +3658,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       {
         int call_result;
         int num;
-        int dirs;
+        int in;
+        CalloutListEntry* e;
         OnigCalloutArgs args;
 
         of = ONIG_CALLOUT_OF_NAME;
@@ -3672,10 +3667,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         func = onig_get_callout_start_func_from_name_id(name_id);
 
       callout_common_entry:
-        GET_MEMNUM_INC(num,  p);
-        GET_MEMNUM_INC(dirs, p);
+        GET_MEMNUM_INC(num, p);
 
-        if (IS_NOT_NULL(func) && (dirs & ONIG_CALLOUT_IN_PROGRESS) != 0) {
+        e = onig_reg_callout_list_at(reg, num);
+        in = e->in;
+
+        if (IS_NOT_NULL(func) && (in & ONIG_CALLOUT_IN_PROGRESS) != 0) {
           CALLOUT_BODY(func, ONIG_CALLOUT_IN_PROGRESS, of, name_id,
                        num, msa->mp->callout_user_data, args, call_result);
           switch (call_result) {
@@ -3698,7 +3695,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         }
         else {
         retraction_callout2:
-          if ((dirs & ONIG_CALLOUT_IN_RETRACTION) != 0) {
+          if ((in & ONIG_CALLOUT_IN_RETRACTION) != 0) {
             if (of == ONIG_CALLOUT_OF_NAME) {
               func = onig_get_callout_start_func_from_name_id(name_id);
               if (IS_NOT_NULL(func)) {
@@ -5018,6 +5015,9 @@ onig_get_used_stack_size_in_callout(OnigCalloutArgs* a, int* used_num, int* used
 
   return ONIG_NORMAL;
 }
+
+
+/* builtin callout functions */
 
 extern int
 onig_builtin_fail(OnigCalloutArgs* args ARG_UNUSED, void* user_data ARG_UNUSED)

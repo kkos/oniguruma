@@ -1551,8 +1551,6 @@ compile_gimmick_node(GimmickNode* node, regex_t* reg)
         }
         r = add_mem_num(reg, node->num);
         if (r != 0) return r;
-        r = add_mem_num(reg, node->dirs);
-        if (r != 0) return r;
       }
       break;
 
