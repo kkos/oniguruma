@@ -485,7 +485,7 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIG_SYN_OP2_QMARK_TILDE_ABSENT_GROUP   (1U<<25) /* (?~...) */
 #define ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER   (1U<<26) /* \X \y \Y */
 #define ONIG_SYN_OP2_QMARK_PERL_SUBEXP_CALL     (1U<<27) /* (?R), (?&name)... */
-#define ONIG_SYN_OP2_QMARK_BRACE_CALLOUT_CODE   (1U<<28) /* (?{...}) (?{{...}}) */
+#define ONIG_SYN_OP2_QMARK_BRACE_CALLOUT_CONTENTS (1U<<28) /* (?{...}) (?{{...}}) */
 #define ONIG_SYN_OP2_ASTERISK_CALLOUT_NAME      (1U<<29) /* (*name) (*name(a,b)) */
 
 /* syntax (behavior) */
@@ -732,8 +732,8 @@ typedef enum {
 #define ONIG_CALLOUT_IN_BOTH  (ONIG_CALLOUT_IN_PROGRESS | ONIG_CALLOUT_IN_RETRACTION)
 
 typedef enum {
-  ONIG_CALLOUT_OF_CODE = 0,
-  ONIG_CALLOUT_OF_NAME = 1
+  ONIG_CALLOUT_OF_CONTENTS = 0,
+  ONIG_CALLOUT_OF_NAME     = 1
 } OnigCalloutOf;
 
 #define ONIG_NO_NAME_ID   -1
@@ -912,21 +912,21 @@ int onig_set_match_stack_limit_size_of_match_param P_((OnigMatchParam* param, un
 ONIG_EXTERN
 int onig_set_retry_limit_in_match_of_match_param P_((OnigMatchParam* param, unsigned long limit));
 ONIG_EXTERN
-int onig_set_callout_of_code_of_match_param P_((OnigMatchParam* param, OnigCalloutFunc f));
+int onig_set_callout_of_contents_of_match_param P_((OnigMatchParam* param, OnigCalloutFunc f));
 ONIG_EXTERN
-int onig_set_retraction_callout_of_code_of_match_param P_((OnigMatchParam* param, OnigCalloutFunc f));
+int onig_set_retraction_callout_of_contents_of_match_param P_((OnigMatchParam* param, OnigCalloutFunc f));
 
 /* for callout functions */
 ONIG_EXTERN
 int onig_initialize_builtin_callouts P_((void));
 ONIG_EXTERN
-OnigCalloutFunc onig_get_callout_of_code P_((void));
+OnigCalloutFunc onig_get_callout_of_contents P_((void));
 ONIG_EXTERN
-int onig_set_callout_of_code P_((OnigCalloutFunc f));
+int onig_set_callout_of_contents P_((OnigCalloutFunc f));
 ONIG_EXTERN
-OnigCalloutFunc onig_get_retraction_callout_of_code P_((void));
+OnigCalloutFunc onig_get_retraction_callout_of_contents P_((void));
 ONIG_EXTERN
-int onig_set_retraction_callout_of_code P_((OnigCalloutFunc f));
+int onig_set_retraction_callout_of_contents P_((OnigCalloutFunc f));
 ONIG_EXTERN
 int onig_set_callout_of_name P_((OnigUChar* name, OnigUChar* name_end, int callout_in, OnigCalloutFunc callout, int arg_num, OnigType arg_types[], int optional_arg_num, OnigValue opt_defaults[])); /* name: single-byte string */
 ONIG_EXTERN

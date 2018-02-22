@@ -43,8 +43,8 @@
 struct OnigMatchParamStruct {
   unsigned int    match_stack_limit;
   unsigned long   retry_limit_in_match;
-  OnigCalloutFunc callout_of_code;
-  OnigCalloutFunc retraction_callout_of_code;
+  OnigCalloutFunc callout_of_contents;
+  OnigCalloutFunc retraction_callout_of_contents;
   void*           callout_user_data;
 };
 
@@ -65,17 +65,17 @@ onig_set_retry_limit_in_match_of_match_param(OnigMatchParam* param,
 }
 
 extern int
-onig_set_callout_of_code_of_match_param(OnigMatchParam* param, OnigCalloutFunc f)
+onig_set_callout_of_contents_of_match_param(OnigMatchParam* param, OnigCalloutFunc f)
 {
-  param->callout_of_code = f;
+  param->callout_of_contents = f;
   return ONIG_NORMAL;
 }
 
 extern int
-onig_set_retraction_callout_of_code_of_match_param(OnigMatchParam* param,
-                                                   OnigCalloutFunc f)
+onig_set_retraction_callout_of_contents_of_match_param(OnigMatchParam* param,
+                                                       OnigCalloutFunc f)
 {
-  param->retraction_callout_of_code = f;
+  param->retraction_callout_of_contents = f;
   return ONIG_NORMAL;
 }
 
@@ -212,7 +212,7 @@ static OpInfoType OpInfo[] = {
   { OP_PUSH_SAVE_VAL,        "push-save-val",        ARG_SPECIAL },
   { OP_UPDATE_VAR,           "update-var",           ARG_SPECIAL },
 #ifdef USE_CALLOUT
-  { OP_CALLOUT_CODE,         "callout-code",         ARG_SPECIAL },
+  { OP_CALLOUT_CONTENTS,     "callout-contents",     ARG_SPECIAL },
   { OP_CALLOUT_NAME,         "callout-name",         ARG_SPECIAL },
 #endif
   { -1, "", ARG_NON }
@@ -531,7 +531,7 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
       break;
 
 #ifdef USE_CALLOUT
-    case OP_CALLOUT_CODE:
+    case OP_CALLOUT_CONTENTS:
       {
         GET_MEMNUM_INC(mem,  bp); // number
         fprintf(f, ":%d", mem);
@@ -1163,8 +1163,8 @@ onig_initialize_match_param(OnigMatchParam* mp)
 #ifdef USE_RETRY_LIMIT_IN_MATCH
   mp->retry_limit_in_match = RetryLimitInMatch;
 #endif
-  mp->callout_of_code            = DefaultCallout;
-  mp->retraction_callout_of_code = DefaultRetractionCallout;
+  mp->callout_of_contents            = DefaultCallout;
+  mp->retraction_callout_of_contents = DefaultRetractionCallout;
   mp->callout_user_data  = 0;
 }
 
@@ -1484,7 +1484,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while (0)
 
-#define STACK_PUSH_CALLOUT_CODE(anum) do {\
+#define STACK_PUSH_CALLOUT_CONTENTS(anum) do {\
   STACK_ENSURE(1);\
   stk->type = STK_CALLOUT;\
   stk->zid  = ONIG_NO_NAME_ID;\
@@ -1522,8 +1522,8 @@ stack_double(int is_alloca, char** arg_alloc_base,
     int aof;\
     OnigCalloutFunc func;\
     if (stk->zid < 0) {\
-      aof = ONIG_CALLOUT_OF_CODE;\
-      func = msa->mp->retraction_callout_of_code;\
+      aof = ONIG_CALLOUT_OF_CONTENTS;\
+      func = msa->mp->retraction_callout_of_contents;\
     }\
     else {\
       aof = ONIG_CALLOUT_OF_NAME;\
@@ -2124,7 +2124,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
 
 #ifdef USE_CALLOUT
-  /* for OP_CALLOUT_CODE/NAME */
   int name_id, of;
   OnigCalloutFunc func;
 #endif
@@ -3643,11 +3642,11 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       break;
 
 #ifdef USE_CALLOUT
-    case OP_CALLOUT_CODE: SOP_IN(OP_CALLOUT_CODE);
+    case OP_CALLOUT_CONTENTS: SOP_IN(OP_CALLOUT_CONTENTS);
       {
-        of = ONIG_CALLOUT_OF_CODE;
+        of = ONIG_CALLOUT_OF_CONTENTS;
         name_id = ONIG_NO_NAME_ID;
-        func = msa->mp->callout_of_code;
+        func = msa->mp->callout_of_contents;
         goto callout_common_entry;
       }
       SOP_OUT;
@@ -3703,9 +3702,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
               }
             }
             else {
-              func = msa->mp->retraction_callout_of_code;
+              func = msa->mp->retraction_callout_of_contents;
               if (IS_NOT_NULL(func)) {
-                STACK_PUSH_CALLOUT_CODE(num);
+                STACK_PUSH_CALLOUT_CONTENTS(num);
               }
             }
           }
@@ -4832,26 +4831,26 @@ onig_copy_encoding(OnigEncoding to, OnigEncoding from)
 #ifdef USE_CALLOUT
 
 extern OnigCalloutFunc
-onig_get_callout_of_code(void)
+onig_get_callout_of_contents(void)
 {
   return DefaultCallout;
 }
 
 extern int
-onig_set_callout_of_code(OnigCalloutFunc f)
+onig_set_callout_of_contents(OnigCalloutFunc f)
 {
   DefaultCallout = f;
   return ONIG_NORMAL;
 }
 
 extern OnigCalloutFunc
-onig_get_retraction_callout_of_code(void)
+onig_get_retraction_callout_of_contents(void)
 {
   return DefaultRetractionCallout;
 }
 
 extern int
-onig_set_retraction_callout_of_code(OnigCalloutFunc f)
+onig_set_retraction_callout_of_contents(OnigCalloutFunc f)
 {
   DefaultRetractionCallout = f;
   return ONIG_NORMAL;

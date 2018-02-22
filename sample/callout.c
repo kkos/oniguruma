@@ -48,7 +48,7 @@ callout_body(OnigCalloutArgs* args, void* user_data)
   }
   fprintf(stdout,
           "%s %s: content: \"%s\", start: \"%s\", current: \"%s\"\n",
-          of == ONIG_CALLOUT_OF_CODE ? "CODE" : "NAME",
+          of == ONIG_CALLOUT_OF_CONTENTS ? "CONTENTS" : "NAME",
           in == ONIG_CALLOUT_IN_PROGRESS ? "PROGRESS" : "RETRACTION",
           content, start, current);
 
@@ -165,8 +165,8 @@ extern int main(int argc, char* argv[])
     //return -1;
   }
 
-  (void)onig_set_callout_of_code(progress_callout_func);
-  (void)onig_set_retraction_callout_of_code(retraction_callout_func);
+  (void)onig_set_callout_of_contents(progress_callout_func);
+  (void)onig_set_retraction_callout_of_contents(retraction_callout_func);
 
 
   // callout of code

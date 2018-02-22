@@ -641,7 +641,7 @@ enum OpCode {
   OP_PUSH_SAVE_VAL,
   OP_UPDATE_VAR,
 #ifdef USE_CALLOUT
-  OP_CALLOUT_CODE,          /* (?{...}) (?{{...}}) */
+  OP_CALLOUT_CONTENTS,      /* (?{...}) (?{{...}}) */
   OP_CALLOUT_NAME,          /* (*name) (*name[tag](args...)) */
 #endif
 
@@ -745,7 +745,7 @@ typedef int ModeType;
 #define SIZE_OP_UPDATE_VAR             (SIZE_OPCODE + SIZE_UPDATE_VAR_TYPE + SIZE_MEMNUM)
 
 #ifdef USE_CALLOUT
-#define SIZE_OP_CALLOUT_CODE           (SIZE_OPCODE + SIZE_MEMNUM)
+#define SIZE_OP_CALLOUT_CONTENTS       (SIZE_OPCODE + SIZE_MEMNUM)
 #define SIZE_OP_CALLOUT_NAME           (SIZE_OPCODE + SIZE_MEMNUM + SIZE_MEMNUM)
 #endif
 

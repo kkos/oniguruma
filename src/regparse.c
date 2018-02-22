@@ -56,7 +56,7 @@ OnigSyntaxType OnigSyntaxOniguruma = {
       ONIG_SYN_OP2_QMARK_LT_NAMED_GROUP | ONIG_SYN_OP2_ESC_K_NAMED_BACKREF |
       ONIG_SYN_OP2_QMARK_LPAREN_IF_ELSE |
       ONIG_SYN_OP2_QMARK_TILDE_ABSENT_GROUP |
-      ONIG_SYN_OP2_QMARK_BRACE_CALLOUT_CODE |
+      ONIG_SYN_OP2_QMARK_BRACE_CALLOUT_CONTENTS |
       ONIG_SYN_OP2_ASTERISK_CALLOUT_NAME    |
       ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER |
       ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE |
@@ -2441,7 +2441,7 @@ reg_callout_list_entry(ScanEnv* env, int* rnum)
 
   e->flag = 0;
   e->of   = 0;
-  e->in   = ONIG_CALLOUT_OF_CODE;
+  e->in   = ONIG_CALLOUT_OF_CONTENTS;
   e->type = 0;
   e->u.arg.max_num    = 0;
   e->u.arg.passed_num = 0;
@@ -6357,7 +6357,7 @@ static int parse_subexp(Node** top, OnigToken* tok, int term,
 
 /* (?{...}[+-]) (?{{...}}[+-]) */
 static int
-parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
+parse_callout_of_contents(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
 {
   int r;
   int i;
@@ -6419,7 +6419,8 @@ parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   r = reg_callout_list_entry(env, &num);
   if (r != 0) return r;
 
-  r = node_new_callout(np, ONIG_CALLOUT_OF_CODE, num, ONIG_NO_NAME_ID, in, 0, env);
+  r = node_new_callout(np, ONIG_CALLOUT_OF_CONTENTS, num, ONIG_NO_NAME_ID,
+                       in, 0, env);
   if (r != 0) return r;
 
   if (code_start != code_end) {
@@ -6435,7 +6436,7 @@ parse_callout_of_code(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   }
 
   e = onig_reg_callout_list_at(env->reg, num);
-  e->of      = ONIG_CALLOUT_OF_CODE;
+  e->of      = ONIG_CALLOUT_OF_CONTENTS;
   e->in      = in;
   e->name_id = ONIG_NO_NAME_ID;
   e->u.content.start = ext->pattern + (code_start - env->pattern);
@@ -6888,11 +6889,10 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 
 #ifdef USE_CALLOUT
     case '{':
-      if (! IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_BRACE_CALLOUT_CODE))
+      if (! IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_BRACE_CALLOUT_CONTENTS))
         return ONIGERR_UNDEFINED_GROUP_OPTION;
 
-      /* (?{...}) (?{{...}}) */
-      r = parse_callout_of_code(np, ')', &p, end, env);
+      r = parse_callout_of_contents(np, ')', &p, end, env);
       if (r != 0) return r;
 
       goto end;

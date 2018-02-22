@@ -1539,11 +1539,11 @@ compile_gimmick_node(GimmickNode* node, regex_t* reg)
 #ifdef USE_CALLOUT
   case GIMMICK_CALLOUT:
     switch (node->detail_type) {
-    case ONIG_CALLOUT_OF_CODE:
+    case ONIG_CALLOUT_OF_CONTENTS:
     case ONIG_CALLOUT_OF_NAME:
       {
-        r = add_opcode(reg, (node->detail_type == ONIG_CALLOUT_OF_CODE) ?
-                                  OP_CALLOUT_CODE : OP_CALLOUT_NAME);
+        r = add_opcode(reg, (node->detail_type == ONIG_CALLOUT_OF_CONTENTS) ?
+                                  OP_CALLOUT_CONTENTS : OP_CALLOUT_NAME);
         if (r != 0) return r;
         if (node->detail_type == ONIG_CALLOUT_OF_NAME) {
           r = add_mem_num(reg, node->id);
@@ -1586,8 +1586,8 @@ compile_length_gimmick_node(GimmickNode* node, regex_t* reg)
 #ifdef USE_CALLOUT
   case GIMMICK_CALLOUT:
     switch (node->detail_type) {
-    case ONIG_CALLOUT_OF_CODE:
-      len = SIZE_OP_CALLOUT_CODE;
+    case ONIG_CALLOUT_OF_CONTENTS:
+      len = SIZE_OP_CALLOUT_CONTENTS;
       break;
     case ONIG_CALLOUT_OF_NAME:
       len = SIZE_OP_CALLOUT_NAME;
@@ -6597,16 +6597,17 @@ print_indent_tree(FILE* f, Node* node, int indent)
     case GIMMICK_UPDATE_VAR:
       fprintf(f, "update_var:%d:%d", GIMMICK_(node)->detail_type, GIMMICK_(node)->id);
       break;
+#ifdef USE_CALLOUT
     case GIMMICK_CALLOUT:
       switch (GIMMICK_(node)->detail_type) {
-      case ONIG_CALLOUT_OF_CODE:
-        fprintf(f, "callout:code:%d:%d:%d:%d",
-                GIMMICK_(node)->id, GIMMICK_(node)->dirs, GIMMICK_(node)->start, GIMMICK_(node)->end);
+      case ONIG_CALLOUT_OF_CONTENTS:
+        fprintf(f, "callout:contents:%d", GIMMICK_(node)->num);
         break;
       case ONIG_CALLOUT_OF_NAME:
-        fprintf(f, "callout:name");
+        fprintf(f, "callout:name:%d:%d", GIMMICK_(node)->id, GIMMICK_(node)->num);
         break;
       }
+#endif
     }
     break;
 
