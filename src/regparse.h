@@ -334,10 +334,7 @@ typedef struct {
   enum GimmickType type;
   int  detail_type;
   int  num;
-  int  dirs;
   int  id;
-  int  code_start;  /* code start position index */
-  int  code_end;    /* code end   position index */
   int  tag_start;   /* -1: NO tag */
   int  tag_end;
 } GimmickNode;

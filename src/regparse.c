@@ -2452,8 +2452,8 @@ reg_callout_list_entry(ScanEnv* env, int* rnum)
 }
 
 static int
-node_new_callout(Node** node, OnigCalloutOf callout_of, int num,
-                 int id, int dirs, int with_tag, ScanEnv* env)
+node_new_callout(Node** node, OnigCalloutOf callout_of, int num, int id,
+                 int with_tag, ScanEnv* env)
 {
   *node = node_new();
   CHECK_NULL_RETURN_MEMERR(*node);
@@ -2463,9 +2463,6 @@ node_new_callout(Node** node, OnigCalloutOf callout_of, int num,
   GIMMICK_(*node)->num         = num;
   GIMMICK_(*node)->type        = GIMMICK_CALLOUT;
   GIMMICK_(*node)->detail_type = (int )callout_of;
-  GIMMICK_(*node)->dirs        = dirs;
-  GIMMICK_(*node)->code_start  = -1;
-  GIMMICK_(*node)->code_end    = -1;
   GIMMICK_(*node)->tag_start   = -1;
   GIMMICK_(*node)->tag_end     = -1;
 
@@ -6419,14 +6416,8 @@ parse_callout_of_contents(Node** np, int cterm, UChar** src, UChar* end, ScanEnv
   r = reg_callout_list_entry(env, &num);
   if (r != 0) return r;
 
-  r = node_new_callout(np, ONIG_CALLOUT_OF_CONTENTS, num, ONIG_NO_NAME_ID,
-                       in, 0, env);
+  r = node_new_callout(np, ONIG_CALLOUT_OF_CONTENTS, num, ONIG_NO_NAME_ID, 0, env);
   if (r != 0) return r;
-
-  if (code_start != code_end) {
-    GIMMICK_(*np)->code_start = (int )(code_start - env->pattern);
-    GIMMICK_(*np)->code_end   = (int )(code_end   - env->pattern);
-  }
 
   ext = onig_get_regex_ext(env->reg);
   CHECK_NULL_RETURN_MEMERR(ext);
@@ -6679,8 +6670,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   r = reg_callout_list_entry(env, &num);
   if (r != 0) return r;
 
-  r = node_new_callout(&node, ONIG_CALLOUT_OF_NAME, num, name_id,
-                       in, with_tag, env);
+  r = node_new_callout(&node, ONIG_CALLOUT_OF_NAME, num, name_id, with_tag, env);
   if (r != ONIG_NORMAL) return r;
 
   if (tag_start != tag_end) {
