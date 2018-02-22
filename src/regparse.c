@@ -2395,9 +2395,7 @@ onig_free_reg_callout_list(int n, CalloutListEntry* list)
 extern CalloutListEntry*
 onig_reg_callout_list_at(regex_t* reg, int num)
 {
-  RegexExt* ext;
-
-  ext = onig_get_regex_ext(reg);
+  RegexExt* ext = REG_EXTP(reg);
   CHECK_NULL_RETURN(ext);
 
   if (num < 0 || num > ext->callout_num)
