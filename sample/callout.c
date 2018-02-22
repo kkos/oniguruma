@@ -149,10 +149,13 @@ extern int main(int argc, char* argv[])
   use_encs[0] = ONIG_ENCODING_UTF8;
 
   r = onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
-  if (r != ONIG_NORMAL) return -r;
+  if (r != ONIG_NORMAL) return -1;
 
   r = onig_initialize_builtin_callouts();
-  if (r != ONIG_NORMAL) return -r;
+  if (r != ONIG_NORMAL) {
+    fprintf(stderr, "onig_initialize_builtin_callouts(): %d\n", r);
+    return -2;
+  }
 
   name = (UChar* )"foo";
   id = onig_set_callout_of_name(name, name + strlen((char* )name),
@@ -179,8 +182,8 @@ extern int main(int argc, char* argv[])
   test("abc(*SUCCESS)", "abcabc");
   test("abc(?:(*FAIL)|$)", "abcabc");
   test("abc(?:(*ABORT)|$)", "abcabc");
-  test("ab(*foo+{will be fail.})(*FAIL)", "abc");
-  test("abc(d|(*ERROR{-999}))", "abc");
+  test("ab(*foo())(*FAIL)", "abc");
+  test("abc(d|(*ERROR(-999)))", "abc");
 
   onig_end();
   return 0;
