@@ -969,8 +969,6 @@ typedef struct _StackType {
 #ifdef USE_CALLOUT
     struct {
       int    num;
-      UChar* content;
-      UChar* content_end;
     } callout;
 #endif
   } u;
@@ -4862,8 +4860,6 @@ struct {
   enum OnigCalloutOf of;
   int   name_id;   /* name id or ONIG_NO_NAME_ID */
 int   num;
-  const OnigUChar* content;
-  const OnigUChar* content_end;
   OnigRegex        regex;
 const OnigUChar* subject;
 const OnigUChar* subject_end;
@@ -4899,7 +4895,7 @@ onig_get_name_id_of_callout_args(OnigCalloutArgs* args)
 }
 
 extern const UChar*
-onig_get_content_of_callout_args(OnigCalloutArgs* args)
+onig_get_contents_of_callout_args(OnigCalloutArgs* args)
 {
   int num;
   CalloutListEntry* e;
@@ -4913,7 +4909,7 @@ onig_get_content_of_callout_args(OnigCalloutArgs* args)
 }
 
 extern const UChar*
-onig_get_content_end_of_callout_args(OnigCalloutArgs* args)
+onig_get_contents_end_of_callout_args(OnigCalloutArgs* args)
 {
   int num;
   CalloutListEntry* e;
