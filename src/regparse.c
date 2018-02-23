@@ -6718,20 +6718,26 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     tag_start = tag_end = 0;
   }
 
-  is_not_single = 0;
-  r = get_callout_name_id_from_name(enc, is_not_single, name_start, name_end, &name_id);
-  if (r != ONIG_NORMAL) return r;
-
-  in = onig_get_callout_in_from_name_id(name_id);
-  max_arg_num = get_callout_arg_num_from_name_id(name_id);
-  opt_arg_num = get_callout_opt_arg_num_from_name_id(name_id);
-
-  for (i = 0; i < max_arg_num; i++) {
-    types[i] = get_callout_arg_type_from_name_id(name_id, i);
-  }
-
   if (c == '(') {
+    UChar* save;
+
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+
+    /* read for single check only */
+    save = p;
+    arg_num = parse_callout_args(1, ')', &p, end, 0, 0, env);
+    if (arg_num < 0) return arg_num;
+
+    is_not_single = PPEEK_IS(cterm) ?  0 : 1;
+    p = save;
+    r = get_callout_name_id_from_name(enc, is_not_single, name_start, name_end,
+                                      &name_id);
+    if (r != ONIG_NORMAL) return r;
+
+    max_arg_num = get_callout_arg_num_from_name_id(name_id);
+    for (i = 0; i < max_arg_num; i++) {
+      types[i] = get_callout_arg_type_from_name_id(name_id, i);
+    }
 
     arg_num = parse_callout_args(0, ')', &p, end, types, vals, env);
     if (arg_num < 0) return arg_num;
@@ -6741,8 +6747,20 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   }
   else {
     arg_num = 0;
+
+    is_not_single = 0;
+    r = get_callout_name_id_from_name(enc, is_not_single, name_start, name_end,
+                                      &name_id);
+    if (r != ONIG_NORMAL) return r;
+
+    max_arg_num = get_callout_arg_num_from_name_id(name_id);
+    for (i = 0; i < max_arg_num; i++) {
+      types[i] = get_callout_arg_type_from_name_id(name_id, i);
+    }
   }
 
+  in = onig_get_callout_in_from_name_id(name_id);
+  opt_arg_num = get_callout_opt_arg_num_from_name_id(name_id);
   if (arg_num > max_arg_num || arg_num < (max_arg_num - opt_arg_num))
     return ONIGERR_INVALID_CALLOUT_ARG;
 
