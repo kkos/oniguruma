@@ -1255,8 +1255,20 @@ static void
 free_callout_func_list(CalloutNameListType* s)
 {
   if (IS_NOT_NULL(s)) {
-    if (IS_NOT_NULL(s->v))
+    if (IS_NOT_NULL(s->v)) {
+      int i, j;
+
+      for (i = 0; i < s->n; i++) {
+        CalloutNameListEntry* e = s->v + i;
+        for (j = e->arg_num - e->opt_arg_num; j < e->arg_num; j++) {
+          if (e->arg_types[j] == ONIG_TYPE_STRING) {
+            UChar* p = e->opt_defaults[j].s.start;
+            if (IS_NOT_NULL(p)) xfree(p);
+          }
+        }
+      }
       xfree(s->v);
+    }
     xfree(s);
   }
 }
@@ -1585,7 +1597,17 @@ onig_set_callout_of_name(OnigEncoding enc, OnigCalloutType callout_type,
     fe->arg_types[i] = arg_types[i];
   }
   for (i = arg_num - opt_arg_num, j = 0; i < arg_num; i++, j++) {
-    fe->opt_defaults[i] = opt_defaults[j];
+    if (fe->arg_types[i] == ONIG_TYPE_STRING) {
+      OnigValue* val = opt_defaults + j;
+      UChar* ds = strdup_with_null(enc, val->s.start, val->s.end);
+      CHECK_NULL_RETURN_MEMERR(ds);
+
+      fe->opt_defaults[i].s.start = ds;
+      fe->opt_defaults[i].s.end   = ds + (val->s.end - val->s.start);
+    }
+    else {
+      fe->opt_defaults[i] = opt_defaults[j];
+    }
   }
 
   r = id; // return id
