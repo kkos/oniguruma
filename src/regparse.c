@@ -6545,7 +6545,7 @@ parse_callout_args(int cterm, UChar** src, UChar* end, int max_arg_num,
         if (r != ONIG_NORMAL) return r;
         break;
 
-      case ONIG_TYPE_CODE_POINT:
+      case ONIG_TYPE_CHAR:
         if (cn != 1) return ONIGERR_INVALID_CALLOUT_ARG;
         vals[n].cp = ONIGENC_MBC_TO_CODE(enc, buf, bufend);
         break;

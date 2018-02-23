@@ -119,7 +119,7 @@ bar(OnigCalloutArgs* args, void* user_data)
     case ONIG_TYPE_INT:
       fprintf(stdout, "%d\n", val.i);
       break;
-    case ONIG_TYPE_CODE_POINT:
+    case ONIG_TYPE_CHAR:
       fprintf(stdout, "0x%06x\n", val.cp);
       break;
     case ONIG_TYPE_STRING:
@@ -213,7 +213,7 @@ extern int main(int argc, char* argv[])
   name = (UChar* )"bar";
   arg_types[0] = ONIG_TYPE_INT;
   arg_types[1] = ONIG_TYPE_STRING;
-  arg_types[2] = ONIG_TYPE_CODE_POINT;
+  arg_types[2] = ONIG_TYPE_CHAR;
   opt_defaults[0].s.start = "I am a option argument's default value.";
   opt_defaults[0].s.end   = opt_defaults[0].s.start +
                                 strlen((char* )opt_defaults[0].s.start);

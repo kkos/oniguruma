@@ -753,10 +753,10 @@ typedef enum {
 } OnigCalloutResult;
 
 typedef enum {
-  ONIG_TYPE_VOID       = 0,
-  ONIG_TYPE_INT        = 1,
-  ONIG_TYPE_CODE_POINT = 2,
-  ONIG_TYPE_STRING     = 3,
+  ONIG_TYPE_VOID     = 0,
+  ONIG_TYPE_INT      = 1,
+  ONIG_TYPE_CHAR     = 2,
+  ONIG_TYPE_STRING   = 3,
 } OnigType;
 
 #define ONIG_TYPE_MAX   ONIG_TYPE_STRING
