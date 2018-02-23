@@ -6499,6 +6499,7 @@ parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
   int cn;
   UChar* s;
   UChar* e;
+  UChar* eesc;
   OnigCodePoint c;
   UChar* bufend;
   UChar buf[MAX_CALLOUT_ARG_BYTE_LENGTH];
@@ -6512,6 +6513,7 @@ parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
     c   = 0;
     cn  = 0;
     esc = 0;
+    eesc = 0;
     bufend = buf;
     s = e = p;
     while (1) {
@@ -6522,14 +6524,18 @@ parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
       if (esc != 0) {
         esc = 0;
         if (c == '\\' || c == cterm || c == ',') {
-          goto add_char;
+          /* */
         }
-        else
-          return ONIGERR_INVALID_CALLOUT_ARG; /* invalid escape */
+        else {
+          e = eesc;
+          cn++;
+        }
+        goto add_char;
       }
       else {
         if (c == '\\') {
           esc = 1;
+          eesc = e;
         }
         else if (c == cterm || c == ',')
           break;
@@ -6556,7 +6562,7 @@ parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
 
         switch (types[n]) {
         case ONIG_TYPE_INT:
-          if (cn == 0) return ONIGERR_INVALID_CALLOUT_ARG;
+          if (cn == 0 || eesc != 0) return ONIGERR_INVALID_CALLOUT_ARG;
           r = parse_long(enc, buf, bufend, 1, INT_MAX, &rl);
           if (r != ONIG_NORMAL) return r;
           vals[n].i = (int )rl;
