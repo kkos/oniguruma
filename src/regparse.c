@@ -349,71 +349,6 @@ onig_strcpy(UChar* dest, const UChar* src, const UChar* end)
   }
 }
 
-#ifdef USE_CALLOUT
-
-static UChar*
-strdup_with_null1(UChar* s, UChar* end)
-{
-  int slen;
-  UChar *r;
-
-  slen = (int )(end - s);
-
-  r = (UChar* )xmalloc(slen + 1);
-  CHECK_NULL_RETURN(r);
-  xmemcpy(r, s, slen);
-
-  r[slen] = (UChar )0;
-
-  return r;
-}
-
-#if 0
-static int
-str_reduce_to_single_byte_code(OnigEncoding enc, UChar* s, UChar* end,
-                               UChar** rs, UChar** rend)
-{
-  int n;
-  UChar* p;
-  UChar* q;
-  OnigCodePoint code;
-
-  n = 0;
-  p = s;
-  while (p < end) {
-    n = ONIGENC_MBC_ENC_LEN(enc, p);
-    if (n > 1) break;
-    p += n;
-  }
-
-  if (n < 2) {
-    *rs   = s;
-    *rend = end;
-    return ONIG_NORMAL;
-  }
-
-  *rs = q = (UChar* )xmalloc((size_t )(end - s + 1));
-  CHECK_NULL_RETURN_MEMERR(q);
-
-  p = s;
-  while (p < end) {
-    code = ONIGENC_MBC_TO_CODE(enc, p, end);
-    if (code > 0xff) {
-      xfree(*rs);
-      return ONIGERR_INVALID_CODE_POINT_VALUE;
-    }
-
-    *q++ = (UChar )code;
-    p += ONIGENC_MBC_ENC_LEN(enc, p);
-  }
-  *q = '\0';
-  *rend = q;
-
-  return ONIG_NORMAL;
-}
-#endif
-#endif
-
 static int
 save_entry(ScanEnv* env, enum SaveType type, int* id)
 {
@@ -1437,7 +1372,7 @@ callout_name_entry(CalloutNameEntry** rentry, OnigEncoding enc,
     e = (CalloutNameEntry* )xmalloc(sizeof(CalloutNameEntry));
     CHECK_NULL_RETURN_MEMERR(e);
 
-    e->name = strdup_with_null1(name, name_end);
+    e->name = onigenc_strdup(enc, name, name_end);
     if (IS_NULL(e->name)) {
       xfree(e);  return ONIGERR_MEMORY;
     }
@@ -1485,7 +1420,7 @@ callout_name_entry(CalloutNameEntry** rentry, OnigEncoding enc,
     }
     e = &(t->e[t->num]);
     t->num++;
-    e->name = strdup_with_null1(name, name_end);
+    e->name = onigenc_strdup(enc, name, name_end);
     if (IS_NULL(e->name)) return ONIGERR_MEMORY;
 #endif
 
