@@ -119,6 +119,9 @@ bar(OnigCalloutArgs* args, void* user_data)
     case ONIG_TYPE_INT:
       fprintf(stdout, "%d\n", val.i);
       break;
+    case ONIG_TYPE_LONG:
+      fprintf(stdout, "%ld\n", val.l);
+      break;
     case ONIG_TYPE_CHAR:
       fprintf(stdout, "0x%06x\n", val.cp);
       break;
