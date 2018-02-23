@@ -1541,7 +1541,7 @@ onig_set_callout_of_name(OnigEncoding enc, OnigCalloutType callout_type,
     return ONIGERR_INVALID_CALLOUT_ARG;
 
   for (i = 0; i < arg_num; i++) {
-    if (arg_types[i] <= ONIG_TYPE_VOID || arg_types[i] > ONIG_TYPE_MAX)
+    if (arg_types[i] == ONIG_TYPE_VOID || arg_types[i] == ONIG_TYPE_POINTER)
       return ONIGERR_INVALID_CALLOUT_ARG;
   }
 
@@ -6514,11 +6514,11 @@ parse_callout_of_contents(Node** np, int cterm, UChar** src, UChar* end, ScanEnv
   return 0;
 }
 
-static int
-parse_int(OnigEncoding enc, UChar* s, UChar* end, int sign_on, int* ri)
+static long
+parse_long(OnigEncoding enc, UChar* s, UChar* end, int sign_on, long max, long* rl)
 {
-  int v;
-  int d;
+  long v;
+  long d;
   int flag;
   UChar* p;
   OnigCodePoint c;
@@ -6532,8 +6532,8 @@ parse_int(OnigEncoding enc, UChar* s, UChar* end, int sign_on, int* ri)
     c = ONIGENC_MBC_TO_CODE(enc, p, end);
     p += ONIGENC_MBC_ENC_LEN(enc, p);
     if (c >= '0' && c <= '9') {
-      d = c - '0';
-      if (v > (INT_MAX - d) / 10)
+      d = (long )(c - '0');
+      if (v > (max - d) / 10)
         return ONIGERR_INVALID_CALLOUT_ARG;
 
       v = v * 10 + d;
@@ -6547,7 +6547,7 @@ parse_int(OnigEncoding enc, UChar* s, UChar* end, int sign_on, int* ri)
     sign_on = 0;
   }
 
-  *ri = flag * v;
+  *rl = flag * v;
   return ONIG_NORMAL;
 }
 
@@ -6616,11 +6616,21 @@ parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
 
     if (cn != 0) {
       if (skip_mode == 0) {
+        long rl;
+
         switch (types[n]) {
         case ONIG_TYPE_INT:
           if (cn == 0) return ONIGERR_INVALID_CALLOUT_ARG;
-          r = parse_int(enc, buf, bufend, 1, &(vals[n].i));
+          r = parse_long(enc, buf, bufend, 1, INT_MAX, &rl);
           if (r != ONIG_NORMAL) return r;
+          vals[n].i = (int )rl;
+          break;
+
+        case ONIG_TYPE_LONG:
+          if (cn == 0) return ONIGERR_INVALID_CALLOUT_ARG;
+          r = parse_long(enc, buf, bufend, 1, LONG_MAX, &rl);
+          if (r != ONIG_NORMAL) return r;
+          vals[n].l = rl;
           break;
 
         case ONIG_TYPE_CHAR:
@@ -6636,7 +6646,9 @@ parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
             vals[n].s.end   = rs + (e - s);
           }
           break;
-        default:
+
+        case ONIG_TYPE_VOID:
+        case ONIG_TYPE_POINTER:
           return ONIGERR_PARSER_BUG;
           break;
         }
