@@ -661,31 +661,23 @@ onig_st_lookup_callout_name_table(hash_table_type* table,
   return onig_st_lookup(table, (st_data_t )(&key), value);
 }
 
-extern int
-onig_st_insert_callout_name_table(hash_table_type* table,
-                                  OnigEncoding enc,
-                                  int type,
-                                  const UChar* str_key,
-                                  const UChar* end_key,
-                                  hash_data_type value)
+static int
+st_insert_callout_name_table(hash_table_type* table,
+                             OnigEncoding enc, int type,
+                             UChar* str_key, UChar* end_key,
+                             hash_data_type value)
 {
   st_callout_name_key* key;
   int result;
-  UChar* s;
 
   key = (st_callout_name_key* )xmalloc(sizeof(st_callout_name_key));
   CHECK_NULL_RETURN_MEMERR(key);
 
-  s = onigenc_strdup(enc, str_key, end_key);
-  if (IS_NULL(s)) {
-    xfree(key);
-    return ONIGERR_MEMORY;
-  }
-
+  /* key->s: don't duplicate, because str_key is duped in callout_name_entry() */
   key->enc  = enc;
   key->type = type;
-  key->s    = s;
-  key->end  = s + (end_key - str_key);
+  key->s    = str_key;
+  key->end  = end_key;
   result = onig_st_insert(table, (st_data_t )key, value);
   if (result) {
     xfree(key);
@@ -1308,7 +1300,7 @@ i_free_callout_name_entry(st_callout_name_key* key, CalloutNameEntry* e,
                           void* arg ARG_UNUSED)
 {
   xfree(e->name);
-  xfree(key->s);
+  xfree(key->s); /* is same as e->name */
   xfree(key);
   xfree(e);
   return ST_DELETE;
@@ -1450,9 +1442,9 @@ callout_name_entry(CalloutNameEntry** rentry, OnigEncoding enc,
       xfree(e);  return ONIGERR_MEMORY;
     }
 
-    r = onig_st_insert_callout_name_table(t, enc, is_not_single,
-                                          e->name, (e->name + (name_end - name)),
-                                          (HashDataType )e);
+    r = st_insert_callout_name_table(t, enc, is_not_single,
+                                     e->name, (e->name + (name_end - name)),
+                                     (HashDataType )e);
     if (r < 0) return r;
 
 #else
