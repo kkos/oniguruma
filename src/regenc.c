@@ -62,6 +62,25 @@ onigenc_set_default_encoding(OnigEncoding enc)
 }
 
 extern UChar*
+onigenc_strdup(OnigEncoding enc, UChar* s, UChar* end)
+{
+  int slen, term_len, i;
+  UChar *r;
+
+  slen = (int )(end - s);
+  term_len = ONIGENC_MBC_MINLEN(enc);
+
+  r = (UChar* )xmalloc(slen + term_len);
+  CHECK_NULL_RETURN(r);
+  xmemcpy(r, s, slen);
+
+  for (i = 0; i < term_len; i++)
+    r[slen + i] = (UChar )0;
+
+  return r;
+}
+
+extern UChar*
 onigenc_get_right_adjust_char_head(OnigEncoding enc, const UChar* start, const UChar* s)
 {
   UChar* p = ONIGENC_LEFT_ADJUST_CHAR_HEAD(enc, start, s);

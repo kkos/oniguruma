@@ -119,6 +119,9 @@ struct PropertyNameCtype {
 
 #define ONIG_ENCODING_INIT_DEFAULT           ONIG_ENCODING_ASCII
 
+
+extern UChar* onigenc_strdup P_((OnigEncoding enc, UChar* s, UChar* end));
+
 /* for encoding system implementation (internal) */
 extern int onigenc_ascii_apply_all_case_fold P_((OnigCaseFoldType flag, OnigApplyAllCaseFoldFunc f, void* arg));
 extern int onigenc_ascii_get_case_fold_codes_by_str P_((OnigCaseFoldType flag, const OnigUChar* p, const OnigUChar* end, OnigCaseFoldCodeItem items[]));
