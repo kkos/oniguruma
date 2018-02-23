@@ -128,6 +128,9 @@ bar(OnigCalloutArgs* args, void* user_data)
     case ONIG_TYPE_STRING:
       fprintf(stdout, "'%s'\n", val.s.start);
       break;
+    default:
+      /* Never come here. But escape warning. */
+      break;
     };
   }
 
@@ -218,7 +221,7 @@ extern int main(int argc, char* argv[])
   arg_types[0] = ONIG_TYPE_INT;
   arg_types[1] = ONIG_TYPE_STRING;
   arg_types[2] = ONIG_TYPE_CHAR;
-  opt_defaults[0].s.start = "I am a option argument's default value.";
+  opt_defaults[0].s.start = (UChar* )"I am a option argument's default value.";
   opt_defaults[0].s.end   = opt_defaults[0].s.start +
                                 strlen((char* )opt_defaults[0].s.start);
   opt_defaults[1].cp = 0x4422;
