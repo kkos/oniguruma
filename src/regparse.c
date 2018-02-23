@@ -6693,10 +6693,6 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     }
   }
 
-  is_not_single = 0;
-  r = get_callout_name_id_from_name(enc, is_not_single, name_start, name_end, &name_id);
-  if (r != ONIG_NORMAL) return r;
-
   if (c == '[') {
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
     tag_start = p;
@@ -6716,6 +6712,10 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   else {
     tag_start = tag_end = 0;
   }
+
+  is_not_single = 0;
+  r = get_callout_name_id_from_name(enc, is_not_single, name_start, name_end, &name_id);
+  if (r != ONIG_NORMAL) return r;
 
   in = onig_get_callout_in_from_name_id(name_id);
   max_arg_num = get_callout_arg_num_from_name_id(name_id);
