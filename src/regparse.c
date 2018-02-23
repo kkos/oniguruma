@@ -603,6 +603,106 @@ onig_st_insert_strend(hash_table_type* table, const UChar* str_key,
   return result;
 }
 
+
+typedef struct {
+  OnigEncoding enc;
+  int    type; // callout type: single or not
+  UChar* s;
+  UChar* end;
+} st_callout_name_key;
+
+static int
+callout_name_table_cmp(st_callout_name_key* x, st_callout_name_key* y)
+{
+  UChar *p, *q;
+  int c;
+
+  if (x->enc  != y->enc)  return 1;
+  if (x->type != y->type) return 1;
+  if ((x->end - x->s) != (y->end - y->s))
+    return 1;
+
+  p = x->s;
+  q = y->s;
+  while (p < x->end) {
+    c = (int )*p - (int )*q;
+    if (c != 0) return c;
+
+    p++; q++;
+  }
+
+  return 0;
+}
+
+static int
+callout_name_table_hash(st_callout_name_key* x)
+{
+  UChar *p;
+  int val = 0;
+
+  p = x->s;
+  while (p < x->end) {
+    val = val * 997 + (int )*p++;
+  }
+
+  return val + (val >> 5) + ((long )x->enc & 0xffff) + x->type;
+}
+
+extern hash_table_type*
+onig_st_init_callout_name_table_with_size(int size)
+{
+  static struct st_hash_type hashType = {
+    callout_name_table_cmp,
+    callout_name_table_hash,
+  };
+
+  return (hash_table_type* )
+           onig_st_init_table_with_size(&hashType, size);
+}
+
+extern int
+onig_st_lookup_callout_name_table(hash_table_type* table,
+                                  OnigEncoding enc,
+                                  int type,
+                                  const UChar* str_key,
+                                  const UChar* end_key,
+                                  hash_data_type *value)
+{
+  st_callout_name_key key;
+
+  key.enc  = enc;
+  key.type = type;
+  key.s    = (UChar* )str_key;
+  key.end  = (UChar* )end_key;
+
+  return onig_st_lookup(table, (st_data_t )(&key), value);
+}
+
+extern int
+onig_st_insert_callout_name_table(hash_table_type* table,
+                                  OnigEncoding enc,
+                                  int type,
+                                  const UChar* str_key,
+                                  const UChar* end_key,
+                                  hash_data_type value)
+{
+  st_callout_name_key* key;
+  int result;
+
+  key = (st_callout_name_key* )xmalloc(sizeof(st_callout_name_key));
+  CHECK_NULL_RETURN_MEMERR(key);
+
+  key->enc  = enc;
+  key->type = type;
+  key->s    = (UChar* )str_key;
+  key->end  = (UChar* )end_key;
+  result = onig_st_insert(table, (st_data_t )key, value);
+  if (result) {
+    xfree(key);
+  }
+  return result;
+}
+
 #endif /* USE_ST_LIBRARY */
 
 
