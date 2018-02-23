@@ -6552,7 +6552,7 @@ parse_int(OnigEncoding enc, UChar* s, UChar* end, int sign_on, int* ri)
 }
 
 static int
-parse_callout_args(int cterm, UChar** src, UChar* end, int max_arg_num,
+parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
                    OnigType types[], OnigValue vals[], ScanEnv* env)
 {
 #define MAX_CALLOUT_ARG_BYTE_LENGTH   128
@@ -6601,42 +6601,47 @@ parse_callout_args(int cterm, UChar** src, UChar* end, int max_arg_num,
           size_t clen;
 
         add_char:
-          clen = p - e;
-          if (bufend + clen > buf + MAX_CALLOUT_ARG_BYTE_LENGTH)
-            return ONIGERR_INVALID_CALLOUT_ARG; /* too long argument */
+          if (skip_mode == 0) {
+            clen = p - e;
+            if (bufend + clen > buf + MAX_CALLOUT_ARG_BYTE_LENGTH)
+              return ONIGERR_INVALID_CALLOUT_ARG; /* too long argument */
 
-          xmemcpy(bufend, e, clen);
-          bufend += clen;
+            xmemcpy(bufend, e, clen);
+            bufend += clen;
+          }
           cn++;
         }
       }
     }
 
     if (cn != 0) {
-      switch (types[n]) {
-      case ONIG_TYPE_INT:
-        if (cn == 0) return ONIGERR_INVALID_CALLOUT_ARG;
-        r = parse_int(enc, buf, bufend, 1, &(vals[n].i));
-        if (r != ONIG_NORMAL) return r;
-        break;
+      if (skip_mode == 0) {
+        switch (types[n]) {
+        case ONIG_TYPE_INT:
+          if (cn == 0) return ONIGERR_INVALID_CALLOUT_ARG;
+          r = parse_int(enc, buf, bufend, 1, &(vals[n].i));
+          if (r != ONIG_NORMAL) return r;
+          break;
 
-      case ONIG_TYPE_CHAR:
-        if (cn != 1) return ONIGERR_INVALID_CALLOUT_ARG;
-        vals[n].cp = ONIGENC_MBC_TO_CODE(enc, buf, bufend);
-        break;
+        case ONIG_TYPE_CHAR:
+          if (cn != 1) return ONIGERR_INVALID_CALLOUT_ARG;
+          vals[n].cp = ONIGENC_MBC_TO_CODE(enc, buf, bufend);
+          break;
 
-      case ONIG_TYPE_STRING:
-        {
-          UChar* rs = onigenc_strdup(enc, buf, bufend);
-          CHECK_NULL_RETURN_MEMERR(rs);
-          vals[n].s.start = rs;
-          vals[n].s.end   = rs + (e - s);
+        case ONIG_TYPE_STRING:
+          {
+            UChar* rs = onigenc_strdup(enc, buf, bufend);
+            CHECK_NULL_RETURN_MEMERR(rs);
+            vals[n].s.start = rs;
+            vals[n].s.end   = rs + (e - s);
+          }
+          break;
+        default:
+          return ONIGERR_PARSER_BUG;
+          break;
         }
-        break;
-      default:
-        return ONIGERR_PARSER_BUG;
-        break;
       }
+
       n++;
     }
 
@@ -6728,7 +6733,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   if (c == '(') {
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
 
-    arg_num = parse_callout_args(')', &p, end, max_arg_num, types, vals, env);
+    arg_num = parse_callout_args(0, ')', &p, end, types, vals, env);
     if (arg_num < 0) return arg_num;
 
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
