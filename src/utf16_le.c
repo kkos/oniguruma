@@ -2,7 +2,7 @@
   utf16_le.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2018  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -225,8 +225,8 @@ utf16le_get_case_fold_codes_by_str(OnigCaseFoldType flag,
 OnigEncodingType OnigEncodingUTF16_LE = {
   utf16le_mbc_enc_len,
   "UTF-16LE",   /* name */
-  4,            /* max byte length */
-  2,            /* min byte length */
+  4,            /* max enc length */
+  2,            /* min enc length */
   utf16le_is_mbc_newline,
   utf16le_mbc_to_code,
   utf16le_code_to_mbclen,

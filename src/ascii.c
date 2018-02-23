@@ -2,7 +2,7 @@
   ascii.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2018  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,8 +41,8 @@ ascii_is_code_ctype(OnigCodePoint code, unsigned int ctype)
 OnigEncodingType OnigEncodingASCII = {
   onigenc_single_byte_mbc_enc_len,
   "US-ASCII",  /* name */
-  1,           /* max byte length */
-  1,           /* min byte length */
+  1,           /* max enc length */
+  1,           /* min enc length */
   onigenc_is_mbc_newline_0x0a,
   onigenc_single_byte_mbc_to_code,
   onigenc_single_byte_code_to_mbclen,
