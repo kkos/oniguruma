@@ -349,25 +349,6 @@ onig_strcpy(UChar* dest, const UChar* src, const UChar* end)
   }
 }
 
-static UChar*
-strdup_with_null(OnigEncoding enc, UChar* s, UChar* end)
-{
-  int slen, term_len, i;
-  UChar *r;
-
-  slen = (int )(end - s);
-  term_len = ONIGENC_MBC_MINLEN(enc);
-
-  r = (UChar* )xmalloc(slen + term_len);
-  CHECK_NULL_RETURN(r);
-  xmemcpy(r, s, slen);
-
-  for (i = 0; i < term_len; i++)
-    r[slen + i] = (UChar )0;
-
-  return r;
-}
-
 #ifdef USE_CALLOUT
 
 static UChar*
@@ -1053,7 +1034,7 @@ name_add(regex_t* reg, UChar* name, UChar* name_end, int backref, ScanEnv* env)
     e = (NameEntry* )xmalloc(sizeof(NameEntry));
     CHECK_NULL_RETURN_MEMERR(e);
 
-    e->name = strdup_with_null(reg->enc, name, name_end);
+    e->name = onigenc_strdup(reg->enc, name, name_end);
     if (IS_NULL(e->name)) {
       xfree(e);  return ONIGERR_MEMORY;
     }
@@ -1104,7 +1085,7 @@ name_add(regex_t* reg, UChar* name, UChar* name_end, int backref, ScanEnv* env)
     }
     e = &(t->e[t->num]);
     t->num++;
-    e->name = strdup_with_null(reg->enc, name, name_end);
+    e->name = onigenc_strdup(reg->enc, name, name_end);
     if (IS_NULL(e->name)) return ONIGERR_MEMORY;
     e->name_len = name_end - name;
 #endif
@@ -1599,7 +1580,7 @@ onig_set_callout_of_name(OnigEncoding enc, OnigCalloutType callout_type,
   for (i = arg_num - opt_arg_num, j = 0; i < arg_num; i++, j++) {
     if (fe->arg_types[i] == ONIG_TYPE_STRING) {
       OnigValue* val = opt_defaults + j;
-      UChar* ds = strdup_with_null(enc, val->s.start, val->s.end);
+      UChar* ds = onigenc_strdup(enc, val->s.start, val->s.end);
       CHECK_NULL_RETURN_MEMERR(ds);
 
       fe->opt_defaults[i].s.start = ds;
@@ -6646,7 +6627,7 @@ parse_callout_args(int cterm, UChar** src, UChar* end, int max_arg_num,
 
       case ONIG_TYPE_STRING:
         {
-          UChar* rs = strdup_with_null(enc, buf, bufend);
+          UChar* rs = onigenc_strdup(enc, buf, bufend);
           CHECK_NULL_RETURN_MEMERR(rs);
           vals[n].s.start = rs;
           vals[n].s.end   = rs + (e - s);
