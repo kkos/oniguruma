@@ -1215,7 +1215,7 @@ typedef struct {
   int             opt_arg_num;
   OnigType        arg_types[ONIG_CALLOUT_MAX_ARG_NUM];
   OnigValue       opt_defaults[ONIG_CALLOUT_MAX_ARG_NUM];
-  UChar*          name; /* reference to CalloutNames entry: e->name */
+  UChar*          name; /* reference to GlobalCalloutNames entry: e->name */
 } CalloutNameListEntry;
 
 typedef struct {
@@ -1297,7 +1297,7 @@ typedef struct {
 } CalloutNameTable;
 #endif
 
-static CalloutNameTable* CalloutNames;
+static CalloutNameTable* GlobalCalloutNames;
 static int CalloutNameIDCounter;
 
 #ifdef USE_ST_LIBRARY
@@ -1321,14 +1321,14 @@ callout_names_clear(CalloutNameTable* t)
 }
 
 static int
-callout_names_free(void)
+global_callout_names_free(void)
 {
-  if (IS_NOT_NULL(CalloutNames)) {
-    int r = callout_names_clear(CalloutNames);
+  if (IS_NOT_NULL(GlobalCalloutNames)) {
+    int r = callout_names_clear(GlobalCalloutNames);
     if (r != 0) return r;
 
-    onig_st_free_table(CalloutNames);
-    CalloutNames = 0;
+    onig_st_free_table(GlobalCalloutNames);
+    GlobalCalloutNames = 0;
   }
 
   return 0;
@@ -1340,7 +1340,7 @@ callout_name_find(OnigEncoding enc, int is_not_single,
 {
   int r;
   CalloutNameEntry* e;
-  CalloutNameTable* t = CalloutNames;
+  CalloutNameTable* t = GlobalCalloutNames;
 
   e = (CalloutNameEntry* )NULL;
   if (IS_NOT_NULL(t)) {
@@ -1387,14 +1387,14 @@ callout_names_clear(CalloutNameTable* t)
 }
 
 static int
-callout_names_free(void)
+global_callout_names_free(void)
 {
-  if (IS_NOT_NULL(CalloutNames)) {
-    int r = callout_names_clear(CalloutNames);
+  if (IS_NOT_NULL(GlobalCalloutNames)) {
+    int r = callout_names_clear(GlobalCalloutNames);
     if (r != 0) return r;
 
-    xfree(CalloutNames);
-    CalloutNames = 0;
+    xfree(GlobalCalloutNames);
+    GlobalCalloutNames = 0;
   }
   return 0;
 }
@@ -1426,7 +1426,7 @@ callout_name_entry(CalloutNameEntry** rentry, OnigEncoding enc,
 {
   int r;
   CalloutNameEntry* e;
-  CalloutNameTable* t = CalloutNames;
+  CalloutNameTable* t = GlobalCalloutNames;
 
   *rentry = 0;
   if (name_end - name <= 0)
@@ -1437,7 +1437,7 @@ callout_name_entry(CalloutNameEntry** rentry, OnigEncoding enc,
 #ifdef USE_ST_LIBRARY
     if (IS_NULL(t)) {
       t = onig_st_init_callout_name_table_with_size(INIT_NAMES_ALLOC_NUM);
-      CalloutNames = t;
+      GlobalCalloutNames = t;
     }
     e = (CalloutNameEntry* )xmalloc(sizeof(CalloutNameEntry));
     CHECK_NULL_RETURN_MEMERR(e);
@@ -1470,7 +1470,7 @@ callout_name_entry(CalloutNameEntry** rentry, OnigEncoding enc,
         return ONIGERR_MEMORY;
       }
       t->alloc = alloc;
-      CalloutNames = t;
+      GlobalCalloutNames = t;
       goto clear;
     }
     else if (t->num == t->alloc) {
@@ -1670,12 +1670,12 @@ onig_get_callout_name_from_name_id(int name_id)
 }
 
 extern int
-onig_callout_name_list_free(void)
+onig_global_callout_name_list_free(void)
 {
   free_callout_func_list(GlobalCalloutNameList);
   GlobalCalloutNameList = 0;
 
-  callout_names_free();
+  global_callout_names_free();
   return ONIG_NORMAL;
 }
 
