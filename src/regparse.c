@@ -387,6 +387,7 @@ strdup_with_null1(UChar* s, UChar* end)
   return r;
 }
 
+#if 0
 static int
 str_reduce_to_single_byte_code(OnigEncoding enc, UChar* s, UChar* end,
                                UChar** rs, UChar** rend)
@@ -429,7 +430,7 @@ str_reduce_to_single_byte_code(OnigEncoding enc, UChar* s, UChar* end,
 
   return ONIG_NORMAL;
 }
-
+#endif
 #endif
 
 static int
@@ -1206,7 +1207,7 @@ onig_noname_group_capture_is_active(regex_t* reg)
 #ifdef USE_CALLOUT
 
 typedef struct {
-  CalloutType     type;
+  OnigCalloutType type;
   int             in;
   OnigCalloutFunc start_func;
   OnigCalloutFunc end_func;
@@ -1334,14 +1335,25 @@ callout_names_free(void)
 }
 
 static CalloutNameEntry*
-callout_name_find(const UChar* name, const UChar* name_end)
+callout_name_find(OnigEncoding enc, int is_not_single,
+                  const UChar* name, const UChar* name_end)
 {
+  int r;
   CalloutNameEntry* e;
   CalloutNameTable* t = CalloutNames;
 
   e = (CalloutNameEntry* )NULL;
   if (IS_NOT_NULL(t)) {
-    onig_st_lookup_strend(t, name, name_end, (HashDataType* )((void* )(&e)));
+    r = onig_st_lookup_callout_name_table(t, enc, is_not_single, name, name_end,
+                                          (HashDataType* )((void* )(&e)));
+    if (r == 0) { /* not found */
+      if (enc != ONIG_ENCODING_ASCII &&
+          ONIGENC_IS_ASCII_COMPATIBLE_ENCODING(enc)) {
+        enc = ONIG_ENCODING_ASCII;
+        onig_st_lookup_callout_name_table(t, enc, is_not_single, name, name_end,
+                                          (HashDataType* )((void* )(&e)));
+      }
+    }
   }
   return e;
 }
@@ -1409,7 +1421,8 @@ callout_name_find(UChar* name, UChar* name_end)
 
 /* name string must be single byte char string. */
 static int
-callout_name_entry(CalloutNameEntry** rentry, UChar* name, UChar* name_end)
+callout_name_entry(CalloutNameEntry** rentry, OnigEncoding enc,
+                   int is_not_single, UChar* name, UChar* name_end)
 {
   int r;
   CalloutNameEntry* e;
@@ -1419,11 +1432,11 @@ callout_name_entry(CalloutNameEntry** rentry, UChar* name, UChar* name_end)
   if (name_end - name <= 0)
     return ONIGERR_INVALID_CALLOUT_NAME;
 
-  e = callout_name_find(name, name_end);
+  e = callout_name_find(enc, is_not_single, name, name_end);
   if (IS_NULL(e)) {
 #ifdef USE_ST_LIBRARY
     if (IS_NULL(t)) {
-      t = onig_st_init_strend_table_with_size(INIT_NAMES_ALLOC_NUM);
+      t = onig_st_init_callout_name_table_with_size(INIT_NAMES_ALLOC_NUM);
       CalloutNames = t;
     }
     e = (CalloutNameEntry* )xmalloc(sizeof(CalloutNameEntry));
@@ -1433,8 +1446,10 @@ callout_name_entry(CalloutNameEntry** rentry, UChar* name, UChar* name_end)
     if (IS_NULL(e->name)) {
       xfree(e);  return ONIGERR_MEMORY;
     }
-    r = onig_st_insert_strend(t, e->name, (e->name + (name_end - name)),
-                              (HashDataType )e);
+
+    r = onig_st_insert_callout_name_table(t, enc, is_not_single,
+                                          e->name, (e->name + (name_end - name)),
+                                          (HashDataType )e);
     if (r < 0) return r;
 
 #else
@@ -1504,22 +1519,21 @@ is_allowed_callout_name(UChar* name, UChar* name_end)
   return 1;
 }
 
-static int
-set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
-                             CalloutType type,
-                             int in,
-                             OnigCalloutFunc start_func,
-                             OnigCalloutFunc end_func,
-                             int arg_num, OnigType arg_types[],
-                             int opt_arg_num, OnigValue opt_defaults[])
+extern int
+onig_set_callout_of_name(OnigEncoding enc, OnigCalloutType callout_type,
+                         UChar* name, UChar* name_end, int in,
+                         OnigCalloutFunc start_func,
+                         OnigCalloutFunc end_func,
+                         int arg_num, OnigType arg_types[],
+                         int opt_arg_num, OnigValue opt_defaults[])
 {
   int r;
   int i;
   int j;
   int id;
+  int is_not_single;
   CalloutNameEntry* e;
   CalloutNameListEntry* fe;
-  UChar* save_name = name;
 
   if (arg_num < 0 || arg_num > ONIG_CALLOUT_MAX_ARG_NUM)
     return ONIGERR_INVALID_CALLOUT_ARG;
@@ -1538,40 +1552,28 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
       return ONIGERR_INVALID_CALLOUT_ARG;
   }
 
-  if (enc != 0) {
-    r = str_reduce_to_single_byte_code(enc, name, name_end, &name, &name_end);
-    if (r != ONIG_NORMAL) {
-      if (r == ONIGERR_INVALID_CODE_POINT_VALUE)
-        r = ONIGERR_INVALID_CALLOUT_NAME;
-      return r;
-    }
-  }
-
   if (! is_allowed_callout_name(name, name_end)) {
-    r = ONIGERR_INVALID_CALLOUT_NAME;
-    goto end;
+    return ONIGERR_INVALID_CALLOUT_NAME;
   }
 
-  id = callout_name_entry(&e, name, name_end);
-  if (id < 0) {
-    r = id;
-    goto end;
-  }
+  is_not_single = (callout_type != ONIG_CALLOUT_TYPE_SINGLE);
+  id = callout_name_entry(&e, enc, is_not_single, name, name_end);
+  if (id < 0) return id;
 
   r = ONIG_NORMAL;
   if (IS_NULL(GlobalCalloutNameList)) {
     r = make_callout_func_list(&GlobalCalloutNameList, 10);
-    if (r != ONIG_NORMAL) goto end;
+    if (r != ONIG_NORMAL) return r;
   }
 
   while (id >= GlobalCalloutNameList->n) {
     int rid;
     r = callout_func_list_add(GlobalCalloutNameList, &rid);
-    if (r != ONIG_NORMAL) goto end;
+    if (r != ONIG_NORMAL) return r;
   }
 
   fe = GlobalCalloutNameList->v + id;
-  fe->type         = type;
+  fe->type         = callout_type;
   fe->in           = in;
   fe->start_func   = start_func;
   fe->end_func     = end_func;
@@ -1587,63 +1589,33 @@ set_callout_of_name_with_enc(OnigEncoding enc, UChar* name, UChar* name_end,
   }
 
   r = id; // return id
-
- end:
-  if (save_name != name) xfree(name);
   return r;
 }
 
-/* name: single-byte string */
-extern int
-onig_set_callout_of_name(OnigUChar* name, OnigUChar* name_end,
-                         int in, OnigCalloutFunc callout,
-                         int arg_num, OnigType arg_types[],
-                         int opt_arg_num, OnigValue opt_defaults[])
-{
-  return set_callout_of_name_with_enc(0, name, name_end,
-                                      CALLOUT_TYPE_SINGLE,
-                                      in, callout, 0,
-                                      arg_num, arg_types, opt_arg_num, opt_defaults);
-}
-
 static int
-get_callout_name_id_from_name(OnigEncoding enc, UChar* name, UChar* name_end,
-                              int* rid)
+get_callout_name_id_from_name(OnigEncoding enc, int is_not_single,
+                              UChar* name, UChar* name_end, int* rid)
 {
   int r;
   CalloutNameEntry* e;
-  UChar* save_name = name;
-
-  if (enc != 0) {
-    r = str_reduce_to_single_byte_code(enc, name, name_end, &name, &name_end);
-    if (r != ONIG_NORMAL) {
-      if (r == ONIGERR_INVALID_CODE_POINT_VALUE)
-        r = ONIGERR_INVALID_CALLOUT_NAME;
-      return r;
-    }
-  }
 
   if (! is_allowed_callout_name(name, name_end)) {
-    r = ONIGERR_INVALID_CALLOUT_NAME;
-    goto end;
+    return ONIGERR_INVALID_CALLOUT_NAME;
   }
 
-  e = callout_name_find(name, name_end);
+  e = callout_name_find(enc, is_not_single, name, name_end);
   if (IS_NULL(e)) {
-    r = ONIGERR_UNDEFINED_CALLOUT_NAME;
-    goto end;
+    return ONIGERR_UNDEFINED_CALLOUT_NAME;
   }
 
   r = ONIG_NORMAL;
   *rid = e->id;
 
- end:
-  if (save_name != name) xfree(name);
   return r;
 }
 
 
-extern CalloutType
+extern OnigCalloutType
 onig_get_callout_type_from_name_id(int name_id)
 {
   return GlobalCalloutNameList->v[name_id].type;
@@ -6687,6 +6659,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   int max_arg_num;
   int opt_arg_num;
   int with_tag;
+  int is_not_single;
   OnigCodePoint c;
   UChar* name_start;
   UChar* name_end;
@@ -6717,7 +6690,8 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     }
   }
 
-  r = get_callout_name_id_from_name(enc, name_start, name_end, &name_id);
+  is_not_single = 0;
+  r = get_callout_name_id_from_name(enc, is_not_single, name_start, name_end, &name_id);
   if (r != ONIG_NORMAL) return r;
 
   if (c == '[') {

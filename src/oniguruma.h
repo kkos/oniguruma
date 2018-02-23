@@ -736,6 +736,14 @@ typedef enum {
   ONIG_CALLOUT_OF_NAME     = 1
 } OnigCalloutOf;
 
+typedef enum {
+  ONIG_CALLOUT_TYPE_SINGLE              = 0,
+  ONIG_CALLOUT_TYPE_START_CALL          = 1,
+  ONIG_CALLOUT_TYPE_BOTH_CALL           = 2,
+  ONIG_CALLOUT_TYPE_START_MARK_END_CALL = 3,
+} OnigCalloutType;
+
+
 #define ONIG_NO_NAME_ID   -1
 
 #define ONIG_CALLOUT_MAX_ARG_NUM  4
@@ -928,7 +936,7 @@ OnigCalloutFunc onig_get_retraction_callout_of_contents P_((void));
 ONIG_EXTERN
 int onig_set_retraction_callout_of_contents P_((OnigCalloutFunc f));
 ONIG_EXTERN
-int onig_set_callout_of_name P_((OnigUChar* name, OnigUChar* name_end, int callout_in, OnigCalloutFunc callout, int arg_num, OnigType arg_types[], int optional_arg_num, OnigValue opt_defaults[])); /* name: single-byte string */
+int onig_set_callout_of_name P_((OnigEncoding enc, OnigCalloutType type, OnigUChar* name, OnigUChar* name_end, int callout_in, OnigCalloutFunc callout, OnigCalloutFunc end_callout, int arg_num, OnigType arg_types[], int optional_arg_num, OnigValue opt_defaults[])); /* name: single-byte string */
 ONIG_EXTERN
 OnigUChar* onig_get_callout_name_from_name_id P_((int id));
 

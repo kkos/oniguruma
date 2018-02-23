@@ -255,19 +255,12 @@ typedef unsigned int  uintptr_t;
 
 #ifdef USE_CALLOUT
 
-typedef enum {
-  CALLOUT_TYPE_SINGLE              = 0,
-  CALLOUT_TYPE_START_CALL          = 1,
-  CALLOUT_TYPE_BOTH_CALL           = 2,
-  CALLOUT_TYPE_START_MARK_END_CALL = 3,
-} CalloutType;
-
 typedef struct {
   int           flag;
   OnigCalloutOf of;
   int           in;
   int           name_id;
-  CalloutType   type;
+  OnigCalloutType type;
   union {
     struct {
       UChar* start;
@@ -827,7 +820,7 @@ extern int    onig_ext_set_pattern(regex_t* reg, const UChar* pattern, const UCh
 
 #ifdef USE_CALLOUT
 
-extern CalloutType     onig_get_callout_type_from_name_id(int name_id);
+extern OnigCalloutType onig_get_callout_type_from_name_id(int name_id);
 extern OnigCalloutFunc onig_get_callout_start_func_from_name_id(int id);
 extern OnigCalloutFunc onig_get_callout_end_func_from_name_id(int id);
 extern int             onig_callout_tag_table_free(void* table);
