@@ -627,7 +627,8 @@ callout_name_table_hash(st_callout_name_key* x)
     val = val * 997 + (int )*p++;
   }
 
-  return val + (val >> 5) + ((long )x->enc & 0xffff) + x->type;
+  /* use intptr_t for escape warning in Windows */
+  return val + (val >> 5) + ((intptr_t )x->enc & 0xffff) + x->type;
 }
 
 extern hash_table_type*
