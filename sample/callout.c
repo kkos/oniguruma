@@ -203,8 +203,9 @@ extern int main(int argc, char* argv[])
   }
 
   name = (UChar* )"foo";
-  id = onig_set_callout_of_name(name, name + strlen((char* )name),
-                                ONIG_CALLOUT_IN_BOTH, foo, 0, 0, 0, 0);
+  id = onig_set_callout_of_name(ENC, ONIG_CALLOUT_TYPE_SINGLE,
+                                name, name + strlen((char* )name),
+                                ONIG_CALLOUT_IN_BOTH, foo, 0, 0, 0, 0, 0);
   if (id < 0) {
     fprintf(stderr, "ERROR: fail to set callout of name: %s\n", name);
     //return -1;
@@ -219,8 +220,9 @@ extern int main(int argc, char* argv[])
                                 strlen((char* )opt_defaults[0].s.start);
   opt_defaults[1].cp = 0x4422;
 
-  id = onig_set_callout_of_name(name, name + strlen((char* )name),
-                                ONIG_CALLOUT_IN_PROGRESS, bar,
+  id = onig_set_callout_of_name(ENC, ONIG_CALLOUT_TYPE_SINGLE,
+                                name, name + strlen((char* )name),
+                                ONIG_CALLOUT_IN_PROGRESS, bar, 0,
                                 3, arg_types, 2, opt_defaults);
   if (id < 0) {
     fprintf(stderr, "ERROR: fail to set callout of name: %s\n", name);
