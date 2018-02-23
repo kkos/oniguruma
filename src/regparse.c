@@ -671,14 +671,21 @@ onig_st_insert_callout_name_table(hash_table_type* table,
 {
   st_callout_name_key* key;
   int result;
+  UChar* s;
 
   key = (st_callout_name_key* )xmalloc(sizeof(st_callout_name_key));
   CHECK_NULL_RETURN_MEMERR(key);
 
+  s = onigenc_strdup(enc, str_key, end_key);
+  if (IS_NULL(s)) {
+    xfree(key);
+    return ONIGERR_MEMORY;
+  }
+
   key->enc  = enc;
   key->type = type;
-  key->s    = (UChar* )str_key;
-  key->end  = (UChar* )end_key;
+  key->s    = s;
+  key->end  = s + (end_key - str_key);
   result = onig_st_insert(table, (st_data_t )key, value);
   if (result) {
     xfree(key);
@@ -1297,9 +1304,11 @@ static int CalloutNameIDCounter;
 #ifdef USE_ST_LIBRARY
 
 static int
-i_free_callout_name_entry(UChar* key, CalloutNameEntry* e, void* arg ARG_UNUSED)
+i_free_callout_name_entry(st_callout_name_key* key, CalloutNameEntry* e,
+                          void* arg ARG_UNUSED)
 {
   xfree(e->name);
+  xfree(key->s);
   xfree(key);
   xfree(e);
   return ST_DELETE;
