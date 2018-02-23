@@ -1426,9 +1426,8 @@ callout_name_entry(CalloutNameEntry** rentry, OnigEncoding enc,
 
     CalloutNameIDCounter++;
     e->id = CalloutNameIDCounter;
+    e->name_len = (int )(name_end - name);
   }
-
-  e->name_len = (int )(name_end - name);
 
   *rentry = e;
   return e->id;
