@@ -1673,7 +1673,7 @@ onig_get_callout_name_from_name_id(int name_id)
 }
 
 extern int
-onig_global_callout_name_list_free(void)
+onig_global_callout_names_free(void)
 {
   free_callout_func_list(GlobalCalloutNameList);
   GlobalCalloutNameList = 0;

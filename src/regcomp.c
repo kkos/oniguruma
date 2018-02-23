@@ -6301,7 +6301,7 @@ onig_end(void)
   exec_end_call_list();
 
 #ifdef USE_CALLOUT
-  onig_global_callout_name_list_free();
+  onig_global_callout_names_free();
 #endif
 
   onig_inited = 0;

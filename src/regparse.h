@@ -448,7 +448,7 @@ extern int    onig_is_code_in_cc P_((OnigEncoding enc, OnigCodePoint code, CClas
 extern OnigLen onig_get_tiny_min_len(Node* node, unsigned int inhibit_node_types, int* invalid_node);
 
 #ifdef USE_CALLOUT
-extern int onig_global_callout_name_list_free(void);
+extern int onig_global_callout_names_free(void);
 #endif
 
 #ifdef ONIG_DEBUG
