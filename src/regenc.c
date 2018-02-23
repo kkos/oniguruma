@@ -62,7 +62,7 @@ onigenc_set_default_encoding(OnigEncoding enc)
 }
 
 extern UChar*
-onigenc_strdup(OnigEncoding enc, UChar* s, UChar* end)
+onigenc_strdup(OnigEncoding enc, const UChar* s, const UChar* end)
 {
   int slen, term_len, i;
   UChar *r;
