@@ -1685,6 +1685,23 @@ onig_callout_tag_table_free(void* table)
   return 0;
 }
 
+extern int
+onig_get_callout_num_from_tag_name(regex_t* reg,
+				   const UChar* name, const UChar* name_end)
+{
+  int r;
+  RegexExt* ext;
+  CalloutTagVal e;
+
+  ext = REG_EXTP(reg);
+  if (IS_NULL(ext) || IS_NULL(ext->tag_table)) return -1;
+
+  r = onig_st_lookup_strend(ext->tag_table, name, name_end,
+			    (HashDataType* )((void* )(&e)));
+  if (r == 0) return -1;
+  return (int )e;
+}
+
 static CalloutTagVal
 callout_tag_find(CalloutTagTable* t, const UChar* name, const UChar* name_end)
 {
