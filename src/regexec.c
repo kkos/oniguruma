@@ -1205,6 +1205,54 @@ onig_initialize_match_param(regex_t* reg, OnigMatchParam* mp)
   return ONIG_NORMAL;
 }
 
+#ifdef USE_CALLOUT
+
+#define CALLOUT_DATA_INDEX(num, slot) \
+  (((num) - 1) * ONIG_CALLOUT_DATA_SLOT_NUM + (slot))
+
+extern int
+onig_get_callout_data_by_tag(regex_t* reg, OnigMatchParam* mp,
+			     const UChar* tag, const UChar* tag_end, int slot,
+			     OnigType* type, OnigValue* val)
+{
+  int num;
+  int i;
+  CalloutData* d;
+
+  num = onig_get_callout_num_from_tag(reg, tag, tag_end);
+  if (num < 0) return num;
+  if (num == 0) return ONIGERR_INVALID_CALLOUT_TAG_NAME;
+
+  i = CALLOUT_DATA_INDEX(num, slot);
+  d = mp->callout_data + i;
+  if (IS_NOT_NULL(type)) *type = d->t;
+  if (IS_NOT_NULL(val))  *val  = d->v;
+  return ONIG_NORMAL;
+}
+
+extern int
+onig_set_callout_data_by_tag(regex_t* reg, OnigMatchParam* mp,
+			     const UChar* tag, const UChar* tag_end, int slot,
+			     OnigType type, OnigValue* val)
+{
+  int num;
+  int i;
+  CalloutData* d;
+
+  num = onig_get_callout_num_from_tag(reg, tag, tag_end);
+  if (num < 0) return num;
+  if (num == 0) return ONIGERR_INVALID_CALLOUT_TAG_NAME;
+
+  i = CALLOUT_DATA_INDEX(num, slot);
+  d = mp->callout_data + i;
+  d->t = type;
+  d->v = *val;
+
+  return ONIG_NORMAL;
+}
+
+#endif
+
 
 static int
 stack_double(int is_alloca, char** arg_alloc_base,
