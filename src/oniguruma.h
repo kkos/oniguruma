@@ -945,7 +945,7 @@ int onig_set_callout_of_name P_((OnigEncoding enc, OnigCalloutType type, OnigUCh
 ONIG_EXTERN
 OnigUChar* onig_get_callout_name_from_name_id P_((int id));
 ONIG_EXTERN
-int onig_get_callout_num_from_tag_name P_((OnigRegex reg, const UChar* name, const UChar* name_end));
+int onig_get_callout_num_from_tag P_((OnigRegex reg, const UChar* tag, const UChar* tag_end));
 
 /* used in callout functions */
 ONIG_EXTERN
