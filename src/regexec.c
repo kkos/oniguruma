@@ -1157,8 +1157,8 @@ onig_new_match_param(regex_t* reg)
   return p;
 }
 
-static void
-free_match_param_content(OnigMatchParam* p)
+extern void
+onig_free_match_param_content(OnigMatchParam* p)
 {
 #ifdef USE_CALLOUT
   if (IS_NOT_NULL(p->callout_data)) {
@@ -1172,7 +1172,7 @@ extern void
 onig_free_match_param(OnigMatchParam* p)
 {
   if (IS_NOT_NULL(p)) {
-    free_match_param_content(p);
+    onig_free_match_param_content(p);
     xfree(p);
   }
 }
@@ -4118,7 +4118,7 @@ onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at,
 
   onig_initialize_match_param(reg, &mp);
   r = onig_match_with_param(reg, str, end, at, region, option, &mp);
-  free_match_param_content(&mp);
+  onig_free_match_param_content(&mp);
   return r;
 }
 
@@ -4417,7 +4417,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 
   onig_initialize_match_param(reg, &mp);
   r = onig_search_with_param(reg, str, end, start, range, region, option, &mp);
-  free_match_param_content(&mp);
+  onig_free_match_param_content(&mp);
   return r;
 
 }

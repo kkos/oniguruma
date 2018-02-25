@@ -917,6 +917,8 @@ OnigMatchParam* onig_new_match_param P_((OnigRegex reg));
 ONIG_EXTERN
 void onig_free_match_param P_((OnigMatchParam* p));
 ONIG_EXTERN
+void onig_free_match_param_content P_((OnigMatchParam* p));
+ONIG_EXTERN
 int onig_initialize_match_param P_((OnigRegex reg, OnigMatchParam* mp));
 ONIG_EXTERN
 int onig_set_match_stack_limit_size_of_match_param P_((OnigMatchParam* param, unsigned int limit));
