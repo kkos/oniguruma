@@ -746,7 +746,8 @@ typedef enum {
 
 #define ONIG_NO_NAME_ID   -1
 
-#define ONIG_CALLOUT_MAX_ARG_NUM  4
+#define ONIG_CALLOUT_MAX_ARG_NUM      4
+#define ONIG_CALLOUT_DATA_SLOT_NUM    5
 
 struct OnigCalloutArgsStruct;
 typedef struct OnigCalloutArgsStruct OnigCalloutArgs;
@@ -912,11 +913,11 @@ const char* onig_copyright P_((void));
 
 /* for OnigMatchParam */
 ONIG_EXTERN
-OnigMatchParam* onig_new_match_param P_((void));
+OnigMatchParam* onig_new_match_param P_((OnigRegex reg));
 ONIG_EXTERN
 void onig_free_match_param P_((OnigMatchParam* p));
 ONIG_EXTERN
-void onig_initialize_match_param P_((OnigMatchParam* mp));
+int onig_initialize_match_param P_((OnigRegex reg, OnigMatchParam* mp));
 ONIG_EXTERN
 int onig_set_match_stack_limit_size_of_match_param P_((OnigMatchParam* param, unsigned int limit));
 ONIG_EXTERN

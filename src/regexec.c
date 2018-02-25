@@ -39,13 +39,22 @@
 
 #define CHECK_INTERRUPT_IN_MATCH
 
+#ifdef USE_CALLOUT
+typedef struct {
+  OnigType  t;
+  OnigValue v;
+} CalloutData;
+#endif
 
 struct OnigMatchParamStruct {
   unsigned int    match_stack_limit;
   unsigned long   retry_limit_in_match;
   OnigCalloutFunc callout_of_contents;
   OnigCalloutFunc retraction_callout_of_contents;
+#ifdef USE_CALLOUT
   void*           callout_user_data;
+  CalloutData*    callout_data;
+#endif
 };
 
 extern int
@@ -1136,26 +1145,40 @@ static OnigCalloutFunc DefaultCallout;
 static OnigCalloutFunc DefaultRetractionCallout;
 
 extern OnigMatchParam*
-onig_new_match_param(void)
+onig_new_match_param(regex_t* reg)
 {
   OnigMatchParam* p;
 
   p = (OnigMatchParam* )xmalloc(sizeof(*p));
   if (IS_NOT_NULL(p)) {
-    onig_initialize_match_param(p);
+    onig_initialize_match_param(reg, p);
   }
 
   return p;
 }
 
-extern void
-onig_free_match_param(OnigMatchParam* p)
+static void
+free_match_param_content(OnigMatchParam* p)
 {
-  if (IS_NOT_NULL(p)) xfree(p);
+#ifdef USE_CALLOUT
+  if (IS_NOT_NULL(p->callout_data)) {
+    xfree(p->callout_data);
+    p->callout_data = 0;
+  }
+#endif
 }
 
 extern void
-onig_initialize_match_param(OnigMatchParam* mp)
+onig_free_match_param(OnigMatchParam* p)
+{
+  if (IS_NOT_NULL(p)) {
+    free_match_param_content(p);
+    xfree(p);
+  }
+}
+
+extern int
+onig_initialize_match_param(regex_t* reg, OnigMatchParam* mp)
 {
   mp->match_stack_limit  = MatchStackLimit;
 #ifdef USE_RETRY_LIMIT_IN_MATCH
@@ -1163,7 +1186,23 @@ onig_initialize_match_param(OnigMatchParam* mp)
 #endif
   mp->callout_of_contents            = DefaultCallout;
   mp->retraction_callout_of_contents = DefaultRetractionCallout;
-  mp->callout_user_data  = 0;
+
+#ifdef USE_CALLOUT
+  mp->callout_user_data = 0;
+  mp->callout_data      = 0;
+  if (IS_NOT_NULL(REG_EXTP(reg))) {
+    RegexExt* ext = REG_EXTP(reg);
+    if (ext->callout_num > 0) {
+      CalloutData* d;
+      int n = ONIG_CALLOUT_DATA_SLOT_NUM * ext->callout_num;
+      d = (CalloutData* )xmalloc(sizeof(*d) * n);
+      CHECK_NULL_RETURN_MEMERR(d);
+      mp->callout_data = d;
+    }
+  }
+#endif
+
+  return ONIG_NORMAL;
 }
 
 
@@ -2098,7 +2137,7 @@ typedef struct {
 static int
 match_at(regex_t* reg, const UChar* str, const UChar* end,
          const UChar* in_right_range, const UChar* sstart, UChar* sprev,
-	 MatchArg* msa)
+         MatchArg* msa)
 {
   static UChar FinishCode[] = { OP_FINISH };
 
@@ -4074,10 +4113,13 @@ extern int
 onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at,
            OnigRegion* region, OnigOptionType option)
 {
+  int r;
   OnigMatchParam mp;
 
-  onig_initialize_match_param(&mp);
-  return onig_match_with_param(reg, str, end, at, region, option, &mp);
+  onig_initialize_match_param(reg, &mp);
+  r = onig_match_with_param(reg, str, end, at, region, option, &mp);
+  free_match_param_content(&mp);
+  return r;
 }
 
 extern int
@@ -4370,10 +4412,14 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
             const UChar* start, const UChar* range, OnigRegion* region,
             OnigOptionType option)
 {
+  int r;
   OnigMatchParam mp;
 
-  onig_initialize_match_param(&mp);
-  return onig_search_with_param(reg, str, end, start, range, region, option, &mp);
+  onig_initialize_match_param(reg, &mp);
+  r = onig_search_with_param(reg, str, end, start, range, region, option, &mp);
+  free_match_param_content(&mp);
+  return r;
+
 }
 
 extern int
