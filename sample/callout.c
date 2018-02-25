@@ -46,7 +46,7 @@ callout_body(OnigCalloutArgs* args, void* user_data)
   }
 
   if (name_id != ONIG_NO_NAME_ID) {
-    UChar* name = onig_get_callout_name_from_name_id(name_id);
+    UChar* name = onig_get_callout_name_by_name_id(name_id);
     fprintf(stdout, "name: %s\n", name);
   }
   fprintf(stdout,

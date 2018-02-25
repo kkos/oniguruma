@@ -1219,7 +1219,7 @@ onig_get_callout_data_by_tag(regex_t* reg, OnigMatchParam* mp,
   int i;
   CalloutData* d;
 
-  num = onig_get_callout_num_from_tag(reg, tag, tag_end);
+  num = onig_get_callout_num_by_tag(reg, tag, tag_end);
   if (num < 0) return num;
   if (num == 0) return ONIGERR_INVALID_CALLOUT_TAG_NAME;
 
@@ -1239,7 +1239,7 @@ onig_set_callout_data_by_tag(regex_t* reg, OnigMatchParam* mp,
   int i;
   CalloutData* d;
 
-  num = onig_get_callout_num_from_tag(reg, tag, tag_end);
+  num = onig_get_callout_num_by_tag(reg, tag, tag_end);
   if (num < 0) return num;
   if (num == 0) return ONIGERR_INVALID_CALLOUT_TAG_NAME;
 
@@ -1612,7 +1612,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
     }\
     else {\
       aof = ONIG_CALLOUT_OF_NAME;\
-      func = onig_get_callout_start_func_from_name_id(stk->zid);\
+      func = onig_get_callout_start_func_by_name_id(stk->zid);\
     }\
     RETRACTION_CALLOUT(func, aof, stk->zid, stk->u.callout.num, msa->mp->callout_user_data);\
   }
@@ -3748,7 +3748,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
         of = ONIG_CALLOUT_OF_NAME;
         GET_MEMNUM_INC(name_id, p);
-        func = onig_get_callout_start_func_from_name_id(name_id);
+        func = onig_get_callout_start_func_by_name_id(name_id);
 
       callout_common_entry:
         GET_MEMNUM_INC(num, p);
@@ -3781,7 +3781,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         retraction_callout2:
           if ((in & ONIG_CALLOUT_IN_RETRACTION) != 0) {
             if (of == ONIG_CALLOUT_OF_NAME) {
-              func = onig_get_callout_start_func_from_name_id(name_id);
+              func = onig_get_callout_start_func_by_name_id(name_id);
               if (IS_NOT_NULL(func)) {
                 STACK_PUSH_CALLOUT_NAME(name_id, num);
               }

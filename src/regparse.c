@@ -1532,8 +1532,8 @@ onig_set_callout_of_name(OnigEncoding enc, OnigCalloutType callout_type,
 }
 
 static int
-get_callout_name_id_from_name(OnigEncoding enc, int is_not_single,
-                              UChar* name, UChar* name_end, int* rid)
+get_callout_name_id_by_name(OnigEncoding enc, int is_not_single,
+                            UChar* name, UChar* name_end, int* rid)
 {
   int r;
   CalloutNameEntry* e;
@@ -1555,55 +1555,55 @@ get_callout_name_id_from_name(OnigEncoding enc, int is_not_single,
 
 
 extern OnigCalloutType
-onig_get_callout_type_from_name_id(int name_id)
+onig_get_callout_type_by_name_id(int name_id)
 {
   return GlobalCalloutNameList->v[name_id].type;
 }
 
 extern OnigCalloutFunc
-onig_get_callout_start_func_from_name_id(int name_id)
+onig_get_callout_start_func_by_name_id(int name_id)
 {
   return GlobalCalloutNameList->v[name_id].start_func;
 }
 
 extern OnigCalloutFunc
-onig_get_callout_end_func_from_name_id(int name_id)
+onig_get_callout_end_func_by_name_id(int name_id)
 {
   return GlobalCalloutNameList->v[name_id].end_func;
 }
 
 extern int
-onig_get_callout_in_from_name_id(int name_id)
+onig_get_callout_in_by_name_id(int name_id)
 {
   return GlobalCalloutNameList->v[name_id].in;
 }
 
 static int
-get_callout_arg_num_from_name_id(int name_id)
+get_callout_arg_num_by_name_id(int name_id)
 {
   return GlobalCalloutNameList->v[name_id].arg_num;
 }
 
 static int
-get_callout_opt_arg_num_from_name_id(int name_id)
+get_callout_opt_arg_num_by_name_id(int name_id)
 {
   return GlobalCalloutNameList->v[name_id].opt_arg_num;
 }
 
 static OnigType
-get_callout_arg_type_from_name_id(int name_id, int index)
+get_callout_arg_type_by_name_id(int name_id, int index)
 {
   return GlobalCalloutNameList->v[name_id].arg_types[index];
 }
 
 static OnigValue
-get_callout_opt_default_from_name_id(int name_id, int index)
+get_callout_opt_default_by_name_id(int name_id, int index)
 {
   return GlobalCalloutNameList->v[name_id].opt_defaults[index];
 }
 
 extern UChar*
-onig_get_callout_name_from_name_id(int name_id)
+onig_get_callout_name_by_name_id(int name_id)
 {
   return GlobalCalloutNameList->v[name_id].name;
 }
@@ -1686,8 +1686,8 @@ onig_callout_tag_table_free(void* table)
 }
 
 extern int
-onig_get_callout_num_from_tag(regex_t* reg,
-			      const UChar* tag, const UChar* tag_end)
+onig_get_callout_num_by_tag(regex_t* reg,
+                            const UChar* tag, const UChar* tag_end)
 {
   int r;
   RegexExt* ext;
@@ -6702,13 +6702,13 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
 
     is_not_single = PPEEK_IS(cterm) ?  0 : 1;
     p = save;
-    r = get_callout_name_id_from_name(enc, is_not_single, name_start, name_end,
-                                      &name_id);
+    r = get_callout_name_id_by_name(enc, is_not_single, name_start, name_end,
+                                    &name_id);
     if (r != ONIG_NORMAL) return r;
 
-    max_arg_num = get_callout_arg_num_from_name_id(name_id);
+    max_arg_num = get_callout_arg_num_by_name_id(name_id);
     for (i = 0; i < max_arg_num; i++) {
-      types[i] = get_callout_arg_type_from_name_id(name_id, i);
+      types[i] = get_callout_arg_type_by_name_id(name_id, i);
     }
 
     arg_num = parse_callout_args(0, ')', &p, end, types, vals, env);
@@ -6721,18 +6721,18 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     arg_num = 0;
 
     is_not_single = 0;
-    r = get_callout_name_id_from_name(enc, is_not_single, name_start, name_end,
+    r = get_callout_name_id_by_name(enc, is_not_single, name_start, name_end,
                                       &name_id);
     if (r != ONIG_NORMAL) return r;
 
-    max_arg_num = get_callout_arg_num_from_name_id(name_id);
+    max_arg_num = get_callout_arg_num_by_name_id(name_id);
     for (i = 0; i < max_arg_num; i++) {
-      types[i] = get_callout_arg_type_from_name_id(name_id, i);
+      types[i] = get_callout_arg_type_by_name_id(name_id, i);
     }
   }
 
-  in = onig_get_callout_in_from_name_id(name_id);
-  opt_arg_num = get_callout_opt_arg_num_from_name_id(name_id);
+  in = onig_get_callout_in_by_name_id(name_id);
+  opt_arg_num = get_callout_opt_arg_num_by_name_id(name_id);
   if (arg_num > max_arg_num || arg_num < (max_arg_num - opt_arg_num))
     return ONIGERR_INVALID_CALLOUT_ARG;
 
@@ -6769,7 +6769,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   e->of      = ONIG_CALLOUT_OF_NAME;
   e->in      = in;
   e->name_id = name_id;
-  e->type    = onig_get_callout_type_from_name_id(name_id);
+  e->type    = onig_get_callout_type_by_name_id(name_id);
   e->u.arg.num        = max_arg_num;
   e->u.arg.passed_num = arg_num;
   for (i = 0; i < max_arg_num; i++) {
@@ -6777,7 +6777,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     if (i < arg_num)
       e->u.arg.vals[i] = vals[i];
     else
-      e->u.arg.vals[i] = get_callout_opt_default_from_name_id(name_id, i);
+      e->u.arg.vals[i] = get_callout_opt_default_by_name_id(name_id, i);
   }
 
   *np = node;
