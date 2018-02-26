@@ -27,7 +27,47 @@
  * SUCH DAMAGE.
  */
 
-#include "regenc.h"
+#include "regint.h"  /* for USE_CALLOUT */
+
+
+static int inited;
+
+static int
+init(void)
+{
+  if (inited == 0) {
+#ifdef USE_CALLOUT
+
+    int id;
+    OnigType t_int;
+    OnigEncoding enc;
+    char* name;
+
+    enc = ONIG_ENCODING_UTF16_LE;
+    t_int = ONIG_TYPE_INT;
+
+    name = "F\000A\000I\000L\000\000\000";                BC0_P(name, fail);
+    name = "S\000U\000C\000C\000E\000S\000S\000\000\000"; BC0_P(name, success);
+    name = "A\000B\000O\000R\000T\000\000\000";           BC0_P(name, abort);
+    name = "E\000R\000R\000O\000R\000\000\000";           BC1_P(name, error, &t_int);
+    name = "C\000O\000U\000N\000T\000\000\000";           BC0_P(name, count);
+    name = "F\000A\000I\000L\000_\000C\000O\000U\000N\000T\000\000\000";
+    BC0_R(name, count);
+
+#endif /* USE_CALLOUT */
+
+    inited = 1;
+  }
+
+  return ONIG_NORMAL;
+}
+
+static int
+is_initialized(void)
+{
+  return inited;
+}
+
 
 static const int EncLen_UTF16[] = {
   2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -239,7 +279,7 @@ OnigEncodingType OnigEncodingUTF16_LE = {
   onigenc_utf16_32_get_ctype_code_range,
   utf16le_left_adjust_char_head,
   onigenc_always_false_is_allowed_reverse_match,
-  NULL, /* init */
-  NULL, /* is_initialized */
+  init,
+  is_initialized,
   is_valid_mbc_string
 };
