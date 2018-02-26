@@ -94,6 +94,7 @@ extern int main(int argc, char* argv[])
 
   test("abc(.(*COUNT[x]))*(*FAIL)", "abcdefg");
   test("abc(.(*COUNT[_any_]))*(.(*COUNT[x]))*d", "abcdefg");
+  test("abc(.(*FAIL_COUNT[x]))*f", "abcdefg");
 
   onig_end();
   return 0;

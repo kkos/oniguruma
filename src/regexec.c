@@ -5281,6 +5281,14 @@ onig_initialize_builtin_callouts(void)
   if (id < 0) return id;\
 } while(0)
 
+#define BS0_RETRACTION(name, func)  do {\
+    id = onig_set_callout_of_name(enc, ONIG_CALLOUT_TYPE_SINGLE,\
+                              (UChar* )#name, (UChar* )(#name + strlen(#name)), \
+                              ONIG_CALLOUT_IN_RETRACTION,\
+                              onig_builtin_ ## func, 0, 0, 0, 0, 0);\
+  if (id < 0) return id;\
+} while(0)
+
 #define BS1(name, func, ts)  do {\
     id = onig_set_callout_of_name(enc, ONIG_CALLOUT_TYPE_SINGLE,\
                               (UChar* )#name, (UChar* )(#name + strlen(#name)), \
@@ -5301,6 +5309,7 @@ onig_initialize_builtin_callouts(void)
   BS0(ABORT,   abort);
   BS1(ERROR, error, &t_int);
   BS0(COUNT,   count);
+  BS0_RETRACTION(FAIL_COUNT, count);
 
   return ONIG_NORMAL;
 #endif /* USE_CALLOUT */
