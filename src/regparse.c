@@ -1643,7 +1643,7 @@ set_callout_callout_list_values(RegexExt* ext)
 }
 
 extern int
-onig_callout_tag_is_exist_at_num(regex_t* reg, int callout_num)
+onig_callout_tag_is_exist_at_callout_num(regex_t* reg, int callout_num)
 {
   RegexExt* ext = REG_EXTP(reg);
 
