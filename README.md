@@ -49,7 +49,7 @@ New feature of version 6.8.0
 * Retry-limit-in-match function enabled by default
 * NEW: configure option --enable-posix-api=no  (* enabled by default)
 
-(* Callout functions are exprimental level and undocumented now)
+(* Callout functions are experimental level and undocumented now)
 
 
 New feature of version 6.7.1
