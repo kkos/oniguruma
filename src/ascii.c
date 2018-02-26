@@ -40,16 +40,17 @@ init(void)
     int id;
     OnigType t_int;
     OnigEncoding enc;
+    char* name;
 
     enc = ONIG_ENCODING_ASCII;
     t_int = ONIG_TYPE_INT;
 
-    BC0_P(FAIL,        4, fail);
-    BC0_P(SUCCESS,     7, success);
-    BC0_P(ABORT,       5, abort);
-    BC1_P(ERROR,       5, error, &t_int);
-    BC0_P(COUNT,       5, count);
-    BC0_R(FAIL_COUNT, 10, count);
+    name = "FAIL";        BC0_P(name,     4, fail);
+    name = "SUCCESS";     BC0_P(name,     7, success);
+    name = "ABORT";       BC0_P(name,     5, abort);
+    name = "ERROR";       BC1_P(name,     5, error, &t_int);
+    name = "COUNT";       BC0_P(name,     5, count);
+    name = "FAIL_COUNT";  BC0_R(name, 10, count);
 #endif /* USE_CALLOUT */
 
     inited = 1;
