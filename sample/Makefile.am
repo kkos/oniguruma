@@ -6,7 +6,7 @@ LDADD  = $(lib_onig)
 AM_LDFLAGS  = -L$(prefix)/lib
 AM_CPPFLAGS = -I$(top_srcdir)/src -I$(includedir)
 
-TESTS = encode listcap names posix simple sql syntax user_property callout bug_fix
+TESTS = encode listcap names posix simple sql syntax user_property callout count bug_fix
 
 check_PROGRAMS = $(TESTS)
 
@@ -19,6 +19,7 @@ sql_SOURCES     = sql.c
 syntax_SOURCES  = syntax.c
 user_property_SOURCES = user_property.c
 callout_SOURCES = callout.c
+count_SOURCES   = count.c
 bug_fix         = bug_fix.c
 
 sampledir = .
@@ -33,4 +34,5 @@ test: $(TESTS)
 	$(sampledir)/syntax
 	$(sampledir)/user_property
 	$(sampledir)/callout
+	$(sampledir)/count
 	$(sampledir)/bug_fix
