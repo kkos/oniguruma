@@ -5273,30 +5273,6 @@ onig_initialize_builtin_callouts(void)
   return ONIG_NO_SUPPORT_CONFIG;
 #else
 
-#define BS0(name, func)  do {\
-    id = onig_set_callout_of_name(enc, ONIG_CALLOUT_TYPE_SINGLE,\
-                              (UChar* )#name, (UChar* )(#name + strlen(#name)), \
-                              ONIG_CALLOUT_IN_PROGRESS,\
-                              onig_builtin_ ## func, 0, 0, 0, 0, 0);\
-  if (id < 0) return id;\
-} while(0)
-
-#define BS0_RETRACTION(name, func)  do {\
-    id = onig_set_callout_of_name(enc, ONIG_CALLOUT_TYPE_SINGLE,\
-                              (UChar* )#name, (UChar* )(#name + strlen(#name)), \
-                              ONIG_CALLOUT_IN_RETRACTION,\
-                              onig_builtin_ ## func, 0, 0, 0, 0, 0);\
-  if (id < 0) return id;\
-} while(0)
-
-#define BS1(name, func, ts)  do {\
-    id = onig_set_callout_of_name(enc, ONIG_CALLOUT_TYPE_SINGLE,\
-                              (UChar* )#name, (UChar* )(#name + strlen(#name)), \
-                              ONIG_CALLOUT_IN_PROGRESS,\
-                              onig_builtin_ ## func, 0, 1, (ts), 0, 0);\
-  if (id < 0) return id;\
-} while(0)
-
   int id;
   OnigType t_int;
   OnigEncoding enc;
@@ -5304,12 +5280,12 @@ onig_initialize_builtin_callouts(void)
   enc = ONIG_ENCODING_ASCII;
   t_int = ONIG_TYPE_INT;
 
-  BS0(FAIL,    fail);
-  BS0(SUCCESS, success);
-  BS0(ABORT,   abort);
-  BS1(ERROR, error, &t_int);
-  BS0(COUNT,   count);
-  BS0_RETRACTION(FAIL_COUNT, count);
+  BC0_P(FAIL,       fail);
+  BC0_P(SUCCESS,    success);
+  BC0_P(ABORT,      abort);
+  BC1_P(ERROR,      error, &t_int);
+  BC0_P(COUNT,      count);
+  BC0_R(FAIL_COUNT, count);
 
   return ONIG_NORMAL;
 #endif /* USE_CALLOUT */
