@@ -5265,28 +5265,3 @@ onig_builtin_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 }
 
 #endif /* USE_CALLOUT */
-
-extern int
-onig_initialize_builtin_callouts(void)
-{
-#ifndef USE_CALLOUT
-  return ONIG_NO_SUPPORT_CONFIG;
-#else
-
-  int id;
-  OnigType t_int;
-  OnigEncoding enc;
-
-  enc = ONIG_ENCODING_ASCII;
-  t_int = ONIG_TYPE_INT;
-
-  BC0_P(FAIL,       fail);
-  BC0_P(SUCCESS,    success);
-  BC0_P(ABORT,      abort);
-  BC1_P(ERROR,      error, &t_int);
-  BC0_P(COUNT,      count);
-  BC0_R(FAIL_COUNT, count);
-
-  return ONIG_NORMAL;
-#endif /* USE_CALLOUT */
-}

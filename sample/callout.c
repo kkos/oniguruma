@@ -202,12 +202,6 @@ extern int main(int argc, char* argv[])
   r = onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
   if (r != ONIG_NORMAL) return -1;
 
-  r = onig_initialize_builtin_callouts();
-  if (r != ONIG_NORMAL) {
-    fprintf(stderr, "onig_initialize_builtin_callouts(): %d\n", r);
-    return -2;
-  }
-
   name = (UChar* )"foo";
   id = onig_set_callout_of_name(ENC, ONIG_CALLOUT_TYPE_SINGLE,
                                 name, name + strlen((char* )name),

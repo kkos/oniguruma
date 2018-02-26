@@ -86,12 +86,6 @@ extern int main(int argc, char* argv[])
   r = onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
   if (r != ONIG_NORMAL) return -1;
 
-  r = onig_initialize_builtin_callouts();
-  if (r != ONIG_NORMAL) {
-    fprintf(stderr, "onig_initialize_builtin_callouts(): %d\n", r);
-    return -2;
-  }
-
   test("abc(.(*COUNT[x]))*(*FAIL)", "abcdefg");
   test("abc(.(*COUNT[_any_]))*(.(*COUNT[x]))*d", "abcdefg");
   test("abc(.(*FAIL_COUNT[x]))*f", "abcdefg");
