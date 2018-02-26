@@ -985,11 +985,22 @@ int onig_get_callout_data_by_callout_num P_((OnigRegex reg, OnigMatchParam* mp, 
 ONIG_EXTERN
 int onig_set_callout_data_by_callout_num P_((OnigRegex reg, OnigMatchParam* mp, int num, int slot, OnigType type, OnigValue* val));
 
-
 ONIG_EXTERN
 int onig_get_capture_range_in_callout P_((OnigCalloutArgs* args, int mem_num, int* begin, int* end));
 ONIG_EXTERN
 int onig_get_used_stack_size_in_callout P_((OnigCalloutArgs* args, int* used_num, int* used_bytes));
+
+/* builtin callout functions */
+ONIG_EXTERN
+int onig_builtin_fail P_((OnigCalloutArgs* args, void* user_data));
+ONIG_EXTERN
+int onig_builtin_abort P_((OnigCalloutArgs* args, void* user_data));
+ONIG_EXTERN
+int onig_builtin_success P_((OnigCalloutArgs* args, void* user_data));
+ONIG_EXTERN
+int onig_builtin_error P_((OnigCalloutArgs* args, void* user_data));
+ONIG_EXTERN
+int onig_builtin_count P_((OnigCalloutArgs* args, void* user_data));
 
 #ifdef __cplusplus
 }
