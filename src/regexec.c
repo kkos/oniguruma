@@ -1211,17 +1211,14 @@ onig_initialize_match_param(regex_t* reg, OnigMatchParam* mp)
   (((num) - 1) * ONIG_CALLOUT_DATA_SLOT_NUM + (slot))
 
 extern int
-onig_get_callout_data_by_tag(regex_t* reg, OnigMatchParam* mp,
-			     const UChar* tag, const UChar* tag_end, int slot,
-			     OnigType* type, OnigValue* val)
+onig_get_callout_data_by_callout_num(regex_t* reg, OnigMatchParam* mp,
+                                     int num, int slot,
+                                     OnigType* type, OnigValue* val)
 {
-  int num;
   int i;
   CalloutData* d;
 
-  num = onig_get_callout_num_by_tag(reg, tag, tag_end);
-  if (num < 0) return num;
-  if (num == 0) return ONIGERR_INVALID_CALLOUT_TAG_NAME;
+  if (num <= 0) return ONIGERR_INVALID_ARGUMENT;
 
   i = CALLOUT_DATA_INDEX(num, slot);
   d = mp->callout_data + i;
@@ -1231,17 +1228,30 @@ onig_get_callout_data_by_tag(regex_t* reg, OnigMatchParam* mp,
 }
 
 extern int
-onig_set_callout_data_by_tag(regex_t* reg, OnigMatchParam* mp,
-			     const UChar* tag, const UChar* tag_end, int slot,
-			     OnigType type, OnigValue* val)
+onig_get_callout_data_by_tag(regex_t* reg, OnigMatchParam* mp,
+                             const UChar* tag, const UChar* tag_end, int slot,
+                             OnigType* type, OnigValue* val)
 {
+  int r;
   int num;
-  int i;
-  CalloutData* d;
 
   num = onig_get_callout_num_by_tag(reg, tag, tag_end);
   if (num < 0) return num;
   if (num == 0) return ONIGERR_INVALID_CALLOUT_TAG_NAME;
+
+  r = onig_get_callout_data_by_callout_num(reg, mp, num, slot, type, val);
+  return r;
+}
+
+extern int
+onig_set_callout_data_by_callout_num(regex_t* reg, OnigMatchParam* mp,
+                                     int num, int slot,
+                                     OnigType type, OnigValue* val)
+{
+  int i;
+  CalloutData* d;
+
+  if (num <= 0) return ONIGERR_INVALID_ARGUMENT;
 
   i = CALLOUT_DATA_INDEX(num, slot);
   d = mp->callout_data + i;
@@ -1249,6 +1259,22 @@ onig_set_callout_data_by_tag(regex_t* reg, OnigMatchParam* mp,
   d->v = *val;
 
   return ONIG_NORMAL;
+}
+
+extern int
+onig_set_callout_data_by_tag(regex_t* reg, OnigMatchParam* mp,
+                             const UChar* tag, const UChar* tag_end, int slot,
+                             OnigType type, OnigValue* val)
+{
+  int r;
+  int num;
+
+  num = onig_get_callout_num_by_tag(reg, tag, tag_end);
+  if (num < 0) return num;
+  if (num == 0) return ONIGERR_INVALID_CALLOUT_TAG_NAME;
+
+  r = onig_set_callout_data_by_callout_num(reg, mp, num, slot, type, val);
+  return r;
 }
 
 #endif
