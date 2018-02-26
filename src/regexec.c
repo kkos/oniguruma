@@ -5249,7 +5249,13 @@ onig_builtin_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
                                            &type, &val);
   if (r != ONIG_NORMAL) return r;
 
-  val.i++;
+  /* initial state */
+  if (type == ONIG_TYPE_VOID) {
+    type  = ONIG_TYPE_LONG;
+    val.l = 0;
+  }
+
+  val.l++;
 
   r = onig_set_callout_data_by_callout_num(args->regex, args->msa->mp, num, slot,
                                            type, &val);
