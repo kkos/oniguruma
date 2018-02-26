@@ -1196,9 +1196,10 @@ onig_initialize_match_param(regex_t* reg, OnigMatchParam* mp)
     RegexExt* ext = REG_EXTP(reg);
     if (ext->callout_num > 0) {
       CalloutData* d;
-      int n = ONIG_CALLOUT_DATA_SLOT_NUM * ext->callout_num;
-      d = (CalloutData* )xmalloc(sizeof(*d) * n);
+      size_t n = ONIG_CALLOUT_DATA_SLOT_NUM * ext->callout_num * sizeof(*d);
+      d = (CalloutData* )xmalloc(n);
       CHECK_NULL_RETURN_MEMERR(d);
+      xmemset(d, 0, n);
       mp->callout_data = d;
     }
   }
