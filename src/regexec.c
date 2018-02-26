@@ -869,6 +869,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   args.right_range   = right_range;\
   args.current       = s;\
   args.retry_in_match_counter = retry_in_match_counter;\
+  args.msa           = msa;\
   args.stk_base      = stk_base;\
   args.stk           = stk;\
   args.mem_start_stk = mem_start_stk;\
@@ -999,6 +1000,7 @@ struct OnigCalloutArgsStruct {
   unsigned long    retry_in_match_counter;
 
   /* invisible to users */
+  MatchArg*   msa;
   StackType*  stk_base;
   StackType*  stk;
   StackIndex* mem_start_stk;
