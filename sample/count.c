@@ -45,7 +45,7 @@ test(char* in_pattern, char* in_str)
     OnigValue val;
     char* tag;
 
-    fprintf(stderr, "match at %d\n", r);
+    fprintf(stdout, "match at %d\n", r);
 
   show_count:
     tag = "x";
@@ -56,7 +56,7 @@ test(char* in_pattern, char* in_str)
     fprintf(stdout, "count: %ld\n", val.l);
   }
   else if (r == ONIG_MISMATCH) {
-    fprintf(stderr, "search fail\n");
+    fprintf(stdout, "search fail\n");
     goto show_count;
   }
   else { /* error */
