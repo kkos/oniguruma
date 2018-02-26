@@ -59,7 +59,7 @@ test(OnigEncoding enc, char* in_pattern, char* in_str)
     }
 
     slot = 0;
-    r = onig_get_callout_data_by_tag(reg, mp, tag, tag + tag_len, slot, 0, &val);
+    r = onig_get_callout_data_by_tag(reg, mp, (UChar* )tag, (UChar* )tag + tag_len, slot, 0, &val);
     if (r != ONIG_NORMAL) goto err;
 
     fprintf(stdout, "COUNT[x]: %ld\n", val.l);
