@@ -6,10 +6,10 @@
 #include <string.h>
 #include "oniguruma.h"
 
-OnigEncoding ENC = ONIG_ENCODING_UTF8;
+#define ulen(enc, p) onigenc_str_bytelen_null(enc, (UChar* )p)
 
 static int
-test(char* in_pattern, char* in_str)
+test(OnigEncoding enc, char* in_pattern, char* in_str)
 {
   int r;
   unsigned char *start, *range, *end;
@@ -23,8 +23,8 @@ test(char* in_pattern, char* in_str)
   pattern = (UChar* )in_pattern;
   str = (UChar* )in_str;
 
-  r = onig_new(&reg, pattern, pattern + strlen((char* )pattern),
-	ONIG_OPTION_DEFAULT, ENC, ONIG_SYNTAX_DEFAULT, &einfo);
+  r = onig_new(&reg, pattern, pattern + ulen(enc, pattern),
+	ONIG_OPTION_DEFAULT, enc, ONIG_SYNTAX_DEFAULT, &einfo);
   if (r != ONIG_NORMAL) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
     onig_error_code_to_str((UChar* )s, r, &einfo);
@@ -35,7 +35,7 @@ test(char* in_pattern, char* in_str)
   region = onig_region_new();
   mp     = onig_new_match_param(reg);
 
-  end   = str + strlen((char* )str);
+  end   = str + ulen(enc, str);
   start = str;
   range = end;
   r = onig_search_with_param(reg, str, end, start, range, region,
@@ -44,13 +44,22 @@ test(char* in_pattern, char* in_str)
     int slot;
     OnigValue val;
     char* tag;
+    int tag_len;
 
     fprintf(stdout, "match at %d\n", r);
 
   show_count:
-    tag = "x";
+    if (enc == ONIG_ENCODING_UTF16_BE) {
+      tag = "\000x";
+      tag_len = 2;
+    }
+    else {
+      tag = "x";
+      tag_len = 1;
+    }
+
     slot = 0;
-    r = onig_get_callout_data_by_tag(reg, mp, tag, tag + strlen(tag), slot, 0, &val);
+    r = onig_get_callout_data_by_tag(reg, mp, tag, tag + tag_len, slot, 0, &val);
     if (r != ONIG_NORMAL) goto err;
 
     fprintf(stdout, "COUNT[x]: %ld\n", val.l);
@@ -77,18 +86,24 @@ extern int main(int argc, char* argv[])
   int r;
   int id;
   UChar* name;
-  OnigEncoding use_encs[1];
+  OnigEncoding encs[2];
   OnigType arg_types[4];
   OnigValue opt_defaults[4];
 
-  use_encs[0] = ENC;
+  encs[0] = ONIG_ENCODING_UTF8;
+  encs[1] = ONIG_ENCODING_UTF16_BE;
 
-  r = onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
-  if (r != ONIG_NORMAL) return -1;
+  r = onig_initialize(encs, sizeof(encs)/sizeof(encs[0]));
+  if (r != ONIG_NORMAL) {
+    fprintf(stderr, "FAIL: onig_initialize(): %d\n", r);
+    return -1;
+  }
 
-  test("abc(.(*COUNT[x]))*(*FAIL)", "abcdefg");
-  test("abc(.(*COUNT[_any_]))*(.(*COUNT[x]))*d", "abcdefg");
-  test("abc(.(*FAIL_COUNT[x]))*f", "abcdefg");
+  test(encs[0], "abc(.(*COUNT[x]))*(*FAIL)", "abcdefg");
+  test(encs[0], "abc(.(*COUNT[_any_]))*(.(*COUNT[x]))*d", "abcdefg");
+  test(encs[0], "abc(.(*FAIL_COUNT[x]))*f", "abcdefg");
+
+  test(encs[1], "\000a\000b\000c\000(\000.\000(\000*\000C\000O\000U\000N\000T\000[\000x\000]\000)\000)\000*\000(\000*\000F\000A\000I\000L\000)\000\000", "\000a\000b\000c\000d\000e\000f\000g\000\000");
 
   onig_end();
   return 0;
