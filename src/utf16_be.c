@@ -46,13 +46,12 @@ init(void)
     enc = ONIG_ENCODING_UTF16_BE;
     t_int = ONIG_TYPE_INT;
 
-    name = "\000F\000A\000I\000L";                BC0_P(name,   8,  fail);
-    name = "\000S\000U\000C\000C\000E\000S\000S"; BC0_P(name,  14,  success);
-    name = "\000A\000B\000O\000R\000T";           BC0_P(name,  10,  abort);
-    name = "\000E\000R\000R\000O\000R";           BC1_P(name,  10,  error, &t_int);
-    name = "\000C\000O\000U\000N\000T";           BC0_P(name,  10,  count);
-    name = "\000F\000A\000I\000L\000_\000C\000O\000U\000N\000T";
-    BC0_R(name, 20, count);
+    name = "\000F\000A\000I\000L";                BC0_P(name,  fail);
+    name = "\000S\000U\000C\000C\000E\000S\000S"; BC0_P(name,  success);
+    name = "\000A\000B\000O\000R\000T";           BC0_P(name,  abort);
+    name = "\000E\000R\000R\000O\000R";           BC1_P(name,  error, &t_int);
+    name = "\000C\000O\000U\000N\000T";           BC0_P(name,  count);
+    name = "\000F\000A\000I\000L\000_\000C\000O\000U\000N\000T"; BC0_R(name, count);
 
 #endif /* USE_CALLOUT */
 
