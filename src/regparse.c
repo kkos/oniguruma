@@ -1620,7 +1620,7 @@ onig_global_callout_names_free(void)
 
 
 typedef st_table   CalloutTagTable;
-typedef int        CalloutTagVal;
+typedef intptr_t   CalloutTagVal;
 
 #define CALLOUT_TAG_LIST_FLAG_TAG_EXIST     (1<<0)
 
