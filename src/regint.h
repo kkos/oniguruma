@@ -827,7 +827,36 @@ extern int             onig_callout_tag_table_free(void* table);
 extern void            onig_free_reg_callout_list(int n, CalloutListEntry* list);
 extern CalloutListEntry* onig_reg_callout_list_at(regex_t* reg, int num);
 
-#endif
+/* for definition of builtin callout */
+#define BC0_P(name, func)  do {\
+  int len = onigenc_str_bytelen_null(enc, (UChar* )name);\
+  id = onig_set_callout_of_name(enc, ONIG_CALLOUT_TYPE_SINGLE,\
+                              (UChar* )(name), (UChar* )((name) + len),\
+                              ONIG_CALLOUT_IN_PROGRESS,\
+                              onig_builtin_ ## func, 0, 0, 0, 0, 0);\
+  if (id < 0) return id;\
+} while(0)
+
+#define BC0_R(name, func)  do {\
+  int len = onigenc_str_bytelen_null(enc, (UChar* )name);\
+  id = onig_set_callout_of_name(enc, ONIG_CALLOUT_TYPE_SINGLE,\
+                              (UChar* )(name), (UChar* )((name) + len),\
+                              ONIG_CALLOUT_IN_RETRACTION,\
+                              onig_builtin_ ## func, 0, 0, 0, 0, 0);\
+  if (id < 0) return id;\
+} while(0)
+
+#define BC1_P(name, func, ts)  do {\
+  int len = onigenc_str_bytelen_null(enc, (UChar* )name);\
+  id = onig_set_callout_of_name(enc, ONIG_CALLOUT_TYPE_SINGLE,\
+                              (UChar* )(name), (UChar* )((name) + len),\
+                              ONIG_CALLOUT_IN_PROGRESS,\
+                              onig_builtin_ ## func, 0, 1, (ts), 0, 0);\
+  if (id < 0) return id;\
+} while(0)
+
+#endif /* USE_CALLOUT */
+
 
 /* strend hash */
 typedef void hash_table_type;
