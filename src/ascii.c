@@ -27,7 +27,42 @@
  * SUCH DAMAGE.
  */
 
-#include "regenc.h"
+#include "regint.h"   /* for USE_CALLOUT */
+
+static int inited;
+
+static int
+init(void)
+{
+  if (inited == 0) {
+#ifdef USE_CALLOUT
+
+    int id;
+    OnigType t_int;
+    OnigEncoding enc;
+
+    enc = ONIG_ENCODING_ASCII;
+    t_int = ONIG_TYPE_INT;
+
+    BC0_P(FAIL,       fail);
+    BC0_P(SUCCESS,    success);
+    BC0_P(ABORT,      abort);
+    BC1_P(ERROR,      error, &t_int);
+    BC0_P(COUNT,      count);
+    BC0_R(FAIL_COUNT, count);
+#endif /* USE_CALLOUT */
+
+    inited = 1;
+  }
+
+  return ONIG_NORMAL;
+}
+
+static int
+is_initialized(void)
+{
+  return inited;
+}
 
 static int
 ascii_is_code_ctype(OnigCodePoint code, unsigned int ctype)
@@ -55,7 +90,7 @@ OnigEncodingType OnigEncodingASCII = {
   onigenc_not_support_get_ctype_code_range,
   onigenc_single_byte_left_adjust_char_head,
   onigenc_always_true_is_allowed_reverse_match,
-  NULL, /* init */
-  NULL, /* is_initialized */
+  init,
+  is_initialized,
   onigenc_always_true_is_valid_mbc_string
 };

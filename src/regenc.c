@@ -40,8 +40,18 @@ onigenc_init(void)
 extern int
 onig_initialize_encoding(OnigEncoding enc)
 {
+  int r;
+
+  if (ONIGENC_IS_ASCII_COMPATIBLE_ENCODING(enc)) {
+    if (ONIG_ENCODING_ASCII->init != 0 &&
+        ONIG_ENCODING_ASCII->is_initialized() == 0) {
+      r = ONIG_ENCODING_ASCII->init();
+      if (r != ONIG_NORMAL) return r;
+    }
+  }
+
   if (enc->init != 0 && (enc->is_initialized() == 0)) {
-    int r = (enc->init)();
+    r = (enc->init)();
     return r;
   }
 
