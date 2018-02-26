@@ -44,12 +44,12 @@ init(void)
     enc = ONIG_ENCODING_ASCII;
     t_int = ONIG_TYPE_INT;
 
-    BC0_P(FAIL,       fail);
-    BC0_P(SUCCESS,    success);
-    BC0_P(ABORT,      abort);
-    BC1_P(ERROR,      error, &t_int);
-    BC0_P(COUNT,      count);
-    BC0_R(FAIL_COUNT, count);
+    BC0_P(FAIL,        4, fail);
+    BC0_P(SUCCESS,     7, success);
+    BC0_P(ABORT,       5, abort);
+    BC1_P(ERROR,       5, error, &t_int);
+    BC0_P(COUNT,       5, count);
+    BC0_R(FAIL_COUNT, 10, count);
 #endif /* USE_CALLOUT */
 
     inited = 1;
