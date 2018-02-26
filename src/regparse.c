@@ -1433,16 +1433,19 @@ callout_name_entry(CalloutNameEntry** rentry, OnigEncoding enc,
   return e->id;
 }
 
-extern int
-is_allowed_callout_name(UChar* name, UChar* name_end)
+static int
+is_allowed_callout_name(OnigEncoding enc, UChar* name, UChar* name_end)
 {
-  UChar* p = name;
+  UChar* p;
+  OnigCodePoint c;
 
+  p = name;
   while (p < name_end) {
-    OnigCodePoint c = (OnigCodePoint )*p;
+    c = ONIGENC_MBC_TO_CODE(enc, p, name_end);
     if (! IS_ALLOWED_CODE_IN_CALLOUT_NAME(c))
       return 0;
-    p++;
+
+    p += ONIGENC_MBC_ENC_LEN(enc, p);
   }
 
   return 1;
@@ -1481,7 +1484,7 @@ onig_set_callout_of_name(OnigEncoding enc, OnigCalloutType callout_type,
       return ONIGERR_INVALID_CALLOUT_ARG;
   }
 
-  if (! is_allowed_callout_name(name, name_end)) {
+  if (! is_allowed_callout_name(enc, name, name_end)) {
     return ONIGERR_INVALID_CALLOUT_NAME;
   }
 
@@ -1538,7 +1541,7 @@ get_callout_name_id_by_name(OnigEncoding enc, int is_not_single,
   int r;
   CalloutNameEntry* e;
 
-  if (! is_allowed_callout_name(name, name_end)) {
+  if (! is_allowed_callout_name(enc, name, name_end)) {
     return ONIGERR_INVALID_CALLOUT_NAME;
   }
 
