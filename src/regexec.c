@@ -5233,6 +5233,30 @@ onig_builtin_error(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   return n;
 }
 
+extern int
+onig_builtin_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
+{
+  int r;
+  int num;
+  int slot;
+  OnigType  type;
+  OnigValue val;
+
+  num = args->num;
+  slot = 0;
+  r = onig_get_callout_data_by_callout_num(args->regex, args->msa->mp, num, slot,
+                                           &type, &val);
+  if (r != ONIG_NORMAL) return r;
+
+  val.i++;
+
+  r = onig_set_callout_data_by_callout_num(args->regex, args->msa->mp, num, slot,
+                                           type, &val);
+  if (r != ONIG_NORMAL) return r;
+
+  return ONIG_CALLOUT_SUCCESS;
+}
+
 #endif /* USE_CALLOUT */
 
 extern int
@@ -5245,7 +5269,7 @@ onig_initialize_builtin_callouts(void)
 #define BS0(name, func)  do {\
     id = onig_set_callout_of_name(enc, ONIG_CALLOUT_TYPE_SINGLE,\
                               (UChar* )#name, (UChar* )(#name + strlen(#name)), \
-                              ONIG_CALLOUT_IN_BOTH,\
+                              ONIG_CALLOUT_IN_PROGRESS,\
                               onig_builtin_ ## func, 0, 0, 0, 0, 0);\
   if (id < 0) return id;\
 } while(0)
@@ -5268,8 +5292,8 @@ onig_initialize_builtin_callouts(void)
   BS0(FAIL,    fail);
   BS0(SUCCESS, success);
   BS0(ABORT,   abort);
-
   BS1(ERROR, error, &t_int);
+  BS0(COUNT,   count);
 
   return ONIG_NORMAL;
 #endif /* USE_CALLOUT */
