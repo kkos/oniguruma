@@ -53,7 +53,7 @@ test(char* in_pattern, char* in_str)
     r = onig_get_callout_data_by_tag(reg, mp, tag, tag + strlen(tag), slot, 0, &val);
     if (r != ONIG_NORMAL) goto err;
 
-    fprintf(stdout, "count: %ld\n", val.l);
+    fprintf(stdout, "COUNT[x]: %ld\n", val.l);
   }
   else if (r == ONIG_MISMATCH) {
     fprintf(stdout, "search fail\n");
@@ -93,7 +93,7 @@ extern int main(int argc, char* argv[])
   }
 
   test("abc(.(*COUNT[x]))*(*FAIL)", "abcdefg");
-  test("abc(.(*COUNT[_]))*(.(*COUNT[x]))*d", "abcdefg");
+  test("abc(.(*COUNT[_any_]))*(.(*COUNT[x]))*d", "abcdefg");
 
   onig_end();
   return 0;
