@@ -1204,6 +1204,7 @@ callout_func_list_add(CalloutNameListType* s, int* rid)
 
   *rid = s->n;
 
+  xmemset(&(s->v[s->n]), 0, sizeof(*(s->v)));
   s->n++;
   return ONIG_NORMAL;
 }
