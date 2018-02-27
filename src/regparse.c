@@ -1260,6 +1260,7 @@ global_callout_name_table_free(void)
 
     onig_st_free_table(GlobalCalloutNameTable);
     GlobalCalloutNameTable = 0;
+    CalloutNameIDCounter = 0;
   }
 
   return 0;
@@ -1326,6 +1327,7 @@ global_callout_name_table_free(void)
 
     xfree(GlobalCalloutNameTable);
     GlobalCalloutNameTable = 0;
+    CalloutNameIDCounter = 0;
   }
   return 0;
 }
