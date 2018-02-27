@@ -106,6 +106,7 @@ extern int main(int argc, char* argv[])
   test(encs[0], mp, "abc(.(*COUNT[x]))*(*FAIL)", "abcdefg");
   test(encs[0], mp, "abc(.(*COUNT[_any_]))*(.(*COUNT[x]))*d", "abcdefg");
   test(encs[0], mp, "abc(.(*FAIL_COUNT[x]))*f", "abcdefg");
+  test(encs[0], mp, "a(.(*COUNT[x]))*z", "abcd\nabcdz");
 
   test(encs[1], mp, "\000a\000b\000c\000(\000.\000(\000*\000C\000O\000U\000N\000T\000[\000x\000]\000)\000)\000*\000(\000*\000F\000A\000I\000L\000)\000\000", "\000a\000b\000c\000d\000e\000f\000g\000\000");
 
