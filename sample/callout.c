@@ -232,7 +232,6 @@ extern int main(int argc, char* argv[])
   (void)onig_set_callout_of_contents(progress_callout_func);
   (void)onig_set_retraction_callout_of_contents(retraction_callout_func);
 
-
   // callout of code
   test("a+(?{foo bar baz...}+)$", "aaab");
   test("(?{{!{}#$%&'()=-~^|[_]`@*:+;<>?/.\\,}})c", "abc");
@@ -250,6 +249,10 @@ extern int main(int argc, char* argv[])
   test("abc(d|(*ERROR(-999)))", "abc");
   test("ab(*bar(372,I am a bar's argument,あ))c(*FAIL)", "abc");
   test("ab(*bar(1234567890))", "abc");
+  test("(?:a(*ONLY(2))|b)*", "abbabbabbabb");
+  test("(?:(*ONLY(2))a|b)*", "abbabbabbabb");
+  test("(?:(*ONLY)a|b)*", "bbbbbabbbbbabbbbb");
+  test("(?:(*ONLY(3))a|(*ONLY(4))b)*", "bbbaabbab");
 
   onig_end();
   return 0;
