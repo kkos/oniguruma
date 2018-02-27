@@ -41,8 +41,11 @@
 
 #ifdef USE_CALLOUT
 typedef struct {
-  OnigType  t;
-  OnigValue v;
+  int last_match_at_call_counter;
+  struct {
+    OnigType  type;
+    OnigValue val;
+  } slot[ONIG_CALLOUT_DATA_SLOT_NUM];
 } CalloutData;
 #endif
 
@@ -1196,20 +1199,6 @@ onig_initialize_match_param(OnigMatchParam* mp)
   mp->callout_user_data      = 0;
   mp->callout_data           = 0;
   mp->callout_data_alloc_num = 0;
-#if 0
-  if (IS_NOT_NULL(REG_EXTP(reg))) {
-    RegexExt* ext = REG_EXTP(reg);
-    if (ext->callout_num > 0) {
-      CalloutData* d;
-      size_t n = ONIG_CALLOUT_DATA_SLOT_NUM * ext->callout_num * sizeof(*d);
-      d = (CalloutData* )xmalloc(n);
-      CHECK_NULL_RETURN_MEMERR(d);
-      xmemset(d, 0, n);
-      mp->callout_data = d;
-      mp->callout_data_alloc_num = ext->callout_num;
-    }
-  }
-#endif
 #endif
 
   return ONIG_NORMAL;
@@ -1228,7 +1217,7 @@ adjust_match_param(regex_t* reg, OnigMatchParam* mp)
 
   if (ext->callout_num > mp->callout_data_alloc_num) {
     CalloutData* d;
-    size_t n = ONIG_CALLOUT_DATA_SLOT_NUM * ext->callout_num * sizeof(*d);
+    size_t n = ext->callout_num * sizeof(*d);
     if (IS_NOT_NULL(mp->callout_data))
       d = (CalloutData* )xrealloc(mp->callout_data, n);
     else
@@ -1239,9 +1228,7 @@ adjust_match_param(regex_t* reg, OnigMatchParam* mp)
     mp->callout_data_alloc_num = ext->callout_num;
   }
 
-  xmemset(mp->callout_data, 0,
-          mp->callout_data_alloc_num
-          * ONIG_CALLOUT_DATA_SLOT_NUM * sizeof(CalloutData));
+  xmemset(mp->callout_data, 0, mp->callout_data_alloc_num * sizeof(CalloutData));
   return ONIG_NORMAL;
 }
 
@@ -1249,23 +1236,18 @@ adjust_match_param(regex_t* reg, OnigMatchParam* mp)
   r = adjust_match_param(reg, mp);\
   if (r != ONIG_NORMAL) return r;
 
-#define CALLOUT_DATA_INDEX(num, slot) \
-  (((num) - 1) * ONIG_CALLOUT_DATA_SLOT_NUM + (slot))
-
 extern int
 onig_get_callout_data_by_callout_num(regex_t* reg, OnigMatchParam* mp,
                                      int num, int slot,
                                      OnigType* type, OnigValue* val)
 {
-  int i;
   CalloutData* d;
 
   if (num <= 0) return ONIGERR_INVALID_ARGUMENT;
 
-  i = CALLOUT_DATA_INDEX(num, slot);
-  d = mp->callout_data + i;
-  if (IS_NOT_NULL(type)) *type = d->t;
-  if (IS_NOT_NULL(val))  *val  = d->v;
+  d = mp->callout_data + (num - 1);
+  if (IS_NOT_NULL(type)) *type = d->slot[slot].type;
+  if (IS_NOT_NULL(val))  *val  = d->slot[slot].val;
   return ONIG_NORMAL;
 }
 
@@ -1290,15 +1272,13 @@ onig_set_callout_data_by_callout_num(regex_t* reg, OnigMatchParam* mp,
                                      int num, int slot,
                                      OnigType type, OnigValue* val)
 {
-  int i;
   CalloutData* d;
 
   if (num <= 0) return ONIGERR_INVALID_ARGUMENT;
 
-  i = CALLOUT_DATA_INDEX(num, slot);
-  d = mp->callout_data + i;
-  d->t = type;
-  d->v = *val;
+  d = mp->callout_data + (num - 1);
+  d->slot[slot].type = type;
+  d->slot[slot].val  = *val;
 
   return ONIG_NORMAL;
 }
