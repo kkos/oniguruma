@@ -1218,9 +1218,9 @@ onig_initialize_match_param(OnigMatchParam* mp)
 static int
 adjust_match_param(regex_t* reg, OnigMatchParam* mp)
 {
-  if (IS_NULL(REG_EXTP(reg))) return ONIG_NORMAL;
-
   RegexExt* ext = REG_EXTP(reg);
+  if (IS_NULL(ext) || ext->callout_num == 0) return ONIG_NORMAL;
+
   if (ext->callout_num > mp->callout_data_alloc_num) {
     CalloutData* d;
     size_t n = ONIG_CALLOUT_DATA_SLOT_NUM * ext->callout_num * sizeof(*d);
@@ -1230,13 +1230,13 @@ adjust_match_param(regex_t* reg, OnigMatchParam* mp)
       d = (CalloutData* )xmalloc(n);
     CHECK_NULL_RETURN_MEMERR(d);
 
-    xmemset(d + mp->callout_data_alloc_num, 0,
-            (ext->callout_num - mp->callout_data_alloc_num)
-            * ONIG_CALLOUT_DATA_SLOT_NUM * sizeof(*d));
     mp->callout_data = d;
     mp->callout_data_alloc_num = ext->callout_num;
   }
 
+  xmemset(mp->callout_data, 0,
+          mp->callout_data_alloc_num
+          * ONIG_CALLOUT_DATA_SLOT_NUM * sizeof(CalloutData));
   return ONIG_NORMAL;
 }
 
