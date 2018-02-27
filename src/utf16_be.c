@@ -39,12 +39,15 @@ init(void)
 #ifdef USE_CALLOUT
 
     int id;
-    OnigType t_int;
     OnigEncoding enc;
     char* name;
+    OnigType t_int;
+    OnigType t_long;
+    OnigValue opts[4];
 
     enc = ONIG_ENCODING_UTF16_BE;
-    t_int = ONIG_TYPE_INT;
+    t_int  = ONIG_TYPE_INT;
+    t_long = ONIG_TYPE_LONG;
 
     name = "\000F\000A\000I\000L\000\000";                BC0_P(name, fail);
     name = "\000S\000U\000C\000C\000E\000S\000S\000\000"; BC0_P(name, success);
@@ -53,6 +56,9 @@ init(void)
     name = "\000C\000O\000U\000N\000T\000\000";           BC0_P(name, count);
     name = "\000F\000A\000I\000L\000_\000C\000O\000U\000N\000T\000\000";
     BC0_R(name, count);
+
+    name = "\000O\000N\000L\000Y"; opts[0].l = 1L;
+    BC1_B_O(name, only, &t_long, opts);
 
 #endif /* USE_CALLOUT */
 
