@@ -50,16 +50,19 @@ test(OnigEncoding enc, char* in_pattern, char* in_str)
 
   show_count:
     if (enc == ONIG_ENCODING_UTF16_BE) {
-      tag = "\000x";
-      tag_len = 2;
+      tag = "\000x\000\000";
+    }
+    else if (enc == ONIG_ENCODING_UTF16_LE) {
+      tag = "x\000\000\000";
     }
     else {
       tag = "x";
-      tag_len = 1;
     }
+    tag_len = ulen(enc, tag);
 
     slot = 0;
-    r = onig_get_callout_data_by_tag(reg, mp, (UChar* )tag, (UChar* )tag + tag_len, slot, 0, &val);
+    r = onig_get_callout_data_by_tag(reg, mp, (UChar* )tag, (UChar* )tag + tag_len,
+                                     slot, 0, &val);
     if (r != ONIG_NORMAL) goto err;
 
     fprintf(stdout, "COUNT[x]: %ld\n", val.l);
@@ -86,12 +89,13 @@ extern int main(int argc, char* argv[])
   int r;
   int id;
   UChar* name;
-  OnigEncoding encs[2];
+  OnigEncoding encs[3];
   OnigType arg_types[4];
   OnigValue opt_defaults[4];
 
   encs[0] = ONIG_ENCODING_UTF8;
   encs[1] = ONIG_ENCODING_UTF16_BE;
+  encs[2] = ONIG_ENCODING_UTF16_LE;
 
   r = onig_initialize(encs, sizeof(encs)/sizeof(encs[0]));
   if (r != ONIG_NORMAL) {
@@ -104,6 +108,8 @@ extern int main(int argc, char* argv[])
   test(encs[0], "abc(.(*FAIL_COUNT[x]))*f", "abcdefg");
 
   test(encs[1], "\000a\000b\000c\000(\000.\000(\000*\000C\000O\000U\000N\000T\000[\000x\000]\000)\000)\000*\000(\000*\000F\000A\000I\000L\000)\000\000", "\000a\000b\000c\000d\000e\000f\000g\000\000");
+
+  test(encs[2], "a\000b\000c\000(\000.\000(\000*\000C\000O\000U\000N\000T\000[\000x\000]\000)\000)\000*\000(\000*\000F\000A\000I\000L\000)\000\000\000", "a\000b\000c\000d\000e\000f\000g\000\000\000");
 
   onig_end();
   return 0;
