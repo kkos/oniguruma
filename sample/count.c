@@ -9,14 +9,13 @@
 #define ulen(enc, p) onigenc_str_bytelen_null(enc, (UChar* )p)
 
 static int
-test(OnigEncoding enc, char* in_pattern, char* in_str)
+test(OnigEncoding enc, OnigMatchParam* mp, char* in_pattern, char* in_str)
 {
   int r;
   unsigned char *start, *range, *end;
   regex_t* reg;
   OnigErrorInfo einfo;
   OnigRegion *region;
-  OnigMatchParam* mp;
   UChar* pattern;
   UChar* str;
 
@@ -33,7 +32,6 @@ test(OnigEncoding enc, char* in_pattern, char* in_str)
   }
 
   region = onig_region_new();
-  mp     = onig_new_match_param();
 
   end   = str + ulen(enc, str);
   start = str;
@@ -78,7 +76,6 @@ test(OnigEncoding enc, char* in_pattern, char* in_str)
     fprintf(stderr, "SEARCH ERROR: %d: %s\n", r, s);
   }
 
-  onig_free_match_param(mp);
   onig_region_free(region, 1 /* 1:free self, 0:free contents only */);
   onig_free(reg);
   return r;
@@ -89,6 +86,7 @@ extern int main(int argc, char* argv[])
   int r;
   int id;
   UChar* name;
+  OnigMatchParam* mp;
   OnigEncoding encs[3];
   OnigType arg_types[4];
   OnigValue opt_defaults[4];
@@ -103,14 +101,17 @@ extern int main(int argc, char* argv[])
     return -1;
   }
 
-  test(encs[0], "abc(.(*COUNT[x]))*(*FAIL)", "abcdefg");
-  test(encs[0], "abc(.(*COUNT[_any_]))*(.(*COUNT[x]))*d", "abcdefg");
-  test(encs[0], "abc(.(*FAIL_COUNT[x]))*f", "abcdefg");
+  mp = onig_new_match_param();
 
-  test(encs[1], "\000a\000b\000c\000(\000.\000(\000*\000C\000O\000U\000N\000T\000[\000x\000]\000)\000)\000*\000(\000*\000F\000A\000I\000L\000)\000\000", "\000a\000b\000c\000d\000e\000f\000g\000\000");
+  test(encs[0], mp, "abc(.(*COUNT[x]))*(*FAIL)", "abcdefg");
+  test(encs[0], mp, "abc(.(*COUNT[_any_]))*(.(*COUNT[x]))*d", "abcdefg");
+  test(encs[0], mp, "abc(.(*FAIL_COUNT[x]))*f", "abcdefg");
 
-  test(encs[2], "a\000b\000c\000(\000.\000(\000*\000C\000O\000U\000N\000T\000[\000x\000]\000)\000)\000*\000(\000*\000F\000A\000I\000L\000)\000\000\000", "a\000b\000c\000d\000e\000f\000g\000\000\000");
+  test(encs[1], mp, "\000a\000b\000c\000(\000.\000(\000*\000C\000O\000U\000N\000T\000[\000x\000]\000)\000)\000*\000(\000*\000F\000A\000I\000L\000)\000\000", "\000a\000b\000c\000d\000e\000f\000g\000\000");
 
+  test(encs[2], mp, "a\000b\000c\000(\000.\000(\000*\000C\000O\000U\000N\000T\000[\000x\000]\000)\000)\000*\000(\000*\000F\000A\000I\000L\000)\000\000\000", "a\000b\000c\000d\000e\000f\000g\000\000\000");
+
+  onig_free_match_param(mp);
   onig_end();
   return 0;
 }
