@@ -52,6 +52,7 @@ struct OnigMatchParamStruct {
   OnigCalloutFunc callout_of_contents;
   OnigCalloutFunc retraction_callout_of_contents;
 #ifdef USE_CALLOUT
+  int             match_at_call_counter;
   void*           callout_user_data;
   CalloutData*    callout_data;
   int             callout_data_alloc_num;
@@ -1191,8 +1192,9 @@ onig_initialize_match_param(OnigMatchParam* mp)
   mp->retraction_callout_of_contents = DefaultRetractionCallout;
 
 #ifdef USE_CALLOUT
-  mp->callout_user_data = 0;
-  mp->callout_data      = 0;
+  mp->match_at_call_counter  = 0;
+  mp->callout_user_data      = 0;
+  mp->callout_data           = 0;
   mp->callout_data_alloc_num = 0;
 #if 0
   if (IS_NOT_NULL(REG_EXTP(reg))) {
@@ -1219,6 +1221,9 @@ static int
 adjust_match_param(regex_t* reg, OnigMatchParam* mp)
 {
   RegexExt* ext = REG_EXTP(reg);
+
+  mp->match_at_call_counter = 0;
+
   if (IS_NULL(ext) || ext->callout_num == 0) return ONIG_NORMAL;
 
   if (ext->callout_num > mp->callout_data_alloc_num) {
@@ -2282,9 +2287,14 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   OnigEncoding encode = reg->enc;
   OnigCaseFoldType case_fold_flag = reg->case_fold_flag;
 
+#ifdef USE_CALLOUT
+  msa->mp->match_at_call_counter++;
+#endif
+
 #ifdef USE_RETRY_LIMIT_IN_MATCH
   retry_limit_in_match = msa->retry_limit_in_match;
 #endif
+
   //n = reg->num_repeat + reg->num_mem * 2;
   pop_level = reg->stack_pop_level;
   num_mem = reg->num_mem;
