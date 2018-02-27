@@ -42,14 +42,14 @@ Supported character encodings:
 New feature of version 6.8.0
 --------------------------
 
-* NEW API: onig_search_with_param(), onig_match_with_param()
-* NEW: Callouts of contents  (?{....}) (?{{....}})
-* NEW: Callouts of name      (*name) (*name\[tag](a,b...))
-* NEW: Builtin callout functions  (*FAIL) (*SUCCESS) (*ABORT) (*ERROR(n)) (*COUNT)
 * Retry-limit-in-match function enabled by default
 * NEW: configure option --enable-posix-api=no  (* enabled by default)
+* NEW API: onig_search_with_param(), onig_match_with_param()
+* NEW: Callouts of contents  (?{....}\[+-]) (?{{....}})
+* NEW: Callouts of name      (*name) (*name\[tag](a,b...))
+* NEW: Builtin callout functions  (*FAIL) (*ERROR(n)) (*COUNT) (*ONLY(n)) etc..
 
-(* Callout functions are experimental level and undocumented now)
+(* Callout functions are experimental level and API isn't fixed definitely yet. Undocumented now)
 
 
 New feature of version 6.7.1
