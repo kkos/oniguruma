@@ -5264,4 +5264,44 @@ onig_builtin_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   return ONIG_CALLOUT_SUCCESS;
 }
 
+extern int
+onig_builtin_only(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
+{
+  int r;
+  int num;
+  int slot;
+  OnigType  type;
+  OnigValue val;
+  OnigValue aval;
+
+  num = args->num;
+  slot = 0;
+  r = onig_get_callout_data_by_callout_num(args->regex, args->msa->mp, num, slot,
+                                           &type, &val);
+  if (r != ONIG_NORMAL) return r;
+
+  /* initial state */
+  if (type == ONIG_TYPE_VOID) {
+    type  = ONIG_TYPE_LONG;
+    val.l = 0;
+  }
+
+  r = onig_get_arg_of_callout_args(args, 0, &type, &aval);
+  if (r != ONIG_NORMAL) return r;
+
+  if (args->in == ONIG_CALLOUT_IN_RETRACTION) {
+    val.l--;
+  }
+  else {
+    if (val.l >= aval.l) return ONIG_CALLOUT_FAIL;
+    val.l++;
+  }
+
+  r = onig_set_callout_data_by_callout_num(args->regex, args->msa->mp, num, slot,
+                                           ONIG_TYPE_LONG, &val);
+  if (r != ONIG_NORMAL) return r;
+
+  return ONIG_CALLOUT_SUCCESS;
+}
+
 #endif /* USE_CALLOUT */

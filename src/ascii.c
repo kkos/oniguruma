@@ -39,11 +39,13 @@ init(void)
 
     int id;
     OnigType t_int;
+    OnigType t_long;
     OnigEncoding enc;
     char* name;
 
     enc = ONIG_ENCODING_ASCII;
-    t_int = ONIG_TYPE_INT;
+    t_int  = ONIG_TYPE_INT;
+    t_long = ONIG_TYPE_LONG;
 
     name = "FAIL";        BC0_P(name, fail);
     name = "SUCCESS";     BC0_P(name, success);
@@ -51,6 +53,8 @@ init(void)
     name = "ERROR";       BC1_P(name, error, &t_int);
     name = "COUNT";       BC0_P(name, count);
     name = "FAIL_COUNT";  BC0_R(name, count);
+    name = "ONLY";        BC1_B(name, only, &t_long);
+
 #endif /* USE_CALLOUT */
 
     inited = 1;
