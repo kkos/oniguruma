@@ -1236,6 +1236,28 @@ adjust_match_param(regex_t* reg, OnigMatchParam* mp)
   r = adjust_match_param(reg, mp);\
   if (r != ONIG_NORMAL) return r;
 
+#define CALLOUT_DATA_AT_NUM(mp, num)  ((mp)->callout_data + ((num) - 1))
+
+extern int
+onig_check_callout_data_and_clear_old_values(OnigCalloutArgs* args)
+{
+  OnigMatchParam* mp;
+  int num;
+  CalloutData* d;
+
+  mp  = args->msa->mp;
+  num = args->num;
+
+  d = CALLOUT_DATA_AT_NUM(mp, num);
+  if (d->last_match_at_call_counter != mp->match_at_call_counter) {
+    xmemset(d, 0, sizeof(*d));
+    d->last_match_at_call_counter = mp->match_at_call_counter;
+    return d->last_match_at_call_counter;
+  }
+
+  return 0;
+}
+
 extern int
 onig_get_callout_data_by_callout_num(regex_t* reg, OnigMatchParam* mp,
                                      int num, int slot,
@@ -1245,7 +1267,12 @@ onig_get_callout_data_by_callout_num(regex_t* reg, OnigMatchParam* mp,
 
   if (num <= 0) return ONIGERR_INVALID_ARGUMENT;
 
-  d = mp->callout_data + (num - 1);
+  d = CALLOUT_DATA_AT_NUM(mp, num);
+  if (d->last_match_at_call_counter != mp->match_at_call_counter) {
+    xmemset(d, 0, sizeof(*d));
+    d->last_match_at_call_counter = mp->match_at_call_counter;
+  }
+
   if (IS_NOT_NULL(type)) *type = d->slot[slot].type;
   if (IS_NOT_NULL(val))  *val  = d->slot[slot].val;
   return ONIG_NORMAL;
@@ -1276,7 +1303,7 @@ onig_set_callout_data_by_callout_num(regex_t* reg, OnigMatchParam* mp,
 
   if (num <= 0) return ONIGERR_INVALID_ARGUMENT;
 
-  d = mp->callout_data + (num - 1);
+  d = CALLOUT_DATA_AT_NUM(mp, num);
   d->slot[slot].type = type;
   d->slot[slot].val  = *val;
 
@@ -5271,6 +5298,8 @@ onig_builtin_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   OnigType  type;
   OnigValue val;
 
+  (void )onig_check_callout_data_and_clear_old_values(args);
+
   num = args->num;
   slot = 0;
   r = onig_get_callout_data_by_callout_num(args->regex, args->msa->mp, num, slot,
@@ -5301,6 +5330,8 @@ onig_builtin_only(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   OnigType  type;
   OnigValue val;
   OnigValue aval;
+
+  (void )onig_check_callout_data_and_clear_old_values(args);
 
   num = args->num;
   slot = 0;
