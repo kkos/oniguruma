@@ -38,10 +38,11 @@ init(void)
 #ifdef USE_CALLOUT
 
     int id;
-    OnigType t_int;
-    OnigType t_long;
     OnigEncoding enc;
     char* name;
+    OnigType t_int;
+    OnigType t_long;
+    OnigValue opts[4];
 
     enc = ONIG_ENCODING_ASCII;
     t_int  = ONIG_TYPE_INT;
@@ -53,7 +54,9 @@ init(void)
     name = "ERROR";       BC1_P(name, error, &t_int);
     name = "COUNT";       BC0_P(name, count);
     name = "FAIL_COUNT";  BC0_R(name, count);
-    name = "ONLY";        BC1_B(name, only, &t_long);
+
+    name = "ONLY"; opts[0].l = 1L;
+    BC1_B_O(name, only, &t_long, opts);
 
 #endif /* USE_CALLOUT */
 
