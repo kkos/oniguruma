@@ -913,13 +913,13 @@ const char* onig_copyright P_((void));
 
 /* for OnigMatchParam */
 ONIG_EXTERN
-OnigMatchParam* onig_new_match_param P_((OnigRegex reg));
+OnigMatchParam* onig_new_match_param P_((void));
 ONIG_EXTERN
 void onig_free_match_param P_((OnigMatchParam* p));
 ONIG_EXTERN
 void onig_free_match_param_content P_((OnigMatchParam* p));
 ONIG_EXTERN
-int onig_initialize_match_param P_((OnigRegex reg, OnigMatchParam* mp));
+int onig_initialize_match_param P_((OnigMatchParam* mp));
 ONIG_EXTERN
 int onig_set_match_stack_limit_size_of_match_param P_((OnigMatchParam* param, unsigned int limit));
 ONIG_EXTERN

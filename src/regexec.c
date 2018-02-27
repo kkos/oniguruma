@@ -54,6 +54,7 @@ struct OnigMatchParamStruct {
 #ifdef USE_CALLOUT
   void*           callout_user_data;
   CalloutData*    callout_data;
+  int             callout_data_alloc_num;
 #endif
 };
 
@@ -1147,13 +1148,13 @@ static OnigCalloutFunc DefaultCallout;
 static OnigCalloutFunc DefaultRetractionCallout;
 
 extern OnigMatchParam*
-onig_new_match_param(regex_t* reg)
+onig_new_match_param(void)
 {
   OnigMatchParam* p;
 
   p = (OnigMatchParam* )xmalloc(sizeof(*p));
   if (IS_NOT_NULL(p)) {
-    onig_initialize_match_param(reg, p);
+    onig_initialize_match_param(p);
   }
 
   return p;
@@ -1180,7 +1181,7 @@ onig_free_match_param(OnigMatchParam* p)
 }
 
 extern int
-onig_initialize_match_param(regex_t* reg, OnigMatchParam* mp)
+onig_initialize_match_param(OnigMatchParam* mp)
 {
   mp->match_stack_limit  = MatchStackLimit;
 #ifdef USE_RETRY_LIMIT_IN_MATCH
@@ -1192,6 +1193,8 @@ onig_initialize_match_param(regex_t* reg, OnigMatchParam* mp)
 #ifdef USE_CALLOUT
   mp->callout_user_data = 0;
   mp->callout_data      = 0;
+  mp->callout_data_alloc_num = 0;
+#if 0
   if (IS_NOT_NULL(REG_EXTP(reg))) {
     RegexExt* ext = REG_EXTP(reg);
     if (ext->callout_num > 0) {
@@ -1201,14 +1204,45 @@ onig_initialize_match_param(regex_t* reg, OnigMatchParam* mp)
       CHECK_NULL_RETURN_MEMERR(d);
       xmemset(d, 0, n);
       mp->callout_data = d;
+      mp->callout_data_alloc_num = ext->callout_num;
     }
   }
+#endif
 #endif
 
   return ONIG_NORMAL;
 }
 
 #ifdef USE_CALLOUT
+
+static int
+adjust_match_param(regex_t* reg, OnigMatchParam* mp)
+{
+  if (IS_NULL(REG_EXTP(reg))) return ONIG_NORMAL;
+
+  RegexExt* ext = REG_EXTP(reg);
+  if (ext->callout_num > mp->callout_data_alloc_num) {
+    CalloutData* d;
+    size_t n = ONIG_CALLOUT_DATA_SLOT_NUM * ext->callout_num * sizeof(*d);
+    if (IS_NOT_NULL(mp->callout_data))
+      d = (CalloutData* )xrealloc(mp->callout_data, n);
+    else
+      d = (CalloutData* )xmalloc(n);
+    CHECK_NULL_RETURN_MEMERR(d);
+
+    xmemset(d + mp->callout_data_alloc_num, 0,
+            (ext->callout_num - mp->callout_data_alloc_num)
+            * ONIG_CALLOUT_DATA_SLOT_NUM * sizeof(*d));
+    mp->callout_data = d;
+    mp->callout_data_alloc_num = ext->callout_num;
+  }
+
+  return ONIG_NORMAL;
+}
+
+#define ADJUST_MATCH_PARAM(reg, mp) \
+  r = adjust_match_param(reg, mp);\
+  if (r != ONIG_NORMAL) return r;
 
 #define CALLOUT_DATA_INDEX(num, slot) \
   (((num) - 1) * ONIG_CALLOUT_DATA_SLOT_NUM + (slot))
@@ -1279,8 +1313,9 @@ onig_set_callout_data_by_tag(regex_t* reg, OnigMatchParam* mp,
   r = onig_set_callout_data_by_callout_num(reg, mp, num, slot, type, val);
   return r;
 }
-
-#endif
+#else
+#define ADJUST_MATCH_PARAM(reg, mp)
+#endif /* USE_CALLOUT */
 
 
 static int
@@ -4193,7 +4228,7 @@ onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at,
   int r;
   OnigMatchParam mp;
 
-  onig_initialize_match_param(reg, &mp);
+  onig_initialize_match_param(&mp);
   r = onig_match_with_param(reg, str, end, at, region, option, &mp);
   onig_free_match_param_content(&mp);
   return r;
@@ -4208,6 +4243,7 @@ onig_match_with_param(regex_t* reg, const UChar* str, const UChar* end,
   UChar *prev;
   MatchArg msa;
 
+  ADJUST_MATCH_PARAM(reg, mp);
   MATCH_ARG_INIT(msa, reg, option, region, at, mp);
   if (region
 #ifdef USE_POSIX_API_REGION_OPTION
@@ -4492,7 +4528,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
   int r;
   OnigMatchParam mp;
 
-  onig_initialize_match_param(reg, &mp);
+  onig_initialize_match_param(&mp);
   r = onig_search_with_param(reg, str, end, start, range, region, option, &mp);
   onig_free_match_param_content(&mp);
   return r;
@@ -4515,6 +4551,8 @@ onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
      "onig_search (entry point): str: %p, end: %d, start: %d, range: %d\n",
      str, (int )(end - str), (int )(start - str), (int )(range - str));
 #endif
+
+  ADJUST_MATCH_PARAM(reg, mp);
 
   if (region
 #ifdef USE_POSIX_API_REGION_OPTION

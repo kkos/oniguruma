@@ -33,7 +33,7 @@ test(OnigEncoding enc, char* in_pattern, char* in_str)
   }
 
   region = onig_region_new();
-  mp     = onig_new_match_param(reg);
+  mp     = onig_new_match_param();
 
   end   = str + ulen(enc, str);
   start = str;
