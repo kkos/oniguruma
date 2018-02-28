@@ -6682,7 +6682,11 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     while (! PEND) {
       tag_end = p;
       PFETCH_S(c);
-      if (c == ']') break;
+      if (c == ']') {
+        if (tag_end == tag_start)
+          return ONIGERR_INVALID_CALLOUT_TAG_NAME;
+        break;
+      }
       if (c > 255) return ONIGERR_INVALID_CALLOUT_TAG_NAME;
       if (! ONIGENC_IS_CODE_ALNUM(enc, c) && c != '_')
         return ONIGERR_INVALID_CALLOUT_TAG_NAME;
