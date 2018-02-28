@@ -63,9 +63,6 @@ init(void)
     args[0] = ONIG_TYPE_CHAR; opts[0].cp = 'p';
     BC_B_O(name, total_count, 1, args, 1, opts);
 
-    name = "\000O\000N\000L\000Y\000\000"; opts[0].l = 1L;
-    BC_B_O(name, max, 1, &t_long, 1, opts);
-
 #endif /* USE_CALLOUT */
 
     inited = 1;
