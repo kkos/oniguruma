@@ -7350,7 +7350,7 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
       int targetq_num = quantifier_type_num(qnt);
 
 #ifdef USE_WARNING_REDUNDANT_NESTED_REPEAT_OPERATOR
-      if (! NODE_IS_BY_NUMBER(qnode) && ! NODE_IS_BY_NUMBER(target) &&
+      if (targetq_num >= 0 && nestq_num >= 0 &&
           IS_SYNTAX_BV(env->syntax, ONIG_SYN_WARN_REDUNDANT_NESTED_REPEAT)) {
         UChar buf[WARN_BUFSIZE];
 
