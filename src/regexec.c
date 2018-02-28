@@ -5304,7 +5304,7 @@ onig_builtin_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   int is_total;
   OnigCodePoint count_type;
 
-  num = args->num;
+  num = onig_get_callout_num_by_callout_args(args);
 
   r = onig_get_arg_by_callout_args(args, 0, &type, &aval);
   if (r != ONIG_NORMAL) return r;
@@ -5363,7 +5363,7 @@ onig_builtin_max(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 
   (void )onig_check_callout_data_and_clear_old_values(args);
 
-  num = args->num;
+  num = onig_get_callout_num_by_callout_args(args);
   slot = 0;
   r = onig_get_callout_data_by_callout_num(args->regex, args->msa->mp, num, slot,
                                            &type, &val);
