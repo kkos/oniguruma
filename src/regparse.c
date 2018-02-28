@@ -1672,7 +1672,7 @@ i_callout_callout_list_set(UChar* key, CalloutTagVal e, void* arg)
 }
 
 static int
-set_ext_callout_list_values(regex_t* reg)
+setup_ext_callout_list_values(regex_t* reg)
 {
   int i, j;
   RegexExt* ext;
@@ -8125,7 +8125,7 @@ onig_parse_tree(Node** root, const UChar* pattern, const UChar* end,
 #ifdef USE_CALLOUT
   ext = REG_EXTP(reg);
   if (IS_NOT_NULL(ext) && ext->callout_num > 0) {
-    r = set_ext_callout_list_values(reg);
+    r = setup_ext_callout_list_values(reg);
   }
 #endif
 
