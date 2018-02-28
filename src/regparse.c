@@ -42,6 +42,8 @@
 
 #define IS_ALLOWED_CODE_IN_CALLOUT_NAME(c) \
   ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' /* || c == '!' */)
+#define IS_ALLOWED_CODE_IN_CALLOUT_TAG_NAME(c) \
+  ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_')
 
 
 OnigSyntaxType OnigSyntaxOniguruma = {
@@ -1448,6 +1450,30 @@ is_allowed_callout_name(OnigEncoding enc, UChar* name, UChar* name_end)
   while (p < name_end) {
     c = ONIGENC_MBC_TO_CODE(enc, p, name_end);
     if (! IS_ALLOWED_CODE_IN_CALLOUT_NAME(c))
+      return 0;
+
+    if (p == name) {
+      if (c >= '0' && c <= '9') return 0;
+    }
+
+    p += ONIGENC_MBC_ENC_LEN(enc, p);
+  }
+
+  return 1;
+}
+
+static int
+is_allowed_callout_tag_name(OnigEncoding enc, UChar* name, UChar* name_end)
+{
+  UChar* p;
+  OnigCodePoint c;
+
+  if (name >= name_end) return 0;
+
+  p = name;
+  while (p < name_end) {
+    c = ONIGENC_MBC_TO_CODE(enc, p, name_end);
+    if (! IS_ALLOWED_CODE_IN_CALLOUT_TAG_NAME(c))
       return 0;
 
     if (p == name) {
@@ -6684,18 +6710,13 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
     tag_start = p;
     while (! PEND) {
+      if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
       tag_end = p;
       PFETCH_S(c);
-      if (c == ']') {
-        if (tag_end == tag_start)
-          return ONIGERR_INVALID_CALLOUT_TAG_NAME;
-        break;
-      }
-      if (c > 255) return ONIGERR_INVALID_CALLOUT_TAG_NAME;
-      if (! ONIGENC_IS_CODE_ALNUM(enc, c) && c != '_')
-        return ONIGERR_INVALID_CALLOUT_TAG_NAME;
+      if (c == ']') break;
     }
-    if (c != ']') return ONIGERR_END_PATTERN_IN_GROUP;
+    if (! is_allowed_callout_tag_name(enc, tag_start, tag_end))
+      return ONIGERR_INVALID_CALLOUT_TAG_NAME;
 
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
     PFETCH_S(c);
