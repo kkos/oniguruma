@@ -1263,6 +1263,7 @@ onig_get_callout_data_by_callout_num(regex_t* reg, OnigMatchParam* mp,
                                      int num, int slot,
                                      OnigType* type, OnigValue* val)
 {
+  OnigType t;
   CalloutData* d;
 
   if (num <= 0) return ONIGERR_INVALID_ARGUMENT;
@@ -1273,9 +1274,10 @@ onig_get_callout_data_by_callout_num(regex_t* reg, OnigMatchParam* mp,
     d->last_match_at_call_counter = mp->match_at_call_counter;
   }
 
-  if (IS_NOT_NULL(type)) *type = d->slot[slot].type;
+  t = d->slot[slot].type;
+  if (IS_NOT_NULL(type)) *type = t;
   if (IS_NOT_NULL(val))  *val  = d->slot[slot].val;
-  return ONIG_NORMAL;
+  return (t == ONIG_TYPE_VOID ? 1 : ONIG_NORMAL);
 }
 
 extern int
@@ -5304,10 +5306,10 @@ onig_builtin_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   slot = 0;
   r = onig_get_callout_data_by_callout_num(args->regex, args->msa->mp, num, slot,
                                            &type, &val);
-  if (r != ONIG_NORMAL) return r;
-
-  /* initial state */
-  if (type == ONIG_TYPE_VOID) {
+  if (r < ONIG_NORMAL)
+    return r;
+  else if (r > ONIG_NORMAL) {
+    /* type == void: initial state */
     type  = ONIG_TYPE_LONG;
     val.l = 0;
   }
@@ -5337,10 +5339,10 @@ onig_builtin_only(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   slot = 0;
   r = onig_get_callout_data_by_callout_num(args->regex, args->msa->mp, num, slot,
                                            &type, &val);
-  if (r != ONIG_NORMAL) return r;
-
-  /* initial state */
-  if (type == ONIG_TYPE_VOID) {
+  if (r < ONIG_NORMAL)
+    return r;
+  else if (r > ONIG_NORMAL) {
+    /* type == void: initial state */
     type  = ONIG_TYPE_LONG;
     val.l = 0;
   }
