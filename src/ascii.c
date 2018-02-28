@@ -55,10 +55,11 @@ init(void)
     name = "ERROR";       BC1_P(name, error, &t_int);
     name = "MAX";         BC1_B(name, max, &t_long);
     name = "COUNT";
-    args[0] = ONIG_TYPE_CHAR;
-    args[1] = ONIG_TYPE_CHAR;
-    opts[0].cp = ' '; opts[1].cp = 'p';
-    BC_B_O(name, count, 2, args, 2, opts);
+    args[0] = ONIG_TYPE_CHAR; opts[0].cp = 'p';
+    BC_B_O(name, count, 1, args, 1, opts);
+    name = "TOTAL_COUNT";
+    args[0] = ONIG_TYPE_CHAR; opts[0].cp = 'p';
+    BC_B_O(name, total_count, 1, args, 1, opts);
 
     name = "ONLY"; opts[0].l = 1L;
     BC_B_O(name, max, 1, &t_long, 1, opts);
