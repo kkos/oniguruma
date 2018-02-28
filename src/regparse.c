@@ -1671,13 +1671,37 @@ i_callout_callout_list_set(UChar* key, CalloutTagVal e, void* arg)
   return ST_CONTINUE;
 }
 
-static void
-set_callout_callout_list_values(RegexExt* ext)
+static int
+set_callout_callout_list_values(regex_t* reg)
 {
+  int i, j;
+  RegexExt* ext;
+
+  ext = REG_EXTP(reg);
   if (IS_NOT_NULL(ext->tag_table)) {
     onig_st_foreach((CalloutTagTable *)ext->tag_table, i_callout_callout_list_set,
                     (st_data_t )ext);
   }
+
+  for (i = 0; i < ext->callout_num; i++) {
+    CalloutListEntry* e = ext->callout_list + i;
+    if (e->of == ONIG_CALLOUT_OF_NAME) {
+      for (j = 0; j < e->u.arg.num; j++) {
+        if (e->u.arg.types[j] == ONIG_TYPE_TAG) {
+          UChar* start;
+          UChar* end;
+          int num;
+          start = e->u.arg.vals[j].s.start;
+          end   = e->u.arg.vals[j].s.end;
+          num = onig_get_callout_num_by_tag(reg, start, end);
+          if (num < 0) return num;
+          e->u.arg.vals[j].tag = num;
+        }
+      }
+    }
+  }
+
+  return ONIG_NORMAL;
 }
 
 extern int
@@ -6645,6 +6669,14 @@ parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
           }
           break;
 
+        case ONIG_TYPE_TAG:
+          if (eesc != 0 || ! is_allowed_callout_tag_name(enc, s, e))
+            return ONIGERR_INVALID_CALLOUT_TAG_NAME;
+
+          vals[n].s.start = s;
+          vals[n].s.end   = e;
+          break;
+
         case ONIG_TYPE_VOID:
         case ONIG_TYPE_POINTER:
           return ONIGERR_PARSER_BUG;
@@ -8093,7 +8125,7 @@ onig_parse_tree(Node** root, const UChar* pattern, const UChar* end,
 #ifdef USE_CALLOUT
   ext = REG_EXTP(reg);
   if (IS_NOT_NULL(ext) && ext->callout_num > 0) {
-    set_callout_callout_list_values(ext);
+    r = set_callout_callout_list_values(reg);
   }
 #endif
 
