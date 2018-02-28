@@ -6632,7 +6632,7 @@ parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
   return n;
 }
 
-/* (*name[TAG]) (*name[TAG](a,b,..)) */
+/* (*name[TAG]) (*name[TAG]{a,b,..}) */
 static int
 parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
 {
@@ -6667,7 +6667,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   while (! PEND) {
     name_end = p;
     PFETCH_S(c);
-    if (c == cterm || c == '[' || c == '(') break;
+    if (c == cterm || c == '[' || c == '{') break;
     else if (c > 255)
       return ONIGERR_INVALID_CALLOUT_NAME;
     else {
@@ -6696,14 +6696,14 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     tag_start = tag_end = 0;
   }
 
-  if (c == '(') {
+  if (c == '{') {
     UChar* save;
 
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
 
     /* read for single check only */
     save = p;
-    arg_num = parse_callout_args(1, ')', &p, end, 0, 0, env);
+    arg_num = parse_callout_args(1, '}', &p, end, 0, 0, env);
     if (arg_num < 0) return arg_num;
 
     is_not_single = PPEEK_IS(cterm) ?  0 : 1;
@@ -6717,7 +6717,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
       types[i] = get_callout_arg_type_by_name_id(name_id, i);
     }
 
-    arg_num = parse_callout_args(0, ')', &p, end, types, vals, env);
+    arg_num = parse_callout_args(0, '}', &p, end, types, vals, env);
     if (arg_num < 0) return arg_num;
 
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
