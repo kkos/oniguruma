@@ -951,6 +951,8 @@ int onig_set_callout_data_by_tag P_((OnigRegex reg, OnigMatchParam* mp, const UC
 
 /* used in callout functions */
 ONIG_EXTERN
+int onig_get_callout_num_by_callout_args P_((OnigCalloutArgs* args));
+ONIG_EXTERN
 OnigCalloutIn onig_get_callout_in_by_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
 OnigCalloutOf onig_get_callout_of_by_callout_args P_((OnigCalloutArgs* args));
