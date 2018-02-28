@@ -269,8 +269,8 @@ typedef struct {
     struct {
       int num;
       int passed_num;
-      OnigType  types[ONIG_CALLOUT_MAX_ARG_NUM];
-      OnigValue vals[ONIG_CALLOUT_MAX_ARG_NUM];
+      OnigType  types[ONIG_CALLOUT_MAX_ARGS_NUM];
+      OnigValue vals[ONIG_CALLOUT_MAX_ARGS_NUM];
     } arg;
   } u;
 } CalloutListEntry;
