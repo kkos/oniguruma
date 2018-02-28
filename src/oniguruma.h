@@ -951,31 +951,31 @@ int onig_set_callout_data_by_tag P_((OnigRegex reg, OnigMatchParam* mp, const UC
 
 /* used in callout functions */
 ONIG_EXTERN
-OnigCalloutIn onig_get_callout_in_of_callout_args P_((OnigCalloutArgs* args));
+OnigCalloutIn onig_get_callout_in_by_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
-OnigCalloutOf onig_get_callout_of_of_callout_args P_((OnigCalloutArgs* args));
+OnigCalloutOf onig_get_callout_of_by_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
-int onig_get_name_id_of_callout_args P_((OnigCalloutArgs* args));
+int onig_get_name_id_by_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
-const OnigUChar* onig_get_contents_of_callout_args P_((OnigCalloutArgs* args));
+const OnigUChar* onig_get_contents_by_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
-const OnigUChar* onig_get_contents_end_of_callout_args P_((OnigCalloutArgs* args));
+const OnigUChar* onig_get_contents_end_by_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
-int onig_get_arg_num_of_callout_args P_((OnigCalloutArgs* args));
+int onig_get_arg_num_by_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
-int onig_get_passed_arg_num_of_callout_args P_((OnigCalloutArgs* args));
+int onig_get_passed_arg_num_by_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
-int onig_get_arg_of_callout_args P_((OnigCalloutArgs* args, int index, OnigType* type, OnigValue* val));
+int onig_get_arg_by_callout_args P_((OnigCalloutArgs* args, int index, OnigType* type, OnigValue* val));
 ONIG_EXTERN
-const OnigUChar* onig_get_start_of_callout_args P_((OnigCalloutArgs* args));
+const OnigUChar* onig_get_start_by_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
-const OnigUChar* onig_get_right_range_of_callout_args P_((OnigCalloutArgs* args));
+const OnigUChar* onig_get_right_range_by_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
-const OnigUChar* onig_get_current_of_callout_args P_((OnigCalloutArgs* args));
+const OnigUChar* onig_get_current_by_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
-OnigRegex onig_get_regex_of_callout_args P_((OnigCalloutArgs* args));
+OnigRegex onig_get_regex_by_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
-unsigned long onig_get_retry_counter_of_callout_args P_((OnigCalloutArgs* args));
+unsigned long onig_get_retry_counter_by_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
 int onig_callout_tag_is_exist_at_callout_num P_((OnigRegex reg, int callout_num));
 ONIG_EXTERN

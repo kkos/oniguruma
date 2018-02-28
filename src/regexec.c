@@ -5057,25 +5057,25 @@ const OnigUChar* subject_end;
 #endif
 
 extern OnigCalloutIn
-onig_get_callout_in_of_callout_args(OnigCalloutArgs* args)
+onig_get_callout_in_by_callout_args(OnigCalloutArgs* args)
 {
   return args->in;
 }
 
 extern OnigCalloutOf
-onig_get_callout_of_of_callout_args(OnigCalloutArgs* args)
+onig_get_callout_of_by_callout_args(OnigCalloutArgs* args)
 {
   return args->of;
 }
 
 extern int
-onig_get_name_id_of_callout_args(OnigCalloutArgs* args)
+onig_get_name_id_by_callout_args(OnigCalloutArgs* args)
 {
   return args->name_id;
 }
 
 extern const UChar*
-onig_get_contents_of_callout_args(OnigCalloutArgs* args)
+onig_get_contents_by_callout_args(OnigCalloutArgs* args)
 {
   int num;
   CalloutListEntry* e;
@@ -5091,7 +5091,7 @@ onig_get_contents_of_callout_args(OnigCalloutArgs* args)
 }
 
 extern const UChar*
-onig_get_contents_end_of_callout_args(OnigCalloutArgs* args)
+onig_get_contents_end_by_callout_args(OnigCalloutArgs* args)
 {
   int num;
   CalloutListEntry* e;
@@ -5107,7 +5107,7 @@ onig_get_contents_end_of_callout_args(OnigCalloutArgs* args)
 }
 
 extern int
-onig_get_arg_num_of_callout_args(OnigCalloutArgs* args)
+onig_get_arg_num_by_callout_args(OnigCalloutArgs* args)
 {
   int num;
   CalloutListEntry* e;
@@ -5123,7 +5123,7 @@ onig_get_arg_num_of_callout_args(OnigCalloutArgs* args)
 }
 
 extern int
-onig_get_passed_arg_num_of_callout_args(OnigCalloutArgs* args)
+onig_get_passed_arg_num_by_callout_args(OnigCalloutArgs* args)
 {
   int num;
   CalloutListEntry* e;
@@ -5139,7 +5139,7 @@ onig_get_passed_arg_num_of_callout_args(OnigCalloutArgs* args)
 }
 
 extern int
-onig_get_arg_of_callout_args(OnigCalloutArgs* args, int index,
+onig_get_arg_by_callout_args(OnigCalloutArgs* args, int index,
                              OnigType* type, OnigValue* val)
 {
   int num;
@@ -5158,31 +5158,31 @@ onig_get_arg_of_callout_args(OnigCalloutArgs* args, int index,
 }
 
 extern const UChar*
-onig_get_start_of_callout_args(OnigCalloutArgs* args)
+onig_get_start_by_callout_args(OnigCalloutArgs* args)
 {
   return args->start;
 }
 
 extern const UChar*
-onig_get_right_range_of_callout_args(OnigCalloutArgs* args)
+onig_get_right_range_by_callout_args(OnigCalloutArgs* args)
 {
   return args->right_range;
 }
 
 extern const UChar*
-onig_get_current_of_callout_args(OnigCalloutArgs* args)
+onig_get_current_by_callout_args(OnigCalloutArgs* args)
 {
   return args->current;
 }
 
 extern OnigRegex
-onig_get_regex_of_callout_args(OnigCalloutArgs* args)
+onig_get_regex_by_callout_args(OnigCalloutArgs* args)
 {
   return args->regex;
 }
 
 extern unsigned long
-onig_get_retry_counter_of_callout_args(OnigCalloutArgs* args)
+onig_get_retry_counter_by_callout_args(OnigCalloutArgs* args)
 {
   return args->retry_in_match_counter;
 }
@@ -5274,7 +5274,7 @@ onig_builtin_error(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   int n;
   OnigValue val;
 
-  r = onig_get_arg_of_callout_args(args, 0, 0, &val);
+  r = onig_get_arg_by_callout_args(args, 0, 0, &val);
   if (r != ONIG_NORMAL) return r;
 
   n = val.i;
@@ -5299,12 +5299,12 @@ onig_builtin_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 
   num = args->num;
 
-  r = onig_get_arg_of_callout_args(args, 0, &type, &aval);
+  r = onig_get_arg_by_callout_args(args, 0, &type, &aval);
   if (r != ONIG_NORMAL) return r;
 
   is_total = (aval.cp == '+' ? 1 : 0);
 
-  r = onig_get_arg_of_callout_args(args, 1, &type, &aval);
+  r = onig_get_arg_by_callout_args(args, 1, &type, &aval);
   if (r != ONIG_NORMAL) return r;
 
   count_type = aval.cp;
@@ -5368,7 +5368,7 @@ onig_builtin_max(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
     val.l = 0;
   }
 
-  r = onig_get_arg_of_callout_args(args, 0, &type, &aval);
+  r = onig_get_arg_by_callout_args(args, 0, &type, &aval);
   if (r != ONIG_NORMAL) return r;
 
   if (args->in == ONIG_CALLOUT_IN_RETRACTION) {

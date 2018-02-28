@@ -28,17 +28,17 @@ callout_body(OnigCalloutArgs* args, void* user_data)
   const UChar* current;
   regex_t* regex;
 
-  in            = onig_get_callout_in_of_callout_args(args);
-  of            = onig_get_callout_of_of_callout_args(args);
-  name_id       = onig_get_name_id_of_callout_args(args);
-  start         = onig_get_start_of_callout_args(args);
-  current       = onig_get_current_of_callout_args(args);
-  regex         = onig_get_regex_of_callout_args(args);
+  in            = onig_get_callout_in_by_callout_args(args);
+  of            = onig_get_callout_of_by_callout_args(args);
+  name_id       = onig_get_name_id_by_callout_args(args);
+  start         = onig_get_start_by_callout_args(args);
+  current       = onig_get_current_by_callout_args(args);
+  regex         = onig_get_regex_by_callout_args(args);
 
   contents = 0;
   if (of == ONIG_CALLOUT_OF_CONTENTS) {
-    acontents     = onig_get_contents_of_callout_args(args);
-    acontents_end = onig_get_contents_end_of_callout_args(args);
+    acontents     = onig_get_contents_by_callout_args(args);
+    acontents_end = onig_get_contents_end_by_callout_args(args);
     if (acontents != 0) {
       len = acontents_end - acontents;
       contents = (UChar* )strndup((const char* )acontents, len);
@@ -101,16 +101,16 @@ bar(OnigCalloutArgs* args, void* user_data)
 
   fprintf(stdout, "bar called.\n");
 
-  n = onig_get_arg_num_of_callout_args(args);
+  n = onig_get_arg_num_by_callout_args(args);
   if (n < 0) {
-    fprintf(stderr, "FAIL: onig_get_arg_num_of_callout_args(): %d\n", n);
+    fprintf(stderr, "FAIL: onig_get_arg_num_by_callout_args(): %d\n", n);
     return n;
   }
 
   for (i = 0; i < n; i++) {
-    r = onig_get_arg_of_callout_args(args, i, &type, &val);
+    r = onig_get_arg_by_callout_args(args, i, &type, &val);
     if (r != 0) {
-      fprintf(stderr, "FAIL: onig_get_arg_of_callout_args(): %d\n", r);
+      fprintf(stderr, "FAIL: onig_get_arg_by_callout_args(): %d\n", r);
       return r;
     }
 
