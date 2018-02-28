@@ -1259,6 +1259,23 @@ onig_check_callout_data_and_clear_old_values(OnigCalloutArgs* args)
 }
 
 extern int
+onig_get_callout_data_by_callout_num_dont_clear_old(regex_t* reg, OnigMatchParam* mp,
+                                                    int num, int slot,
+                                                    OnigType* type, OnigValue* val)
+{
+  OnigType t;
+  CalloutData* d;
+
+  if (num <= 0) return ONIGERR_INVALID_ARGUMENT;
+
+  d = CALLOUT_DATA_AT_NUM(mp, num);
+  t = d->slot[slot].type;
+  if (IS_NOT_NULL(type)) *type = t;
+  if (IS_NOT_NULL(val))  *val  = d->slot[slot].val;
+  return (t == ONIG_TYPE_VOID ? 1 : ONIG_NORMAL);
+}
+
+extern int
 onig_get_callout_data_by_callout_num(regex_t* reg, OnigMatchParam* mp,
                                      int num, int slot,
                                      OnigType* type, OnigValue* val)
@@ -1308,6 +1325,7 @@ onig_set_callout_data_by_callout_num(regex_t* reg, OnigMatchParam* mp,
   d = CALLOUT_DATA_AT_NUM(mp, num);
   d->slot[slot].type = type;
   d->slot[slot].val  = *val;
+  d->last_match_at_call_counter = mp->match_at_call_counter;
 
   return ONIG_NORMAL;
 }
@@ -5293,7 +5311,15 @@ onig_builtin_error(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 }
 
 extern int
-onig_builtin_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
+onig_builtin_count(OnigCalloutArgs* args, void* user_data)
+{
+  (void )onig_check_callout_data_and_clear_old_values(args);
+
+  return onig_builtin_total_count(args, user_data);
+}
+
+extern int
+onig_builtin_total_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 {
   int r;
   int num;
@@ -5301,7 +5327,6 @@ onig_builtin_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   OnigType  type;
   OnigValue val;
   OnigValue aval;
-  int is_total;
   OnigCodePoint count_type;
 
   num = onig_get_callout_num_by_callout_args(args);
@@ -5309,22 +5334,13 @@ onig_builtin_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   r = onig_get_arg_by_callout_args(args, 0, &type, &aval);
   if (r != ONIG_NORMAL) return r;
 
-  is_total = (aval.cp == '+' ? 1 : 0);
-
-  r = onig_get_arg_by_callout_args(args, 1, &type, &aval);
-  if (r != ONIG_NORMAL) return r;
-
   count_type = aval.cp;
   if (count_type != 'p' && count_type != 's' && count_type != 'f')
     return ONIGERR_INVALID_CALLOUT_ARG;
 
-  if (! is_total) {
-    (void )onig_check_callout_data_and_clear_old_values(args);
-  }
-
   slot = 0;
-  r = onig_get_callout_data_by_callout_num(args->regex, args->msa->mp, num, slot,
-                                           &type, &val);
+  r = onig_get_callout_data_by_callout_num_dont_clear_old(args->regex,
+                               args->msa->mp, num, slot, &type, &val);
   if (r < ONIG_NORMAL)
     return r;
   else if (r > ONIG_NORMAL) {
