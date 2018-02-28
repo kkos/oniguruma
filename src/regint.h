@@ -864,12 +864,12 @@ extern CalloutListEntry* onig_reg_callout_list_at(regex_t* reg, int num);
   if (id < 0) return id;\
 } while(0)
 
-#define BC1_B_O(name, func, ts, opts)  do {\
+#define BC_B_O(name, func, nts, ts, nopts, opts)  do {\
   int len = onigenc_str_bytelen_null(enc, (UChar* )name);\
   id = onig_set_callout_of_name(enc, ONIG_CALLOUT_TYPE_SINGLE,\
-                              (UChar* )(name), (UChar* )((name) + len),\
-                              ONIG_CALLOUT_IN_BOTH,\
-                              onig_builtin_ ## func, 0, 1, (ts), 1, opts);\
+                           (UChar* )(name), (UChar* )((name) + len),\
+                           ONIG_CALLOUT_IN_BOTH,\
+                           onig_builtin_ ## func, 0, (nts), (ts), (nopts), (opts));\
   if (id < 0) return id;\
 } while(0)
 

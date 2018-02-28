@@ -43,6 +43,7 @@ init(void)
     char* name;
     OnigType t_int;
     OnigType t_long;
+    OnigType  args[4];
     OnigValue opts[4];
 
     enc = ONIG_ENCODING_UTF16_LE;
@@ -53,13 +54,16 @@ init(void)
     name = "S\000U\000C\000C\000E\000S\000S\000\000\000"; BC0_P(name, success);
     name = "A\000B\000O\000R\000T\000\000\000";           BC0_P(name, abort);
     name = "E\000R\000R\000O\000R\000\000\000";           BC1_P(name, error, &t_int);
-    name = "C\000O\000U\000N\000T\000\000\000";           BC0_P(name, count);
-    name = "F\000A\000I\000L\000_\000C\000O\000U\000N\000T\000\000\000";
-    BC0_R(name, count);
-
     name = "M\000A\000X\000\000\000";                     BC1_B(name, max, &t_long);
+
+    name = "C\000O\000U\000N\000T\000\000\000";
+    args[0] = ONIG_TYPE_CHAR;
+    args[1] = ONIG_TYPE_CHAR;
+    opts[0].cp = ' '; opts[1].cp = 'p';
+    BC_B_O(name, count, 2, args, 2, opts);
+
     name = "O\000N\000L\000Y\000\000\000"; opts[0].l = 1L;
-    BC1_B_O(name, max, &t_long, opts);
+    BC_B_O(name, max, 1, &t_long, 1, opts);
 #endif /* USE_CALLOUT */
 
     inited = 1;

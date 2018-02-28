@@ -42,6 +42,7 @@ init(void)
     char* name;
     OnigType t_int;
     OnigType t_long;
+    OnigType  args[4];
     OnigValue opts[4];
 
     enc = ONIG_ENCODING_ASCII;
@@ -52,12 +53,15 @@ init(void)
     name = "SUCCESS";     BC0_P(name, success);
     name = "ABORT";       BC0_P(name, abort);
     name = "ERROR";       BC1_P(name, error, &t_int);
-    name = "COUNT";       BC0_P(name, count);
-    name = "FAIL_COUNT";  BC0_R(name, count);
     name = "MAX";         BC1_B(name, max, &t_long);
+    name = "COUNT";
+    args[0] = ONIG_TYPE_CHAR;
+    args[1] = ONIG_TYPE_CHAR;
+    opts[0].cp = ' '; opts[1].cp = 'p';
+    BC_B_O(name, count, 2, args, 2, opts);
 
     name = "ONLY"; opts[0].l = 1L;
-    BC1_B_O(name, max, &t_long, opts);
+    BC_B_O(name, max, 1, &t_long, 1, opts);
 
 #endif /* USE_CALLOUT */
 

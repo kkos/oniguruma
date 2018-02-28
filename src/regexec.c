@@ -5299,10 +5299,28 @@ onig_builtin_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   int slot;
   OnigType  type;
   OnigValue val;
-
-  (void )onig_check_callout_data_and_clear_old_values(args);
+  OnigValue aval;
+  int is_total;
+  OnigCodePoint count_type;
 
   num = args->num;
+
+  r = onig_get_arg_of_callout_args(args, 0, &type, &aval);
+  if (r != ONIG_NORMAL) return r;
+
+  is_total = (aval.cp == '+' ? 1 : 0);
+
+  r = onig_get_arg_of_callout_args(args, 1, &type, &aval);
+  if (r != ONIG_NORMAL) return r;
+
+  count_type = aval.cp;
+  if (count_type != 'p' && count_type != 's' && count_type != 'f')
+    return ONIGERR_INVALID_CALLOUT_ARG;
+
+  if (! is_total) {
+    (void )onig_check_callout_data_and_clear_old_values(args);
+  }
+
   slot = 0;
   r = onig_get_callout_data_by_callout_num(args->regex, args->msa->mp, num, slot,
                                            &type, &val);
@@ -5314,10 +5332,19 @@ onig_builtin_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
     val.l = 0;
   }
 
-  val.l++;
+  if (args->in == ONIG_CALLOUT_IN_RETRACTION) {
+    if (count_type == 'f')
+      val.l++;
+    else if (count_type == 's')
+      val.l--;
+  }
+  else {
+    if (count_type != 'f')
+      val.l++;
+  }
 
   r = onig_set_callout_data_by_callout_num(args->regex, args->msa->mp, num, slot,
-                                           type, &val);
+                                           ONIG_TYPE_LONG, &val);
   if (r != ONIG_NORMAL) return r;
 
   return ONIG_CALLOUT_SUCCESS;
