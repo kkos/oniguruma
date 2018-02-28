@@ -61,9 +61,13 @@ test(OnigEncoding enc, OnigMatchParam* mp, char* in_pattern, char* in_str)
     slot = 0;
     r = onig_get_callout_data_by_tag(reg, mp, (UChar* )tag, (UChar* )tag + tag_len,
                                      slot, 0, &val);
-    if (r != ONIG_NORMAL) goto err;
-
-    fprintf(stdout, "COUNT[x]: %ld\n", val.l);
+    if (r < ONIG_NORMAL) goto err;
+    else if (r > ONIG_NORMAL) {
+      fprintf(stdout, "COUNT[x]: NO DATA\n");
+    }
+    else {
+      fprintf(stdout, "COUNT[x]: %ld\n", val.l);
+    }
   }
   else if (r == ONIG_MISMATCH) {
     fprintf(stdout, "search fail\n");
@@ -73,7 +77,7 @@ test(OnigEncoding enc, OnigMatchParam* mp, char* in_pattern, char* in_str)
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
   err:
     onig_error_code_to_str((UChar* )s, r);
-    fprintf(stderr, "SEARCH ERROR: %d: %s\n", r, s);
+    fprintf(stdout, "SEARCH ERROR: %d: %s\n", r, s);
   }
 
   onig_region_free(region, 1 /* 1:free self, 0:free contents only */);
@@ -105,8 +109,15 @@ extern int main(int argc, char* argv[])
 
   test(encs[0], mp, "abc(.(*COUNT[x]))*(*FAIL)", "abcdefg");
   test(encs[0], mp, "abc(.(*COUNT[_any_]))*(.(*COUNT[x]))*d", "abcdefg");
-  test(encs[0], mp, "abc(.(*COUNT[x]{-,f}))*f", "abcdefg");
+  /* fail count */
+  test(encs[0], mp, "abc(.(*COUNT[x]{f}))*f", "abcdefg");
+  /* success count */
+  test(encs[0], mp, "abc(.(*COUNT[x]{s}))*f", "abcdefg");
+  /* passed count */
+  test(encs[0], mp, "abc(.(*COUNT[x]))*f", "abcdefg");
   test(encs[0], mp, "a(.(*COUNT[x]))*z", "abcd\nabcdz");
+  /* total count */
+  test(encs[0], mp, "a(.(*TOTAL_COUNT[x]))*z", "abcd\nabcdz");
 
   test(encs[1], mp, "\000a\000b\000c\000(\000.\000(\000*\000C\000O\000U\000N\000T\000[\000x\000]\000)\000)\000*\000(\000*\000F\000A\000I\000L\000)\000\000", "\000a\000b\000c\000d\000e\000f\000g\000\000");
 
