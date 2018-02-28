@@ -6670,17 +6670,15 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
 
   node = 0;
   name_start = p;
-  while (! PEND) {
+  while (1) {
+    if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
     name_end = p;
     PFETCH_S(c);
     if (c == cterm || c == '[' || c == '{') break;
-    else if (c > 255)
-      return ONIGERR_INVALID_CALLOUT_NAME;
-    else {
-      if (! IS_ALLOWED_CODE_IN_CALLOUT_NAME(c))
-        return ONIGERR_INVALID_CALLOUT_NAME;
-    }
   }
+
+  if (! is_allowed_callout_name(enc, name_start, name_end))
+    return ONIGERR_INVALID_CALLOUT_NAME;
 
   if (c == '[') {
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
