@@ -5107,7 +5107,7 @@ onig_get_contents_end_by_callout_args(OnigCalloutArgs* args)
 }
 
 extern int
-onig_get_arg_num_by_callout_args(OnigCalloutArgs* args)
+onig_get_args_num_by_callout_args(OnigCalloutArgs* args)
 {
   int num;
   CalloutListEntry* e;

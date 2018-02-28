@@ -101,9 +101,9 @@ bar(OnigCalloutArgs* args, void* user_data)
 
   fprintf(stdout, "bar called.\n");
 
-  n = onig_get_arg_num_by_callout_args(args);
+  n = onig_get_args_num_by_callout_args(args);
   if (n < 0) {
-    fprintf(stderr, "FAIL: onig_get_arg_num_by_callout_args(): %d\n", n);
+    fprintf(stderr, "FAIL: onig_get_args_num_by_callout_args(): %d\n", n);
     return n;
   }
 
