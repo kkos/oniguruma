@@ -5324,7 +5324,7 @@ onig_builtin_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 }
 
 extern int
-onig_builtin_only(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
+onig_builtin_max(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 {
   int r;
   int num;

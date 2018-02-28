@@ -1000,7 +1000,7 @@ int onig_builtin_error P_((OnigCalloutArgs* args, void* user_data));
 ONIG_EXTERN
 int onig_builtin_count P_((OnigCalloutArgs* args, void* user_data));
 ONIG_EXTERN
-int onig_builtin_only P_((OnigCalloutArgs* args, void* user_data));
+int onig_builtin_max P_((OnigCalloutArgs* args, void* user_data));
 
 #ifdef __cplusplus
 }

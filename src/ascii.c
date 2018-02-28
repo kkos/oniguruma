@@ -54,9 +54,10 @@ init(void)
     name = "ERROR";       BC1_P(name, error, &t_int);
     name = "COUNT";       BC0_P(name, count);
     name = "FAIL_COUNT";  BC0_R(name, count);
+    name = "MAX";         BC1_B(name, max, &t_long);
 
     name = "ONLY"; opts[0].l = 1L;
-    BC1_B_O(name, only, &t_long, opts);
+    BC1_B_O(name, max, &t_long, opts);
 
 #endif /* USE_CALLOUT */
 

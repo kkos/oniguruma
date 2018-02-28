@@ -57,8 +57,9 @@ init(void)
     name = "F\000A\000I\000L\000_\000C\000O\000U\000N\000T\000\000\000";
     BC0_R(name, count);
 
-    name = "O\000N\000L\000Y\000"; opts[0].l = 1L;
-    BC1_B_O(name, only, &t_long, opts);
+    name = "M\000A\000X\000\000\000";                     BC1_B(name, max, &t_long);
+    name = "O\000N\000L\000Y\000\000\000"; opts[0].l = 1L;
+    BC1_B_O(name, max, &t_long, opts);
 #endif /* USE_CALLOUT */
 
     inited = 1;
