@@ -768,6 +768,7 @@ typedef enum {
   ONIG_TYPE_CHAR     = 3,
   ONIG_TYPE_STRING   = 4,
   ONIG_TYPE_POINTER  = 5,
+  ONIG_TYPE_TAG      = 7,
 } OnigType;
 
 typedef union {
@@ -779,6 +780,7 @@ typedef union {
     OnigUChar* end;
   } s;
   void* p;
+  int tag;  /* tag -> callout_num */
 } OnigValue;
 
 
