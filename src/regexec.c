@@ -5149,8 +5149,8 @@ onig_get_arg_of_callout_args(OnigCalloutArgs* args, int index,
   e = onig_reg_callout_list_at(args->regex, num);
   if (IS_NULL(e)) return 0;
   if (e->of == ONIG_CALLOUT_OF_NAME) {
-    *type = e->u.arg.types[index];
-    *val  = e->u.arg.vals[index];
+    if (IS_NOT_NULL(type)) *type = e->u.arg.types[index];
+    if (IS_NOT_NULL(val))  *val  = e->u.arg.vals[index];
     return ONIG_NORMAL;
   }
 
@@ -5270,22 +5270,16 @@ onig_builtin_success(OnigCalloutArgs* args ARG_UNUSED, void* user_data ARG_UNUSE
 extern int
 onig_builtin_error(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 {
+  int r;
   int n;
-  int num;
-  CalloutListEntry* e;
+  OnigValue val;
 
-  num = args->num;
-  e = onig_reg_callout_list_at(args->regex, num);
-  if (IS_NULL(e)) return 0;
+  r = onig_get_arg_of_callout_args(args, 0, 0, &val);
+  if (r != ONIG_NORMAL) return r;
 
-  if (e->u.arg.types[0] == ONIG_TYPE_INT) {
-    n = e->u.arg.vals[0].i;
-    if (n >= 0) {
-      n = ONIGERR_INVALID_CALLOUT_BODY;
-    }
-  }
-  else {
-    n = ONIG_CALLOUT_FAIL;
+  n = val.i;
+  if (n >= 0) {
+    n = ONIGERR_INVALID_CALLOUT_BODY;
   }
 
   return n;
