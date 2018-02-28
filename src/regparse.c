@@ -41,7 +41,7 @@
 #define CASE_FOLD_IS_APPLIED_INSIDE_NEGATIVE_CCLASS
 
 #define IS_ALLOWED_CODE_IN_CALLOUT_NAME(c) \
-  ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' || c == '!')
+  ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' /* || c == '!' */)
 
 
 OnigSyntaxType OnigSyntaxOniguruma = {
