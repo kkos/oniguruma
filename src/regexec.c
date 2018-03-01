@@ -1302,15 +1302,13 @@ onig_get_callout_data_by_tag(regex_t* reg, OnigMatchParam* mp,
                              const UChar* tag, const UChar* tag_end, int slot,
                              OnigType* type, OnigValue* val)
 {
-  int r;
   int num;
 
   num = onig_get_callout_num_by_tag(reg, tag, tag_end);
-  if (num < 0) return num;
+  if (num < 0)  return num;
   if (num == 0) return ONIGERR_INVALID_CALLOUT_TAG_NAME;
 
-  r = onig_get_callout_data_by_callout_num(reg, mp, num, slot, type, val);
-  return r;
+  return onig_get_callout_data_by_callout_num(reg, mp, num, slot, type, val);
 }
 
 extern int
@@ -1335,15 +1333,13 @@ onig_set_callout_data_by_tag(regex_t* reg, OnigMatchParam* mp,
                              const UChar* tag, const UChar* tag_end, int slot,
                              OnigType type, OnigValue* val)
 {
-  int r;
   int num;
 
   num = onig_get_callout_num_by_tag(reg, tag, tag_end);
-  if (num < 0) return num;
+  if (num < 0)  return num;
   if (num == 0) return ONIGERR_INVALID_CALLOUT_TAG_NAME;
 
-  r = onig_set_callout_data_by_callout_num(reg, mp, num, slot, type, val);
-  return r;
+  return onig_set_callout_data_by_callout_num(reg, mp, num, slot, type, val);
 }
 #else
 #define ADJUST_MATCH_PARAM(reg, mp)
