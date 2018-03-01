@@ -335,8 +335,6 @@ typedef struct {
   int  detail_type;
   int  num;
   int  id;
-  int  tag_start;   /* -1: NO tag */
-  int  tag_end;
 } GimmickNode;
 
 typedef struct _Node {

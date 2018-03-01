@@ -2568,8 +2568,6 @@ node_new_callout(Node** node, OnigCalloutOf callout_of, int num, int id,
   GIMMICK_(*node)->num         = num;
   GIMMICK_(*node)->type        = GIMMICK_CALLOUT;
   GIMMICK_(*node)->detail_type = (int )callout_of;
-  GIMMICK_(*node)->tag_start   = -1;
-  GIMMICK_(*node)->tag_end     = -1;
 
   return ONIG_NORMAL;
 }
@@ -6827,9 +6825,6 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   if (r != ONIG_NORMAL) return r;
 
   if (tag_start != tag_end) {
-    GIMMICK_(node)->tag_start = (int )(tag_start - env->pattern);
-    GIMMICK_(node)->tag_end   = (int )(tag_end   - env->pattern);
-
     r = callout_tag_entry(env->reg, tag_start, tag_end, GIMMICK_(node)->num);
     if (r != ONIG_NORMAL) {
       onig_node_free(node);
