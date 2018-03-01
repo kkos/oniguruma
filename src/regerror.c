@@ -43,8 +43,6 @@ onig_error_code_to_format(int code)
 {
   char *p;
 
-  if (code >= 0) return (UChar* )0;
-
   switch (code) {
   case ONIG_MISMATCH:
     p = "mismatch"; break;
