@@ -984,6 +984,7 @@ typedef struct _StackType {
 #ifdef USE_CALLOUT
     struct {
       int num;
+      OnigCalloutFunc func;
     } callout;
 #endif
   } u;
@@ -1661,19 +1662,21 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while (0)
 
-#define STACK_PUSH_CALLOUT_CONTENTS(anum) do {\
+#define STACK_PUSH_CALLOUT_CONTENTS(anum, func) do {\
   STACK_ENSURE(1);\
   stk->type = STK_CALLOUT;\
   stk->zid  = ONIG_NO_NAME_ID;\
   stk->u.callout.num = (anum);\
+  stk->u.callout.func = (func);\
   STACK_INC;\
 } while(0)
 
-#define STACK_PUSH_CALLOUT_NAME(aid, anum) do {\
+#define STACK_PUSH_CALLOUT_NAME(aid, anum, func) do {\
   STACK_ENSURE(1);\
   stk->type = STK_CALLOUT;\
   stk->zid  = (aid);\
   stk->u.callout.num = (anum);\
+  stk->u.callout.func = (func);\
   STACK_INC;\
 } while(0)
 
@@ -1697,16 +1700,13 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define POP_CALLOUT_CASE \
   else if (stk->type == STK_CALLOUT) {\
     int aof;\
-    OnigCalloutFunc func;\
     if (stk->zid < 0) {\
       aof = ONIG_CALLOUT_OF_CONTENTS;\
-      func = msa->mp->retraction_callout_of_contents;\
     }\
     else {\
       aof = ONIG_CALLOUT_OF_NAME;\
-      func = onig_get_callout_start_func_by_name_id(stk->zid);\
     }\
-    RETRACTION_CALLOUT(func, aof, stk->zid, stk->u.callout.num, msa->mp->callout_user_data);\
+    RETRACTION_CALLOUT(stk->u.callout.func, aof, stk->zid, stk->u.callout.num, msa->mp->callout_user_data);\
   }
 #else
 #define POP_CALLOUT_CASE
@@ -2301,8 +2301,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
 
 #ifdef USE_CALLOUT
-  int name_id, of;
-  OnigCalloutFunc func;
+  int of;
 #endif
 
   UChar *p = reg->p;
@@ -3825,12 +3824,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
 #ifdef USE_CALLOUT
     case OP_CALLOUT_CONTENTS: SOP_IN(OP_CALLOUT_CONTENTS);
-      {
-        of = ONIG_CALLOUT_OF_CONTENTS;
-        name_id = ONIG_NO_NAME_ID;
-        func = msa->mp->callout_of_contents;
-        goto callout_common_entry;
-      }
+      of = ONIG_CALLOUT_OF_CONTENTS;
+      goto callout_common_entry;
+
       SOP_OUT;
       continue;
       break;
@@ -3838,20 +3834,27 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     case OP_CALLOUT_NAME: SOP_IN(OP_CALLOUT_NAME);
       {
         int call_result;
+        int name_id;
         int num;
         int in;
         CalloutListEntry* e;
+        OnigCalloutFunc func;
         OnigCalloutArgs args;
 
         of = ONIG_CALLOUT_OF_NAME;
         GET_MEMNUM_INC(name_id, p);
-        func = onig_get_callout_start_func_by_name_id(name_id);
 
       callout_common_entry:
         GET_MEMNUM_INC(num, p);
-
         e = onig_reg_callout_list_at(reg, num);
         in = e->in;
+        if (of == ONIG_CALLOUT_OF_NAME) {
+          func = onig_get_callout_start_func_by_callout_num(reg, num);
+        }
+        else {
+          name_id = ONIG_NO_NAME_ID;
+          func = msa->mp->callout_of_contents;
+        }
 
         if (IS_NOT_NULL(func) && (in & ONIG_CALLOUT_IN_PROGRESS) != 0) {
           CALLOUT_BODY(func, ONIG_CALLOUT_IN_PROGRESS, of, name_id,
@@ -3878,15 +3881,14 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         retraction_callout2:
           if ((in & ONIG_CALLOUT_IN_RETRACTION) != 0) {
             if (of == ONIG_CALLOUT_OF_NAME) {
-              func = onig_get_callout_start_func_by_name_id(name_id);
               if (IS_NOT_NULL(func)) {
-                STACK_PUSH_CALLOUT_NAME(name_id, num);
+                STACK_PUSH_CALLOUT_NAME(name_id, num, func);
               }
             }
             else {
               func = msa->mp->retraction_callout_of_contents;
               if (IS_NOT_NULL(func)) {
-                STACK_PUSH_CALLOUT_CONTENTS(num);
+                STACK_PUSH_CALLOUT_CONTENTS(num, func);
               }
             }
           }

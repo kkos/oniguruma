@@ -1591,6 +1591,16 @@ get_callout_name_id_by_name(OnigEncoding enc, int is_not_single,
   return r;
 }
 
+extern OnigCalloutFunc
+onig_get_callout_start_func_by_callout_num(regex_t* reg, int num)
+{
+  /* If used for callouts of contents, return 0. */
+  CalloutListEntry* e;
+
+  e = onig_reg_callout_list_at(reg, num);
+  return e->start_func;
+}
+
 
 extern OnigCalloutType
 onig_get_callout_type_by_name_id(int name_id)
@@ -2536,6 +2546,8 @@ reg_callout_list_entry(ScanEnv* env, int* rnum)
   e->of   = 0;
   e->in   = ONIG_CALLOUT_OF_CONTENTS;
   e->type = 0;
+  e->start_func       = 0;
+  e->end_func         = 0;
   e->u.arg.num        = 0;
   e->u.arg.passed_num = 0;
 
@@ -6833,10 +6845,12 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   }
 
   e = onig_reg_callout_list_at(env->reg, num);
-  e->of      = ONIG_CALLOUT_OF_NAME;
-  e->in      = in;
-  e->name_id = name_id;
-  e->type    = onig_get_callout_type_by_name_id(name_id);
+  e->of         = ONIG_CALLOUT_OF_NAME;
+  e->in         = in;
+  e->name_id    = name_id;
+  e->type       = onig_get_callout_type_by_name_id(name_id);
+  e->start_func = onig_get_callout_start_func_by_name_id(name_id);
+  e->end_func   = onig_get_callout_end_func_by_name_id(name_id);
   e->u.arg.num        = max_arg_num;
   e->u.arg.passed_num = arg_num;
   for (i = 0; i < max_arg_num; i++) {
