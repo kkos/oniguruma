@@ -202,6 +202,7 @@ extern int main(int argc, char* argv[])
   r = onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
   if (r != ONIG_NORMAL) return -1;
 
+  /* monitor on */
   r = onig_setup_builtin_monitors_by_ascii_encoded_name();
   if (r != ONIG_NORMAL) return -1;
 
@@ -257,7 +258,9 @@ extern int main(int argc, char* argv[])
   test("(?:(*MAX{1})a|b)*", "bbbbbabbbbbabbbbb");
   test("(?:(*MAX{3})a|(*MAX{4})b)*", "bbbaabbab");
 
-  test("(?:(*MON)(*MAX{3})a(*MON)|(*MAX{4})b)*", "bbbaabbab");
+  /* monitor test */
+  //test("(?:(*MON)(*MAX{3})a(*MON{foo})|(*MAX{4})b)*", "bbbaabbab");
+  test("(?:(*MON)(*FAIL)|.{,3}(*MON[X])k)", "abcdefghijk");
 
   onig_end();
   return 0;
