@@ -5158,6 +5158,18 @@ onig_get_arg_by_callout_args(OnigCalloutArgs* args, int index,
 }
 
 extern const UChar*
+onig_get_string_by_callout_args(OnigCalloutArgs* args)
+{
+  return args->string;
+}
+
+extern const UChar*
+onig_get_string_end_by_callout_args(OnigCalloutArgs* args)
+{
+  return args->string_end;
+}
+
+extern const UChar*
 onig_get_start_by_callout_args(OnigCalloutArgs* args)
 {
   return args->start;

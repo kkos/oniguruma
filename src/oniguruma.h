@@ -972,6 +972,10 @@ int onig_get_passed_args_num_by_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
 int onig_get_arg_by_callout_args P_((OnigCalloutArgs* args, int index, OnigType* type, OnigValue* val));
 ONIG_EXTERN
+const UChar* onig_get_string_by_callout_args P_((OnigCalloutArgs* args));
+ONIG_EXTERN
+const UChar* onig_get_string_end_by_callout_args P_((OnigCalloutArgs* args));
+ONIG_EXTERN
 const OnigUChar* onig_get_start_by_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
 const OnigUChar* onig_get_right_range_by_callout_args P_((OnigCalloutArgs* args));
