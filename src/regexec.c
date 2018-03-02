@@ -5404,35 +5404,45 @@ static int
 onig_builtin_monitor(OnigCalloutArgs* args, void* user_data)
 {
   int num;
-  int pnum;
+  int tag_len;
+  //int pnum;
   const UChar* start;
   const UChar* right;
   const UChar* current;
   const UChar* string;
   const UChar* strend;
-  OnigType type;
-  OnigValue aval;
+  const UChar* tag_start;
+  const UChar* tag_end;
+  regex_t* reg;
   OnigCalloutIn in;
-  char buf[10];
+  char buf[20];
   FILE* fp;
 
   fp = stdout;
 
-  in       = onig_get_callout_in_by_callout_args(args);
-  num      = onig_get_callout_num_by_callout_args(args);
-  start    = onig_get_start_by_callout_args(args);
-  right    = onig_get_right_range_by_callout_args(args);
-  current  = onig_get_current_by_callout_args(args);
-  string   = onig_get_string_by_callout_args(args);
-  strend   = onig_get_string_end_by_callout_args(args);
-  pnum     = onig_get_passed_args_num_by_callout_args(args);
-  if (pnum == 0)
+  in        = onig_get_callout_in_by_callout_args(args);
+  num       = onig_get_callout_num_by_callout_args(args);
+  start     = onig_get_start_by_callout_args(args);
+  right     = onig_get_right_range_by_callout_args(args);
+  current   = onig_get_current_by_callout_args(args);
+  string    = onig_get_string_by_callout_args(args);
+  strend    = onig_get_string_end_by_callout_args(args);
+  reg       = onig_get_regex_by_callout_args(args);
+  tag_start = onig_get_tag_start_by_callout_num(reg, num);
+  tag_end   = onig_get_tag_end_by_callout_num(reg, num);
+  //pnum     = onig_get_passed_args_num_by_callout_args(args);
+
+  if (tag_start == 0)
     xsnprintf(buf, sizeof(buf), "#%d", num);
-  else
-    (void )onig_get_arg_by_callout_args(args, 0, &type, &aval);
+  else {
+    /* CAUTION: tag string is not terminated with NULL. */
+    tag_len = tag_end - tag_start + 1;
+    if (tag_len > sizeof(buf)) tag_len = sizeof(buf);
+    xsnprintf(buf, tag_len, "%s", tag_start);
+  }
 
   fprintf(fp, "ONIG-MONITOR: %-4s %s at: %d [%d - %d] len: %d\n",
-          pnum == 0 ? buf : (char* )aval.s.start,
+          buf,
           in == ONIG_CALLOUT_IN_PROGRESS ? "=>" : "<=",
           (int )(current - string),
           (int )(start   - string),
@@ -5448,17 +5458,12 @@ onig_setup_builtin_monitors_by_ascii_encoded_name(void)
 {
   int id;
   char* name;
-  OnigType ts[4];
-  OnigValue opts[4];
   OnigEncoding enc;
 
   enc = ONIG_ENCODING_ASCII;
 
   name = "MON";
-  ts[0] = ONIG_TYPE_STRING;
-  opts[0].s.start = opts[0].s.end = 0;
-
-  BC_B_O(name, monitor, 1, ts, 1, opts);
+  BC0_B(name, monitor);
 
   return ONIG_NORMAL;
 }
