@@ -5404,7 +5404,7 @@ static int
 onig_builtin_monitor(OnigCalloutArgs* args, void* user_data)
 {
   int num;
-  int tag_len;
+  size_t tag_len;
   //int pnum;
   const UChar* start;
   const UChar* right;
