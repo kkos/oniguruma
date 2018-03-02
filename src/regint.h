@@ -267,8 +267,8 @@ typedef struct {
   OnigCalloutFunc end_func;
   union {
     struct {
-      UChar* start;
-      UChar* end;
+      const UChar* start;
+      const UChar* end;
     } content;
     struct {
       int num;
