@@ -1601,6 +1601,20 @@ onig_get_callout_start_func_by_callout_num(regex_t* reg, int num)
   return e->start_func;
 }
 
+extern UChar*
+onig_get_tag_start_by_callout_num(regex_t* reg, int num)
+{
+  CalloutListEntry* e = onig_reg_callout_list_at(reg, num);
+  return e->tag_start;
+}
+
+extern UChar*
+onig_get_tag_end_by_callout_num(regex_t* reg, int num)
+{
+  CalloutListEntry* e = onig_reg_callout_list_at(reg, num);
+  return e->tag_end;
+}
+
 
 extern OnigCalloutType
 onig_get_callout_type_by_name_id(int name_id)

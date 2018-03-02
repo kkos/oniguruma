@@ -988,6 +988,10 @@ unsigned long onig_get_retry_counter_by_callout_args P_((OnigCalloutArgs* args))
 ONIG_EXTERN
 int onig_callout_tag_is_exist_at_callout_num P_((OnigRegex reg, int callout_num));
 ONIG_EXTERN
+UChar* onig_get_tag_start_by_callout_num P_((OnigRegex reg, int num));
+ONIG_EXTERN
+UChar* onig_get_tag_end_by_callout_num P_((OnigRegex reg, int num));
+ONIG_EXTERN
 int onig_get_callout_data_by_callout_num_dont_clear_old P_((OnigRegex reg, OnigMatchParam* mp, int num, int slot, OnigType* type, OnigValue* val));
 ONIG_EXTERN
 int onig_get_callout_data_by_callout_num P_((OnigRegex reg, OnigMatchParam* mp, int num, int slot, OnigType* type, OnigValue* val));
