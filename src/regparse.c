@@ -6519,15 +6519,14 @@ parse_callout_of_contents(Node** np, int cterm, UChar** src, UChar* end, ScanEnv
   r = reg_callout_list_entry(env, &num);
   if (r != 0) return r;
 
-  r = node_new_callout(np, ONIG_CALLOUT_OF_CONTENTS, num, ONIG_NO_NAME_ID, 0, env);
-  if (r != 0) return r;
-
   ext = onig_get_regex_ext(env->reg);
-  CHECK_NULL_RETURN_MEMERR(ext);
   if (IS_NULL(ext->pattern)) {
     r = onig_ext_set_pattern(env->reg, env->pattern, env->pattern_end);
     if (r != ONIG_NORMAL) return r;
   }
+
+  r = node_new_callout(np, ONIG_CALLOUT_OF_CONTENTS, num, ONIG_NO_NAME_ID, 0, env);
+  if (r != 0) return r;
 
   e = onig_reg_callout_list_at(env->reg, num);
   e->of      = ONIG_CALLOUT_OF_CONTENTS;
@@ -6821,6 +6820,12 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   r = reg_callout_list_entry(env, &num);
   if (r != 0) return r;
 
+  ext = onig_get_regex_ext(env->reg);
+  if (IS_NULL(ext->pattern)) {
+    r = onig_ext_set_pattern(env->reg, env->pattern, env->pattern_end);
+    if (r != ONIG_NORMAL) return r;
+  }
+
   r = node_new_callout(&node, ONIG_CALLOUT_OF_NAME, num, name_id, with_tag, env);
   if (r != ONIG_NORMAL) return r;
 
@@ -6830,13 +6835,6 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
       onig_node_free(node);
       return r;
     }
-  }
-
-  ext = onig_get_regex_ext(env->reg);
-  CHECK_NULL_RETURN_MEMERR(ext);
-  if (IS_NULL(ext->pattern)) {
-    r = onig_ext_set_pattern(env->reg, env->pattern, env->pattern_end);
-    if (r != ONIG_NORMAL) return r;
   }
 
   e = onig_reg_callout_list_at(env->reg, num);
