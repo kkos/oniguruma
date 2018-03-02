@@ -5384,4 +5384,52 @@ onig_builtin_max(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   return ONIG_CALLOUT_SUCCESS;
 }
 
+
+#include <stdio.h>
+
+/* name start with "onig_" for macros. */
+static int
+onig_builtin_monitor(OnigCalloutArgs* args, void* user_data)
+{
+  int num;
+  int name_id;
+  UChar* name;
+  const UChar* start;
+  const UChar* current;
+  OnigCalloutIn in;
+  FILE* fp;
+
+  fp = stdout;
+
+  in      = onig_get_callout_in_by_callout_args(args);
+  num     = onig_get_callout_num_by_callout_args(args);
+  name_id = onig_get_name_id_by_callout_args(args);
+  name    = onig_get_callout_name_by_name_id(name_id);
+  start   = onig_get_start_by_callout_args(args);
+  current = onig_get_current_by_callout_args(args);
+
+  fprintf(fp, "ONIG-MONITOR: %s(#%d) %s at: %d\n",
+          name, num,
+          in == ONIG_CALLOUT_IN_PROGRESS ? "->" : "<-",
+          (int )(current - start));
+  fflush(fp);
+
+  return ONIG_CALLOUT_SUCCESS;
+}
+
+extern int
+onig_setup_builtin_monitors_by_ascii_encoded_name(void)
+{
+  int id;
+  char* name;
+  OnigEncoding enc;
+
+  enc = ONIG_ENCODING_ASCII;
+
+  name = "MON";
+  BC0_B(name, monitor);
+
+  return ONIG_NORMAL;
+}
+
 #endif /* USE_CALLOUT */

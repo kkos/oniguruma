@@ -1011,6 +1011,9 @@ int onig_builtin_total_count P_((OnigCalloutArgs* args, void* user_data));
 ONIG_EXTERN
 int onig_builtin_max P_((OnigCalloutArgs* args, void* user_data));
 
+ONIG_EXTERN
+int onig_setup_builtin_monitors_by_ascii_encoded_name P_((void));
+
 #ifdef __cplusplus
 }
 #endif
