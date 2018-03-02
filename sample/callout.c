@@ -38,8 +38,8 @@ callout_body(OnigCalloutArgs* args, void* user_data)
     acontents     = onig_get_contents_by_callout_args(args);
     acontents_end = onig_get_contents_end_by_callout_args(args);
     if (acontents != 0) {
-      len = acontents_end - acontents;
-      contents = (UChar* )strndup((const char* )acontents, len);
+      OnigEncoding enc = onig_get_encoding(regex);
+      contents = onigenc_strdup(enc, acontents, acontents_end);
     }
   }
 
