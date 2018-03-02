@@ -5123,7 +5123,7 @@ onig_get_args_num_by_callout_args(OnigCalloutArgs* args)
 }
 
 extern int
-onig_get_passed_arg_num_by_callout_args(OnigCalloutArgs* args)
+onig_get_passed_args_num_by_callout_args(OnigCalloutArgs* args)
 {
   int num;
   CalloutListEntry* e;
@@ -5409,7 +5409,7 @@ onig_builtin_monitor(OnigCalloutArgs* args, void* user_data)
   start    = onig_get_start_by_callout_args(args);
   right    = onig_get_right_range_by_callout_args(args);
   current  = onig_get_current_by_callout_args(args);
-  pnum     = onig_get_passed_arg_num_by_callout_args(args);
+  pnum     = onig_get_passed_args_num_by_callout_args(args);
   if (pnum == 0)
     xsnprintf(buf, sizeof(buf), "#%d", num);
   else

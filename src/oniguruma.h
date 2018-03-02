@@ -968,7 +968,7 @@ const OnigUChar* onig_get_contents_end_by_callout_args P_((OnigCalloutArgs* args
 ONIG_EXTERN
 int onig_get_args_num_by_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
-int onig_get_passed_arg_num_by_callout_args P_((OnigCalloutArgs* args));
+int onig_get_passed_args_num_by_callout_args P_((OnigCalloutArgs* args));
 ONIG_EXTERN
 int onig_get_arg_by_callout_args P_((OnigCalloutArgs* args, int index, OnigType* type, OnigValue* val));
 ONIG_EXTERN
