@@ -17,7 +17,6 @@ callout_body(OnigCalloutArgs* args, void* user_data)
   int used_num;
   int used_bytes;
   OnigCalloutIn in;
-  OnigCalloutOf of;
   int name_id;
   UChar* contents;
   const UChar* acontents;
@@ -27,20 +26,17 @@ callout_body(OnigCalloutArgs* args, void* user_data)
   regex_t* regex;
 
   in            = onig_get_callout_in_by_callout_args(args);
-  of            = onig_get_callout_of_by_callout_args(args);
   name_id       = onig_get_name_id_by_callout_args(args);
   start         = onig_get_start_by_callout_args(args);
   current       = onig_get_current_by_callout_args(args);
   regex         = onig_get_regex_by_callout_args(args);
 
   contents = 0;
-  if (of == ONIG_CALLOUT_OF_CONTENTS) {
-    acontents     = onig_get_contents_by_callout_args(args);
+  acontents = onig_get_contents_by_callout_args(args);
+  if (acontents != 0) {
+    OnigEncoding enc = onig_get_encoding(regex);
     acontents_end = onig_get_contents_end_by_callout_args(args);
-    if (acontents != 0) {
-      OnigEncoding enc = onig_get_encoding(regex);
-      contents = onigenc_strdup(enc, acontents, acontents_end);
-    }
+    contents = onigenc_strdup(enc, acontents, acontents_end);
   }
 
   if (name_id != ONIG_NON_NAME_ID) {
@@ -49,7 +45,7 @@ callout_body(OnigCalloutArgs* args, void* user_data)
   }
   fprintf(stdout,
           "%s %s: contents: \"%s\", start: \"%s\", current: \"%s\"\n",
-          of == ONIG_CALLOUT_OF_CONTENTS ? "CONTENTS" : "NAME",
+          contents != 0 ? "CONTENTS" : "NAME",
           in == ONIG_CALLOUT_IN_PROGRESS ? "PROGRESS" : "RETRACTION",
           contents, start, current);
 

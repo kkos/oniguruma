@@ -862,9 +862,8 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 }
 
 #ifdef USE_CALLOUT
-#define CALLOUT_BODY(func, ain, aof, aname_id, anum, user, args, result) do { \
+#define CALLOUT_BODY(func, ain, aname_id, anum, user, args, result) do { \
   args.in            = (ain);\
-  args.of            = (aof);\
   args.name_id       = (aname_id);\
   args.num           = anum;\
   args.regex         = reg;\
@@ -882,10 +881,10 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   result = (func)(&args, user);\
 } while (0)
 
-#define RETRACTION_CALLOUT(func, aof, aname_id, anum, user) do {\
+#define RETRACTION_CALLOUT(func, aname_id, anum, user) do {\
   int result;\
   OnigCalloutArgs args;\
-  CALLOUT_BODY(func, ONIG_CALLOUT_IN_RETRACTION, aof, aname_id, anum, user, args, result);\
+  CALLOUT_BODY(func, ONIG_CALLOUT_IN_RETRACTION, aname_id, anum, user, args, result);\
   switch (result) {\
   case ONIG_CALLOUT_FAIL:\
     goto fail;\
@@ -994,7 +993,6 @@ typedef struct _StackType {
 
 struct OnigCalloutArgsStruct {
   OnigCalloutIn    in;
-  OnigCalloutOf    of;
   int              name_id;   /* name id or ONIG_NON_NAME_ID */
   int              num;
   OnigRegex        regex;
@@ -1699,14 +1697,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #ifdef USE_CALLOUT
 #define POP_CALLOUT_CASE \
   else if (stk->type == STK_CALLOUT) {\
-    int aof;\
-    if (stk->zid < 0) {\
-      aof = ONIG_CALLOUT_OF_CONTENTS;\
-    }\
-    else {\
-      aof = ONIG_CALLOUT_OF_NAME;\
-    }\
-    RETRACTION_CALLOUT(stk->u.callout.func, aof, stk->zid, stk->u.callout.num, msa->mp->callout_user_data);\
+    RETRACTION_CALLOUT(stk->u.callout.func, stk->zid, stk->u.callout.num, msa->mp->callout_user_data);\
   }
 #else
 #define POP_CALLOUT_CASE
@@ -3857,7 +3848,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         }
 
         if (IS_NOT_NULL(func) && (in & ONIG_CALLOUT_IN_PROGRESS) != 0) {
-          CALLOUT_BODY(func, ONIG_CALLOUT_IN_PROGRESS, of, name_id,
+          CALLOUT_BODY(func, ONIG_CALLOUT_IN_PROGRESS, name_id,
                        num, msa->mp->callout_user_data, args, call_result);
           switch (call_result) {
           case ONIG_CALLOUT_FAIL:
@@ -5060,12 +5051,6 @@ extern OnigCalloutIn
 onig_get_callout_in_by_callout_args(OnigCalloutArgs* args)
 {
   return args->in;
-}
-
-extern OnigCalloutOf
-onig_get_callout_of_by_callout_args(OnigCalloutArgs* args)
-{
-  return args->of;
 }
 
 extern int
