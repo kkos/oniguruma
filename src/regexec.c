@@ -5392,26 +5392,34 @@ static int
 onig_builtin_monitor(OnigCalloutArgs* args, void* user_data)
 {
   int num;
-  int name_id;
-  UChar* name;
+  int pnum;
   const UChar* start;
+  const UChar* right;
   const UChar* current;
+  OnigType type;
+  OnigValue aval;
   OnigCalloutIn in;
+  char buf[10];
   FILE* fp;
 
   fp = stdout;
 
-  in      = onig_get_callout_in_by_callout_args(args);
-  num     = onig_get_callout_num_by_callout_args(args);
-  name_id = onig_get_name_id_by_callout_args(args);
-  name    = onig_get_callout_name_by_name_id(name_id);
-  start   = onig_get_start_by_callout_args(args);
-  current = onig_get_current_by_callout_args(args);
+  in       = onig_get_callout_in_by_callout_args(args);
+  num      = onig_get_callout_num_by_callout_args(args);
+  start    = onig_get_start_by_callout_args(args);
+  right    = onig_get_right_range_by_callout_args(args);
+  current  = onig_get_current_by_callout_args(args);
+  pnum     = onig_get_passed_arg_num_by_callout_args(args);
+  if (pnum == 0)
+    xsnprintf(buf, sizeof(buf), "#%d", num);
+  else
+    (void )onig_get_arg_by_callout_args(args, 0, &type, &aval);
 
-  fprintf(fp, "ONIG-MONITOR: %s(#%d) %s at: %d\n",
-          name, num,
-          in == ONIG_CALLOUT_IN_PROGRESS ? "->" : "<-",
-          (int )(current - start));
+  fprintf(fp, "ONIG-MONITOR: %-4s %s at: %d [0 - %d]\n",
+          pnum == 0 ? buf : (char* )aval.s.start,
+          in == ONIG_CALLOUT_IN_PROGRESS ? "=>" : "<=",
+          (int )(current - start),
+          (int )(right   - start));
   fflush(fp);
 
   return ONIG_CALLOUT_SUCCESS;
@@ -5422,12 +5430,17 @@ onig_setup_builtin_monitors_by_ascii_encoded_name(void)
 {
   int id;
   char* name;
+  OnigType ts[4];
+  OnigValue opts[4];
   OnigEncoding enc;
 
   enc = ONIG_ENCODING_ASCII;
 
   name = "MON";
-  BC0_B(name, monitor);
+  ts[0] = ONIG_TYPE_STRING;
+  opts[0].s.start = opts[0].s.end = 0;
+
+  BC_B_O(name, monitor, 1, ts, 1, opts);
 
   return ONIG_NORMAL;
 }
