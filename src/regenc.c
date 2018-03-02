@@ -2,7 +2,7 @@
   regenc.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2018  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -104,11 +104,11 @@ onig_initialize_encoding(OnigEncoding enc)
 
   if (enc != ONIG_ENCODING_ASCII &&
       ONIGENC_IS_ASCII_COMPATIBLE_ENCODING(enc)) {
-    if (ONIG_ENCODING_ASCII->init != 0 &&
-        enc_is_inited(ONIG_ENCODING_ASCII) == 0) {
-      r = ONIG_ENCODING_ASCII->init();
+    OnigEncoding ascii = ONIG_ENCODING_ASCII;
+    if (ascii->init != 0 && enc_is_inited(ascii) == 0) {
+      r = ascii->init();
       if (r != ONIG_NORMAL) return r;
-      enc_inited_entry(ONIG_ENCODING_ASCII);
+      enc_inited_entry(ascii);
     }
   }
 
