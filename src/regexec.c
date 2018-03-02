@@ -868,8 +868,8 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   args.name_id       = (aname_id);\
   args.num           = anum;\
   args.regex         = reg;\
-  args.subject       = str;\
-  args.subject_end   = end;\
+  args.string        = str;\
+  args.string_end    = end;\
   args.start         = sstart;\
   args.right_range   = right_range;\
   args.current       = s;\
@@ -998,8 +998,8 @@ struct OnigCalloutArgsStruct {
   int              name_id;   /* name id or ONIG_NON_NAME_ID */
   int              num;
   OnigRegex        regex;
-  const OnigUChar* subject;
-  const OnigUChar* subject_end;
+  const OnigUChar* string;
+  const OnigUChar* string_end;
   const OnigUChar* start;
   const OnigUChar* right_range;
   const OnigUChar* current;  // current matching position
@@ -5198,7 +5198,7 @@ onig_get_capture_range_in_callout(OnigCalloutArgs* a, int mem_num, int* begin, i
 
   i = mem_num;
   reg = a->regex;
-  str = a->subject;
+  str = a->string;
   stk_base = a->stk_base;
 
   if (i > 0) {
