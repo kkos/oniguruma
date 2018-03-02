@@ -6304,6 +6304,8 @@ onig_end(void)
   onig_global_callout_names_free();
 #endif
 
+  onigenc_end();
+
   onig_inited = 0;
 
   return 0;

@@ -31,6 +31,66 @@
 
 OnigEncoding OnigEncDefaultCharEncoding = ONIG_ENCODING_INIT_DEFAULT;
 
+#define INITED_LIST_SIZE  20
+
+static int InitedListNum;
+
+static struct {
+  OnigEncoding enc;
+  int          inited;
+} InitedList[INITED_LIST_SIZE];
+
+static int
+enc_inited_entry(OnigEncoding enc)
+{
+  int i;
+
+  for (i = 0; i < InitedListNum; i++) {
+    if (InitedList[i].enc == enc) {
+      InitedList[i].inited = 1;
+      return i;
+    }
+  }
+
+  i = InitedListNum;
+  if (i < INITED_LIST_SIZE - 1) {
+    InitedList[i].enc    = enc;
+    InitedList[i].inited = 1;
+    InitedListNum++;
+    return i;
+  }
+
+  return -1;
+}
+
+static int
+enc_is_inited(OnigEncoding enc)
+{
+  int i;
+
+  for (i = 0; i < InitedListNum; i++) {
+    if (InitedList[i].enc == enc) {
+      return InitedList[i].inited;
+    }
+  }
+
+  return 0;
+}
+
+extern int
+onigenc_end(void)
+{
+  int i;
+
+  for (i = 0; i < InitedListNum; i++) {
+    InitedList[i].enc    = 0;
+    InitedList[i].inited = 0;
+  }
+
+  InitedListNum = 0;
+  return ONIG_NORMAL;
+}
+
 extern int
 onigenc_init(void)
 {
@@ -42,16 +102,21 @@ onig_initialize_encoding(OnigEncoding enc)
 {
   int r;
 
-  if (ONIGENC_IS_ASCII_COMPATIBLE_ENCODING(enc)) {
+  if (enc != ONIG_ENCODING_ASCII &&
+      ONIGENC_IS_ASCII_COMPATIBLE_ENCODING(enc)) {
     if (ONIG_ENCODING_ASCII->init != 0 &&
-        ONIG_ENCODING_ASCII->is_initialized() == 0) {
+        enc_is_inited(ONIG_ENCODING_ASCII) == 0) {
       r = ONIG_ENCODING_ASCII->init();
       if (r != ONIG_NORMAL) return r;
+      enc_inited_entry(ONIG_ENCODING_ASCII);
     }
   }
 
-  if (enc->init != 0 && (enc->is_initialized() == 0)) {
+  if (enc->init != 0 &&
+      enc_is_inited(enc) == 0) {
     r = (enc->init)();
+    if (r == ONIG_NORMAL)
+      enc_inited_entry(enc);
     return r;
   }
 
