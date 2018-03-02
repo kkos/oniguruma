@@ -5408,6 +5408,8 @@ onig_builtin_monitor(OnigCalloutArgs* args, void* user_data)
   const UChar* start;
   const UChar* right;
   const UChar* current;
+  const UChar* string;
+  const UChar* strend;
   OnigType type;
   OnigValue aval;
   OnigCalloutIn in;
@@ -5421,17 +5423,21 @@ onig_builtin_monitor(OnigCalloutArgs* args, void* user_data)
   start    = onig_get_start_by_callout_args(args);
   right    = onig_get_right_range_by_callout_args(args);
   current  = onig_get_current_by_callout_args(args);
+  string   = onig_get_string_by_callout_args(args);
+  strend   = onig_get_string_end_by_callout_args(args);
   pnum     = onig_get_passed_args_num_by_callout_args(args);
   if (pnum == 0)
     xsnprintf(buf, sizeof(buf), "#%d", num);
   else
     (void )onig_get_arg_by_callout_args(args, 0, &type, &aval);
 
-  fprintf(fp, "ONIG-MONITOR: %-4s %s at: %d [0 - %d]\n",
+  fprintf(fp, "ONIG-MONITOR: %-4s %s at: %d [%d - %d] len: %d\n",
           pnum == 0 ? buf : (char* )aval.s.start,
           in == ONIG_CALLOUT_IN_PROGRESS ? "=>" : "<=",
-          (int )(current - start),
-          (int )(right   - start));
+          (int )(current - string),
+          (int )(start   - string),
+          (int )(right   - string),
+          (int )(strend  - string));
   fflush(fp);
 
   return ONIG_CALLOUT_SUCCESS;
