@@ -260,8 +260,10 @@ typedef struct {
   OnigCalloutOf of;
   int           in;
   int           name_id;
+  UChar*        tag_start;
+  UChar*        tag_end;
   OnigCalloutType type;
-  OnigCalloutFunc start_func; /* may be a monitor func */
+  OnigCalloutFunc start_func;
   OnigCalloutFunc end_func;
   union {
     struct {

@@ -1846,12 +1846,17 @@ callout_tag_entry(regex_t* reg, UChar* name, UChar* name_end,
 {
   int r;
   RegexExt* ext;
+  CalloutListEntry* e;
 
   r = ext_ensure_tag_table(reg);
   if (r != ONIG_NORMAL) return r;
 
   ext = onig_get_regex_ext(reg);
   r = callout_tag_entry_raw(ext->tag_table, name, name_end, entry_val);
+
+  e = onig_reg_callout_list_at(reg, entry_val);
+  e->tag_start = name;
+  e->tag_end   = name_end;
 
   return r;
 }
@@ -2542,10 +2547,12 @@ reg_callout_list_entry(ScanEnv* env, int* rnum)
 
   e = ext->callout_list + num;
 
-  e->flag = 0;
-  e->of   = 0;
-  e->in   = ONIG_CALLOUT_OF_CONTENTS;
-  e->type = 0;
+  e->flag      = 0;
+  e->of        = 0;
+  e->in        = ONIG_CALLOUT_OF_CONTENTS;
+  e->type      = 0;
+  e->tag_start = 0;
+  e->tag_end   = 0;
   e->start_func       = 0;
   e->end_func         = 0;
   e->u.arg.num        = 0;
