@@ -6,8 +6,6 @@
 #include <string.h>
 #include "oniguruma.h"
 
-OnigEncoding ENC = ONIG_ENCODING_UTF8;
-
 static int
 callout_body(OnigCalloutArgs* args, void* user_data)
 {
@@ -138,7 +136,7 @@ bar(OnigCalloutArgs* args, void* user_data)
 }
 
 static int
-test(char* in_pattern, char* in_str)
+test(OnigEncoding enc, char* in_pattern, char* in_str)
 {
   int r;
   unsigned char *start, *range, *end;
@@ -152,7 +150,7 @@ test(char* in_pattern, char* in_str)
   str = (UChar* )in_str;
 
   r = onig_new(&reg, pattern, pattern + strlen((char* )pattern),
-	ONIG_OPTION_DEFAULT, ENC, ONIG_SYNTAX_DEFAULT, &einfo);
+	ONIG_OPTION_DEFAULT, enc, ONIG_SYNTAX_DEFAULT, &einfo);
   if (r != ONIG_NORMAL) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
     onig_error_code_to_str((UChar* )s, r, &einfo);
@@ -196,8 +194,10 @@ extern int main(int argc, char* argv[])
   OnigEncoding use_encs[1];
   OnigType arg_types[4];
   OnigValue opt_defaults[4];
+  OnigEncoding enc;
 
-  use_encs[0] = ENC;
+  enc = ONIG_ENCODING_UTF8;
+  use_encs[0] = enc;
 
   r = onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
   if (r != ONIG_NORMAL) return -1;
@@ -207,7 +207,7 @@ extern int main(int argc, char* argv[])
   if (r != ONIG_NORMAL) return -1;
 
   name = (UChar* )"foo";
-  id = onig_set_callout_of_name(ENC, ONIG_CALLOUT_TYPE_SINGLE,
+  id = onig_set_callout_of_name(enc, ONIG_CALLOUT_TYPE_SINGLE,
                                 name, name + strlen((char* )name),
                                 ONIG_CALLOUT_IN_BOTH, foo, 0, 0, 0, 0, 0);
   if (id < 0) {
@@ -224,7 +224,7 @@ extern int main(int argc, char* argv[])
                                 strlen((char* )opt_defaults[0].s.start);
   opt_defaults[1].cp = 0x4422;
 
-  id = onig_set_callout_of_name(ENC, ONIG_CALLOUT_TYPE_SINGLE,
+  id = onig_set_callout_of_name(enc, ONIG_CALLOUT_TYPE_SINGLE,
                                 name, name + strlen((char* )name),
                                 ONIG_CALLOUT_IN_PROGRESS, bar, 0,
                                 3, arg_types, 2, opt_defaults);
@@ -237,30 +237,30 @@ extern int main(int argc, char* argv[])
   (void)onig_set_retraction_callout_of_contents(retraction_callout_func);
 
   // callout of contents
-  test("a+(?{foo bar baz...}+)$", "aaab");
-  test("(?{{!{}#$%&'()=-~^|[_]`@*:+;<>?/.\\,}})c", "abc");
-  test("\\A(...)(?{{{booooooooooooo{{ooo}}ooooooooooz}}}-)", "aaab");
-  test("\\A(?!a(?{prec-read-not}+)b)", "ac");
-  test("(?<!a(?{look-behind-not}+)c)c", "abc");
+  test(enc, "a+(?{foo bar baz...}+)$", "aaab");
+  test(enc, "(?{{!{}#$%&'()=-~^|[_]`@*:+;<>?/.\\,}})c", "abc");
+  test(enc, "\\A(...)(?{{{booooooooooooo{{ooo}}ooooooooooz}}}-)", "aaab");
+  test(enc, "\\A(?!a(?{prec-read-not}+)b)", "ac");
+  test(enc, "(?<!a(?{look-behind-not}+)c)c", "abc");
 
 
   // callout of name
-  test("\\A(*foo)abc", "abc");
-  test("abc(*SUCCESS)", "abcabc");
-  test("abc(?:(*FAIL)|$)", "abcabc");
-  test("abc(?:(*ABORT)|$)", "abcabc");
-  test("ab(*foo{})(*FAIL)", "abc");
-  test("abc(d|(*ERROR{-999}))", "abc");
-  test("ab(*bar{372,I am a bar's argument,あ})c(*FAIL)", "abc");
-  test("ab(*bar{1234567890})", "abc");
-  test("(?:a(*MAX{2})|b)*", "abbabbabbabb");
-  test("(?:(*MAX{2})a|b)*", "abbabbabbabb");
-  test("(?:(*MAX{1})a|b)*", "bbbbbabbbbbabbbbb");
-  test("(?:(*MAX{3})a|(*MAX{4})b)*", "bbbaabbab");
+  test(enc, "\\A(*foo)abc", "abc");
+  test(enc, "abc(*SUCCESS)", "abcabc");
+  test(enc, "abc(?:(*FAIL)|$)", "abcabc");
+  test(enc, "abc(?:(*ABORT)|$)", "abcabc");
+  test(enc, "ab(*foo{})(*FAIL)", "abc");
+  test(enc, "abc(d|(*ERROR{-999}))", "abc");
+  test(enc, "ab(*bar{372,I am a bar's argument,あ})c(*FAIL)", "abc");
+  test(enc, "ab(*bar{1234567890})", "abc");
+  test(enc, "(?:a(*MAX{2})|b)*", "abbabbabbabb");
+  test(enc, "(?:(*MAX{2})a|b)*", "abbabbabbabb");
+  test(enc, "(?:(*MAX{1})a|b)*", "bbbbbabbbbbabbbbb");
+  test(enc, "(?:(*MAX{3})a|(*MAX{4})b)*", "bbbaabbab");
 
   /* monitor test */
-  //test("(?:(*MON)(*MAX{3})a(*MON{foo})|(*MAX{4})b)*", "bbbaabbab");
-  test("(?:(*MON)(*FAIL)|.{,3}(*MON[X])k)", "abcdefghijk");
+  //test(enc, "(?:(*MON)(*MAX{3})a(*MON{foo})|(*MAX{4})b)*", "bbbaabbab");
+  test(enc, "(?:(*MON)(*FAIL)|.{,3}(*MON[X])k)", "abcdefghijk");
 
   onig_end();
   return 0;
