@@ -849,6 +849,15 @@ extern OnigCalloutFunc onig_get_callout_start_func_by_callout_num(regex_t* reg, 
   if (id < 0) return id;\
 } while(0)
 
+#define BC0_B(name, func)  do {\
+  int len = onigenc_str_bytelen_null(enc, (UChar* )name);\
+  id = onig_set_callout_of_name(enc, ONIG_CALLOUT_TYPE_SINGLE,\
+                              (UChar* )(name), (UChar* )((name) + len),\
+                              ONIG_CALLOUT_IN_BOTH,\
+                              onig_builtin_ ## func, 0, 0, 0, 0, 0);\
+  if (id < 0) return id;\
+} while(0)
+
 #define BC1_P(name, func, ts)  do {\
   int len = onigenc_str_bytelen_null(enc, (UChar* )name);\
   id = onig_set_callout_of_name(enc, ONIG_CALLOUT_TYPE_SINGLE,\
