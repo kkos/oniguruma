@@ -6823,16 +6823,13 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     if (r != ONIG_NORMAL) return r;
   }
 
+  if (tag_start != tag_end) {
+    r = callout_tag_entry(env->reg, tag_start, tag_end, num);
+    if (r != ONIG_NORMAL) return r;
+  }
+
   r = node_new_callout(&node, ONIG_CALLOUT_OF_NAME, num, name_id, env);
   if (r != ONIG_NORMAL) return r;
-
-  if (tag_start != tag_end) {
-    r = callout_tag_entry(env->reg, tag_start, tag_end, GIMMICK_(node)->num);
-    if (r != ONIG_NORMAL) {
-      onig_node_free(node);
-      return r;
-    }
-  }
 
   e = onig_reg_callout_list_at(env->reg, num);
   e->of         = ONIG_CALLOUT_OF_NAME;
