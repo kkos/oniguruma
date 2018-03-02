@@ -5388,9 +5388,9 @@ onig_builtin_max(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 static int
 onig_builtin_monitor(OnigCalloutArgs* args, void* user_data)
 {
+  int r;
   int num;
   size_t tag_len;
-  //int pnum;
   const UChar* start;
   const UChar* right;
   const UChar* current;
@@ -5400,12 +5400,26 @@ onig_builtin_monitor(OnigCalloutArgs* args, void* user_data)
   const UChar* tag_end;
   regex_t* reg;
   OnigCalloutIn in;
+  OnigType type;
+  OnigValue val;
   char buf[20];
   FILE* fp;
 
   fp = stdout;
 
-  in        = onig_get_callout_in_by_callout_args(args);
+  r = onig_get_arg_by_callout_args(args, 0, &type, &val);
+  if (r != ONIG_NORMAL) return r;
+
+  in = onig_get_callout_in_by_callout_args(args);
+  if (in == ONIG_CALLOUT_IN_PROGRESS) {
+    if (val.cp == '-')
+      return ONIG_CALLOUT_SUCCESS;
+  }
+  else {
+    if (val.cp != '+' && val.cp != '-')
+      return ONIG_CALLOUT_SUCCESS;
+  }
+
   num       = onig_get_callout_num_by_callout_args(args);
   start     = onig_get_start_by_callout_args(args);
   right     = onig_get_right_range_by_callout_args(args);
@@ -5415,7 +5429,6 @@ onig_builtin_monitor(OnigCalloutArgs* args, void* user_data)
   reg       = onig_get_regex_by_callout_args(args);
   tag_start = onig_get_tag_start_by_callout_num(reg, num);
   tag_end   = onig_get_tag_end_by_callout_num(reg, num);
-  //pnum     = onig_get_passed_args_num_by_callout_args(args);
 
   if (tag_start == 0)
     xsnprintf(buf, sizeof(buf), "#%d", num);
@@ -5447,11 +5460,15 @@ onig_setup_builtin_monitors_by_ascii_encoded_name(void)
   int id;
   char* name;
   OnigEncoding enc;
+  OnigType ts[4];
+  OnigValue opts[4];
 
   enc = ONIG_ENCODING_ASCII;
 
   name = "MON";
-  BC0_B(name, monitor);
+  ts[0] = ONIG_TYPE_CHAR;
+  opts[0].cp = ' ';
+  BC_B_O(name, monitor, 1, ts, 1, opts);
 
   return ONIG_NORMAL;
 }
