@@ -6525,13 +6525,13 @@ parse_callout_of_contents(Node** np, int cterm, UChar** src, UChar* end, ScanEnv
     if (r != ONIG_NORMAL) return r;
   }
 
-  r = node_new_callout(np, ONIG_CALLOUT_OF_CONTENTS, num, ONIG_NO_NAME_ID, env);
+  r = node_new_callout(np, ONIG_CALLOUT_OF_CONTENTS, num, ONIG_NON_NAME_ID, env);
   if (r != 0) return r;
 
   e = onig_reg_callout_list_at(env->reg, num);
   e->of      = ONIG_CALLOUT_OF_CONTENTS;
   e->in      = in;
-  e->name_id = ONIG_NO_NAME_ID;
+  e->name_id = ONIG_NON_NAME_ID;
   e->u.content.start = ext->pattern + (code_start - env->pattern);
   e->u.content.end   = ext->pattern + (code_end   - env->pattern);
 

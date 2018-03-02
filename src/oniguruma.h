@@ -744,7 +744,7 @@ typedef enum {
 } OnigCalloutType;
 
 
-#define ONIG_NO_NAME_ID   -1
+#define ONIG_NON_NAME_ID   -1
 
 #define ONIG_CALLOUT_MAX_ARGS_NUM     4
 #define ONIG_CALLOUT_DATA_SLOT_NUM    5

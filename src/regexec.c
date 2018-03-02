@@ -995,7 +995,7 @@ typedef struct _StackType {
 struct OnigCalloutArgsStruct {
   OnigCalloutIn    in;
   OnigCalloutOf    of;
-  int              name_id;   /* name id or ONIG_NO_NAME_ID */
+  int              name_id;   /* name id or ONIG_NON_NAME_ID */
   int              num;
   OnigRegex        regex;
   const OnigUChar* subject;
@@ -1665,7 +1665,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_CALLOUT_CONTENTS(anum, func) do {\
   STACK_ENSURE(1);\
   stk->type = STK_CALLOUT;\
-  stk->zid  = ONIG_NO_NAME_ID;\
+  stk->zid  = ONIG_NON_NAME_ID;\
   stk->u.callout.num = (anum);\
   stk->u.callout.func = (func);\
   STACK_INC;\
@@ -3852,7 +3852,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           func = onig_get_callout_start_func_by_callout_num(reg, num);
         }
         else {
-          name_id = ONIG_NO_NAME_ID;
+          name_id = ONIG_NON_NAME_ID;
           func = msa->mp->callout_of_contents;
         }
 
@@ -5049,29 +5049,6 @@ onig_set_retraction_callout_of_contents(OnigCalloutFunc f)
   DefaultRetractionCallout = f;
   return ONIG_NORMAL;
 }
-
-#if 0
-struct {
-  enum OnigCalloutIn in;
-  enum OnigCalloutOf of;
-  int   name_id;   /* name id or ONIG_NO_NAME_ID */
-int   num;
-  OnigRegex        regex;
-const OnigUChar* subject;
-const OnigUChar* subject_end;
-  const OnigUChar* start;
-  const OnigUChar* right_range;
-  const OnigUChar* current;  // current matching position
-  unsigned long    retry_in_match_counter;
-
-  /* invisible to users */
-  StackType*  stk_base;
-  StackType*  stk;
-  StackIndex* mem_start_stk;
-  StackIndex* mem_end_stk;
-};
-#endif
-
 
 extern int
 onig_get_callout_num_by_callout_args(OnigCalloutArgs* args)
