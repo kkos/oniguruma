@@ -282,8 +282,8 @@ typedef struct {
 #endif
 
 typedef struct {
-  UChar* pattern;
-  UChar* pattern_end;
+  const UChar* pattern;
+  const UChar* pattern_end;
 #ifdef USE_CALLOUT
   void*  tag_table;
   int    callout_num;

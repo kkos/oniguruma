@@ -5888,7 +5888,7 @@ free_regex_ext(RegexExt* ext)
 {
   if (IS_NOT_NULL(ext)) {
     if (IS_NOT_NULL(ext->pattern))
-      xfree(ext->pattern);
+      xfree((void* )ext->pattern);
 
 #ifdef USE_CALLOUT
     if (IS_NOT_NULL(ext->tag_table))
