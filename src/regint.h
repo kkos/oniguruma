@@ -260,8 +260,8 @@ typedef struct {
   OnigCalloutOf of;
   int           in;
   int           name_id;
-  UChar*        tag_start;
-  UChar*        tag_end;
+  const UChar*  tag_start;
+  const UChar*  tag_end;
   OnigCalloutType type;
   OnigCalloutFunc start_func;
   OnigCalloutFunc end_func;
