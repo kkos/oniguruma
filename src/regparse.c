@@ -2558,7 +2558,7 @@ reg_callout_list_entry(ScanEnv* env, int* rnum)
 
 static int
 node_new_callout(Node** node, OnigCalloutOf callout_of, int num, int id,
-                 int with_tag, ScanEnv* env)
+                 ScanEnv* env)
 {
   *node = node_new();
   CHECK_NULL_RETURN_MEMERR(*node);
@@ -6525,7 +6525,7 @@ parse_callout_of_contents(Node** np, int cterm, UChar** src, UChar* end, ScanEnv
     if (r != ONIG_NORMAL) return r;
   }
 
-  r = node_new_callout(np, ONIG_CALLOUT_OF_CONTENTS, num, ONIG_NO_NAME_ID, 0, env);
+  r = node_new_callout(np, ONIG_CALLOUT_OF_CONTENTS, num, ONIG_NO_NAME_ID, env);
   if (r != 0) return r;
 
   e = onig_reg_callout_list_at(env->reg, num);
@@ -6717,7 +6717,6 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   int arg_num;
   int max_arg_num;
   int opt_arg_num;
-  int with_tag;
   int is_not_single;
   OnigCodePoint c;
   UChar* name_start;
@@ -6815,8 +6814,6 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   if (c != cterm)
     return ONIGERR_INVALID_CALLOUT_PATTERN;
 
-  with_tag = (tag_start != tag_end) ? 1 : 0;
-
   r = reg_callout_list_entry(env, &num);
   if (r != 0) return r;
 
@@ -6826,7 +6823,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
     if (r != ONIG_NORMAL) return r;
   }
 
-  r = node_new_callout(&node, ONIG_CALLOUT_OF_NAME, num, name_id, with_tag, env);
+  r = node_new_callout(&node, ONIG_CALLOUT_OF_NAME, num, name_id, env);
   if (r != ONIG_NORMAL) return r;
 
   if (tag_start != tag_end) {
