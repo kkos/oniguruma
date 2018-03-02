@@ -26,16 +26,11 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
 #include "regint.h"  /* for USE_CALLOUT */
-
-
-static int inited;
 
 static int
 init(void)
 {
-  if (inited == 0) {
 #ifdef USE_CALLOUT
 
     int id;
@@ -65,18 +60,8 @@ init(void)
 
 #endif /* USE_CALLOUT */
 
-    inited = 1;
-  }
-
   return ONIG_NORMAL;
 }
-
-static int
-is_initialized(void)
-{
-  return inited;
-}
-
 
 static const int EncLen_UTF16[] = {
   2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -289,6 +274,6 @@ OnigEncodingType OnigEncodingUTF16_LE = {
   utf16le_left_adjust_char_head,
   onigenc_always_false_is_allowed_reverse_match,
   init,
-  is_initialized,
+  0, /* is_initialized */
   is_valid_mbc_string
 };

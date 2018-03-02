@@ -29,12 +29,9 @@
 
 #include "regint.h"   /* for USE_CALLOUT */
 
-static int inited;
-
 static int
 init(void)
 {
-  if (inited == 0) {
 #ifdef USE_CALLOUT
 
     int id;
@@ -63,17 +60,18 @@ init(void)
 
 #endif /* USE_CALLOUT */
 
-    inited = 1;
-  }
-
   return ONIG_NORMAL;
 }
 
+#if 0
 static int
 is_initialized(void)
 {
-  return inited;
+  /* Don't use this function */
+  /* can't answer, because builtin callout entries removed in onig_end() */
+  return 0;
 }
+#endif
 
 static int
 ascii_is_code_ctype(OnigCodePoint code, unsigned int ctype)
@@ -102,6 +100,6 @@ OnigEncodingType OnigEncodingASCII = {
   onigenc_single_byte_left_adjust_char_head,
   onigenc_always_true_is_allowed_reverse_match,
   init,
-  is_initialized,
+  0, /* is_initialized */
   onigenc_always_true_is_valid_mbc_string
 };
