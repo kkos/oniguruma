@@ -5436,9 +5436,12 @@ onig_builtin_monitor(OnigCalloutArgs* args, void* user_data)
     xsnprintf(buf, sizeof(buf), "#%d", num);
   else {
     /* CAUTION: tag string is not terminated with NULL. */
-    tag_len = tag_end - tag_start + 1;
-    if (tag_len > sizeof(buf)) tag_len = sizeof(buf);
-    xsnprintf(buf, tag_len, "%s", tag_start);
+    int i;
+
+    tag_len = tag_end - tag_start;
+    if (tag_len >= sizeof(buf)) tag_len = sizeof(buf) - 1;
+    for (i = 0; i < tag_len; i++) buf[i] = tag_start[i];
+    buf[tag_len] = '\0';
   }
 
   fprintf(fp, "ONIG-MONITOR: %-4s %s at: %d [%d - %d] len: %d\n",
