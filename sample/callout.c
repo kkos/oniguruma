@@ -256,7 +256,7 @@ extern int main(int argc, char* argv[])
 
   /* monitor test */
   //test(enc, "(?:(*MON)(*MAX{3})a(*MON{foo})|(*MAX{4})b)*", "bbbaabbab");
-  test(enc, "(?:(*MON)(*FAIL)|.{,3}(*MON[X])k)", "abcdefghijk");
+  test(enc, "(?:(*MON{+})(*FAIL)|.{,3}(*MON[X])k)", "abcdefghijk");
 
   onig_end();
   return 0;
