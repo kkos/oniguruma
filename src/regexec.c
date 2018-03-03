@@ -5306,7 +5306,7 @@ onig_builtin_total_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   r = onig_get_arg_by_callout_args(args, 0, &type, &aval);
   if (r != ONIG_NORMAL) return r;
 
-  count_type = aval.cp;
+  count_type = aval.c;
   if (count_type != 'p' && count_type != 's' && count_type != 'f')
     return ONIGERR_INVALID_CALLOUT_ARG;
 
@@ -5412,11 +5412,11 @@ onig_builtin_monitor(OnigCalloutArgs* args, void* user_data)
 
   in = onig_get_callout_in_by_callout_args(args);
   if (in == ONIG_CALLOUT_IN_PROGRESS) {
-    if (val.cp == '-')
+    if (val.c == '-')
       return ONIG_CALLOUT_SUCCESS;
   }
   else {
-    if (val.cp != '+' && val.cp != '-')
+    if (val.c != '+' && val.c != '-')
       return ONIG_CALLOUT_SUCCESS;
   }
 
@@ -5467,7 +5467,7 @@ onig_setup_builtin_monitors_by_ascii_encoded_name(void)
 
   name = "MON";
   ts[0] = ONIG_TYPE_CHAR;
-  opts[0].cp = ' ';
+  opts[0].c = ' ';
   BC_B_O(name, monitor, 1, ts, 1, opts);
 
   return ONIG_NORMAL;

@@ -776,7 +776,7 @@ typedef enum {
 typedef union {
   int  i;
   long l;
-  OnigCodePoint cp;
+  OnigCodePoint c;
   struct {
     OnigUChar* start;
     OnigUChar* end;

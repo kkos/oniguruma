@@ -6687,7 +6687,7 @@ parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
 
         case ONIG_TYPE_CHAR:
           if (cn != 1) return ONIGERR_INVALID_CALLOUT_ARG;
-          vals[n].cp = ONIGENC_MBC_TO_CODE(enc, buf, bufend);
+          vals[n].c = ONIGENC_MBC_TO_CODE(enc, buf, bufend);
           break;
 
         case ONIG_TYPE_STRING:

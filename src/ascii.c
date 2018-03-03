@@ -52,10 +52,10 @@ init(void)
     name = "ERROR";       BC1_P(name, error, &t_int);
     name = "MAX";         BC1_B(name, max, &t_long);
     name = "COUNT";
-    args[0] = ONIG_TYPE_CHAR; opts[0].cp = 'p';
+    args[0] = ONIG_TYPE_CHAR; opts[0].c = 'p';
     BC_B_O(name, count, 1, args, 1, opts);
     name = "TOTAL_COUNT";
-    args[0] = ONIG_TYPE_CHAR; opts[0].cp = 'p';
+    args[0] = ONIG_TYPE_CHAR; opts[0].c = 'p';
     BC_B_O(name, total_count, 1, args, 1, opts);
 
 #endif /* USE_CALLOUT */

@@ -117,7 +117,7 @@ bar(OnigCalloutArgs* args, void* user_data)
       fprintf(stdout, "%ld\n", val.l);
       break;
     case ONIG_TYPE_CHAR:
-      fprintf(stdout, "0x%06x\n", val.cp);
+      fprintf(stdout, "0x%06x\n", val.c);
       break;
     case ONIG_TYPE_STRING:
       fprintf(stdout, "'%s'\n", val.s.start);
@@ -218,7 +218,7 @@ extern int main(int argc, char* argv[])
   opt_defaults[0].s.start = (UChar* )"I am a option argument's default value.";
   opt_defaults[0].s.end   = opt_defaults[0].s.start +
                                 strlen((char* )opt_defaults[0].s.start);
-  opt_defaults[1].cp = 0x4422;
+  opt_defaults[1].c = 0x4422;
 
   id = onig_set_callout_of_name(enc, ONIG_CALLOUT_TYPE_SINGLE,
                                 name, name + strlen((char* )name),
