@@ -234,9 +234,9 @@ extern int main(int argc, char* argv[])
 
   // callout of contents
   test(enc, "a+(?{foo bar baz...}+)$", "aaab");
-  test(enc, "(?{{!{}#$%&'()=-~^|[_]`@*:+;<>?/.\\,}})c", "abc");
+  test(enc, "(?{{!{}#$%&'()=-~^|[_]`@*:+;<>?/.\\,}}[symbols])c", "abc");
   test(enc, "\\A(...)(?{{{booooooooooooo{{ooo}}ooooooooooz}}}-)", "aaab");
-  test(enc, "\\A(?!a(?{prec-read-not}+)b)", "ac");
+  test(enc, "\\A(?!a(?{prec-read-not}[xxx]+)b)", "ac");
   test(enc, "(?<!a(?{look-behind-not}+)c)c", "abc");
 
 
