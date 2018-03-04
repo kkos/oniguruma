@@ -6476,7 +6476,7 @@ static int parse_subexp(Node** top, OnigToken* tok, int term,
 
 #ifdef USE_CALLOUT
 
-/* (?{...}[+-]) (?{{...}}[+-]) */
+/* (?{...}[tag][+-]) (?{{...}}[tag][+-]) */
 static int
 parse_callout_of_contents(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
 {
@@ -6487,6 +6487,8 @@ parse_callout_of_contents(Node** np, int cterm, UChar** src, UChar* end, ScanEnv
   OnigCodePoint c;
   UChar* code_start;
   UChar* code_end;
+  UChar* tag_start;
+  UChar* tag_end;
   int brace_nest;
   CalloutListEntry* e;
   RegexExt* ext;
@@ -6522,7 +6524,27 @@ parse_callout_of_contents(Node** np, int cterm, UChar** src, UChar* end, ScanEnv
   }
 
   if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+
   PFETCH_S(c);
+  if (c == '[') {
+    if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+    tag_start = p;
+    while (! PEND) {
+      if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+      tag_end = p;
+      PFETCH_S(c);
+      if (c == ']') break;
+    }
+    if (! is_allowed_callout_tag_name(enc, tag_start, tag_end))
+      return ONIGERR_INVALID_CALLOUT_TAG_NAME;
+
+    if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+    PFETCH_S(c);
+  }
+  else {
+    tag_start = tag_end = 0;
+  }
+
   if (c == '+') {
     in |= ONIG_CALLOUT_IN_RETRACTION;
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
@@ -6543,6 +6565,11 @@ parse_callout_of_contents(Node** np, int cterm, UChar** src, UChar* end, ScanEnv
   ext = onig_get_regex_ext(env->reg);
   if (IS_NULL(ext->pattern)) {
     r = onig_ext_set_pattern(env->reg, env->pattern, env->pattern_end);
+    if (r != ONIG_NORMAL) return r;
+  }
+
+  if (tag_start != tag_end) {
+    r = callout_tag_entry(env->reg, tag_start, tag_end, num);
     if (r != ONIG_NORMAL) return r;
   }
 
