@@ -47,14 +47,22 @@ init(void)
     name = "FAIL";        BC0_P(name, fail);
     name = "SUCCESS";     BC0_P(name, success);
     name = "ABORT";       BC0_P(name, abort);
-    name = "ERROR";       BC1_P(name, error, &t_long);
-    name = "MAX";         BC1_B(name, max, &t_long);
+    name = "ERROR";       BC_P(name, error, 1, &t_long);
+    name = "MAX";         BC_B(name, max, 1, &t_long);
+
     name = "COUNT";
     args[0] = ONIG_TYPE_CHAR; opts[0].c = ' ';
     BC_B_O(name, count, 1, args, 1, opts);
+
     name = "TOTAL_COUNT";
     args[0] = ONIG_TYPE_CHAR; opts[0].c = ' ';
     BC_B_O(name, total_count, 1, args, 1, opts);
+
+    name = "CMP";
+    args[0] = ONIG_TYPE_TAG;
+    args[1] = ONIG_TYPE_STRING;
+    args[2] = ONIG_TYPE_TAG;
+    BC_P(name, cmp, 3, args);
 
 #endif /* USE_CALLOUT */
 

@@ -48,15 +48,22 @@ init(void)
     name = "\000F\000A\000I\000L\000\000";                BC0_P(name, fail);
     name = "\000S\000U\000C\000C\000E\000S\000S\000\000"; BC0_P(name, success);
     name = "\000A\000B\000O\000R\000T\000\000";           BC0_P(name, abort);
-    name = "\000E\000R\000R\000O\000R\000\000";          BC1_P(name, error, &t_long);
-    name = "\000M\000A\000X\000\000";                    BC1_B(name, max, &t_long);
+    name = "\000E\000R\000R\000O\000R\000\000";       BC_P(name, error, 1, &t_long);
+    name = "\000M\000A\000X\000\000";                 BC_B(name, max, 1, &t_long);
 
     name = "\000C\000O\000U\000N\000T\000\000";
     args[0] = ONIG_TYPE_CHAR; opts[0].c = ' ';
     BC_B_O(name, count, 1, args, 1, opts);
+
     name = "\000T\000O\000T\000A\000L\000_\000C\000O\000U\000N\000T\000\000";
     args[0] = ONIG_TYPE_CHAR; opts[0].c = ' ';
     BC_B_O(name, total_count, 1, args, 1, opts);
+
+    name = "\000C\000M\000P\000\000";
+    args[0] = ONIG_TYPE_TAG;
+    args[1] = ONIG_TYPE_STRING;
+    args[2] = ONIG_TYPE_TAG;
+    BC_P(name, cmp, 3, args);
 
 #endif /* USE_CALLOUT */
 
