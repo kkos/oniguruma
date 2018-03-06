@@ -1131,7 +1131,7 @@ typedef struct {
   OnigCalloutFunc end_func;
   int             arg_num;
   int             opt_arg_num;
-  OnigType        arg_types[ONIG_CALLOUT_MAX_ARGS_NUM];
+  unsigned int    arg_types[ONIG_CALLOUT_MAX_ARGS_NUM];
   OnigValue       opt_defaults[ONIG_CALLOUT_MAX_ARGS_NUM];
   UChar*          name; /* reference to GlobalCalloutNameTable entry: e->name */
 } CalloutNameListEntry;
@@ -1491,7 +1491,7 @@ onig_set_callout_of_name(OnigEncoding enc, OnigCalloutType callout_type,
                          UChar* name, UChar* name_end, int in,
                          OnigCalloutFunc start_func,
                          OnigCalloutFunc end_func,
-                         int arg_num, OnigType arg_types[],
+                         int arg_num, unsigned int arg_types[],
                          int opt_arg_num, OnigValue opt_defaults[])
 {
   int r;
@@ -1515,8 +1515,23 @@ onig_set_callout_of_name(OnigEncoding enc, OnigCalloutType callout_type,
     return ONIGERR_INVALID_CALLOUT_ARG;
 
   for (i = 0; i < arg_num; i++) {
-    if (arg_types[i] == ONIG_TYPE_VOID || arg_types[i] == ONIG_TYPE_POINTER)
+    unsigned int t = arg_types[i];
+    if (t == ONIG_TYPE_VOID)
       return ONIGERR_INVALID_CALLOUT_ARG;
+    else {
+      if (i >= arg_num - opt_arg_num) {
+        if (t != ONIG_TYPE_LONG && t != ONIG_TYPE_CHAR && t != ONIG_TYPE_STRING &&
+            t != ONIG_TYPE_TAG)
+          return ONIGERR_INVALID_CALLOUT_ARG;
+      }
+      else {
+        if (t != ONIG_TYPE_LONG) {
+          t = t & ~ONIG_TYPE_LONG;
+          if (t != ONIG_TYPE_CHAR && t != ONIG_TYPE_STRING && t != ONIG_TYPE_TAG)
+            return ONIGERR_INVALID_CALLOUT_ARG;
+        }
+      }
+    }
   }
 
   if (! is_allowed_callout_name(enc, name, name_end)) {
@@ -1652,7 +1667,7 @@ get_callout_opt_arg_num_by_name_id(int name_id)
   return GlobalCalloutNameList->v[name_id].opt_arg_num;
 }
 
-static OnigType
+static unsigned int
 get_callout_arg_type_by_name_id(int name_id, int index)
 {
   return GlobalCalloutNameList->v[name_id].arg_types[index];
@@ -6695,14 +6710,27 @@ parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
 
     if (cn != 0) {
       if (skip_mode == 0) {
-        long rl;
+        if ((types[n] & ONIG_TYPE_LONG) != 0) {
+          int fixed = 0;
+          if (cn > 0) {
+            long rl;
+            r = parse_long(enc, buf, bufend, 1, LONG_MAX, &rl);
+            if (r == ONIG_NORMAL) {
+              vals[n].l = rl;
+              fixed = 1;
+              types[n] = ONIG_TYPE_LONG;
+            }
+          }
+
+          if (fixed == 0) {
+            types[n] = (types[n] & ~ONIG_TYPE_LONG);
+            if (types[n] == ONIG_TYPE_VOID)
+              return ONIGERR_INVALID_CALLOUT_ARG;
+          }
+        }
 
         switch (types[n]) {
         case ONIG_TYPE_LONG:
-          if (cn == 0) return ONIGERR_INVALID_CALLOUT_ARG;
-          r = parse_long(enc, buf, bufend, 1, LONG_MAX, &rl);
-          if (r != ONIG_NORMAL) return r;
-          vals[n].l = rl;
           break;
 
         case ONIG_TYPE_CHAR:
@@ -6767,8 +6795,8 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   Node*  node;
   CalloutListEntry* e;
   RegexExt* ext;
-  OnigType  types[ONIG_CALLOUT_MAX_ARGS_NUM];
-  OnigValue vals[ONIG_CALLOUT_MAX_ARGS_NUM];
+  unsigned int types[ONIG_CALLOUT_MAX_ARGS_NUM];
+  OnigValue    vals[ONIG_CALLOUT_MAX_ARGS_NUM];
   OnigEncoding enc = env->enc;
   UChar* p = *src;
 

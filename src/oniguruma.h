@@ -941,7 +941,7 @@ OnigCalloutFunc onig_get_retraction_callout_of_contents P_((void));
 ONIG_EXTERN
 int onig_set_retraction_callout_of_contents P_((OnigCalloutFunc f));
 ONIG_EXTERN
-int onig_set_callout_of_name P_((OnigEncoding enc, OnigCalloutType type, OnigUChar* name, OnigUChar* name_end, int callout_in, OnigCalloutFunc callout, OnigCalloutFunc end_callout, int arg_num, OnigType arg_types[], int optional_arg_num, OnigValue opt_defaults[])); /* name: single-byte string */
+int onig_set_callout_of_name P_((OnigEncoding enc, OnigCalloutType type, OnigUChar* name, OnigUChar* name_end, int callout_in, OnigCalloutFunc callout, OnigCalloutFunc end_callout, int arg_num, unsigned int arg_types[], int optional_arg_num, OnigValue opt_defaults[])); /* name: single-byte string */
 ONIG_EXTERN
 OnigUChar* onig_get_callout_name_by_name_id P_((int id));
 ONIG_EXTERN

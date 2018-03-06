@@ -37,8 +37,8 @@ init(void)
     OnigEncoding enc;
     char* name;
     OnigType t_long;
-    OnigType  args[4];
-    OnigValue opts[4];
+    unsigned int args[4];
+    OnigValue    opts[4];
 
     enc = ONIG_ENCODING_UTF16_LE;
     t_long = ONIG_TYPE_LONG;
@@ -58,9 +58,9 @@ init(void)
     BC_B_O(name, total_count, 1, args, 1, opts);
 
     name = "C\000M\000P\000\000\000";
-    args[0] = ONIG_TYPE_TAG;
+    args[0] = ONIG_TYPE_TAG | ONIG_TYPE_LONG;
     args[1] = ONIG_TYPE_STRING;
-    args[2] = ONIG_TYPE_TAG;
+    args[2] = ONIG_TYPE_TAG | ONIG_TYPE_LONG;
     BC_P(name, cmp, 3, args);
 
 #endif /* USE_CALLOUT */
