@@ -1275,6 +1275,15 @@ onig_get_callout_data_dont_clear_old(regex_t* reg, OnigMatchParam* mp,
 }
 
 extern int
+onig_get_callout_data_by_callout_args_self_dont_clear_old(OnigCalloutArgs* args,
+                                                          int slot, OnigType* type,
+                                                          OnigValue* val)
+{
+  return onig_get_callout_data_dont_clear_old(args->regex, args->msa->mp,
+                                              args->num, slot, type, val);
+}
+
+extern int
 onig_get_callout_data(regex_t* reg, OnigMatchParam* mp,
                       int callout_num, int slot,
                       OnigType* type, OnigValue* val)
@@ -1311,6 +1320,23 @@ onig_get_callout_data_by_tag(regex_t* reg, OnigMatchParam* mp,
 }
 
 extern int
+onig_get_callout_data_by_callout_args(OnigCalloutArgs* args,
+                                      int callout_num, int slot,
+                                      OnigType* type, OnigValue* val)
+{
+  return onig_get_callout_data(args->regex, args->msa->mp, callout_num, slot,
+                               type, val);
+}
+
+extern int
+onig_get_callout_data_by_callout_args_self(OnigCalloutArgs* args,
+                                           int slot, OnigType* type, OnigValue* val)
+{
+  return onig_get_callout_data(args->regex, args->msa->mp, args->num, slot,
+                               type, val);
+}
+
+extern int
 onig_set_callout_data(regex_t* reg, OnigMatchParam* mp,
                       int callout_num, int slot,
                       OnigType type, OnigValue* val)
@@ -1340,6 +1366,24 @@ onig_set_callout_data_by_tag(regex_t* reg, OnigMatchParam* mp,
 
   return onig_set_callout_data(reg, mp, num, slot, type, val);
 }
+
+extern int
+onig_set_callout_data_by_callout_args(OnigCalloutArgs* args,
+                                      int callout_num, int slot,
+                                      OnigType type, OnigValue* val)
+{
+  return onig_set_callout_data(args->regex, args->msa->mp, callout_num, slot,
+                               type, val);
+}
+
+extern int
+onig_set_callout_data_by_callout_args_self(OnigCalloutArgs* args,
+                                           int slot, OnigType type, OnigValue* val)
+{
+  return onig_set_callout_data(args->regex, args->msa->mp, args->num, slot,
+                               type, val);
+}
+
 #else
 #define ADJUST_MATCH_PARAM(reg, mp)
 #endif /* USE_CALLOUT */
@@ -5294,14 +5338,11 @@ extern int
 onig_builtin_total_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 {
   int r;
-  int num;
   int slot;
   OnigType  type;
   OnigValue val;
   OnigValue aval;
   OnigCodePoint count_type;
-
-  num = onig_get_callout_num_by_callout_args(args);
 
   r = onig_get_arg_by_callout_args(args, 0, &type, &aval);
   if (r != ONIG_NORMAL) return r;
@@ -5311,8 +5352,8 @@ onig_builtin_total_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
     return ONIGERR_INVALID_CALLOUT_ARG;
 
   slot = 0;
-  r = onig_get_callout_data_dont_clear_old(args->regex, args->msa->mp,
-                                           num, slot, &type, &val);
+  r = onig_get_callout_data_by_callout_args_self_dont_clear_old(args, slot,
+                                                                &type, &val);
   if (r < ONIG_NORMAL)
     return r;
   else if (r > ONIG_NORMAL) {
@@ -5332,8 +5373,7 @@ onig_builtin_total_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
       val.l++;
   }
 
-  r = onig_set_callout_data(args->regex, args->msa->mp, num, slot,
-                            ONIG_TYPE_LONG, &val);
+  r = onig_set_callout_data_by_callout_args_self(args, slot, ONIG_TYPE_LONG, &val);
   if (r != ONIG_NORMAL) return r;
 
   return ONIG_CALLOUT_SUCCESS;
@@ -5343,7 +5383,6 @@ extern int
 onig_builtin_max(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 {
   int r;
-  int num;
   int slot;
   OnigType  type;
   OnigValue val;
@@ -5351,9 +5390,8 @@ onig_builtin_max(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 
   (void )onig_check_callout_data_and_clear_old_values(args);
 
-  num = onig_get_callout_num_by_callout_args(args);
   slot = 0;
-  r = onig_get_callout_data(args->regex, args->msa->mp, num, slot, &type, &val);
+  r = onig_get_callout_data_by_callout_args_self(args, slot, &type, &val);
   if (r < ONIG_NORMAL)
     return r;
   else if (r > ONIG_NORMAL) {
@@ -5373,8 +5411,7 @@ onig_builtin_max(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
     val.l++;
   }
 
-  r = onig_set_callout_data(args->regex, args->msa->mp, num, slot,
-                            ONIG_TYPE_LONG, &val);
+  r = onig_set_callout_data_by_callout_args_self(args, slot, ONIG_TYPE_LONG, &val);
   if (r != ONIG_NORMAL) return r;
 
   return ONIG_CALLOUT_SUCCESS;
@@ -5393,7 +5430,6 @@ extern int
 onig_builtin_cmp(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 {
   int r;
-  int num;
   int slot;
   long lv;
   long rv;
@@ -5408,7 +5444,7 @@ onig_builtin_cmp(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   if (r != ONIG_NORMAL) return r;
 
   if (type == ONIG_TYPE_TAG) {
-    r = onig_get_callout_data(reg, args->msa->mp, val.tag, 0, &type, &val);
+    r = onig_get_callout_data_by_callout_args(args, val.tag, 0, &type, &val);
     if (r < ONIG_NORMAL) return r;
     else if (r > ONIG_NORMAL)
       lv = 0L;
@@ -5423,7 +5459,7 @@ onig_builtin_cmp(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   if (r != ONIG_NORMAL) return r;
 
   if (type == ONIG_TYPE_TAG) {
-    r = onig_get_callout_data(reg, args->msa->mp, val.tag, 0, &type, &val);
+    r = onig_get_callout_data_by_callout_args(args, val.tag, 0, &type, &val);
     if (r < ONIG_NORMAL) return r;
     else if (r > ONIG_NORMAL)
       rv = 0L;
@@ -5434,9 +5470,8 @@ onig_builtin_cmp(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
     rv = val.l;
   }
 
-  num = onig_get_callout_num_by_callout_args(args);
   slot = 0;
-  r = onig_get_callout_data(reg, args->msa->mp, num, slot, &type, &val);
+  r = onig_get_callout_data_by_callout_args_self(args, slot, &type, &val);
   if (r < ONIG_NORMAL)
     return r;
   else if (r > ONIG_NORMAL) {
@@ -5482,8 +5517,7 @@ onig_builtin_cmp(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
       break;
     }
     val.l = (long )op;
-    r = onig_set_callout_data(reg, args->msa->mp, num, slot,
-                              ONIG_TYPE_LONG, &val);
+    r = onig_set_callout_data_by_callout_args_self(args, slot, ONIG_TYPE_LONG, &val);
     if (r != ONIG_NORMAL) return r;
   }
   else {

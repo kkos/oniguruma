@@ -991,10 +991,19 @@ const UChar* onig_get_tag_end P_((OnigRegex reg, int callout_num));
 ONIG_EXTERN
 int onig_get_callout_data_dont_clear_old P_((OnigRegex reg, OnigMatchParam* mp, int callout_num, int slot, OnigType* type, OnigValue* val));
 ONIG_EXTERN
+int onig_get_callout_data_by_callout_args_self_dont_clear_old P_((OnigCalloutArgs* args, int slot, OnigType* type, OnigValue* val));
+ONIG_EXTERN
 int onig_get_callout_data P_((OnigRegex reg, OnigMatchParam* mp, int callout_num, int slot, OnigType* type, OnigValue* val));
 ONIG_EXTERN
+int onig_get_callout_data_by_callout_args P_((OnigCalloutArgs* args, int callout_num, int slot, OnigType* type, OnigValue* val));
+ONIG_EXTERN
+int onig_get_callout_data_by_callout_args_self P_((OnigCalloutArgs* args, int slot, OnigType* type, OnigValue* val));
+ONIG_EXTERN
 int onig_set_callout_data P_((OnigRegex reg, OnigMatchParam* mp, int callout_num, int slot, OnigType type, OnigValue* val));
-
+ONIG_EXTERN
+int onig_set_callout_data_by_callout_args P_((OnigCalloutArgs* args, int callout_num, int slot, OnigType type, OnigValue* val));
+ONIG_EXTERN
+int onig_set_callout_data_by_callout_args_self P_((OnigCalloutArgs* args, int slot, OnigType type, OnigValue* val));
 ONIG_EXTERN
 int onig_get_capture_range_in_callout P_((OnigCalloutArgs* args, int mem_num, int* begin, int* end));
 ONIG_EXTERN
