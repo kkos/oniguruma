@@ -1707,7 +1707,7 @@ setup_ext_callout_list_values(regex_t* reg)
                     (st_data_t )ext);
   }
 
-  for (i = 0; i < ext->callout_num; i++) {
+  for (i = 1; i <= ext->callout_num; i++) {
     CalloutListEntry* e = ext->callout_list + i;
     if (e->of == ONIG_CALLOUT_OF_NAME) {
       for (j = 0; j < e->u.arg.num; j++) {
