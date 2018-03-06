@@ -110,9 +110,9 @@ extern int main(int argc, char* argv[])
   test(encs[0], mp, "abc(.(*COUNT[x]))*(*FAIL)", "abcdefg");
   test(encs[0], mp, "abc(.(*COUNT[_any_]))*(.(*COUNT[x]))*d", "abcdefg");
   /* fail count */
-  test(encs[0], mp, "abc(.(*COUNT[x]{f}))*f", "abcdefg");
+  test(encs[0], mp, "abc(.(*COUNT[x]{-}))*f", "abcdefg");
   /* success count */
-  test(encs[0], mp, "abc(.(*COUNT[x]{s}))*f", "abcdefg");
+  test(encs[0], mp, "abc(.(*COUNT[x]{+}))*f", "abcdefg");
   /* passed count */
   test(encs[0], mp, "abc(.(*COUNT[x]))*f", "abcdefg");
   test(encs[0], mp, "a(.(*COUNT[x]))*z", "abcd\nabcdz");

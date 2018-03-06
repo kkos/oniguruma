@@ -5307,7 +5307,7 @@ onig_builtin_total_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   if (r != ONIG_NORMAL) return r;
 
   count_type = aval.c;
-  if (count_type != 'p' && count_type != 's' && count_type != 'f')
+  if (count_type != ' ' && count_type != '+' && count_type != '-')
     return ONIGERR_INVALID_CALLOUT_ARG;
 
   slot = 0;
@@ -5322,13 +5322,13 @@ onig_builtin_total_count(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   }
 
   if (args->in == ONIG_CALLOUT_IN_RETRACTION) {
-    if (count_type == 'f')
+    if (count_type == '-')
       val.l++;
-    else if (count_type == 's')
+    else if (count_type == '+')
       val.l--;
   }
   else {
-    if (count_type != 'f')
+    if (count_type != '-')
       val.l++;
   }
 
