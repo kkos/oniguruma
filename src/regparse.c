@@ -1592,26 +1592,26 @@ get_callout_name_id_by_name(OnigEncoding enc, int is_not_single,
 }
 
 extern OnigCalloutFunc
-onig_get_callout_start_func_by_callout_num(regex_t* reg, int num)
+onig_get_callout_start_func(regex_t* reg, int callout_num)
 {
   /* If used for callouts of contents, return 0. */
   CalloutListEntry* e;
 
-  e = onig_reg_callout_list_at(reg, num);
+  e = onig_reg_callout_list_at(reg, callout_num);
   return e->start_func;
 }
 
 extern const UChar*
-onig_get_tag_start_by_callout_num(regex_t* reg, int num)
+onig_get_tag_start(regex_t* reg, int callout_num)
 {
-  CalloutListEntry* e = onig_reg_callout_list_at(reg, num);
+  CalloutListEntry* e = onig_reg_callout_list_at(reg, callout_num);
   return e->tag_start;
 }
 
 extern const UChar*
-onig_get_tag_end_by_callout_num(regex_t* reg, int num)
+onig_get_tag_end(regex_t* reg, int callout_num)
 {
-  CalloutListEntry* e = onig_reg_callout_list_at(reg, num);
+  CalloutListEntry* e = onig_reg_callout_list_at(reg, callout_num);
   return e->tag_end;
 }
 

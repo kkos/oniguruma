@@ -830,7 +830,7 @@ extern OnigCalloutFunc onig_get_callout_end_func_by_name_id(int id);
 extern int             onig_callout_tag_table_free(void* table);
 extern void            onig_free_reg_callout_list(int n, CalloutListEntry* list);
 extern CalloutListEntry* onig_reg_callout_list_at(regex_t* reg, int num);
-extern OnigCalloutFunc onig_get_callout_start_func_by_callout_num(regex_t* reg, int num);
+extern OnigCalloutFunc onig_get_callout_start_func(regex_t* reg, int callout_num);
 
 /* for definition of builtin callout */
 #define BC0_P(name, func)  do {\
