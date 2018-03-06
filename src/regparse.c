@@ -6698,13 +6698,6 @@ parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
         long rl;
 
         switch (types[n]) {
-        case ONIG_TYPE_INT:
-          if (cn == 0 || eesc != 0) return ONIGERR_INVALID_CALLOUT_ARG;
-          r = parse_long(enc, buf, bufend, 1, INT_MAX, &rl);
-          if (r != ONIG_NORMAL) return r;
-          vals[n].i = (int )rl;
-          break;
-
         case ONIG_TYPE_LONG:
           if (cn == 0) return ONIGERR_INVALID_CALLOUT_ARG;
           r = parse_long(enc, buf, bufend, 1, LONG_MAX, &rl);

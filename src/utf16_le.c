@@ -36,20 +36,18 @@ init(void)
     int id;
     OnigEncoding enc;
     char* name;
-    OnigType t_int;
     OnigType t_long;
     OnigType  args[4];
     OnigValue opts[4];
 
     enc = ONIG_ENCODING_UTF16_LE;
-    t_int  = ONIG_TYPE_INT;
     t_long = ONIG_TYPE_LONG;
 
     name = "F\000A\000I\000L\000\000\000";                BC0_P(name, fail);
     name = "S\000U\000C\000C\000E\000S\000S\000\000\000"; BC0_P(name, success);
     name = "A\000B\000O\000R\000T\000\000\000";           BC0_P(name, abort);
-    name = "E\000R\000R\000O\000R\000\000\000";           BC1_P(name, error, &t_int);
-    name = "M\000A\000X\000\000\000";                     BC1_B(name, max, &t_long);
+    name = "E\000R\000R\000O\000R\000\000\000";          BC1_P(name, error, &t_long);
+    name = "M\000A\000X\000\000\000";                    BC1_B(name, max, &t_long);
 
     name = "C\000O\000U\000N\000T\000\000\000";
     args[0] = ONIG_TYPE_CHAR; opts[0].c = 'p';

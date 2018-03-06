@@ -765,16 +765,14 @@ typedef enum {
 
 typedef enum {
   ONIG_TYPE_VOID     = 0,
-  ONIG_TYPE_INT      = 1,
-  ONIG_TYPE_LONG     = 2,
-  ONIG_TYPE_CHAR     = 3,
-  ONIG_TYPE_STRING   = 4,
-  ONIG_TYPE_POINTER  = 5,
-  ONIG_TYPE_TAG      = 7,
+  ONIG_TYPE_LONG     = 1,
+  ONIG_TYPE_CHAR     = 2,
+  ONIG_TYPE_STRING   = 3,
+  ONIG_TYPE_POINTER  = 4,
+  ONIG_TYPE_TAG      = 5,
 } OnigType;
 
 typedef union {
-  int  i;
   long l;
   OnigCodePoint c;
   struct {

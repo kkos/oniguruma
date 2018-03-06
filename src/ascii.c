@@ -37,19 +37,17 @@ init(void)
     int id;
     OnigEncoding enc;
     char* name;
-    OnigType t_int;
     OnigType t_long;
     OnigType  args[4];
     OnigValue opts[4];
 
     enc = ONIG_ENCODING_ASCII;
-    t_int  = ONIG_TYPE_INT;
     t_long = ONIG_TYPE_LONG;
 
     name = "FAIL";        BC0_P(name, fail);
     name = "SUCCESS";     BC0_P(name, success);
     name = "ABORT";       BC0_P(name, abort);
-    name = "ERROR";       BC1_P(name, error, &t_int);
+    name = "ERROR";       BC1_P(name, error, &t_long);
     name = "MAX";         BC1_B(name, max, &t_long);
     name = "COUNT";
     args[0] = ONIG_TYPE_CHAR; opts[0].c = 'p';
