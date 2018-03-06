@@ -251,6 +251,7 @@ extern int main(int argc, char* argv[])
   test(enc, "(?:(*MAX{1})a|b)*", "bbbbbabbbbbabbbbb");
   test(enc, "(?:(*MAX{3})a|(*MAX{4})b)*", "bbbaabbab");
   test(enc, "(?:(*MAX[A]{3})a|(*MAX[B]{5})b)*(*CMP{A,<,B})", "abababc");
+  test(enc, "(?:(*MAX[A]{7})a|(*MAX[B]{5})b)*(*CMP{A,>=,4})", "abababcabababaa");
 
   /* monitor test */
   //test(enc, "(?:(*MON)(*MAX{3})a(*MON{foo})|(*MAX{4})b)*", "bbbaabbab");
