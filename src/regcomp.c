@@ -6151,11 +6151,7 @@ onig_reg_init(regex_t* reg, OnigOptionType option, OnigCaseFoldType case_fold_fl
 #if 0
     return ONIGERR_LIBRARY_IS_NOT_INITIALIZED;
 #else
-    r = onig_initialize(NULL, 0);
-    if (r != 0)
-      return ONIGERR_FAIL_TO_INITIALIZE;
-
-    r = onig_initialize_encoding(enc);
+    r = onig_initialize(&enc, 1);
     if (r != 0)
       return ONIGERR_FAIL_TO_INITIALIZE;
 
