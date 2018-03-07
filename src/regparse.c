@@ -1725,7 +1725,7 @@ setup_ext_callout_list_values(regex_t* reg)
                     (st_data_t )ext);
   }
 
-  for (i = 1; i <= ext->callout_num; i++) {
+  for (i = 0; i < ext->callout_num; i++) {
     CalloutListEntry* e = ext->callout_list + i;
     if (e->of == ONIG_CALLOUT_OF_NAME) {
       for (j = 0; j < e->u.arg.num; j++) {
@@ -2538,9 +2538,10 @@ onig_reg_callout_list_at(regex_t* reg, int num)
   RegexExt* ext = REG_EXTP(reg);
   CHECK_NULL_RETURN(ext);
 
-  if (num < 0 || num > ext->callout_num)
+  if (num <= 0 || num > ext->callout_num)
     return 0;
 
+  num--;
   return ext->callout_list + num;
 }
 
@@ -2567,7 +2568,7 @@ reg_callout_list_entry(ScanEnv* env, int* rnum)
   }
 
   num = ext->callout_num + 1;
-  if (num >= ext->callout_list_alloc) {
+  if (num > ext->callout_list_alloc) {
     int alloc = ext->callout_list_alloc * 2;
     list = (CalloutListEntry* )xrealloc(ext->callout_list,
                                         sizeof(CalloutListEntry) * alloc);
@@ -2577,14 +2578,14 @@ reg_callout_list_entry(ScanEnv* env, int* rnum)
     ext->callout_list_alloc = alloc;
   }
 
-  e = ext->callout_list + num;
+  e = ext->callout_list + (num - 1);
 
-  e->flag      = 0;
-  e->of        = 0;
-  e->in        = ONIG_CALLOUT_OF_CONTENTS;
-  e->type      = 0;
-  e->tag_start = 0;
-  e->tag_end   = 0;
+  e->flag             = 0;
+  e->of               = 0;
+  e->in               = ONIG_CALLOUT_OF_CONTENTS;
+  e->type             = 0;
+  e->tag_start        = 0;
+  e->tag_end          = 0;
   e->start_func       = 0;
   e->end_func         = 0;
   e->u.arg.num        = 0;
