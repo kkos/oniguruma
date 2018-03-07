@@ -1502,6 +1502,9 @@ onig_set_callout_of_name(OnigEncoding enc, OnigCalloutType callout_type,
   CalloutNameEntry* e;
   CalloutNameListEntry* fe;
 
+  if (callout_type != ONIG_CALLOUT_TYPE_SINGLE)
+    return ONIGERR_INVALID_ARGUMENT;
+
   if (arg_num < 0 || arg_num > ONIG_CALLOUT_MAX_ARGS_NUM)
     return ONIGERR_INVALID_CALLOUT_ARG;
 
