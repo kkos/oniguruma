@@ -23,9 +23,21 @@ http://llvm.org/docs/LibFuzzer.html
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 {
 	regex_t *reg;
-	if (onig_new
-	    (&reg, Data, Data + Size, ONIG_OPTION_DEFAULT, ONIG_ENCODING_UTF8,
-	     ONIG_SYNTAX_DEFAULT, 0) == 0)
+  OnigEncoding enc;
+
+  enc = ONIG_ENCODING_UTF8;
+
+#ifdef FULL_TEST
+  onig_initialize(&enc, 1);
+#endif
+
+	if (onig_new(&reg, Data, Data + Size, ONIG_OPTION_DEFAULT, enc,
+               ONIG_SYNTAX_DEFAULT, 0) == 0)
 		onig_free(reg);
+
+#ifdef FULL_TEST
+  onig_end();
+#endif
+
 	return 0;
 }
