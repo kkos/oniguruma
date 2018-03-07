@@ -1065,6 +1065,14 @@ extern int main(int argc, char* argv[])
   x2("c.*\\b", "abc", 2, 3);
   x2("\\b.*abc.*\\b", "abc", 0, 3);
 
+  x2("(*SUCCESS)", "abcdefg", 0, 0);
+  n("(*FAIL)", "abcdefg");
+  n("abcd(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)", "abcdefg");
+  x2("(?:[ab]|(*MAX{2}).)*", "abcbaaccaaa", 0, 7);
+  x2("(?:(*COUNT[AB]{+})[ab]|(*COUNT[CD]{+})[cd])*(*CMP{AB,<,CD})",
+     "abababcdab", 5, 8);
+
+
   e("\\u040", "@", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("(?<abc>\\g<abc>)", "zzzz", ONIGERR_NEVER_ENDING_RECURSION);
   e("(?<=(?>abc))", "abc", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
