@@ -137,8 +137,7 @@ re_mbcinit(int mb_code)
     break;
   }
 
-  onig_initialize(0, 0);
-  onig_initialize_encoding(enc);
+  onig_initialize(&enc, 1);
 
   onigenc_set_default_encoding(enc);
 }
