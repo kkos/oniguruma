@@ -224,7 +224,7 @@ Oniguruma API  Version 6.8.0  2018/02/13
 
 # OnigMatchParam* onig_new_match_param()
 
-  Create a OnigMatchParam object and initialize the contents by
+  Allocate a OnigMatchParam object and initialize the contents by
   onig_initialize_match_param().
 
 
@@ -243,6 +243,54 @@ Oniguruma API  Version 6.8.0  2018/02/13
 
   arguments
   1 mp: match-param pointer
+
+
+# int onig_set_match_stack_limit_size_of_match_param(OnigMatchParam* mp, unsigned int limit)
+
+  Set a maximum number of match-stack depth.
+  0 means unlimited.
+
+  arguments
+  1 mp: match-param pointer
+  2 limit: number of limit
+
+  normal return: ONIG_NORMAL
+
+
+# int onig_set_retry_limit_in_match_of_match_param(OnigMatchParam* mp, unsigned long limit)
+
+  Set a retry limit count of a match process.
+
+  arguments
+  1 mp: match-param pointer
+  2 limit: number of limit
+
+  normal return: ONIG_NORMAL
+
+
+# int onig_set_callout_of_contents_of_match_param(OnigMatchParam* mp, OnigCalloutFunc f)
+
+  Set a function for callouts of contents in progress.
+  If 0 (NULL) is set, never called in progress.
+
+  arguments
+  1 mp: match-param pointer
+  2 f: function
+
+  normal return: ONIG_NORMAL
+
+
+# int onig_set_retraction_callout_of_contents_of_match_param(OnigMatchParam* mp, OnigCalloutFunc f)
+
+  Set a function for callouts of contents in retraction (backtrack).
+  If 0 (NULL) is set, never called in retraction.
+
+  arguments
+  1 mp: match-param pointer
+  2 f: function
+
+  normal return: ONIG_NORMAL
+
 
 
 # int onig_search(regex_t* reg, const UChar* str, const UChar* end, const UChar* start,
@@ -675,6 +723,32 @@ Oniguruma API  Version 6.8.0  2018/02/13
 # int onig_set_retry_limit_in_match(unsigned long n)
 
   Set the limit of retry counts in matching process.
+
+  normal return: ONIG_NORMAL
+
+
+# OnigCalloutFunc onig_get_callout_of_contents(void)
+
+  Get a function for callouts of contents in progress.
+
+
+# int onig_set_callout_of_contents(OnigCalloutFunc f)
+
+  Set a function for callouts of contents in progress.
+  If 0 (NULL) is set, never called in progress.
+
+  normal return: ONIG_NORMAL
+
+
+# OnigCalloutFunc onig_get_retraction_callout_of_contents(void)
+
+  Get a function for callouts of contents in retraction (backtrack).
+
+
+# int onig_set_retraction_callout_of_contents(OnigCalloutFunc f)
+
+  Set a function for callouts of contents in retraction (backtrack).
+  If 0 (NULL) is set, never called in retraction.
 
   normal return: ONIG_NORMAL
 
