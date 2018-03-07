@@ -5582,8 +5582,8 @@ onig_builtin_monitor(OnigCalloutArgs* args, void* user_data)
   string    = onig_get_string_by_callout_args(args);
   strend    = onig_get_string_end_by_callout_args(args);
   reg       = onig_get_regex_by_callout_args(args);
-  tag_start = onig_get_tag_start(reg, num);
-  tag_end   = onig_get_tag_end(reg, num);
+  tag_start = onig_get_callout_tag_start(reg, num);
+  tag_end   = onig_get_callout_tag_end(reg, num);
 
   if (tag_start == 0)
     xsnprintf(buf, sizeof(buf), "#%d", num);
