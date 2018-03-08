@@ -50,11 +50,11 @@ init(void)
     name = "M\000A\000X\000\000\000";                 BC_B(name, max,   1, &t_long);
 
     name = "C\000O\000U\000N\000T\000\000\000";
-    args[0] = ONIG_TYPE_CHAR; opts[0].c = ' ';
+    args[0] = ONIG_TYPE_CHAR; opts[0].c = '>';
     BC_B_O(name, count, 1, args, 1, opts);
 
     name = "T\000O\000T\000A\000L\000_\000C\000O\000U\000N\000T\000\000\000";
-    args[0] = ONIG_TYPE_CHAR; opts[0].c = ' ';
+    args[0] = ONIG_TYPE_CHAR; opts[0].c = '>';
     BC_B_O(name, total_count, 1, args, 1, opts);
 
     name = "C\000M\000P\000\000\000";

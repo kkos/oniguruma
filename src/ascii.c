@@ -51,11 +51,11 @@ init(void)
     name = "MAX";         BC_B(name, max, 1, &t_long);
 
     name = "COUNT";
-    args[0] = ONIG_TYPE_CHAR; opts[0].c = ' ';
+    args[0] = ONIG_TYPE_CHAR; opts[0].c = '>';
     BC_B_O(name, count, 1, args, 1, opts);
 
     name = "TOTAL_COUNT";
-    args[0] = ONIG_TYPE_CHAR; opts[0].c = ' ';
+    args[0] = ONIG_TYPE_CHAR; opts[0].c = '>';
     BC_B_O(name, total_count, 1, args, 1, opts);
 
     name = "CMP";
