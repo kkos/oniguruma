@@ -887,8 +887,6 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   CALLOUT_BODY(func, ONIG_CALLOUT_IN_RETRACTION, aname_id, anum, user, args, result);\
   switch (result) {\
   case ONIG_CALLOUT_FAIL:\
-    goto fail;\
-    break;\
   case ONIG_CALLOUT_SUCCESS:\
     break;\
   case ONIG_CALLOUT_ABORT:\
