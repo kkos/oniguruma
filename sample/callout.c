@@ -229,13 +229,12 @@ extern int main(int argc, char* argv[])
   (void)onig_set_callout_of_contents(progress_callout_func);
   (void)onig_set_retraction_callout_of_contents(retraction_callout_func);
 
-  // callout of contents
+  /* callout of contents */
   test(enc, "a+(?{foo bar baz...}X)$", "aaab");
   test(enc, "(?{{!{}#$%&'()=-~^|[_]`@*:+;<>?/.\\,}}[symbols])c", "abc");
   test(enc, "\\A(...)(?{{{booooooooooooo{{ooo}}ooooooooooz}}}<)", "aaab");
   test(enc, "\\A(?!a(?{in prec-read-not}[xxx]X)b)", "ac");
   test(enc, "(?<!a(?{in look-behind-not}X)c)c", "abc");
-
 
   // callout of name
   test(enc, "\\A(*foo)abc", "abc");
@@ -253,8 +252,11 @@ extern int main(int argc, char* argv[])
   test(enc, "(?:(*MAX[A]{3})a|(*MAX[B]{5})b)*(*CMP{A,<,B})", "abababc");
   test(enc, "(?:(*MAX[A]{7})a|(*MAX[B]{5})b)*(*CMP{A,>=,4})", "abababcabababaa");
 
+  /* callouts in condition */
+  test(enc, "\\A(?(?{in condition})then|else)\\z", "then");
+  test(enc, "\\A(?(*FAIL)then|else)\\z", "else");
+
   /* monitor test */
-  //test(enc, "(?:(*MON)(*MAX{3})a(*MON{foo})|(*MAX{4})b)*", "bbbaabbab");
   test(enc, "(?:(*MON{X})(*FAIL)|.{,3}(*MON[FOO])k)", "abcdefghijk");
 
   onig_end();
