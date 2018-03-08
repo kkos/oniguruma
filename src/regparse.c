@@ -6564,13 +6564,18 @@ parse_callout_of_contents(Node** np, int cterm, UChar** src, UChar* end, ScanEnv
     tag_start = tag_end = 0;
   }
 
-  if (c == '+') {
+  if (c == 'X') {
     in |= ONIG_CALLOUT_IN_RETRACTION;
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
     PFETCH_S(c);
   }
-  else if (c == '-') {
+  else if (c == '<') {
     in = ONIG_CALLOUT_IN_RETRACTION;
+    if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+    PFETCH_S(c);
+  }
+  else if (c == '>') { /* no needs (default) */
+    //in = ONIG_CALLOUT_IN_PROGRESS;
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
     PFETCH_S(c);
   }
