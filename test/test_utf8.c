@@ -1071,6 +1071,8 @@ extern int main(int argc, char* argv[])
   x2("(?:[ab]|(*MAX{2}).)*", "abcbaaccaaa", 0, 7);
   x2("(?:(*COUNT[AB]{X})[ab]|(*COUNT[CD]{X})[cd])*(*CMP{AB,<,CD})",
      "abababcdab", 5, 8);
+  x2("(?(?{....})123|456)", "123", 0, 3);
+  x2("(?(*FAIL)123|456)", "456", 0, 3);
 
 
   e("\\u040", "@", ONIGERR_INVALID_CODE_POINT_VALUE);
