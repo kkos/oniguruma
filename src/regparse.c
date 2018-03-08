@@ -7205,6 +7205,22 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
             if (c != ')') goto err_if_else;
           }
         }
+#ifdef USE_CALLOUT
+        else if (c == '?') {
+          if (IS_SYNTAX_OP2(env->syntax,
+                            ONIG_SYN_OP2_QMARK_BRACE_CALLOUT_CONTENTS)) {
+            if (! PEND && PPEEK_IS('{')) {
+              /* condition part is callouts of contents: (?(?{...})THEN|ELSE) */
+              condition_is_checker = 0;
+              PFETCH(c);
+              r = parse_callout_of_contents(&condition, ')', &p, end, env);
+              if (r != 0) return r;
+              goto end_condition;
+            }
+          }
+          goto any_condition;
+        }
+#endif
         else {
         any_condition:
           PUNFETCH;
@@ -7218,6 +7234,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           }
         }
 
+      end_condition:
         CHECK_NULL_RETURN_MEMERR(condition);
 
         if (PEND) {
