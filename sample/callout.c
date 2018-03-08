@@ -230,11 +230,11 @@ extern int main(int argc, char* argv[])
   (void)onig_set_retraction_callout_of_contents(retraction_callout_func);
 
   // callout of contents
-  test(enc, "a+(?{foo bar baz...}+)$", "aaab");
+  test(enc, "a+(?{foo bar baz...}X)$", "aaab");
   test(enc, "(?{{!{}#$%&'()=-~^|[_]`@*:+;<>?/.\\,}}[symbols])c", "abc");
-  test(enc, "\\A(...)(?{{{booooooooooooo{{ooo}}ooooooooooz}}}-)", "aaab");
-  test(enc, "\\A(?!a(?{prec-read-not}[xxx]+)b)", "ac");
-  test(enc, "(?<!a(?{look-behind-not}+)c)c", "abc");
+  test(enc, "\\A(...)(?{{{booooooooooooo{{ooo}}ooooooooooz}}}<)", "aaab");
+  test(enc, "\\A(?!a(?{in prec-read-not}[xxx]X)b)", "ac");
+  test(enc, "(?<!a(?{in look-behind-not}X)c)c", "abc");
 
 
   // callout of name
