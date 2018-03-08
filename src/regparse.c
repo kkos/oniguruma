@@ -7220,6 +7220,13 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           }
           goto any_condition;
         }
+        else if (c == '*' &&
+                 IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_ASTERISK_CALLOUT_NAME)) {
+          condition_is_checker = 0;
+          r = parse_callout_of_name(&condition, ')', &p, end, env);
+          if (r != 0) return r;
+          goto end_condition;
+        }
 #endif
         else {
         any_condition:
