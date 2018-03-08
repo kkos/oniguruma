@@ -5567,11 +5567,11 @@ onig_builtin_monitor(OnigCalloutArgs* args, void* user_data)
 
   in = onig_get_callout_in_by_callout_args(args);
   if (in == ONIG_CALLOUT_IN_PROGRESS) {
-    if (val.c == '-')
+    if (val.c == '<')
       return ONIG_CALLOUT_SUCCESS;
   }
   else {
-    if (val.c != '+' && val.c != '-')
+    if (val.c != 'X' && val.c != '<')
       return ONIG_CALLOUT_SUCCESS;
   }
 
@@ -5622,7 +5622,7 @@ onig_setup_builtin_monitors_by_ascii_encoded_name(void)
 
   name = "MON";
   ts[0] = ONIG_TYPE_CHAR;
-  opts[0].c = ' ';
+  opts[0].c = '>';
   BC_B_O(name, monitor, 1, ts, 1, opts);
 
   return ONIG_NORMAL;
