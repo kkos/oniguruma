@@ -5550,6 +5550,8 @@ onig_builtin_cmp(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 
 #include <stdio.h>
 
+static FILE* OutFp;
+
 /* name start with "onig_" for macros. */
 static int
 onig_builtin_monitor(OnigCalloutArgs* args, void* user_data)
@@ -5571,7 +5573,7 @@ onig_builtin_monitor(OnigCalloutArgs* args, void* user_data)
   char buf[20];
   FILE* fp;
 
-  fp = stdout;
+  fp = OutFp;
 
   r = onig_get_arg_by_callout_args(args, 0, &type, &val);
   if (r != ONIG_NORMAL) return r;
@@ -5621,13 +5623,18 @@ onig_builtin_monitor(OnigCalloutArgs* args, void* user_data)
 }
 
 extern int
-onig_setup_builtin_monitors_by_ascii_encoded_name(void)
+onig_setup_builtin_monitors_by_ascii_encoded_name(void* fp /* FILE* */)
 {
   int id;
   char* name;
   OnigEncoding enc;
   OnigType ts[4];
   OnigValue opts[4];
+
+  if (IS_NOT_NULL(fp))
+    OutFp = (FILE* )fp;
+  else
+    OutFp = stdout;
 
   enc = ONIG_ENCODING_ASCII;
 

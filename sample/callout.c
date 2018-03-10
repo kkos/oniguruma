@@ -196,7 +196,7 @@ extern int main(int argc, char* argv[])
   if (r != ONIG_NORMAL) return -1;
 
   /* monitor on */
-  r = onig_setup_builtin_monitors_by_ascii_encoded_name();
+  r = onig_setup_builtin_monitors_by_ascii_encoded_name(stdout);
   if (r != ONIG_NORMAL) return -1;
 
   name = (UChar* )"foo";

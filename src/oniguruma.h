@@ -1028,7 +1028,7 @@ ONIG_EXTERN
 int onig_builtin_cmp P_((OnigCalloutArgs* args, void* user_data));
 
 ONIG_EXTERN
-int onig_setup_builtin_monitors_by_ascii_encoded_name P_((void));
+int onig_setup_builtin_monitors_by_ascii_encoded_name P_((void* fp));
 
 #ifdef __cplusplus
 }
