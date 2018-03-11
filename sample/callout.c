@@ -18,9 +18,7 @@ callout_body(OnigCalloutArgs* args, void* user_data)
   int used_bytes;
   OnigCalloutIn in;
   int name_id;
-  UChar* contents;
-  const UChar* acontents;
-  const UChar* acontents_end;
+  const UChar* contents;
   const UChar* start;
   const UChar* current;
   regex_t* regex;
@@ -31,13 +29,7 @@ callout_body(OnigCalloutArgs* args, void* user_data)
   current       = onig_get_current_by_callout_args(args);
   regex         = onig_get_regex_by_callout_args(args);
 
-  contents = 0;
-  acontents = onig_get_contents_by_callout_args(args);
-  if (acontents != 0) {
-    OnigEncoding enc = onig_get_encoding(regex);
-    acontents_end = onig_get_contents_end_by_callout_args(args);
-    contents = onigenc_strdup(enc, acontents, acontents_end);
-  }
+  contents = onig_get_contents_by_callout_args(args);
 
   if (name_id != ONIG_NON_NAME_ID) {
     UChar* name = onig_get_callout_name_by_name_id(name_id);
@@ -48,8 +40,6 @@ callout_body(OnigCalloutArgs* args, void* user_data)
           contents != 0 ? "CONTENTS" : "NAME",
           in == ONIG_CALLOUT_IN_PROGRESS ? "PROGRESS" : "RETRACTION",
           contents, start, current);
-
-  if (contents != 0) free(contents);
 
   (void )onig_get_used_stack_size_in_callout(args, &used_num, &used_bytes);
   fprintf(stdout, "stack: used_num: %d, used_bytes: %d\n", used_num, used_bytes);
