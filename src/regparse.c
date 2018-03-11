@@ -2527,6 +2527,11 @@ onig_free_reg_callout_list(int n, CalloutListEntry* list)
         }
       }
     }
+    else { /* ONIG_CALLOUT_OF_CONTENTS */
+      if (IS_NOT_NULL(list[i].u.content.start)) {
+	xfree((void* )list[i].u.content.start);
+      }
+    }
   }
 
   xfree(list);
@@ -6506,6 +6511,7 @@ parse_callout_of_contents(Node** np, int cterm, UChar** src, UChar* end, ScanEnv
   OnigCodePoint c;
   UChar* code_start;
   UChar* code_end;
+  UChar* contents;
   UChar* tag_start;
   UChar* tag_end;
   int brace_nest;
@@ -6597,15 +6603,21 @@ parse_callout_of_contents(Node** np, int cterm, UChar** src, UChar* end, ScanEnv
     if (r != ONIG_NORMAL) return r;
   }
 
+  contents = onigenc_strdup(enc, code_start, code_end);
+  CHECK_NULL_RETURN_MEMERR(contents);
+
   r = node_new_callout(np, ONIG_CALLOUT_OF_CONTENTS, num, ONIG_NON_NAME_ID, env);
-  if (r != 0) return r;
+  if (r != 0) {
+    xfree(contents);
+    return r;
+  }
 
   e = onig_reg_callout_list_at(env->reg, num);
   e->of      = ONIG_CALLOUT_OF_CONTENTS;
   e->in      = in;
   e->name_id = ONIG_NON_NAME_ID;
-  e->u.content.start = ext->pattern + (code_start - env->pattern);
-  e->u.content.end   = ext->pattern + (code_end   - env->pattern);
+  e->u.content.start = contents;
+  e->u.content.end   = contents + (code_end - code_start);
 
   *src = p;
   return 0;
