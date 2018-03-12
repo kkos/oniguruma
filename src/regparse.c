@@ -1802,7 +1802,7 @@ onig_get_callout_num_by_tag(regex_t* reg,
     return ONIGERR_INVALID_CALLOUT_TAG_NAME;
 
   r = onig_st_lookup_strend(ext->tag_table, tag, tag_end,
-			    (HashDataType* )((void* )(&e)));
+                            (HashDataType* )((void* )(&e)));
   if (r == 0) return ONIGERR_INVALID_CALLOUT_TAG_NAME;
   return (int )e;
 }
@@ -2529,7 +2529,7 @@ onig_free_reg_callout_list(int n, CalloutListEntry* list)
     }
     else { /* ONIG_CALLOUT_OF_CONTENTS */
       if (IS_NOT_NULL(list[i].u.content.start)) {
-	xfree((void* )list[i].u.content.start);
+        xfree((void* )list[i].u.content.start);
       }
     }
   }

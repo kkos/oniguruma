@@ -23,7 +23,7 @@ test(OnigEncoding enc, OnigMatchParam* mp, char* in_pattern, char* in_str)
   str = (UChar* )in_str;
 
   r = onig_new(&reg, pattern, pattern + ulen(enc, pattern),
-	ONIG_OPTION_DEFAULT, enc, ONIG_SYNTAX_DEFAULT, &einfo);
+               ONIG_OPTION_DEFAULT, enc, ONIG_SYNTAX_DEFAULT, &einfo);
   if (r != ONIG_NORMAL) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
     onig_error_code_to_str((UChar* )s, r, &einfo);
