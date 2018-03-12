@@ -37,7 +37,7 @@ init(void)
     int id;
     OnigEncoding enc;
     char* name;
-    OnigType t_long;
+    unsigned int t_long;
     unsigned int args[4];
     OnigValue    opts[4];
 

@@ -5628,7 +5628,7 @@ onig_setup_builtin_monitors_by_ascii_encoded_name(void* fp /* FILE* */)
   int id;
   char* name;
   OnigEncoding enc;
-  OnigType ts[4];
+  unsigned int ts[4];
   OnigValue opts[4];
 
   if (IS_NOT_NULL(fp))

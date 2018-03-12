@@ -6662,7 +6662,7 @@ parse_long(OnigEncoding enc, UChar* s, UChar* end, int sign_on, long max, long* 
 
 static int
 parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
-                   OnigType types[], OnigValue vals[], ScanEnv* env)
+                   unsigned int types[], OnigValue vals[], ScanEnv* env)
 {
 #define MAX_CALLOUT_ARG_BYTE_LENGTH   128
 
