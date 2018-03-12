@@ -25,4 +25,5 @@ Makefile.in
 .libs/
 .deps/
 /build
+/onig-*.tar.gz
 m4/*.m4
