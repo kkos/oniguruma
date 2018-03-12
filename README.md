@@ -45,9 +45,9 @@ New feature of version 6.8.0
 * Retry-limit-in-match function enabled by default
 * NEW: configure option --enable-posix-api=no  (* enabled by default)
 * NEW API: onig_search_with_param(), onig_match_with_param()
-* NEW: Callouts of contents  (?{..contents..}\[X<>]) (?{{....}})
+* NEW: Callouts of contents  (?{...contents...}\[X<>]) (?{{....}})
 * NEW: Callouts of name      (*name) (*name\[tag]{args...})
-* NEW: Builtin callout functions  (*FAIL) (*ERROR{n}) (*COUNT) (*MAX{n}) etc..
+* NEW: Builtin callouts  (*FAIL) (*ERROR{n}) (*COUNT) (*MAX{n}) etc..
 
 (* Callout function API is experimental level and isn't fixed definitely yet. Undocumented now)
 
