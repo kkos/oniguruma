@@ -175,7 +175,7 @@ extern int main(int argc, char* argv[])
   int id;
   UChar* name;
   OnigEncoding use_encs[1];
-  OnigType arg_types[4];
+  unsigned int arg_types[4];
   OnigValue opt_defaults[4];
   OnigEncoding enc;
 
