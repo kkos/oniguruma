@@ -8,6 +8,7 @@
 /syntax
 /user_property
 /callout
+/echo
 /count
 /bug_fix
 /log*
