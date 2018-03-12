@@ -9,6 +9,7 @@ EXTRA_DIST = oniguruma.pc.in HISTORY README_japanese README.md \
 	CMakeLists.txt dist.info oniguruma.pc.cmake.in cmake/dist.cmake \
 	src/config.h.cmake.in \
 	doc/API doc/API.ja doc/RE doc/RE.ja doc/FAQ doc/FAQ.ja \
+	doc/CALLOUTS.BUILTIN doc/CALLOUTS.BUILTIN.ja \
 	doc/UNICODE_PROPERTIES \
 	src/Makefile.windows src/config.h.win32 src/config.h.win64 \
 	windows/testc.c contributed/libfuzzer-onig.cpp contributed/makefile

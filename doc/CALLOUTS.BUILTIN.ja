@@ -1,0 +1,86 @@
+CALLOUTS.BUILTIN               2018/03/12
+
+
+* FAIL
+
+  (*FAIL)
+
+  常に失敗する
+
+
+* SUCCESS
+
+  (*SUCCESS)
+
+  常に成功する
+
+
+* ABORT
+
+  (*ABORT)
+
+  検索/照合を中止する
+  戻り値: ONIG_ABORT
+
+
+* ERROR
+
+  (*ERROR{n::LONG})
+
+  検索/照合を中止する
+  戻り値は引数'n'の値。(負の値でなければならない)
+
+
+* MAX
+
+  (*MAX{n::LONG})
+
+  成功回数を制限する
+
+  [callout data]
+  slot 0: 現在の成功回数
+
+
+* COUNT
+
+  (*COUNT{c::CHAR = '>'})
+
+  カウンタ
+  'c'引数の値によって、slot 0の値が変化する
+  デフォルトの'c'の値は '>'
+
+  [callout data]
+  slot 0: '>': 前進回数, '<': 後退回数, 'X': 成功回数
+  slot 1: 前進回数
+  slot 2: 後退回数
+
+  (* 成功回数 = 前進回数 - 後退回数)
+
+  ** ONIG_OPTION_FIND_LONGEST または ONIG_OPTION_FIND_NOT_EMPTY が使用されると
+     COUNT と TOTAL_COUNT は正確な動作ができなくなる
+
+
+* TOTAL_COUNT
+
+  (*TOTAL_COUNT{c::CHAR = '>'})
+
+  これはCOUNTとほとんど同じ
+  しかし、カウントが検索過程で積算される
+
+  [callout data]
+  slot 0: '>': 前進回数, '<': 後退回数, 'X': 成功回数
+  slot 1: 前進回数
+  slot 2: 後退回数
+
+
+* CMP
+
+  (*CMP{x::TAG/LONG, op::STRING, y::TAG/LONG})
+
+  xの値とyの値をop演算子で比較する
+
+  op: '==', '!=', '>', '<', '>=', '<='
+
+  例: "(?:(*MAX[A]{7})a|(*MAX[B]{5})b)*(*CMP{A,>=,4})"
+
+//END

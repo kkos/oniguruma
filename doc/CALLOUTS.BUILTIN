@@ -1,0 +1,86 @@
+CALLOUTS.BUILTIN               2018/03/12
+
+
+* FAIL
+
+  (*FAIL)
+
+  Always fail.
+
+
+* SUCCESS
+
+  (*SUCCESS)
+
+  Always success.
+
+
+* ABORT
+
+  (*ABORT)
+
+  Terminate Search/Match process.
+  Return value is ONIG_ABORT.
+
+
+* ERROR
+
+  (*ERROR{n::LONG})
+
+  Terminate Search/Match process.
+  Return value is the argument 'n'. (The value must be negative.)
+
+
+* MAX
+
+  (*MAX{n::LONG})
+
+  Restrict the maximum count of success.
+
+  [callout data]
+  slot 0: current success count.
+
+
+* COUNT
+
+  (*COUNT{c::CHAR = '>'})
+
+  Counter.
+  Depends on 'c' argument, the slot 0 value changes.
+  Default 'c' value is '>'.
+
+  [callout data]
+  slot 0: '>': progress count, '<': retraction count, 'X': success count
+  slot 1: progress count
+  slot 2: retraction count
+
+  (* success count = progress count - retraction count)
+
+  ** If option ONIG_OPTION_FIND_LONGEST or ONIG_OPTION_FIND_NOT_EMPTY is used,
+     COUNT and TOTAL_COUNT are not accurate.
+
+
+* TOTAL_COUNT
+
+  (*TOTAL_COUNT{c::CHAR = '>'})
+
+  It's the almost same as COUNT.
+  But the counts are integrated in a search process.
+
+  [callout data]
+  slot 0: '>': progress count, '<': retraction count, 'X': success count
+  slot 1: progress count
+  slot 2: retraction count
+
+
+* CMP
+
+  (*CMP{x::TAG/LONG, op::STRING, y::TAG/LONG})
+
+  Compare x value and y value with op operator.
+
+  op: '==', '!=', '>', '<', '>=', '<='
+
+  ex. "(?:(*MAX[A]{7})a|(*MAX[B]{5})b)*(*CMP{A,>=,4})"
+
+//END
