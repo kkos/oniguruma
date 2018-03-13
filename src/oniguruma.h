@@ -927,19 +927,19 @@ int onig_set_match_stack_limit_size_of_match_param P_((OnigMatchParam* param, un
 ONIG_EXTERN
 int onig_set_retry_limit_in_match_of_match_param P_((OnigMatchParam* param, unsigned long limit));
 ONIG_EXTERN
-int onig_set_callout_of_contents_of_match_param P_((OnigMatchParam* param, OnigCalloutFunc f));
+int onig_set_progress_callout_of_match_param P_((OnigMatchParam* param, OnigCalloutFunc f));
 ONIG_EXTERN
-int onig_set_retraction_callout_of_contents_of_match_param P_((OnigMatchParam* param, OnigCalloutFunc f));
+int onig_set_retraction_callout_of_match_param P_((OnigMatchParam* param, OnigCalloutFunc f));
 
 /* for callout functions */
 ONIG_EXTERN
-OnigCalloutFunc onig_get_callout_of_contents P_((void));
+OnigCalloutFunc onig_get_progress_callout P_((void));
 ONIG_EXTERN
-int onig_set_callout_of_contents P_((OnigCalloutFunc f));
+int onig_set_progress_callout P_((OnigCalloutFunc f));
 ONIG_EXTERN
-OnigCalloutFunc onig_get_retraction_callout_of_contents P_((void));
+OnigCalloutFunc onig_get_retraction_callout P_((void));
 ONIG_EXTERN
-int onig_set_retraction_callout_of_contents P_((OnigCalloutFunc f));
+int onig_set_retraction_callout P_((OnigCalloutFunc f));
 ONIG_EXTERN
 int onig_set_callout_of_name P_((OnigEncoding enc, OnigCalloutType type, OnigUChar* name, OnigUChar* name_end, int callout_in, OnigCalloutFunc callout, OnigCalloutFunc end_callout, int arg_num, unsigned int arg_types[], int optional_arg_num, OnigValue opt_defaults[])); /* name: single-byte string */
 ONIG_EXTERN

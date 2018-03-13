@@ -52,7 +52,7 @@ typedef struct {
 struct OnigMatchParamStruct {
   unsigned int    match_stack_limit;
   unsigned long   retry_limit_in_match;
-  OnigCalloutFunc callout_of_contents;
+  OnigCalloutFunc progress_callout_of_contents;
   OnigCalloutFunc retraction_callout_of_contents;
 #ifdef USE_CALLOUT
   int             match_at_call_counter;
@@ -79,15 +79,14 @@ onig_set_retry_limit_in_match_of_match_param(OnigMatchParam* param,
 }
 
 extern int
-onig_set_callout_of_contents_of_match_param(OnigMatchParam* param, OnigCalloutFunc f)
+onig_set_progress_callout_of_match_param(OnigMatchParam* param, OnigCalloutFunc f)
 {
-  param->callout_of_contents = f;
+  param->progress_callout_of_contents = f;
   return ONIG_NORMAL;
 }
 
 extern int
-onig_set_retraction_callout_of_contents_of_match_param(OnigMatchParam* param,
-                                                       OnigCalloutFunc f)
+onig_set_retraction_callout_of_match_param(OnigMatchParam* param, OnigCalloutFunc f)
 {
   param->retraction_callout_of_contents = f;
   return ONIG_NORMAL;
@@ -1145,7 +1144,7 @@ onig_set_retry_limit_in_match(unsigned long size)
 #endif
 }
 
-static OnigCalloutFunc DefaultCallout;
+static OnigCalloutFunc DefaultProgressCallout;
 static OnigCalloutFunc DefaultRetractionCallout;
 
 extern OnigMatchParam*
@@ -1188,7 +1187,7 @@ onig_initialize_match_param(OnigMatchParam* mp)
 #ifdef USE_RETRY_LIMIT_IN_MATCH
   mp->retry_limit_in_match = RetryLimitInMatch;
 #endif
-  mp->callout_of_contents            = DefaultCallout;
+  mp->progress_callout_of_contents   = DefaultProgressCallout;
   mp->retraction_callout_of_contents = DefaultRetractionCallout;
 
 #ifdef USE_CALLOUT
@@ -3886,7 +3885,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         }
         else {
           name_id = ONIG_NON_NAME_ID;
-          func = msa->mp->callout_of_contents;
+          func = msa->mp->progress_callout_of_contents;
         }
 
         if (IS_NOT_NULL(func) && (in & ONIG_CALLOUT_IN_PROGRESS) != 0) {
@@ -5058,26 +5057,26 @@ onig_copy_encoding(OnigEncoding to, OnigEncoding from)
 #ifdef USE_CALLOUT
 
 extern OnigCalloutFunc
-onig_get_callout_of_contents(void)
+onig_get_progress_callout(void)
 {
-  return DefaultCallout;
+  return DefaultProgressCallout;
 }
 
 extern int
-onig_set_callout_of_contents(OnigCalloutFunc f)
+onig_set_progress_callout(OnigCalloutFunc f)
 {
-  DefaultCallout = f;
+  DefaultProgressCallout = f;
   return ONIG_NORMAL;
 }
 
 extern OnigCalloutFunc
-onig_get_retraction_callout_of_contents(void)
+onig_get_retraction_callout(void)
 {
   return DefaultRetractionCallout;
 }
 
 extern int
-onig_set_retraction_callout_of_contents(OnigCalloutFunc f)
+onig_set_retraction_callout(OnigCalloutFunc f)
 {
   DefaultRetractionCallout = f;
   return ONIG_NORMAL;
