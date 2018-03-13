@@ -1,4 +1,4 @@
-Oniguruma API  Version 6.8.0  2018/02/13
+Oniguruma API  Version 6.8.0  2018/03/13
 
 #include <oniguruma.h>
 
@@ -268,7 +268,7 @@ Oniguruma API  Version 6.8.0  2018/02/13
   normal return: ONIG_NORMAL
 
 
-# int onig_set_callout_of_contents_of_match_param(OnigMatchParam* mp, OnigCalloutFunc f)
+# int onig_set_progress_callout_of_match_param(OnigMatchParam* mp, OnigCalloutFunc f)
 
   Set a function for callouts of contents in progress.
   If 0 (NULL) is set, never called in progress.
@@ -280,7 +280,7 @@ Oniguruma API  Version 6.8.0  2018/02/13
   normal return: ONIG_NORMAL
 
 
-# int onig_set_retraction_callout_of_contents_of_match_param(OnigMatchParam* mp, OnigCalloutFunc f)
+# int onig_set_retraction_callout_of_match_param(OnigMatchParam* mp, OnigCalloutFunc f)
 
   Set a function for callouts of contents in retraction (backtrack).
   If 0 (NULL) is set, never called in retraction.
@@ -727,12 +727,12 @@ Oniguruma API  Version 6.8.0  2018/02/13
   normal return: ONIG_NORMAL
 
 
-# OnigCalloutFunc onig_get_callout_of_contents(void)
+# OnigCalloutFunc onig_get_progress_callout(void)
 
   Get a function for callouts of contents in progress.
 
 
-# int onig_set_callout_of_contents(OnigCalloutFunc f)
+# int onig_set_progress_callout(OnigCalloutFunc f)
 
   Set a function for callouts of contents in progress.
   If 0 (NULL) is set, never called in progress.
@@ -740,12 +740,12 @@ Oniguruma API  Version 6.8.0  2018/02/13
   normal return: ONIG_NORMAL
 
 
-# OnigCalloutFunc onig_get_retraction_callout_of_contents(void)
+# OnigCalloutFunc onig_get_retraction_callout(void)
 
   Get a function for callouts of contents in retraction (backtrack).
 
 
-# int onig_set_retraction_callout_of_contents(OnigCalloutFunc f)
+# int onig_set_retraction_callout(OnigCalloutFunc f)
 
   Set a function for callouts of contents in retraction (backtrack).
   If 0 (NULL) is set, never called in retraction.

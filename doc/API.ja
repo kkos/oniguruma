@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.8.0   2018/03/07
+鬼車インターフェース Version 6.8.0   2018/03/13
 
 #include <oniguruma.h>
 
@@ -267,7 +267,7 @@
   正常終了戻り値: ONIG_NORMAL
 
 
-# int onig_set_callout_of_contents_of_match_param(OnigMatchParam* mp, OnigCalloutFunc f)
+# int onig_set_progress_callout_of_match_param(OnigMatchParam* mp, OnigCalloutFunc f)
 
   前進時の内容の呼び出し(callouts)で呼び出される関数をセットする。
   もし０(NULL)がセットされると、前進時に呼び出しは起こらない。
@@ -279,7 +279,7 @@
   正常終了戻り値: ONIG_NORMAL
 
 
-# int onig_set_retraction_callout_of_contents_of_match_param(OnigMatchParam* mp, OnigCalloutFunc f)
+# int onig_set_retraction_callout_of_match_param(OnigMatchParam* mp, OnigCalloutFunc f)
 
   後退時の内容の呼び出し(callouts)で呼び出される関数をセットする。
   もし０(NULL)がセットされると、後退時に呼び出しは起こらない。
@@ -733,12 +733,12 @@
   正常終了戻り値: ONIG_NORMAL
 
 
-# OnigCalloutFunc onig_get_callout_of_contents(void)
+# OnigCalloutFunc onig_get_progress_callout(void)
 
   前進時の内容の呼び出しで呼び出される関数を返す。
 
 
-# int onig_set_callout_of_contents(OnigCalloutFunc f)
+# int onig_set_progress_callout(OnigCalloutFunc f)
 
   前進時の内容の呼び出しで呼び出される関数を指定する。
   もし0(NULL)を指定すると、前進時の内容の呼び出しで呼び出しは起こらない。
@@ -746,12 +746,12 @@
   正常終了戻り値: ONIG_NORMAL
 
 
-# OnigCalloutFunc onig_get_retraction_callout_of_contents(void)
+# OnigCalloutFunc onig_get_retraction_callout(void)
 
   後退時の内容の呼び出しで呼び出される関数を返す。
 
 
-# int onig_set_retraction_callout_of_contents(OnigCalloutFunc f)
+# int onig_set_retraction_callout(OnigCalloutFunc f)
 
   後退時の内容の呼び出しで呼び出される関数を指定する。
   もし0(NULL)を指定すると、後退時の内容の呼び出しで呼び出しは起こらない。
