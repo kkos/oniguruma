@@ -216,8 +216,8 @@ extern int main(int argc, char* argv[])
     //return -1;
   }
 
-  (void)onig_set_callout_of_contents(progress_callout_func);
-  (void)onig_set_retraction_callout_of_contents(retraction_callout_func);
+  (void)onig_set_progress_callout(progress_callout_func);
+  (void)onig_set_retraction_callout(retraction_callout_func);
 
   /* callout of contents */
   test(enc, "a+(?{foo bar baz...}X)$", "aaab");
