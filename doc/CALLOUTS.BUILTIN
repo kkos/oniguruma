@@ -1,4 +1,4 @@
-CALLOUTS.BUILTIN               2018/03/12
+CALLOUTS.BUILTIN               2018/03/13
 
 
 * FAIL
@@ -82,5 +82,9 @@ CALLOUTS.BUILTIN               2018/03/12
   op: '==', '!=', '>', '<', '>=', '<='
 
   ex. "(?:(*MAX[A]{7})a|(*MAX[B]{5})b)*(*CMP{A,>=,4})"
+
+
+  [callout data]
+  slot 0: op value (enum OP_CMP in src/regexec.c)
 
 //END

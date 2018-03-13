@@ -1,4 +1,4 @@
-CALLOUTS.BUILTIN               2018/03/12
+CALLOUTS.BUILTIN.ja               2018/03/13
 
 
 * FAIL
@@ -82,5 +82,9 @@ CALLOUTS.BUILTIN               2018/03/12
   op: '==', '!=', '>', '<', '>=', '<='
 
   例: "(?:(*MAX[A]{7})a|(*MAX[B]{5})b)*(*CMP{A,>=,4})"
+
+
+  [callout data]
+  slot 0: op値 (src/regexec.c の中の enum OP_CMP)
 
 //END
