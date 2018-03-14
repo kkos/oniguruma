@@ -45,6 +45,7 @@ init(void)
     t_long = ONIG_TYPE_LONG;
 
     name = "FAIL";        BC0_P(name, fail);
+    name = "MISMATCH";    BC0_P(name, mismatch);
     name = "ABORT";       BC0_P(name, abort);
     name = "ERROR";       BC_P(name, error, 1, &t_long);
     name = "MAX";         BC_B(name, max, 1, &t_long);
