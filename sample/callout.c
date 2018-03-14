@@ -228,7 +228,6 @@ extern int main(int argc, char* argv[])
 
   // callout of name
   test(enc, "\\A(*foo)abc", "abc");
-  test(enc, "abc(*SUCCESS)", "abcabc");
   test(enc, "abc(?:(*FAIL)|$)", "abcabc");
   test(enc, "abc(?:(*ABORT)|$)", "abcabc");
   test(enc, "ab(*foo{})(*FAIL)", "abc");

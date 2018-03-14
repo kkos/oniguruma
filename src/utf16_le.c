@@ -43,9 +43,8 @@ init(void)
     enc = ONIG_ENCODING_UTF16_LE;
     t_long = ONIG_TYPE_LONG;
 
-    name = "F\000A\000I\000L\000\000\000";                BC0_P(name, fail);
-    name = "S\000U\000C\000C\000E\000S\000S\000\000\000"; BC0_P(name, success);
-    name = "A\000B\000O\000R\000T\000\000\000";           BC0_P(name, abort);
+    name = "F\000A\000I\000L\000\000\000";            BC0_P(name, fail);
+    name = "A\000B\000O\000R\000T\000\000\000";       BC0_P(name, abort);
     name = "E\000R\000R\000O\000R\000\000\000";       BC_P(name, error, 1, &t_long);
     name = "M\000A\000X\000\000\000";                 BC_B(name, max,   1, &t_long);
 

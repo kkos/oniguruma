@@ -1065,7 +1065,6 @@ extern int main(int argc, char* argv[])
   x2("c.*\\b", "abc", 2, 3);
   x2("\\b.*abc.*\\b", "abc", 0, 3);
 
-  x2("(*SUCCESS)", "abcdefg", 0, 0);
   n("(*FAIL)", "abcdefg");
   n("abcd(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)(*FAIL)", "abcdefg");
   x2("(?:[ab]|(*MAX{2}).)*", "abcbaaccaaa", 0, 7);
@@ -1078,6 +1077,7 @@ extern int main(int argc, char* argv[])
   e("\\u040", "@", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("(?<abc>\\g<abc>)", "zzzz", ONIGERR_NEVER_ENDING_RECURSION);
   e("(?<=(?>abc))", "abc", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
+  e("(*FOO)", "abcdefg", ONIGERR_UNDEFINED_CALLOUT_NAME);
 
   fprintf(stdout,
        "\nRESULT   SUCC: %d,  FAIL: %d,  ERROR: %d      (by Oniguruma %s)\n",
