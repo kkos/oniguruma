@@ -758,9 +758,10 @@ typedef int (*OnigCalloutFunc)(OnigCalloutArgs* args, void* user_data);
 
 /* callout function return values (less than -1: error code) */
 typedef enum {
-  ONIG_CALLOUT_FAIL    = -1,
-  ONIG_CALLOUT_SUCCESS =  0,
-  ONIG_CALLOUT_ABORT   =  ONIG_ABORT /* == -3 */
+  ONIG_CALLOUT_FAIL     =  1,
+  ONIG_CALLOUT_SUCCESS  =  0,
+  ONIG_CALLOUT_MISMATCH =  ONIG_MISMATCH,  /* == -1 */
+  ONIG_CALLOUT_ABORT    =  ONIG_ABORT      /* == -3 */
 } OnigCalloutResult;
 
 typedef enum {
@@ -1013,9 +1014,9 @@ int onig_get_used_stack_size_in_callout P_((OnigCalloutArgs* args, int* used_num
 ONIG_EXTERN
 int onig_builtin_fail P_((OnigCalloutArgs* args, void* user_data));
 ONIG_EXTERN
-int onig_builtin_abort P_((OnigCalloutArgs* args, void* user_data));
+int onig_builtin_mismatch P_((OnigCalloutArgs* args, void* user_data));
 ONIG_EXTERN
-int onig_builtin_success P_((OnigCalloutArgs* args, void* user_data));
+int onig_builtin_abort P_((OnigCalloutArgs* args, void* user_data));
 ONIG_EXTERN
 int onig_builtin_error P_((OnigCalloutArgs* args, void* user_data));
 ONIG_EXTERN
