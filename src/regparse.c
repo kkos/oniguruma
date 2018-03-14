@@ -2555,7 +2555,7 @@ onig_reg_callout_list_at(regex_t* reg, int num)
 static int
 reg_callout_list_entry(ScanEnv* env, int* rnum)
 {
-#define INIT_CALLOUT_LIST_NUM  4
+#define INIT_CALLOUT_LIST_NUM  3
 
   int num;
   CalloutListEntry* list;
