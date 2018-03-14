@@ -229,6 +229,7 @@ extern int main(int argc, char* argv[])
   // callout of name
   test(enc, "\\A(*foo)abc", "abc");
   test(enc, "abc(?:(*FAIL)|$)", "abcabc");
+  test(enc, "abc(?:$|(*MISMATCH)|abc$)", "abcabc");
   test(enc, "abc(?:(*ABORT)|$)", "abcabc");
   test(enc, "ab(*foo{})(*FAIL)", "abc");
   test(enc, "abc(d|(*ERROR{-999}))", "abc");
