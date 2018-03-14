@@ -8,6 +8,14 @@ CALLOUTS.BUILTIN.ja               2018/03/14
   常に失敗する
 
 
+* MISMATCH
+
+  (*MISMATCH)
+
+  照合を中止する
+  検索は継続する
+
+
 * ABORT
 
   (*ABORT)

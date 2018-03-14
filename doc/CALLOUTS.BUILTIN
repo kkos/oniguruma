@@ -8,6 +8,14 @@ CALLOUTS.BUILTIN               2018/03/14
   Always fail.
 
 
+* MISMATCH
+
+  (*MISMATCH)
+
+  Terminate Match process.
+  Continue Search process.
+
+
 * ABORT
 
   (*ABORT)
