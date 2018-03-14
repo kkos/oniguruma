@@ -1,4 +1,4 @@
-CALLOUTS.BUILTIN               2018/03/13
+CALLOUTS.BUILTIN               2018/03/14
 
 
 * FAIL
@@ -6,13 +6,6 @@ CALLOUTS.BUILTIN               2018/03/13
   (*FAIL)
 
   Always fail.
-
-
-* SUCCESS
-
-  (*SUCCESS)
-
-  Always success.
 
 
 * ABORT
@@ -43,7 +36,7 @@ CALLOUTS.BUILTIN               2018/03/13
 
 * COUNT
 
-  (*COUNT{c::CHAR = '>'})
+  (*COUNT{c::CHAR})
 
   Counter.
   Depends on 'c' argument, the slot 0 value changes.
@@ -62,10 +55,11 @@ CALLOUTS.BUILTIN               2018/03/13
 
 * TOTAL_COUNT
 
-  (*TOTAL_COUNT{c::CHAR = '>'})
+  (*TOTAL_COUNT{c::CHAR})
 
   It's the almost same as COUNT.
   But the counts are integrated in a search process.
+  Default 'c' value is '>'.
 
   [callout data]
   slot 0: '>': progress count, '<': retraction count, 'X': success count
@@ -81,8 +75,7 @@ CALLOUTS.BUILTIN               2018/03/13
 
   op: '==', '!=', '>', '<', '>=', '<='
 
-  ex. "(?:(*MAX[A]{7})a|(*MAX[B]{5})b)*(*CMP{A,>=,4})"
-
+  ex. "(?:(*MAX[TA]{7})a|(*MAX[TB]{5})b)*(*CMP{TA,>=,4})"
 
   [callout data]
   slot 0: op value (enum OP_CMP in src/regexec.c)

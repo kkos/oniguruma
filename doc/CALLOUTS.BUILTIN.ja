@@ -1,4 +1,4 @@
-CALLOUTS.BUILTIN.ja               2018/03/13
+CALLOUTS.BUILTIN.ja               2018/03/14
 
 
 * FAIL
@@ -6,13 +6,6 @@ CALLOUTS.BUILTIN.ja               2018/03/13
   (*FAIL)
 
   常に失敗する
-
-
-* SUCCESS
-
-  (*SUCCESS)
-
-  常に成功する
 
 
 * ABORT
@@ -43,7 +36,7 @@ CALLOUTS.BUILTIN.ja               2018/03/13
 
 * COUNT
 
-  (*COUNT{c::CHAR = '>'})
+  (*COUNT{c::CHAR})
 
   カウンタ
   'c'引数の値によって、slot 0の値が変化する
@@ -62,10 +55,11 @@ CALLOUTS.BUILTIN.ja               2018/03/13
 
 * TOTAL_COUNT
 
-  (*TOTAL_COUNT{c::CHAR = '>'})
+  (*TOTAL_COUNT{c::CHAR})
 
   これはCOUNTとほとんど同じ
   しかし、カウントが検索過程で積算される
+  デフォルトの'c'の値は '>'
 
   [callout data]
   slot 0: '>': 前進回数, '<': 後退回数, 'X': 成功回数
@@ -78,11 +72,11 @@ CALLOUTS.BUILTIN.ja               2018/03/13
   (*CMP{x::TAG/LONG, op::STRING, y::TAG/LONG})
 
   xの値とyの値をop演算子で比較する
+  x, yがTAGのときにはそのcalloutのslot 0の値が参照される
 
   op: '==', '!=', '>', '<', '>=', '<='
 
-  例: "(?:(*MAX[A]{7})a|(*MAX[B]{5})b)*(*CMP{A,>=,4})"
-
+  例: "(?:(*MAX[TA]{7})a|(*MAX[TB]{5})b)*(*CMP{TA,>=,4})"
 
   [callout data]
   slot 0: op値 (src/regexec.c の中の enum OP_CMP)
