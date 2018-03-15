@@ -1,4 +1,4 @@
-CALLOUTS.BUILTIN.ja               2018/03/14
+CALLOUTS.BUILTIN.ja               2018/03/15
 
 
 * FAIL
@@ -16,20 +16,13 @@ CALLOUTS.BUILTIN.ja               2018/03/14
   検索は継続する
 
 
-* ABORT
-
-  (*ABORT)
-
-  検索/照合を中止する
-  戻り値: ONIG_ABORT
-
-
 * ERROR
 
   (*ERROR{n::LONG})
 
   検索/照合を中止する
   戻り値は引数'n'の値。(負の値でなければならない)
+  'n'はオプション引数で、デフォルト値はONIG_ABORT
 
 
 * MAX
@@ -48,7 +41,7 @@ CALLOUTS.BUILTIN.ja               2018/03/14
 
   カウンタ
   'c'引数の値によって、slot 0の値が変化する
-  デフォルトの'c'の値は '>'
+  'c'はオプション引数で、デフォルト値は'>'
 
   [callout data]
   slot 0: '>': 前進回数, '<': 後退回数, 'X': 成功回数
@@ -58,7 +51,7 @@ CALLOUTS.BUILTIN.ja               2018/03/14
   (* 成功回数 = 前進回数 - 後退回数)
 
   ** ONIG_OPTION_FIND_LONGEST または ONIG_OPTION_FIND_NOT_EMPTY が使用されると
-     COUNT と TOTAL_COUNT は正確な動作ができなくなる
+     正確な動作ができなくなる
 
 
 * TOTAL_COUNT
@@ -67,12 +60,15 @@ CALLOUTS.BUILTIN.ja               2018/03/14
 
   これはCOUNTとほとんど同じ
   しかし、カウントが検索過程で積算される
-  デフォルトの'c'の値は '>'
+  'c'はオプション引数で、デフォルト値は'>'
 
   [callout data]
   slot 0: '>': 前進回数, '<': 後退回数, 'X': 成功回数
   slot 1: 前進回数
   slot 2: 後退回数
+
+  ** ONIG_OPTION_FIND_LONGEST または ONIG_OPTION_FIND_NOT_EMPTY が使用されると
+     正確な動作ができなくなる
 
 
 * CMP

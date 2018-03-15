@@ -1,4 +1,4 @@
-CALLOUTS.BUILTIN               2018/03/14
+CALLOUTS.BUILTIN               2018/03/15
 
 
 * FAIL
@@ -16,20 +16,14 @@ CALLOUTS.BUILTIN               2018/03/14
   Continue Search process.
 
 
-* ABORT
-
-  (*ABORT)
-
-  Terminate Search/Match process.
-  Return value is ONIG_ABORT.
-
-
 * ERROR
 
   (*ERROR{n::LONG})
 
   Terminate Search/Match process.
+
   Return value is the argument 'n'. (The value must be negative.)
+  'n' is an optional argument. (default value is ONIG_ABORT)
 
 
 * MAX
@@ -48,7 +42,7 @@ CALLOUTS.BUILTIN               2018/03/14
 
   Counter.
   Depends on 'c' argument, the slot 0 value changes.
-  Default 'c' value is '>'.
+  'c' is an optional argument, deefault value is '>'.
 
   [callout data]
   slot 0: '>': progress count, '<': retraction count, 'X': success count
@@ -58,7 +52,7 @@ CALLOUTS.BUILTIN               2018/03/14
   (* success count = progress count - retraction count)
 
   ** If option ONIG_OPTION_FIND_LONGEST or ONIG_OPTION_FIND_NOT_EMPTY is used,
-     COUNT and TOTAL_COUNT are not accurate.
+     counts are not accurate.
 
 
 * TOTAL_COUNT
@@ -67,12 +61,15 @@ CALLOUTS.BUILTIN               2018/03/14
 
   It's the almost same as COUNT.
   But the counts are integrated in a search process.
-  Default 'c' value is '>'.
+  'c' is an optional argument, deefault value is '>'.
 
   [callout data]
   slot 0: '>': progress count, '<': retraction count, 'X': success count
   slot 1: progress count
   slot 2: retraction count
+
+  ** If option ONIG_OPTION_FIND_LONGEST or ONIG_OPTION_FIND_NOT_EMPTY is used,
+     counts are not accurate.
 
 
 * CMP
