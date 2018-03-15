@@ -46,9 +46,11 @@ init(void)
 
     name = "FAIL";        BC0_P(name, fail);
     name = "MISMATCH";    BC0_P(name, mismatch);
-    name = "ABORT";       BC0_P(name, abort);
-    name = "ERROR";       BC_P(name, error, 1, &t_long);
     name = "MAX";         BC_B(name, max, 1, &t_long);
+
+    name = "ERROR";
+    args[0] = ONIG_TYPE_LONG; opts[0].l = ONIG_ABORT;
+    BC_P_O(name, error, 1, args, 1, opts);
 
     name = "COUNT";
     args[0] = ONIG_TYPE_CHAR; opts[0].c = '>';

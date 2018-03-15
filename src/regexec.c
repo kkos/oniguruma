@@ -5301,12 +5301,6 @@ onig_builtin_mismatch(OnigCalloutArgs* args ARG_UNUSED, void* user_data ARG_UNUS
   return ONIG_CALLOUT_MISMATCH;
 }
 
-extern int
-onig_builtin_abort(OnigCalloutArgs* args ARG_UNUSED, void* user_data ARG_UNUSED)
-{
-  return ONIG_CALLOUT_ABORT;
-}
-
 #if 0
 extern int
 onig_builtin_success(OnigCalloutArgs* args ARG_UNUSED, void* user_data ARG_UNUSED)

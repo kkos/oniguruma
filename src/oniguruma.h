@@ -1016,8 +1016,6 @@ int onig_builtin_fail P_((OnigCalloutArgs* args, void* user_data));
 ONIG_EXTERN
 int onig_builtin_mismatch P_((OnigCalloutArgs* args, void* user_data));
 ONIG_EXTERN
-int onig_builtin_abort P_((OnigCalloutArgs* args, void* user_data));
-ONIG_EXTERN
 int onig_builtin_error P_((OnigCalloutArgs* args, void* user_data));
 ONIG_EXTERN
 int onig_builtin_count P_((OnigCalloutArgs* args, void* user_data));
