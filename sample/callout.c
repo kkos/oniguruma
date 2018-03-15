@@ -230,7 +230,7 @@ extern int main(int argc, char* argv[])
   test(enc, "\\A(*foo)abc", "abc");
   test(enc, "abc(?:(*FAIL)|$)", "abcabc");
   test(enc, "abc(?:$|(*MISMATCH)|abc$)", "abcabc");
-  test(enc, "abc(?:(*ABORT)|$)", "abcabc");
+  test(enc, "abc(?:(*ERROR)|$)", "abcabc");
   test(enc, "ab(*foo{})(*FAIL)", "abc");
   test(enc, "abc(d|(*ERROR{-999}))", "abc");
   test(enc, "ab(*bar{372,I am a bar's argument,あ})c(*FAIL)", "abc");
