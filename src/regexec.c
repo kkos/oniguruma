@@ -888,8 +888,6 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   case ONIG_CALLOUT_FAIL:\
   case ONIG_CALLOUT_SUCCESS:\
     break;\
-  case ONIG_CALLOUT_MISMATCH:\
-  case ONIG_CALLOUT_ABORT:\
   default:\
     if (result > 0) {\
       result = ONIGERR_INVALID_ARGUMENT;\
@@ -3899,9 +3897,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           case ONIG_CALLOUT_SUCCESS:
             goto retraction_callout2;
             break;
-          case ONIG_CALLOUT_MISMATCH: /* == ONIG_MISMATCH */
-          case ONIG_CALLOUT_ABORT:    /* == ONIG_ABORT */
-            /* fall */
           default: /* error code */
             if (call_result > 0) {
               call_result = ONIGERR_INVALID_ARGUMENT;
@@ -5298,7 +5293,7 @@ onig_builtin_fail(OnigCalloutArgs* args ARG_UNUSED, void* user_data ARG_UNUSED)
 extern int
 onig_builtin_mismatch(OnigCalloutArgs* args ARG_UNUSED, void* user_data ARG_UNUSED)
 {
-  return ONIG_CALLOUT_MISMATCH;
+  return ONIG_MISMATCH;
 }
 
 #if 0
