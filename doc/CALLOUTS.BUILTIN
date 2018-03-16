@@ -1,4 +1,4 @@
-CALLOUTS.BUILTIN               2018/03/15
+CALLOUTS.BUILTIN               2018/03/16
 
 
 * FAIL
@@ -22,7 +22,7 @@ CALLOUTS.BUILTIN               2018/03/15
 
   Terminate Search/Match process.
 
-  Return value is the argument 'n'. (The value must be negative.)
+  Return value is the argument 'n'. (The value must be less than -1)
   'n' is an optional argument. (default value is ONIG_ABORT)
 
 

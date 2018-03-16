@@ -1,4 +1,4 @@
-CALLOUTS.BUILTIN.ja               2018/03/15
+CALLOUTS.BUILTIN.ja               2018/03/16
 
 
 * FAIL
@@ -21,7 +21,7 @@ CALLOUTS.BUILTIN.ja               2018/03/15
   (*ERROR{n::LONG})
 
   検索/照合を中止する
-  戻り値は引数'n'の値。(負の値でなければならない)
+  戻り値は引数'n'の値。(-1より小さい負の値でなければならない)
   'n'はオプション引数で、デフォルト値はONIG_ABORT
 
 
