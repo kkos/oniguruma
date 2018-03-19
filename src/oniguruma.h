@@ -138,6 +138,9 @@ typedef struct OnigEncodingTypeST {
   int    (*init)(void);
   int    (*is_initialized)(void);
   int    (*is_valid_mbc_string)(const OnigUChar* s, const OnigUChar* end);
+  unsigned int flag;
+  OnigCodePoint sb_range;
+  int index;
 } OnigEncodingType;
 
 typedef OnigEncodingType* OnigEncoding;

@@ -109,5 +109,6 @@ OnigEncodingType OnigEncodingASCII = {
   onigenc_always_true_is_allowed_reverse_match,
   init,
   0, /* is_initialized */
-  onigenc_always_true_is_valid_mbc_string
+  onigenc_always_true_is_valid_mbc_string,
+  0, 0, 0
 };
