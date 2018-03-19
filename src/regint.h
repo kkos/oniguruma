@@ -295,6 +295,50 @@ typedef struct {
 #define REG_EXTP(reg)      ((RegexExt* )((reg)->chain))
 #define REG_EXTPL(reg)     ((reg)->chain)
 
+struct re_pattern_buffer {
+  /* common members of BBuf(bytes-buffer) */
+  unsigned char* p;         /* compiled pattern */
+  unsigned int used;        /* used space for p */
+  unsigned int alloc;       /* allocated space for p */
+
+  int num_mem;                   /* used memory(...) num counted from 1 */
+  int num_repeat;                /* OP_REPEAT/OP_REPEAT_NG id-counter */
+  int num_null_check;            /* OP_EMPTY_CHECK_START/END id counter */
+  int num_comb_exp_check;        /* no longer used (combination explosion check) */
+  int num_call;                  /* number of subexp call */
+  unsigned int capture_history;  /* (?@...) flag (1-31) */
+  unsigned int bt_mem_start;     /* need backtrack flag */
+  unsigned int bt_mem_end;       /* need backtrack flag */
+  int stack_pop_level;
+  int repeat_range_alloc;
+  OnigRepeatRange* repeat_range;
+
+  OnigEncoding      enc;
+  OnigOptionType    options;
+  OnigSyntaxType*   syntax;
+  OnigCaseFoldType  case_fold_flag;
+  void*             name_table;
+
+  /* optimization info (string search, char-map and anchors) */
+  int            optimize;          /* optimize flag */
+  int            threshold_len;     /* search str-length for apply optimize */
+  int            anchor;            /* BEGIN_BUF, BEGIN_POS, (SEMI_)END_BUF */
+  OnigLen   anchor_dmin;       /* (SEMI_)END_BUF anchor distance */
+  OnigLen   anchor_dmax;       /* (SEMI_)END_BUF anchor distance */
+  int            sub_anchor;        /* start-anchor for exact or map */
+  unsigned char *exact;
+  unsigned char *exact_end;
+  unsigned char  map[ONIG_CHAR_TABLE_SIZE]; /* used as BM skip or char-map */
+  int           *int_map;                   /* BM skip for exact_len > 255 */
+  int           *int_map_backward;          /* BM skip for backward search */
+  OnigLen   dmin;                      /* min-distance of exact or map */
+  OnigLen   dmax;                      /* max-distance of exact or map */
+
+  /* regex_t link chain */
+  struct re_pattern_buffer* chain;  /* escape compile-conflict */
+};
+
+
 /* stack pop level */
 enum StackPopLevel {
   STACK_POP_LEVEL_FREE      = 0,
