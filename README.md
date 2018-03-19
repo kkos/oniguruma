@@ -39,6 +39,12 @@ Supported character encodings:
 * CP1251:  contributed by Byte
 
 
+New feature of version 6.8.1
+--------------------------
+
+* Update shared library version to 5.0.0 for API incompatible changes from 6.7.1
+
+
 New feature of version 6.8.0
 --------------------------
 
