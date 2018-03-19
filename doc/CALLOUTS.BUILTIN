@@ -1,14 +1,14 @@
-CALLOUTS.BUILTIN               2018/03/16
+CALLOUTS.BUILTIN               2018/03/19
 
 
-* FAIL
+* FAIL    (progress)
 
   (*FAIL)
 
   Always fail.
 
 
-* MISMATCH
+* MISMATCH    (progress)
 
   (*MISMATCH)
 
@@ -16,7 +16,7 @@ CALLOUTS.BUILTIN               2018/03/16
   Continue Search process.
 
 
-* ERROR
+* ERROR    (progress)
 
   (*ERROR{n::LONG})
 
@@ -26,7 +26,7 @@ CALLOUTS.BUILTIN               2018/03/16
   'n' is an optional argument. (default value is ONIG_ABORT)
 
 
-* MAX
+* MAX    (progress/retraction)
 
   (*MAX{n::LONG})
 
@@ -36,7 +36,7 @@ CALLOUTS.BUILTIN               2018/03/16
   slot 0: current success count.
 
 
-* COUNT
+* COUNT    (progress/retraction)
 
   (*COUNT{c::CHAR})
 
@@ -55,7 +55,7 @@ CALLOUTS.BUILTIN               2018/03/16
      counts are not accurate.
 
 
-* TOTAL_COUNT
+* TOTAL_COUNT    (progress/retraction)
 
   (*TOTAL_COUNT{c::CHAR})
 
@@ -72,7 +72,7 @@ CALLOUTS.BUILTIN               2018/03/16
      counts are not accurate.
 
 
-* CMP
+* CMP    (progress)
 
   (*CMP{x::TAG/LONG, op::STRING, y::TAG/LONG})
 

@@ -1,14 +1,14 @@
-CALLOUTS.BUILTIN.ja               2018/03/16
+CALLOUTS.BUILTIN.ja               2018/03/19
 
 
-* FAIL
+* FAIL    (前進)
 
   (*FAIL)
 
   常に失敗する
 
 
-* MISMATCH
+* MISMATCH    (前進)
 
   (*MISMATCH)
 
@@ -16,7 +16,7 @@ CALLOUTS.BUILTIN.ja               2018/03/16
   検索は継続する
 
 
-* ERROR
+* ERROR    (前進)
 
   (*ERROR{n::LONG})
 
@@ -25,7 +25,7 @@ CALLOUTS.BUILTIN.ja               2018/03/16
   'n'はオプション引数で、デフォルト値はONIG_ABORT
 
 
-* MAX
+* MAX    (前進/後退)
 
   (*MAX{n::LONG})
 
@@ -35,7 +35,7 @@ CALLOUTS.BUILTIN.ja               2018/03/16
   slot 0: 現在の成功回数
 
 
-* COUNT
+* COUNT    (前進/後退)
 
   (*COUNT{c::CHAR})
 
@@ -54,7 +54,7 @@ CALLOUTS.BUILTIN.ja               2018/03/16
      正確な動作ができなくなる
 
 
-* TOTAL_COUNT
+* TOTAL_COUNT    (前進/後退)
 
   (*TOTAL_COUNT{c::CHAR})
 
@@ -71,7 +71,7 @@ CALLOUTS.BUILTIN.ja               2018/03/16
      正確な動作ができなくなる
 
 
-* CMP
+* CMP    (前進)
 
   (*CMP{x::TAG/LONG, op::STRING, y::TAG/LONG})
 
