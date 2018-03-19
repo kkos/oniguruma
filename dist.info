@@ -1,7 +1,7 @@
 --- This file is part of LuaDist project
 
 name = "onig"
-version = "6.8.0"
+version = "6.8.1"
 
 desc = "Oniguruma is a regular expressions library."
 author = "K.Kosako"
