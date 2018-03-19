@@ -1,5 +1,12 @@
 History
 
+2018/03/19: Version 6.8.1
+
+2018/03/19: update LTVERSION from 4:0:0 to 5:0:0
+2018/03/19: add flag, sb_range etc.. into OnigEncodingType
+2018/03/19: move regex structure from oniguruma.h to regint.h
+2018/03/19: ONIGENC_CTYPE_XXX to be enum (Issue #33)
+
 2018/03/16: Version 6.8.0
 
 2018/03/12: add doc/CALLOUTS.BUILTIN for builtin callouts
