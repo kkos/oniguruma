@@ -115,7 +115,7 @@ typedef struct {
   OnigCodePoint one_or_more_time;
   OnigCodePoint anychar_anytime;
 } OnigMetaCharTableType;
-  
+
 typedef int (*OnigApplyAllCaseFoldFunc)(OnigCodePoint from, OnigCodePoint* to, int to_len, void* arg);
 
 typedef struct OnigEncodingTypeST {
@@ -344,7 +344,7 @@ int onigenc_str_bytelen_null P_((OnigEncoding enc, const OnigUChar* p));
 ONIG_EXTERN
 int onigenc_is_valid_mbc_string P_((OnigEncoding enc, const OnigUChar* s, const OnigUChar* end));
 ONIG_EXTERN
-UChar* onigenc_strdup P_((OnigEncoding enc, const UChar* s, const UChar* end));
+OnigUChar* onigenc_strdup P_((OnigEncoding enc, const OnigUChar* s, const OnigUChar* end));
 
 
 /* PART: regular expression */
@@ -549,7 +549,7 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIGERR_SPECIFIED_ENCODING_CANT_CONVERT_TO_WIDE_CHAR  -22
 #define ONIGERR_FAIL_TO_INITIALIZE                            -23
 /* general error */
-#define ONIGERR_INVALID_ARGUMENT                              -30 
+#define ONIGERR_INVALID_ARGUMENT                              -30
 /* syntax error */
 #define ONIGERR_END_PATTERN_AT_LEFT_BRACE                    -100
 #define ONIGERR_END_PATTERN_AT_LEFT_BRACKET                  -101
@@ -909,11 +909,11 @@ int onig_set_callout_of_name P_((OnigEncoding enc, OnigCalloutType type, OnigUCh
 ONIG_EXTERN
 OnigUChar* onig_get_callout_name_by_name_id P_((int id));
 ONIG_EXTERN
-int onig_get_callout_num_by_tag P_((OnigRegex reg, const UChar* tag, const UChar* tag_end));
+int onig_get_callout_num_by_tag P_((OnigRegex reg, const OnigUChar* tag, const OnigUChar* tag_end));
 ONIG_EXTERN
-int onig_get_callout_data_by_tag P_((OnigRegex reg, OnigMatchParam* mp, const UChar* tag, const UChar* tag_end, int slot, OnigType* type, OnigValue* val));
+int onig_get_callout_data_by_tag P_((OnigRegex reg, OnigMatchParam* mp, const OnigUChar* tag, const OnigUChar* tag_end, int slot, OnigType* type, OnigValue* val));
 ONIG_EXTERN
-int onig_set_callout_data_by_tag P_((OnigRegex reg, OnigMatchParam* mp, const UChar* tag, const UChar* tag_end, int slot, OnigType type, OnigValue* val));
+int onig_set_callout_data_by_tag P_((OnigRegex reg, OnigMatchParam* mp, const OnigUChar* tag, const OnigUChar* tag_end, int slot, OnigType type, OnigValue* val));
 
 /* used in callout functions */
 ONIG_EXTERN
