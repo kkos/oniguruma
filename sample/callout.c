@@ -241,6 +241,7 @@ extern int main(int argc, char* argv[])
   test(enc, "(?:(*MAX{3})a|(*MAX{4})b)*", "bbbaabbab");
   test(enc, "(?:(*MAX[A]{3})a|(*MAX[B]{5})b)*(*CMP{A,<,B})", "abababc");
   test(enc, "(?:(*MAX[A]{7})a|(*MAX[B]{5})b)*(*CMP{A,>=,4})", "abababcabababaa");
+  test(enc, "(?:(*MAX[T]{3})a)*(?:(*MAX{T})c)*", "aaccc");
 
   /* callouts in condition */
   test(enc, "\\A(?(?{in condition})then|else)\\z", "then");
