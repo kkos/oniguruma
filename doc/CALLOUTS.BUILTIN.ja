@@ -1,4 +1,4 @@
-CALLOUTS.BUILTIN.ja               2018/03/19
+CALLOUTS.BUILTIN.ja               2018/03/22
 
 
 * FAIL    (前進)
@@ -27,9 +27,10 @@ CALLOUTS.BUILTIN.ja               2018/03/19
 
 * MAX    (前進/後退)
 
-  (*MAX{n::LONG})
+  (*MAX{n::LONG/TAG})
 
   成功回数を制限する
+  'n'の値がTAGのときは、そのTAGのcalloutのslot 0の値が使用される
 
   [callout data]
   slot 0: 現在の成功回数

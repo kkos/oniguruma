@@ -1,4 +1,4 @@
-CALLOUTS.BUILTIN               2018/03/19
+CALLOUTS.BUILTIN               2018/03/22
 
 
 * FAIL    (progress)
@@ -28,9 +28,12 @@ CALLOUTS.BUILTIN               2018/03/19
 
 * MAX    (progress/retraction)
 
-  (*MAX{n::LONG})
+  (*MAX{n::LONG/TAG})
 
   Restrict the maximum count of success.
+  If 'n' values are tag, slot 0 value of the tag are used.
+
+  ex. "(?:(*MAX[T]{3})a)*(?:(*MAX{T})c)*"
 
   [callout data]
   slot 0: current success count.
@@ -77,6 +80,7 @@ CALLOUTS.BUILTIN               2018/03/19
   (*CMP{x::TAG/LONG, op::STRING, y::TAG/LONG})
 
   Compare x value and y value with op operator.
+  If x and y values are tag, slot 0 value of the tag are used.
 
   op: '==', '!=', '>', '<', '>=', '<='
 
