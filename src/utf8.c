@@ -296,5 +296,6 @@ OnigEncodingType OnigEncodingUTF8 = {
   onigenc_always_true_is_allowed_reverse_match,
   NULL, /* init */
   NULL, /* is_initialized */
-  is_valid_mbc_string
+  is_valid_mbc_string,
+  0, 0, 0
 };

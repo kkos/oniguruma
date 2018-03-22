@@ -282,5 +282,6 @@ OnigEncodingType OnigEncodingUTF16_LE = {
   onigenc_always_false_is_allowed_reverse_match,
   init,
   0, /* is_initialized */
-  is_valid_mbc_string
+  is_valid_mbc_string,
+  0, 0, 0
 };
