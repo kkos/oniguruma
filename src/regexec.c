@@ -5393,6 +5393,7 @@ onig_builtin_max(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 {
   int r;
   int slot;
+  long max_val;
   OnigType  type;
   OnigValue val;
   OnigValue aval;
@@ -5411,12 +5412,23 @@ onig_builtin_max(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 
   r = onig_get_arg_by_callout_args(args, 0, &type, &aval);
   if (r != ONIG_NORMAL) return r;
+  if (type == ONIG_TYPE_TAG) {
+    r = onig_get_callout_data_by_callout_args(args, aval.tag, 0, &type, &aval);
+    if (r < ONIG_NORMAL) return r;
+    else if (r > ONIG_NORMAL)
+      max_val = 0L;
+    else
+      max_val = aval.l;
+  }
+  else { /* LONG */
+    max_val = aval.l;
+  }
 
   if (args->in == ONIG_CALLOUT_IN_RETRACTION) {
     val.l--;
   }
   else {
-    if (val.l >= aval.l) return ONIG_CALLOUT_FAIL;
+    if (val.l >= max_val) return ONIG_CALLOUT_FAIL;
     val.l++;
   }
 

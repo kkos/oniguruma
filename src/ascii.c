@@ -37,16 +37,17 @@ init(void)
     int id;
     OnigEncoding enc;
     char* name;
-    unsigned int t_long;
     unsigned int args[4];
     OnigValue    opts[4];
 
     enc = ONIG_ENCODING_ASCII;
-    t_long = ONIG_TYPE_LONG;
 
     name = "FAIL";        BC0_P(name, fail);
     name = "MISMATCH";    BC0_P(name, mismatch);
-    name = "MAX";         BC_B(name, max, 1, &t_long);
+
+    name = "MAX";
+    args[0] = ONIG_TYPE_TAG | ONIG_TYPE_LONG;
+    BC_B(name, max, 1, args);
 
     name = "ERROR";
     args[0] = ONIG_TYPE_LONG; opts[0].l = ONIG_ABORT;
