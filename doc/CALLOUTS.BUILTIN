@@ -1,4 +1,4 @@
-CALLOUTS.BUILTIN               2018/03/22
+CALLOUTS.BUILTIN               2018/03/26
 
 
 * FAIL    (progress)
@@ -45,7 +45,7 @@ CALLOUTS.BUILTIN               2018/03/22
 
   Counter.
   Depends on 'c' argument, the slot 0 value changes.
-  'c' is an optional argument, deefault value is '>'.
+  'c' is an optional argument, default value is '>'.
 
   [callout data]
   slot 0: '>': progress count, '<': retraction count, 'X': success count
@@ -64,7 +64,7 @@ CALLOUTS.BUILTIN               2018/03/22
 
   It's the almost same as COUNT.
   But the counts are integrated in a search process.
-  'c' is an optional argument, deefault value is '>'.
+  'c' is an optional argument, default value is '>'.
 
   [callout data]
   slot 0: '>': progress count, '<': retraction count, 'X': success count
