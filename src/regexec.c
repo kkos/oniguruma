@@ -5394,6 +5394,7 @@ onig_builtin_max(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   int r;
   int slot;
   long max_val;
+  OnigCodePoint count_type;
   OnigType  type;
   OnigValue val;
   OnigValue aval;
@@ -5424,12 +5425,26 @@ onig_builtin_max(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
     max_val = aval.l;
   }
 
+  r = onig_get_arg_by_callout_args(args, 1, &type, &aval);
+  if (r != ONIG_NORMAL) return r;
+
+  count_type = aval.c;
+  if (count_type != '>' && count_type != 'X' && count_type != '<')
+    return ONIGERR_INVALID_CALLOUT_ARG;
+
   if (args->in == ONIG_CALLOUT_IN_RETRACTION) {
-    val.l--;
+    if (count_type == '<') {
+      if (val.l >= max_val) return ONIG_CALLOUT_FAIL;
+      val.l++;
+    }
+    else if (count_type == 'X')
+      val.l--;
   }
   else {
-    if (val.l >= max_val) return ONIG_CALLOUT_FAIL;
-    val.l++;
+    if (count_type != '<') {
+      if (val.l >= max_val) return ONIG_CALLOUT_FAIL;
+      val.l++;
+    }
   }
 
   r = onig_set_callout_data_by_callout_args_self(args, slot, ONIG_TYPE_LONG, &val);

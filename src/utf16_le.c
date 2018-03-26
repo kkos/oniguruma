@@ -46,7 +46,9 @@ init(void)
 
     name = "M\000A\000X\000\000\000";
     args[0] = ONIG_TYPE_TAG | ONIG_TYPE_LONG;
-    BC_B(name, max, 1, args);
+    args[1] = ONIG_TYPE_CHAR;
+    opts[0].c = 'X';
+    BC_B_O(name, max, 2, args, 1, opts);
 
     name = "E\000R\000R\000O\000R\000\000\000";
     args[0] = ONIG_TYPE_LONG; opts[0].l = ONIG_ABORT;
