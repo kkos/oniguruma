@@ -3395,9 +3395,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         sprev = s;
         if (backref_match_at_nested_level(reg, stk, stk_base, ic
                      , case_fold_flag, (int )level, (int )tlen, p, &s, end)) {
-          while (sprev + (len = enclen(encode, sprev)) < s)
-            sprev += len;
-
+          if (sprev < end) {
+            while (sprev + (len = enclen(encode, sprev)) < s)
+              sprev += len;
+          }
           p += (SIZE_MEMNUM * tlen);
         }
         else
