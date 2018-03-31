@@ -1850,11 +1850,11 @@ stack_double(int is_alloca, char** arg_alloc_base,
 } while(0)
 
 #ifdef USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT
-#define STACK_EMPTY_CHECK_MEMST(isnull,sid,s,reg) do {\
+#define STACK_EMPTY_CHECK_MEM(isnull,sid,s,reg) do {\
   StackType* k = stk;\
   while (1) {\
     k--;\
-    STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_MEMST"); \
+    STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_MEM"); \
     if (k->type == STK_EMPTY_CHECK_START) {\
       if (k->zid == (sid)) {\
         if (k->u.empty_check.pstr != (s)) {\
@@ -1889,12 +1889,12 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_EMPTY_CHECK_MEMST_REC(isnull,sid,s,reg) do {\
+#define STACK_EMPTY_CHECK_MEM_REC(isnull,sid,s,reg) do {\
   int level = 0;\
   StackType* k = stk;\
   while (1) {\
     k--;\
-    STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_MEMST_REC"); \
+    STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_MEM_REC");\
     if (k->type == STK_EMPTY_CHECK_START) {\
       if (k->zid == (sid)) {\
         if (level == 0) {\
@@ -3518,10 +3518,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         int is_empty;
 
         GET_MEMNUM_INC(mem, p); /* mem: null check id */
-        STACK_EMPTY_CHECK_MEMST(is_empty, mem, s, reg);
+        STACK_EMPTY_CHECK_MEM(is_empty, mem, s, reg);
         if (is_empty) {
 #ifdef ONIG_DEBUG_MATCH
-          fprintf(stderr, "EMPTY_CHECK_END_MEMST: skip  id:%d, s:%p\n", (int)mem, s);
+          fprintf(stderr, "EMPTY_CHECK_END_MEM: skip  id:%d, s:%p\n", (int)mem, s);
 #endif
           if (is_empty == -1) goto fail;
           goto empty_check_found;
@@ -3540,13 +3540,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
         GET_MEMNUM_INC(mem, p); /* mem: null check id */
 #ifdef USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT
-        STACK_EMPTY_CHECK_MEMST_REC(is_empty, mem, s, reg);
+        STACK_EMPTY_CHECK_MEM_REC(is_empty, mem, s, reg);
 #else
         STACK_EMPTY_CHECK_REC(is_empty, mem, s);
 #endif
         if (is_empty) {
 #ifdef ONIG_DEBUG_MATCH
-          fprintf(stderr, "EMPTY_CHECK_END_MEMST_PUSH: skip  id:%d, s:%p\n",
+          fprintf(stderr, "EMPTY_CHECK_END_MEM_PUSH: skip  id:%d, s:%p\n",
                   (int )mem, s);
 #endif
           if (is_empty == -1) goto fail;
