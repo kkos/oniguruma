@@ -1873,7 +1873,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
                 endp = STACK_AT(k->u.mem.end)->u.mem.pstr;\
               else\
                 endp = (UChar* )k->u.mem.end;\
-              /*fprintf(stderr, "num: %d, pstr: %p, endp: %p\n", k->u.mem.num, STACK_AT(k->u.mem.start)->u.mem.pstr, endp);*/ \
               if (STACK_AT(k->u.mem.start)->u.mem.pstr != endp) {\
                 (isnull) = 0; break;\
               }\
@@ -1908,19 +1907,27 @@ stack_double(int is_alloca, char** arg_alloc_base,
             (isnull) = 1;\
             while (k < stk) {\
               if (k->type == STK_MEM_START) {\
-                if (k->u.mem.end == INVALID_STACK_INDEX) {\
-                  (isnull) = 0; break;\
+                if (level == 0) {\
+                  if (k->u.mem.end == INVALID_STACK_INDEX) {\
+                    (isnull) = 0; break;\
+                  }\
+                  if (MEM_STATUS_AT(reg->bt_mem_end, k->zid))\
+                    endp = STACK_AT(k->u.mem.end)->u.mem.pstr;\
+                  else\
+                    endp = (UChar* )k->u.mem.end;\
+                  if (STACK_AT(k->u.mem.start)->u.mem.pstr != endp) {\
+                    (isnull) = 0; break;\
+                  }\
+                  else if (endp != s) {\
+                    (isnull) = -1; /* empty, but position changed */\
+                  }\
                 }\
-                if (MEM_STATUS_AT(reg->bt_mem_end, k->zid))\
-                  endp = STACK_AT(k->u.mem.end)->u.mem.pstr;\
-                else\
-                  endp = (UChar* )k->u.mem.end;\
-                if (STACK_AT(k->u.mem.start)->u.mem.pstr != endp) {\
-                  (isnull) = 0; break;\
-                }\
-                else if (endp != s) {\
-                  (isnull) = -1; /* empty, but position changed */ \
-                }\
+              }\
+              else if (k->type == STK_EMPTY_CHECK_START) {\
+                if (k->zid == (sid)) level++;\
+              }\
+              else if (k->type == STK_EMPTY_CHECK_END) {\
+                if (k->zid == (sid)) level--;\
               }\
               k++;\
             }\
