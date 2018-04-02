@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.8.0    2018/03/08
+Oniguruma Regular Expressions Version 6.8.0    2018/04/02
 
 syntax: ONIG_SYNTAX_ONIGURUMA (default)
 
@@ -272,6 +272,13 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
                               '>': progress only (default)
   (?{...contents...}[tag])    tag assigned
   (?{...contents...}[tag]D)
+
+                              * Escape characters have no effects in contents.
+                              * contents is not allowed to start with '{'.
+
+  (?{{{...contents...}}})     n times continuations '}' in contents is allowed in
+                              (n+1) times continuations {{{...}}}.
+
 
   * Callouts of name
   (*name)
