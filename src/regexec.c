@@ -1849,6 +1849,18 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
+#define STACK_MEM_START_GET_PREV_END_ADDR(k /* STK_MEM_START*/, reg, addr) do {\
+  if (k->u.mem.prev_end == INVALID_STACK_INDEX) {\
+    (addr) = 0;\
+  }\
+  else {\
+    if (MEM_STATUS_AT((reg)->bt_mem_end, k->zid))\
+      (addr) = STACK_AT(k->u.mem.prev_end)->u.mem.pstr;\
+    else\
+      (addr) = (UChar* )k->u.mem.prev_end;\
+  }\
+} while (0)
+
 #ifdef USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT
 #define STACK_EMPTY_CHECK_MEM(isnull,sid,s,reg) do {\
   StackType* k = stk;\
@@ -1866,14 +1878,11 @@ stack_double(int is_alloca, char** arg_alloc_base,
           (isnull) = 1;\
           while (k < stk) {\
             if (k->type == STK_MEM_START) {\
-              if (k->u.mem.prev_end == INVALID_STACK_INDEX) {\
+              STACK_MEM_START_GET_PREV_END_ADDR(k, reg, endp);\
+              if (endp == 0) {\
                 (isnull) = 0; break;\
               }\
-              if (MEM_STATUS_AT(reg->bt_mem_end, k->zid))\
-                endp = STACK_AT(k->u.mem.prev_end)->u.mem.pstr;\
-              else\
-                endp = (UChar* )k->u.mem.prev_end;\
-              if (STACK_AT(k->u.mem.prev_start)->u.mem.pstr != endp) {\
+              else if (STACK_AT(k->u.mem.prev_start)->u.mem.pstr != endp) {\
                 (isnull) = 0; break;\
               }\
               else if (endp != s) {\
@@ -1908,14 +1917,11 @@ stack_double(int is_alloca, char** arg_alloc_base,
             while (k < stk) {\
               if (k->type == STK_MEM_START) {\
                 if (level == 0) {\
-                  if (k->u.mem.prev_end == INVALID_STACK_INDEX) {\
+                  STACK_MEM_START_GET_PREV_END_ADDR(k, reg, endp);\
+                  if (endp == 0) {\
                     (isnull) = 0; break;\
                   }\
-                  if (MEM_STATUS_AT(reg->bt_mem_end, k->zid))\
-                    endp = STACK_AT(k->u.mem.prev_end)->u.mem.pstr;\
-                  else\
-                    endp = (UChar* )k->u.mem.prev_end;\
-                  if (STACK_AT(k->u.mem.prev_start)->u.mem.pstr != endp) {\
+                  else if (STACK_AT(k->u.mem.prev_start)->u.mem.pstr != endp) { \
                     (isnull) = 0; break;\
                   }\
                   else if (endp != s) {\
