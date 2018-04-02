@@ -1861,7 +1861,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while (0)
 
-#ifdef USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT
+#ifdef USE_INSISTENT_CHECK_CAPTURES_IN_EMPTY_REPEAT
 #define STACK_EMPTY_CHECK_MEM(isnull,sid,s,reg) do {\
   StackType* k = stk;\
   while (1) {\
@@ -1971,7 +1971,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
     }\
   }\
 } while(0)
-#endif /* USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT */
+#endif /* USE_INSISTENT_CHECK_CAPTURES_IN_EMPTY_REPEAT */
 
 #define STACK_GET_REPEAT(sid, k) do {\
   int level = 0;\
@@ -3518,7 +3518,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       continue;
       break;
 
-#ifdef USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT
+#ifdef USE_INSISTENT_CHECK_CAPTURES_IN_EMPTY_REPEAT
     case OP_EMPTY_CHECK_END_MEMST:  SOP_IN(OP_EMPTY_CHECK_END_MEMST);
       {
         int is_empty;
@@ -3545,7 +3545,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         int is_empty;
 
         GET_MEMNUM_INC(mem, p); /* mem: null check id */
-#ifdef USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT
+#ifdef USE_INSISTENT_CHECK_CAPTURES_IN_EMPTY_REPEAT
         STACK_EMPTY_CHECK_MEM_REC(is_empty, mem, s, reg);
 #else
         STACK_EMPTY_CHECK_REC(is_empty, mem, s);

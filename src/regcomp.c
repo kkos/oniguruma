@@ -3763,7 +3763,7 @@ expand_case_fold_string(Node* node, regex_t* reg)
   return r;
 }
 
-#ifdef USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT
+#ifdef USE_INSISTENT_CHECK_CAPTURES_IN_EMPTY_REPEAT
 static enum QuantBodyEmpty
 quantifiers_memory_node_info(Node* node)
 {
@@ -3847,7 +3847,7 @@ quantifiers_memory_node_info(Node* node)
 
   return r;
 }
-#endif /* USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT */
+#endif /* USE_INSISTENT_CHECK_CAPTURES_IN_EMPTY_REPEAT */
 
 
 #define IN_ALT          (1<<0)
@@ -4375,7 +4375,7 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
   if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 1) {
     d = tree_min_len(body, env);
     if (d == 0) {
-#ifdef USE_INSISTENT_CHECK_CAPTURES_STATUS_IN_ENDLESS_REPEAT
+#ifdef USE_INSISTENT_CHECK_CAPTURES_IN_EMPTY_REPEAT
       qn->body_empty_info = quantifiers_memory_node_info(body);
       if (qn->body_empty_info == QUANT_BODY_IS_EMPTY_REC) {
         if (NODE_TYPE(body) == NODE_ENCLOSURE &&
