@@ -278,5 +278,6 @@ OnigEncodingType OnigEncodingUTF16_BE = {
   init,
   0, /* is_initialized */
   is_valid_mbc_string,
-  0, 0, 0
+  ENC_FLAG_UNICODE,
+  0, 0
 };

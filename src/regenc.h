@@ -120,6 +120,10 @@ struct PropertyNameCtype {
 #define ONIG_ENCODING_INIT_DEFAULT           ONIG_ENCODING_ASCII
 
 
+#define ENC_FLAG_ASCII_COMPATIBLE      (1<<0)
+#define ENC_FLAG_UNICODE               (1<<1)
+
+
 /* for encoding system implementation (internal) */
 extern int onigenc_end(void);
 extern int onigenc_ascii_apply_all_case_fold P_((OnigCaseFoldType flag, OnigApplyAllCaseFoldFunc f, void* arg));

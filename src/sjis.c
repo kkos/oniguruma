@@ -338,5 +338,6 @@ OnigEncodingType OnigEncodingSJIS = {
   NULL, /* init */
   NULL, /* is_initialized */
   is_valid_mbc_string,
-  0, 0, 0
+  ENC_FLAG_ASCII_COMPATIBLE,
+  0, 0
 };
