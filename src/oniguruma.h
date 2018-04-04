@@ -894,6 +894,8 @@ ONIG_EXTERN
 int onig_set_progress_callout_of_match_param P_((OnigMatchParam* param, OnigCalloutFunc f));
 ONIG_EXTERN
 int onig_set_retraction_callout_of_match_param P_((OnigMatchParam* param, OnigCalloutFunc f));
+ONIG_EXTERN
+int onig_set_callout_user_data_of_match_param P_((OnigMatchParam* param, void* user_data));
 
 /* for callout functions */
 ONIG_EXTERN
