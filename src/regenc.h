@@ -256,6 +256,7 @@ extern const unsigned short OnigEncAsciiCtypeTable[];
 #define ONIGENC_IS_UNICODE_ENCODING(enc) \
   ((enc)->is_code_ctype == onigenc_unicode_is_code_ctype)
 
-#define ONIGENC_IS_ASCII_COMPATIBLE_ENCODING(enc)  ((enc)->min_enc_len == 1)
+#define ONIGENC_IS_ASCII_COMPATIBLE_ENCODING(enc)  \
+  (((enc)->flag & ENC_FLAG_ASCII_COMPATIBLE) != 0)
 
 #endif /* REGENC_H */
