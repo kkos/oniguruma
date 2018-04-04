@@ -52,9 +52,9 @@ typedef struct {
 struct OnigMatchParamStruct {
   unsigned int    match_stack_limit;
   unsigned long   retry_limit_in_match;
+#ifdef USE_CALLOUT
   OnigCalloutFunc progress_callout_of_contents;
   OnigCalloutFunc retraction_callout_of_contents;
-#ifdef USE_CALLOUT
   int             match_at_call_counter;
   void*           callout_user_data;
   CalloutData*    callout_data;
@@ -81,15 +81,23 @@ onig_set_retry_limit_in_match_of_match_param(OnigMatchParam* param,
 extern int
 onig_set_progress_callout_of_match_param(OnigMatchParam* param, OnigCalloutFunc f)
 {
+#ifdef USE_CALLOUT
   param->progress_callout_of_contents = f;
   return ONIG_NORMAL;
+#else
+  return ONIG_NO_SUPPORT_CONFIG;
+#endif
 }
 
 extern int
 onig_set_retraction_callout_of_match_param(OnigMatchParam* param, OnigCalloutFunc f)
 {
+#ifdef USE_CALLOUT
   param->retraction_callout_of_contents = f;
   return ONIG_NORMAL;
+#else
+  return ONIG_NO_SUPPORT_CONFIG;
+#endif
 }
 
 
