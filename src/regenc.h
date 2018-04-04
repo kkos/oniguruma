@@ -254,7 +254,7 @@ extern const unsigned short OnigEncAsciiCtypeTable[];
   ONIGENC_IS_ASCII_CODE_CTYPE(code, ONIGENC_CTYPE_LOWER))
    
 #define ONIGENC_IS_UNICODE_ENCODING(enc) \
-  ((enc)->is_code_ctype == onigenc_unicode_is_code_ctype)
+  (((enc)->flag & ENC_FLAG_UNICODE) != 0)
 
 #define ONIGENC_IS_ASCII_COMPATIBLE_ENCODING(enc)  \
   (((enc)->flag & ENC_FLAG_ASCII_COMPATIBLE) != 0)
