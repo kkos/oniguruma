@@ -3,11 +3,6 @@ Oniguruma
 
 https://github.com/kkos/oniguruma
 
-FIXED Security Issues:
---------------------------
-  **CVE-2017-9224, CVE-2017-9225, CVE-2017-9226**
-  **CVE-2017-9227, CVE-2017-9228, CVE-2017-9229**
-
 Oniguruma is a modern and flexible regular expressions library. It
 encompasses features from different regular expression implementations
 that traditionally exist in different languages. It comes close to
@@ -115,6 +110,12 @@ New feature of version 6.3.0
 --------------------------
 
 * NEW: octal codepoint \o{.....}
+* Fixed CVE-2017-9224
+* Fixed CVE-2017-9225
+* Fixed CVE-2017-9226
+* Fixed CVE-2017-9227
+* Fixed CVE-2017-9228
+* Fixed CVE-2017-9229
 
 
 New feature of version 6.1.2
