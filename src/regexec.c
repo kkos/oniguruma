@@ -133,19 +133,21 @@ typedef struct {
 #ifdef ONIG_DEBUG
 
 /* arguments type */
-#define ARG_SPECIAL     -1
-#define ARG_NON          0
-#define ARG_RELADDR      1
-#define ARG_ABSADDR      2
-#define ARG_LENGTH       3
-#define ARG_MEMNUM       4
-#define ARG_OPTION       5
-#define ARG_MODE         6
+typedef enum {
+  ARG_SPECIAL =  -1,
+  ARG_NON     =   0,
+  ARG_RELADDR =   1,
+  ARG_ABSADDR =   2,
+  ARG_LENGTH  =   3,
+  ARG_MEMNUM  =   4,
+  ARG_OPTION  =   5,
+  ARG_MODE    =   6
+} OpArgType;
 
 typedef struct {
   short int opcode;
   char*     name;
-  short int arg_type;
+  OpArgType arg_type;
 } OpInfoType;
 
 static OpInfoType OpInfo[] = {
@@ -314,11 +316,12 @@ extern void
 onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
                               OnigEncoding enc)
 {
-  int i, n, arg_type;
+  int i, n;
+  OpArgType   arg_type;
   RelAddrType addr;
-  LengthType len;
-  MemNumType mem;
-  OnigCodePoint code;
+  LengthType  len;
+  MemNumType  mem;
+  OnigCodePoint  code;
   OnigOptionType option;
   ModeType mode;
   UChar *q;
@@ -355,11 +358,12 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
         fprintf(f, ":%d", option);
       }
       break;
-
     case ARG_MODE:
       mode = *((ModeType* )bp);
       bp += SIZE_MODE;
       fprintf(f, ":%d", mode);
+      break;
+    default:
       break;
     }
   }
