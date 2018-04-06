@@ -710,7 +710,6 @@ typedef int AbsAddrType;
 typedef int LengthType;
 typedef int RepeatNumType;
 typedef int MemNumType;
-typedef short int StateCheckNumType;
 typedef void* PointerType;
 typedef int SaveType;
 typedef int UpdateVarType;
