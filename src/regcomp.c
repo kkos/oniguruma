@@ -5979,7 +5979,10 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 #endif
 
   root = 0;
-  if (IS_NOT_NULL(einfo)) einfo->par = (UChar* )NULL;
+  if (IS_NOT_NULL(einfo)) {
+    einfo->enc = reg->enc;
+    einfo->par = (UChar* )NULL;
+  }
 
 #ifdef ONIG_DEBUG
   print_enc_string(stderr, reg->enc, pattern, pattern_end);
@@ -6124,7 +6127,6 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
  err:
   if (IS_NOT_NULL(scan_env.error)) {
     if (IS_NOT_NULL(einfo)) {
-      einfo->enc     = scan_env.enc;
       einfo->par     = scan_env.error;
       einfo->par_end = scan_env.error_end;
     }
