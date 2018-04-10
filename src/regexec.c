@@ -5173,7 +5173,7 @@ onig_get_args_num_by_callout_args(OnigCalloutArgs* args)
 
   num = args->num;
   e = onig_reg_callout_list_at(args->regex, num);
-  if (IS_NULL(e)) return 0;
+  if (IS_NULL(e)) return ONIGERR_INVALID_ARGUMENT;
   if (e->of == ONIG_CALLOUT_OF_NAME) {
     return e->u.arg.num;
   }
@@ -5189,7 +5189,7 @@ onig_get_passed_args_num_by_callout_args(OnigCalloutArgs* args)
 
   num = args->num;
   e = onig_reg_callout_list_at(args->regex, num);
-  if (IS_NULL(e)) return 0;
+  if (IS_NULL(e)) return ONIGERR_INVALID_ARGUMENT;
   if (e->of == ONIG_CALLOUT_OF_NAME) {
     return e->u.arg.passed_num;
   }
@@ -5206,7 +5206,7 @@ onig_get_arg_by_callout_args(OnigCalloutArgs* args, int index,
 
   num = args->num;
   e = onig_reg_callout_list_at(args->regex, num);
-  if (IS_NULL(e)) return 0;
+  if (IS_NULL(e)) return ONIGERR_INVALID_ARGUMENT;
   if (e->of == ONIG_CALLOUT_OF_NAME) {
     if (IS_NOT_NULL(type)) *type = e->u.arg.types[index];
     if (IS_NOT_NULL(val))  *val  = e->u.arg.vals[index];
