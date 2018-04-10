@@ -29,7 +29,7 @@
 
 #include "regenc.h"
 
-//#define USE_INVALID_CODE_SCHEME
+/* #define USE_INVALID_CODE_SCHEME */
 
 #ifdef USE_INVALID_CODE_SCHEME
 /* virtual codepoint values for invalid encoding byte 0xfe and 0xff */

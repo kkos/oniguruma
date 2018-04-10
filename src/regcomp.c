@@ -2450,7 +2450,6 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
       if (NODE_STRING_LEN(x) == 0)
         break;
 
-      //c = *(xs->s);
       switch (ytype) {
       case NODE_CTYPE:
         switch (CTYPE_(y)->ctype) {
@@ -2758,7 +2757,7 @@ tree_min_len(Node* node, ScanEnv* env)
           len = en->min_len;
         else {
           if (NODE_IS_MARK1(node))
-            len = 0;  // recursive
+            len = 0;  /* recursive */
           else {
             NODE_STATUS_ADD(node, NST_MARK1);
             len = tree_min_len(NODE_BODY(node), env);

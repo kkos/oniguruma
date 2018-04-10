@@ -569,7 +569,7 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
 #ifdef USE_CALLOUT
     case OP_CALLOUT_CONTENTS:
       {
-        GET_MEMNUM_INC(mem,  bp); // number
+        GET_MEMNUM_INC(mem,  bp); /* number */
         fprintf(f, ":%d", mem);
       }
       break;
@@ -578,8 +578,8 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp, UChar* start,
       {
         int id;
 
-        GET_MEMNUM_INC(id,   bp); // id
-        GET_MEMNUM_INC(mem,  bp); // number
+        GET_MEMNUM_INC(id,   bp); /* id */
+        GET_MEMNUM_INC(mem,  bp); /* number */
 
         fprintf(f, ":%d:%d", id, mem);
       }
@@ -1019,7 +1019,7 @@ struct OnigCalloutArgsStruct {
   const OnigUChar* string_end;
   const OnigUChar* start;
   const OnigUChar* right_range;
-  const OnigUChar* current;  // current matching position
+  const OnigUChar* current;  /* current matching position */
   unsigned long    retry_in_match_counter;
 
   /* invisible to users */
@@ -1150,7 +1150,7 @@ onig_get_retry_limit_in_match(void)
 #ifdef USE_RETRY_LIMIT_IN_MATCH
   return RetryLimitInMatch;
 #else
-  //return ONIG_NO_SUPPORT_CONFIG;
+  /* return ONIG_NO_SUPPORT_CONFIG; */
   return 0;
 #endif
 }
@@ -2384,7 +2384,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   retry_limit_in_match = msa->retry_limit_in_match;
 #endif
 
-  //n = reg->num_repeat + reg->num_mem * 2;
   pop_level = reg->stack_pop_level;
   num_mem = reg->num_mem;
   STACK_INIT(INIT_MATCH_STACK_SIZE);
@@ -3032,7 +3031,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     case OP_WORD_BOUNDARY:  SOP_IN(OP_WORD_BOUNDARY);
       {
         ModeType mode;
-        GET_MODE_INC(mode, p); // ascii_mode
+        GET_MODE_INC(mode, p); /* ascii_mode */
 
         if (ON_STR_BEGIN(s)) {
           DATA_ENSURE(1);
@@ -3056,7 +3055,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     case OP_NO_WORD_BOUNDARY:  SOP_IN(OP_NO_WORD_BOUNDARY);
       {
         ModeType mode;
-        GET_MODE_INC(mode, p); // ascii_mode
+        GET_MODE_INC(mode, p); /* ascii_mode */
 
         if (ON_STR_BEGIN(s)) {
           if (DATA_ENSURE_CHECK1 && IS_MBC_WORD_ASCII_MODE(encode, s, end, mode))
@@ -3080,7 +3079,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     case OP_WORD_BEGIN:  SOP_IN(OP_WORD_BEGIN);
       {
         ModeType mode;
-        GET_MODE_INC(mode, p); // ascii_mode
+        GET_MODE_INC(mode, p); /* ascii_mode */
 
         if (DATA_ENSURE_CHECK1 && IS_MBC_WORD_ASCII_MODE(encode, s, end, mode)) {
           if (ON_STR_BEGIN(s) || !IS_MBC_WORD_ASCII_MODE(encode, sprev, end, mode)) {
@@ -3095,7 +3094,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     case OP_WORD_END:  SOP_IN(OP_WORD_END);
       {
         ModeType mode;
-        GET_MODE_INC(mode, p); // ascii_mode
+        GET_MODE_INC(mode, p); /* ascii_mode */
 
         if (!ON_STR_BEGIN(s) && IS_MBC_WORD_ASCII_MODE(encode, sprev, end, mode)) {
           if (ON_STR_END(s) || ! IS_MBC_WORD_ASCII_MODE(encode, s, end, mode)) {
@@ -3614,8 +3613,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     case OP_POP_OUT:  SOP_IN(OP_POP_OUT);
       STACK_POP_ONE;
-      // for stop backtrack
-      //CHECK_RETRY_LIMIT_IN_MATCH;
+      /* for stop backtrack */
+      /* CHECK_RETRY_LIMIT_IN_MATCH; */
       SOP_OUT;
       continue;
       break;
