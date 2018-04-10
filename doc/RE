@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.8.0    2018/04/02
+Oniguruma Regular Expressions Version 6.8.0    2018/04/10
 
 syntax: ONIG_SYNTAX_ONIGURUMA (default)
 
@@ -279,12 +279,17 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
   (?{{{...contents...}}})     n times continuations '}' in contents is allowed in
                               (n+1) times continuations {{{...}}}.
 
+    Allowed tag string characters: _ A-Z a-z 0-9 (* first character: _ A-Z a-z)
+
 
   * Callouts of name
   (*name)
   (*name{args...})            with args
   (*name[tag])                tag assigned
   (*name[tag]{args...})
+
+    Allowed name string characters: _ A-Z a-z 0-9 (* first character: _ A-Z a-z)
+    Allowed tag  string characters: _ A-Z a-z 0-9 (* first character: _ A-Z a-z)
 
 
   <Absent functions>

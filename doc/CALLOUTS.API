@@ -1,0 +1,264 @@
+Callouts API  Version 6.8.2 2018/04/10
+
+#include <oniguruma.h>
+
+
+(1) Callouts function type
+
+  typedef int (*OnigCalloutFunc)(OnigCalloutArgs* args, void* user_data);
+
+  If 0 (NULL) is set as a callout function value, never called.
+
+
+  * callouts function return value (int)
+
+    ONIG_CALLOUT_FAIL(1):     fail
+    ONIG_CALLOUT_SUCCESS(0):  success
+    less than -1:             error code (terminate search/match)
+
+    ONIG_CALLOUT_FAIL/SUCCESS values are ignored in retraction,
+    because retraction is a recovery process after failure.
+
+
+
+(2) Set/Get a function for Callouts of contents
+
+# OnigCalloutFunc onig_get_progress_callout(void)
+
+  Get a function for callouts of contents in progress.
+
+
+# int onig_set_progress_callout(OnigCalloutFunc f)
+
+  Set a function for callouts of contents in progress.
+  This value set in onig_initialize_match_param() as default callout function.
+
+  normal return: ONIG_NORMAL
+
+
+# OnigCalloutFunc onig_get_retraction_callout(void)
+
+  Get a function for callouts of contents in retraction (backtrack).
+
+
+# int onig_set_retraction_callout(OnigCalloutFunc f)
+
+  Set a function for callouts of contents in retraction (backtrack).
+  This value set in onig_initialize_match_param() as default callout function.
+
+  normal return: ONIG_NORMAL
+
+
+# int onig_set_progress_callout_of_match_param(OnigMatchParam* mp, OnigCalloutFunc f)
+
+  Set a function for callouts of contents in progress.
+
+  arguments
+  1 mp: match-param pointer
+  2 f: function
+
+  normal return: ONIG_NORMAL
+
+
+# int onig_set_retraction_callout_of_match_param(OnigMatchParam* mp, OnigCalloutFunc f)
+
+  Set a function for callouts of contents in retraction (backtrack).
+
+  arguments
+  1 mp: match-param pointer
+  2 f: function
+
+  normal return: ONIG_NORMAL
+
+
+
+(3) Set a function for Callouts of name
+
+# int onig_set_callout_of_name(OnigEncoding enc, OnigCalloutType type, OnigUChar* name, OnigUChar* name_end, int callout_in, OnigCalloutFunc callout, OnigCalloutFunc end_callout, int arg_num, unsigned int arg_types[], int optional_arg_num, OnigValue opt_defaults[])
+
+  Set a function for callouts of name.
+  Allowed name string characters: _ A-Z a-z 0-9   (* first character: _ A-Z a-z)
+
+  (enc, name) pair is used as key value to find callout function.
+  You have to call this function for every encoding which used in your applications.
+  But if enc is ASCII compatible and (enc, name) entry is not found,
+  then (ASCII, name) entry is used.
+  Therefore, if you use ASCI compatible encodings only, it is enough to call
+  this function one time for (ASCII, name).
+
+  arguments
+   1 enc:         character encoding
+   2 type:        callout type (currently ONIG_CALLOUT_TYPE_SINGLE only supported)
+   3 name:        name string pointer (the string is encoded by enc)
+   4 name_end:    name string end pointer
+   5 callout_in:  direction flag (ONIG_CALLOUT_IN_PROGRESS/RETRACTION/BOTH)
+   6 callout:     callout function
+   7 end_callout: * not used currently (set 0)
+   8 arg_num:     number of arguments (*limit by ONIG_CALLOUT_MAX_ARGS_NUM == 4)
+   9 arg_types:   type array of arguments
+  10 optional_arg_num: number of optional arguments
+  11 opt_defaults: option values array of arguments
+
+  normal return: ONIG_NORMAL
+  error:
+    ONIGERR_INVALID_CALLOUT_NAME
+    ONIGERR_INVALID_ARGUMENT
+    ONIGERR_INVALID_CALLOUT_ARG
+
+
+
+(4) User data
+
+# int onig_set_callout_user_data_of_match_param(OnigMatchParam* param, void* user_data)
+
+  Set a user_data value which passed as a argument of callout for both of progress and retractions.
+
+  normal return: ONIG_NORMAL
+
+
+
+(5) Get values from OnigCalloutArgs
+
+# int onig_get_callout_num_by_callout_args(OnigCalloutArgs* args)
+
+  Return callout number of this callout.
+  Callout number is an identifier of callout in the regex pattern.
+
+
+# OnigCalloutIn onig_get_callout_in_by_callout_args(OnigCalloutArgs* args)
+
+  Return the direction of this callout.
+  (ONIG_CALLOUT_IN_PROGRESS or ONIG_CALLOUT_IN_RETRACTION)
+
+
+# int onig_get_name_id_by_callout_args(OnigCalloutArgs* args)
+
+  Return the name identiifer of this callout.
+  If this callout is callout of contents, then return ONIG_NON_NAME_ID.
+
+
+# const OnigUChar* onig_get_contents_by_callout_args(OnigCalloutArgs* args)
+
+  Return the contents of this callout.
+  If this callout is callout of name, then return NULL.
+
+
+# const OnigUChar* onig_get_contents_end_by_callout_args(OnigCalloutArgs* args)
+
+  Return the end of contents of this callout.
+  If this callout is callout of name, then return NULL.
+
+
+# int onig_get_args_num_by_callout_args(OnigCalloutArgs* args)
+
+  Return the number of args of this callout.
+  It includes optional arguments that doesn't passed in regex pattern.
+  If this callout is callout of contents, then return ONIGERR_INVALID_ARGUMENT.
+
+
+# int onig_get_passed_args_num_by_callout_args(OnigCalloutArgs* args)
+
+  Return the number of args that passed really in regex pattern.
+  If this callout is callout of contents, then return ONIGERR_INVALID_ARGUMENT.
+
+
+# int onig_get_arg_by_callout_args(OnigCalloutArgs* args, int index, OnigType* type, OnigValue* val)
+
+  Return a value and a type of the callout argument.
+  If this callout is callout of contents, then return ONIGERR_INVALID_ARGUMENT.
+
+  normal return: ONIG_NORMAL
+
+
+# const OnigUChar* onig_get_string_by_callout_args(OnigCalloutArgs* args)
+
+  Return the subject string adress.
+  This is the second argument(str) of onig_search().
+
+
+# const OnigUChar* onig_get_string_end_by_callout_args(OnigCalloutArgs* args)
+
+  Return the end address of subject string.
+  This is the third argument(end) of onig_search().
+
+
+# const OnigUChar* onig_get_start_by_callout_args(OnigCalloutArgs* args)
+
+  Return the start address of subject string in current match process.
+
+
+# const OnigUChar* onig_get_right_range_by_callout_args(OnigCalloutArgs* args)
+
+  Return the right range address of subject string.
+
+
+# const OnigUChar* onig_get_current_by_callout_args(OnigCalloutArgs* args)
+
+  Return the current address of subject string in current match process.
+
+
+# OnigRegex onig_get_regex_by_callout_args(OnigCalloutArgs* args)
+
+  Return the regex object address of this callout.
+
+
+# unsigned long onig_get_retry_counter_by_callout_args(OnigCalloutArgs* args)
+
+  Return the current counter value for retry-limit-in-match.
+
+
+
+(6) Tag
+
+  "Tag" is a name which assigned to a callout in regexp pattern.
+  Allowed tag string characters: _ A-Z a-z 0-9   (* first character: _ A-Z a-z)
+
+
+# int onig_callout_tag_is_exist_at_callout_num(OnigRegex reg, int callout_num)
+
+  Return 1 if tag is assigned for the callout, else return 0.
+
+
+# const OnigUChar* onig_get_callout_tag_start(OnigRegex reg, int callout_num)
+
+  Return the start address of tag string for the callout.
+
+
+# const OnigUChar* onig_get_callout_tag_end(OnigRegex reg, int callout_num)
+
+  Return the end address of tag string for the callout.
+
+
+# int onig_get_callout_num_by_tag(OnigRegex reg, const OnigUChar* tag, const OnigUChar* tag_end)
+
+  Return the callout number for the tag.
+
+
+
+(7) Access to callout data
+
+  "Callout data" is ONIG_CALLOUT_DATA_SLOT_NUM(5) values area
+  for each callout in each search process.
+  Each value area in the callout is indicated by "slot" number (0 - 4).
+
+
+# int onig_get_callout_data_dont_clear_old(OnigRegex reg, OnigMatchParam* mp, int callout_num, int slot, OnigType* type, OnigValue* val)
+# int onig_get_callout_data_by_callout_args_self_dont_clear_old(OnigCalloutArgs* args, int slot, OnigType* type, OnigValue* val)
+# int onig_get_callout_data(OnigRegex reg, OnigMatchParam* mp, int callout_num, int slot, OnigType* type, OnigValue* val)
+# int onig_get_callout_data_by_callout_args(OnigCalloutArgs* args, int callout_num, int slot, OnigType* type, OnigValue* val)
+# int onig_get_callout_data_by_callout_args_self(OnigCalloutArgs* args, int slot, OnigType* type, OnigValue* val)
+# int onig_set_callout_data(OnigRegex reg, OnigMatchParam* mp, int callout_num, int slot, OnigType type, OnigValue* val)
+# int onig_set_callout_data_by_callout_args(OnigCalloutArgs* args, int callout_num, int slot, OnigType type, OnigValue* val)
+# int onig_set_callout_data_by_callout_args_self(OnigCalloutArgs* args, int slot, OnigType type, OnigValue* val)
+# int onig_get_callout_data_by_tag(OnigRegex reg, OnigMatchParam* mp, const OnigUChar* tag, const OnigUChar* tag_end, int slot, OnigType* type, OnigValue* val)
+# int onig_set_callout_data_by_tag(OnigRegex reg, OnigMatchParam* mp, const OnigUChar* tag, const OnigUChar* tag_end, int slot, OnigType type, OnigValue* val)
+
+
+
+(8) Miscellaneous functions
+
+# OnigUChar* onig_get_callout_name_by_name_id(int id)
+# int onig_get_capture_range_in_callout(OnigCalloutArgs* args, int mem_num, int* begin, int* end)
+# int onig_get_used_stack_size_in_callout(OnigCalloutArgs* args, int* used_num, int* used_bytes)
+
+//END
