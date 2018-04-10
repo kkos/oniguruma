@@ -5341,8 +5341,11 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
           if (num_type != IS_NOT_NUM) {
             if (num_type == IS_REL_NUM) {
               gnum = backref_rel_to_abs(gnum, env);
-              if (gnum < 0)
+              if (gnum < 0) {
+                onig_scan_env_set_error_string(env, ONIGERR_UNDEFINED_NAME_REFERENCE,
+                                               prev, name_end);
                 return ONIGERR_UNDEFINED_GROUP_REFERENCE;
+              }
             }
             tok->u.call.by_number = 1;
             tok->u.call.gnum      = gnum;
@@ -5563,8 +5566,11 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
                 else {
                   if (num_type == IS_REL_NUM) {
                     gnum = backref_rel_to_abs(gnum, env);
-                    if (gnum < 0)
+                    if (gnum < 0) {
+                      onig_scan_env_set_error_string(env,
+                             ONIGERR_UNDEFINED_NAME_REFERENCE, name, name_end);
                       return ONIGERR_UNDEFINED_GROUP_REFERENCE;
+                    }
                   }
                   tok->u.call.by_number = 1;
                   tok->u.call.gnum      = gnum;
