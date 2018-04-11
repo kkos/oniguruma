@@ -1637,54 +1637,83 @@ onig_get_callout_tag_end(regex_t* reg, int callout_num)
 extern OnigCalloutType
 onig_get_callout_type_by_name_id(int name_id)
 {
+  if (name_id < 0 || name_id >= GlobalCalloutNameList->n)
+    return 0;
+
   return GlobalCalloutNameList->v[name_id].type;
 }
 
 extern OnigCalloutFunc
 onig_get_callout_start_func_by_name_id(int name_id)
 {
+  if (name_id < 0 || name_id >= GlobalCalloutNameList->n)
+    return 0;
+
   return GlobalCalloutNameList->v[name_id].start_func;
 }
 
 extern OnigCalloutFunc
 onig_get_callout_end_func_by_name_id(int name_id)
 {
+  if (name_id < 0 || name_id >= GlobalCalloutNameList->n)
+    return 0;
+
   return GlobalCalloutNameList->v[name_id].end_func;
 }
 
 extern int
 onig_get_callout_in_by_name_id(int name_id)
 {
+  if (name_id < 0 || name_id >= GlobalCalloutNameList->n)
+    return 0;
+
   return GlobalCalloutNameList->v[name_id].in;
 }
 
 static int
 get_callout_arg_num_by_name_id(int name_id)
 {
+  if (name_id < 0 || name_id >= GlobalCalloutNameList->n)
+    return -1;
+
   return GlobalCalloutNameList->v[name_id].arg_num;
 }
 
 static int
 get_callout_opt_arg_num_by_name_id(int name_id)
 {
+  if (name_id < 0 || name_id >= GlobalCalloutNameList->n)
+    return 0;
+
   return GlobalCalloutNameList->v[name_id].opt_arg_num;
 }
 
 static unsigned int
 get_callout_arg_type_by_name_id(int name_id, int index)
 {
+  if (name_id < 0 || name_id >= GlobalCalloutNameList->n)
+    return 0;
+
   return GlobalCalloutNameList->v[name_id].arg_types[index];
 }
 
 static OnigValue
 get_callout_opt_default_by_name_id(int name_id, int index)
 {
+  if (name_id < 0 || name_id >= GlobalCalloutNameList->n) {
+    OnigValue v;
+    xmemset(&v, 0, sizeof(v));
+    return v;
+  }
   return GlobalCalloutNameList->v[name_id].opt_defaults[index];
 }
 
 extern UChar*
 onig_get_callout_name_by_name_id(int name_id)
 {
+  if (name_id < 0 || name_id >= GlobalCalloutNameList->n)
+    return 0;
+
   return GlobalCalloutNameList->v[name_id].name;
 }
 
