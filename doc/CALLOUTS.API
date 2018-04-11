@@ -1,16 +1,28 @@
-Callouts API  Version 6.8.2 2018/04/10
+Callouts API  Version 6.8.2 2018/04/11
 
 #include <oniguruma.h>
 
+(1) Callout functions
+(2) Set/Get functions for Callouts of contents
+(3) Set functions for Callouts of name
+(4) User data
+(5) Get values from OnigCalloutArgs
+(6) Tag
+(7) Callout data (used in callout functions)
+(8) Callout data (used in applications)
+(9) Miscellaneous functions
 
-(1) Callouts function type
+
+(1) Callout functions
+
+  type: OnigCalloutFunc
 
   typedef int (*OnigCalloutFunc)(OnigCalloutArgs* args, void* user_data);
 
   If 0 (NULL) is set as a callout function value, never called.
 
 
-  * callouts function return value (int)
+  * Callout function return value (int)
 
     ONIG_CALLOUT_FAIL(1):     fail
     ONIG_CALLOUT_SUCCESS(0):  success
@@ -19,9 +31,16 @@ Callouts API  Version 6.8.2 2018/04/10
     ONIG_CALLOUT_FAIL/SUCCESS values are ignored in retraction,
     because retraction is a recovery process after failure.
 
+  * Example of callout function
+
+    extern int always_success(OnigCalloutArgs* args, void* user_data)
+    {
+      return ONIG_CALLOUT_SUCCESS;
+    }
 
 
-(2) Set/Get a function for Callouts of contents
+
+(2) Set/Get functions for Callouts of contents
 
 # OnigCalloutFunc onig_get_progress_callout(void)
 
@@ -72,9 +91,9 @@ Callouts API  Version 6.8.2 2018/04/10
 
 
 
-(3) Set a function for Callouts of name
+(3) Set functions for Callouts of name
 
-# int onig_set_callout_of_name(OnigEncoding enc, OnigCalloutType type, OnigUChar* name, OnigUChar* name_end, int callout_in, OnigCalloutFunc callout, OnigCalloutFunc end_callout, int arg_num, unsigned int arg_types[], int optional_arg_num, OnigValue opt_defaults[])
+# int onig_set_callout_of_name(OnigEncoding enc, OnigCalloutType type, OnigUChar* name, OnigUChar* name_end, int callout_in, OnigCalloutFunc callout, OnigCalloutFunc end_callout, int arg_num, unsigned int arg_types[], int opt_arg_num, OnigValue opt_defaults[])
 
   Set a function for callouts of name.
   Allowed name string characters: _ A-Z a-z 0-9   (* first character: _ A-Z a-z)
@@ -96,8 +115,8 @@ Callouts API  Version 6.8.2 2018/04/10
    7 end_callout: * not used currently (set 0)
    8 arg_num:     number of arguments (*limit by ONIG_CALLOUT_MAX_ARGS_NUM == 4)
    9 arg_types:   type array of arguments
-  10 optional_arg_num: number of optional arguments
-  11 opt_defaults: option values array of arguments
+  10 opt_arg_num: number of optional arguments
+  11 opt_defaults: default values array of optional arguments
 
   normal return: ONIG_NORMAL
   error:
@@ -122,7 +141,7 @@ Callouts API  Version 6.8.2 2018/04/10
 # int onig_get_callout_num_by_callout_args(OnigCalloutArgs* args)
 
   Return callout number of this callout.
-  Callout number is an identifier of callout in the regex pattern.
+  "Callout number" is identifier of a callout in the regex pattern.
 
 
 # OnigCalloutIn onig_get_callout_in_by_callout_args(OnigCalloutArgs* args)
@@ -210,7 +229,7 @@ Callouts API  Version 6.8.2 2018/04/10
 
 (6) Tag
 
-  "Tag" is a name which assigned to a callout in regexp pattern.
+  "Tag" is name assigned to a callout in regexp pattern.
   Allowed tag string characters: _ A-Z a-z 0-9   (* first character: _ A-Z a-z)
 
 
@@ -235,30 +254,125 @@ Callouts API  Version 6.8.2 2018/04/10
 
 
 
-(7) Access to callout data
+(7) Callout data (used in callout functions)
 
   "Callout data" is ONIG_CALLOUT_DATA_SLOT_NUM(5) values area
   for each callout in each search process.
   Each value area in the callout is indicated by "slot" number (0 - 4).
 
 
-# int onig_get_callout_data_dont_clear_old(OnigRegex reg, OnigMatchParam* mp, int callout_num, int slot, OnigType* type, OnigValue* val)
-# int onig_get_callout_data_by_callout_args_self_dont_clear_old(OnigCalloutArgs* args, int slot, OnigType* type, OnigValue* val)
-# int onig_get_callout_data(OnigRegex reg, OnigMatchParam* mp, int callout_num, int slot, OnigType* type, OnigValue* val)
 # int onig_get_callout_data_by_callout_args(OnigCalloutArgs* args, int callout_num, int slot, OnigType* type, OnigValue* val)
+
+  Return the callout data value/type for a callout slot indicated by
+  callout_num/slot.
+
+  normal return: ONIG_NORMAL
+              1: not yet set (type is ONIG_TYPE_VOID)
+            < 0: error code
+
+
 # int onig_get_callout_data_by_callout_args_self(OnigCalloutArgs* args, int slot, OnigType* type, OnigValue* val)
-# int onig_set_callout_data(OnigRegex reg, OnigMatchParam* mp, int callout_num, int slot, OnigType type, OnigValue* val)
+
+  Return self callout data value/type.
+
+  normal return: ONIG_NORMAL
+              1: not yet set (type is ONIG_TYPE_VOID)
+            < 0: error code
+
+
 # int onig_set_callout_data_by_callout_args(OnigCalloutArgs* args, int callout_num, int slot, OnigType type, OnigValue* val)
+
+  Set the callout data value/type for a callout slot indicated by callout_num/slot.
+
+  normal return: ONIG_NORMAL
+            < 0: error code
+
+
 # int onig_set_callout_data_by_callout_args_self(OnigCalloutArgs* args, int slot, OnigType type, OnigValue* val)
+
+  Set self callout data value/type for a callout slot indicated by slot.
+
+  normal return: ONIG_NORMAL
+            < 0: error code
+
+
+# int onig_get_callout_data_by_callout_args_self_dont_clear_old(OnigCalloutArgs* args, int slot, OnigType* type, OnigValue* val)
+
+  This function is almost same as onig_get_callout_data_by_callout_args_self().
+  But this function doesn't clear values which set in previous failed match process.
+  Other onig_get_callout_data_xxxx() functions clear all values which set
+  in previous failed match process.
+
+  For example, Builtin callout (*TOTAL_COUNT) is implemented by using this function
+  for accumulate count of all of match processes in a search process.
+  Builtin callout (*COUNT) returns count in last success match process only,
+  because it doesn't use this function.
+
+
+(8) Callout data (used in apllications)
+
+# int onig_get_callout_data(OnigRegex reg, OnigMatchParam* mp, int callout_num, int slot, OnigType* type, OnigValue* val)
+
+  Return the callout data value/type for a callout slot indicated by
+  callout_num/slot.
+
+  normal return: ONIG_NORMAL
+              1: not yet set (type is ONIG_TYPE_VOID)
+            < 0: error code
+
+
 # int onig_get_callout_data_by_tag(OnigRegex reg, OnigMatchParam* mp, const OnigUChar* tag, const OnigUChar* tag_end, int slot, OnigType* type, OnigValue* val)
+
+  Return the callout data value/type for a callout slot indicated by tag/slot.
+
+  normal return: ONIG_NORMAL
+              1: not yet set (type is ONIG_TYPE_VOID)
+            < 0: error code
+
+
+# int onig_set_callout_data(OnigRegex reg, OnigMatchParam* mp, int callout_num, int slot, OnigType type, OnigValue* val)
+
+  Set the callout data value/type for a callout slot indicated by callout_num/slot.
+
+  normal return: ONIG_NORMAL
+            < 0: error code
+
+
 # int onig_set_callout_data_by_tag(OnigRegex reg, OnigMatchParam* mp, const OnigUChar* tag, const OnigUChar* tag_end, int slot, OnigType type, OnigValue* val)
 
+  Set the callout data value/type for a callout slot indicated by tag/slot.
+
+  normal return: ONIG_NORMAL
+            < 0: error code
 
 
-(8) Miscellaneous functions
+# int onig_get_callout_data_dont_clear_old(OnigRegex reg, OnigMatchParam* mp, int callout_num, int slot, OnigType* type, OnigValue* val)
 
-# OnigUChar* onig_get_callout_name_by_name_id(int id)
+  No needs to use this function.
+  It will be abolished.
+
+
+
+(9) Miscellaneous functions
+
+# OnigUChar* onig_get_callout_name_by_name_id(int name_id)
+
+  Return callout name of the name id.
+  if invalid name id is passed, return 0.
+
+
 # int onig_get_capture_range_in_callout(OnigCalloutArgs* args, int mem_num, int* begin, int* end)
+
+  Return current capture range position.
+  Position is byte length offset from subject string.
+  For uncaptured mem_num, ONIG_REGION_NOTPOS is set.
+
+
 # int onig_get_used_stack_size_in_callout(OnigCalloutArgs* args, int* used_num, int* used_bytes)
+
+  Return current used stack size.
+
+  used_num:   number of stack elements
+  used_bytes: used byte size of stack
 
 //END
