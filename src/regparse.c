@@ -1673,38 +1673,24 @@ onig_get_callout_in_by_name_id(int name_id)
 static int
 get_callout_arg_num_by_name_id(int name_id)
 {
-  if (name_id < 0 || name_id >= GlobalCalloutNameList->n)
-    return -1;
-
   return GlobalCalloutNameList->v[name_id].arg_num;
 }
 
 static int
 get_callout_opt_arg_num_by_name_id(int name_id)
 {
-  if (name_id < 0 || name_id >= GlobalCalloutNameList->n)
-    return 0;
-
   return GlobalCalloutNameList->v[name_id].opt_arg_num;
 }
 
 static unsigned int
 get_callout_arg_type_by_name_id(int name_id, int index)
 {
-  if (name_id < 0 || name_id >= GlobalCalloutNameList->n)
-    return 0;
-
   return GlobalCalloutNameList->v[name_id].arg_types[index];
 }
 
 static OnigValue
 get_callout_opt_default_by_name_id(int name_id, int index)
 {
-  if (name_id < 0 || name_id >= GlobalCalloutNameList->n) {
-    OnigValue v;
-    xmemset(&v, 0, sizeof(v));
-    return v;
-  }
   return GlobalCalloutNameList->v[name_id].opt_defaults[index];
 }
 
