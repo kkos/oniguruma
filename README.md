@@ -39,6 +39,7 @@ New feature of version 6.8.2
 
 * Fix: #80 UChar in header causes issue
 * NEW API: onig_set_callout_user_data_of_match_param()  (* omission in 6.8.0)
+* add doc/CALLOUTS.API and doc/CALLOUTS.API.ja
 
 
 New feature of version 6.8.1
