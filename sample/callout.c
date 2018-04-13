@@ -13,7 +13,6 @@ callout_body(OnigCalloutArgs* args, void* user_data)
   int i;
   int n;
   int begin, end;
-  int len;
   int used_num;
   int used_bytes;
   OnigCalloutIn in;
