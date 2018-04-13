@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.8.0    2018/04/10
+Oniguruma Regular Expressions Version 6.8.0    2018/04/13
 
 syntax: ONIG_SYNTAX_ONIGURUMA (default)
 
@@ -266,10 +266,11 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
   <Callouts>
 
   * Callouts of contents
-  (?{...contents...})         callouts in progress
-  (?{...contents...}D)        D is a direction flag char. ('X' or '<' or '>')
-                              D = 'X': progress and retraction, '<': retraction only
-                              '>': progress only (default)
+  (?{...contents...})         callout in progress
+  (?{...contents...}D)        D is a direction flag char
+                              D = 'X': in progress and retraction
+                                  '<': in retraction only
+                                  '>': in progress only
   (?{...contents...}[tag])    tag assigned
   (?{...contents...}[tag]D)
 
