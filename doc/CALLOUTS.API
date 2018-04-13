@@ -1,4 +1,4 @@
-Callouts API  Version 6.8.2 2018/04/11
+Callouts API  Version 6.8.2 2018/04/13
 
 #include <oniguruma.h>
 
@@ -130,7 +130,7 @@ Callouts API  Version 6.8.2 2018/04/11
 
 # int onig_set_callout_user_data_of_match_param(OnigMatchParam* param, void* user_data)
 
-  Set a user_data value which passed as a argument of callout for both of progress and retractions.
+  Set a user_data value which passed as a argument of callout.
 
   normal return: ONIG_NORMAL
 
@@ -158,13 +158,13 @@ Callouts API  Version 6.8.2 2018/04/11
 
 # const OnigUChar* onig_get_contents_by_callout_args(OnigCalloutArgs* args)
 
-  Return the contents of this callout.
+  Return the contents string of this callout. (NULL terminated string)
   If this callout is callout of name, then return NULL.
 
 
 # const OnigUChar* onig_get_contents_end_by_callout_args(OnigCalloutArgs* args)
 
-  Return the end of contents of this callout.
+  Return the end of contents string of this callout.
   If this callout is callout of name, then return NULL.
 
 
@@ -241,6 +241,7 @@ Callouts API  Version 6.8.2 2018/04/11
 # const OnigUChar* onig_get_callout_tag_start(OnigRegex reg, int callout_num)
 
   Return the start address of tag string for the callout.
+  (NULL terminated string)
 
 
 # const OnigUChar* onig_get_callout_tag_end(OnigRegex reg, int callout_num)
@@ -258,7 +259,8 @@ Callouts API  Version 6.8.2 2018/04/11
 
   "Callout data" is ONIG_CALLOUT_DATA_SLOT_NUM(5) values area
   for each callout in each search process.
-  Each value area in the callout is indicated by "slot" number (0 - 4).
+  Each value area in a callout is indicated by "slot" number (0 - 4).
+  Callout data are used for any purpose by callout function implementers.
 
 
 # int onig_get_callout_data_by_callout_args(OnigCalloutArgs* args, int callout_num, int slot, OnigType* type, OnigValue* val)
@@ -370,7 +372,7 @@ Callouts API  Version 6.8.2 2018/04/11
 
 # int onig_get_used_stack_size_in_callout(OnigCalloutArgs* args, int* used_num, int* used_bytes)
 
-  Return current used stack size.
+  Return current used stack size for match process.
 
   used_num:   number of stack elements
   used_bytes: used byte size of stack
