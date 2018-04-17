@@ -19,8 +19,9 @@ endif
 lib_LTLIBRARIES = $(libname)
 
 libonig_la_SOURCES = regint.h regparse.h regenc.h st.h \
-	regerror.c regparse.c regext.c regcomp.c regexec.c reggnu.c \
-	regenc.c regsyntax.c regtrav.c regversion.c st.c \
+	regparse.c regcomp.c regexec.c \
+	regenc.c regerror.c regext.c regsyntax.c regtrav.c regversion.c st.c \
+	reggnu.c \
   $(posix_sources) \
 	unicode.c \
 	unicode_unfold_key.c \

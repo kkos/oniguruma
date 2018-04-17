@@ -88,12 +88,8 @@ test(OnigEncoding enc, OnigMatchParam* mp, char* in_pattern, char* in_str)
 extern int main(int argc, char* argv[])
 {
   int r;
-  int id;
-  UChar* name;
   OnigMatchParam* mp;
   OnigEncoding encs[3];
-  OnigType arg_types[4];
-  OnigValue opt_defaults[4];
 
   encs[0] = ONIG_ENCODING_UTF8;
   encs[1] = ONIG_ENCODING_UTF16_BE;

@@ -36,7 +36,7 @@ extern "C" {
 #define ONIGURUMA
 #define ONIGURUMA_VERSION_MAJOR   6
 #define ONIGURUMA_VERSION_MINOR   8
-#define ONIGURUMA_VERSION_TEENY   1
+#define ONIGURUMA_VERSION_TEENY   2
 
 #define ONIGURUMA_VERSION_INT     60801
 
@@ -894,6 +894,8 @@ ONIG_EXTERN
 int onig_set_progress_callout_of_match_param P_((OnigMatchParam* param, OnigCalloutFunc f));
 ONIG_EXTERN
 int onig_set_retraction_callout_of_match_param P_((OnigMatchParam* param, OnigCalloutFunc f));
+ONIG_EXTERN
+int onig_set_callout_user_data_of_match_param P_((OnigMatchParam* param, void* user_data));
 
 /* for callout functions */
 ONIG_EXTERN
@@ -905,7 +907,7 @@ OnigCalloutFunc onig_get_retraction_callout P_((void));
 ONIG_EXTERN
 int onig_set_retraction_callout P_((OnigCalloutFunc f));
 ONIG_EXTERN
-int onig_set_callout_of_name P_((OnigEncoding enc, OnigCalloutType type, OnigUChar* name, OnigUChar* name_end, int callout_in, OnigCalloutFunc callout, OnigCalloutFunc end_callout, int arg_num, unsigned int arg_types[], int optional_arg_num, OnigValue opt_defaults[])); /* name: single-byte string */
+int onig_set_callout_of_name P_((OnigEncoding enc, OnigCalloutType type, OnigUChar* name, OnigUChar* name_end, int callout_in, OnigCalloutFunc callout, OnigCalloutFunc end_callout, int arg_num, unsigned int arg_types[], int optional_arg_num, OnigValue opt_defaults[]));
 ONIG_EXTERN
 OnigUChar* onig_get_callout_name_by_name_id P_((int id));
 ONIG_EXTERN

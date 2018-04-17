@@ -9,7 +9,7 @@ TESTS = test_utf8 testc testp testcu
 
 check_PROGRAMS = test_utf8 testc testp testcu
 
-test: test_utf8 testc testp testcu
+test: test_uchar test_utf8 testc testp testcu
 	@echo "[Oniguruma API, UTF-8 check]"
 	@./test_utf8  | grep RESULT
 	@echo "[Oniguruma API, ASCII/EUC-JP check]"
@@ -18,6 +18,11 @@ test: test_utf8 testc testp testcu
 	@./testp  | grep RESULT
 	@echo "[Oniguruma API, UTF-16 check]"
 	@./testcu | grep RESULT
+
+test_uchar:
+	@echo "[UChar in oniguruma.h check]"
+	@grep "\(^\|[^g]\)UChar" $(top_srcdir)/src/oniguruma.h
+	@echo ""
 
 test_utf8_SOURCES = test_utf8.c
 test_utf8_LDADD = $(lib_onig)

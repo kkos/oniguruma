@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(oniguruma VERSION 6.8.1)
+project(oniguruma VERSION 6.8.2)
 
 set(PACKAGE onig)
 set(PACKAGE_VERSION ${PROJECT_VERSION})
@@ -154,6 +154,7 @@ install(
 # Documentation (uses onig not oniguruma for directory)
 install(FILES doc/API doc/API.ja doc/RE doc/RE.ja doc/FAQ doc/FAQ.ja
               doc/CALLOUTS.BUILTIN doc/CALLOUTS.BUILTIN.ja
+              doc/CALLOUTS.API doc/CALLOUTS.API.ja
               doc/UNICODE_PROPERTIES
         DESTINATION "${CMAKE_INSTALL_DATADIR}/${PACKAGE_NAME}")
 
