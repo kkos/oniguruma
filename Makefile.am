@@ -33,3 +33,7 @@ oniguruma.pc: $(srcdir)/oniguruma.pc.in Makefile
 
 pkgconfigdir   = $(libdir)/pkgconfig
 pkgconfig_DATA = oniguruma.pc
+
+
+all-test:
+	cd test; make test
