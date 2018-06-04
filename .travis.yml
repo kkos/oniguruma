@@ -6,6 +6,10 @@ compiler:
 
 install: true
 
+branches:
+  except:
+    - 5.9.6
+
 before_script:
   - autoreconf -fi
 
