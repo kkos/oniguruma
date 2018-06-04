@@ -6,5 +6,8 @@ compiler:
 
 install: true
 
+before_script:
+  - autoreconf -fi
+
 script:
   - ./configure && make && make all-test
