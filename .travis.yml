@@ -1,0 +1,10 @@
+language: c
+
+compiler:
+  - gcc
+  - clang
+
+install: true
+
+script:
+  - ./configure && make && make all-test
