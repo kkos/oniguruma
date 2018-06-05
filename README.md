@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/kkos/oniguruma.svg?branch=master)](https://travis-ci.org/kkos/oniguruma)
+
 Oniguruma
 =========
 
