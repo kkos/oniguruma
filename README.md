@@ -61,8 +61,6 @@ New feature of version 6.8.0
 * NEW: Builtin callouts  (*FAIL) (*MISMATCH) (*ERROR{n}) (*COUNT) (*MAX{n}) etc..
 * Examples of Callouts program: [callout.c](sample/callout.c), [count.c](sample/count.c), [echo.c](sample/echo.c)
 
-(* Callout function API is experimental level and isn't fixed definitely yet. Undocumented now)
-
 
 New feature of version 6.7.1
 --------------------------
