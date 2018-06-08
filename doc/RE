@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.8.0    2018/04/13
+Oniguruma Regular Expressions Version 6.8.0    2018/06/08
 
 syntax: ONIG_SYNTAX_ONIGURUMA (default)
 
@@ -475,7 +475,6 @@ A-3. Missing features compared with perl 5.8.0
 
    + \N{name}
    + \l,\u,\L,\U,\C
-   + (?{code})
    + (??{code})
 
    * \Q...\E
