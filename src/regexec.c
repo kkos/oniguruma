@@ -3484,22 +3484,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       break;
 #endif
 
-#if 0   /* no need: IS_DYNAMIC_OPTION() == 0 */
-    case OP_SET_OPTION_PUSH:  SOP_IN(OP_SET_OPTION_PUSH);
-      GET_OPTION_INC(option, p);
-      STACK_PUSH_ALT(p, s, sprev);
-      p += SIZE_OP_SET_OPTION + SIZE_OP_FAIL;
-      SOP_OUT;
-      continue;
-      break;
-
-    case OP_SET_OPTION:  SOP_IN(OP_SET_OPTION);
-      GET_OPTION_INC(option, p);
-      SOP_OUT;
-      continue;
-      break;
-#endif
-
     case OP_EMPTY_CHECK_START:  SOP_IN(OP_EMPTY_CHECK_START);
       GET_MEMNUM_INC(mem, p);    /* mem: null check id */
       STACK_PUSH_EMPTY_CHECK_START(mem, s);

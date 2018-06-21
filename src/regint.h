@@ -678,10 +678,6 @@ enum OpCode {
   OP_CALLOUT_CONTENTS,      /* (?{...}) (?{{...}}) */
   OP_CALLOUT_NAME,          /* (*name) (*name[tag](args...)) */
 #endif
-
-  /* no need: IS_DYNAMIC_OPTION() == 0 */
-  OP_SET_OPTION_PUSH,    /* set option and push recover option */
-  OP_SET_OPTION          /* set option */
 };
 
 enum SaveType {
