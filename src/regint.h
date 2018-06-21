@@ -424,13 +424,6 @@ typedef unsigned int  MemStatusType;
    ((ctype) == ONIGENC_CTYPE_DIGIT && IS_DIGIT_ASCII(options)) ||\
    ((ctype) == ONIGENC_CTYPE_SPACE && IS_SPACE_ASCII(options))))
 
-/* OP_SET_OPTION is required for these options.
-#define IS_DYNAMIC_OPTION(option) \
-  (((option) & (ONIG_OPTION_MULTILINE | ONIG_OPTION_IGNORECASE)) != 0)
-*/
-/* ignore-case and multibyte status are included in compiled code. */
-#define IS_DYNAMIC_OPTION(option)  0
-
 #define DISABLE_CASE_FOLD_MULTI_CHAR(case_fold_flag) \
   ((case_fold_flag) & ~INTERNAL_ONIGENC_CASE_FOLD_MULTI_CHAR)
 
