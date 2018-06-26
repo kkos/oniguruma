@@ -213,8 +213,6 @@ static OpInfoType OpInfo[] = {
   { OP_MEMORY_END_PUSH_REC, "mem-end-push-rec",     ARG_MEMNUM  },
   { OP_MEMORY_END,          "mem-end",              ARG_MEMNUM  },
   { OP_MEMORY_END_REC,      "mem-end-rec",          ARG_MEMNUM  },
-  { OP_SET_OPTION_PUSH,     "set-option-push",      ARG_OPTION  },
-  { OP_SET_OPTION,          "set-option",           ARG_OPTION  },
   { OP_FAIL,                "fail",                 ARG_NON },
   { OP_JUMP,                "jump",                 ARG_RELADDR },
   { OP_PUSH,                "push",                 ARG_RELADDR },
