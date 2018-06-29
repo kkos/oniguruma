@@ -35,8 +35,6 @@
 #define HAVE_MEMORY_H 1
 #define uid_t int
 #define gid_t int
-#define HAVE_STRUCT_STAT_ST_RDEV 1
-#define HAVE_ST_RDEV 1
 #define GETGROUPS_T int
 #define RETSIGTYPE void
 #define HAVE_ALLOCA 1
