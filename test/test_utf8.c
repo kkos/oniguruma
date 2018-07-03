@@ -394,6 +394,10 @@ extern int main(int argc, char* argv[])
   x2("a|(?i)c", "C", 0, 1);
   x2("(?i)c|a", "C", 0, 1);
   x2("(?i)c|a", "A", 0, 1);
+  x2("a(?i)b|c", "aB", 0, 2);
+  x2("a(?i)b|c", "aC", 0, 2);
+  n("a(?i)b|c", "AC");
+  n("a(?:(?i)b)|c", "aC");
   x2("(?i:c)|a", "C", 0, 1);
   n("(?i:c)|a", "A");
   x2("[abc]?", "abc", 0, 1);
