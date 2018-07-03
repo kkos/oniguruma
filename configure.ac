@@ -64,15 +64,17 @@ AC_FUNC_ALLOCA
 AC_FUNC_MEMCMP
 
 AC_CACHE_CHECK(for prototypes, _cv_have_prototypes,
-  [AC_TRY_COMPILE([int foo(int x) { return 0; }], [return foo(10);],
-	_cv_have_prototypes=yes,
-	_cv_have_prototypes=no)])
+  [AC_COMPILE_IFELSE(
+    [AC_LANG_PROGRAM([[int foo(int x) { return 0; }]],
+      [[return foo(10);]])],
+    [_cv_have_prototypes=yes],
+    [_cv_have_prototypes=no])])
 if test "$_cv_have_prototypes" = yes; then
   AC_DEFINE(HAVE_PROTOTYPES,1,[Define if compilerr supports prototypes])
 fi
 
 AC_CACHE_CHECK(for variable length prototypes and stdarg.h, _cv_stdarg,
-  [AC_TRY_COMPILE([
+  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <stdarg.h>
 int foo(int x, ...) {
 	va_list va;
@@ -82,9 +84,7 @@ int foo(int x, ...) {
 	va_arg(va, double);
 	return 0;
 }
-], [return foo(10, "", 3.14);],
-	_cv_stdarg=yes,
-	_cv_stdarg=no)])
+]], [[return foo(10, "", 3.14);]])],[_cv_stdarg=yes],[_cv_stdarg=no])])
 if test "$_cv_stdarg" = yes; then
   AC_DEFINE(HAVE_STDARG_PROTOTYPES,1,[Define if compiler supports stdarg prototypes])
 fi
