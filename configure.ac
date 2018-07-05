@@ -4,7 +4,7 @@ AC_INIT(onig, 6.8.2)
 AC_CONFIG_MACRO_DIR([m4])
 
 AM_INIT_AUTOMAKE([-Wno-portability 1.14])
-AC_CONFIG_HEADER(src/config.h)
+AC_CONFIG_HEADERS([src/config.h])
 
 
 dnl default value for STATISTICS
