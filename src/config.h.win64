@@ -36,7 +36,6 @@
 #define uid_t int
 #define gid_t int
 #define GETGROUPS_T int
-#define RETSIGTYPE void
 #define HAVE_ALLOCA 1
 #define HAVE_DUP2 1
 #define HAVE_MEMCMP 1
