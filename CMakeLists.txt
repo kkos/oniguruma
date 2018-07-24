@@ -5,6 +5,7 @@ set(PACKAGE onig)
 set(PACKAGE_VERSION ${PROJECT_VERSION})
 
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(ENABLE_POSIX_API  "Include POSIX API" ON)
 
 set(USE_CRNL_AS_LINE_TERMINATOR 0)
 set(VERSION ${PACKAGE_VERSION})
@@ -56,7 +57,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/oniguruma.pc.cmake.in ${CMAKE_CURRENT
 set(_SRCS src/regint.h src/regparse.h src/regenc.h src/st.h
  src/regerror.c src/regparse.c src/regext.c src/regcomp.c src/regexec.c
  src/reggnu.c src/regenc.c src/regsyntax.c src/regtrav.c src/regversion.c
- src/st.c src/regposix.c src/regposerr.c src/onig_init.c
+ src/st.c src/regposerr.c src/onig_init.c
  src/unicode.c src/ascii.c src/utf8.c src/utf16_be.c src/utf16_le.c
  src/utf32_be.c src/utf32_le.c src/euc_jp.c src/sjis.c src/iso8859_1.c
  src/iso8859_2.c src/iso8859_3.c src/iso8859_4.c src/iso8859_5.c
@@ -67,6 +68,10 @@ set(_SRCS src/regint.h src/regparse.h src/regenc.h src/st.h
  src/euc_jp_prop.c src/sjis_prop.c
  src/unicode_unfold_key.c
  src/unicode_fold1_key.c src/unicode_fold2_key.c src/unicode_fold3_key.c)
+
+if(ENABLE_POSIX_API)
+  set(_SRCS ${_SRCS} src/regposix.c)
+endif()
 
 add_library(onig ${_SRCS})
 target_include_directories(onig PUBLIC
