@@ -196,7 +196,7 @@ Callouts API  Version 6.8.2 2018/06/08
 
 # const OnigUChar* onig_get_string_by_callout_args(OnigCalloutArgs* args)
 
-  Returns the subject string adress.
+  Returns the subject string address.
   This is the second argument(str) of onig_search().
 
 
