@@ -164,11 +164,11 @@ install(FILES doc/API doc/API.ja doc/RE doc/RE.ja doc/FAQ doc/FAQ.ja
               doc/CALLOUTS.BUILTIN doc/CALLOUTS.BUILTIN.ja
               doc/CALLOUTS.API doc/CALLOUTS.API.ja
               doc/UNICODE_PROPERTIES
-        DESTINATION "${CMAKE_INSTALL_DATADIR}/${PACKAGE_NAME}")
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/${PACKAGE}")
 
 # Other files (uses onig not oniguruma for directory)
 install(FILES AUTHORS COPYING HISTORY README.md
-        DESTINATION "${CMAKE_INSTALL_DATADIR}/${PACKAGE_NAME}")
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/${PACKAGE}")
 
 # pkg-config
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/oniguruma.pc
