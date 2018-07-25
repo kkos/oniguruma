@@ -69,8 +69,11 @@ set(_SRCS src/regint.h src/regparse.h src/regenc.h src/st.h
  src/unicode_unfold_key.c
  src/unicode_fold1_key.c src/unicode_fold2_key.c src/unicode_fold3_key.c)
 
+set(_INST_HEADERS src/oniguruma.h src/oniggnu.h)
+
 if(ENABLE_POSIX_API)
   set(_SRCS ${_SRCS} src/regposix.c src/regposerr.c)
+  set(_INST_HEADERS ${_INST_HEADERS} src/onigposix.h)
 endif()
 
 add_library(onig ${_SRCS})
@@ -136,7 +139,7 @@ install(
 # Headers:
 #   * src/oniguruma.h -> <prefix>/include/oniguruma
 install(
-    FILES src/oniguruma.h src/onigposix.h src/oniggnu.h
+    FILES ${_INST_HEADERS}
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
 )
 
