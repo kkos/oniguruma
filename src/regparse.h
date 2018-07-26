@@ -165,8 +165,8 @@ enum QuantBodyEmpty {
 
 
 #define NODE_STATUS(node)           (((Node* )node)->u.base.status)
-#define NODE_STATUS_ADD(node,f)     (NODE_STATUS(node) |= (f))
-#define NODE_STATUS_REMOVE(node,f)  (NODE_STATUS(node) &= ~(f))
+#define NODE_STATUS_ADD(node,f)     (NODE_STATUS(node) |= (NST_ ## f))
+#define NODE_STATUS_REMOVE(node,f)  (NODE_STATUS(node) &= ~(NST_ ## f))
 
 #define NODE_IS_BY_NUMBER(node)       ((NODE_STATUS(node) & NST_BY_NUMBER)      != 0)
 #define NODE_IS_IN_REAL_REPEAT(node)  ((NODE_STATUS(node) & NST_IN_REAL_REPEAT) != 0)
