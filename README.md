@@ -7,21 +7,9 @@ https://github.com/kkos/oniguruma
 
 Oniguruma is a modern and flexible regular expressions library. It
 encompasses features from different regular expression implementations
-that traditionally exist in different languages. It comes close to
-being a complete superset of all regular expression features found
-in other regular expression implementations.
+that traditionally exist in different languages.
 
-Its features include:
-* Character encoding can be specified per regular expression object.
-* Several regular expression types are supported:
-  * Oniguruma (native)
-  * POSIX
-  * Grep
-  * GNU Regex
-  * Perl
-  * Java
-  * Ruby
-  * Emacs
+Character encoding can be specified per regular expression object.
 
 Supported character encodings:
 
