@@ -158,7 +158,7 @@ Install
 
 ### Case 2: Windows 64/32bit platform (Visual Studio)
 
-   execute make_win64 or make_win32
+   Execute make_win.bat
 
       onig_s.lib:  static link library
       onig.dll:    dynamic link library
@@ -287,5 +287,4 @@ Source Files
 |utf32_le.c         |UTF-32LE encoding                                       |
 |unicode.c          |common codes of Unicode encoding                        |
 |unicode_fold_data.c|Unicode folding data                                    |
-|win32/Makefile     |Makefile for Win32 (VC++)                               |
-|win32/config.h     |config.h for Win32                                      |
+|windows/testc.c    |Test program for Windowns (VC++)                        |
