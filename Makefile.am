@@ -12,7 +12,8 @@ EXTRA_DIST = oniguruma.pc.in HISTORY README_japanese README.md \
 	doc/CALLOUTS.BUILTIN doc/CALLOUTS.BUILTIN.ja \
 	doc/CALLOUTS.API doc/CALLOUTS.API.ja \
 	doc/UNICODE_PROPERTIES \
-	src/Makefile.windows src/config.h.win32 src/config.h.win64 \
+	src/Makefile.windows src/config.h.windows.in \
+	src/config.h.win32 src/config.h.win64 \
 	windows/testc.c contributed/libfuzzer-onig.cpp contributed/makefile
 
 bin_SCRIPTS = onig-config
