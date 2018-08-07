@@ -5,7 +5,7 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src test sample
 
 EXTRA_DIST = oniguruma.pc.in HISTORY README_japanese README.md \
-	index.html index_ja.html \
+	index.html index_ja.html make_win.bat \
 	CMakeLists.txt oniguruma.pc.cmake.in cmake/Config.cmake.in \
 	src/config.h.cmake.in \
 	doc/API doc/API.ja doc/RE doc/RE.ja doc/FAQ doc/FAQ.ja \
