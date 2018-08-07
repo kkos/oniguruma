@@ -24,6 +24,12 @@ libname   = $(libbase)_s.lib
 dllname   = $(libbase).dll
 dlllib    = $(libbase).lib
 
+!IF defined(ENABLE_POSIX_API) && "$(ENABLE_POSIX_API)" == "NO"
+posixobjs = 
+!ELSE
+posixobjs = $(BUILD_DIR)/regposix.obj $(BUILD_DIR)/regposerr.obj
+!ENDIF
+
 onigheaders  = $(ONIG_DIR)/oniguruma.h $(ONIG_DIR)/regint.h $(ONIG_DIR)/regparse.h $(ONIG_DIR)/regenc.h $(ONIG_DIR)/st.h
 posixheaders = $(ONIG_DIR)/onigposix.h
 headers      = $(posixheaders) $(onigheaders)
@@ -31,7 +37,6 @@ headers      = $(posixheaders) $(onigheaders)
 onigobjs     = $(BUILD_DIR)/reggnu.obj $(BUILD_DIR)/regerror.obj $(BUILD_DIR)/regparse.obj $(BUILD_DIR)/regext.obj $(BUILD_DIR)/regcomp.obj \
 	       $(BUILD_DIR)/regexec.obj $(BUILD_DIR)/regenc.obj $(BUILD_DIR)/regsyntax.obj $(BUILD_DIR)/regtrav.obj \
 	       $(BUILD_DIR)/regversion.obj $(BUILD_DIR)/st.obj $(BUILD_DIR)/onig_init.obj
-posixobjs    = $(BUILD_DIR)/regposix.obj $(BUILD_DIR)/regposerr.obj
 libobjs      = $(onigobjs) $(posixobjs)
 
 jp_objs      =  $(BUILD_DIR)/euc_jp.obj $(BUILD_DIR)/sjis.obj
