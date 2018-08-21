@@ -1,7 +1,7 @@
 /* This file was converted by gperf_fold_key_conv.py
       from gperf output file. */
-/* ANSI-C code produced by gperf version 3.0.4 */
-/* Command-line: gperf -n -C -T -c -t -j1 -L ANSI-C -F,-1 -N unicode_fold2_key unicode_fold2_key.gperf  */
+/* ANSI-C code produced by gperf version 3.1 */
+/* Command-line: /usr/bin/gperf -n -C -T -c -t -j1 -L ANSI-C -F,-1 -N unicode_fold2_key unicode_fold2_key.gperf  */
 /* Computed positions: -k'3,6' */
 
 
@@ -60,12 +60,6 @@ hash(OnigCodePoint codes[])
   return asso_values[(unsigned char)onig_codes_byte_at(codes, 5)] + asso_values[(unsigned char)onig_codes_byte_at(codes, 2)];
 }
 
-#ifdef __GNUC__
-__inline
-#if defined __GNUC_STDC_INLINE__ || defined __GNUC_GNU_INLINE__
-__attribute__ ((__gnu_inline__))
-#endif
-#endif
 int
 unicode_fold2_key(OnigCodePoint codes[])
 {
@@ -195,7 +189,7 @@ unicode_fold2_key(OnigCodePoint codes[])
     {
       int key = hash(codes);
 
-      if (key <= MAX_HASH_VALUE && key >= 0)
+      if (key <= MAX_HASH_VALUE)
         {
           int index = wordlist[key];
 
