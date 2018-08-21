@@ -1,16 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # gperf_fold_key_conv.py
-# Copyright (c) 2016-2017  K.Kosako
+# Copyright (c) 2016-2018  K.Kosako
 
 import sys
 import re
 
 REG_LINE_GPERF = re.compile('#line .+gperf"')
-REG_HASH_FUNC = re.compile('hash\s*\(register\s+const\s+char\s*\*\s*str,\s*register\s+unsigned\s+int\s+len\s*\)')
+REG_HASH_FUNC = re.compile('hash\s*\(register\s+const\s+char\s*\*\s*str,\s*register\s+size_t\s+len\s*\)')
 REG_STR_AT = re.compile('str\[(\d+)\]')
 REG_RETURN_TYPE = re.compile('^const\s+short\s+int\s*\*')
-REG_FOLD_KEY = re.compile('unicode_fold(\d)_key\s*\(register\s+const\s+char\s*\*\s*str,\s*register\s+unsigned\s+int\s+len\)')
+REG_FOLD_KEY = re.compile('unicode_fold(\d)_key\s*\(register\s+const\s+char\s*\*\s*str,\s*register\s+size_t\s+len\)')
 REG_ENTRY = re.compile('\{".*?",\s*(-?\d+)\s*\}')
 REG_IF_LEN = re.compile('if\s*\(\s*len\s*<=\s*MAX_WORD_LENGTH.+')
 REG_GET_HASH = re.compile('(?:register\s+)?(?:unsigned\s+)?int\s+key\s*=\s*hash\s*\(str,\s*len\);')
