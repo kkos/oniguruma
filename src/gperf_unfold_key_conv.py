@@ -9,7 +9,7 @@ import re
 REG_LINE_GPERF = re.compile('#line .+gperf"')
 REG_HASH_FUNC = re.compile('hash\s*\(register\s+const\s+char\s*\*\s*str,\s*register\s+size_t\s+len\s*\)')
 REG_STR_AT = re.compile('str\[(\d+)\]')
-REG_UNFOLD_KEY = re.compile('unicode_unfold_key\s*\(register\s+const\s+char\s*\*\s*str,\s*register\s+size_t\s+len\)')
+REG_UNFOLD_KEY = re.compile('onigenc_unicode_unfold_key\s*\(register\s+const\s+char\s*\*\s*str,\s*register\s+size_t\s+len\)')
 REG_ENTRY = re.compile('\{".+?",\s*/\*(.+?)\*/\s*(-?\d+),\s*(\d)\}')
 REG_EMPTY_ENTRY = re.compile('\{"",\s*(-?\d+),\s*(\d)\}')
 REG_IF_LEN = re.compile('if\s*\(\s*len\s*<=\s*MAX_WORD_LENGTH.+')
@@ -26,7 +26,7 @@ def parse_line(s):
     if r != s: return r
     r = re.sub(REG_STR_AT, 'onig_codes_byte_at(codes, \\1)', s)
     if r != s: return r
-    r = re.sub(REG_UNFOLD_KEY, 'unicode_unfold_key(OnigCodePoint code)', s)
+    r = re.sub(REG_UNFOLD_KEY, 'onigenc_unicode_unfold_key(OnigCodePoint code)', s)
     if r != s: return r
     r = re.sub(REG_ENTRY, '{\\1, \\2, \\3}', s)
     if r != s: return r

@@ -104,7 +104,7 @@ onigenc_unicode_mbc_case_fold(OnigEncoding enc,
   }
 #endif
 
-  buk = unicode_unfold_key(code);
+  buk = onigenc_unicode_unfold_key(code);
   if (buk != 0) {
     if (buk->fold_len == 1) {
       return ONIGENC_CODE_TO_MBC(enc, *FOLDS1_FOLD(buk->index), fold);
@@ -316,7 +316,7 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
   }
 #endif
 
-  buk = unicode_unfold_key(code);
+  buk = onigenc_unicode_unfold_key(code);
   if (buk != 0) {
     if (buk->fold_len == 1) {
       int un;
@@ -356,7 +356,7 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
         for (fn = 0; fn < 2; fn++) {
           int index;
           cs[fn][0] = FOLDS2_FOLD(buk->index)[fn];
-          index = unicode_fold1_key(&cs[fn][0]);
+          index = onigenc_unicode_fold1_key(&cs[fn][0]);
           if (index >= 0) {
             int m = FOLDS1_UNFOLDS_NUM(index);
             for (i = 0; i < m; i++) {
@@ -393,7 +393,7 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
         for (fn = 0; fn < 3; fn++) {
           int index;
           cs[fn][0] = FOLDS3_FOLD(buk->index)[fn];
-          index = unicode_fold1_key(&cs[fn][0]);
+          index = onigenc_unicode_fold1_key(&cs[fn][0]);
           if (index >= 0) {
             int m = FOLDS1_UNFOLDS_NUM(index);
             for (i = 0; i < m; i++) {
@@ -424,7 +424,7 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
     }
   }
   else {
-    int index = unicode_fold1_key(&code);
+    int index = onigenc_unicode_fold1_key(&code);
     if (index >= 0) {
       int m = FOLDS1_UNFOLDS_NUM(index);
       for (i = 0; i < m; i++) {
@@ -447,7 +447,7 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
     codes[0] = code;
     code = ONIGENC_MBC_TO_CODE(enc, p, end);
 
-    buk = unicode_unfold_key(code);
+    buk = onigenc_unicode_unfold_key(code);
     if (buk != 0 && buk->fold_len == 1) {
       codes[1] = *FOLDS1_FOLD(buk->index);
     }
@@ -457,7 +457,7 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
     clen = enclen(enc, p);
     len += clen;
 
-    index = unicode_fold2_key(codes);
+    index = onigenc_unicode_fold2_key(codes);
     if (index >= 0) {
       m = FOLDS2_UNFOLDS_NUM(index);
       for (i = 0; i < m; i++) {
@@ -471,7 +471,7 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
     p += clen;
     if (p < end) {
       code = ONIGENC_MBC_TO_CODE(enc, p, end);
-      buk = unicode_unfold_key(code);
+      buk = onigenc_unicode_unfold_key(code);
       if (buk != 0 && buk->fold_len == 1) {
         codes[2] = *FOLDS1_FOLD(buk->index);
       }
@@ -481,7 +481,7 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
       clen = enclen(enc, p);
       len += clen;
 
-      index = unicode_fold3_key(codes);
+      index = onigenc_unicode_fold3_key(codes);
       if (index >= 0) {
         m = FOLDS3_UNFOLDS_NUM(index);
         for (i = 0; i < m; i++) {

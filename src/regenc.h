@@ -209,10 +209,10 @@ struct ByUnfoldKey {
   short int     fold_len;
 };
 
-extern const struct ByUnfoldKey* unicode_unfold_key(OnigCodePoint code);
-extern int unicode_fold1_key(OnigCodePoint code[]);
-extern int unicode_fold2_key(OnigCodePoint code[]);
-extern int unicode_fold3_key(OnigCodePoint code[]);
+extern const struct ByUnfoldKey* onigenc_unicode_unfold_key(OnigCodePoint code);
+extern int onigenc_unicode_fold1_key(OnigCodePoint code[]);
+extern int onigenc_unicode_fold2_key(OnigCodePoint code[]);
+extern int onigenc_unicode_fold3_key(OnigCodePoint code[]);
 
 extern int onig_codes_cmp(OnigCodePoint a[], OnigCodePoint b[], int n);
 extern int onig_codes_byte_at(OnigCodePoint code[], int at);

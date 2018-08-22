@@ -1,7 +1,7 @@
 /* This file was converted by gperf_fold_key_conv.py
       from gperf output file. */
 /* ANSI-C code produced by gperf version 3.1 */
-/* Command-line: /usr/bin/gperf -n -C -T -c -t -j1 -L ANSI-C -F,-1 -N unicode_fold2_key unicode_fold2_key.gperf  */
+/* Command-line: /usr/bin/gperf -n -C -T -c -t -j1 -L ANSI-C -F,-1 -N onigenc_unicode_fold2_key unicode_fold2_key.gperf  */
 /* Computed positions: -k'3,6' */
 
 
@@ -61,7 +61,7 @@ hash(OnigCodePoint codes[])
 }
 
 int
-unicode_fold2_key(OnigCodePoint codes[])
+onigenc_unicode_fold2_key(OnigCodePoint codes[])
 {
   static const short int wordlist[] =
     {

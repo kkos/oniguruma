@@ -1,7 +1,7 @@
 /* This file was converted by gperf_unfold_key_conv.py
       from gperf output file. */
 /* ANSI-C code produced by gperf version 3.1 */
-/* Command-line: /usr/bin/gperf -n -C -T -c -t -j1 -L ANSI-C -F,-1,0 -N unicode_unfold_key unicode_unfold_key.gperf  */
+/* Command-line: /usr/bin/gperf -n -C -T -c -t -j1 -L ANSI-C -F,-1,0 -N onigenc_unicode_unfold_key unicode_unfold_key.gperf  */
 /* Computed positions: -k'1-3' */
 
 
@@ -65,7 +65,7 @@ hash(OnigCodePoint codes[])
 }
 
 const struct ByUnfoldKey *
-unicode_unfold_key(OnigCodePoint code)
+onigenc_unicode_unfold_key(OnigCodePoint code)
 {
   static const struct ByUnfoldKey wordlist[] =
     {
