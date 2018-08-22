@@ -24470,7 +24470,7 @@ static const struct unicode_prop_name_pool_t unicode_prop_name_pool_contents =
     "graphemelink"
   };
 #define unicode_prop_name_pool ((const char *) &unicode_prop_name_pool_contents)
-const struct PoolPropertyNameCtype *
+static const struct PoolPropertyNameCtype *
 unicode_lookup_property_name (register const char *str, register size_t len)
 {
   static const struct PoolPropertyNameCtype wordlist[] =
