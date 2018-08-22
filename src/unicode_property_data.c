@@ -23003,7 +23003,7 @@ hash (register const char *str, register size_t len)
       5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163, 5163,
       5163, 5163, 5163, 5163, 5163, 5163
     };
-  register unsigned int hval = len;
+  register unsigned int hval = (unsigned int )len;
 
   switch (hval)
     {
