@@ -34,6 +34,7 @@
 #endif
 
 #include "config.h"
+#include <stddef.h>
 
 #ifdef ONIG_ESCAPE_UCHAR_COLLISION
 #undef ONIG_ESCAPE_UCHAR_COLLISION
@@ -158,7 +159,7 @@ extern int onigenc_mb2_is_code_ctype P_((OnigEncoding enc, OnigCodePoint code, u
 extern int onigenc_mb4_code_to_mbclen P_((OnigCodePoint code));
 extern int onigenc_mb4_code_to_mbc P_((OnigEncoding enc, OnigCodePoint code, UChar *buf));
 extern int onigenc_mb4_is_code_ctype P_((OnigEncoding enc, OnigCodePoint code, unsigned int ctype));
-extern struct PropertyNameCtype* euc_jp_lookup_property_name P_((register const char *str, register unsigned int len));
+extern struct PropertyNameCtype* onigenc_euc_jp_lookup_property_name P_((register const char *str, register size_t len));
 extern struct PropertyNameCtype* sjis_lookup_property_name P_((register const char *str, register unsigned int len));
 
 /* in enc/unicode.c */
