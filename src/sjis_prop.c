@@ -1,5 +1,5 @@
 /* ANSI-C code produced by gperf version 3.1 */
-/* Command-line: gperf -pt -T -L ANSI-C -N onigenc_sjis_lookup_property_name --output-file sjis_prop.c sjis_prop.gperf  */
+/* Command-line: /usr/bin/gperf -pt -T -L ANSI-C -N onigenc_sjis_lookup_property_name --output-file gperf2.tmp sjis_prop.gperf  */
 /* Computed positions: -k'1,3' */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
@@ -80,7 +80,7 @@ hash (register const char *str, register size_t len)
       56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
       56, 56, 56, 56, 56, 56
     };
-  return len + asso_values[(unsigned char)str[2]] + asso_values[(unsigned char)str[0]];
+  return (unsigned int )len + asso_values[(unsigned char)str[2]] + asso_values[(unsigned char)str[0]];
 }
 
 struct PropertyNameCtype *
