@@ -2076,20 +2076,6 @@ cons_node_free_alone(Node* node)
   onig_node_free(node);
 }
 
-extern void
-list_node_free_not_car(Node* node)
-{
-  Node* next_node;
-
- start:
-  if (IS_NULL(node)) return;
-
-  next_node = NODE_CDR(node);
-  xfree(node);
-  node = next_node;
-  goto start;
-}
-
 static Node*
 node_new(void)
 {
