@@ -54,6 +54,7 @@ EXTRA_DIST = koi8.c mktable.c \
 	make_unicode_egcb.sh make_unicode_egcb_data.py \
 	make_unicode_fold.sh make_unicode_fold_data.py \
 	make_unicode_property.sh make_unicode_property_data.py \
+	make_property.sh \
 	gperf_fold_key_conv.py gperf_unfold_key_conv.py \
 	unicode-7.0/unicode_fold1_key.c unicode-7.0/unicode_fold2_key.c \
 	unicode-7.0/unicode_fold3_key.c unicode-7.0/unicode_fold_data.c \
