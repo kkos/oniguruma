@@ -700,19 +700,6 @@ onigenc_egcb_is_break_position(OnigEncoding enc, UChar* p, UChar* prev,
 }
 
 
-/*
- Undefine __GNUC__ for Escape warnings in Clang.
-
-./unicode_property_data.c:26730:44: warning: static variable
-      'unicode_prop_name_pool_contents' is used in an inline function with
-      external linkage [-Wstatic-in-inline]
-              register const char *s = o + unicode_prop_name_pool;
-*/
-
-#ifdef __clang__
-#undef __GNUC__
-#endif
-
 #ifdef USE_UNICODE_PROPERTIES
 #include "unicode_property_data.c"
 #else
