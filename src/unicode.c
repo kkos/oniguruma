@@ -588,7 +588,7 @@ unicode_egcb_is_break_2code(OnigCodePoint from_code, OnigCodePoint to_code)
         && (to == EGCB_V || to == EGCB_T)) return EGCB_NOT_BREAK;
 
     /* GB8 */
-    if ((from == EGCB_LVT || from == EGCB_T) && (to == EGCB_T))
+    if ((to == EGCB_T) && (from == EGCB_LVT || from == EGCB_T))
       return EGCB_NOT_BREAK;
 
     goto GB999;
