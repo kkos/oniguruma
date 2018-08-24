@@ -509,7 +509,7 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
 enum EGCB_BREAK_TYPE {
   EGCB_NOT_BREAK = 0,
   EGCB_BREAK     = 1,
-  EGCB_BREAK_UNDEF_E_MODIFIER = 2,
+  EGCB_BREAK_UNDEF_GB11  = 2,
   EGCB_BREAK_UNDEF_RI_RI = 3
 };
 
@@ -608,16 +608,13 @@ unicode_egcb_is_break_2code(OnigCodePoint from_code, OnigCodePoint to_code)
   /* GB9b */
   if (from == EGCB_Prepend) return EGCB_NOT_BREAK;
 
-  /* GB10 */
-  if (to == EGCB_E_Modifier) {
-    if (from == EGCB_E_Base || from == EGCB_E_Base_GAZ) return EGCB_NOT_BREAK;
-    if (from == EGCB_Extend) return EGCB_BREAK_UNDEF_E_MODIFIER;
-    goto GB999;
-  }
+  /* GB10 removed */
 
   /* GB11 */
   if (from == EGCB_ZWJ) {
-    if (to == EGCB_Glue_After_Zwj || to == EGCB_E_Base_GAZ) return EGCB_NOT_BREAK;
+    if (onigenc_unicode_is_code_ctype(to_code, PROP_INDEX_EXTENDEDPICTOGRAPHIC))
+      return EGCB_BREAK_UNDEF_GB11;
+
     goto GB999;
   }
 
@@ -670,12 +667,13 @@ onigenc_egcb_is_break_position(OnigEncoding enc, UChar* p, UChar* prev,
     return 1;
     break;
 
-  case EGCB_BREAK_UNDEF_E_MODIFIER:
+  case EGCB_BREAK_UNDEF_GB11:
     while ((prev = onigenc_get_prev_char_head(enc, start, prev)) != NULL) {
       from = ONIGENC_MBC_TO_CODE(enc, prev, end);
-      type = egcb_get_type(from);
-      if (type == EGCB_E_Base || type == EGCB_E_Base_GAZ)
+      if (onigenc_unicode_is_code_ctype(from, PROP_INDEX_EXTENDEDPICTOGRAPHIC))
         return 0;
+
+      type = egcb_get_type(from);
       if (type != EGCB_Extend)
         break;
     }
