@@ -5289,3 +5289,19 @@ unicode_lookup_property_name (register const char *str, register size_t len)
 
 #define PROPERTY_NAME_MAX_SIZE  17
 #define CODE_RANGES_NUM         15
+
+#define PROP_INDEX_NEWLINE 0
+#define PROP_INDEX_ALPHA 1
+#define PROP_INDEX_BLANK 2
+#define PROP_INDEX_CNTRL 3
+#define PROP_INDEX_DIGIT 4
+#define PROP_INDEX_GRAPH 5
+#define PROP_INDEX_LOWER 6
+#define PROP_INDEX_PRINT 7
+#define PROP_INDEX_PUNCT 8
+#define PROP_INDEX_SPACE 9
+#define PROP_INDEX_UPPER 10
+#define PROP_INDEX_XDIGIT 11
+#define PROP_INDEX_WORD 12
+#define PROP_INDEX_ALNUM 13
+#define PROP_INDEX_ASCII 14
