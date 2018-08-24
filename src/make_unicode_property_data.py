@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # make_unicode_property_data.py
-# Copyright (c) 2016-2017  K.Kosako
+# Copyright (c) 2016-2018  K.Kosako
 
 import sys
 import re
@@ -31,6 +31,7 @@ DIC  = { }
 KDIC = { }
 PropIndex = { }
 PROPERTY_NAME_MAX_LEN = 0
+PROPS = None
 
 def normalize_prop_name(name):
   name = re.sub(r'[ _]', '', name)
@@ -405,6 +406,12 @@ def entry_and_print_prop_and_index(name, index):
   nname = normalize_prop_name(name)
   print_prop_and_index(nname, index)
 
+def parse_and_merge_properties(path, klass):
+  dic, props = parse_properties(path, klass)
+  merge_dic(DIC, dic)
+  merge_props(PROPS, props)
+  return dic, props
+
 ### main ###
 argv = sys.argv
 argc = len(argv)
@@ -424,18 +431,11 @@ with open('UnicodeData.txt', 'r') as f:
 PROPS = DIC.keys()
 PROPS = list_sub(PROPS, POSIX_LIST)
 
-dic, props = parse_properties('DerivedCoreProperties.txt', 'Derived Property')
-merge_dic(DIC, dic)
-merge_props(PROPS, props)
-
-dic, props = parse_properties('Scripts.txt', 'Script')
-merge_dic(DIC, dic)
-merge_props(PROPS, props)
+dic, props = parse_and_merge_properties('DerivedCoreProperties.txt', 'Derived Property')
+dic, props = parse_and_merge_properties('Scripts.txt', 'Script')
 DIC['Unknown'] = inverse_ranges(add_ranges_in_dic(dic))
+dic, props = parse_and_merge_properties('PropList.txt', 'Binary Property')
 
-dic, props = parse_properties('PropList.txt', 'Binary Property')
-merge_dic(DIC, dic)
-merge_props(PROPS, props)
 PROPS.append('Unknown')
 KDIC['Unknown'] = 'Script'
 
