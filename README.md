@@ -24,6 +24,13 @@ Supported character encodings:
 * CP1251:  contributed by Byte
 
 
+New feature of version 6.9.0
+--------------------------
+
+* NEW: update Unicode version 11.0.0
+* NEW: add Emoji properties
+
+
 New feature of version 6.8.2
 --------------------------
 
