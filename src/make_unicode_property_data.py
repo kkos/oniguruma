@@ -85,6 +85,16 @@ def dic_find_by_value(dic, v):
 
   return None
 
+def make_reverse_dic(dic):
+  rev = {}
+  for key, val in dic.items():
+    d = rev.get(val, None)
+    if d is None:
+      rev[val] = [key]
+    else:
+      d.append(key)
+
+  return rev
 
 def normalize_ranges(in_ranges, sort=False):
   if sort:
@@ -558,6 +568,12 @@ if VERSION_INFO is not None:
 
 print "#define PROPERTY_NAME_MAX_SIZE  %d" % (PROPERTY_NAME_MAX_LEN + 10)
 print "#define CODE_RANGES_NUM         %d" % (index + 1)
+
+index_props = make_reverse_dic(PropIndex)
+print ''
+for i in range(index + 1):
+  for p in index_props[i]:
+    print "#define PROP_INDEX_%s %d" % (p.upper(), i)
 
 if OUTPUT_LIST_MODE:
   UPF.close()
