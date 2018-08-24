@@ -523,10 +523,12 @@ enum EGCB_TYPE {
   EGCB_Regional_Indicator = 6,
   EGCB_SpacingMark = 7,
   EGCB_ZWJ         = 8,
+#if 0
   EGCB_E_Base         = 9,
   EGCB_E_Base_GAZ     = 10,
   EGCB_E_Modifier     = 11,
   EGCB_Glue_After_Zwj = 12,
+#endif
   EGCB_L   = 13,
   EGCB_LV  = 14,
   EGCB_LVT = 15,
