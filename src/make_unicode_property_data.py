@@ -19,7 +19,7 @@ GRAPHEME_CLUSTER_BREAK_NAME_PREFIX = 'Grapheme_Cluster_Break_'
 
 UD_FIRST_REG = re.compile("<.+,\s*First>")
 UD_LAST_REG  = re.compile("<.+,\s*Last>")
-PR_TOTAL_REG = re.compile("#\s*Total\s+code\s+points:")
+PR_TOTAL_REG = re.compile("#\s*Total\s+(?:code\s+points|elements):")
 PR_LINE_REG  = re.compile("([0-9A-Fa-f]+)(?:..([0-9A-Fa-f]+))?\s*;\s*(\w+)")
 PA_LINE_REG  = re.compile("(\w+)\s*;\s*(\w+)")
 PVA_LINE_REG = re.compile("(sc|gc)\s*;\s*(\w+)\s*;\s*(\w+)(?:\s*;\s*(\w+))?")
@@ -434,7 +434,8 @@ PROPS = list_sub(PROPS, POSIX_LIST)
 dic, props = parse_and_merge_properties('DerivedCoreProperties.txt', 'Derived Property')
 dic, props = parse_and_merge_properties('Scripts.txt', 'Script')
 DIC['Unknown'] = inverse_ranges(add_ranges_in_dic(dic))
-dic, props = parse_and_merge_properties('PropList.txt', 'Binary Property')
+dic, props = parse_and_merge_properties('PropList.txt',   'Binary Property')
+dic, props = parse_and_merge_properties('emoji-data.txt', 'Emoji Property')
 
 PROPS.append('Unknown')
 KDIC['Unknown'] = 'Script'
