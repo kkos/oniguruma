@@ -1043,6 +1043,11 @@ extern int main(int argc, char* argv[])
   x2(".\\Y.", "\xE0\xA4\xB7\xE0\xA4\xBF", 0, 6);
   n(".\\y.", "\xE0\xA4\xB7\xE0\xA4\xBF");
 
+  // {Extended_Pictographic} Extend* ZWJ x {Extended_Pictographic}
+  x2("..\\Y.", "\xE3\x80\xB0\xE2\x80\x8D\xE2\xAD\x95", 0, 9);
+  x2("...\\Y.", "\xE3\x80\xB0\xCC\x82\xE2\x80\x8D\xE2\xAD\x95", 0, 11);
+  n("...\\Y.", "\xE3\x80\xB0\xCD\xB0\xE2\x80\x8D\xE2\xAD\x95");
+
   // CR + LF
   n("^\\X\\X$", "\x0d\x0a");
   x2("^\\X$", "\x0d\x0a", 0, 2);
