@@ -937,6 +937,10 @@ extern int main(int argc, char* argv[])
 
   x2("\\p{Hiragana}", "ぴ", 0, 3);
   n("\\P{Hiragana}", "ぴ");
+  x2("\\p{Emoji}", "\xE2\xAD\x90", 0, 3);
+  x2("\\p{^Emoji}", "\xEF\xBC\x93", 0, 3);
+  x2("\\p{Extended_Pictographic}", "\xE2\x9A\xA1", 0, 3);
+  n("\\p{Extended_Pictographic}", "\xE3\x81\x82");
 
   x2("\\p{Word}", "こ", 0, 3);
   n("\\p{^Word}", "こ");
