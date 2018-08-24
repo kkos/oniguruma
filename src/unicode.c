@@ -497,6 +497,12 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
   return n;
 }
 
+#ifdef USE_UNICODE_PROPERTIES
+#include "unicode_property_data.c"
+#else
+#include "unicode_property_data_posix.c"
+#endif
+
 
 #ifdef USE_UNICODE_EXTENDED_GRAPHEME_CLUSTER
 
@@ -699,12 +705,6 @@ onigenc_egcb_is_break_position(OnigEncoding enc, UChar* p, UChar* prev,
 #endif /* USE_UNICODE_EXTENDED_GRAPHEME_CLUSTER */
 }
 
-
-#ifdef USE_UNICODE_PROPERTIES
-#include "unicode_property_data.c"
-#else
-#include "unicode_property_data_posix.c"
-#endif
 
 #define USER_DEFINED_PROPERTY_MAX_NUM  20
 
