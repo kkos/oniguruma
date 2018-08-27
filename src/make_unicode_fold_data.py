@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # make_unicode_fold_data.py
-# Copyright (c) 2016-2017  K.Kosako
+# Copyright (c) 2016-2018  K.Kosako
 
 import sys
 import re
@@ -234,7 +234,7 @@ def output_fold_source(f, out_comment):
     print >> f, '#include "regenc.h"'
     print >> f, ''
     if VERSION_INFO is not None:
-        print "#define CASEFOLD_VERSION  %s" % re.sub(r'[\.-]', '_', VERSION_INFO)
+        print "#define UNICODE_CASEFOLD_VERSION  %s" % re.sub(r'[\.-]', '_', VERSION_INFO)
         print ''
     #output_macros(f, DataName)
     print >> f, ''
