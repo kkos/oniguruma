@@ -27,7 +27,7 @@ Supported character encodings:
 New feature of version 6.9.0
 --------------------------
 
-* NEW: update Unicode version 11.0.0
+* Update Unicode version 11.0.0
 * NEW: add Emoji properties
 
 
