@@ -3193,27 +3193,31 @@ node_new_str_raw_char(UChar c)
 }
 
 static Node*
-str_node_split_last_char(StrNode* sn, OnigEncoding enc)
+str_node_split_last_char(Node* node, OnigEncoding enc)
 {
   const UChar *p;
-  Node* n = NULL_NODE;
+  Node* rn;
+  StrNode* sn;
 
+  sn = STR_(node);
+  rn = NULL_NODE;
   if (sn->end > sn->s) {
     p = onigenc_get_prev_char_head(enc, sn->s, sn->end);
     if (p && p > sn->s) { /* can be split. */
-      n = node_new_str(p, sn->end);
+      rn = node_new_str(p, sn->end);
       if ((sn->flag & STRING_RAW) != 0)
-        NODE_STRING_SET_RAW(n);
+        NODE_STRING_SET_RAW(rn);
 
       sn->end = (UChar* )p;
     }
   }
-  return n;
+  return rn;
 }
 
 static int
-str_node_can_be_split(StrNode* sn, OnigEncoding enc)
+str_node_can_be_split(Node* node, OnigEncoding enc)
 {
+  StrNode* sn = STR_(node);
   if (sn->end > sn->s) {
     return ((enclen(enc, sn->s) < sn->end - sn->s)  ?  1 : 0);
   }
@@ -7515,9 +7519,8 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
   switch (NODE_TYPE(target)) {
   case NODE_STRING:
     if (! group) {
-      StrNode* sn = STR_(target);
-      if (str_node_can_be_split(sn, env->enc)) {
-        Node* n = str_node_split_last_char(sn, env->enc);
+      if (str_node_can_be_split(target, env->enc)) {
+        Node* n = str_node_split_last_char(target, env->enc);
         if (IS_NOT_NULL(n)) {
           NODE_BODY(qnode) = n;
           return 2;
