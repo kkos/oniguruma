@@ -562,9 +562,10 @@ if not(POSIX_ONLY):
 
 print '%%'
 print ''
-if VERSION_INFO is not None:
-  print "#define PROPERTY_VERSION  %s" % re.sub(r'[\.-]', '_', VERSION_INFO)
-  print ''
+if not(POSIX_ONLY):
+  if VERSION_INFO is not None:
+    print "#define UNICODE_PROPERTY_VERSION  %s" % re.sub(r'[\.-]', '_', VERSION_INFO)
+    print ''
 
 print "#define PROPERTY_NAME_MAX_SIZE  %d" % (PROPERTY_NAME_MAX_LEN + 10)
 print "#define CODE_RANGES_NUM         %d" % (index + 1)
