@@ -2,7 +2,7 @@
   unicode.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2017  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2018  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -524,6 +524,7 @@ enum EGCB_TYPE {
   EGCB_SpacingMark = 7,
   EGCB_ZWJ         = 8,
 #if 0
+  /* obsoleted */
   EGCB_E_Base         = 9,
   EGCB_E_Base_GAZ     = 10,
   EGCB_E_Modifier     = 11,
