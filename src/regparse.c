@@ -3205,7 +3205,7 @@ str_node_split_last_char(Node* node, OnigEncoding enc)
     p = onigenc_get_prev_char_head(enc, sn->s, sn->end);
     if (p && p > sn->s) { /* can be split. */
       rn = node_new_str(p, sn->end);
-      if ((sn->flag & STRING_RAW) != 0)
+      if (NODE_STRING_IS_RAW(node))
         NODE_STRING_SET_RAW(rn);
 
       sn->end = (UChar* )p;
