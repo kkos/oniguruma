@@ -115,20 +115,22 @@ enum EnclosureType {
 #define NODE_STRING_BUF_SIZE       24  /* sizeof(CClassNode) - sizeof(int)*4 */
 #define NODE_BACKREFS_SIZE       6
 
-#define STRING_RAW                (1<<0) /* by backslashed number */
-#define STRING_AMBIG              (1<<1)
-#define STRING_DONT_GET_OPT_INFO  (1<<2)
+#define NODE_STRING_RAW                (1<<0) /* by backslashed number */
+#define NODE_STRING_AMBIG              (1<<1)
+#define NODE_STRING_DONT_GET_OPT_INFO  (1<<2)
 
 #define NODE_STRING_LEN(node)            (int )((node)->u.str.end - (node)->u.str.s)
-#define NODE_STRING_SET_RAW(node)          (node)->u.str.flag |= STRING_RAW
-#define NODE_STRING_CLEAR_RAW(node)        (node)->u.str.flag &= ~STRING_RAW
-#define NODE_STRING_SET_AMBIG(node)        (node)->u.str.flag |= STRING_AMBIG
+#define NODE_STRING_SET_RAW(node)        (node)->u.str.flag |= NODE_STRING_RAW
+#define NODE_STRING_CLEAR_RAW(node)      (node)->u.str.flag &= ~NODE_STRING_RAW
+#define NODE_STRING_SET_AMBIG(node)      (node)->u.str.flag |= NODE_STRING_AMBIG
 #define NODE_STRING_SET_DONT_GET_OPT_INFO(node) \
-  (node)->u.str.flag |= STRING_DONT_GET_OPT_INFO
-#define NODE_STRING_IS_RAW(node)          (((node)->u.str.flag & STRING_RAW)   != 0)
-#define NODE_STRING_IS_AMBIG(node)        (((node)->u.str.flag & STRING_AMBIG) != 0)
+  (node)->u.str.flag |= NODE_STRING_DONT_GET_OPT_INFO
+#define NODE_STRING_IS_RAW(node) \
+  (((node)->u.str.flag & NODE_STRING_RAW) != 0)
+#define NODE_STRING_IS_AMBIG(node) \
+  (((node)->u.str.flag & NODE_STRING_AMBIG) != 0)
 #define NODE_STRING_IS_DONT_GET_OPT_INFO(node) \
-  (((node)->u.str.flag & STRING_DONT_GET_OPT_INFO) != 0)
+  (((node)->u.str.flag & NODE_STRING_DONT_GET_OPT_INFO) != 0)
 
 #define BACKREFS_P(br) \
   (IS_NOT_NULL((br)->back_dynamic) ? (br)->back_dynamic : (br)->back_static)
