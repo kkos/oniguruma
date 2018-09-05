@@ -4,7 +4,6 @@
 #define HAVE_STDLIB_H 1
 #define HAVE_STRING_H 1
 #define HAVE_MEMORY_H 1
-#define HAVE_FLOAT_H 1
 #define HAVE_OFF_T 1
 #define SIZEOF_INT 4
 #define SIZEOF_SHORT 2
