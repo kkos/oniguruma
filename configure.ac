@@ -61,7 +61,6 @@ AC_HEADER_TIME
 
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
-AC_FUNC_MEMCMP
 
 AC_CACHE_CHECK(for prototypes, _cv_have_prototypes,
   [AC_COMPILE_IFELSE(
