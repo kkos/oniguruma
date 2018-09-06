@@ -56,7 +56,6 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_SIZEOF(int, 4)
 AC_CHECK_SIZEOF(short, 2)
 AC_CHECK_SIZEOF(long, 4)
-AC_C_CONST
 
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
