@@ -50,7 +50,7 @@ dnl Checks for libraries.
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(string.h strings.h sys/time.h unistd.h sys/times.h)
+AC_CHECK_HEADERS(strings.h sys/time.h unistd.h sys/times.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_SIZEOF(int, 4)
