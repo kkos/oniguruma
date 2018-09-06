@@ -38,15 +38,10 @@
 #define GETGROUPS_T int
 #define HAVE_ALLOCA 1
 #define HAVE_DUP2 1
-#define HAVE_MEMCMP 1
-#define HAVE_MEMMOVE 1
 #define HAVE_MKDIR 1
 #define HAVE_STRCASECMP 1
 #define HAVE_STRNCASECMP 1
-#define HAVE_STRERROR 1
 #define HAVE_STRFTIME 1
-#define HAVE_STRCHR 1
-#define HAVE_STRSTR 1
 #define HAVE_STRTOD 1
 #define HAVE_STRTOL 1
 #define HAVE_STRTOUL 1
