@@ -10,11 +10,7 @@
 #include "oniguruma.h"
 #endif
 
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# include <strings.h>
-#endif
+#include <string.h>
 
 #define SLEN(s)  strlen(s)
 

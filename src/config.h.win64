@@ -1,7 +1,6 @@
 #define STDC_HEADERS 1
 #define HAVE_SYS_TYPES_H 1
 #define HAVE_SYS_STAT_H 1
-#define HAVE_STRING_H 1
 #define HAVE_MEMORY_H 1
 #define HAVE_OFF_T 1
 #define SIZEOF_INT 4
@@ -25,7 +24,6 @@
 #endif
 #define HAVE_DECL_SYS_NERR 1
 #define STDC_HEADERS 1
-#define HAVE_STRING_H 1
 #define HAVE_FCNTL_H 1
 #define HAVE_SYS_UTIME_H 1
 #define HAVE_MEMORY_H 1
