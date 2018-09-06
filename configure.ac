@@ -86,5 +86,6 @@ if test "$_cv_stdarg" = yes; then
   AC_DEFINE(HAVE_STDARG_PROTOTYPES,1,[Define if compiler supports stdarg prototypes])
 fi
 
-
-AC_OUTPUT([Makefile src/Makefile test/Makefile sample/Makefile onig-config], [chmod +x onig-config])
+AC_CONFIG_FILES([Makefile src/Makefile test/Makefile sample/Makefile onig-config])
+AC_CONFIG_COMMANDS([default],[chmod +x onig-config],[])
+AC_OUTPUT
