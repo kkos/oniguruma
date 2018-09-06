@@ -18,5 +18,5 @@ $(ONIG_LIB):
 
 
 
-clean: 
+clean:
 	rm -f $(TARGETS)

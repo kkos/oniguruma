@@ -10,7 +10,7 @@ AC_CONFIG_HEADERS([src/config.h])
 dnl default value for STATISTICS
 STATISTICS=""
 AC_ARG_WITH(statistics,
-	[  --with-statistics       take matching time statistical data], 
+	[  --with-statistics       take matching time statistical data],
 	[ STATISTICS=-DONIG_DEBUG_STATISTICS ])
 AC_SUBST(STATISTICS)
 

@@ -782,13 +782,13 @@ static int
 onig_region_resize_clear(OnigRegion* region, int n)
 {
   int r;
-  
+
   r = onig_region_resize(region, n);
   if (r != 0) return r;
   onig_region_clear(region);
   return 0;
 }
-    
+
 extern int
 onig_region_set(OnigRegion* region, int at, int beg, int end)
 {
@@ -798,7 +798,7 @@ onig_region_set(OnigRegion* region, int at, int beg, int end)
     int r = onig_region_resize(region, at + 1);
     if (r < 0) return r;
   }
-  
+
   region->beg[at] = beg;
   region->end[at] = end;
   return 0;
