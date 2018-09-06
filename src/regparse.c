@@ -71,7 +71,7 @@ OnigSyntaxType OnigSyntaxOniguruma = {
       ONIG_SYN_OP2_CCLASS_SET_OP | ONIG_SYN_OP2_ESC_CAPITAL_C_BAR_CONTROL |
       ONIG_SYN_OP2_ESC_CAPITAL_M_BAR_META | ONIG_SYN_OP2_ESC_V_VTAB |
       ONIG_SYN_OP2_ESC_H_XDIGIT | ONIG_SYN_OP2_ESC_U_HEX4 )
-  , ( SYN_GNU_REGEX_BV | 
+  , ( SYN_GNU_REGEX_BV |
       ONIG_SYN_ALLOW_INTERVAL_LOW_ABBREV |
       ONIG_SYN_DIFFERENT_LEN_ALT_LOOK_BEHIND |
       ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP |
@@ -113,7 +113,7 @@ OnigSyntaxType OnigSyntaxRuby = {
       ONIG_SYN_OP2_CCLASS_SET_OP | ONIG_SYN_OP2_ESC_CAPITAL_C_BAR_CONTROL |
       ONIG_SYN_OP2_ESC_CAPITAL_M_BAR_META | ONIG_SYN_OP2_ESC_V_VTAB |
       ONIG_SYN_OP2_ESC_H_XDIGIT | ONIG_SYN_OP2_ESC_U_HEX4 )
-  , ( SYN_GNU_REGEX_BV | 
+  , ( SYN_GNU_REGEX_BV |
       ONIG_SYN_ALLOW_INTERVAL_LOW_ABBREV |
       ONIG_SYN_DIFFERENT_LEN_ALT_LOOK_BEHIND |
       ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP |
@@ -3054,7 +3054,7 @@ make_absent_tree(Node** node, Node* absent, Node* expr, int is_range_cutter,
   else {
     r = make_absent_tail(&ns[5], &ns[6], id1, env);
     if (r != 0) goto err;
-  
+
     x = make_list(7, ns);
     if (IS_NULL(x)) goto err0;
   }
@@ -3066,7 +3066,7 @@ make_absent_tree(Node** node, Node* absent, Node* expr, int is_range_cutter,
   r = ONIGERR_MEMORY;
  err:
   for (i = 0; i < 7; i++) onig_node_free(ns[i]);
-  return r;  
+  return r;
 }
 
 extern int
@@ -4552,7 +4552,7 @@ find_str_position(OnigCodePoint s[], int n, UChar* from, UChar* to,
   OnigCodePoint x;
   UChar *q;
   UChar *p = from;
-  
+
   while (p < to) {
     x = ONIGENC_MBC_TO_CODE(enc, p, to);
     q = p + enclen(enc, p);
@@ -5214,7 +5214,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
         goto skip_backref;
       }
 
-      if (IS_SYNTAX_OP(syn, ONIG_SYN_OP_DECIMAL_BACKREF) && 
+      if (IS_SYNTAX_OP(syn, ONIG_SYN_OP_DECIMAL_BACKREF) &&
           (num <= env->num_mem || num <= 9)) { /* This spec. from GNU regex */
         if (IS_SYNTAX_BV(syn, ONIG_SYN_STRICT_CHECK_BACKREF)) {
           if (num > env->num_mem || IS_NULL(SCANENV_MEMENV(env)[num].node))

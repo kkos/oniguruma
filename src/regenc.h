@@ -252,7 +252,7 @@ extern const unsigned short OnigEncAsciiCtypeTable[];
 #define ONIGENC_IS_ASCII_CODE_CASE_AMBIG(code) \
  (ONIGENC_IS_ASCII_CODE_CTYPE(code, ONIGENC_CTYPE_UPPER) ||\
   ONIGENC_IS_ASCII_CODE_CTYPE(code, ONIGENC_CTYPE_LOWER))
-   
+
 #define ONIGENC_IS_UNICODE_ENCODING(enc) \
   (((enc)->flag & ENC_FLAG_UNICODE) != 0)
 
