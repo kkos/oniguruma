@@ -1,4 +1,3 @@
-#define STDC_HEADERS 1
 #define HAVE_SYS_TYPES_H 1
 #define HAVE_SYS_STAT_H 1
 #define HAVE_MEMORY_H 1
@@ -27,7 +26,6 @@
 #endif
 #endif
 #define HAVE_DECL_SYS_NERR 1
-#define STDC_HEADERS 1
 #define HAVE_FCNTL_H 1
 #define HAVE_SYS_UTIME_H 1
 #define HAVE_MEMORY_H 1

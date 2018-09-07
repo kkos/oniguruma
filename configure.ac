@@ -49,7 +49,6 @@ AC_PROG_MAKE_SET
 dnl Checks for libraries.
 
 dnl Checks for header files.
-AC_HEADER_STDC
 AC_CHECK_HEADERS(strings.h sys/time.h unistd.h sys/times.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
