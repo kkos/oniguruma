@@ -2,7 +2,7 @@
 
 product_name = oniguruma
 
-CPPFLAGS = 
+CPPFLAGS =
 CFLAGS = -O2 -nologo /W3
 LDFLAGS =
 LOADLIBES =
@@ -17,7 +17,7 @@ CP      = copy
 CC = cl
 DEFS = -DHAVE_CONFIG_H
 
-subdirs = 
+subdirs =
 
 libbase   = onig
 libname   = $(libbase)_s.lib
@@ -25,7 +25,7 @@ dllname   = $(libbase).dll
 dlllib    = $(libbase).lib
 
 !IF defined(ENABLE_POSIX_API) && "$(ENABLE_POSIX_API)" == "NO"
-posixobjs = 
+posixobjs =
 !ELSE
 posixobjs = $(BUILD_DIR)/regposix.obj $(BUILD_DIR)/regposerr.obj
 !ENDIF
@@ -91,7 +91,7 @@ setup:
 	$(CP) ..\win32\testc.c  testc.c
 
 
-all: $(libname) $(dllname) 
+all: $(libname) $(dllname)
 
 $(libname): $(libobjs) $(encobjs)
 	$(ARLIB) $(ARLIB_FLAGS) -out:$@ $(libobjs) $(encobjs)
