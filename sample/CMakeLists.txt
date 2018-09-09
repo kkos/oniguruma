@@ -34,4 +34,3 @@ target_link_libraries(sql onig)
 
 add_executable(syntax syntax.c)
 target_link_libraries(syntax onig)
-
