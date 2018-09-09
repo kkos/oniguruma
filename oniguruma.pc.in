@@ -11,4 +11,3 @@ Version: @PACKAGE_VERSION@
 Requires:
 Libs: -L${libdir} -lonig
 Cflags: -I${includedir}
-
