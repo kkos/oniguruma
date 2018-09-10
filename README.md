@@ -296,4 +296,4 @@ Source Files
 |utf32_le.c         |UTF-32LE encoding                                       |
 |unicode.c          |common codes of Unicode encoding                        |
 |unicode_fold_data.c|Unicode folding data                                    |
-|windows/testc.c    |Test program for Windowns (VC++)                        |
+|windows/testc.c    |Test program for Windows (VC++)                        |
