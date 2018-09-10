@@ -23,6 +23,13 @@ ${GPERF} ${GPERF_OPT} -F,-1 -N onigenc_unicode_fold2_key unicode_fold2_key.gperf
 ${GPERF} ${GPERF_OPT} -F,-1 -N onigenc_unicode_fold3_key unicode_fold3_key.gperf > ${TMP3}
 ./gperf_fold_key_conv.py 3 < ${TMP3} > unicode_fold3_key.c
 
+# remove redundant EOLs before EOF
+perl -i -pe 'BEGIN{undef $/}s/\n\n*\z/\n/;' unicode_fold_data.c
+perl -i -pe 'BEGIN{undef $/}s/\n\n*\z/\n/;' unicode_fold1_key.c
+perl -i -pe 'BEGIN{undef $/}s/\n\n*\z/\n/;' unicode_fold2_key.c
+perl -i -pe 'BEGIN{undef $/}s/\n\n*\z/\n/;' unicode_fold3_key.c
+perl -i -pe 'BEGIN{undef $/}s/\n\n*\z/\n/;' unicode_unfold_key.c
+
 rm -f ${TMP0} ${TMP1} ${TMP2} ${TMP3}
 rm -f unicode_unfold_key.gperf unicode_fold1_key.gperf unicode_fold2_key.gperf unicode_fold3_key.gperf
 
