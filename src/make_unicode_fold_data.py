@@ -5,7 +5,6 @@
 
 import sys
 import re
-import codecs
 
 SOURCE_FILE = 'CaseFolding.txt'
 GPERF_UNFOLD_KEY_FILE = 'unicode_unfold_key.gperf'
