@@ -54,11 +54,13 @@ def parse_line(s, key_len):
 def parse_file(f, key_len):
     print "/* This file was converted by gperf_fold_key_conv.py\n      from gperf output file. */"
 
-    line = f.readline()
-    while line:
+    while True:
+        line = f.readline()
+        if not line:
+            break
+
         s = parse_line(line, key_len)
         print s
-        line = f.readline()
 
 
 # main
