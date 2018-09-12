@@ -2520,10 +2520,8 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
       if (sn->end <= sn->s)
         break;
 
-      if (exact != 0 &&
-          !NODE_STRING_IS_RAW(node) && IS_IGNORECASE(reg->options)) {
-      }
-      else {
+      if (exact == 0 ||
+          ! IS_IGNORECASE(reg->options) || NODE_STRING_IS_RAW(node)) {
         n = node;
       }
     }
