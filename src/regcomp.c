@@ -138,6 +138,17 @@ int_multiply_cmp(int x, int y, int v)
     return 1;
 }
 
+extern int
+onig_positive_int_multiply(int x, int y)
+{
+  if (x == 0 || y == 0) return 0;
+
+  if (x < INT_MAX / y)
+    return x * y;
+  else
+    return -1;
+}
+
 
 #ifndef PLATFORM_UNALIGNED_WORD_ACCESS
 static unsigned char PadBuf[WORD_ALIGNMENT_SIZE];

@@ -198,17 +198,6 @@ onig_set_parse_depth_limit(unsigned int depth)
   return 0;
 }
 
-static int
-positive_int_multiply(int x, int y)
-{
-  if (x == 0 || y == 0) return 0;
-
-  if (x < INT_MAX / y)
-    return x * y;
-  else
-    return -1;
-}
-
 static void
 bbuf_free(BBuf* bbuf)
 {
@@ -3877,7 +3866,7 @@ onig_reduce_nested_quantifier(Node* pnode, Node* cnode)
   if (pnum < 0 || cnum < 0) {
     if ((p->lower == p->upper) && ! IS_REPEAT_INFINITE(p->upper)) {
       if ((c->lower == c->upper) && ! IS_REPEAT_INFINITE(c->upper)) {
-        int n = positive_int_multiply(p->lower, c->lower);
+        int n = onig_positive_int_multiply(p->lower, c->lower);
         if (n >= 0) {
           p->lower = p->upper = n;
           NODE_BODY(pnode) = NODE_BODY(cnode);
