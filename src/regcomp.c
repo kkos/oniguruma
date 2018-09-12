@@ -981,8 +981,9 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
     if (r != 0) return r;
 
     for (i = 0; i < n; i++) {
-      r = add_opcode_rel_addr(reg, OP_PUSH,
-                              (n - i) * tlen + (n - i - 1) * SIZE_OP_PUSH);
+      int v = onig_positive_int_multiply(n - i, tlen);
+      if (v < 0) return ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE;
+      r = add_opcode_rel_addr(reg, OP_PUSH, v + (n - i - 1) * SIZE_OP_PUSH);
       if (r != 0) return r;
       r = compile_tree(NODE_QUANT_BODY(qn), reg, env);
       if (r != 0) return r;
@@ -1082,12 +1083,16 @@ compile_length_enclosure_node(EnclosureNode* node, regex_t* reg)
 
   case ENCLOSURE_STOP_BACKTRACK:
     if (NODE_IS_STOP_BT_SIMPLE_REPEAT(node)) {
-      QuantNode* qn = QUANT_(NODE_ENCLOSURE_BODY(node));
+      int v;
+      QuantNode* qn;
+
+      qn = QUANT_(NODE_ENCLOSURE_BODY(node));
       tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
       if (tlen < 0) return tlen;
 
-      len = tlen * qn->lower
-        + SIZE_OP_PUSH + tlen + SIZE_OP_POP_OUT + SIZE_OP_JUMP;
+      v = onig_positive_int_multiply(qn->lower, tlen);
+      if (v < 0) return ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE;
+      len = v + SIZE_OP_PUSH + tlen + SIZE_OP_POP_OUT + SIZE_OP_JUMP;
     }
     else {
       len = SIZE_OP_ATOMIC_START + tlen + SIZE_OP_ATOMIC_END;
