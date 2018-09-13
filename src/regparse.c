@@ -1761,7 +1761,7 @@ onig_callout_tag_is_exist_at_callout_num(regex_t* reg, int callout_num)
   if (callout_num > ext->callout_num) return 0;
 
   return (ext->callout_list[callout_num].flag &
-          CALLOUT_TAG_LIST_FLAG_TAG_EXIST) != 0  ? 1 : 0;
+          CALLOUT_TAG_LIST_FLAG_TAG_EXIST) != 0;
 }
 
 static int
@@ -4690,12 +4690,12 @@ fetch_token_in_cc(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
           IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CHAR_PROPERTY)) {
         PINC;
         tok->type = TK_CHAR_PROPERTY;
-        tok->u.prop.not = (c == 'P' ? 1 : 0);
+        tok->u.prop.not = c == 'P';
 
         if (!PEND && IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CIRCUMFLEX_NOT)) {
           PFETCH(c2);
           if (c2 == '^') {
-            tok->u.prop.not = (tok->u.prop.not == 0 ? 1 : 0);
+            tok->u.prop.not = tok->u.prop.not == 0;
           }
           else
             PUNFETCH;
@@ -5371,13 +5371,13 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
           IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CHAR_PROPERTY)) {
         PINC;
         tok->type = TK_CHAR_PROPERTY;
-        tok->u.prop.not = (c == 'P' ? 1 : 0);
+        tok->u.prop.not = c == 'P';
 
         if (!PEND &&
             IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CIRCUMFLEX_NOT)) {
           PFETCH(c);
           if (c == '^') {
-            tok->u.prop.not = (tok->u.prop.not == 0 ? 1 : 0);
+            tok->u.prop.not = tok->u.prop.not == 0;
           }
           else
             PUNFETCH;
@@ -8016,7 +8016,7 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
         return ONIGERR_TARGET_OF_REPEAT_OPERATOR_INVALID;
 
       qn = node_new_quantifier(tok->u.repeat.lower, tok->u.repeat.upper,
-                               (r == TK_INTERVAL ? 1 : 0));
+                               r == TK_INTERVAL);
       CHECK_NULL_RETURN_MEMERR(qn);
       QUANT_(qn)->greedy = tok->u.repeat.greedy;
       r = set_quantifier(qn, *targetp, group, env);
