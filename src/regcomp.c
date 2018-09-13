@@ -2466,7 +2466,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
 
           code = ONIGENC_MBC_TO_CODE(reg->enc, xs->s,
                                      xs->s + ONIGENC_MBC_MAXLEN(reg->enc));
-          return (onig_is_code_in_cc(reg->enc, code, cc) != 0 ? 0 : 1);
+          return onig_is_code_in_cc(reg->enc, code, cc) == 0;
         }
         break;
 
@@ -4698,7 +4698,7 @@ comp_distance_value(MinMax* d1, MinMax* d2, int v1, int v2)
 static int
 is_equal_mml(MinMax* a, MinMax* b)
 {
-  return (a->min == b->min && a->max == b->max) ? 1 : 0;
+  return a->min == b->min && a->max == b->max;
 }
 
 static void
@@ -4820,7 +4820,7 @@ alt_merge_opt_anc_info(OptAnc* to, OptAnc* add)
 static int
 is_full_opt_exact(OptExact* e)
 {
-  return (e->len >= OPT_EXACT_MAXLEN ? 1 : 0);
+  return e->len >= OPT_EXACT_MAXLEN;
 }
 
 static void
@@ -6323,11 +6323,11 @@ onig_is_code_in_cc_len(int elen, OnigCodePoint code, /* CClassNode* */ void* cc_
       found = 0;
     }
     else {
-      found = (onig_is_in_code_range(cc->mbuf->p, code) != 0 ? 1 : 0);
+      found = onig_is_in_code_range(cc->mbuf->p, code) != 0;
     }
   }
   else {
-    found = (BITSET_AT(cc->bs, code) == 0 ? 0 : 1);
+    found = BITSET_AT(cc->bs, code) != 0;
   }
 
   if (IS_NCCLASS_NOT(cc))

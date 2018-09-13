@@ -247,7 +247,7 @@ static int to_ascii(OnigEncoding enc, UChar *s, UChar *end,
       if (len >= buf_size) break;
     }
 
-    *is_over = ((p < end) ? 1 : 0);
+    *is_over = p < end;
   }
   else {
     len = MIN((int )(end - s), buf_size);

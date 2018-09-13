@@ -113,10 +113,7 @@ static int
 code_to_mbclen(OnigCodePoint code)
 {
   if (code < 256) {
-    if (EncLen_SJIS[(int )code] == 1)
-      return 1;
-    else
-      return 0;
+    return EncLen_SJIS[(int )code] == 1;
   }
   else if (code <= 0xffff) {
     return 2;
