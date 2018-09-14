@@ -6,8 +6,6 @@
 import sys
 import re
 
-INCLUDE_GRAPHEME_CLUSTER_DATA = False
-
 POSIX_LIST = [
     'NEWLINE', 'Alpha', 'Blank', 'Cntrl', 'Digit', 'Graph', 'Lower',
     'Print', 'Punct', 'Space', 'Upper', 'XDigit', 'Word', 'Alnum', 'ASCII'
@@ -427,9 +425,17 @@ argv = sys.argv
 argc = len(argv)
 
 POSIX_ONLY = False
-if argc >= 2:
-  if argv[1] == '-posix':
+INCLUDE_GRAPHEME_CLUSTER_DATA = False
+
+for i in range(1, argc):
+  arg = argv[i]
+  if arg == '-posix':
     POSIX_ONLY = True
+  elif arg == '-gc':
+    INCLUDE_GRAPHEME_CLUSTER_DATA = True
+  else:
+    print >> sys.stderr, "Invalid argument: %s" % arg
+
 
 OUTPUT_LIST_MODE = not(POSIX_ONLY)
 
