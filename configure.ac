@@ -59,32 +59,6 @@ AC_CHECK_SIZEOF(long, 4)
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
 
-AC_CACHE_CHECK(for prototypes, _cv_have_prototypes,
-  [AC_COMPILE_IFELSE(
-    [AC_LANG_PROGRAM([[int foo(int x) { return 0; }]],
-      [[return foo(10);]])],
-    [_cv_have_prototypes=yes],
-    [_cv_have_prototypes=no])])
-if test "$_cv_have_prototypes" = yes; then
-  AC_DEFINE(HAVE_PROTOTYPES,1,[Define if compilerr supports prototypes])
-fi
-
-AC_CACHE_CHECK(for variable length prototypes and stdarg.h, _cv_stdarg,
-  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include <stdarg.h>
-int foo(int x, ...) {
-	va_list va;
-	va_start(va, x);
-	va_arg(va, int);
-	va_arg(va, char *);
-	va_arg(va, double);
-	return 0;
-}
-]], [[return foo(10, "", 3.14);]])],[_cv_stdarg=yes],[_cv_stdarg=no])])
-if test "$_cv_stdarg" = yes; then
-  AC_DEFINE(HAVE_STDARG_PROTOTYPES,1,[Define if compiler supports stdarg prototypes])
-fi
-
 AC_CONFIG_FILES([Makefile src/Makefile test/Makefile sample/Makefile onig-config])
 AC_CONFIG_COMMANDS([default],[chmod +x onig-config],[])
 AC_OUTPUT

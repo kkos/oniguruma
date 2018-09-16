@@ -72,26 +72,6 @@
 
 #include "regenc.h"
 
-#ifdef __cplusplus
-# ifndef  HAVE_STDARG_PROTOTYPES
-#  define HAVE_STDARG_PROTOTYPES 1
-# endif
-#endif
-
-/* escape Mac OS X/Xcode 2.4/gcc 4.0.1 problem */
-#if defined(__APPLE__) && defined(__GNUC__) && __GNUC__ >= 4
-# ifndef  HAVE_STDARG_PROTOTYPES
-#  define HAVE_STDARG_PROTOTYPES 1
-# endif
-#endif
-
-#ifdef HAVE_STDARG_H
-# ifndef  HAVE_STDARG_PROTOTYPES
-#  define HAVE_STDARG_PROTOTYPES 1
-# endif
-#endif
-
-
 #define INIT_MATCH_STACK_SIZE                     160
 #define DEFAULT_MATCH_STACK_LIMIT_SIZE              0 /* unlimited */
 #define DEFAULT_RETRY_LIMIT_IN_MATCH         10000000
