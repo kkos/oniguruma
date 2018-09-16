@@ -49,7 +49,7 @@ AC_PROG_MAKE_SET
 dnl Checks for libraries.
 
 dnl Checks for header files.
-AC_CHECK_HEADERS(strings.h sys/time.h unistd.h sys/times.h)
+AC_CHECK_HEADERS(sys/time.h unistd.h sys/times.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_SIZEOF(int, 4)
