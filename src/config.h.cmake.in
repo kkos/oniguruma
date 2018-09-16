@@ -13,12 +13,6 @@
    */
 #cmakedefine HAVE_ALLOCA_H  ${HAVE_ALLOCA_H}
 
-/* Define if compilerr supports prototypes */
-#cmakedefine HAVE_PROTOTYPES  ${HAVE_PROTOTYPES}
-
-/* Define if compiler supports stdarg prototypes */
-#cmakedefine HAVE_STDARG_PROTOTYPES  ${HAVE_STDARG_PROTOTYPES}
-
 /* Define to 1 if you have the <stdint.h> header file. */
 #cmakedefine HAVE_STDINT_H  ${HAVE_STDINT_H}
 

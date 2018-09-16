@@ -33,8 +33,6 @@ include(TestBigEndian)
 
 check_function_exists(alloca HAVE_ALLOCA)
 check_include_files(alloca.h HAVE_ALLOCA_H)
-set(HAVE_PROTOTYPES 1)
-check_include_files(stdarg.h    HAVE_STDARG_PROTOTYPES)
 check_include_files(stdint.h    HAVE_STDINT_H)
 check_include_files(strings.h   HAVE_STRINGS_H)
 check_include_files(sys/times.h HAVE_SYS_TIMES_H)
