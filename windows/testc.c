@@ -12,11 +12,7 @@
 #include "oniguruma.h"
 #endif
 
-#ifdef _WIN32
-# include <string.h>
-#else
-# include <strings.h>
-#endif
+#include <string.h>
 
 #define SLEN(s)  strlen(s)
 
