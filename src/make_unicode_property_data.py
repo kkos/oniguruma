@@ -447,11 +447,11 @@ with open('UnicodeData.txt', 'r') as f:
 PROPS = DIC.keys()
 PROPS = list_sub(PROPS, POSIX_LIST)
 
-dic, props = parse_and_merge_properties('DerivedCoreProperties.txt', 'Derived Property')
+parse_and_merge_properties('DerivedCoreProperties.txt', 'Derived Property')
 dic, props = parse_and_merge_properties('Scripts.txt', 'Script')
 DIC['Unknown'] = inverse_ranges(add_ranges_in_dic(dic))
-dic, props = parse_and_merge_properties('PropList.txt',   'Binary Property')
-dic, props = parse_and_merge_properties('emoji-data.txt', 'Emoji Property')
+parse_and_merge_properties('PropList.txt',   'Binary Property')
+parse_and_merge_properties('emoji-data.txt', 'Emoji Property')
 
 PROPS.append('Unknown')
 KDIC['Unknown'] = 'Script'
