@@ -4134,35 +4134,18 @@ bm_search_notrev(regex_t* reg, const UChar* target, const UChar* target_end,
 
   s = text;
 
-  if (IS_NULL(reg->int_map)) {
-    while (s < end) {
-      p = se = s + tlen1;
-      t = tail;
-      while (*p == *t) {
-        if (t == target) return (UChar* )s;
-        p--; t--;
-      }
-      skip = reg->map[*se];
-      t = s;
-      do {
-        s += enclen(reg->enc, s);
-      } while ((s - t) < skip && s < end);
+  while (s < end) {
+    p = se = s + tlen1;
+    t = tail;
+    while (*p == *t) {
+      if (t == target) return (UChar* )s;
+      p--; t--;
     }
-  }
-  else {
-    while (s < end) {
-      p = se = s + tlen1;
-      t = tail;
-      while (*p == *t) {
-        if (t == target) return (UChar* )s;
-        p--; t--;
-      }
-      skip = reg->int_map[*se];
-      t = s;
-      do {
-        s += enclen(reg->enc, s);
-      } while ((s - t) < skip && s < end);
-    }
+    skip = reg->map[*se];
+    t = s;
+    do {
+      s += enclen(reg->enc, s);
+    } while ((s - t) < skip && s < end);
   }
 
   return (UChar* )NULL;
@@ -4181,28 +4164,17 @@ bm_search(regex_t* reg, const UChar* target, const UChar* target_end,
 
   tail = target_end - 1;
   s = text + (target_end - target) - 1;
-  if (IS_NULL(reg->int_map)) {
-    while (s < end) {
-      p = s;
-      t = tail;
-      while (*p == *t) {
-        if (t == target) return (UChar* )p;
-        p--; t--;
-      }
-      s += reg->map[*s];
+
+  while (s < end) {
+    p = s;
+    t = tail;
+    while (*p == *t) {
+      if (t == target) return (UChar* )p;
+      p--; t--;
     }
+    s += reg->map[*s];
   }
-  else { /* see int_map[] */
-    while (s < end) {
-      p = s;
-      t = tail;
-      while (*p == *t) {
-        if (t == target) return (UChar* )p;
-        p--; t--;
-      }
-      s += reg->int_map[*s];
-    }
-  }
+
   return (UChar* )NULL;
 }
 

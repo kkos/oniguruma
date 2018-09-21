@@ -4554,8 +4554,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
 /* set skip map for Boyer-Moore search */
 static int
-set_bm_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED,
-            UChar skip[], int** int_skip)
+set_bm_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED, UChar skip[])
 {
   int i, len;
 
@@ -4565,18 +4564,12 @@ set_bm_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED,
 
     for (i = 0; i < len - 1; i++)
       skip[s[i]] = len - 1 - i;
+
+    return 0;
   }
   else {
-    if (IS_NULL(*int_skip)) {
-      *int_skip = (int* )xmalloc(sizeof(int) * ONIG_CHAR_TABLE_SIZE);
-      if (IS_NULL(*int_skip)) return ONIGERR_MEMORY;
-    }
-    for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++) (*int_skip)[i] = len;
-
-    for (i = 0; i < len - 1; i++)
-      (*int_skip)[s[i]] = len - 1 - i;
+    return ONIGERR_PARSER_BUG;
   }
-  return 0;
 }
 
 #define OPT_EXACT_MAXLEN   24
@@ -5563,7 +5556,7 @@ set_optimize_exact(regex_t* reg, OptExact* e)
 
     if (e->len >= 3 || (e->len >= 2 && allow_reverse)) {
       r = set_bm_skip(reg->exact, reg->exact_end, reg->enc,
-                      reg->map, &(reg->int_map));
+                      reg->map);
       if (r != 0) return r;
 
       reg->optimize = (allow_reverse != 0
@@ -5909,7 +5902,6 @@ onig_free_body(regex_t* reg)
   if (IS_NOT_NULL(reg)) {
     if (IS_NOT_NULL(reg->p))                xfree(reg->p);
     if (IS_NOT_NULL(reg->exact))            xfree(reg->exact);
-    if (IS_NOT_NULL(reg->int_map))          xfree(reg->int_map);
     if (IS_NOT_NULL(reg->int_map_backward)) xfree(reg->int_map_backward);
     if (IS_NOT_NULL(reg->repeat_range))     xfree(reg->repeat_range);
     if (IS_NOT_NULL(REG_EXTP(reg))) {
@@ -6166,7 +6158,6 @@ onig_reg_init(regex_t* reg, OnigOptionType option, OnigCaseFoldType case_fold_fl
   (reg)->syntax           = syntax;
   (reg)->optimize         = 0;
   (reg)->exact            = (UChar* )NULL;
-  (reg)->int_map          = (int* )NULL;
   (reg)->int_map_backward = (int* )NULL;
   REG_EXTPL(reg) = NULL;
 
