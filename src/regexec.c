@@ -4158,12 +4158,12 @@ bm_search(regex_t* reg, const UChar* target, const UChar* target_end,
   const UChar *s, *t, *p, *end;
   const UChar *tail;
 
-  end = text_range + (target_end - target) - 1;
+  end = text_range + (target_end - target);
   if (end > text_end)
     end = text_end;
 
   tail = target_end - 1;
-  s = text + (target_end - target) - 1;
+  s = text + (tail - target);
 
   while (s < end) {
     p = s;
