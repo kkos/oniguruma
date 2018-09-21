@@ -4574,6 +4574,10 @@ set_bm_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED, UChar skip[])
 
 #define OPT_EXACT_MAXLEN   24
 
+#if OPT_EXACT_MAXLEN >= ONIG_CHAR_TABLE_SIZE
+#error Too big OPT_EXACT_MAXLEN
+#endif
+
 typedef struct {
   OnigLen min;  /* min byte length */
   OnigLen max;  /* max byte length */
