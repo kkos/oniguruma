@@ -4552,7 +4552,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
   return r;
 }
 
-/* set skip map for Boyer-Moore search */
+/* set skip map for Boyer-Moore-Horspool search */
 static int
 set_bm_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED, UChar skip[])
 {
@@ -5564,7 +5564,7 @@ set_optimize_exact(regex_t* reg, OptExact* e)
       if (r != 0) return r;
 
       reg->optimize = (allow_reverse != 0
-                       ? OPTIMIZE_EXACT_BM : OPTIMIZE_EXACT_BM_NO_REV);
+                       ? OPTIMIZE_EXACT_BMH : OPTIMIZE_EXACT_BMH_FORWARD);
     }
     else {
       reg->optimize = OPTIMIZE_EXACT;
@@ -5789,7 +5789,8 @@ print_anchor(FILE* f, int anchor)
 static void
 print_optimize_info(FILE* f, regex_t* reg)
 {
-  static const char* on[] = { "NONE", "EXACT", "EXACT_BM", "EXACT_BM_NOT_REV",
+  static const char* on[] = { "NONE", "EXACT",
+                              "EXACT_BMH", "EXACT_BMH_FORWARD",
                               "EXACT_IC", "MAP" };
 
   fprintf(f, "optimize: %s\n", on[reg->optimize]);
