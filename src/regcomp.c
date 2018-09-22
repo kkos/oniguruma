@@ -4552,6 +4552,24 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
   return r;
 }
 
+#ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
+static int
+set_bmh_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED, UChar skip[])
+{
+  int i, len;
+
+  len = (int )(end - s);
+  if (len + 1 >= ONIG_CHAR_TABLE_SIZE)
+    return ONIGERR_PARSER_BUG;
+
+  for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++) skip[i] = (UChar )(len + 1);
+
+  for (i = 0; i < len; i++)
+    skip[s[i]] = len - i;
+
+  return 0;
+}
+#else
 /* set skip map for Boyer-Moore-Horspool search */
 static int
 set_bmh_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED, UChar skip[])
@@ -4571,6 +4589,8 @@ set_bmh_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED, UChar skip[])
     return ONIGERR_PARSER_BUG;
   }
 }
+#endif /* USE_SUNDAY_QUICK_SEARCH_ALGORITHM */
+
 
 #define OPT_EXACT_MAXLEN   24
 

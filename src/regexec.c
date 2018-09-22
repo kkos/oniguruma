@@ -4112,6 +4112,79 @@ slow_search_backward_ic(OnigEncoding enc, int case_fold_flag,
   return (UChar* )NULL;
 }
 
+#ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
+
+static UChar*
+bmh_search_forward(regex_t* reg, const UChar* target, const UChar* target_end,
+                   const UChar* text, const UChar* text_end,
+                   const UChar* text_range)
+{
+  const UChar *s, *se, *t, *p, *end;
+  const UChar *tail;
+  int skip, tlen1;
+
+#ifdef ONIG_DEBUG_SEARCH
+  fprintf(stderr,
+          "bmh_search_forward: text: %p, text_end: %p, text_range: %p\n",
+          text, text_end, text_range);
+#endif
+
+  tail = target_end - 1;
+  tlen1 = (int )(tail - target);
+  end = text_range;
+  if (end + tlen1 > text_end)
+    end = text_end - tlen1;
+
+  s = text;
+
+  while (s < end) {
+    p = se = s + tlen1;
+    t = tail;
+    while (*p == *t) {
+      if (t == target) return (UChar* )s;
+      p--; t--;
+    }
+    if (se + 1 >= text_end) break;
+    skip = reg->map[*(se + 1)];
+    t = s;
+    do {
+      s += enclen(reg->enc, s);
+    } while ((s - t) < skip && s < end);
+  }
+
+  return (UChar* )NULL;
+}
+
+static UChar*
+bmh_search(regex_t* reg, const UChar* target, const UChar* target_end,
+           const UChar* text, const UChar* text_end, const UChar* text_range)
+{
+  const UChar *s, *t, *p, *end;
+  const UChar *tail;
+
+  end = text_range + (target_end - target);
+  if (end > text_end)
+    end = text_end;
+
+  tail = target_end - 1;
+  s = text + (tail - target);
+
+  while (s < end) {
+    p = s;
+    t = tail;
+    while (*p == *t) {
+      if (t == target) return (UChar* )p;
+      p--; t--;
+    }
+    if (s + 1 >= text_end) break;
+    s += reg->map[*(s + 1)];
+  }
+
+  return (UChar* )NULL;
+}
+
+#else
+
 static UChar*
 bmh_search_forward(regex_t* reg, const UChar* target, const UChar* target_end,
                    const UChar* text, const UChar* text_end,
@@ -4178,6 +4251,7 @@ bmh_search(regex_t* reg, const UChar* target, const UChar* target_end,
 
   return (UChar* )NULL;
 }
+#endif /* USE_SUNDAY_QUICK_SEARCH_ALGORITHM */
 
 static UChar*
 map_search(OnigEncoding enc, UChar map[],
