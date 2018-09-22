@@ -4393,8 +4393,6 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
 }
 
 
-#define BM_BACKWARD_SEARCH_LENGTH_THRESHOLD   100
-
 static int
 backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
                       UChar* s, const UChar* range, UChar* adjrange,
