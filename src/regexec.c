@@ -4368,11 +4368,11 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
                        reg->exact, reg->exact_end, p, end, range);
     break;
 
-  case OPTIMIZE_EXACT_BMH:
+  case OPTIMIZE_EXACT_FAST:
     p = bmh_search(reg, reg->exact, reg->exact_end, p, end, range);
     break;
 
-  case OPTIMIZE_EXACT_BMH_STEP_FORWARD:
+  case OPTIMIZE_EXACT_FAST_STEP_FORWARD:
     p = bmh_search_step_forward(reg, reg->exact, reg->exact_end,
                                 p, end, range);
     break;
@@ -4495,8 +4495,8 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
                                 range, adjrange, end, p);
     break;
 
-  case OPTIMIZE_EXACT_BMH:
-  case OPTIMIZE_EXACT_BMH_STEP_FORWARD:
+  case OPTIMIZE_EXACT_FAST:
+  case OPTIMIZE_EXACT_FAST_STEP_FORWARD:
     goto exact_method;
     break;
 

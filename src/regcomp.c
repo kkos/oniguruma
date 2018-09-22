@@ -5583,7 +5583,8 @@ set_optimize_exact(regex_t* reg, OptExact* e)
       if (r != 0) return r;
 
       reg->optimize = (allow_reverse != 0
-                       ? OPTIMIZE_EXACT_BMH : OPTIMIZE_EXACT_BMH_STEP_FORWARD);
+                       ? OPTIMIZE_EXACT_FAST
+                       : OPTIMIZE_EXACT_FAST_STEP_FORWARD);
     }
     else {
       reg->optimize = OPTIMIZE_EXACT;
@@ -5809,7 +5810,7 @@ static void
 print_optimize_info(FILE* f, regex_t* reg)
 {
   static const char* on[] = { "NONE", "EXACT",
-                              "EXACT_BMH", "EXACT_BMH_STEP_FORWARD",
+                              "EXACT_FAST", "EXACT_FAST_STEP_FORWARD",
                               "EXACT_IC", "MAP" };
 
   fprintf(f, "optimize: %s\n", on[reg->optimize]);

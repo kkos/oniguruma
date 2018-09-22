@@ -317,12 +317,12 @@ enum StackPopLevel {
 
 /* optimize flags */
 enum OptimizeType {
-  OPTIMIZE_NONE                   = 0,
-  OPTIMIZE_EXACT                  = 1,  /* Slow Search */
-  OPTIMIZE_EXACT_BMH              = 2,  /* Boyer-Moore-Horspool */
-  OPTIMIZE_EXACT_BMH_STEP_FORWARD = 3,  /* Boyer-Moore-Horspool */
-  OPTIMIZE_EXACT_IC               = 4,  /* Slow Search (ignore case) */
-  OPTIMIZE_MAP                    = 5   /* char map */
+  OPTIMIZE_NONE = 0,
+  OPTIMIZE_EXACT,                    /* Slow Search */
+  OPTIMIZE_EXACT_FAST,               /* Sunday quick search or BMH */
+  OPTIMIZE_EXACT_FAST_STEP_FORWARD,  /* Sunday quick search or BMH */
+  OPTIMIZE_EXACT_IC,                 /* Slow Search (ignore case) */
+  OPTIMIZE_MAP                       /* char map */
 };
 
 /* bit status */
