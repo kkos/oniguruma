@@ -4554,7 +4554,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
 /* set skip map for Boyer-Moore-Horspool search */
 static int
-set_bm_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED, UChar skip[])
+set_bmh_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED, UChar skip[])
 {
   int i, len;
 
@@ -5559,8 +5559,7 @@ set_optimize_exact(regex_t* reg, OptExact* e)
       ONIGENC_IS_ALLOWED_REVERSE_MATCH(reg->enc, reg->exact, reg->exact_end);
 
     if (e->len >= 3 || (e->len >= 2 && allow_reverse)) {
-      r = set_bm_skip(reg->exact, reg->exact_end, reg->enc,
-                      reg->map);
+      r = set_bmh_skip(reg->exact, reg->exact_end, reg->enc, reg->map);
       if (r != 0) return r;
 
       reg->optimize = (allow_reverse != 0
