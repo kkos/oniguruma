@@ -4360,15 +4360,15 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
 
  retry:
   switch (reg->optimize) {
-  case OPTIMIZE_EXACT:
+  case OPTIMIZE_STR:
     p = slow_search(reg->enc, reg->exact, reg->exact_end, p, end, range);
     break;
-  case OPTIMIZE_EXACT_IC:
+  case OPTIMIZE_STR_IC:
     p = slow_search_ic(reg->enc, reg->case_fold_flag,
                        reg->exact, reg->exact_end, p, end, range);
     break;
 
-  case OPTIMIZE_EXACT_FAST:
+  case OPTIMIZE_STR_FAST:
 #ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
     p = sunday_quick_search(reg, reg->exact, reg->exact_end, p, end, range);
 #else
@@ -4376,7 +4376,7 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
 #endif
     break;
 
-  case OPTIMIZE_EXACT_FAST_STEP_FORWARD:
+  case OPTIMIZE_STR_FAST_STEP_FORWARD:
 #ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
     p = sunday_quick_search_step_forward(reg, reg->exact, reg->exact_end,
                                          p, end, range);
@@ -4492,20 +4492,20 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
 
  retry:
   switch (reg->optimize) {
-  case OPTIMIZE_EXACT:
+  case OPTIMIZE_STR:
   exact_method:
     p = slow_search_backward(reg->enc, reg->exact, reg->exact_end,
                              range, adjrange, end, p);
     break;
 
-  case OPTIMIZE_EXACT_IC:
+  case OPTIMIZE_STR_IC:
     p = slow_search_backward_ic(reg->enc, reg->case_fold_flag,
                                 reg->exact, reg->exact_end,
                                 range, adjrange, end, p);
     break;
 
-  case OPTIMIZE_EXACT_FAST:
-  case OPTIMIZE_EXACT_FAST_STEP_FORWARD:
+  case OPTIMIZE_STR_FAST:
+  case OPTIMIZE_STR_FAST_STEP_FORWARD:
     goto exact_method;
     break;
 

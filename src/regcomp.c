@@ -5569,7 +5569,7 @@ set_optimize_exact(regex_t* reg, OptExact* e)
     CHECK_NULL_RETURN_MEMERR(reg->exact);
     xmemcpy(reg->exact, e->s, e->len);
     reg->exact_end = reg->exact + e->len;
-    reg->optimize = OPTIMIZE_EXACT_IC;
+    reg->optimize = OPTIMIZE_STR_IC;
   }
   else {
     int allow_reverse;
@@ -5587,11 +5587,11 @@ set_optimize_exact(regex_t* reg, OptExact* e)
       if (r != 0) return r;
 
       reg->optimize = (allow_reverse != 0
-                       ? OPTIMIZE_EXACT_FAST
-                       : OPTIMIZE_EXACT_FAST_STEP_FORWARD);
+                       ? OPTIMIZE_STR_FAST
+                       : OPTIMIZE_STR_FAST_STEP_FORWARD);
     }
     else {
-      reg->optimize = OPTIMIZE_EXACT;
+      reg->optimize = OPTIMIZE_STR;
     }
   }
 
