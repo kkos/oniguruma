@@ -4115,7 +4115,7 @@ slow_search_backward_ic(OnigEncoding enc, int case_fold_flag,
 #ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
 
 static UChar*
-bmh_search_step_forward(regex_t* reg,
+sunday_quick_search_step_forward(regex_t* reg,
                         const UChar* target, const UChar* target_end,
                         const UChar* text, const UChar* text_end,
                         const UChar* text_range)
@@ -4126,8 +4126,7 @@ bmh_search_step_forward(regex_t* reg,
 
 #ifdef ONIG_DEBUG_SEARCH
   fprintf(stderr,
-          "bmh_search_step_forward: text: %p, text_end: %p, text_range: %p\n",
-          text, text_end, text_range);
+          "sunday_quick_search_step_forward: text: %p, text_end: %p, text_range: %p\n", text, text_end, text_range);
 #endif
 
   tail = target_end - 1;
@@ -4157,8 +4156,9 @@ bmh_search_step_forward(regex_t* reg,
 }
 
 static UChar*
-bmh_search(regex_t* reg, const UChar* target, const UChar* target_end,
-           const UChar* text, const UChar* text_end, const UChar* text_range)
+sunday_quick_search(regex_t* reg, const UChar* target, const UChar* target_end,
+                    const UChar* text, const UChar* text_end,
+                    const UChar* text_range)
 {
   const UChar *s, *t, *p, *end;
   const UChar *tail;
@@ -4369,12 +4369,21 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
     break;
 
   case OPTIMIZE_EXACT_FAST:
+#ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
+    p = sunday_quick_search(reg, reg->exact, reg->exact_end, p, end, range);
+#else
     p = bmh_search(reg, reg->exact, reg->exact_end, p, end, range);
+#endif
     break;
 
   case OPTIMIZE_EXACT_FAST_STEP_FORWARD:
+#ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
+    p = sunday_quick_search_step_forward(reg, reg->exact, reg->exact_end,
+                                         p, end, range);
+#else
     p = bmh_search_step_forward(reg, reg->exact, reg->exact_end,
                                 p, end, range);
+#endif
     break;
 
   case OPTIMIZE_MAP:
