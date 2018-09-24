@@ -4555,8 +4555,8 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 #ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
 /* set skip map for Sunday quick search */
 static int
-set_search_skip_table(UChar* s, UChar* end,
-                      OnigEncoding enc ARG_UNUSED, UChar skip[])
+set_sunday_quick_search_skip_table(UChar* s, UChar* end,
+                                   OnigEncoding enc ARG_UNUSED, UChar skip[])
 {
   int i, len;
 
@@ -4574,8 +4574,8 @@ set_search_skip_table(UChar* s, UChar* end,
 #else
 /* set skip map for Boyer-Moore-Horspool search */
 static int
-set_search_skip_table(UChar* s, UChar* end,
-                      OnigEncoding enc ARG_UNUSED, UChar skip[])
+set_bmh_search_skip_table(UChar* s, UChar* end,
+                          OnigEncoding enc ARG_UNUSED, UChar skip[])
 {
   int i, len;
 
@@ -5582,8 +5582,13 @@ set_optimize_exact(regex_t* reg, OptExact* e)
       ONIGENC_IS_ALLOWED_REVERSE_MATCH(reg->enc, reg->exact, reg->exact_end);
 
     if (e->len >= 3 || (e->len >= 2 && allow_reverse)) {
-      r = set_search_skip_table(reg->exact, reg->exact_end,
-                                reg->enc, reg->map);
+#ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
+      r = set_sunday_quick_search_skip_table(reg->exact, reg->exact_end,
+                                             reg->enc, reg->map);
+#else
+      r = set_bmh_search_skip_table(reg->exact, reg->exact_end,
+                                    reg->enc, reg->map);
+#endif
       if (r != 0) return r;
 
       reg->optimize = (allow_reverse != 0
