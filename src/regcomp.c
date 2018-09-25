@@ -4555,28 +4555,48 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 #ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
 static int
 set_sunday_quick_search_skip_table(UChar* s, UChar* end, OnigEncoding enc,
-                                   UChar skip[])
+                                   UChar skip[], int* roffset)
 {
-  int i, len, emin;
+  int i, len, offset;
 
-  emin = ONIGENC_MBC_MINLEN(enc);
+  offset = 1;
+  if (ONIGENC_MBC_MINLEN(enc) > 1) {
+    UChar* p = s;
+    while (1) {
+      len = enclen(enc, p);
+      if (p + len >= end) {
+        UChar* q = p + (ONIGENC_MBC_MINLEN(enc) - 1);
+        while (q > p) {
+          if (*q != '\0') {
+            offset = q - p + 1;
+            break;
+          }
+          q--;
+        }
+        break;
+      }
+      p += len;
+    }
+  }
 
   len = (int )(end - s);
-  if (len + emin >= ONIG_CHAR_TABLE_SIZE)
+  if (len + offset >= ONIG_CHAR_TABLE_SIZE)
     return ONIGERR_PARSER_BUG;
 
-  for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++) skip[i] = (UChar )(len + emin);
+  *roffset = offset;
+
+  for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++) skip[i] = (UChar )(len + offset);
 
   for (i = 0; i < len; i++)
-    skip[s[i]] = len - i + (emin - 1);
+    skip[s[i]] = len - i + (offset - 1);
 
   return 0;
 }
 #else
 /* set skip map for Boyer-Moore-Horspool search */
 static int
-set_bmh_search_skip_table(UChar* s, UChar* end,
-                          OnigEncoding enc ARG_UNUSED, UChar skip[])
+set_bmh_search_skip_table(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED,
+                          UChar skip[])
 {
   int i, len;
 
@@ -5585,7 +5605,8 @@ set_optimize_exact(regex_t* reg, OptExact* e)
     if (e->len >= 3 || (e->len >= 2 && allow_reverse)) {
 #ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
       r = set_sunday_quick_search_skip_table(reg->exact, reg->exact_end,
-                                             reg->enc, reg->map);
+                                             reg->enc, reg->map,
+                                             &(reg->map_offset));
 #else
       r = set_bmh_search_skip_table(reg->exact, reg->exact_end,
                                     reg->enc, reg->map);
@@ -5706,6 +5727,7 @@ clear_optimize_info(regex_t* reg)
   reg->anchor_dmax   = 0;
   reg->sub_anchor    = 0;
   reg->exact_end     = (UChar* )NULL;
+  reg->map_offset    = 0;
   reg->threshold_len = 0;
   if (IS_NOT_NULL(reg->exact)) {
     xfree(reg->exact);

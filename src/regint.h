@@ -294,14 +294,15 @@ struct re_pattern_buffer {
   int            optimize;          /* optimize flag */
   int            threshold_len;     /* search str-length for apply optimize */
   int            anchor;            /* BEGIN_BUF, BEGIN_POS, (SEMI_)END_BUF */
-  OnigLen   anchor_dmin;       /* (SEMI_)END_BUF anchor distance */
-  OnigLen   anchor_dmax;       /* (SEMI_)END_BUF anchor distance */
+  OnigLen        anchor_dmin;       /* (SEMI_)END_BUF anchor distance */
+  OnigLen        anchor_dmax;       /* (SEMI_)END_BUF anchor distance */
   int            sub_anchor;        /* start-anchor for exact or map */
   unsigned char *exact;
   unsigned char *exact_end;
-  unsigned char  map[ONIG_CHAR_TABLE_SIZE]; /* used as BM skip or char-map */
-  OnigLen   dmin;                      /* min-distance of exact or map */
-  OnigLen   dmax;                      /* max-distance of exact or map */
+  unsigned char  map[ONIG_CHAR_TABLE_SIZE]; /* used as BMH skip or char-map */
+  int            map_offset;
+  OnigLen        dmin;                      /* min-distance of exact or map */
+  OnigLen        dmax;                      /* max-distance of exact or map */
 
   /* regex_t link chain */
   struct re_pattern_buffer* chain;  /* escape compile-conflict */
