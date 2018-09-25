@@ -4118,11 +4118,12 @@ static UChar*
 sunday_quick_search_step_forward(regex_t* reg,
                         const UChar* target, const UChar* target_end,
                         const UChar* text, const UChar* text_end,
-                        const UChar* text_range)
+                                 const UChar* text_range)
 {
   const UChar *s, *se, *t, *p, *end;
   const UChar *tail;
   int skip, tlen1;
+  int enc_minlen;
 
 #ifdef ONIG_DEBUG_SEARCH
   fprintf(stderr,
@@ -4135,6 +4136,7 @@ sunday_quick_search_step_forward(regex_t* reg,
   if (end + tlen1 > text_end)
     end = text_end - tlen1;
 
+  enc_minlen = ONIGENC_MBC_MINLEN(reg->enc);
   s = text;
 
   while (s < end) {
@@ -4144,8 +4146,8 @@ sunday_quick_search_step_forward(regex_t* reg,
       if (t == target) return (UChar* )s;
       p--; t--;
     }
-    if (se + 1 >= text_end) break;
-    skip = reg->map[*(se + 1)];
+    if (se + enc_minlen >= text_end) break;
+    skip = reg->map[*(se + enc_minlen)];
     t = s;
     do {
       s += enclen(reg->enc, s);
@@ -4162,11 +4164,13 @@ sunday_quick_search(regex_t* reg, const UChar* target, const UChar* target_end,
 {
   const UChar *s, *t, *p, *end;
   const UChar *tail;
+  int enc_minlen;
 
   end = text_range + (target_end - target);
   if (end > text_end)
     end = text_end;
 
+  enc_minlen = ONIGENC_MBC_MINLEN(reg->enc);
   tail = target_end - 1;
   s = text + (tail - target);
 
@@ -4177,8 +4181,8 @@ sunday_quick_search(regex_t* reg, const UChar* target, const UChar* target_end,
       if (t == target) return (UChar* )p;
       p--; t--;
     }
-    if (s + 1 >= text_end) break;
-    s += reg->map[*(s + 1)];
+    if (s + enc_minlen >= text_end) break;
+    s += reg->map[*(s + enc_minlen)];
   }
 
   return (UChar* )NULL;

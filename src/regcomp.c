@@ -4553,21 +4553,22 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 }
 
 #ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
-/* set skip map for Sunday quick search */
 static int
-set_sunday_quick_search_skip_table(UChar* s, UChar* end,
-                                   OnigEncoding enc ARG_UNUSED, UChar skip[])
+set_sunday_quick_search_skip_table(UChar* s, UChar* end, OnigEncoding enc,
+                                   UChar skip[])
 {
-  int i, len;
+  int i, len, emin;
+
+  emin = ONIGENC_MBC_MINLEN(enc);
 
   len = (int )(end - s);
-  if (len + 1 >= ONIG_CHAR_TABLE_SIZE)
+  if (len + emin >= ONIG_CHAR_TABLE_SIZE)
     return ONIGERR_PARSER_BUG;
 
-  for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++) skip[i] = (UChar )(len + 1);
+  for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++) skip[i] = (UChar )(len + emin);
 
   for (i = 0; i < len; i++)
-    skip[s[i]] = len - i;
+    skip[s[i]] = len - i + (emin - 1);
 
   return 0;
 }
