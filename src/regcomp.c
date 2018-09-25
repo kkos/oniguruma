@@ -5896,7 +5896,7 @@ print_optimize_info(FILE* f, regex_t* reg)
 extern RegexExt*
 onig_get_regex_ext(regex_t* reg)
 {
-  if (IS_NULL(REG_EXTP(reg))) {
+  if (IS_NULL(reg->extp)) {
     RegexExt* ext = (RegexExt* )xmalloc(sizeof(*ext));
     if (IS_NULL(ext)) return 0;
 
@@ -5909,10 +5909,10 @@ onig_get_regex_ext(regex_t* reg)
     ext->callout_list = 0;
 #endif
 
-    REG_EXTPL(reg) = (void* )ext;
+    reg->extp = ext;
   }
 
-  return REG_EXTP(reg);
+  return reg->extp;
 }
 
 static void
@@ -5960,9 +5960,9 @@ onig_free_body(regex_t* reg)
     if (IS_NOT_NULL(reg->p))                xfree(reg->p);
     if (IS_NOT_NULL(reg->exact))            xfree(reg->exact);
     if (IS_NOT_NULL(reg->repeat_range))     xfree(reg->repeat_range);
-    if (IS_NOT_NULL(REG_EXTP(reg))) {
-      free_regex_ext(REG_EXTP(reg));
-      REG_EXTPL(reg) = 0;
+    if (IS_NOT_NULL(reg->extp)) {
+      free_regex_ext(reg->extp);
+      reg->extp = 0;
     }
 
     onig_names_free(reg);
@@ -6122,7 +6122,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 
     if ((reg->num_repeat != 0) || (reg->bt_mem_end != 0)
 #ifdef USE_CALLOUT
-        || (IS_NOT_NULL(REG_EXTP(reg)) && REG_EXTP(reg)->callout_num != 0)
+        || (IS_NOT_NULL(reg->extp) && reg->extp->callout_num != 0)
 #endif
         )
       reg->stack_pop_level = STACK_POP_LEVEL_ALL;
@@ -6214,7 +6214,7 @@ onig_reg_init(regex_t* reg, OnigOptionType option, OnigCaseFoldType case_fold_fl
   (reg)->syntax           = syntax;
   (reg)->optimize         = 0;
   (reg)->exact            = (UChar* )NULL;
-  REG_EXTPL(reg) = NULL;
+  (reg)->extp             = (RegexExt* )NULL;
 
   (reg)->p                = (UChar* )NULL;
   (reg)->alloc            = 0;

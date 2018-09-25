@@ -1725,7 +1725,7 @@ setup_ext_callout_list_values(regex_t* reg)
   int i, j;
   RegexExt* ext;
 
-  ext = REG_EXTP(reg);
+  ext = reg->extp;
   if (IS_NOT_NULL(ext->tag_table)) {
     onig_st_foreach((CalloutTagTable *)ext->tag_table, i_callout_callout_list_set,
                     (st_data_t )ext);
@@ -1755,7 +1755,7 @@ setup_ext_callout_list_values(regex_t* reg)
 extern int
 onig_callout_tag_is_exist_at_callout_num(regex_t* reg, int callout_num)
 {
-  RegexExt* ext = REG_EXTP(reg);
+  RegexExt* ext = reg->extp;
 
   if (IS_NULL(ext) || IS_NULL(ext->callout_list)) return 0;
   if (callout_num > ext->callout_num) return 0;
@@ -1803,7 +1803,7 @@ onig_get_callout_num_by_tag(regex_t* reg,
   RegexExt* ext;
   CalloutTagVal e;
 
-  ext = REG_EXTP(reg);
+  ext = reg->extp;
   if (IS_NULL(ext) || IS_NULL(ext->tag_table))
     return ONIGERR_INVALID_CALLOUT_TAG_NAME;
 
@@ -2532,7 +2532,7 @@ onig_free_reg_callout_list(int n, CalloutListEntry* list)
 extern CalloutListEntry*
 onig_reg_callout_list_at(regex_t* reg, int num)
 {
-  RegexExt* ext = REG_EXTP(reg);
+  RegexExt* ext = reg->extp;
   CHECK_NULL_RETURN(ext);
 
   if (num <= 0 || num > ext->callout_num)
@@ -8238,7 +8238,7 @@ onig_parse_tree(Node** root, const UChar* pattern, const UChar* end,
   reg->num_mem = env->num_mem;
 
 #ifdef USE_CALLOUT
-  ext = REG_EXTP(reg);
+  ext = reg->extp;
   if (IS_NOT_NULL(ext) && ext->callout_num > 0) {
     r = setup_ext_callout_list_values(reg);
   }

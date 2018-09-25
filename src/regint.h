@@ -263,9 +263,6 @@ typedef struct {
 #endif
 } RegexExt;
 
-#define REG_EXTP(reg)      ((RegexExt* )((reg)->chain))
-#define REG_EXTPL(reg)     ((reg)->chain)
-
 struct re_pattern_buffer {
   /* common members of BBuf(bytes-buffer) */
   unsigned char* p;         /* compiled pattern */
@@ -302,9 +299,7 @@ struct re_pattern_buffer {
   int            map_offset;
   OnigLen        dmin;                      /* min-distance of exact or map */
   OnigLen        dmax;                      /* max-distance of exact or map */
-
-  /* regex_t link chain */
-  struct re_pattern_buffer* chain;  /* escape compile-conflict */
+  RegexExt*      extp;
 };
 
 

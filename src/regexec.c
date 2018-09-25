@@ -1225,7 +1225,7 @@ onig_initialize_match_param(OnigMatchParam* mp)
 static int
 adjust_match_param(regex_t* reg, OnigMatchParam* mp)
 {
-  RegexExt* ext = REG_EXTP(reg);
+  RegexExt* ext = reg->extp;
 
   mp->match_at_call_counter = 0;
 
