@@ -275,7 +275,6 @@ struct re_pattern_buffer {
   int num_mem;                   /* used memory(...) num counted from 1 */
   int num_repeat;                /* OP_REPEAT/OP_REPEAT_NG id-counter */
   int num_null_check;            /* OP_EMPTY_CHECK_START/END id counter */
-  int num_comb_exp_check;        /* no longer used (combination explosion check) */
   int num_call;                  /* number of subexp call */
   unsigned int capture_history;  /* (?@...) flag (1-31) */
   unsigned int bt_mem_start;     /* need backtrack flag */
