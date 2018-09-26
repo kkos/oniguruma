@@ -11,6 +11,7 @@
 #define SIZEOF_VOIDP 4
 #define SIZEOF_FLOAT 4
 #define SIZEOF_DOUBLE 8
+#define SIZEOF_SIZE_T 4
 #define TOKEN_PASTE(x,y) x##y
 #ifndef NORETURN
 #if _MSC_VER > 1100
