@@ -3610,14 +3610,36 @@ expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[], UChar *p
 }
 
 static int
+is_good_case_fold_items_for_search(OnigEncoding enc, int slen,
+                                   int n, OnigCaseFoldCodeItem items[])
+{
+  int i, len;
+  UChar buf[ONIGENC_MBC_CASE_FOLD_MAXLEN];
+
+  for (i = 0; i < n; i++) {
+    OnigCaseFoldCodeItem* item = items + i;
+
+    if (item->code_len != 1)    return 0;
+    if (item->byte_len != slen) return 0;
+    len = ONIGENC_CODE_TO_MBC(enc, item->code[0], buf);
+    if (len != slen) return 0;
+  }
+
+  return 1;
+}
+
+static int
 expand_case_fold_string(Node* node, regex_t* reg)
 {
 #define THRESHOLD_CASE_FOLD_ALT_FOR_EXPANSION  8
 
   int r, n, len, alt_num;
+  int is_ambig, fold_len;
   UChar *start, *end, *p;
+  UChar* foldp;
   Node *top_root, *root, *snode, *prev_node;
   OnigCaseFoldCodeItem items[ONIGENC_GET_CASE_FOLD_CODES_MAX_NUM];
+  UChar buf[ONIGENC_MBC_CASE_FOLD_MAXLEN];
   StrNode* sn = STR_(node);
 
   if (NODE_STRING_IS_AMBIG(node)) return 0;
@@ -3631,8 +3653,8 @@ expand_case_fold_string(Node* node, regex_t* reg)
   alt_num = 1;
   p = start;
   while (p < end) {
-    n = ONIGENC_GET_CASE_FOLD_CODES_BY_STR(reg->enc, reg->case_fold_flag, p, end,
-                                           items);
+    n = ONIGENC_GET_CASE_FOLD_CODES_BY_STR(reg->enc, reg->case_fold_flag,
+                                           p, end, items);
     if (n < 0) {
       r = n;
       goto err;
@@ -3640,7 +3662,8 @@ expand_case_fold_string(Node* node, regex_t* reg)
 
     len = enclen(reg->enc, p);
 
-    if (n == 0) {
+    if (n == 0 || IS_NOT_NULL(snode) ||
+        is_good_case_fold_items_for_search(reg->enc, len, n, items)) {
       if (IS_NULL(snode)) {
         if (IS_NULL(root) && IS_NOT_NULL(prev_node)) {
           top_root = root = onig_node_list_add(NULL_NODE, prev_node);
@@ -3658,10 +3681,45 @@ expand_case_fold_string(Node* node, regex_t* reg)
             goto mem_err;
           }
         }
+
+        is_ambig = -1; /* -1: new */
+      }
+      else {
+        is_ambig = NODE_STRING_IS_AMBIG(snode);
       }
 
-      r = onig_node_str_cat(snode, p, p + len);
-      if (r != 0) goto err;
+      if (n != 0) {
+        foldp = p;
+        fold_len = ONIGENC_MBC_CASE_FOLD(reg->enc, reg->case_fold_flag,
+                                         &foldp, end, buf);
+        foldp = buf;
+      }
+      else {
+        foldp = p; fold_len = len;
+      }
+
+      if ((n != 0 && is_ambig == 0) || (n == 0 && is_ambig > 0)) {
+        if (IS_NULL(root) /* && IS_NOT_NULL(prev_node) */) {
+          top_root = root = onig_node_list_add(NULL_NODE, prev_node);
+          if (IS_NULL(root)) {
+            onig_node_free(prev_node);
+            goto mem_err;
+          }
+        }
+
+        prev_node = snode = onig_node_new_str(foldp, foldp + fold_len);
+        if (IS_NULL(snode)) goto mem_err;
+        if (IS_NULL(onig_node_list_add(root, snode))) {
+          onig_node_free(snode);
+          goto mem_err;
+        }
+      }
+      else {
+        r = onig_node_str_cat(snode, foldp, foldp + fold_len);
+        if (r != 0) goto err;
+      }
+
+      if (n != 0) NODE_STRING_SET_AMBIG(snode);
     }
     else {
       alt_num *= (n + 1);
