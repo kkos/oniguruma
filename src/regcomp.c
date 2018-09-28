@@ -4989,6 +4989,9 @@ concat_opt_exact_str(OptExact* to, UChar* s, UChar* end, OnigEncoding enc)
   }
 
   to->len = i;
+
+  if (p >= end && to->len == (int )(end - s))
+    to->reach_end = 1;
 }
 
 static void
@@ -5358,9 +5361,6 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
 
         set_mml(&opt->len, slen, max);
       }
-
-      if (opt->exb.len == slen)
-        opt->exb.reach_end = 1;
     }
     break;
 
