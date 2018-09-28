@@ -6507,6 +6507,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
   case NODE_STRING:
     {
       char* mode;
+      char* dont;
 
       if (NODE_STRING_IS_RAW(node))
         mode = "-raw";
@@ -6515,7 +6516,12 @@ print_indent_tree(FILE* f, Node* node, int indent)
       else
         mode = "";
 
-      fprintf(f, "<string%s:%p>", mode, node);
+      if (NODE_STRING_IS_DONT_GET_OPT_INFO(node))
+        dont = " (dont-opt)";
+      else
+        dont = "";
+
+      fprintf(f, "<string%s%s:%p>", mode, dont, node);
       for (p = STR_(node)->s; p < STR_(node)->end; p++) {
         if (*p >= 0x20 && *p < 0x7f)
           fputc(*p, f);
