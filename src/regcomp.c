@@ -4626,7 +4626,7 @@ set_sunday_quick_search_skip_table(UChar* s, UChar* end, OnigEncoding enc,
         UChar* q = p + (ONIGENC_MBC_MINLEN(enc) - 1);
         while (q > p) {
           if (*q != '\0') {
-            offset = q - p + 1;
+            offset = (int )(q - p + 1);
             break;
           }
           q--;
