@@ -6505,12 +6505,23 @@ print_indent_tree(FILE* f, Node* node, int indent)
     break;
 
   case NODE_STRING:
-    fprintf(f, "<string%s:%p>", (NODE_STRING_IS_RAW(node) ? "-raw" : ""), node);
-    for (p = STR_(node)->s; p < STR_(node)->end; p++) {
-      if (*p >= 0x20 && *p < 0x7f)
-        fputc(*p, f);
-      else {
-        fprintf(f, " 0x%02x", *p);
+    {
+      char* mode;
+
+      if (NODE_STRING_IS_RAW(node))
+        mode = "-raw";
+      else if (NODE_STRING_IS_AMBIG(node))
+        mode = "-ambig";
+      else
+        mode = "";
+
+      fprintf(f, "<string%s:%p>", mode, node);
+      for (p = STR_(node)->s; p < STR_(node)->end; p++) {
+        if (*p >= 0x20 && *p < 0x7f)
+          fputc(*p, f);
+        else {
+          fprintf(f, " 0x%02x", *p);
+        }
       }
     }
     break;
