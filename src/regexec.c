@@ -4367,7 +4367,7 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
   case OPTIMIZE_STR:
     p = slow_search(reg->enc, reg->exact, reg->exact_end, p, end, range);
     break;
-  case OPTIMIZE_STR_IC:
+  case OPTIMIZE_STR_CASE_FOLD:
     p = slow_search_ic(reg->enc, reg->case_fold_flag,
                        reg->exact, reg->exact_end, p, end, range);
     break;
@@ -4502,7 +4502,7 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
                              range, adjrange, end, p);
     break;
 
-  case OPTIMIZE_STR_IC:
+  case OPTIMIZE_STR_CASE_FOLD:
     p = slow_search_backward_ic(reg->enc, reg->case_fold_flag,
                                 reg->exact, reg->exact_end,
                                 range, adjrange, end, p);

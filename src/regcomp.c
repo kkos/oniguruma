@@ -5648,7 +5648,7 @@ set_optimize_exact(regex_t* reg, OptExact* e)
     CHECK_NULL_RETURN_MEMERR(reg->exact);
     xmemcpy(reg->exact, e->s, e->len);
     reg->exact_end = reg->exact + e->len;
-    reg->optimize = OPTIMIZE_STR_IC;
+    reg->optimize = OPTIMIZE_STR_CASE_FOLD;
   }
   else {
     int allow_reverse;
