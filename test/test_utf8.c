@@ -287,6 +287,10 @@ extern int main(int argc, char* argv[])
   x2("(?i:ss)", "\xc3\x9f", 0, 2);
   /* 0xe1,0xba,0x9e == 1E9E # LATIN CAPITAL LETTER SHARP S */
   x2("(?i:ss)", "\xe1\xba\x9e", 0, 3);
+  x2("(?i:\xc3\x9f)", "ss", 0, 2);
+  x2("(?i:\xc3\x9f)", "SS", 0, 2);
+  x2("(?i:[\xc3\x9f])", "ss", 0, 2);
+  x2("(?i:[\xc3\x9f])", "SS", 0, 2);
   x2("(?i:[A-Z])", "a", 0, 1);
   x2("(?i:[f-m])", "H", 0, 1);
   x2("(?i:[f-m])", "h", 0, 1);
