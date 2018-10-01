@@ -1,4 +1,3 @@
-
 ONIG_LIB=../src/.libs/libonig.a
 LIBS=$(ONIG_LIB) /usr/local/lib/libLLVMFuzzerMain.a
 
