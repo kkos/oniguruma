@@ -3634,7 +3634,8 @@ expand_case_fold_string(Node* node, regex_t* reg)
 #define THRESHOLD_CASE_FOLD_ALT_FOR_EXPANSION  8
 
   int r, n, len, alt_num;
-  int is_ambig, fold_len;
+  int fold_len;
+  int prev_is_ambig, prev_is_good, is_good;
   UChar *start, *end, *p;
   UChar* foldp;
   Node *top_root, *root, *snode, *prev_node;
@@ -3661,9 +3662,9 @@ expand_case_fold_string(Node* node, regex_t* reg)
     }
 
     len = enclen(reg->enc, p);
+    is_good = is_good_case_fold_items_for_search(reg->enc, len, n, items);
 
-    if (n == 0 || IS_NOT_NULL(snode) ||
-        is_good_case_fold_items_for_search(reg->enc, len, n, items)) {
+    if (is_good || IS_NOT_NULL(snode)) {
       if (IS_NULL(snode)) {
         if (IS_NULL(root) && IS_NOT_NULL(prev_node)) {
           top_root = root = onig_node_list_add(NULL_NODE, prev_node);
@@ -3682,10 +3683,11 @@ expand_case_fold_string(Node* node, regex_t* reg)
           }
         }
 
-        is_ambig = -1; /* -1: new */
+        prev_is_ambig = -1; /* -1: new */
       }
       else {
-        is_ambig = NODE_STRING_IS_AMBIG(snode);
+        prev_is_ambig = NODE_STRING_IS_AMBIG(snode);
+        prev_is_good  = NODE_STRING_IS_GOOD_AMBIG(snode);
       }
 
       if (n != 0) {
@@ -3698,7 +3700,8 @@ expand_case_fold_string(Node* node, regex_t* reg)
         foldp = p; fold_len = len;
       }
 
-      if ((n != 0 && is_ambig == 0) || (n == 0 && is_ambig > 0)) {
+      if ((prev_is_ambig == 0 && n != 0) ||
+	  (prev_is_ambig > 0 && (n == 0 || prev_is_good != is_good))) {
         if (IS_NULL(root) /* && IS_NOT_NULL(prev_node) */) {
           top_root = root = onig_node_list_add(NULL_NODE, prev_node);
           if (IS_NULL(root)) {
@@ -3720,6 +3723,7 @@ expand_case_fold_string(Node* node, regex_t* reg)
       }
 
       if (n != 0) NODE_STRING_SET_AMBIG(snode);
+      if (is_good != 0) NODE_STRING_SET_GOOD_AMBIG(snode);
     }
     else {
       alt_num *= (n + 1);
