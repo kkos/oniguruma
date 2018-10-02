@@ -4656,7 +4656,7 @@ set_sunday_quick_search_skip_table(regex_t* reg, int case_expand,
 
   *roffset = offset;
 
-  for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++) {
+  for (i = 0; i < CHAR_MAP_SIZE; i++) {
     skip[i] = (UChar )(len + offset);
   }
 
@@ -4697,7 +4697,7 @@ set_bmh_search_skip_table(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED,
 
   len = (int )(end - s);
   if (len < UCHAR_MAX) {
-    for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++) skip[i] = len;
+    for (i = 0; i < CHAR_MAP_SIZE; i++) skip[i] = len;
 
     for (i = 0; i < len - 1; i++)
       skip[s[i]] = len - 1 - i;
@@ -4748,7 +4748,7 @@ typedef struct {
   MinMax    mmd;    /* position */
   OptAnc    anc;
   int       value;  /* weighted value */
-  UChar     map[ONIG_CHAR_TABLE_SIZE];
+  UChar     map[CHAR_MAP_SIZE];
 } OptMap;
 
 typedef struct {
@@ -5210,7 +5210,7 @@ alt_merge_opt_map(OnigEncoding enc, OptMap* to, OptMap* add)
   alt_merge_mml(&to->mmd, &add->mmd);
 
   val = 0;
-  for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++) {
+  for (i = 0; i < CHAR_MAP_SIZE; i++) {
     if (add->map[i])
       to->map[i] = 1;
 
@@ -5731,7 +5731,7 @@ set_optimize_map(regex_t* reg, OptMap* m)
 {
   int i;
 
-  for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++)
+  for (i = 0; i < CHAR_MAP_SIZE; i++)
     reg->map[i] = m->map[i];
 
   reg->optimize   = OPTIMIZE_MAP;
@@ -5962,14 +5962,14 @@ print_optimize_info(FILE* f, regex_t* reg)
   else if (reg->optimize & OPTIMIZE_MAP) {
     int c, i, n = 0;
 
-    for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++)
+    for (i = 0; i < CHAR_MAP_SIZE; i++)
       if (reg->map[i]) n++;
 
     fprintf(f, "map: n=%d\n", n);
     if (n > 0) {
       c = 0;
       fputc('[', f);
-      for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++) {
+      for (i = 0; i < CHAR_MAP_SIZE; i++) {
         if (reg->map[i] != 0) {
           if (c > 0)  fputs(", ", f);
           c++;

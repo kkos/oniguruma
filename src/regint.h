@@ -188,6 +188,7 @@ typedef unsigned int  uintptr_t;
 #define CHECK_NULL_RETURN_MEMERR(p)   if (IS_NULL(p)) return ONIGERR_MEMORY
 #define NULL_UCHARP                   ((UChar* )0)
 
+#define CHAR_MAP_SIZE       256
 #define INFINITE_LEN        ONIG_INFINITE_DISTANCE
 
 #ifdef PLATFORM_UNALIGNED_WORD_ACCESS
@@ -295,7 +296,7 @@ struct re_pattern_buffer {
   int            sub_anchor;        /* start-anchor for exact or map */
   unsigned char *exact;
   unsigned char *exact_end;
-  unsigned char  map[ONIG_CHAR_TABLE_SIZE]; /* used as BMH skip or char-map */
+  unsigned char  map[CHAR_MAP_SIZE]; /* used as BMH skip or char-map */
   int            map_offset;
   OnigLen        dmin;                      /* min-distance of exact or map */
   OnigLen        dmax;                      /* max-distance of exact or map */
