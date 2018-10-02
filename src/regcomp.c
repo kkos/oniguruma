@@ -3684,6 +3684,7 @@ expand_case_fold_string(Node* node, regex_t* reg)
         }
 
         prev_is_ambig = -1; /* -1: new */
+        prev_is_good  =  0; /* escape compiler warning */
       }
       else {
         prev_is_ambig = NODE_STRING_IS_AMBIG(snode);
@@ -3701,7 +3702,7 @@ expand_case_fold_string(Node* node, regex_t* reg)
       }
 
       if ((prev_is_ambig == 0 && n != 0) ||
-	  (prev_is_ambig > 0 && (n == 0 || prev_is_good != is_good))) {
+          (prev_is_ambig > 0 && (n == 0 || prev_is_good != is_good))) {
         if (IS_NULL(root) /* && IS_NOT_NULL(prev_node) */) {
           top_root = root = onig_node_list_add(NULL_NODE, prev_node);
           if (IS_NULL(root)) {
