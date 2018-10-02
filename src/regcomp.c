@@ -4617,10 +4617,18 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
 #ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
 static int
-set_sunday_quick_search_skip_table(UChar* s, UChar* end, OnigEncoding enc,
+set_sunday_quick_search_skip_table(regex_t* reg, int case_expand,
+                                   UChar* s, UChar* end,
                                    UChar skip[], int* roffset)
 {
-  int i, len, offset;
+  int i, j, k, len, offset;
+  int n, clen;
+  UChar* p;
+  OnigEncoding enc;
+  OnigCaseFoldCodeItem items[ONIGENC_GET_CASE_FOLD_CODES_MAX_NUM];
+  UChar buf[ONIGENC_MBC_CASE_FOLD_MAXLEN];
+
+  enc = reg->enc;
 
   offset = 1;
   if (ONIGENC_MBC_MINLEN(enc) > 1) {
@@ -4648,10 +4656,34 @@ set_sunday_quick_search_skip_table(UChar* s, UChar* end, OnigEncoding enc,
 
   *roffset = offset;
 
-  for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++) skip[i] = (UChar )(len + offset);
+  for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++) {
+    skip[i] = (UChar )(len + offset);
+  }
 
-  for (i = 0; i < len; i++)
-    skip[s[i]] = len - i + (offset - 1);
+  for (p = s; p < end; ) {
+    clen = enclen(enc, p);
+    if (p + clen > end) clen = (int )(end - p);
+
+    len = (int )(end - p);
+    for (j = 0; j < clen; j++) {
+      skip[p[j]] = len - j + (offset - 1);
+    }
+
+    if (case_expand != 0) {
+      n = ONIGENC_GET_CASE_FOLD_CODES_BY_STR(enc, reg->case_fold_flag,
+                                             p, end, items);
+      for (k = 0; k < n; k++) {
+        ONIGENC_CODE_TO_MBC(enc, items[k].code[0], buf);
+        for (j = 0; j < clen; j++) {
+          int z = len - j + (offset - 1);
+          if (skip[p[j]] > z)
+            skip[p[j]] = z;
+        }
+      }
+    }
+
+    p += clen;
+  }
 
   return 0;
 }
@@ -5667,9 +5699,8 @@ set_optimize_exact(regex_t* reg, OptExact* e)
 
     if (e->len >= 3 || (e->len >= 2 && allow_reverse)) {
 #ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
-      r = set_sunday_quick_search_skip_table(reg->exact, reg->exact_end,
-                                             reg->enc, reg->map,
-                                             &(reg->map_offset));
+      r = set_sunday_quick_search_skip_table(reg, 0, reg->exact, reg->exact_end,
+                                             reg->map, &(reg->map_offset));
 #else
       r = set_bmh_search_skip_table(reg->exact, reg->exact_end,
                                     reg->enc, reg->map);
