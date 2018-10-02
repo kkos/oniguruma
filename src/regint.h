@@ -317,6 +317,7 @@ enum OptimizeType {
   OPTIMIZE_STR,                    /* Slow Search */
   OPTIMIZE_STR_FAST,               /* Sunday quick search or BMH */
   OPTIMIZE_STR_FAST_STEP_FORWARD,  /* Sunday quick search or BMH */
+  OPTIMIZE_STR_CASE_FOLD_FAST,     /* Sunday quick search (ignore case) */
   OPTIMIZE_STR_CASE_FOLD,          /* Slow Search (ignore case) */
   OPTIMIZE_MAP                     /* char map */
 };
