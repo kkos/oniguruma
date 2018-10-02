@@ -4651,7 +4651,7 @@ set_sunday_quick_search_skip_table(regex_t* reg, int case_expand,
   }
 
   len = (int )(end - s);
-  if (len + offset >= ONIG_CHAR_TABLE_SIZE)
+  if (len + offset >= UCHAR_MAX)
     return ONIGERR_PARSER_BUG;
 
   *roffset = offset;
@@ -4696,7 +4696,7 @@ set_bmh_search_skip_table(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED,
   int i, len;
 
   len = (int )(end - s);
-  if (len < ONIG_CHAR_TABLE_SIZE) {
+  if (len < UCHAR_MAX) {
     for (i = 0; i < ONIG_CHAR_TABLE_SIZE; i++) skip[i] = len;
 
     for (i = 0; i < len - 1; i++)
@@ -4713,7 +4713,7 @@ set_bmh_search_skip_table(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED,
 
 #define OPT_EXACT_MAXLEN   24
 
-#if OPT_EXACT_MAXLEN >= ONIG_CHAR_TABLE_SIZE
+#if OPT_EXACT_MAXLEN >= UCHAR_MAX
 #error Too big OPT_EXACT_MAXLEN
 #endif
 
