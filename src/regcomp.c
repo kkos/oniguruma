@@ -5714,6 +5714,17 @@ set_optimize_exact(regex_t* reg, OptExact* e)
 
   if (e->case_fold) {
     reg->optimize = OPTIMIZE_STR_CASE_FOLD;
+#ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
+    if (e->good_case_fold != 0) {
+      if (e->len >= 2) {
+        r = set_sunday_quick_search_skip_table(reg, 1,
+                             reg->exact, reg->exact_end,
+                             reg->map, &(reg->map_offset));
+        if (r != 0) return r;
+	reg->optimize = OPTIMIZE_STR_CASE_FOLD_FAST;
+      }
+    }
+#endif
   }
   else {
     int allow_reverse;
@@ -5721,7 +5732,7 @@ set_optimize_exact(regex_t* reg, OptExact* e)
     allow_reverse =
       ONIGENC_IS_ALLOWED_REVERSE_MATCH(reg->enc, reg->exact, reg->exact_end);
 
-    if (e->len >= 3 || (e->len >= 2 && allow_reverse)) {
+    if (e->len >= 2 || (e->len >= 1 && allow_reverse)) {
 #ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
       r = set_sunday_quick_search_skip_table(reg, 0, reg->exact, reg->exact_end,
                                              reg->map, &(reg->map_offset));
