@@ -4676,8 +4676,8 @@ set_sunday_quick_search_skip_table(regex_t* reg, int case_expand,
         ONIGENC_CODE_TO_MBC(enc, items[k].code[0], buf);
         for (j = 0; j < clen; j++) {
           int z = len - j + (offset - 1);
-          if (skip[p[j]] > z)
-            skip[p[j]] = z;
+          if (skip[buf[j]] > z)
+            skip[buf[j]] = z;
         }
       }
     }
