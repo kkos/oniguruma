@@ -5707,19 +5707,16 @@ set_optimize_exact(regex_t* reg, OptExact* e)
 
   if (e->len == 0) return 0;
 
+  reg->exact = (UChar* )xmalloc(e->len);
+  CHECK_NULL_RETURN_MEMERR(reg->exact);
+  xmemcpy(reg->exact, e->s, e->len);
+  reg->exact_end = reg->exact + e->len;
+
   if (e->case_fold) {
-    reg->exact = (UChar* )xmalloc(e->len);
-    CHECK_NULL_RETURN_MEMERR(reg->exact);
-    xmemcpy(reg->exact, e->s, e->len);
-    reg->exact_end = reg->exact + e->len;
     reg->optimize = OPTIMIZE_STR_CASE_FOLD;
   }
   else {
     int allow_reverse;
-
-    reg->exact = onigenc_strdup(reg->enc, e->s, e->s + e->len);
-    CHECK_NULL_RETURN_MEMERR(reg->exact);
-    reg->exact_end = reg->exact + e->len;
 
     allow_reverse =
       ONIGENC_IS_ALLOWED_REVERSE_MATCH(reg->enc, reg->exact, reg->exact_end);
