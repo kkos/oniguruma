@@ -4739,7 +4739,8 @@ typedef struct {
   MinMax     mmd;   /* position */
   OptAnc     anc;
   int        reach_end;
-  int        ignore_case;
+  int        case_fold;
+  int        good_case_fold;
   int        len;
   UChar      s[OPT_EXACT_MAXLEN];
 } OptExact;
@@ -4964,10 +4965,11 @@ clear_opt_exact(OptExact* e)
 {
   clear_mml(&e->mmd);
   clear_opt_anc_info(&e->anc);
-  e->reach_end   = 0;
-  e->ignore_case = 0;
-  e->len         = 0;
-  e->s[0]        = '\0';
+  e->reach_end      = 0;
+  e->case_fold      = 0;
+  e->good_case_fold = 0;
+  e->len            = 0;
+  e->s[0]           = '\0';
 }
 
 static void
@@ -4983,10 +4985,17 @@ concat_opt_exact(OptExact* to, OptExact* add, OnigEncoding enc)
   UChar *p, *end;
   OptAnc tanc;
 
-  if (! to->ignore_case && add->ignore_case) {
-    if (to->len >= add->len) return 0;  /* avoid */
+  if (add->case_fold != 0) {
+    if (! to->case_fold) {
+      if (to->len > 1 || to->len >= add->len) return 0;  /* avoid */
 
-    to->ignore_case = 1;
+      to->case_fold = 1;
+    }
+    else {
+      if (to->good_case_fold != 0) {
+        if (add->good_case_fold == 0) return 0;
+      }
+    }
   }
 
   r = 0;
@@ -5061,7 +5070,10 @@ alt_merge_opt_exact(OptExact* to, OptExact* add, OptEnv* env)
     to->reach_end = 0;
   }
   to->len = i;
-  to->ignore_case |= add->ignore_case;
+  if (add->case_fold != 0)
+    to->case_fold = 1;
+  if (add->good_case_fold == 0)
+    to->good_case_fold = 0;
 
   alt_merge_opt_anc_info(&to->anc, &add->anc);
   if (! to->reach_end) to->anc.right = 0;
@@ -5091,8 +5103,11 @@ select_opt_exact(OnigEncoding enc, OptExact* now, OptExact* alt)
     if (alt->len > 1) va += 5;
   }
 
-  if (now->ignore_case == 0) vn *= 2;
-  if (alt->ignore_case == 0) va *= 2;
+  if (now->case_fold == 0) vn *= 2;
+  if (alt->case_fold == 0) va *= 2;
+
+  if (now->good_case_fold != 0) vn *= 4;
+  if (alt->good_case_fold != 0) va *= 4;
 
   if (comp_distance_value(&now->mmd, &alt->mmd, vn, va) > 0)
     copy_opt_exact(now, alt);
@@ -5187,10 +5202,20 @@ comp_opt_exact_or_map(OptExact* e, OptMap* m)
 {
 #define COMP_EM_BASE  20
   int ae, am;
+  int case_value;
 
   if (m->value <= 0) return -1;
 
-  ae = COMP_EM_BASE * e->len * (e->ignore_case ? 1 : 2);
+  if (e->case_fold != 0) {
+    if (e->good_case_fold != 0)
+      case_value = 2;
+    else
+      case_value = 1;
+  }
+  else
+    case_value = 3;
+
+  ae = COMP_EM_BASE * e->len * case_value;
   am = COMP_EM_BASE * 5 * 2 / m->value;
   return comp_distance_value(&e->mmd, &m->mmd, ae, am);
 }
@@ -5385,7 +5410,9 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
         }
         else {
           concat_opt_exact_str(&opt->exb, sn->s, sn->end, enc);
-          opt->exb.ignore_case = 1;
+          opt->exb.case_fold = 1;
+          if (NODE_STRING_IS_GOOD_AMBIG(node))
+            opt->exb.good_case_fold = 1;
 
           if (slen > 0) {
             r = add_char_amb_opt_map(&opt->map, sn->s, sn->end,
@@ -5680,7 +5707,7 @@ set_optimize_exact(regex_t* reg, OptExact* e)
 
   if (e->len == 0) return 0;
 
-  if (e->ignore_case) {
+  if (e->case_fold) {
     reg->exact = (UChar* )xmalloc(e->len);
     CHECK_NULL_RETURN_MEMERR(reg->exact);
     xmemcpy(reg->exact, e->s, e->len);
