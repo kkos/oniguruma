@@ -3664,7 +3664,10 @@ expand_case_fold_string(Node* node, regex_t* reg)
     len = enclen(reg->enc, p);
     is_good = is_good_case_fold_items_for_search(reg->enc, len, n, items);
 
-    if (is_good || IS_NOT_NULL(snode)) {
+    if (IS_NOT_NULL(snode) ||
+	(is_good &&
+	 /* expand single char case: ex. /(?i:a)/ */
+	 !(p == start && p + len >= end))) {
       if (IS_NULL(snode)) {
         if (IS_NULL(root) && IS_NOT_NULL(prev_node)) {
           top_root = root = onig_node_list_add(NULL_NODE, prev_node);
