@@ -4746,7 +4746,7 @@ typedef struct {
   int        good_case_fold;
   int        len;
   UChar      s[OPT_EXACT_MAXLEN];
-} OptExact;
+} OptStr;
 
 typedef struct {
   MinMax    mmd;    /* position */
@@ -4756,12 +4756,12 @@ typedef struct {
 } OptMap;
 
 typedef struct {
-  MinMax    len;
-  OptAnc    anc;
-  OptExact  exb;     /* boundary */
-  OptExact  exm;     /* middle */
-  OptExact  expr;    /* prec read (?=...) */
-  OptMap    map;     /* boundary */
+  MinMax  len;
+  OptAnc  anc;
+  OptStr  sb;     /* boundary */
+  OptStr  sm;     /* middle */
+  OptStr  spr;    /* prec read (?=...) */
+  OptMap  map;    /* boundary */
 } NodeOpt;
 
 
@@ -4958,13 +4958,13 @@ alt_merge_opt_anc_info(OptAnc* to, OptAnc* add)
 }
 
 static int
-is_full_opt_exact(OptExact* e)
+is_full_opt_exact(OptStr* e)
 {
   return e->len >= OPT_EXACT_MAXLEN;
 }
 
 static void
-clear_opt_exact(OptExact* e)
+clear_opt_exact(OptStr* e)
 {
   clear_mml(&e->mmd);
   clear_opt_anc_info(&e->anc);
@@ -4976,13 +4976,13 @@ clear_opt_exact(OptExact* e)
 }
 
 static void
-copy_opt_exact(OptExact* to, OptExact* from)
+copy_opt_exact(OptStr* to, OptStr* from)
 {
   *to = *from;
 }
 
 static int
-concat_opt_exact(OptExact* to, OptExact* add, OnigEncoding enc)
+concat_opt_exact(OptStr* to, OptStr* add, OnigEncoding enc)
 {
   int i, j, len, r;
   UChar *p, *end;
@@ -5025,7 +5025,7 @@ concat_opt_exact(OptExact* to, OptExact* add, OnigEncoding enc)
 }
 
 static void
-concat_opt_exact_str(OptExact* to, UChar* s, UChar* end, OnigEncoding enc)
+concat_opt_exact_str(OptStr* to, UChar* s, UChar* end, OnigEncoding enc)
 {
   int i, j, len;
   UChar *p;
@@ -5044,7 +5044,7 @@ concat_opt_exact_str(OptExact* to, UChar* s, UChar* end, OnigEncoding enc)
 }
 
 static void
-alt_merge_opt_exact(OptExact* to, OptExact* add, OptEnv* env)
+alt_merge_opt_exact(OptStr* to, OptStr* add, OptEnv* env)
 {
   int i, j, len;
 
@@ -5083,7 +5083,7 @@ alt_merge_opt_exact(OptExact* to, OptExact* add, OptEnv* env)
 }
 
 static void
-select_opt_exact(OnigEncoding enc, OptExact* now, OptExact* alt)
+select_opt_exact(OnigEncoding enc, OptStr* now, OptStr* alt)
 {
   int vn, va;
 
@@ -5201,7 +5201,7 @@ select_opt_map(OptMap* now, OptMap* alt)
 }
 
 static int
-comp_opt_exact_or_map(OptExact* e, OptMap* m)
+comp_opt_exact_or_map(OptStr* e, OptMap* m)
 {
 #define COMP_EM_BASE  20
   int ae, am;
@@ -5253,9 +5253,9 @@ alt_merge_opt_map(OnigEncoding enc, OptMap* to, OptMap* add)
 static void
 set_bound_node_opt_info(NodeOpt* opt, MinMax* plen)
 {
-  copy_mml(&(opt->exb.mmd),  plen);
-  copy_mml(&(opt->expr.mmd), plen);
-  copy_mml(&(opt->map.mmd),  plen);
+  copy_mml(&(opt->sb.mmd),  plen);
+  copy_mml(&(opt->spr.mmd), plen);
+  copy_mml(&(opt->map.mmd), plen);
 }
 
 static void
@@ -5263,9 +5263,9 @@ clear_node_opt_info(NodeOpt* opt)
 {
   clear_mml(&opt->len);
   clear_opt_anc_info(&opt->anc);
-  clear_opt_exact(&opt->exb);
-  clear_opt_exact(&opt->exm);
-  clear_opt_exact(&opt->expr);
+  clear_opt_exact(&opt->sb);
+  clear_opt_exact(&opt->sm);
+  clear_opt_exact(&opt->spr);
   clear_opt_map(&opt->map);
 }
 
@@ -5278,15 +5278,15 @@ copy_node_opt_info(NodeOpt* to, NodeOpt* from)
 static void
 concat_left_node_opt_info(OnigEncoding enc, NodeOpt* to, NodeOpt* add)
 {
-  int exb_reach, exm_reach;
+  int sb_reach, sm_reach;
   OptAnc tanc;
 
   concat_opt_anc_info(&tanc, &to->anc, &add->anc, to->len.max, add->len.max);
   copy_opt_anc_info(&to->anc, &tanc);
 
-  if (add->exb.len > 0 && to->len.max == 0) {
-    concat_opt_anc_info(&tanc, &to->anc, &add->exb.anc, to->len.max, add->len.max);
-    copy_opt_anc_info(&add->exb.anc, &tanc);
+  if (add->sb.len > 0 && to->len.max == 0) {
+    concat_opt_anc_info(&tanc, &to->anc, &add->sb.anc, to->len.max, add->len.max);
+    copy_opt_anc_info(&add->sb.anc, &tanc);
   }
 
   if (add->map.value > 0 && to->len.max == 0) {
@@ -5294,38 +5294,38 @@ concat_left_node_opt_info(OnigEncoding enc, NodeOpt* to, NodeOpt* add)
       add->map.anc.left |= to->anc.left;
   }
 
-  exb_reach = to->exb.reach_end;
-  exm_reach = to->exm.reach_end;
+  sb_reach = to->sb.reach_end;
+  sm_reach = to->sm.reach_end;
 
   if (add->len.max != 0)
-    to->exb.reach_end = to->exm.reach_end = 0;
+    to->sb.reach_end = to->sm.reach_end = 0;
 
-  if (add->exb.len > 0) {
-    if (exb_reach) {
-      concat_opt_exact(&to->exb, &add->exb, enc);
-      clear_opt_exact(&add->exb);
+  if (add->sb.len > 0) {
+    if (sb_reach) {
+      concat_opt_exact(&to->sb, &add->sb, enc);
+      clear_opt_exact(&add->sb);
     }
-    else if (exm_reach) {
-      concat_opt_exact(&to->exm, &add->exb, enc);
-      clear_opt_exact(&add->exb);
+    else if (sm_reach) {
+      concat_opt_exact(&to->sm, &add->sb, enc);
+      clear_opt_exact(&add->sb);
     }
   }
-  select_opt_exact(enc, &to->exm, &add->exb);
-  select_opt_exact(enc, &to->exm, &add->exm);
+  select_opt_exact(enc, &to->sm, &add->sb);
+  select_opt_exact(enc, &to->sm, &add->sm);
 
-  if (to->expr.len > 0) {
+  if (to->spr.len > 0) {
     if (add->len.max > 0) {
-      if (to->expr.len > (int )add->len.max)
-        to->expr.len = add->len.max;
+      if (to->spr.len > (int )add->len.max)
+        to->spr.len = add->len.max;
 
-      if (to->expr.mmd.max == 0)
-        select_opt_exact(enc, &to->exb, &to->expr);
+      if (to->spr.mmd.max == 0)
+        select_opt_exact(enc, &to->sb, &to->spr);
       else
-        select_opt_exact(enc, &to->exm, &to->expr);
+        select_opt_exact(enc, &to->sm, &to->spr);
     }
   }
-  else if (add->expr.len > 0) {
-    copy_opt_exact(&to->expr, &add->expr);
+  else if (add->spr.len > 0) {
+    copy_opt_exact(&to->spr, &add->spr);
   }
 
   select_opt_map(&to->map, &add->map);
@@ -5336,9 +5336,9 @@ static void
 alt_merge_node_opt_info(NodeOpt* to, NodeOpt* add, OptEnv* env)
 {
   alt_merge_opt_anc_info(&to->anc, &add->anc);
-  alt_merge_opt_exact(&to->exb,  &add->exb, env);
-  alt_merge_opt_exact(&to->exm,  &add->exm, env);
-  alt_merge_opt_exact(&to->expr, &add->expr, env);
+  alt_merge_opt_exact(&to->sb,  &add->sb, env);
+  alt_merge_opt_exact(&to->sm,  &add->sm, env);
+  alt_merge_opt_exact(&to->spr, &add->spr, env);
   alt_merge_opt_map(env->enc, &to->map, &add->map);
 
   alt_merge_mml(&to->len, &add->len);
@@ -5398,7 +5398,7 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
       /* int is_raw = NODE_STRING_IS_RAW(node); */
 
       if (! NODE_STRING_IS_AMBIG(node)) {
-        concat_opt_exact_str(&opt->exb, sn->s, sn->end, enc);
+        concat_opt_exact_str(&opt->sb, sn->s, sn->end, enc);
         if (slen > 0) {
           add_char_opt_map(&opt->map, *(sn->s), enc);
         }
@@ -5412,10 +5412,10 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
           max = ONIGENC_MBC_MAXLEN_DIST(enc) * n;
         }
         else {
-          concat_opt_exact_str(&opt->exb, sn->s, sn->end, enc);
-          opt->exb.case_fold = 1;
+          concat_opt_exact_str(&opt->sb, sn->s, sn->end, enc);
+          opt->sb.case_fold = 1;
           if (NODE_STRING_IS_GOOD_AMBIG(node))
-            opt->exb.good_case_fold = 1;
+            opt->sb.good_case_fold = 1;
 
           if (slen > 0) {
             r = add_char_amb_opt_map(&opt->map, sn->s, sn->end,
@@ -5516,12 +5516,12 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
       {
         r = optimize_nodes(NODE_BODY(node), &xo, env);
         if (r == 0) {
-          if (xo.exb.len > 0)
-            copy_opt_exact(&opt->expr, &xo.exb);
-          else if (xo.exm.len > 0)
-            copy_opt_exact(&opt->expr, &xo.exm);
+          if (xo.sb.len > 0)
+            copy_opt_exact(&opt->spr, &xo.sb);
+          else if (xo.sm.len > 0)
+            copy_opt_exact(&opt->spr, &xo.sm);
 
-          opt->expr.reach_end = 0;
+          opt->spr.reach_end = 0;
 
           if (xo.map.value > 0)
             copy_opt_map(&opt->map, &xo.map);
@@ -5581,22 +5581,22 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
 
       if (qn->lower > 0) {
         copy_node_opt_info(opt, &xo);
-        if (xo.exb.len > 0) {
-          if (xo.exb.reach_end) {
-            for (i = 2; i <= qn->lower && ! is_full_opt_exact(&opt->exb); i++) {
-              int rc = concat_opt_exact(&opt->exb, &xo.exb, enc);
+        if (xo.sb.len > 0) {
+          if (xo.sb.reach_end) {
+            for (i = 2; i <= qn->lower && ! is_full_opt_exact(&opt->sb); i++) {
+              int rc = concat_opt_exact(&opt->sb, &xo.sb, enc);
               if (rc > 0) break;
             }
-            if (i < qn->lower) opt->exb.reach_end = 0;
+            if (i < qn->lower) opt->sb.reach_end = 0;
           }
         }
 
         if (qn->lower != qn->upper) {
-          opt->exb.reach_end = 0;
-          opt->exm.reach_end = 0;
+          opt->sb.reach_end = 0;
+          opt->sm.reach_end = 0;
         }
         if (qn->lower > 1)
-          opt->exm.reach_end = 0;
+          opt->sm.reach_end = 0;
       }
 
       if (IS_REPEAT_INFINITE(qn->upper)) {
@@ -5704,7 +5704,7 @@ optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
 }
 
 static int
-set_optimize_exact(regex_t* reg, OptExact* e)
+set_optimize_exact(regex_t* reg, OptStr* e)
 {
   int r;
 
@@ -5823,14 +5823,14 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
     reg->anchor_dmax = opt.len.max;
   }
 
-  if (opt.exb.len > 0 || opt.exm.len > 0) {
-    select_opt_exact(reg->enc, &opt.exb, &opt.exm);
-    if (opt.map.value > 0 && comp_opt_exact_or_map(&opt.exb, &opt.map) > 0) {
+  if (opt.sb.len > 0 || opt.sm.len > 0) {
+    select_opt_exact(reg->enc, &opt.sb, &opt.sm);
+    if (opt.map.value > 0 && comp_opt_exact_or_map(&opt.sb, &opt.map) > 0) {
       goto set_map;
     }
     else {
-      r = set_optimize_exact(reg, &opt.exb);
-      set_sub_anchor(reg, &opt.exb.anc);
+      r = set_optimize_exact(reg, &opt.sb);
+      set_sub_anchor(reg, &opt.sb.anc);
     }
   }
   else if (opt.map.value > 0) {
