@@ -4194,7 +4194,7 @@ sunday_quick_search_case_fold(regex_t* reg,
                               const UChar* text,   const UChar* text_end,
                               const UChar* text_range)
 {
-  const UChar *s, *se, *p, *end;
+  const UChar *s, *se, *end;
   const UChar *tail;
   int skip, tlen1;
   int map_offset;
@@ -4226,10 +4226,16 @@ sunday_quick_search_case_fold(regex_t* reg,
     se = s + tlen1;
     if (se + map_offset >= text_end) break;
     skip = reg->map[*(se + map_offset)];
+#if 0
     p = s;
     do {
-      s += enclen(reg->enc, s);
+      s += enclen(enc, s);
     } while ((s - p) < skip && s < end);
+#else
+    /* This is faster than prev code for long text.  ex: /(?i)Twain/  */
+    s += skip;
+    s = onigenc_get_right_adjust_char_head(enc, text, s);
+#endif
   }
 
   return (UChar* )NULL;
