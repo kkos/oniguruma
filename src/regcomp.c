@@ -4762,7 +4762,7 @@ typedef struct {
   OptStr  sm;     /* middle */
   OptStr  spr;    /* prec read (?=...) */
   OptMap  map;    /* boundary */
-} NodeOpt;
+} OptNode;
 
 
 static int
@@ -5251,7 +5251,7 @@ alt_merge_opt_map(OnigEncoding enc, OptMap* to, OptMap* add)
 }
 
 static void
-set_bound_node_opt_info(NodeOpt* opt, MinMax* plen)
+set_bound_node_opt_info(OptNode* opt, MinMax* plen)
 {
   copy_mml(&(opt->sb.mmd),  plen);
   copy_mml(&(opt->spr.mmd), plen);
@@ -5259,7 +5259,7 @@ set_bound_node_opt_info(NodeOpt* opt, MinMax* plen)
 }
 
 static void
-clear_node_opt_info(NodeOpt* opt)
+clear_node_opt_info(OptNode* opt)
 {
   clear_mml(&opt->len);
   clear_opt_anc_info(&opt->anc);
@@ -5270,13 +5270,13 @@ clear_node_opt_info(NodeOpt* opt)
 }
 
 static void
-copy_node_opt_info(NodeOpt* to, NodeOpt* from)
+copy_node_opt_info(OptNode* to, OptNode* from)
 {
   *to = *from;
 }
 
 static void
-concat_left_node_opt_info(OnigEncoding enc, NodeOpt* to, NodeOpt* add)
+concat_left_node_opt_info(OnigEncoding enc, OptNode* to, OptNode* add)
 {
   int sb_reach, sm_reach;
   OptAnc tanc;
@@ -5333,7 +5333,7 @@ concat_left_node_opt_info(OnigEncoding enc, NodeOpt* to, NodeOpt* add)
 }
 
 static void
-alt_merge_node_opt_info(NodeOpt* to, NodeOpt* add, OptEnv* env)
+alt_merge_node_opt_info(OptNode* to, OptNode* add, OptEnv* env)
 {
   alt_merge_opt_anc_info(&to->anc, &add->anc);
   alt_merge_opt_exact(&to->sb,  &add->sb, env);
@@ -5348,11 +5348,11 @@ alt_merge_node_opt_info(NodeOpt* to, NodeOpt* add, OptEnv* env)
 #define MAX_NODE_OPT_INFO_REF_COUNT    5
 
 static int
-optimize_nodes(Node* node, NodeOpt* opt, OptEnv* env)
+optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
 {
   int i;
   int r;
-  NodeOpt xo;
+  OptNode xo;
   OnigEncoding enc;
 
   r = 0;
@@ -5796,7 +5796,7 @@ static int
 set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
 {
   int r;
-  NodeOpt opt;
+  OptNode opt;
   OptEnv env;
 
   env.enc            = reg->enc;
