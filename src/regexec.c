@@ -4234,7 +4234,8 @@ sunday_quick_search_case_fold(regex_t* reg,
 #else
     /* This is faster than prev code for long text.  ex: /(?i)Twain/  */
     s += skip;
-    s = onigenc_get_right_adjust_char_head(enc, text, s);
+    if (s < end)
+      s = onigenc_get_right_adjust_char_head(enc, text, s);
 #endif
   }
 
