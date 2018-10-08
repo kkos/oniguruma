@@ -121,6 +121,8 @@ struct PropertyNameCtype {
 #define ONIG_ENCODING_INIT_DEFAULT           ONIG_ENCODING_ASCII
 
 
+#define ENC_SKIP_OFFSET_1_OR_0             7
+
 #define ENC_FLAG_ASCII_COMPATIBLE      (1<<0)
 #define ENC_FLAG_UNICODE               (1<<1)
 #define ENC_FLAG_SKIP_OFFSET_MASK      (7<<2)
@@ -129,9 +131,10 @@ struct PropertyNameCtype {
 #define ENC_FLAG_SKIP_OFFSET_2         (2<<2)
 #define ENC_FLAG_SKIP_OFFSET_3         (3<<2)
 #define ENC_FLAG_SKIP_OFFSET_4         (4<<2)
-#define ENC_FLAG_SKIP_OFFSET_1_OR_0    (7<<2)
+#define ENC_FLAG_SKIP_OFFSET_1_OR_0    (ENC_SKIP_OFFSET_1_OR_0<<2)
 
-#define ENC_GET_SKIP_OFFSET(flag)      ((flag)>>2)
+#define ENC_GET_SKIP_OFFSET(enc) \
+  (((enc)->flag & ENC_FLAG_SKIP_OFFSET_MASK)>>2)
 
 
 /* for encoding system implementation (internal) */

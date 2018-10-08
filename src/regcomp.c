@@ -4632,21 +4632,14 @@ set_sunday_quick_search_skip_table(regex_t* reg, int case_expand,
   UChar buf[ONIGENC_MBC_CASE_FOLD_MAXLEN];
 
   enc = reg->enc;
-
-  offset = 1;
-  if (ONIGENC_MBC_MINLEN(enc) > 1) {
+  offset = ENC_GET_SKIP_OFFSET(enc);
+  if (offset == ENC_SKIP_OFFSET_1_OR_0) {
     UChar* p = s;
     while (1) {
       len = enclen(enc, p);
       if (p + len >= end) {
-        UChar* q = p + (ONIGENC_MBC_MINLEN(enc) - 1);
-        while (q > p) {
-          if (*q != '\0') {
-            offset = (int )(q - p + 1);
-            break;
-          }
-          q--;
-        }
+	if (len == 1) offset = 1;
+	else          offset = 0;
         break;
       }
       p += len;
@@ -4664,12 +4657,16 @@ set_sunday_quick_search_skip_table(regex_t* reg, int case_expand,
   }
 
   for (p = s; p < end; ) {
+    int z;
+
     clen = enclen(enc, p);
     if (p + clen > end) clen = (int )(end - p);
 
     len = (int )(end - p);
     for (j = 0; j < clen; j++) {
-      skip[p[j]] = len - j + (offset - 1);
+      z = len - j + (offset - 1);
+      if (z <= 0) break;
+      skip[p[j]] = z;
     }
 
     if (case_expand != 0) {
@@ -4678,7 +4675,8 @@ set_sunday_quick_search_skip_table(regex_t* reg, int case_expand,
       for (k = 0; k < n; k++) {
         ONIGENC_CODE_TO_MBC(enc, items[k].code[0], buf);
         for (j = 0; j < clen; j++) {
-          int z = len - j + (offset - 1);
+          z = len - j + (offset - 1);
+	  if (z <= 0) break;
           if (skip[buf[j]] > z)
             skip[buf[j]] = z;
         }
