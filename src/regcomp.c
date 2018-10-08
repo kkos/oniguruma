@@ -4618,7 +4618,6 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
   return r;
 }
 
-#ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
 static int
 set_sunday_quick_search_skip_table(regex_t* reg, int case_expand,
                                    UChar* s, UChar* end,
@@ -4688,28 +4687,6 @@ set_sunday_quick_search_skip_table(regex_t* reg, int case_expand,
 
   return 0;
 }
-#else
-/* set skip map for Boyer-Moore-Horspool search */
-static int
-set_bmh_search_skip_table(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED,
-                          UChar skip[])
-{
-  int i, len;
-
-  len = (int )(end - s);
-  if (len < UCHAR_MAX) {
-    for (i = 0; i < CHAR_MAP_SIZE; i++) skip[i] = len;
-
-    for (i = 0; i < len - 1; i++)
-      skip[s[i]] = len - 1 - i;
-
-    return 0;
-  }
-  else {
-    return ONIGERR_PARSER_BUG;
-  }
-}
-#endif /* USE_SUNDAY_QUICK_SEARCH_ALGORITHM */
 
 
 #define OPT_EXACT_MAXLEN   24
@@ -5715,7 +5692,6 @@ set_optimize_exact(regex_t* reg, OptStr* e)
 
   if (e->case_fold) {
     reg->optimize = OPTIMIZE_STR_CASE_FOLD;
-#ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
     if (e->good_case_fold != 0) {
       if (e->len >= 2) {
         r = set_sunday_quick_search_skip_table(reg, 1,
@@ -5725,7 +5701,6 @@ set_optimize_exact(regex_t* reg, OptStr* e)
 	reg->optimize = OPTIMIZE_STR_CASE_FOLD_FAST;
       }
     }
-#endif
   }
   else {
     int allow_reverse;
@@ -5734,13 +5709,8 @@ set_optimize_exact(regex_t* reg, OptStr* e)
       ONIGENC_IS_ALLOWED_REVERSE_MATCH(reg->enc, reg->exact, reg->exact_end);
 
     if (e->len >= 2 || (e->len >= 1 && allow_reverse)) {
-#ifdef USE_SUNDAY_QUICK_SEARCH_ALGORITHM
       r = set_sunday_quick_search_skip_table(reg, 0, reg->exact, reg->exact_end,
                                              reg->map, &(reg->map_offset));
-#else
-      r = set_bmh_search_skip_table(reg->exact, reg->exact_end,
-                                    reg->enc, reg->map);
-#endif
       if (r != 0) return r;
 
       reg->optimize = (allow_reverse != 0
