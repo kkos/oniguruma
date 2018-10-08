@@ -4619,9 +4619,9 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 }
 
 static int
-set_sunday_quick_search_skip_table(regex_t* reg, int case_expand,
-                                   UChar* s, UChar* end,
-                                   UChar skip[], int* roffset)
+set_sunday_quick_search_or_bmh_skip_table(regex_t* reg, int case_expand,
+					  UChar* s, UChar* end,
+					  UChar skip[], int* roffset)
 {
   int i, j, k, len, offset;
   int n, clen;
@@ -5694,7 +5694,7 @@ set_optimize_exact(regex_t* reg, OptStr* e)
     reg->optimize = OPTIMIZE_STR_CASE_FOLD;
     if (e->good_case_fold != 0) {
       if (e->len >= 2) {
-        r = set_sunday_quick_search_skip_table(reg, 1,
+        r = set_sunday_quick_search_or_bmh_skip_table(reg, 1,
                              reg->exact, reg->exact_end,
                              reg->map, &(reg->map_offset));
         if (r != 0) return r;
@@ -5709,8 +5709,9 @@ set_optimize_exact(regex_t* reg, OptStr* e)
       ONIGENC_IS_ALLOWED_REVERSE_MATCH(reg->enc, reg->exact, reg->exact_end);
 
     if (e->len >= 2 || (e->len >= 1 && allow_reverse)) {
-      r = set_sunday_quick_search_skip_table(reg, 0, reg->exact, reg->exact_end,
-                                             reg->map, &(reg->map_offset));
+      r = set_sunday_quick_search_or_bmh_skip_table(reg, 0,
+                                         reg->exact, reg->exact_end,
+                                         reg->map, &(reg->map_offset));
       if (r != 0) return r;
 
       reg->optimize = (allow_reverse != 0
