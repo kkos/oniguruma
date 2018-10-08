@@ -297,6 +297,6 @@ OnigEncodingType OnigEncodingUTF8 = {
   NULL, /* init */
   NULL, /* is_initialized */
   is_valid_mbc_string,
-  ENC_FLAG_ASCII_COMPATIBLE|ENC_FLAG_UNICODE,
+  ENC_FLAG_ASCII_COMPATIBLE|ENC_FLAG_UNICODE|ENC_FLAG_SKIP_OFFSET_1_OR_0,
   0, 0
 };
