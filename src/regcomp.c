@@ -3665,9 +3665,9 @@ expand_case_fold_string(Node* node, regex_t* reg)
     is_good = is_good_case_fold_items_for_search(reg->enc, len, n, items);
 
     if (IS_NOT_NULL(snode) ||
-	(is_good &&
-	 /* expand single char case: ex. /(?i:a)/ */
-	 !(p == start && p + len >= end))) {
+        (is_good &&
+         /* expand single char case: ex. /(?i:a)/ */
+         ! (p == start && p + len >= end))) {
       if (IS_NULL(snode)) {
         if (IS_NULL(root) && IS_NOT_NULL(prev_node)) {
           top_root = root = onig_node_list_add(NULL_NODE, prev_node);
@@ -4620,8 +4620,8 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
 static int
 set_sunday_quick_search_or_bmh_skip_table(regex_t* reg, int case_expand,
-					  UChar* s, UChar* end,
-					  UChar skip[], int* roffset)
+                                          UChar* s, UChar* end,
+                                          UChar skip[], int* roffset)
 {
   int i, j, k, len, offset;
   int n, clen;
@@ -4637,8 +4637,8 @@ set_sunday_quick_search_or_bmh_skip_table(regex_t* reg, int case_expand,
     while (1) {
       len = enclen(enc, p);
       if (p + len >= end) {
-	if (len == 1) offset = 1;
-	else          offset = 0;
+        if (len == 1) offset = 1;
+        else          offset = 0;
         break;
       }
       p += len;
@@ -4675,7 +4675,7 @@ set_sunday_quick_search_or_bmh_skip_table(regex_t* reg, int case_expand,
         ONIGENC_CODE_TO_MBC(enc, items[k].code[0], buf);
         for (j = 0; j < clen; j++) {
           z = len - j + (offset - 1);
-	  if (z <= 0) break;
+          if (z <= 0) break;
           if (skip[buf[j]] > z)
             skip[buf[j]] = z;
         }
@@ -5698,7 +5698,7 @@ set_optimize_exact(regex_t* reg, OptStr* e)
                              reg->exact, reg->exact_end,
                              reg->map, &(reg->map_offset));
         if (r != 0) return r;
-	reg->optimize = OPTIMIZE_STR_CASE_FOLD_FAST;
+        reg->optimize = OPTIMIZE_STR_CASE_FOLD_FAST;
       }
     }
   }

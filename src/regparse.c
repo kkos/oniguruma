@@ -7980,7 +7980,7 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
       int ascii_mode =
         IS_WORD_ASCII(env->options) && IS_WORD_ANCHOR_TYPE(tok->u.anchor) ? 1 : 0;
       *np = onig_node_new_anchor(tok->u.anchor, ascii_mode);
-	  CHECK_NULL_RETURN_MEMERR(*np);
+      CHECK_NULL_RETURN_MEMERR(*np);
     }
     break;
 
