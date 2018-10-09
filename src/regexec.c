@@ -3944,10 +3944,17 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       goto finish;
       NEXT_OP;
 
+#ifdef ONIG_DEBUG_STATISTICS
     fail:
       SOP_OUT;
-      /* fall */
+      goto fail2;
+#endif
     CASE_OP(FAIL)
+#ifdef ONIG_DEBUG_STATISTICS
+    fail2:
+#else
+    fail:
+#endif
       STACK_POP;
       p     = stk->u.state.pcode;
       s     = stk->u.state.pstr;
