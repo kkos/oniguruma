@@ -4069,6 +4069,7 @@ slow_search_backward(OnigEncoding enc, UChar* target, UChar* target_end,
     s = ONIGENC_LEFT_ADJUST_CHAR_HEAD(enc, adjust_text, s);
 
   while (s >= text) {
+    if(IS_NULL(s))break;
     if (*s == *target) {
       p = s + 1;
       t = target + 1;
@@ -4272,6 +4273,7 @@ map_search_backward(OnigEncoding enc, UChar map[],
   const UChar *s = text_start;
 
   while (s >= text) {
+    if(IS_NULL(s))break;
     if (map[*s]) return (UChar* )s;
 
     s = onigenc_get_prev_char_head(enc, adjust_text, s);
@@ -4514,7 +4516,7 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
       case ANCHOR_BEGIN_LINE:
         if (!ON_STR_BEGIN(p)) {
           prev = onigenc_get_prev_char_head(reg->enc, str, p);
-          if (!ONIGENC_IS_MBC_NEWLINE(reg->enc, prev, end)) {
+          if (IS_NOT_NULL(prev) && !ONIGENC_IS_MBC_NEWLINE(reg->enc, prev, end)) {
             p = prev;
             goto retry;
           }
@@ -4706,7 +4708,7 @@ onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
       UChar* pre_end = ONIGENC_STEP_BACK(reg->enc, str, end, 1);
 
       max_semi_end = (UChar* )end;
-      if (ONIGENC_IS_MBC_NEWLINE(reg->enc, pre_end, end)) {
+      if (IS_NOT_NULL(pre_end) && ONIGENC_IS_MBC_NEWLINE(reg->enc, pre_end, end)) {
         min_semi_end = pre_end;
 
 #ifdef USE_CRNL_AS_LINE_TERMINATOR
@@ -4855,6 +4857,7 @@ onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
             MATCH_AND_RETURN_CHECK(orig_start);
             s = prev;
           }
+          if(IS_NULL(s))break;
         } while (s >= range);
         goto mismatch;
       }

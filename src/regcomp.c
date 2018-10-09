@@ -3558,7 +3558,7 @@ expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[], UChar *p
       goto mem_err2;
     }
 
-    if (items[i].byte_len != slen) {
+    if (items[i].byte_len != slen && IS_NOT_NULL(var_anode)) {
       Node *rem;
       UChar *q = p + items[i].byte_len;
 

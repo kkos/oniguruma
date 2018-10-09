@@ -1562,6 +1562,7 @@ onig_set_callout_of_name(OnigEncoding enc, OnigCalloutType callout_type,
   }
   for (i = arg_num - opt_arg_num, j = 0; i < arg_num; i++, j++) {
     if (fe->arg_types[i] == ONIG_TYPE_STRING) {
+      if(IS_NULL(opt_defaults))return ONIGERR_INVALID_ARGUMENT;
       OnigValue* val = opt_defaults + j;
       UChar* ds = onigenc_strdup(enc, val->s.start, val->s.end);
       CHECK_NULL_RETURN_MEMERR(ds);
