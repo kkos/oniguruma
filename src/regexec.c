@@ -2373,20 +2373,25 @@ typedef struct {
 
 #ifdef ONIG_DEBUG_MATCH
 #define MATCH_DEBUG_OUT(offset) do {\
-      static unsigned int counter = 1;\
       UChar *xp, *q, *bp, buf[50];\
-      int len;\
+      int len, spos;\
+      spos = IS_NOT_NULL(s) ? (int )(s - str) : -1;\
       xp = p - (offset);\
       fprintf(stderr, "%7u: %7ld: %4d> \"",\
-              counter, GET_STACK_INDEX(stk), (int )(s - str));\
+              counter, GET_STACK_INDEX(stk), spos);\
       counter++;\
       bp = buf;\
-      for (i = 0, q = s; i < 7 && q < end; i++) {\
-        len = enclen(encode, q);\
-        while (len-- > 0) *bp++ = *q++;\
+      if (IS_NOT_NULL(s)) {\
+        for (i = 0, q = s; i < 7 && q < end; i++) {\
+          len = enclen(encode, q);\
+          while (len-- > 0) *bp++ = *q++;\
+        }\
+        if (q < end) { xmemcpy(bp, "...\"", 4); bp += 4; }\
+        else         { xmemcpy(bp, "\"",    1); bp += 1; }\
       }\
-      if (q < end) { xmemcpy(bp, "...\"", 4); bp += 4; }\
-      else         { xmemcpy(bp, "\"",    1); bp += 1; }\
+      else {\
+        xmemcpy(bp, "\"", 1); bp += 1;\
+      }\
       *bp = 0;\
       fputs((char* )buf, stderr);\
       for (i = 0; i < 20 - (bp - buf); i++) fputc(' ', stderr);\
@@ -2539,6 +2544,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   OnigOptionType option = reg->options;
   OnigEncoding encode = reg->enc;
   OnigCaseFoldType case_fold_flag = reg->case_fold_flag;
+
+#ifdef ONIG_DEBUG_MATCH
+  static unsigned int counter = 1;
+#endif
 
 #ifdef USE_CALLOUT
   msa->mp->match_at_call_counter++;
