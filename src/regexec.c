@@ -2346,7 +2346,7 @@ typedef struct {
 
 #define BYTECODE_INTERPRETER_START      JUMP_OP;
 #define BYTECODE_INTERPRETER_END
-#define CASE_OP(x)   L_##x: SOP_IN(OP_##x); sbegin = s; MATCH_DEBUG_OUT(1);
+#define CASE_OP(x)   L_##x: SOP_IN(OP_##x); sbegin = s; MATCH_DEBUG_OUT(1)
 #define DEFAULT_OP   /* L_DEFAULT: */
 #define NEXT_OP      sprev = sbegin; JUMP_OP
 #define JUMP_OP      goto *opcode_to_label[*p++]
@@ -2396,7 +2396,7 @@ typedef struct {
         fprintf(stderr, "%4d: ", (int )(xp - reg->p));\
       onig_print_compiled_byte_code(stderr, xp, NULL, reg->p, encode);\
       fprintf(stderr, "\n");\
-    }
+  } while(0);
 #else
 #define MATCH_DEBUG_OUT(offset)
 #endif
