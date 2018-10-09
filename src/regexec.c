@@ -4724,7 +4724,7 @@ onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
       UChar* pre_end = ONIGENC_STEP_BACK(reg->enc, str, end, 1);
 
       max_semi_end = (UChar* )end;
-      if (IS_NOT_NULL(pre_end) && ONIGENC_IS_MBC_NEWLINE(reg->enc, pre_end, end)) {
+      if (ONIGENC_IS_MBC_NEWLINE(reg->enc, pre_end, end)) {
         min_semi_end = pre_end;
 
 #ifdef USE_CRNL_AS_LINE_TERMINATOR
