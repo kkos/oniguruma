@@ -1133,7 +1133,7 @@ compile_length_enclosure_node(EnclosureNode* node, regex_t* reg)
   return len;
 }
 
-static int get_char_length_tree(Node* node, regex_t* reg, int* len);
+static int get_char_len_node(Node* node, regex_t* reg, int* len);
 
 static int
 compile_enclosure_memory_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
@@ -1421,7 +1421,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
       r = add_opcode(reg, OP_LOOK_BEHIND);
       if (r != 0) return r;
       if (node->char_len < 0) {
-        r = get_char_length_tree(NODE_ANCHOR_BODY(node), reg, &n);
+        r = get_char_len_node(NODE_ANCHOR_BODY(node), reg, &n);
         if (r != 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
       }
       else
@@ -1442,7 +1442,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
                               len + SIZE_OP_LOOK_BEHIND_NOT_END);
       if (r != 0) return r;
       if (node->char_len < 0) {
-        r = get_char_length_tree(NODE_ANCHOR_BODY(node), reg, &n);
+        r = get_char_len_node(NODE_ANCHOR_BODY(node), reg, &n);
         if (r != 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
       }
       else
@@ -2138,7 +2138,7 @@ fix_unset_addr_list(UnsetAddrList* uslist, regex_t* reg)
 
 /* fixed size pattern node only */
 static int
-get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
+get_char_len_node1(Node* node, regex_t* reg, int* len, int level)
 {
   int tlen;
   int r = 0;
@@ -2148,7 +2148,7 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
   switch (NODE_TYPE(node)) {
   case NODE_LIST:
     do {
-      r = get_char_length_tree1(NODE_CAR(node), reg, &tlen, level);
+      r = get_char_len_node1(NODE_CAR(node), reg, &tlen, level);
       if (r == 0)
         *len = distance_add(*len, tlen);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
@@ -2159,9 +2159,9 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
       int tlen2;
       int varlen = 0;
 
-      r = get_char_length_tree1(NODE_CAR(node), reg, &tlen, level);
+      r = get_char_len_node1(NODE_CAR(node), reg, &tlen, level);
       while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node))) {
-        r = get_char_length_tree1(NODE_CAR(node), reg, &tlen2, level);
+        r = get_char_len_node1(NODE_CAR(node), reg, &tlen2, level);
         if (r == 0) {
           if (tlen != tlen2)
             varlen = 1;
@@ -2201,7 +2201,7 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
           *len = 0;
         }
         else {
-          r = get_char_length_tree1(NODE_BODY(node), reg, &tlen, level);
+          r = get_char_len_node1(NODE_BODY(node), reg, &tlen, level);
           if (r == 0)
             *len = distance_multiply(tlen, qn->lower);
         }
@@ -2214,7 +2214,7 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
 #ifdef USE_CALL
   case NODE_CALL:
     if (! NODE_IS_RECURSION(node))
-      r = get_char_length_tree1(NODE_BODY(node), reg, len, level);
+      r = get_char_len_node1(NODE_BODY(node), reg, len, level);
     else
       r = GET_CHAR_LEN_VARLEN;
     break;
@@ -2235,7 +2235,7 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
         if (NODE_IS_CLEN_FIXED(node))
           *len = en->char_len;
         else {
-          r = get_char_length_tree1(NODE_BODY(node), reg, len, level);
+          r = get_char_len_node1(NODE_BODY(node), reg, len, level);
           if (r == 0) {
             en->char_len = *len;
             NODE_STATUS_ADD(node, CLEN_FIXED);
@@ -2245,21 +2245,21 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
 #endif
       case ENCLOSURE_OPTION:
       case ENCLOSURE_STOP_BACKTRACK:
-        r = get_char_length_tree1(NODE_BODY(node), reg, len, level);
+        r = get_char_len_node1(NODE_BODY(node), reg, len, level);
         break;
       case ENCLOSURE_IF_ELSE:
         {
           int clen, elen;
 
-          r = get_char_length_tree1(NODE_BODY(node), reg, &clen, level);
+          r = get_char_len_node1(NODE_BODY(node), reg, &clen, level);
           if (r == 0) {
             if (IS_NOT_NULL(en->te.Then)) {
-              r = get_char_length_tree1(en->te.Then, reg, &tlen, level);
+              r = get_char_len_node1(en->te.Then, reg, &tlen, level);
               if (r != 0) break;
             }
             else tlen = 0;
             if (IS_NOT_NULL(en->te.Else)) {
-              r = get_char_length_tree1(en->te.Else, reg, &elen, level);
+              r = get_char_len_node1(en->te.Else, reg, &elen, level);
               if (r != 0) break;
             }
             else elen = 0;
@@ -2297,9 +2297,9 @@ get_char_length_tree1(Node* node, regex_t* reg, int* len, int level)
 }
 
 static int
-get_char_length_tree(Node* node, regex_t* reg, int* len)
+get_char_len_node(Node* node, regex_t* reg, int* len)
 {
-  return get_char_length_tree1(node, reg, len, 0);
+  return get_char_len_node1(node, reg, len, 0);
 }
 
 /* x is not included y ==>  1 : 0 */
@@ -3381,7 +3381,7 @@ setup_look_behind(Node* node, regex_t* reg, ScanEnv* env)
   int r, len;
   AnchorNode* an = ANCHOR_(node);
 
-  r = get_char_length_tree(NODE_ANCHOR_BODY(an), reg, &len);
+  r = get_char_len_node(NODE_ANCHOR_BODY(an), reg, &len);
   if (r == 0)
     an->char_len = len;
   else if (r == GET_CHAR_LEN_VARLEN)
