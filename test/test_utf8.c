@@ -298,6 +298,7 @@ extern int main(int argc, char* argv[])
   x2("(?i:\xc3\x9f)", "SS", 0, 2);
   x2("(?i:[\xc3\x9f])", "ss", 0, 2);
   x2("(?i:[\xc3\x9f])", "SS", 0, 2);
+  x2("(?i)(?<!ss)z", "qqz", 2, 3);
   x2("(?i:[A-Z])", "a", 0, 1);
   x2("(?i:[f-m])", "H", 0, 1);
   x2("(?i:[f-m])", "h", 0, 1);
