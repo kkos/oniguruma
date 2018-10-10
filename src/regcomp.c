@@ -3332,6 +3332,15 @@ recursive_call_check_trav(Node* node, ScanEnv* env, int state)
 
 #endif
 
+#define IN_ALT          (1<<0)
+#define IN_NOT          (1<<1)
+#define IN_REAL_REPEAT  (1<<2)
+#define IN_VAR_REPEAT   (1<<3)
+#define IN_ZERO_REPEAT  (1<<4)
+#define IN_MULTI_ENTRY  (1<<5)
+#define IN_LOOK_BEHIND  (1<<6)
+
+
 /* divide different length alternatives in look-behind.
   (?<=A|B) ==> (?<=A)|(?<=B)
   (?<!A|B) ==> (?<!A)(?<!B)
@@ -3628,26 +3637,30 @@ is_good_case_fold_items_for_search(OnigEncoding enc, int slen,
   return 1;
 }
 
-static int
-expand_case_fold_string(Node* node, regex_t* reg)
-{
 #define THRESHOLD_CASE_FOLD_ALT_FOR_EXPANSION  8
 
+static int
+expand_case_fold_string(Node* node, regex_t* reg, int state)
+{
   int r, n, len, alt_num;
   int fold_len;
-  int prev_is_ambig, prev_is_good, is_good;
+  int prev_is_ambig, prev_is_good, is_good, is_in_look_behind;
   UChar *start, *end, *p;
   UChar* foldp;
   Node *top_root, *root, *snode, *prev_node;
   OnigCaseFoldCodeItem items[ONIGENC_GET_CASE_FOLD_CODES_MAX_NUM];
   UChar buf[ONIGENC_MBC_CASE_FOLD_MAXLEN];
-  StrNode* sn = STR_(node);
+  StrNode* sn;
 
   if (NODE_STRING_IS_AMBIG(node)) return 0;
+
+  sn = STR_(node);
 
   start = sn->s;
   end   = sn->end;
   if (start >= end) return 0;
+
+  is_in_look_behind = (state & IN_LOOK_BEHIND) != 0;
 
   r = 0;
   top_root = root = prev_node = snode = NULL_NODE;
@@ -3664,10 +3677,11 @@ expand_case_fold_string(Node* node, regex_t* reg)
     len = enclen(reg->enc, p);
     is_good = is_good_case_fold_items_for_search(reg->enc, len, n, items);
 
-    if (IS_NOT_NULL(snode) ||
-        (is_good &&
-         /* expand single char case: ex. /(?i:a)/ */
-         ! (p == start && p + len >= end))) {
+    if (is_in_look_behind ||
+        (IS_NOT_NULL(snode) ||
+         (is_good
+          /* expand single char case: ex. /(?i:a)/ */
+          && !(p == start && p + len >= end)))) {
       if (IS_NULL(snode)) {
         if (IS_NULL(root) && IS_NOT_NULL(prev_node)) {
           top_root = root = onig_node_list_add(NULL_NODE, prev_node);
@@ -3897,13 +3911,6 @@ quantifiers_memory_node_info(Node* node)
 }
 #endif /* USE_INSISTENT_CHECK_CAPTURES_IN_EMPTY_REPEAT */
 
-
-#define IN_ALT          (1<<0)
-#define IN_NOT          (1<<1)
-#define IN_REAL_REPEAT  (1<<2)
-#define IN_VAR_REPEAT   (1<<3)
-#define IN_ZERO_REPEAT  (1<<4)
-#define IN_MULTI_ENTRY  (1<<5)
 
 #ifdef USE_CALL
 
@@ -4376,7 +4383,7 @@ setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
                           ALLOWED_ENCLOSURE_IN_LB, ALLOWED_ANCHOR_IN_LB);
       if (r < 0) return r;
       if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
-      r = setup_tree(NODE_ANCHOR_BODY(an), reg, state, env);
+      r = setup_tree(NODE_ANCHOR_BODY(an), reg, (state|IN_LOOK_BEHIND), env);
       if (r != 0) return r;
       r = setup_look_behind(node, reg, env);
     }
@@ -4388,7 +4395,8 @@ setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
                           ALLOWED_ENCLOSURE_IN_LB_NOT, ALLOWED_ANCHOR_IN_LB_NOT);
       if (r < 0) return r;
       if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
-      r = setup_tree(NODE_ANCHOR_BODY(an), reg, (state | IN_NOT), env);
+      r = setup_tree(NODE_ANCHOR_BODY(an), reg, (state|IN_NOT|IN_LOOK_BEHIND),
+                     env);
       if (r != 0) return r;
       r = setup_look_behind(node, reg, env);
     }
@@ -4519,7 +4527,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
   case NODE_STRING:
     if (IS_IGNORECASE(reg->options) && !NODE_STRING_IS_RAW(node)) {
-      r = expand_case_fold_string(node, reg);
+      r = expand_case_fold_string(node, reg, state);
     }
     break;
 
