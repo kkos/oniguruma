@@ -272,7 +272,33 @@ extern int main(int argc, char* argv[])
   x2("(?i:a)", "a", 0, 1);
   x2("(?i:a)", "A", 0, 1);
   x2("(?i:A)", "a", 0, 1);
+  x2("(?i:i)", "I", 0, 1);
+  x2("(?i:I)", "i", 0, 1);
+  x2("(?i:[A-Z])", "i", 0, 1);
+  x2("(?i:[a-z])", "I", 0, 1);
   n("(?i:A)", "b");
+  x2("(?i:ss)", "ss", 0, 2);
+  x2("(?i:ss)", "Ss", 0, 2);
+  x2("(?i:ss)", "SS", 0, 2);
+  /* 0xc5,0xbf == 017F: # LATIN SMALL LETTER LONG S */
+  x2("(?i:ss)", "\xc5\xbfS", 0, 3);
+  x2("(?i:ss)", "s\xc5\xbf", 0, 3);
+  /* 0xc3,0x9f == 00DF: # LATIN SMALL LETTER SHARP S */
+  x2("(?i:ss)", "\xc3\x9f", 0, 2);
+  /* 0xe1,0xba,0x9e == 1E9E # LATIN CAPITAL LETTER SHARP S */
+  x2("(?i:ss)", "\xe1\xba\x9e", 0, 3);
+  x2("(?i:xssy)", "xssy", 0, 4);
+  x2("(?i:xssy)", "xSsy", 0, 4);
+  x2("(?i:xssy)", "xSSy", 0, 4);
+  x2("(?i:xssy)", "x\xc5\xbfSy", 0, 5);
+  x2("(?i:xssy)", "xs\xc5\xbfy", 0, 5);
+  x2("(?i:xssy)", "x\xc3\x9fy", 0, 4);
+  x2("(?i:xssy)", "x\xe1\xba\x9ey", 0, 5);
+  x2("(?i:\xc3\x9f)", "ss", 0, 2);
+  x2("(?i:\xc3\x9f)", "SS", 0, 2);
+  x2("(?i:[\xc3\x9f])", "ss", 0, 2);
+  x2("(?i:[\xc3\x9f])", "SS", 0, 2);
+  x2("(?i)(?<!ss)z", "qqz", 2, 3);
   x2("(?i:[A-Z])", "a", 0, 1);
   x2("(?i:[f-m])", "H", 0, 1);
   x2("(?i:[f-m])", "h", 0, 1);

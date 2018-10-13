@@ -187,6 +187,7 @@ typedef unsigned int  uintptr_t;
 #define CHECK_NULL_RETURN_MEMERR(p)   if (IS_NULL(p)) return ONIGERR_MEMORY
 #define NULL_UCHARP                   ((UChar* )0)
 
+#define CHAR_MAP_SIZE       256
 #define INFINITE_LEN        ONIG_INFINITE_DISTANCE
 
 #ifdef PLATFORM_UNALIGNED_WORD_ACCESS
@@ -262,9 +263,6 @@ typedef struct {
 #endif
 } RegexExt;
 
-#define REG_EXTP(reg)      ((RegexExt* )((reg)->chain))
-#define REG_EXTPL(reg)     ((reg)->chain)
-
 struct re_pattern_buffer {
   /* common members of BBuf(bytes-buffer) */
   unsigned char* p;         /* compiled pattern */
@@ -274,7 +272,6 @@ struct re_pattern_buffer {
   int num_mem;                   /* used memory(...) num counted from 1 */
   int num_repeat;                /* OP_REPEAT/OP_REPEAT_NG id-counter */
   int num_null_check;            /* OP_EMPTY_CHECK_START/END id counter */
-  int num_comb_exp_check;        /* no longer used (combination explosion check) */
   int num_call;                  /* number of subexp call */
   unsigned int capture_history;  /* (?@...) flag (1-31) */
   unsigned int bt_mem_start;     /* need backtrack flag */
@@ -293,19 +290,16 @@ struct re_pattern_buffer {
   int            optimize;          /* optimize flag */
   int            threshold_len;     /* search str-length for apply optimize */
   int            anchor;            /* BEGIN_BUF, BEGIN_POS, (SEMI_)END_BUF */
-  OnigLen   anchor_dmin;       /* (SEMI_)END_BUF anchor distance */
-  OnigLen   anchor_dmax;       /* (SEMI_)END_BUF anchor distance */
+  OnigLen        anchor_dmin;       /* (SEMI_)END_BUF anchor distance */
+  OnigLen        anchor_dmax;       /* (SEMI_)END_BUF anchor distance */
   int            sub_anchor;        /* start-anchor for exact or map */
   unsigned char *exact;
   unsigned char *exact_end;
-  unsigned char  map[ONIG_CHAR_TABLE_SIZE]; /* used as BM skip or char-map */
-  int           *int_map;                   /* BM skip for exact_len > 255 */
-  int           *int_map_backward;          /* BM skip for backward search */
-  OnigLen   dmin;                      /* min-distance of exact or map */
-  OnigLen   dmax;                      /* max-distance of exact or map */
-
-  /* regex_t link chain */
-  struct re_pattern_buffer* chain;  /* escape compile-conflict */
+  unsigned char  map[CHAR_MAP_SIZE]; /* used as BMH skip or char-map */
+  int            map_offset;
+  OnigLen        dmin;                      /* min-distance of exact or map */
+  OnigLen        dmax;                      /* max-distance of exact or map */
+  RegexExt*      extp;
 };
 
 
@@ -318,12 +312,13 @@ enum StackPopLevel {
 
 /* optimize flags */
 enum OptimizeType {
-  OPTIMIZE_NONE            = 0,
-  OPTIMIZE_EXACT           = 1,  /* Slow Search */
-  OPTIMIZE_EXACT_BM        = 2,  /* Boyer Moore Search */
-  OPTIMIZE_EXACT_BM_NO_REV = 3,  /* BM   (but not simple match) */
-  OPTIMIZE_EXACT_IC        = 4,  /* Slow Search (ignore case) */
-  OPTIMIZE_MAP             = 5   /* char map */
+  OPTIMIZE_NONE = 0,
+  OPTIMIZE_STR,                   /* Slow Search */
+  OPTIMIZE_STR_FAST,              /* Sunday quick search / BMH */
+  OPTIMIZE_STR_FAST_STEP_FORWARD, /* Sunday quick search / BMH */
+  OPTIMIZE_STR_CASE_FOLD_FAST,    /* Sunday quick search / BMH (ignore case) */
+  OPTIMIZE_STR_CASE_FOLD,         /* Slow Search (ignore case) */
+  OPTIMIZE_MAP                    /* char map */
 };
 
 /* bit status */

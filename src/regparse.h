@@ -117,18 +117,22 @@ enum EnclosureType {
 
 #define NODE_STRING_RAW                (1<<0) /* by backslashed number */
 #define NODE_STRING_AMBIG              (1<<1)
-#define NODE_STRING_DONT_GET_OPT_INFO  (1<<2)
+#define NODE_STRING_GOOD_AMBIG         (1<<2)
+#define NODE_STRING_DONT_GET_OPT_INFO  (1<<3)
 
 #define NODE_STRING_LEN(node)            (int )((node)->u.str.end - (node)->u.str.s)
 #define NODE_STRING_SET_RAW(node)        (node)->u.str.flag |= NODE_STRING_RAW
 #define NODE_STRING_CLEAR_RAW(node)      (node)->u.str.flag &= ~NODE_STRING_RAW
 #define NODE_STRING_SET_AMBIG(node)      (node)->u.str.flag |= NODE_STRING_AMBIG
+#define NODE_STRING_SET_GOOD_AMBIG(node) (node)->u.str.flag |= NODE_STRING_GOOD_AMBIG
 #define NODE_STRING_SET_DONT_GET_OPT_INFO(node) \
   (node)->u.str.flag |= NODE_STRING_DONT_GET_OPT_INFO
 #define NODE_STRING_IS_RAW(node) \
   (((node)->u.str.flag & NODE_STRING_RAW) != 0)
 #define NODE_STRING_IS_AMBIG(node) \
   (((node)->u.str.flag & NODE_STRING_AMBIG) != 0)
+#define NODE_STRING_IS_GOOD_AMBIG(node) \
+  (((node)->u.str.flag & NODE_STRING_GOOD_AMBIG) != 0)
 #define NODE_STRING_IS_DONT_GET_OPT_INFO(node) \
   (((node)->u.str.flag & NODE_STRING_DONT_GET_OPT_INFO) != 0)
 
