@@ -1125,8 +1125,8 @@ compile_length_enclosure_node(EnclosureNode* node, regex_t* reg)
     }
     break;
 
-  default:
-    return ONIGERR_TYPE_BUG;
+  case ENCLOSURE_OPTION:
+    len = tlen;
     break;
   }
 
@@ -1298,10 +1298,6 @@ compile_enclosure_node(EnclosureNode* node, regex_t* reg, ScanEnv* env)
         r = compile_tree(Else, reg, env);
       }
     }
-    break;
-
-  default:
-    return ONIGERR_TYPE_BUG;
     break;
   }
 
@@ -2272,9 +2268,6 @@ get_char_len_node1(Node* node, regex_t* reg, int* len, int level)
             }
           }
         }
-        break;
-
-      default:
         break;
       }
     }
@@ -3890,8 +3883,6 @@ quantifiers_memory_node_info(Node* node)
             if (v > r) r = v;
           }
         }
-        break;
-      default:
         break;
       }
     }
@@ -6710,8 +6701,8 @@ print_indent_tree(FILE* f, Node* node, int indent)
     case ENCLOSURE_STOP_BACKTRACK:
       fprintf(f, "stop-bt");
       break;
-
-    default:
+    case ENCLOSURE_IF_ELSE:
+      fprintf(f, "if-else");
       break;
     }
     fprintf(f, "\n");
