@@ -2415,7 +2415,7 @@ node_new_enclosure(enum EnclosureType type)
 }
 
 extern Node*
-onig_node_new_enclosure(int type)
+onig_node_new_enclosure(enum EnclosureType type)
 {
   return node_new_enclosure(type);
 }
