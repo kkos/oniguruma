@@ -254,6 +254,7 @@ typedef struct {
     } m;
     struct {
       OnigOptionType options;
+      int is_no_effect;
     } o;
     struct {
       /* body is condition */

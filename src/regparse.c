@@ -2450,6 +2450,17 @@ node_new_option(OnigOptionType option)
   Node* node = node_new_enclosure(ENCLOSURE_OPTION);
   CHECK_NULL_RETURN(node);
   ENCLOSURE_(node)->o.options = option;
+  ENCLOSURE_(node)->o.is_no_effect = 0;
+  return node;
+}
+
+static Node*
+node_new_no_effect(OnigOptionType option)
+{
+  Node* node = node_new_enclosure(ENCLOSURE_OPTION);
+  CHECK_NULL_RETURN(node);
+  ENCLOSURE_(node)->o.options = option;
+  ENCLOSURE_(node)->o.is_no_effect = 1;
   return node;
 }
 
@@ -6511,7 +6522,7 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end, ScanEnv* en
 }
 
 static int parse_subexp(Node** top, OnigToken* tok, int term,
-                        UChar** src, UChar* end, ScanEnv* env);
+                        UChar** src, UChar* end, ScanEnv* env, int group_head);
 
 #ifdef USE_CALLOUT
 
@@ -6996,7 +7007,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
     group:
       r = fetch_token(tok, &p, end, env);
       if (r < 0) return r;
-      r = parse_subexp(np, tok, term, &p, end, env);
+      r = parse_subexp(np, tok, term, &p, end, env, 0);
       if (r < 0) return r;
       *src = p;
       return 1; /* group */
@@ -7091,7 +7102,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 
         r = fetch_token(tok, &p, end, env);
         if (r < 0) return r;
-        r = parse_subexp(&absent, tok, term, &p, end, env);
+        r = parse_subexp(&absent, tok, term, &p, end, env, 1);
         if (r < 0) {
           onig_node_free(absent);
           return r;
@@ -7269,7 +7280,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           condition_is_checker = 0;
           r = fetch_token(tok, &p, end, env);
           if (r < 0) return r;
-          r = parse_subexp(&condition, tok, term, &p, end, env);
+          r = parse_subexp(&condition, tok, term, &p, end, env, 0);
           if (r < 0) {
             onig_node_free(condition);
             return r;
@@ -7310,7 +7321,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
             onig_node_free(condition);
             return r;
           }
-          r = parse_subexp(&target, tok, term, &p, end, env);
+          r = parse_subexp(&target, tok, term, &p, end, env, 1);
           if (r < 0) {
             onig_node_free(condition);
             onig_node_free(target);
@@ -7442,7 +7453,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
             env->options = option;
             r = fetch_token(tok, &p, end, env);
             if (r < 0) return r;
-            r = parse_subexp(&target, tok, term, &p, end, env);
+            r = parse_subexp(&target, tok, term, &p, end, env, 0);
             env->options = prev;
             if (r < 0) {
               onig_node_free(target);
@@ -7489,7 +7500,7 @@ parse_enclosure(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
   CHECK_NULL_RETURN_MEMERR(*np);
   r = fetch_token(tok, &p, end, env);
   if (r < 0) return r;
-  r = parse_subexp(&target, tok, term, &p, end, env);
+  r = parse_subexp(&target, tok, term, &p, end, env, 0);
   if (r < 0) {
     onig_node_free(target);
     return r;
@@ -7721,7 +7732,7 @@ i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[], int to_len, void* arg)
 
 static int
 parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
-          ScanEnv* env)
+          ScanEnv* env, int group_head)
 {
   int r, len, group = 0;
   Node* qn;
@@ -7743,7 +7754,21 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
   case TK_SUBEXP_OPEN:
     r = parse_enclosure(np, tok, TK_SUBEXP_CLOSE, src, end, env);
     if (r < 0) return r;
-    if (r == 1) group = 1;
+    if (r == 1) { /* group */
+      if (group_head == 0)
+	group = 1;
+      else {
+	Node* target;
+
+	target = *np;
+	*np = node_new_no_effect(env->options);
+	if (IS_NULL(*np)) {
+	  onig_node_free(target);
+	  return ONIGERR_MEMORY;
+	}
+	NODE_BODY(*np) = target;
+      }
+    }
     else if (r == 2) { /* option only */
       Node* target;
       OnigOptionType prev = env->options;
@@ -7751,7 +7776,7 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
       env->options = ENCLOSURE_(*np)->o.options;
       r = fetch_token(tok, src, end, env);
       if (r < 0) return r;
-      r = parse_subexp(&target, tok, term, src, end, env);
+      r = parse_subexp(&target, tok, term, src, end, env, 0);
       env->options = prev;
       if (r < 0) {
         onig_node_free(target);
@@ -8092,13 +8117,13 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 
 static int
 parse_branch(Node** top, OnigToken* tok, int term, UChar** src, UChar* end,
-             ScanEnv* env)
+             ScanEnv* env, int group_head)
 {
   int r;
   Node *node, **headp;
 
   *top = NULL;
-  r = parse_exp(&node, tok, term, src, end, env);
+  r = parse_exp(&node, tok, term, src, end, env, group_head);
   if (r < 0) {
     onig_node_free(node);
     return r;
@@ -8116,7 +8141,7 @@ parse_branch(Node** top, OnigToken* tok, int term, UChar** src, UChar* end,
 
     headp = &(NODE_CDR(*top));
     while (r != TK_EOT && r != term && r != TK_ALT) {
-      r = parse_exp(&node, tok, term, src, end, env);
+      r = parse_exp(&node, tok, term, src, end, env, 0);
       if (r < 0) {
         onig_node_free(node);
         return r;
@@ -8140,7 +8165,7 @@ parse_branch(Node** top, OnigToken* tok, int term, UChar** src, UChar* end,
 /* term_tok: TK_EOT or TK_SUBEXP_CLOSE */
 static int
 parse_subexp(Node** top, OnigToken* tok, int term, UChar** src, UChar* end,
-             ScanEnv* env)
+             ScanEnv* env, int group_head)
 {
   int r;
   Node *node, **headp;
@@ -8150,7 +8175,7 @@ parse_subexp(Node** top, OnigToken* tok, int term, UChar** src, UChar* end,
   if (env->parse_depth > ParseDepthLimit)
     return ONIGERR_PARSE_DEPTH_LIMIT_OVER;
 
-  r = parse_branch(&node, tok, term, src, end, env);
+  r = parse_branch(&node, tok, term, src, end, env, group_head);
   if (r < 0) {
     onig_node_free(node);
     return r;
@@ -8170,7 +8195,7 @@ parse_subexp(Node** top, OnigToken* tok, int term, UChar** src, UChar* end,
     while (r == TK_ALT) {
       r = fetch_token(tok, src, end, env);
       if (r < 0) return r;
-      r = parse_branch(&node, tok, term, src, end, env);
+      r = parse_branch(&node, tok, term, src, end, env, 0);
       if (r < 0) {
         onig_node_free(node);
         return r;
@@ -8209,7 +8234,7 @@ parse_regexp(Node** top, UChar** src, UChar* end, ScanEnv* env)
 
   r = fetch_token(&tok, src, end, env);
   if (r < 0) return r;
-  r = parse_subexp(top, &tok, TK_EOT, src, end, env);
+  r = parse_subexp(top, &tok, TK_EOT, src, end, env, 0);
   if (r < 0) return r;
 
   return 0;
