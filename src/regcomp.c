@@ -1316,30 +1316,30 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
   }
 
   switch (node->type) {
-  case ANCHOR_PREC_READ:
+  case ANCR_PREC_READ:
     len = SIZE_OP_PREC_READ_START + tlen + SIZE_OP_PREC_READ_END;
     break;
-  case ANCHOR_PREC_READ_NOT:
+  case ANCR_PREC_READ_NOT:
     len = SIZE_OP_PREC_READ_NOT_START + tlen + SIZE_OP_PREC_READ_NOT_END;
     break;
-  case ANCHOR_LOOK_BEHIND:
+  case ANCR_LOOK_BEHIND:
     len = SIZE_OP_LOOK_BEHIND + tlen;
     break;
-  case ANCHOR_LOOK_BEHIND_NOT:
+  case ANCR_LOOK_BEHIND_NOT:
     len = SIZE_OP_LOOK_BEHIND_NOT_START + tlen + SIZE_OP_LOOK_BEHIND_NOT_END;
     break;
 
-  case ANCHOR_WORD_BOUNDARY:
-  case ANCHOR_NO_WORD_BOUNDARY:
+  case ANCR_WORD_BOUNDARY:
+  case ANCR_NO_WORD_BOUNDARY:
 #ifdef USE_WORD_BEGIN_END
-  case ANCHOR_WORD_BEGIN:
-  case ANCHOR_WORD_END:
+  case ANCR_WORD_BEGIN:
+  case ANCR_WORD_END:
 #endif
     len = SIZE_OP_WORD_BOUNDARY;
     break;
 
-  case ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
-  case ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
+  case ANCR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
+  case ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
     len = SIZE_OPCODE;
     break;
 
@@ -1358,14 +1358,14 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
   enum OpCode op;
 
   switch (node->type) {
-  case ANCHOR_BEGIN_BUF:      r = add_opcode(reg, OP_BEGIN_BUF);      break;
-  case ANCHOR_END_BUF:        r = add_opcode(reg, OP_END_BUF);        break;
-  case ANCHOR_BEGIN_LINE:     r = add_opcode(reg, OP_BEGIN_LINE);     break;
-  case ANCHOR_END_LINE:       r = add_opcode(reg, OP_END_LINE);       break;
-  case ANCHOR_SEMI_END_BUF:   r = add_opcode(reg, OP_SEMI_END_BUF);   break;
-  case ANCHOR_BEGIN_POSITION: r = add_opcode(reg, OP_BEGIN_POSITION); break;
+  case ANCR_BEGIN_BUF:      r = add_opcode(reg, OP_BEGIN_BUF);      break;
+  case ANCR_END_BUF:        r = add_opcode(reg, OP_END_BUF);        break;
+  case ANCR_BEGIN_LINE:     r = add_opcode(reg, OP_BEGIN_LINE);     break;
+  case ANCR_END_LINE:       r = add_opcode(reg, OP_END_LINE);       break;
+  case ANCR_SEMI_END_BUF:   r = add_opcode(reg, OP_SEMI_END_BUF);   break;
+  case ANCR_BEGIN_POSITION: r = add_opcode(reg, OP_BEGIN_POSITION); break;
 
-  case ANCHOR_WORD_BOUNDARY:
+  case ANCR_WORD_BOUNDARY:
     op = OP_WORD_BOUNDARY;
   word:
     r = add_opcode(reg, op);
@@ -1373,27 +1373,27 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     r = add_mode(reg, (ModeType )node->ascii_mode);
     break;
 
-  case ANCHOR_NO_WORD_BOUNDARY:
+  case ANCR_NO_WORD_BOUNDARY:
     op = OP_NO_WORD_BOUNDARY; goto word;
     break;
 #ifdef USE_WORD_BEGIN_END
-  case ANCHOR_WORD_BEGIN:
+  case ANCR_WORD_BEGIN:
     op = OP_WORD_BEGIN; goto word;
     break;
-  case ANCHOR_WORD_END:
+  case ANCR_WORD_END:
     op = OP_WORD_END; goto word;
     break;
 #endif
 
-  case ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
+  case ANCR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
     r = add_opcode(reg, OP_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY);
     break;
 
-  case ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
+  case ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
     r = add_opcode(reg, OP_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY);
     break;
 
-  case ANCHOR_PREC_READ:
+  case ANCR_PREC_READ:
     r = add_opcode(reg, OP_PREC_READ_START);
     if (r != 0) return r;
     r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
@@ -1401,7 +1401,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     r = add_opcode(reg, OP_PREC_READ_END);
     break;
 
-  case ANCHOR_PREC_READ_NOT:
+  case ANCR_PREC_READ_NOT:
     len = compile_length_tree(NODE_ANCHOR_BODY(node), reg);
     if (len < 0) return len;
     r = add_opcode_rel_addr(reg, OP_PREC_READ_NOT_START, len + SIZE_OP_PREC_READ_NOT_END);
@@ -1411,7 +1411,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     r = add_opcode(reg, OP_PREC_READ_NOT_END);
     break;
 
-  case ANCHOR_LOOK_BEHIND:
+  case ANCR_LOOK_BEHIND:
     {
       int n;
       r = add_opcode(reg, OP_LOOK_BEHIND);
@@ -1429,7 +1429,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     }
     break;
 
-  case ANCHOR_LOOK_BEHIND_NOT:
+  case ANCR_LOOK_BEHIND_NOT:
     {
       int n;
 
@@ -2572,7 +2572,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
     break;
 
   case NODE_ANCHOR:
-    if (ANCHOR_(node)->type == ANCHOR_PREC_READ)
+    if (ANCHOR_(node)->type == ANCR_PREC_READ)
       n = get_head_value_node(NODE_BODY(node), exact, reg);
     break;
 
@@ -3359,7 +3359,7 @@ divide_look_behind_alternatives(Node* node)
     NODE_CAR(np) = insert_node;
   }
 
-  if (anc_type == ANCHOR_LOOK_BEHIND_NOT) {
+  if (anc_type == ANCR_LOOK_BEHIND_NOT) {
     np = node;
     do {
       NODE_SET_TYPE(np, NODE_LIST);  /* alt -> list */
@@ -4182,12 +4182,12 @@ setup_called_state_call(Node* node, int state)
       AnchorNode* an = ANCHOR_(node);
 
       switch (an->type) {
-      case ANCHOR_PREC_READ_NOT:
-      case ANCHOR_LOOK_BEHIND_NOT:
+      case ANCR_PREC_READ_NOT:
+      case ANCR_LOOK_BEHIND_NOT:
         state |= IN_NOT;
         /* fall */
-      case ANCHOR_PREC_READ:
-      case ANCHOR_LOOK_BEHIND:
+      case ANCR_PREC_READ:
+      case ANCR_LOOK_BEHIND:
         setup_called_state_call(NODE_ANCHOR_BODY(an), state);
         break;
       default:
@@ -4299,12 +4299,12 @@ setup_called_state(Node* node, int state)
       AnchorNode* an = ANCHOR_(node);
 
       switch (an->type) {
-      case ANCHOR_PREC_READ_NOT:
-      case ANCHOR_LOOK_BEHIND_NOT:
+      case ANCR_PREC_READ_NOT:
+      case ANCR_LOOK_BEHIND_NOT:
         state |= IN_NOT;
         /* fall */
-      case ANCHOR_PREC_READ:
-      case ANCHOR_LOOK_BEHIND:
+      case ANCR_PREC_READ:
+      case ANCR_LOOK_BEHIND:
         setup_called_state(NODE_ANCHOR_BODY(an), state);
         break;
       default:
@@ -4344,31 +4344,31 @@ setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
 #define ALLOWED_BAG_IN_LB_NOT   (1<<BAG_OPTION)
 
 #define ALLOWED_ANCHOR_IN_LB \
-  ( ANCHOR_LOOK_BEHIND | ANCHOR_BEGIN_LINE | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF \
-  | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUNDARY | ANCHOR_NO_WORD_BOUNDARY \
-  | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END \
-  | ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY \
-  | ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY )
+  ( ANCR_LOOK_BEHIND | ANCR_BEGIN_LINE | ANCR_END_LINE | ANCR_BEGIN_BUF \
+  | ANCR_BEGIN_POSITION | ANCR_WORD_BOUNDARY | ANCR_NO_WORD_BOUNDARY \
+  | ANCR_WORD_BEGIN | ANCR_WORD_END \
+  | ANCR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY \
+  | ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY )
 
 #define ALLOWED_ANCHOR_IN_LB_NOT \
-  ( ANCHOR_LOOK_BEHIND | ANCHOR_LOOK_BEHIND_NOT | ANCHOR_BEGIN_LINE \
-  | ANCHOR_END_LINE | ANCHOR_BEGIN_BUF | ANCHOR_BEGIN_POSITION | ANCHOR_WORD_BOUNDARY \
-  | ANCHOR_NO_WORD_BOUNDARY | ANCHOR_WORD_BEGIN | ANCHOR_WORD_END \
-  | ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY \
-  | ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY )
+  ( ANCR_LOOK_BEHIND | ANCR_LOOK_BEHIND_NOT | ANCR_BEGIN_LINE \
+  | ANCR_END_LINE | ANCR_BEGIN_BUF | ANCR_BEGIN_POSITION | ANCR_WORD_BOUNDARY \
+  | ANCR_NO_WORD_BOUNDARY | ANCR_WORD_BEGIN | ANCR_WORD_END \
+  | ANCR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY \
+  | ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY )
 
   int r;
   AnchorNode* an = ANCHOR_(node);
 
   switch (an->type) {
-  case ANCHOR_PREC_READ:
+  case ANCR_PREC_READ:
     r = setup_tree(NODE_ANCHOR_BODY(an), reg, state, env);
     break;
-  case ANCHOR_PREC_READ_NOT:
+  case ANCR_PREC_READ_NOT:
     r = setup_tree(NODE_ANCHOR_BODY(an), reg, (state | IN_NOT), env);
     break;
 
-  case ANCHOR_LOOK_BEHIND:
+  case ANCR_LOOK_BEHIND:
     {
       r = check_type_tree(NODE_ANCHOR_BODY(an), ALLOWED_TYPE_IN_LB,
                           ALLOWED_BAG_IN_LB, ALLOWED_ANCHOR_IN_LB);
@@ -4380,7 +4380,7 @@ setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
     }
     break;
 
-  case ANCHOR_LOOK_BEHIND_NOT:
+  case ANCR_LOOK_BEHIND_NOT:
     {
       r = check_type_tree(NODE_ANCHOR_BODY(an), ALLOWED_TYPE_IN_LB,
                           ALLOWED_BAG_IN_LB_NOT, ALLOWED_ANCHOR_IN_LB_NOT);
@@ -4884,15 +4884,15 @@ concat_opt_anc_info(OptAnc* to, OptAnc* left, OptAnc* right,
     to->right |= left->right;
   }
   else {
-    to->right |= (left->right & ANCHOR_PREC_READ_NOT);
+    to->right |= (left->right & ANCR_PREC_READ_NOT);
   }
 }
 
 static int
 is_left(int a)
 {
-  if (a == ANCHOR_END_BUF  || a == ANCHOR_SEMI_END_BUF ||
-      a == ANCHOR_END_LINE || a == ANCHOR_PREC_READ || a == ANCHOR_PREC_READ_NOT)
+  if (a == ANCR_END_BUF  || a == ANCR_SEMI_END_BUF ||
+      a == ANCR_END_LINE || a == ANCR_PREC_READ || a == ANCR_PREC_READ_NOT)
     return 0;
 
   return 1;
@@ -5475,18 +5475,18 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
 
   case NODE_ANCHOR:
     switch (ANCHOR_(node)->type) {
-    case ANCHOR_BEGIN_BUF:
-    case ANCHOR_BEGIN_POSITION:
-    case ANCHOR_BEGIN_LINE:
-    case ANCHOR_END_BUF:
-    case ANCHOR_SEMI_END_BUF:
-    case ANCHOR_END_LINE:
-    case ANCHOR_PREC_READ_NOT:
-    case ANCHOR_LOOK_BEHIND:
+    case ANCR_BEGIN_BUF:
+    case ANCR_BEGIN_POSITION:
+    case ANCR_BEGIN_LINE:
+    case ANCR_END_BUF:
+    case ANCR_SEMI_END_BUF:
+    case ANCR_END_LINE:
+    case ANCR_PREC_READ_NOT:
+    case ANCR_LOOK_BEHIND:
       add_opt_anc_info(&opt->anc, ANCHOR_(node)->type);
       break;
 
-    case ANCHOR_PREC_READ:
+    case ANCR_PREC_READ:
       {
         r = optimize_nodes(NODE_BODY(node), &xo, env);
         if (r == 0) {
@@ -5503,7 +5503,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
       }
       break;
 
-    case ANCHOR_LOOK_BEHIND_NOT:
+    case ANCR_LOOK_BEHIND_NOT:
       break;
     }
     break;
@@ -5577,9 +5577,9 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
         if (env->mmd.max == 0 &&
             NODE_IS_ANYCHAR(NODE_BODY(node)) && qn->greedy != 0) {
           if (IS_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), env)))
-            add_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_INF_ML);
+            add_opt_anc_info(&opt->anc, ANCR_ANYCHAR_INF_ML);
           else
-            add_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_INF);
+            add_opt_anc_info(&opt->anc, ANCR_ANYCHAR_INF);
         }
 
         max = (xo.len.max > 0 ? INFINITE_LEN : 0);
@@ -5624,9 +5624,9 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
 #endif
           {
             r = optimize_nodes(NODE_BODY(node), opt, env);
-            if (is_set_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_INF_MASK)) {
+            if (is_set_opt_anc_info(&opt->anc, ANCR_ANYCHAR_INF_MASK)) {
               if (MEM_STATUS_AT0(env->scan_env->backrefed_mem, en->m.regnum))
-                remove_opt_anc_info(&opt->anc, ANCHOR_ANYCHAR_INF_MASK);
+                remove_opt_anc_info(&opt->anc, ANCR_ANYCHAR_INF_MASK);
             }
           }
         break;
@@ -5752,8 +5752,8 @@ set_optimize_map(regex_t* reg, OptMap* m)
 static void
 set_sub_anchor(regex_t* reg, OptAnc* anc)
 {
-  reg->sub_anchor |= anc->left  & ANCHOR_BEGIN_LINE;
-  reg->sub_anchor |= anc->right & ANCHOR_END_LINE;
+  reg->sub_anchor |= anc->left  & ANCR_BEGIN_LINE;
+  reg->sub_anchor |= anc->right & ANCR_END_LINE;
 }
 
 #if defined(ONIG_DEBUG_COMPILE) || defined(ONIG_DEBUG_MATCH)
@@ -5776,17 +5776,17 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
   r = optimize_nodes(node, &opt, &env);
   if (r != 0) return r;
 
-  reg->anchor = opt.anc.left & (ANCHOR_BEGIN_BUF |
-        ANCHOR_BEGIN_POSITION | ANCHOR_ANYCHAR_INF | ANCHOR_ANYCHAR_INF_ML |
-        ANCHOR_LOOK_BEHIND);
+  reg->anchor = opt.anc.left & (ANCR_BEGIN_BUF |
+        ANCR_BEGIN_POSITION | ANCR_ANYCHAR_INF | ANCR_ANYCHAR_INF_ML |
+        ANCR_LOOK_BEHIND);
 
-  if ((opt.anc.left & (ANCHOR_LOOK_BEHIND | ANCHOR_PREC_READ_NOT)) != 0)
-    reg->anchor &= ~ANCHOR_ANYCHAR_INF_ML;
+  if ((opt.anc.left & (ANCR_LOOK_BEHIND | ANCR_PREC_READ_NOT)) != 0)
+    reg->anchor &= ~ANCR_ANYCHAR_INF_ML;
 
-  reg->anchor |= opt.anc.right & (ANCHOR_END_BUF | ANCHOR_SEMI_END_BUF |
-       ANCHOR_PREC_READ_NOT);
+  reg->anchor |= opt.anc.right & (ANCR_END_BUF | ANCR_SEMI_END_BUF |
+                                  ANCR_PREC_READ_NOT);
 
-  if (reg->anchor & (ANCHOR_END_BUF | ANCHOR_SEMI_END_BUF)) {
+  if (reg->anchor & (ANCR_END_BUF | ANCR_SEMI_END_BUF)) {
     reg->anchor_dmin = opt.len.min;
     reg->anchor_dmax = opt.len.max;
   }
@@ -5807,9 +5807,9 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
     set_sub_anchor(reg, &opt.map.anc);
   }
   else {
-    reg->sub_anchor |= opt.anc.left & ANCHOR_BEGIN_LINE;
+    reg->sub_anchor |= opt.anc.left & ANCR_BEGIN_LINE;
     if (opt.len.max == 0)
-      reg->sub_anchor |= opt.anc.right & ANCHOR_END_LINE;
+      reg->sub_anchor |= opt.anc.right & ANCR_END_LINE;
   }
 
 #if defined(ONIG_DEBUG_COMPILE) || defined(ONIG_DEBUG_MATCH)
@@ -5896,41 +5896,41 @@ print_anchor(FILE* f, int anchor)
 
   fprintf(f, "[");
 
-  if (anchor & ANCHOR_BEGIN_BUF) {
+  if (anchor & ANCR_BEGIN_BUF) {
     fprintf(f, "begin-buf");
     q = 1;
   }
-  if (anchor & ANCHOR_BEGIN_LINE) {
+  if (anchor & ANCR_BEGIN_LINE) {
     if (q) fprintf(f, ", ");
     q = 1;
     fprintf(f, "begin-line");
   }
-  if (anchor & ANCHOR_BEGIN_POSITION) {
+  if (anchor & ANCR_BEGIN_POSITION) {
     if (q) fprintf(f, ", ");
     q = 1;
     fprintf(f, "begin-pos");
   }
-  if (anchor & ANCHOR_END_BUF) {
+  if (anchor & ANCR_END_BUF) {
     if (q) fprintf(f, ", ");
     q = 1;
     fprintf(f, "end-buf");
   }
-  if (anchor & ANCHOR_SEMI_END_BUF) {
+  if (anchor & ANCR_SEMI_END_BUF) {
     if (q) fprintf(f, ", ");
     q = 1;
     fprintf(f, "semi-end-buf");
   }
-  if (anchor & ANCHOR_END_LINE) {
+  if (anchor & ANCR_END_LINE) {
     if (q) fprintf(f, ", ");
     q = 1;
     fprintf(f, "end-line");
   }
-  if (anchor & ANCHOR_ANYCHAR_INF) {
+  if (anchor & ANCR_ANYCHAR_INF) {
     if (q) fprintf(f, ", ");
     q = 1;
     fprintf(f, "anychar-inf");
   }
-  if (anchor & ANCHOR_ANYCHAR_INF_ML) {
+  if (anchor & ANCR_ANYCHAR_INF_ML) {
     if (q) fprintf(f, ", ");
     fprintf(f, "anychar-inf-ml");
   }
@@ -5947,7 +5947,7 @@ print_optimize_info(FILE* f, regex_t* reg)
 
   fprintf(f, "optimize: %s\n", on[reg->optimize]);
   fprintf(f, "  anchor: "); print_anchor(f, reg->anchor);
-  if ((reg->anchor & ANCHOR_END_BUF_MASK) != 0)
+  if ((reg->anchor & ANCR_END_BUF_MASK) != 0)
     print_distance_range(f, reg->anchor_dmin, reg->anchor_dmax);
   fprintf(f, "\n");
 
@@ -6619,36 +6619,36 @@ print_indent_tree(FILE* f, Node* node, int indent)
   case NODE_ANCHOR:
     fprintf(f, "<anchor:%p> ", node);
     switch (ANCHOR_(node)->type) {
-    case ANCHOR_BEGIN_BUF:        fputs("begin buf",      f); break;
-    case ANCHOR_END_BUF:          fputs("end buf",        f); break;
-    case ANCHOR_BEGIN_LINE:       fputs("begin line",     f); break;
-    case ANCHOR_END_LINE:         fputs("end line",       f); break;
-    case ANCHOR_SEMI_END_BUF:     fputs("semi end buf",   f); break;
-    case ANCHOR_BEGIN_POSITION:   fputs("begin position", f); break;
+    case ANCR_BEGIN_BUF:        fputs("begin buf",      f); break;
+    case ANCR_END_BUF:          fputs("end buf",        f); break;
+    case ANCR_BEGIN_LINE:       fputs("begin line",     f); break;
+    case ANCR_END_LINE:         fputs("end line",       f); break;
+    case ANCR_SEMI_END_BUF:     fputs("semi end buf",   f); break;
+    case ANCR_BEGIN_POSITION:   fputs("begin position", f); break;
 
-    case ANCHOR_WORD_BOUNDARY:    fputs("word boundary",     f); break;
-    case ANCHOR_NO_WORD_BOUNDARY: fputs("not word boundary", f); break;
+    case ANCR_WORD_BOUNDARY:    fputs("word boundary",     f); break;
+    case ANCR_NO_WORD_BOUNDARY: fputs("not word boundary", f); break;
 #ifdef USE_WORD_BEGIN_END
-    case ANCHOR_WORD_BEGIN:       fputs("word begin", f);     break;
-    case ANCHOR_WORD_END:         fputs("word end", f);       break;
+    case ANCR_WORD_BEGIN:       fputs("word begin", f);     break;
+    case ANCR_WORD_END:         fputs("word end", f);       break;
 #endif
-    case ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
+    case ANCR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
       fputs("extended-grapheme-cluster boundary", f); break;
-    case ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
+    case ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
       fputs("no-extended-grapheme-cluster boundary", f); break;
-    case ANCHOR_PREC_READ:
+    case ANCR_PREC_READ:
       fprintf(f, "prec read\n");
       print_indent_tree(f, NODE_BODY(node), indent + add);
       break;
-    case ANCHOR_PREC_READ_NOT:
+    case ANCR_PREC_READ_NOT:
       fprintf(f, "prec read not\n");
       print_indent_tree(f, NODE_BODY(node), indent + add);
       break;
-    case ANCHOR_LOOK_BEHIND:
+    case ANCR_LOOK_BEHIND:
       fprintf(f, "look behind\n");
       print_indent_tree(f, NODE_BODY(node), indent + add);
       break;
-    case ANCHOR_LOOK_BEHIND_NOT:
+    case ANCR_LOOK_BEHIND_NOT:
       fprintf(f, "look behind not\n");
       print_indent_tree(f, NODE_BODY(node), indent + add);
       break;

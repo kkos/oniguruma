@@ -283,8 +283,8 @@ typedef struct _Node {
   (NODE_IS_FIXED_OPTION(node) ? CTYPE_(node)->options : reg->options)
 
 
-#define ANCHOR_ANYCHAR_INF_MASK  (ANCHOR_ANYCHAR_INF | ANCHOR_ANYCHAR_INF_ML)
-#define ANCHOR_END_BUF_MASK      (ANCHOR_END_BUF | ANCHOR_SEMI_END_BUF)
+#define ANCR_ANYCHAR_INF_MASK  (ANCR_ANYCHAR_INF | ANCR_ANYCHAR_INF_ML)
+#define ANCR_END_BUF_MASK      (ANCR_END_BUF | ANCR_SEMI_END_BUF)
 
 #define NODE_STRING_RAW                (1<<0) /* by backslashed number */
 #define NODE_STRING_AMBIG              (1<<1)

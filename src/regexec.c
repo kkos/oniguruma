@@ -4410,7 +4410,7 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
       UChar* prev;
 
       switch (reg->sub_anchor) {
-      case ANCHOR_BEGIN_LINE:
+      case ANCR_BEGIN_LINE:
         if (!ON_STR_BEGIN(p)) {
           prev = onigenc_get_prev_char_head(reg->enc,
                                             (pprev ? pprev : str), p);
@@ -4419,7 +4419,7 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
         }
         break;
 
-      case ANCHOR_END_LINE:
+      case ANCR_END_LINE:
         if (ON_STR_END(p)) {
 #ifndef USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE
           prev = (UChar* )onigenc_get_prev_char_head(reg->enc,
@@ -4529,7 +4529,7 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
       UChar* prev;
 
       switch (reg->sub_anchor) {
-      case ANCHOR_BEGIN_LINE:
+      case ANCR_BEGIN_LINE:
         if (!ON_STR_BEGIN(p)) {
           prev = onigenc_get_prev_char_head(reg->enc, str, p);
           if (IS_NOT_NULL(prev) && !ONIGENC_IS_MBC_NEWLINE(reg->enc, prev, end)) {
@@ -4539,7 +4539,7 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
         }
         break;
 
-      case ANCHOR_END_LINE:
+      case ANCR_END_LINE:
         if (ON_STR_END(p)) {
 #ifndef USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE
           prev = onigenc_get_prev_char_head(reg->enc, adjrange, p);
@@ -4665,7 +4665,7 @@ onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
   if (reg->anchor != 0 && str < end) {
     UChar *min_semi_end, *max_semi_end;
 
-    if (reg->anchor & ANCHOR_BEGIN_POSITION) {
+    if (reg->anchor & ANCR_BEGIN_POSITION) {
       /* search start-position only */
     begin_position:
       if (range > start)
@@ -4673,7 +4673,7 @@ onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
       else
         range = start;
     }
-    else if (reg->anchor & ANCHOR_BEGIN_BUF) {
+    else if (reg->anchor & ANCR_BEGIN_BUF) {
       /* search str-position only */
       if (range > start) {
         if (start != str) goto mismatch_no_msa;
@@ -4688,7 +4688,7 @@ onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
           goto mismatch_no_msa;
       }
     }
-    else if (reg->anchor & ANCHOR_END_BUF) {
+    else if (reg->anchor & ANCR_END_BUF) {
       min_semi_end = max_semi_end = (UChar* )end;
 
     end_buf:
@@ -4720,7 +4720,7 @@ onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
         if (range > start) goto mismatch_no_msa;
       }
     }
-    else if (reg->anchor & ANCHOR_SEMI_END_BUF) {
+    else if (reg->anchor & ANCR_SEMI_END_BUF) {
       UChar* pre_end = ONIGENC_STEP_BACK(reg->enc, str, end, 1);
 
       max_semi_end = (UChar* )end;
@@ -4743,7 +4743,7 @@ onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
         goto end_buf;
       }
     }
-    else if ((reg->anchor & ANCHOR_ANYCHAR_INF_ML)) {
+    else if ((reg->anchor & ANCR_ANYCHAR_INF_ML)) {
       goto begin_position;
     }
   }
@@ -4816,13 +4816,13 @@ onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
         if (! forward_search_range(reg, str, end, s, sch_range,
                                    &low, &high, (UChar** )NULL)) goto mismatch;
 
-        if ((reg->anchor & ANCHOR_ANYCHAR_INF) != 0) {
+        if ((reg->anchor & ANCR_ANYCHAR_INF) != 0) {
           do {
             MATCH_AND_RETURN_CHECK(orig_range);
             prev = s;
             s += enclen(reg->enc, s);
 
-            if ((reg->anchor & (ANCHOR_LOOK_BEHIND | ANCHOR_PREC_READ_NOT)) == 0) {
+            if ((reg->anchor & (ANCR_LOOK_BEHIND | ANCR_PREC_READ_NOT)) == 0) {
               while (!ONIGENC_IS_MBC_NEWLINE(reg->enc, prev, end) && s < range) {
                 prev = s;
                 s += enclen(reg->enc, s);

@@ -2645,7 +2645,7 @@ make_extended_grapheme_cluster(Node** node, ScanEnv* env)
   ns[1] = NULL_NODE;
 
   r = ONIGERR_MEMORY;
-  ns[0] = onig_node_new_anchor(ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY, 0);
+  ns[0] = onig_node_new_anchor(ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY, 0);
   if (IS_NULL(ns[0])) goto err;
 
   r = node_new_true_anychar(&ns[1], env);
@@ -4999,38 +4999,38 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case 'b':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_B_WORD_BOUND)) break;
       tok->type = TK_ANCHOR;
-      tok->u.anchor = ANCHOR_WORD_BOUNDARY;
+      tok->u.anchor = ANCR_WORD_BOUNDARY;
       break;
 
     case 'B':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_B_WORD_BOUND)) break;
       tok->type = TK_ANCHOR;
-      tok->u.anchor = ANCHOR_NO_WORD_BOUNDARY;
+      tok->u.anchor = ANCR_NO_WORD_BOUNDARY;
       break;
 
     case 'y':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER)) break;
       tok->type = TK_ANCHOR;
-      tok->u.anchor = ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY;
+      tok->u.anchor = ANCR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY;
       break;
 
     case 'Y':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER)) break;
       tok->type = TK_ANCHOR;
-      tok->u.anchor = ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY;
+      tok->u.anchor = ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY;
       break;
 
 #ifdef USE_WORD_BEGIN_END
     case '<':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_LTGT_WORD_BEGIN_END)) break;
       tok->type = TK_ANCHOR;
-      tok->u.anchor = ANCHOR_WORD_BEGIN;
+      tok->u.anchor = ANCR_WORD_BEGIN;
       break;
 
     case '>':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_LTGT_WORD_BEGIN_END)) break;
       tok->type = TK_ANCHOR;
-      tok->u.anchor = ANCHOR_WORD_END;
+      tok->u.anchor = ANCR_WORD_END;
       break;
 #endif
 
@@ -5105,26 +5105,26 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_AZ_BUF_ANCHOR)) break;
     begin_buf:
       tok->type = TK_ANCHOR;
-      tok->u.subtype = ANCHOR_BEGIN_BUF;
+      tok->u.subtype = ANCR_BEGIN_BUF;
       break;
 
     case 'Z':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_AZ_BUF_ANCHOR)) break;
       tok->type = TK_ANCHOR;
-      tok->u.subtype = ANCHOR_SEMI_END_BUF;
+      tok->u.subtype = ANCR_SEMI_END_BUF;
       break;
 
     case 'z':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_AZ_BUF_ANCHOR)) break;
     end_buf:
       tok->type = TK_ANCHOR;
-      tok->u.subtype = ANCHOR_END_BUF;
+      tok->u.subtype = ANCR_END_BUF;
       break;
 
     case 'G':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_CAPITAL_G_BEGIN_ANCHOR)) break;
       tok->type = TK_ANCHOR;
-      tok->u.subtype = ANCHOR_BEGIN_POSITION;
+      tok->u.subtype = ANCR_BEGIN_POSITION;
       break;
 
     case '`':
@@ -5619,14 +5619,14 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_LINE_ANCHOR)) break;
       tok->type = TK_ANCHOR;
       tok->u.subtype = (IS_SINGLELINE(env->options)
-                        ? ANCHOR_BEGIN_BUF : ANCHOR_BEGIN_LINE);
+                        ? ANCR_BEGIN_BUF : ANCR_BEGIN_LINE);
       break;
 
     case '$':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_LINE_ANCHOR)) break;
       tok->type = TK_ANCHOR;
       tok->u.subtype = (IS_SINGLELINE(env->options)
-                        ? ANCHOR_SEMI_END_BUF : ANCHOR_END_LINE);
+                        ? ANCR_SEMI_END_BUF : ANCR_END_LINE);
       break;
 
     case '[':
@@ -7014,10 +7014,10 @@ parse_bag(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
       break;
 
     case '=':
-      *np = onig_node_new_anchor(ANCHOR_PREC_READ, 0);
+      *np = onig_node_new_anchor(ANCR_PREC_READ, 0);
       break;
     case '!':  /*         preceding read */
-      *np = onig_node_new_anchor(ANCHOR_PREC_READ_NOT, 0);
+      *np = onig_node_new_anchor(ANCR_PREC_READ_NOT, 0);
       break;
     case '>':            /* (?>...) stop backtrack */
       *np = node_new_bag(BAG_STOP_BACKTRACK);
@@ -7035,9 +7035,9 @@ parse_bag(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
       if (PEND) return ONIGERR_END_PATTERN_WITH_UNMATCHED_PARENTHESIS;
       PFETCH(c);
       if (c == '=')
-        *np = onig_node_new_anchor(ANCHOR_LOOK_BEHIND, 0);
+        *np = onig_node_new_anchor(ANCR_LOOK_BEHIND, 0);
       else if (c == '!')
-        *np = onig_node_new_anchor(ANCHOR_LOOK_BEHIND_NOT, 0);
+        *np = onig_node_new_anchor(ANCR_LOOK_BEHIND_NOT, 0);
       else {
         if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_LT_NAMED_GROUP)) {
           UChar *name;

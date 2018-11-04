@@ -506,32 +506,32 @@ typedef struct _BBuf {
 
 
 /* has body */
-#define ANCHOR_PREC_READ        (1<<0)
-#define ANCHOR_PREC_READ_NOT    (1<<1)
-#define ANCHOR_LOOK_BEHIND      (1<<2)
-#define ANCHOR_LOOK_BEHIND_NOT  (1<<3)
+#define ANCR_PREC_READ        (1<<0)
+#define ANCR_PREC_READ_NOT    (1<<1)
+#define ANCR_LOOK_BEHIND      (1<<2)
+#define ANCR_LOOK_BEHIND_NOT  (1<<3)
 /* no body */
-#define ANCHOR_BEGIN_BUF        (1<<4)
-#define ANCHOR_BEGIN_LINE       (1<<5)
-#define ANCHOR_BEGIN_POSITION   (1<<6)
-#define ANCHOR_END_BUF          (1<<7)
-#define ANCHOR_SEMI_END_BUF     (1<<8)
-#define ANCHOR_END_LINE         (1<<9)
-#define ANCHOR_WORD_BOUNDARY    (1<<10)
-#define ANCHOR_NO_WORD_BOUNDARY (1<<11)
-#define ANCHOR_WORD_BEGIN       (1<<12)
-#define ANCHOR_WORD_END         (1<<13)
-#define ANCHOR_ANYCHAR_INF      (1<<14)
-#define ANCHOR_ANYCHAR_INF_ML   (1<<15)
-#define ANCHOR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY    (1<<16)
-#define ANCHOR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY (1<<17)
+#define ANCR_BEGIN_BUF        (1<<4)
+#define ANCR_BEGIN_LINE       (1<<5)
+#define ANCR_BEGIN_POSITION   (1<<6)
+#define ANCR_END_BUF          (1<<7)
+#define ANCR_SEMI_END_BUF     (1<<8)
+#define ANCR_END_LINE         (1<<9)
+#define ANCR_WORD_BOUNDARY    (1<<10)
+#define ANCR_NO_WORD_BOUNDARY (1<<11)
+#define ANCR_WORD_BEGIN       (1<<12)
+#define ANCR_WORD_END         (1<<13)
+#define ANCR_ANYCHAR_INF      (1<<14)
+#define ANCR_ANYCHAR_INF_ML   (1<<15)
+#define ANCR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY    (1<<16)
+#define ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY (1<<17)
 
 
-#define ANCHOR_HAS_BODY(a)      ((a)->type < ANCHOR_BEGIN_BUF)
+#define ANCHOR_HAS_BODY(a)      ((a)->type < ANCR_BEGIN_BUF)
 
 #define IS_WORD_ANCHOR_TYPE(type) \
-  ((type) == ANCHOR_WORD_BOUNDARY || (type) == ANCHOR_NO_WORD_BOUNDARY || \
-   (type) == ANCHOR_WORD_BEGIN || (type) == ANCHOR_WORD_END)
+  ((type) == ANCR_WORD_BOUNDARY || (type) == ANCR_NO_WORD_BOUNDARY || \
+   (type) == ANCR_WORD_BEGIN || (type) == ANCR_WORD_END)
 
 /* operation code */
 enum OpCode {
