@@ -38,7 +38,7 @@ typedef enum {
   NODE_CTYPE     =  2,
   NODE_BACKREF   =  3,
   NODE_QUANT     =  4,
-  NODE_ENCLOSURE =  5,
+  NODE_BAG       =  5,
   NODE_ANCHOR    =  6,
   NODE_LIST      =  7,
   NODE_ALT       =  8,
@@ -65,7 +65,7 @@ enum GimmickType {
 #define NODE_BIT_CTYPE      NODE_TYPE2BIT(NODE_CTYPE)
 #define NODE_BIT_BACKREF    NODE_TYPE2BIT(NODE_BACKREF)
 #define NODE_BIT_QUANT      NODE_TYPE2BIT(NODE_QUANT)
-#define NODE_BIT_ENCLOSURE  NODE_TYPE2BIT(NODE_ENCLOSURE)
+#define NODE_BIT_BAG        NODE_TYPE2BIT(NODE_BAG)
 #define NODE_BIT_ANCHOR     NODE_TYPE2BIT(NODE_ANCHOR)
 #define NODE_BIT_LIST       NODE_TYPE2BIT(NODE_LIST)
 #define NODE_BIT_ALT        NODE_TYPE2BIT(NODE_ALT)
@@ -84,7 +84,7 @@ enum GimmickType {
 #define CTYPE_(node)       (&((node)->u.ctype))
 #define BACKREF_(node)     (&((node)->u.backref))
 #define QUANT_(node)       (&((node)->u.quant))
-#define ENCLOSURE_(node)   (&((node)->u.enclosure))
+#define BAG_(node)         (&((node)->u.bag))
 #define ANCHOR_(node)      (&((node)->u.anchor))
 #define CONS_(node)        (&((node)->u.cons))
 #define CALL_(node)        (&((node)->u.call))
@@ -104,11 +104,11 @@ enum GimmickType {
 #define ANCHOR_ANYCHAR_INF_MASK  (ANCHOR_ANYCHAR_INF | ANCHOR_ANYCHAR_INF_ML)
 #define ANCHOR_END_BUF_MASK      (ANCHOR_END_BUF | ANCHOR_SEMI_END_BUF)
 
-enum EnclosureType {
-  ENCLOSURE_MEMORY = 0,
-  ENCLOSURE_OPTION = 1,
-  ENCLOSURE_STOP_BACKTRACK = 2,
-  ENCLOSURE_IF_ELSE = 3,
+enum BagType {
+  BAG_MEMORY = 0,
+  BAG_OPTION = 1,
+  BAG_STOP_BACKTRACK = 2,
+  BAG_IF_ELSE = 3,
 };
 
 #define NODE_STRING_MARGIN         16
@@ -199,8 +199,8 @@ enum QuantBodyEmpty {
     ((NODE_STATUS(node) & NODE_ST_STOP_BT_SIMPLE_REPEAT) != 0)
 
 #define NODE_BODY(node)           ((node)->u.base.body)
-#define NODE_QUANT_BODY(node)      ((node)->body)
-#define NODE_ENCLOSURE_BODY(node)   ((node)->body)
+#define NODE_QUANT_BODY(node)     ((node)->body)
+#define NODE_BAG_BODY(node)       ((node)->body)
 #define NODE_CALL_BODY(node)      ((node)->body)
 #define NODE_ANCHOR_BODY(node)    ((node)->body)
 
@@ -244,7 +244,7 @@ typedef struct {
   int status;
   struct _Node* body;
 
-  enum EnclosureType type;
+  enum BagType type;
   union {
     struct {
       int regnum;
@@ -267,7 +267,7 @@ typedef struct {
   OnigLen max_len;   /* max length (byte) */
   int char_len;      /* character length  */
   int opt_count;     /* referenced count in optimize_nodes() */
-} EnclosureNode;
+} BagNode;
 
 #ifdef USE_CALL
 
@@ -285,7 +285,7 @@ typedef struct {
 typedef struct {
   NodeType node_type;
   int status;
-  struct _Node* body; /* to EnclosureNode : ENCLOSURE_MEMORY */
+  struct _Node* body; /* to BagNode : BAG_MEMORY */
 
   int     by_number;
   int     group_num;
@@ -355,7 +355,7 @@ typedef struct _Node {
     StrNode       str;
     CClassNode    cclass;
     QuantNode     quant;
-    EnclosureNode enclosure;
+    BagNode       bag;
     BackRefNode   backref;
     AnchorNode    anchor;
     ConsAltNode   cons;
@@ -439,7 +439,7 @@ extern void   onig_node_conv_to_str_node P_((Node* node, int raw));
 extern int    onig_node_str_cat P_((Node* node, const UChar* s, const UChar* end));
 extern int    onig_node_str_set P_((Node* node, const UChar* s, const UChar* end));
 extern void   onig_node_free P_((Node* node));
-extern Node*  onig_node_new_enclosure P_((enum EnclosureType type));
+extern Node*  onig_node_new_bag P_((enum BagType type));
 extern Node*  onig_node_new_anchor P_((int type, int ascii_mode));
 extern Node*  onig_node_new_str P_((const UChar* s, const UChar* end));
 extern Node*  onig_node_new_list P_((Node* left, Node* right));
