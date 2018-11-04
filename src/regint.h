@@ -62,13 +62,18 @@
 #define USE_INSISTENT_CHECK_CAPTURES_IN_EMPTY_REPEAT    /* /(?:()|())*\2/ */
 #define USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE     /* /\n$/ =~ "\n" */
 #define USE_WARNING_REDUNDANT_NESTED_REPEAT_OPERATOR
-
 #define USE_RETRY_LIMIT_IN_MATCH
 
 /* internal config */
 #define USE_OP_PUSH_OR_JUMP_EXACT
 #define USE_QUANT_PEEK_NEXT
 #define USE_ST_LIBRARY
+
+#define USE_WORD_BEGIN_END        /* "\<", "\>" */
+#define USE_CAPTURE_HISTORY
+#define USE_VARIABLE_META_CHARS
+#define USE_POSIX_API_REGION_OPTION
+#define USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
 
 #include "regenc.h"
 
@@ -82,12 +87,6 @@
 #ifdef ONIG_ESCAPE_UCHAR_COLLISION
 #undef ONIG_ESCAPE_UCHAR_COLLISION
 #endif
-
-#define USE_WORD_BEGIN_END        /* "\<", "\>" */
-#define USE_CAPTURE_HISTORY
-#define USE_VARIABLE_META_CHARS
-#define USE_POSIX_API_REGION_OPTION
-#define USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
 
 #define xmalloc     malloc
 #define xrealloc    realloc
