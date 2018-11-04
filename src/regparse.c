@@ -2450,17 +2450,20 @@ node_new_option(OnigOptionType option)
   Node* node = node_new_bag(BAG_OPTION);
   CHECK_NULL_RETURN(node);
   BAG_(node)->o.options = option;
-  BAG_(node)->o.is_no_effect = 0;
   return node;
 }
 
 static Node*
-node_new_no_effect(OnigOptionType option)
+node_new_group(Node* content)
 {
-  Node* node = node_new_bag(BAG_OPTION);
+  Node* node;
+
+  node = node_new();
   CHECK_NULL_RETURN(node);
-  BAG_(node)->o.options = option;
-  BAG_(node)->o.is_no_effect = 1;
+  NODE_SET_TYPE(node, NODE_LIST);
+  NODE_CAR(node) = content;
+  NODE_CDR(node) = NULL_NODE;
+
   return node;
 }
 
@@ -7761,12 +7764,11 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 	Node* target;
 
 	target = *np;
-	*np = node_new_no_effect(env->options);
+	*np = node_new_group(target);
 	if (IS_NULL(*np)) {
 	  onig_node_free(target);
 	  return ONIGERR_MEMORY;
 	}
-	NODE_BODY(*np) = target;
       }
     }
     else if (r == 2) { /* option only */
