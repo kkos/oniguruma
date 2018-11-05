@@ -7759,16 +7759,16 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
     if (r < 0) return r;
     if (r == 1) { /* group */
       if (group_head == 0)
-	group = 1;
+        group = 1;
       else {
-	Node* target;
+        Node* target;
 
-	target = *np;
-	*np = node_new_group(target);
-	if (IS_NULL(*np)) {
-	  onig_node_free(target);
-	  return ONIGERR_MEMORY;
-	}
+        target = *np;
+        *np = node_new_group(target);
+        if (IS_NULL(*np)) {
+          onig_node_free(target);
+          return ONIGERR_MEMORY;
+        }
       }
     }
     else if (r == 2) { /* option only */
