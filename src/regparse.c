@@ -2005,7 +2005,7 @@ onig_node_free(Node* node)
 
   switch (NODE_TYPE(node)) {
   case NODE_STRING:
-    if (STR_(node)->capa != 0 &&
+    if (STR_(node)->capacity != 0 &&
         IS_NOT_NULL(STR_(node)->s) && STR_(node)->s != STR_(node)->buf) {
       xfree(STR_(node)->s);
     }
@@ -3102,11 +3102,11 @@ onig_node_str_cat(Node* node, const UChar* s, const UChar* end)
   if (addlen > 0) {
     int len  = (int )(STR_(node)->end - STR_(node)->s);
 
-    if (STR_(node)->capa > 0 || (len + addlen > NODE_STRING_BUF_SIZE - 1)) {
+    if (STR_(node)->capacity > 0 || (len + addlen > NODE_STRING_BUF_SIZE - 1)) {
       UChar* p;
       int capa = len + addlen + NODE_STRING_MARGIN;
 
-      if (capa <= STR_(node)->capa) {
+      if (capa <= STR_(node)->capacity) {
         onig_strcpy(STR_(node)->s + len, s, end);
       }
       else {
@@ -3117,8 +3117,8 @@ onig_node_str_cat(Node* node, const UChar* s, const UChar* end)
           p = strcat_capa(STR_(node)->s, STR_(node)->end, s, end, capa);
 
         CHECK_NULL_RETURN_MEMERR(p);
-        STR_(node)->s    = p;
-        STR_(node)->capa = capa;
+        STR_(node)->s        = p;
+        STR_(node)->capacity = capa;
       }
     }
     else {
@@ -3150,24 +3150,24 @@ extern void
 onig_node_conv_to_str_node(Node* node, int flag)
 {
   NODE_SET_TYPE(node, NODE_STRING);
-  STR_(node)->flag = flag;
-  STR_(node)->capa = 0;
-  STR_(node)->s    = STR_(node)->buf;
-  STR_(node)->end  = STR_(node)->buf;
+  STR_(node)->flag     = flag;
+  STR_(node)->capacity = 0;
+  STR_(node)->s        = STR_(node)->buf;
+  STR_(node)->end      = STR_(node)->buf;
 }
 
 extern void
 onig_node_str_clear(Node* node)
 {
-  if (STR_(node)->capa != 0 &&
+  if (STR_(node)->capacity != 0 &&
       IS_NOT_NULL(STR_(node)->s) && STR_(node)->s != STR_(node)->buf) {
     xfree(STR_(node)->s);
   }
 
-  STR_(node)->capa = 0;
-  STR_(node)->flag = 0;
-  STR_(node)->s    = STR_(node)->buf;
-  STR_(node)->end  = STR_(node)->buf;
+  STR_(node)->capacity = 0;
+  STR_(node)->flag     = 0;
+  STR_(node)->s        = STR_(node)->buf;
+  STR_(node)->end      = STR_(node)->buf;
 }
 
 static Node*
@@ -3177,10 +3177,10 @@ node_new_str(const UChar* s, const UChar* end)
   CHECK_NULL_RETURN(node);
 
   NODE_SET_TYPE(node, NODE_STRING);
-  STR_(node)->capa = 0;
-  STR_(node)->flag = 0;
-  STR_(node)->s    = STR_(node)->buf;
-  STR_(node)->end  = STR_(node)->buf;
+  STR_(node)->capacity = 0;
+  STR_(node)->flag     = 0;
+  STR_(node)->s        = STR_(node)->buf;
+  STR_(node)->end      = STR_(node)->buf;
   if (onig_node_str_cat(node, s, end)) {
     onig_node_free(node);
     return NULL;

@@ -163,7 +163,7 @@ swap_node(Node* a, Node* b)
 
   if (NODE_TYPE(a) == NODE_STRING) {
     StrNode* sn = STR_(a);
-    if (sn->capa == 0) {
+    if (sn->capacity == 0) {
       int len = (int )(sn->end - sn->s);
       sn->s   = sn->buf;
       sn->end = sn->s + len;
@@ -172,7 +172,7 @@ swap_node(Node* a, Node* b)
 
   if (NODE_TYPE(b) == NODE_STRING) {
     StrNode* sn = STR_(b);
-    if (sn->capa == 0) {
+    if (sn->capacity == 0) {
       int len = (int )(sn->end - sn->s);
       sn->s   = sn->buf;
       sn->end = sn->s + len;

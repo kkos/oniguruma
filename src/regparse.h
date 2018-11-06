@@ -81,7 +81,7 @@ typedef struct {
   UChar* s;
   UChar* end;
   unsigned int flag;
-  int    capa;    /* (allocated size - 1) or 0: use buf[] */
+  int    capacity;    /* (allocated size - 1) or 0: use buf[] */
   UChar  buf[NODE_STRING_BUF_SIZE];
 } StrNode;
 
