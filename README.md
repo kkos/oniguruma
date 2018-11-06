@@ -26,6 +26,12 @@ Supported character encodings:
 * CP1251:  contributed by Byte
 
 
+New feature of version 6.9.1
+--------------------------
+
+* Speed improvement (* especially UTF-8)
+
+
 New feature of version 6.9.0
 --------------------------
 
