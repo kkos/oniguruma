@@ -2467,6 +2467,17 @@ node_new_group(Node* content)
   return node;
 }
 
+static Node*
+node_drop_group(Node* group)
+{
+  Node* content;
+
+  content = NODE_CAR(group);
+  NODE_CAR(group) = NULL_NODE;
+  onig_node_free(group);
+  return content;
+}
+
 static int
 node_new_fail(Node** node, ScanEnv* env)
 {
@@ -7543,7 +7554,7 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
 
   switch (NODE_TYPE(target)) {
   case NODE_STRING:
-    if (! group) {
+    if (group == 0) {
       if (str_node_can_be_split(target, env->enc)) {
         Node* n = str_node_split_last_char(target, env->enc);
         if (IS_NOT_NULL(n)) {
@@ -7761,14 +7772,13 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
       if (group_head == 0)
         group = 1;
       else {
-        Node* target;
-
-        target = *np;
+        Node* target = *np;
         *np = node_new_group(target);
         if (IS_NULL(*np)) {
           onig_node_free(target);
           return ONIGERR_MEMORY;
         }
+        group = 2;
       }
     }
     else if (r == 2) { /* option only */
@@ -8065,6 +8075,8 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 
   repeat:
     if (r == TK_OP_REPEAT || r == TK_INTERVAL) {
+      Node* target;
+
       if (is_invalid_quantifier_target(*targetp))
         return ONIGERR_TARGET_OF_REPEAT_OPERATOR_INVALID;
 
@@ -8072,7 +8084,14 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
                                r == TK_INTERVAL);
       CHECK_NULL_RETURN_MEMERR(qn);
       QUANT_(qn)->greedy = tok->u.repeat.greedy;
-      r = set_quantifier(qn, *targetp, group, env);
+      if (group == 2) {
+        target = node_drop_group(*np);
+        *np = NULL_NODE;
+      }
+      else {
+        target = *targetp;
+      }
+      r = set_quantifier(qn, target, group, env);
       if (r < 0) {
         onig_node_free(qn);
         return r;
