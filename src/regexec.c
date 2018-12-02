@@ -2350,6 +2350,7 @@ typedef struct {
 #define DEFAULT_OP   /* L_DEFAULT: */
 #define NEXT_OP      sprev = sbegin; JUMP_OP
 #define JUMP_OP      goto *opcode_to_label[*p++]
+#define BREAK_OP     /* Nothing */
 
 #else
 
@@ -2363,11 +2364,13 @@ typedef struct {
 #define DEFAULT_OP   default:
 #define NEXT_OP      break
 #define JUMP_OP      continue; break
+#define BREAK_OP     break
 
 #endif /* USE_DIRECT_THREADED_CODE */
 
 #define NEXT_OUT     SOP_OUT; NEXT_OP
 #define JUMP_OUT     SOP_OUT; JUMP_OP
+#define BREAK_OUT    SOP_OUT; BREAK_OP
 #define CHECK_INTERRUPT_JUMP_OUT  SOP_OUT; CHECK_INTERRUPT_IN_MATCH; JUMP_OP
 
 
@@ -3850,7 +3853,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     CASE_OP(CALLOUT_CONTENTS)
       of = ONIG_CALLOUT_OF_CONTENTS;
       goto callout_common_entry;
-      JUMP_OUT;
+      BREAK_OUT;
 
     CASE_OP(CALLOUT_NAME)
       {
