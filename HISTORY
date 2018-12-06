@@ -1,5 +1,25 @@
 History
 
+2018/12/11: Version 6.9.1
+
+2018/10/08: use ENC_FLAG_SKIP_OFFSET_XXX values
+2018/10/06: UTF-8 supports code range from 0x0000 to 0x10FFFF
+            (https://tools.ietf.org/html/rfc3629)
+2018/10/05: speed improvement
+2018/10/03: use OPTIMIZE_STR_CASE_FOLD_FAST
+2018/10/01: convert CRLF line endings to LF
+2018/09/27: set SIZEOF_SIZE_T for windows platforms
+2018/09/22: use Sunday quick search algorithm instead of Boyer-Moor-Horspool
+2018/09/20: introduce threaded code into match_at()
+2018/09/17: remove HAVE_STRINGS_H
+2018/09/16: remove HAVE_PROTOTYPES and HAVE_STDARG_PROTOTYPES
+2018/09/14: add a command line option '-gc' for make_unicode_property_data.py.
+2018/09/08: remove AC_HEADER_STDC
+2018/09/06: remove AC_OUTPUT macro call
+2018/09/06: remove AC_FUNC_MEMCMP, AC_HEADER_TIME, AC_C_CONST, HAVE__SETJMP and
+            HAVE_STRING_H
+2018/09/05: remove HAVE_LIMITS_H, HAVE_FLOAT_H and HAVE_STDLIB_H
+
 2018/09/03: Version 6.9.0
 
 2018/08/24: add Unicode Emoji properties
