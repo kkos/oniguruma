@@ -2339,10 +2339,10 @@ typedef struct {
 
 
 #ifdef __GNUC__
-#define USE_DIRECT_THREADED_CODE
+#define USE_THREADED_CODE
 #endif
 
-#ifdef USE_DIRECT_THREADED_CODE
+#ifdef USE_THREADED_CODE
 
 #define BYTECODE_INTERPRETER_START      JUMP_OP;
 #define BYTECODE_INTERPRETER_END
@@ -2366,7 +2366,7 @@ typedef struct {
 #define JUMP_OP      continue; break
 #define BREAK_OP     break
 
-#endif /* USE_DIRECT_THREADED_CODE */
+#endif /* USE_THREADED_CODE */
 
 #define NEXT_OUT     SOP_OUT; NEXT_OP
 #define JUMP_OUT     SOP_OUT; JUMP_OP
@@ -2419,7 +2419,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 {
   static UChar FinishCode[] = { OP_FINISH };
 
-#ifdef USE_DIRECT_THREADED_CODE
+#ifdef USE_THREADED_CODE
   static const void *opcode_to_label[] = {
   &&L_FINISH,
   &&L_END,
