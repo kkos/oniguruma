@@ -512,6 +512,8 @@ onig_st_insert_strend(hash_table_type* table, const UChar* str_key,
 }
 
 
+#ifdef USE_CALLOUT
+
 typedef struct {
   OnigEncoding enc;
   int    type; /* callout type: single or not */
@@ -610,6 +612,7 @@ st_insert_callout_name_table(hash_table_type* table,
   }
   return result;
 }
+#endif
 
 #endif /* USE_ST_LIBRARY */
 
@@ -7301,7 +7304,9 @@ parse_bag(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           }
         }
 
+#ifdef USE_CALLOUT
       end_condition:
+#endif
         CHECK_NULL_RETURN_MEMERR(condition);
 
         if (PEND) {

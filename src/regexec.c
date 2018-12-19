@@ -1164,8 +1164,10 @@ onig_set_retry_limit_in_match(unsigned long size)
 #endif
 }
 
+#ifdef USE_CALLOUT
 static OnigCalloutFunc DefaultProgressCallout;
 static OnigCalloutFunc DefaultRetractionCallout;
+#endif
 
 extern OnigMatchParam*
 onig_new_match_param(void)
@@ -1207,10 +1209,10 @@ onig_initialize_match_param(OnigMatchParam* mp)
 #ifdef USE_RETRY_LIMIT_IN_MATCH
   mp->retry_limit_in_match = RetryLimitInMatch;
 #endif
-  mp->progress_callout_of_contents   = DefaultProgressCallout;
-  mp->retraction_callout_of_contents = DefaultRetractionCallout;
 
 #ifdef USE_CALLOUT
+  mp->progress_callout_of_contents   = DefaultProgressCallout;
+  mp->retraction_callout_of_contents = DefaultRetractionCallout;
   mp->match_at_call_counter  = 0;
   mp->callout_user_data      = 0;
   mp->callout_data           = 0;
