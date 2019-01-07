@@ -7881,12 +7881,12 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
   case TK_CODE_POINT:
     {
       UChar buf[ONIGENC_CODE_TO_MBC_MAXLEN];
-      int num = ONIGENC_CODE_TO_MBC(env->enc, tok->u.code, buf);
-      if (num < 0) return num;
+      len = ONIGENC_CODE_TO_MBC(env->enc, tok->u.code, buf);
+      if (len < 0) return len;
 #ifdef NUMBERED_CHAR_IS_NOT_CASE_AMBIG
-      *np = node_new_str_raw(buf, buf + num);
+      *np = node_new_str_raw(buf, buf + len);
 #else
-      *np = node_new_str(buf, buf + num);
+      *np = node_new_str(buf, buf + len);
 #endif
       CHECK_NULL_RETURN_MEMERR(*np);
     }
