@@ -251,57 +251,6 @@ typedef struct {
 
 #endif
 
-typedef struct {
-  const UChar* pattern;
-  const UChar* pattern_end;
-#ifdef USE_CALLOUT
-  void*  tag_table;
-  int    callout_num;
-  int    callout_list_alloc;
-  CalloutListEntry* callout_list;    /* index: callout num */
-#endif
-} RegexExt;
-
-struct re_pattern_buffer {
-  /* common members of BBuf(bytes-buffer) */
-  unsigned char* p;         /* compiled pattern */
-  unsigned int used;        /* used space for p */
-  unsigned int alloc;       /* allocated space for p */
-
-  int num_mem;                   /* used memory(...) num counted from 1 */
-  int num_repeat;                /* OP_REPEAT/OP_REPEAT_NG id-counter */
-  int num_null_check;            /* OP_EMPTY_CHECK_START/END id counter */
-  int num_call;                  /* number of subexp call */
-  unsigned int capture_history;  /* (?@...) flag (1-31) */
-  unsigned int bt_mem_start;     /* need backtrack flag */
-  unsigned int bt_mem_end;       /* need backtrack flag */
-  int stack_pop_level;
-  int repeat_range_alloc;
-  OnigRepeatRange* repeat_range;
-
-  OnigEncoding      enc;
-  OnigOptionType    options;
-  OnigSyntaxType*   syntax;
-  OnigCaseFoldType  case_fold_flag;
-  void*             name_table;
-
-  /* optimization info (string search, char-map and anchors) */
-  int            optimize;          /* optimize flag */
-  int            threshold_len;     /* search str-length for apply optimize */
-  int            anchor;            /* BEGIN_BUF, BEGIN_POS, (SEMI_)END_BUF */
-  OnigLen        anchor_dmin;       /* (SEMI_)END_BUF anchor distance */
-  OnigLen        anchor_dmax;       /* (SEMI_)END_BUF anchor distance */
-  int            sub_anchor;        /* start-anchor for exact or map */
-  unsigned char *exact;
-  unsigned char *exact_end;
-  unsigned char  map[CHAR_MAP_SIZE]; /* used as BMH skip or char-map */
-  int            map_offset;
-  OnigLen        dmin;                      /* min-distance of exact or map */
-  OnigLen        dmax;                      /* max-distance of exact or map */
-  RegexExt*      extp;
-};
-
-
 /* stack pop level */
 enum StackPopLevel {
   STACK_POP_LEVEL_FREE      = 0,
@@ -791,8 +740,59 @@ typedef int ModeType;
 #define NCCLASS_CLEAR_NOT(nd)   NCCLASS_FLAG_CLEAR(nd, FLAG_NCCLASS_NOT)
 #define IS_NCCLASS_NOT(nd)      IS_NCCLASS_FLAG_ON(nd, FLAG_NCCLASS_NOT)
 
-extern void onig_add_end_call(void (*func)(void));
 
+typedef struct {
+  const UChar* pattern;
+  const UChar* pattern_end;
+#ifdef USE_CALLOUT
+  void*  tag_table;
+  int    callout_num;
+  int    callout_list_alloc;
+  CalloutListEntry* callout_list;    /* index: callout num */
+#endif
+} RegexExt;
+
+struct re_pattern_buffer {
+  /* common members of BBuf(bytes-buffer) */
+  unsigned char* p;         /* compiled pattern */
+  unsigned int used;        /* used space for p */
+  unsigned int alloc;       /* allocated space for p */
+
+  int num_mem;                   /* used memory(...) num counted from 1 */
+  int num_repeat;                /* OP_REPEAT/OP_REPEAT_NG id-counter */
+  int num_null_check;            /* OP_EMPTY_CHECK_START/END id counter */
+  int num_call;                  /* number of subexp call */
+  unsigned int capture_history;  /* (?@...) flag (1-31) */
+  unsigned int bt_mem_start;     /* need backtrack flag */
+  unsigned int bt_mem_end;       /* need backtrack flag */
+  int stack_pop_level;
+  int repeat_range_alloc;
+  OnigRepeatRange* repeat_range;
+
+  OnigEncoding      enc;
+  OnigOptionType    options;
+  OnigSyntaxType*   syntax;
+  OnigCaseFoldType  case_fold_flag;
+  void*             name_table;
+
+  /* optimization info (string search, char-map and anchors) */
+  int            optimize;          /* optimize flag */
+  int            threshold_len;     /* search str-length for apply optimize */
+  int            anchor;            /* BEGIN_BUF, BEGIN_POS, (SEMI_)END_BUF */
+  OnigLen        anchor_dmin;       /* (SEMI_)END_BUF anchor distance */
+  OnigLen        anchor_dmax;       /* (SEMI_)END_BUF anchor distance */
+  int            sub_anchor;        /* start-anchor for exact or map */
+  unsigned char *exact;
+  unsigned char *exact_end;
+  unsigned char  map[CHAR_MAP_SIZE]; /* used as BMH skip or char-map */
+  int            map_offset;
+  OnigLen        dmin;                      /* min-distance of exact or map */
+  OnigLen        dmax;                      /* max-distance of exact or map */
+  RegexExt*      extp;
+};
+
+
+extern void onig_add_end_call(void (*func)(void));
 
 #ifdef ONIG_DEBUG
 
