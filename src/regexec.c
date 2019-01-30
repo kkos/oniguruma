@@ -499,7 +499,8 @@ onig_print_compiled_byte_code(FILE* f, Operation* p, Operation* start, OnigEncod
   case OP_REPEAT_NG:
     mem = p->repeat.id;
     addr = p->repeat.addr;
-    fprintf(f, ":%d:%d", mem, addr);
+    fprintf(f, ":%d:", mem);
+    p_rel_addr(f, addr, p, start);
     break;
 
   case OP_REPEAT_INC:
