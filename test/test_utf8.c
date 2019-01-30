@@ -61,7 +61,7 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not,
 
     if (error_no == 0) {
       onig_error_code_to_str((UChar* )s, r);
-      fprintf(err_file, "ERROR: %s\n", s);
+      fprintf(err_file, "ERROR: %s  /%s/\n", s, pattern);
       nerror++;
     }
     else {
