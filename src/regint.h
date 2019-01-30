@@ -30,8 +30,8 @@
  */
 
 /* for debug */
-/* #define ONIG_DEBUG_PARSE */
-/* #define ONIG_DEBUG_COMPILE */
+#define ONIG_DEBUG_PARSE
+#define ONIG_DEBUG_COMPILE
 /* #define ONIG_DEBUG_SEARCH */
 /* #define ONIG_DEBUG_MATCH */
 /* #define ONIG_DONT_OPTIMIZE */
@@ -650,6 +650,7 @@ typedef int ModeType;
 
 
 /* op-code + arg size */
+#if 0
 #define SIZE_OP_ANYCHAR_STAR            SIZE_OPCODE
 #define SIZE_OP_ANYCHAR_STAR_PEEK_NEXT (SIZE_OPCODE + 1)
 #define SIZE_OP_JUMP                   (SIZE_OPCODE + SIZE_RELADDR)
@@ -688,6 +689,54 @@ typedef int ModeType;
 #define SIZE_OP_CALLOUT_CONTENTS       (SIZE_OPCODE + SIZE_MEMNUM)
 #define SIZE_OP_CALLOUT_NAME           (SIZE_OPCODE + SIZE_MEMNUM + SIZE_MEMNUM)
 #endif
+
+#else  /* if 0 */
+
+/* for relative address increment to go next op. */
+#define SIZE_INC_OP                     1
+
+#define SIZE_OP_ANYCHAR_STAR            1
+#define SIZE_OP_ANYCHAR_STAR_PEEK_NEXT  1
+#define SIZE_OP_JUMP                    1
+#define SIZE_OP_PUSH                    1
+#define SIZE_OP_PUSH_SUPER              1
+#define SIZE_OP_POP_OUT                 1
+#define SIZE_OP_PUSH_OR_JUMP_EXACT1     1
+#define SIZE_OP_PUSH_IF_PEEK_NEXT       1
+#define SIZE_OP_REPEAT                  1
+#define SIZE_OP_REPEAT_INC              1
+#define SIZE_OP_REPEAT_INC_NG           1
+#define SIZE_OP_WORD_BOUNDARY           1
+#define SIZE_OP_PREC_READ_START         1
+#define SIZE_OP_PREC_READ_NOT_START     1
+#define SIZE_OP_PREC_READ_END           1
+#define SIZE_OP_PREC_READ_NOT_END       1
+#define SIZE_OP_BACKREF                 1
+#define SIZE_OP_FAIL                    1
+#define SIZE_OP_MEMORY_START            1
+#define SIZE_OP_MEMORY_START_PUSH       1
+#define SIZE_OP_MEMORY_END_PUSH         1
+#define SIZE_OP_MEMORY_END_PUSH_REC     1
+#define SIZE_OP_MEMORY_END              1
+#define SIZE_OP_MEMORY_END_REC          1
+#define SIZE_OP_ATOMIC_START            1
+#define SIZE_OP_ATOMIC_END              1
+#define SIZE_OP_EMPTY_CHECK_START       1
+#define SIZE_OP_EMPTY_CHECK_END         1
+#define SIZE_OP_LOOK_BEHIND             1
+#define SIZE_OP_LOOK_BEHIND_NOT_START   1
+#define SIZE_OP_LOOK_BEHIND_NOT_END     1
+#define SIZE_OP_CALL                    1
+#define SIZE_OP_RETURN                  1
+#define SIZE_OP_PUSH_SAVE_VAL           1
+#define SIZE_OP_UPDATE_VAR              1
+
+#ifdef USE_CALLOUT
+#define SIZE_OP_CALLOUT_CONTENTS        1
+#define SIZE_OP_CALLOUT_NAME            1
+#endif
+#endif /* if 0 */
+
 
 #define MC_ESC(syn)               (syn)->meta_char_table.esc
 #define MC_ANYCHAR(syn)           (syn)->meta_char_table.anychar
@@ -742,6 +791,116 @@ typedef int ModeType;
 
 
 typedef struct {
+  enum OpCode opcode;
+  union {
+    struct {
+      UChar* s;
+    } exact;
+    struct {
+      UChar* s;
+      LengthType n;   /* number of chars */
+    } exact_n; /* EXACTN, EXACTN_IC, EXACTMB2N, EXACTMB3N */
+    struct {
+      UChar* s;
+      LengthType n;   /* number of chars */
+      LengthType len; /* char byte length */
+    } exact_len_n; /* EXACTMBN */
+    struct {
+      BitSet bs;
+    } cclass;
+    struct {
+      void*  mb;
+    } cclass_mb;
+    struct {
+      void*  mb; /* mb must be same position with cclass_mb for match_at(). */
+      BitSet bs;
+    } cclass_mix;
+    struct {
+      UChar c;
+    } anychar_star_peek_next;
+    struct {
+      ModeType mode;
+    } word_boundary; /* OP_WORD_BOUNDARY, OP_NO_WORD_BOUNDARY, OP_WORD_BEGIN, OP_WORD_END */
+    struct {
+      int num;
+      union {
+        MemNumType  n1; /* num == 1 */
+        MemNumType* ns; /* num >  1 */
+      };
+      int nest_level;
+      OnigOptionType options;
+    } backref_general; /* BACKREF_MULTI, BACKREF_MULTI_IC, BACKREF_WITH_LEVEL, BACKREF_CHECK, BACKREF_CHECK_WITH_LEVEL, */
+    struct {
+      MemNumType n1;
+    } backref_n; /* BACKREF_N, BACKREF_N_IC */
+    struct {
+      MemNumType num;
+    } memory_start; /* MEMORY_START, MEMORY_START_PUSH */
+    struct {
+      MemNumType num;
+    } memory_end; /* MEMORY_END, MEMORY_END_REC, MEMORY_END_PUSH, MEMORY_END_PUSH_REC */
+    struct {
+      RelAddrType addr;
+    } jump;
+    struct {
+      RelAddrType addr;
+    } push;
+    struct {
+      RelAddrType addr;
+      UChar c;
+    } push_or_jump_exact1;
+    struct {
+      RelAddrType addr;
+      UChar c;
+    } push_if_peek_next;
+    struct {
+      MemNumType  id;
+      RelAddrType addr;
+    } repeat; /* REPEAT, REPEAT_NG */
+    struct {
+      MemNumType  id;
+    } repeat_inc; /* REPEAT_INC, REPEAT_INC_SG, REPEAT_INC_NG, REPEAT_INC_NG_SG */
+    struct {
+      MemNumType mem;
+    } empty_check_start;
+    struct {
+      MemNumType mem;
+    } empty_check_end; /* EMPTY_CHECK_END, EMPTY_CHECK_END_MEMST, EMPTY_CHECK_END_MEMST_PUSH */
+    struct {
+      RelAddrType addr;
+    } prec_read_not_start;
+    struct {
+      LengthType len;
+    } look_behind;
+    struct {
+      LengthType  len;
+      RelAddrType addr;
+    } look_behind_not_start;
+    struct {
+      AbsAddrType addr;
+    } call;
+    struct {
+      SaveType   type;
+      MemNumType id;
+    } push_save_val;
+    struct {
+      UpdateVarType type;
+      MemNumType id;
+    } update_var;
+#ifdef USE_CALLOUT
+    struct {
+      MemNumType num;
+    } callout_contents;
+    struct {
+      MemNumType num;
+      MemNumType id;
+    } callout_name;
+#endif
+
+  };
+} Operation;
+
+typedef struct {
   const UChar* pattern;
   const UChar* pattern_end;
 #ifdef USE_CALLOUT
@@ -754,9 +913,16 @@ typedef struct {
 
 struct re_pattern_buffer {
   /* common members of BBuf(bytes-buffer) */
+#if 0
   unsigned char* p;         /* compiled pattern */
   unsigned int used;        /* used space for p */
   unsigned int alloc;       /* allocated space for p */
+#else
+  Operation*   ops;
+  Operation*   ops_curr;
+  unsigned int ops_used;    /* used space for ops */
+  unsigned int ops_alloc;   /* allocated space for ops */
+#endif
 
   int num_mem;                   /* used memory(...) num counted from 1 */
   int num_repeat;                /* OP_REPEAT/OP_REPEAT_NG id-counter */
@@ -790,6 +956,11 @@ struct re_pattern_buffer {
   OnigLen        dmax;                      /* max-distance of exact or map */
   RegexExt*      extp;
 };
+
+#define COP(reg)            ((reg)->ops_curr)
+#define COP_CURR_OFFSET(reg)  ((reg)->ops_used - 1)
+#define COP_CURR_OFFSET_BYTES(reg, p)  \
+  ((int )((void* )(&((reg)->ops_curr->p)) - (void* )((reg)->ops)))
 
 
 extern void onig_add_end_call(void (*func)(void));
