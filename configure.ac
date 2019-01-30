@@ -3,7 +3,7 @@ AC_INIT(onig, 6.9.1)
 
 AC_CONFIG_MACRO_DIR([m4])
 
-AM_INIT_AUTOMAKE([-Wno-portability 1.14])
+AM_INIT_AUTOMAKE([-Wno-portability])
 AC_CONFIG_HEADERS([src/config.h])
 
 
