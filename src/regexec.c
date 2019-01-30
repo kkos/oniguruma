@@ -3780,6 +3780,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         INC_OP;
       }
       else if (stkp->u.repeat.count >= reg->repeat_range[mem].lower) {
+        INC_OP;
         STACK_PUSH_ALT(p, s, sprev);
         p = STACK_AT(si)->u.repeat.pcode; /* Don't use stkp after PUSH. */
       }
