@@ -211,7 +211,11 @@ static int to_ascii(OnigEncoding enc, UChar *s, UChar *end,
   UChar *p;
   OnigCodePoint code;
 
-  if (ONIGENC_MBC_MINLEN(enc) > 1) {
+  if (!s) {
+    len = 0;
+    *is_over = 0;
+  }
+  else if (ONIGENC_MBC_MINLEN(enc) > 1) {
     p = s;
     len = 0;
     while (p < end) {
