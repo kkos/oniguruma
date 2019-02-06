@@ -6128,6 +6128,8 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 {
 #define OPS_INIT_SIZE  8
 
+  extern int onig_init_for_match_at(regex_t* reg);
+
   int r;
   Node*  root;
   ScanEnv  scan_env;
@@ -6269,6 +6271,13 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 #ifdef ONIG_DEBUG_COMPILE
   onig_print_names(stderr, reg);
   onig_print_compiled_byte_code_list(stderr, reg);
+#endif
+
+#ifdef USE_THREADED_CODE
+#ifdef USE_DIRECT_THREADED_CODE
+  /* opcode -> opaddr */
+  onig_init_for_match_at(reg);
+#endif
 #endif
 
  end:

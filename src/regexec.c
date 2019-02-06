@@ -2367,9 +2367,6 @@ typedef struct {
 } posix_regmatch_t;
 
 
-#ifdef __GNUC__
-#define USE_THREADED_CODE
-#endif
 
 #ifdef USE_THREADED_CODE
 
@@ -2379,7 +2376,11 @@ typedef struct {
 #define DEFAULT_OP   /* L_DEFAULT: */
 #define NEXT_OP      sprev = sbegin; JUMP_OP
 #define JUMP_OP      GOTO_OP
+#ifdef USE_DIRECT_THREADED_CODE
+#define GOTO_OP      goto *(p->opaddr)
+#else
 #define GOTO_OP      goto *opcode_to_label[p->opcode]
+#endif
 #define BREAK_OP     /* Nothing */
 
 #else
@@ -2449,7 +2450,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
          const UChar* in_right_range, const UChar* sstart, UChar* sprev,
          MatchArg* msa)
 {
-  static Operation FinishCode[] = { { OP_FINISH } };
+
+#if defined(USE_THREADED_CODE) && defined(USE_DIRECT_THREADED_CODE)
+  static Operation FinishCode[] = { { {.opaddr=&&L_FINISH} } };
+#else
+  static Operation FinishCode[] = { { {OP_FINISH} } };
+#endif
 
 #ifdef USE_THREADED_CODE
   static const void *opcode_to_label[] = {
@@ -2582,6 +2588,22 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
 #ifdef ONIG_DEBUG_MATCH
   static unsigned int counter = 1;
+#endif
+
+#ifdef USE_THREADED_CODE
+#ifdef USE_DIRECT_THREADED_CODE
+  if (IS_NULL(msa)) {
+    for (i = 0; i < reg->ops_used; i++) {
+       const void* addr;
+       /* fprintf(stdout, "code: %d, ", p->opcode); */
+       addr = opcode_to_label[p->opcode];
+       p->opaddr = addr;
+       /* fprintf(stdout, "addr: %p\n", p->opaddr); */
+       p++;
+    }
+    return ONIG_NORMAL;
+  }
+#endif
 #endif
 
 #ifdef USE_CALLOUT
@@ -3620,20 +3642,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           fprintf(stderr, "EMPTY_CHECK_END: skip  id:%d, s:%p\n", (int )mem, s);
 #endif
         empty_check_found:
-          /* empty loop founded, skip next instruction */
-          switch (p->opcode) {
-          case OP_JUMP:
-          case OP_PUSH:
-          case OP_REPEAT_INC:
-          case OP_REPEAT_INC_NG:
-          case OP_REPEAT_INC_SG:
-          case OP_REPEAT_INC_NG_SG:
-            INC_OP;
-            break;
-          default:
-            goto unexpected_bytecode_error;
-            break;
-          }
+          INC_OP;
         }
       }
       JUMP_OUT;
@@ -4069,10 +4078,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
  bytecode_error:
   STACK_SAVE;
   return ONIGERR_UNDEFINED_BYTECODE;
-
- unexpected_bytecode_error:
-  STACK_SAVE;
-  return ONIGERR_UNEXPECTED_BYTECODE;
 
 #ifdef USE_RETRY_LIMIT_IN_MATCH
  retry_limit_in_match_over:
@@ -5371,6 +5376,18 @@ onig_get_used_stack_size_in_callout(OnigCalloutArgs* a, int* used_num, int* used
 
   return ONIG_NORMAL;
 }
+
+#ifdef USE_THREADED_CODE
+#ifdef USE_DIRECT_THREADED_CODE
+extern int
+onig_init_for_match_at(regex_t* reg)
+{
+  return match_at(reg, (const UChar* )NULL, (const UChar* )NULL,
+                  (const UChar* )NULL, (const UChar* )NULL, (UChar* )NULL,
+                  (MatchArg* )NULL);
+}
+#endif
+#endif
 
 
 /* builtin callout functions */

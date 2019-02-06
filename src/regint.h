@@ -54,6 +54,10 @@
 #define PLATFORM_UNALIGNED_WORD_ACCESS
 #endif
 
+#ifdef __GNUC__
+#define USE_THREADED_CODE
+#endif
+
 /* config */
 /* spec. config */
 #define USE_CALL
@@ -63,6 +67,9 @@
 #define USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE     /* /\n$/ =~ "\n" */
 #define USE_WARNING_REDUNDANT_NESTED_REPEAT_OPERATOR
 #define USE_RETRY_LIMIT_IN_MATCH
+#ifdef USE_THREADED_CODE
+#define USE_DIRECT_THREADED_CODE
+#endif
 
 /* internal config */
 #define USE_OP_PUSH_OR_JUMP_EXACT
@@ -791,7 +798,10 @@ typedef int ModeType;
 
 
 typedef struct {
-  enum OpCode opcode;
+  union {
+    enum OpCode opcode;
+    const void* opaddr;
+  };
   union {
     struct {
       UChar* s;
