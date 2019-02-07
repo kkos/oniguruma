@@ -3642,7 +3642,24 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           fprintf(stderr, "EMPTY_CHECK_END: skip  id:%d, s:%p\n", (int )mem, s);
 #endif
         empty_check_found:
+          /* empty loop founded, skip next instruction */
+#if defined(ONIG_DEBUG) && !defined(USE_DIRECT_THREADED_CODE)
+          switch (p->opcode) {
+          case OP_JUMP:
+          case OP_PUSH:
+          case OP_REPEAT_INC:
+          case OP_REPEAT_INC_NG:
+          case OP_REPEAT_INC_SG:
+          case OP_REPEAT_INC_NG_SG:
+            INC_OP;
+            break;
+          default:
+            goto unexpected_bytecode_error;
+            break;
+          }
+#else
           INC_OP;
+#endif
         }
       }
       JUMP_OUT;
@@ -4078,6 +4095,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
  bytecode_error:
   STACK_SAVE;
   return ONIGERR_UNDEFINED_BYTECODE;
+
+#if defined(ONIG_DEBUG) && !defined(USE_DIRECT_THREADED_CODE)
+ unexpected_bytecode_error:
+  STACK_SAVE;
+  return ONIGERR_UNEXPECTED_BYTECODE;
+#endif
 
 #ifdef USE_RETRY_LIMIT_IN_MATCH
  retry_limit_in_match_over:
