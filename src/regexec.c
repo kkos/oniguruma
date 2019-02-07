@@ -2604,10 +2604,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   if (IS_NULL(msa)) {
     for (i = 0; i < reg->ops_used; i++) {
        const void* addr;
-       /* fprintf(stdout, "code: %d, ", p->opcode); */
        addr = opcode_to_label[p->opcode];
        p->opaddr = addr;
-       /* fprintf(stdout, "addr: %p\n", p->opaddr); */
        p++;
     }
     return ONIG_NORMAL;
@@ -3652,7 +3650,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
         empty_check_found:
           /* empty loop founded, skip next instruction */
-#if defined(ONIG_DEBUG) && !defined(USE_DIRECT_THREADED_CODE)
+#ifdef ONIG_DEBUG
           switch (p->opcode) {
           case OP_JUMP:
           case OP_PUSH:
@@ -4105,7 +4103,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   STACK_SAVE;
   return ONIGERR_UNDEFINED_BYTECODE;
 
-#if defined(ONIG_DEBUG) && !defined(USE_DIRECT_THREADED_CODE)
+#ifdef ONIG_DEBUG
  unexpected_bytecode_error:
   STACK_SAVE;
   return ONIGERR_UNEXPECTED_BYTECODE;
