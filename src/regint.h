@@ -798,10 +798,15 @@ typedef int ModeType;
 
 
 typedef struct {
+#ifdef ONIG_DEBUG
+  enum OpCode opcode;
+  const void* opaddr;
+#else
   union {
     enum OpCode opcode;
     const void* opaddr;
   };
+#endif
   union {
     struct {
       UChar* s;
@@ -923,16 +928,10 @@ typedef struct {
 
 struct re_pattern_buffer {
   /* common members of BBuf(bytes-buffer) */
-#if 0
-  unsigned char* p;         /* compiled pattern */
-  unsigned int used;        /* used space for p */
-  unsigned int alloc;       /* allocated space for p */
-#else
   Operation*   ops;
   Operation*   ops_curr;
   unsigned int ops_used;    /* used space for ops */
   unsigned int ops_alloc;   /* allocated space for ops */
-#endif
 
   int num_mem;                   /* used memory(...) num counted from 1 */
   int num_repeat;                /* OP_REPEAT/OP_REPEAT_NG id-counter */

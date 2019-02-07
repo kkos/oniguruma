@@ -2372,7 +2372,7 @@ typedef struct {
 
 #define BYTECODE_INTERPRETER_START      GOTO_OP;
 #define BYTECODE_INTERPRETER_END
-#define CASE_OP(x)   L_##x: SOP_IN(OP_##x); sbegin = s; MATCH_DEBUG_OUT(1)
+#define CASE_OP(x)   L_##x: SOP_IN(OP_##x); sbegin = s; MATCH_DEBUG_OUT(0)
 #define DEFAULT_OP   /* L_DEFAULT: */
 #define NEXT_OP      sprev = sbegin; JUMP_OP
 #define JUMP_OP      GOTO_OP
@@ -2409,7 +2409,8 @@ typedef struct {
 
 #ifdef ONIG_DEBUG_MATCH
 #define MATCH_DEBUG_OUT(offset) do {\
-      UChar *xp, *q, *bp, buf[50];\
+      Operation *xp;\
+      UChar *q, *bp, buf[50];\
       int len, spos;\
       spos = IS_NOT_NULL(s) ? (int )(s - str) : -1;\
       xp = p - (offset);\
@@ -2434,8 +2435,8 @@ typedef struct {
       if (xp == FinishCode)\
         fprintf(stderr, "----: ");\
       else\
-        fprintf(stderr, "%4d: ", (int )(xp - reg->p));\
-      onig_print_compiled_byte_code(stderr, xp, reg->p, encode);\
+        fprintf(stderr, "%4d: ", (int )(xp - reg->ops));\
+      onig_print_compiled_byte_code(stderr, xp, reg->ops, encode);\
       fprintf(stderr, "\n");\
   } while(0);
 #else
@@ -2451,10 +2452,18 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
          MatchArg* msa)
 {
 
+#ifdef ONIG_DEBUG
 #if defined(USE_THREADED_CODE) && defined(USE_DIRECT_THREADED_CODE)
-  static Operation FinishCode[] = { { {.opaddr=&&L_FINISH} } };
+  static Operation FinishCode[] = { {.opcode=OP_FINISH, .opaddr=&&L_FINISH } };
+#else
+  static Operation FinishCode[] = { {OP_FINISH } };
+#endif
+#else
+#if defined(USE_THREADED_CODE) && defined(USE_DIRECT_THREADED_CODE)
+  static Operation FinishCode[] = { { {.opcode=OP_FINISH, .opaddr=&&L_FINISH} } };
 #else
   static Operation FinishCode[] = { { {OP_FINISH} } };
+#endif
 #endif
 
 #ifdef USE_THREADED_CODE
