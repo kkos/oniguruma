@@ -204,7 +204,8 @@ static OpInfoType OpInfo[] = {
   { OP_BACKREF_N_IC,         "backref-n-ic",        ARG_SPECIAL },
   { OP_BACKREF_MULTI,       "backref_multi",        ARG_SPECIAL },
   { OP_BACKREF_MULTI_IC,    "backref_multi-ic",     ARG_SPECIAL },
-  { OP_BACKREF_WITH_LEVEL,  "backref_with_level",   ARG_SPECIAL },
+  { OP_BACKREF_WITH_LEVEL,    "backref_with_level",   ARG_SPECIAL },
+  { OP_BACKREF_WITH_LEVEL_IC, "backref_with_level-c", ARG_SPECIAL },
   { OP_BACKREF_CHECK,       "backref_check",        ARG_SPECIAL },
   { OP_BACKREF_CHECK_WITH_LEVEL, "backref_check_with_level", ARG_SPECIAL },
   { OP_MEMORY_START_PUSH,   "mem-start-push",       ARG_MEMNUM  },
@@ -436,9 +437,7 @@ onig_print_compiled_byte_code(FILE* f, Operation* p, Operation* start, OnigEncod
     }
     break;
   case OP_BACKREF_WITH_LEVEL:
-    option = p->backref_general.options;
-    fprintf(f, ":%d", option);
-    /* fall */
+  case OP_BACKREF_WITH_LEVEL_IC:
   case OP_BACKREF_CHECK_WITH_LEVEL:
     {
       LengthType level;
@@ -2522,6 +2521,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_BACKREF_MULTI,
   &&L_BACKREF_MULTI_IC,
   &&L_BACKREF_WITH_LEVEL,
+  &&L_BACKREF_WITH_LEVEL_IC,
   &&L_BACKREF_CHECK,
   &&L_BACKREF_CHECK_WITH_LEVEL,
   &&L_MEMORY_START,
@@ -3566,21 +3566,24 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       JUMP_OUT;
 
 #ifdef USE_BACKREF_WITH_LEVEL
+    CASE_OP(BACKREF_WITH_LEVEL_IC)
+      n = 1; /* ignore case */
+      goto backref_with_level;
     CASE_OP(BACKREF_WITH_LEVEL)
       {
         int len;
-        OnigOptionType ic;
         int level;
         MemNumType* mems;
 
-        ic    = p->backref_general.options;
+	n = 0;
+      backref_with_level:
         level = p->backref_general.nest_level;
         tlen  = p->backref_general.num;
         mems = tlen == 1 ? &(p->backref_general.n1) : p->backref_general.ns;
 
         sprev = s;
-        if (backref_match_at_nested_level(reg, stk, stk_base, ic
-                     , case_fold_flag, level, (int )tlen, mems, &s, end)) {
+        if (backref_match_at_nested_level(reg, stk, stk_base, n,
+                    case_fold_flag, level, (int )tlen, mems, &s, end)) {
           if (sprev < end) {
             while (sprev + (len = enclen(encode, sprev)) < s)
               sprev += len;

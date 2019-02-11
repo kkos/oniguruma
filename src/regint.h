@@ -552,6 +552,7 @@ enum OpCode {
   OP_BACKREF_MULTI,
   OP_BACKREF_MULTI_IC,
   OP_BACKREF_WITH_LEVEL,        /* \k<xxx+n>, \k<xxx-n> */
+  OP_BACKREF_WITH_LEVEL_IC,     /* \k<xxx+n>, \k<xxx-n> */
   OP_BACKREF_CHECK,             /* (?(n)), (?('name')) */
   OP_BACKREF_CHECK_WITH_LEVEL,  /* (?(n-level)), (?('name-level')) */
 

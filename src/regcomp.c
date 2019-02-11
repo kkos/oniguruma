@@ -205,7 +205,9 @@ ops_free(regex_t* reg)
     case OP_BACKREF1: case OP_BACKREF2: case OP_BACKREF_N: case OP_BACKREF_N_IC:
       break;
     case OP_BACKREF_MULTI:      case OP_BACKREF_MULTI_IC:
-    case OP_BACKREF_WITH_LEVEL: case OP_BACKREF_CHECK:
+    case OP_BACKREF_WITH_LEVEL:
+    case OP_BACKREF_WITH_LEVEL_IC:
+    case OP_BACKREF_CHECK:
     case OP_BACKREF_CHECK_WITH_LEVEL:
       if (op->backref_general.num != 1)
         xfree(op->backref_general.ns);
@@ -1796,10 +1798,12 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
       else {
 #ifdef USE_BACKREF_WITH_LEVEL
         if (NODE_IS_NEST_LEVEL(node)) {
-          r = add_op(reg, OP_BACKREF_WITH_LEVEL);
+	  if ((reg->options & ONIG_OPTION_IGNORECASE) != 0)
+	    r = add_op(reg, OP_BACKREF_WITH_LEVEL_IC);
+	  else
+	    r = add_op(reg, OP_BACKREF_WITH_LEVEL);
+
           if (r != 0) return r;
-          COP(reg)->backref_general.options =
-            (reg->options & ONIG_OPTION_IGNORECASE);
           COP(reg)->backref_general.nest_level = br->nest_level;
           goto add_bacref_mems;
         }
