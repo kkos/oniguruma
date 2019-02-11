@@ -2460,7 +2460,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
 #else
 #if defined(USE_THREADED_CODE) && defined(USE_DIRECT_THREADED_CODE)
-  static Operation FinishCode[] = { { {.opcode=OP_FINISH, .opaddr=&&L_FINISH} } };
+  static Operation FinishCode[] = { { {.opaddr=&&L_FINISH} } };
 #else
   static Operation FinishCode[] = { { {OP_FINISH} } };
 #endif
