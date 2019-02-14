@@ -2388,7 +2388,7 @@ typedef struct {
   while (1) {\
   MATCH_DEBUG_OUT(0)\
   sbegin = s;\
-  switch (*p++) {
+  switch (p->opcode) {
 #define BYTECODE_INTERPRETER_END  } sprev = sbegin; }
 #define CASE_OP(x)   case OP_##x: SOP_IN(OP_##x);
 #define DEFAULT_OP   default:
