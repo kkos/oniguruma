@@ -2367,7 +2367,7 @@ typedef struct {
 
 
 
-#ifdef USE_THREADED_CODE
+#ifdef USE_GOTO_LABELS_AS_VALUES
 
 #define BYTECODE_INTERPRETER_START      GOTO_OP;
 #define BYTECODE_INTERPRETER_END
@@ -2397,7 +2397,7 @@ typedef struct {
 #define GOTO_OP      continue; break
 #define BREAK_OP     break
 
-#endif /* USE_THREADED_CODE */
+#endif /* USE_GOTO_LABELS_AS_VALUES */
 
 #define INC_OP       p++
 #define NEXT_OUT     SOP_OUT; NEXT_OP
@@ -2452,20 +2452,20 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 {
 
 #ifdef ONIG_DEBUG
-#if defined(USE_THREADED_CODE) && defined(USE_DIRECT_THREADED_CODE)
+#if defined(USE_DIRECT_THREADED_CODE)
   static Operation FinishCode[] = { {.opcode=OP_FINISH, .opaddr=&&L_FINISH } };
 #else
   static Operation FinishCode[] = { {OP_FINISH } };
 #endif
 #else
-#if defined(USE_THREADED_CODE) && defined(USE_DIRECT_THREADED_CODE)
+#if defined(USE_DIRECT_THREADED_CODE)
   static Operation FinishCode[] = { { {.opaddr=&&L_FINISH} } };
 #else
   static Operation FinishCode[] = { { {OP_FINISH} } };
 #endif
 #endif
 
-#ifdef USE_THREADED_CODE
+#ifdef USE_GOTO_LABELS_AS_VALUES
   static const void *opcode_to_label[] = {
   &&L_FINISH,
   &&L_END,
@@ -2599,7 +2599,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   static unsigned int counter = 1;
 #endif
 
-#ifdef USE_THREADED_CODE
 #ifdef USE_DIRECT_THREADED_CODE
   if (IS_NULL(msa)) {
     for (i = 0; i < reg->ops_used; i++) {
@@ -2610,7 +2609,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     }
     return ONIG_NORMAL;
   }
-#endif
 #endif
 
 #ifdef USE_CALLOUT
@@ -5410,7 +5408,6 @@ onig_get_used_stack_size_in_callout(OnigCalloutArgs* a, int* used_num, int* used
   return ONIG_NORMAL;
 }
 
-#ifdef USE_THREADED_CODE
 #ifdef USE_DIRECT_THREADED_CODE
 extern int
 onig_init_for_match_at(regex_t* reg)
@@ -5419,7 +5416,6 @@ onig_init_for_match_at(regex_t* reg)
                   (const UChar* )NULL, (const UChar* )NULL, (UChar* )NULL,
                   (MatchArg* )NULL);
 }
-#endif
 #endif
 
 

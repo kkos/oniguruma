@@ -6277,11 +6277,9 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   onig_print_compiled_byte_code_list(stderr, reg);
 #endif
 
-#ifdef USE_THREADED_CODE
 #ifdef USE_DIRECT_THREADED_CODE
   /* opcode -> opaddr */
   onig_init_for_match_at(reg);
-#endif
 #endif
 
  end:

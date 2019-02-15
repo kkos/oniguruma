@@ -55,7 +55,7 @@
 #endif
 
 #ifdef __GNUC__
-#define USE_THREADED_CODE
+#define USE_GOTO_LABELS_AS_VALUES
 #endif
 
 /* config */
@@ -67,7 +67,7 @@
 #define USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE     /* /\n$/ =~ "\n" */
 #define USE_WARNING_REDUNDANT_NESTED_REPEAT_OPERATOR
 #define USE_RETRY_LIMIT_IN_MATCH
-#ifdef USE_THREADED_CODE
+#ifdef USE_GOTO_LABELS_AS_VALUES
 #define USE_DIRECT_THREADED_CODE
 #endif
 
