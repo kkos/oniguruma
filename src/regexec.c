@@ -306,7 +306,6 @@ onig_print_compiled_byte_code(FILE* f, Operation* p, Operation* start, OnigEncod
   LengthType  len;
   MemNumType  mem;
   OnigCodePoint  code;
-  OnigOptionType option;
   ModeType mode;
   UChar *q;
 
