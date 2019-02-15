@@ -172,9 +172,6 @@ static OpInfoType OpInfo[] = {
   { OP_CCLASS_NOT,        "cclass-not"  },
   { OP_CCLASS_MB_NOT,     "cclass-mb-not"  },
   { OP_CCLASS_MIX_NOT,    "cclass-mix-not" },
-#ifdef USE_OP_CCLASS_NODE
-  { OP_CCLASS_NODE,       "cclass-node" },
-#endif
   { OP_ANYCHAR,               "anychar"     },
   { OP_ANYCHAR_ML,            "anychar-ml"  },
   { OP_ANYCHAR_STAR,          "anychar*"    },
@@ -2473,9 +2470,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_CCLASS_NOT,
   &&L_CCLASS_MB_NOT,
   &&L_CCLASS_MIX_NOT,
-#ifdef USE_OP_CCLASS_NODE
-  &&L_CCLASS_NODE,
-#endif
   &&L_ANYCHAR,
   &&L_ANYCHAR_ML,
   &&L_ANYCHAR_STAR,
@@ -3042,27 +3036,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       }
       INC_OP;
       NEXT_OUT;
-
-#ifdef USE_OP_CCLASS_NODE
-    CASE_OP(CCLASS_NODE)
-      {
-        OnigCodePoint code;
-        void *node;
-        int mb_len;
-        UChar *ss;
-
-        DATA_ENSURE(1);
-        GET_POINTER_INC(node, p);
-        mb_len = enclen(encode, s);
-        ss = s;
-        s += mb_len;
-        DATA_ENSURE(0);
-        code = ONIGENC_MBC_TO_CODE(encode, ss, s);
-        if (onig_is_code_in_cc_len(mb_len, code, node) == 0) goto fail;
-      }
-      INC_OP;
-      NEXT_OUT;
-#endif
 
     CASE_OP(ANYCHAR)
       DATA_ENSURE(1);

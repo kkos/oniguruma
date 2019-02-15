@@ -515,9 +515,6 @@ enum OpCode {
   OP_CCLASS_NOT,
   OP_CCLASS_MB_NOT,
   OP_CCLASS_MIX_NOT,
-#ifdef USE_OP_CCLASS_NODE
-  OP_CCLASS_NODE,       /* pointer to CClassNode node */
-#endif
 
   OP_ANYCHAR,                 /* "."  */
   OP_ANYCHAR_ML,              /* "."  multi-line */
