@@ -969,7 +969,7 @@ struct re_pattern_buffer {
 #define COP(reg)            ((reg)->ops_curr)
 #define COP_CURR_OFFSET(reg)  ((reg)->ops_used - 1)
 #define COP_CURR_OFFSET_BYTES(reg, p)  \
-  ((int )((void* )(&((reg)->ops_curr->p)) - (void* )((reg)->ops)))
+  ((int )((char* )(&((reg)->ops_curr->p)) - (char* )((reg)->ops)))
 
 
 extern void onig_add_end_call(void (*func)(void));

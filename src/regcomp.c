@@ -180,7 +180,7 @@ ops_free(regex_t* reg)
 
   if (IS_NULL(reg->ops)) return ;
 
-  for (i = 0; i < reg->ops_used; i++) {
+  for (i = 0; i < (int )reg->ops_used; i++) {
     Operation* op = reg->ops + i;
     switch (op->opcode) {
     case OP_EXACTMBN:
@@ -2154,7 +2154,7 @@ fix_unset_addr_list(UnsetAddrList* uslist, regex_t* reg)
     addr   = en->m.called_addr;
     offset = uslist->us[i].offset;
 
-    paddr = (AbsAddrType* )((void* )reg->ops + offset);
+    paddr = (AbsAddrType* )((char* )reg->ops + offset);
     *paddr = addr;
   }
   return 0;
