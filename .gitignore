@@ -21,6 +21,9 @@ Makefile.in
 *.lib
 *.exe
 *.exp
+*.gcno
+*.gcda
+*.gcov
 *~
 .libs/
 .deps/
