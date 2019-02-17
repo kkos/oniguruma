@@ -38,3 +38,6 @@ pkgconfig_DATA = oniguruma.pc
 
 all-test:
 	cd test; make test
+
+cov:
+	make CFLAGS="--coverage"

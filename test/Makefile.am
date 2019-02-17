@@ -37,3 +37,10 @@ testp_CFLAGS = -DPOSIX_TEST -Wall -Wno-invalid-source-encoding
 
 testcu_SOURCES = testu.c
 testcu_LDADD = $(lib_onig)
+
+
+cov:
+	make CFLAGS="--coverage" test_utf8
+	make CFLAGS="--coverage" testc
+	make CFLAGS="--coverage" testp
+	make CFLAGS="--coverage" testcu
