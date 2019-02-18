@@ -30,6 +30,8 @@ Makefile.in
 /build
 /onig-*.tar.gz
 m4/*.m4
+/coverage
+/coverage.info
 
 # src/
 /src/CaseFolding.txt

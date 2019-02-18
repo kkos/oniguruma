@@ -40,4 +40,16 @@ all-test:
 	cd test; make test
 
 cov:
+	make lcov-clear
+	cd test; make CFLAGS="--coverage" test_utf8; ./test_utf8
+	make lcov
+
+gcov:
 	make CFLAGS="--coverage"
+
+lcov:
+	lcov -c -d src/.libs -o coverage.info
+	genhtml -o coverage coverage.info
+
+lcov-clear:
+	lcov -z -d .

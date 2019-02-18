@@ -39,7 +39,7 @@ testcu_SOURCES = testu.c
 testcu_LDADD = $(lib_onig)
 
 
-cov:
+gcov:
 	make CFLAGS="--coverage" test_utf8
 	make CFLAGS="--coverage" testc
 	make CFLAGS="--coverage" testp
