@@ -3530,7 +3530,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         int level;
         MemNumType* mems;
 
-	n = 0;
+        n = 0;
       backref_with_level:
         level = p->backref_general.nest_level;
         tlen  = p->backref_general.num;
