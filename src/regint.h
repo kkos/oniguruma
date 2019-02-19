@@ -837,11 +837,11 @@ typedef struct {
       ModeType mode;
     } word_boundary; /* OP_WORD_BOUNDARY, OP_NO_WORD_BOUNDARY, OP_WORD_BEGIN, OP_WORD_END */
     struct {
-      int num;
       union {
         MemNumType  n1; /* num == 1 */
         MemNumType* ns; /* num >  1 */
       };
+      int num;
       int nest_level;
     } backref_general; /* BACKREF_MULTI, BACKREF_MULTI_IC, BACKREF_WITH_LEVEL, BACKREF_CHECK, BACKREF_CHECK_WITH_LEVEL, */
     struct {
