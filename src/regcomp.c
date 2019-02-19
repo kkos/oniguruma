@@ -195,11 +195,16 @@ ops_free(regex_t* reg)
       xfree(op->exact.s);
       break;
 
+    case OP_CCLASS_NOT: case OP_CCLASS:
+      xfree(op->cclass.bsp);
+      break;
+
     case OP_CCLASS_MB_NOT: case OP_CCLASS_MB:
       xfree(op->cclass_mb.mb);
       break;
     case OP_CCLASS_MIX_NOT: case OP_CCLASS_MIX:
       xfree(op->cclass_mix.mb);
+      xfree(op->cclass_mix.bsp);
       break;
 
     case OP_BACKREF1: case OP_BACKREF2: case OP_BACKREF_N: case OP_BACKREF_N_IC:
@@ -667,7 +672,9 @@ compile_cclass_node(CClassNode* cc, regex_t* reg)
     r = add_op(reg, IS_NCCLASS_NOT(cc) ? OP_CCLASS_NOT : OP_CCLASS);
     if (r != 0) return r;
 
-    xmemcpy(COP(reg)->cclass.bs, cc->bs, SIZE_BITSET);
+    COP(reg)->cclass.bsp = xmalloc(SIZE_BITSET);
+    CHECK_NULL_RETURN_MEMERR(COP(reg)->cclass.bsp);
+    xmemcpy(COP(reg)->cclass.bsp, cc->bs, SIZE_BITSET);
   }
   else {
     void* p;
@@ -684,7 +691,9 @@ compile_cclass_node(CClassNode* cc, regex_t* reg)
       r = add_op(reg, IS_NCCLASS_NOT(cc) ? OP_CCLASS_MIX_NOT : OP_CCLASS_MIX);
       if (r != 0) return r;
 
-      xmemcpy(COP(reg)->cclass_mix.bs, cc->bs, SIZE_BITSET);
+      COP(reg)->cclass_mix.bsp = xmalloc(SIZE_BITSET);
+      CHECK_NULL_RETURN_MEMERR(COP(reg)->cclass_mix.bsp);
+      xmemcpy(COP(reg)->cclass_mix.bsp, cc->bs, SIZE_BITSET);
 
       p = set_multi_byte_cclass(cc->mbuf, reg);
       CHECK_NULL_RETURN_MEMERR(p);

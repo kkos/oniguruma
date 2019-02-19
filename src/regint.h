@@ -821,14 +821,14 @@ typedef struct {
       LengthType len; /* char byte length */
     } exact_len_n; /* EXACTMBN */
     struct {
-      BitSet bs;
+      BitSetRef bsp;
     } cclass;
     struct {
       void*  mb;
     } cclass_mb;
     struct {
       void*  mb; /* mb must be same position with cclass_mb for match_at(). */
-      BitSet bs;
+      BitSetRef bsp;
     } cclass_mix;
     struct {
       UChar c;

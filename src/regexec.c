@@ -2946,7 +2946,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     CASE_OP(CCLASS)
       DATA_ENSURE(1);
-      if (BITSET_AT(p->cclass.bs, *s) == 0) goto fail;
+      if (BITSET_AT(p->cclass.bsp, *s) == 0) goto fail;
       s += enclen(encode, s);   /* OP_CCLASS can match mb-code. \D, \S */
       INC_OP;
       NEXT_OUT;
@@ -2977,7 +2977,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         goto cclass_mb;
       }
       else {
-        if (BITSET_AT(p->cclass_mix.bs, *s) == 0)
+        if (BITSET_AT(p->cclass_mix.bsp, *s) == 0)
           goto fail;
 
         s++;
@@ -2987,7 +2987,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     CASE_OP(CCLASS_NOT)
       DATA_ENSURE(1);
-      if (BITSET_AT(p->cclass.bs, *s) != 0) goto fail;
+      if (BITSET_AT(p->cclass.bsp, *s) != 0) goto fail;
       s += enclen(encode, s);
       INC_OP;
       NEXT_OUT;
@@ -3027,7 +3027,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         goto cclass_mb_not;
       }
       else {
-        if (BITSET_AT(p->cclass_mix.bs, *s) != 0)
+        if (BITSET_AT(p->cclass_mix.bsp, *s) != 0)
           goto fail;
 
         s++;
