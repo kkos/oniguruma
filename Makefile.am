@@ -41,7 +41,7 @@ all-test:
 
 cov:
 	make lcov-clear
-	cd test; make CFLAGS="--coverage" test_utf8; ./test_utf8
+	cd test; make CFLAGS="--coverage" test
 	make lcov
 
 gcov:
