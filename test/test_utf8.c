@@ -634,6 +634,9 @@ extern int main(int argc, char* argv[])
   x2("(?:()|()|())*\\3\\1", "abc", 0, 0);
   x2("(|(?:a(?:\\g'1')*))b|", "abc", 0, 2);
   x2("^(\"|)(.*)\\1$", "XX", 0, 2);
+  x2("(abc|def|ghi|jkl|mno|pqr|stu){0,10}?\\z", "admno", 2, 5);
+  x2("(abc|(def|ghi|jkl|mno|pqr){0,7}?){5}\\z", "adpqrpqrpqr", 2, 11); // cover OP_REPEAT_INC_NG_SG
+  x2("(?!abc).*\\z", "abcde", 1, 5); // cover OP_PREC_READ_NOT_END
 
   x2("(?~)", "", 0, 0);
   x2("(?~)", "A", 0, 0);
