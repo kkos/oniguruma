@@ -4451,7 +4451,7 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
   }
 
 #ifdef USE_OP_PUSH_OR_JUMP_EXACT
-  if (qn->greedy && (qn->body_empty_info != QUANT_BODY_IS_NOT_EMPTY)) {
+  if (qn->greedy && (qn->body_empty_info == QUANT_BODY_IS_NOT_EMPTY)) {
     if (NODE_TYPE(body) == NODE_QUANT) {
       QuantNode* tqn = QUANT_(body);
       if (IS_NOT_NULL(tqn->head_exact)) {
