@@ -215,7 +215,9 @@ static OpInfoType OpInfo[] = {
   { OP_PUSH,                  "push"                  },
   { OP_PUSH_SUPER,            "push-super"            },
   { OP_POP_OUT,               "pop-out"               },
+#ifdef USE_OP_PUSH_OR_JUMP_EXACT
   { OP_PUSH_OR_JUMP_EXACT1,   "push-or-jump-e1"       },
+#endif
   { OP_PUSH_IF_PEEK_NEXT,     "push-if-peek-next"     },
   { OP_REPEAT,                "repeat"                },
   { OP_REPEAT_NG,             "repeat-ng"             },
@@ -461,12 +463,14 @@ onig_print_compiled_byte_code(FILE* f, Operation* p, Operation* start, OnigEncod
     p_rel_addr(f, addr, p, start);
     break;
 
+#ifdef USE_OP_PUSH_OR_JUMP_EXACT
   case OP_PUSH_OR_JUMP_EXACT1:
     addr = p->push_or_jump_exact1.addr;
     fputc(':', f);
     p_rel_addr(f, addr, p, start);
     p_string(f, 1, &(p->push_or_jump_exact1.c));
     break;
+#endif
 
   case OP_PUSH_IF_PEEK_NEXT:
     addr = p->push_if_peek_next.addr;
@@ -2513,7 +2517,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_PUSH,
   &&L_PUSH_SUPER,
   &&L_POP_OUT,
+#ifdef USE_OP_PUSH_OR_JUMP_EXACT
   &&L_PUSH_OR_JUMP_EXACT1,
+#endif
   &&L_PUSH_IF_PEEK_NEXT,
   &&L_REPEAT,
   &&L_REPEAT_NG,
@@ -3699,6 +3705,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       INC_OP;
       JUMP_OUT;
 
+ #ifdef USE_OP_PUSH_OR_JUMP_EXACT
     CASE_OP(PUSH_OR_JUMP_EXACT1)
       {
         UChar c;
@@ -3713,6 +3720,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       }
       p += addr;
       JUMP_OUT;
+#endif
 
     CASE_OP(PUSH_IF_PEEK_NEXT)
       {

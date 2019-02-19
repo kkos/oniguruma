@@ -811,9 +811,12 @@ compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
     }
 
     if (qn->greedy) {
+#ifdef USE_OP_PUSH_OR_JUMP_EXACT
       if (IS_NOT_NULL(qn->head_exact))
         len += SIZE_OP_PUSH_OR_JUMP_EXACT1 + mod_tlen + SIZE_OP_JUMP;
-      else if (IS_NOT_NULL(qn->next_head_exact))
+      else
+#endif
+      if (IS_NOT_NULL(qn->next_head_exact))
         len += SIZE_OP_PUSH_IF_PEEK_NEXT + mod_tlen + SIZE_OP_JUMP;
       else
         len += SIZE_OP_PUSH + mod_tlen + SIZE_OP_JUMP;
@@ -888,9 +891,12 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
       r = add_op(reg, OP_JUMP);
       if (r != 0) return r;
       if (qn->greedy) {
+#ifdef USE_OP_PUSH_OR_JUMP_EXACT
         if (IS_NOT_NULL(qn->head_exact))
           COP(reg)->jump.addr = SIZE_OP_PUSH_OR_JUMP_EXACT1 + SIZE_INC_OP;
-        else if (IS_NOT_NULL(qn->next_head_exact))
+        else
+#endif
+        if (IS_NOT_NULL(qn->next_head_exact))
           COP(reg)->jump.addr = SIZE_OP_PUSH_IF_PEEK_NEXT + SIZE_INC_OP;
         else
           COP(reg)->jump.addr = SIZE_OP_PUSH + SIZE_INC_OP;
@@ -905,6 +911,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
     }
 
     if (qn->greedy) {
+#ifdef USE_OP_PUSH_OR_JUMP_EXACT
       if (IS_NOT_NULL(qn->head_exact)) {
         r = add_op(reg, OP_PUSH_OR_JUMP_EXACT1);
         if (r != 0) return r;
@@ -916,7 +923,9 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
 
         addr = -(mod_tlen + (int )SIZE_OP_PUSH_OR_JUMP_EXACT1);
       }
-      else if (IS_NOT_NULL(qn->next_head_exact)) {
+      else
+#endif
+      if (IS_NOT_NULL(qn->next_head_exact)) {
         r = add_op(reg, OP_PUSH_IF_PEEK_NEXT);
         if (r != 0) return r;
         COP(reg)->push_if_peek_next.addr = SIZE_INC_OP + mod_tlen + SIZE_OP_JUMP;
@@ -4450,7 +4459,6 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
     }
   }
 
-#ifdef USE_OP_PUSH_OR_JUMP_EXACT
   if (qn->greedy && (qn->body_empty_info == QUANT_BODY_IS_NOT_EMPTY)) {
     if (NODE_TYPE(body) == NODE_QUANT) {
       QuantNode* tqn = QUANT_(body);
@@ -4463,7 +4471,6 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
       qn->head_exact = get_head_value_node(NODE_BODY(node), 1, reg);
     }
   }
-#endif
 
   return r;
 }

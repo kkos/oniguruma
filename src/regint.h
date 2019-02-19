@@ -72,7 +72,7 @@
 #endif
 
 /* internal config */
-#define USE_OP_PUSH_OR_JUMP_EXACT
+/* #define USE_OP_PUSH_OR_JUMP_EXACT */
 #define USE_QUANT_PEEK_NEXT
 #define USE_ST_LIBRARY
 
@@ -565,7 +565,9 @@ enum OpCode {
   OP_PUSH,
   OP_PUSH_SUPER,
   OP_POP_OUT,
+#ifdef USE_OP_PUSH_OR_JUMP_EXACT
   OP_PUSH_OR_JUMP_EXACT1,  /* if match exact then push, else jump. */
+#endif
   OP_PUSH_IF_PEEK_NEXT,    /* if match exact then push, else none. */
   OP_REPEAT,               /* {n,m} */
   OP_REPEAT_NG,            /* {n,m}? (non greedy) */
@@ -662,7 +664,9 @@ typedef int ModeType;
 #define SIZE_OP_PUSH                   (SIZE_OPCODE + SIZE_RELADDR)
 #define SIZE_OP_PUSH_SUPER             (SIZE_OPCODE + SIZE_RELADDR)
 #define SIZE_OP_POP_OUT                 SIZE_OPCODE
+#ifdef USE_OP_PUSH_OR_JUMP_EXACT
 #define SIZE_OP_PUSH_OR_JUMP_EXACT1    (SIZE_OPCODE + SIZE_RELADDR + 1)
+#endif
 #define SIZE_OP_PUSH_IF_PEEK_NEXT      (SIZE_OPCODE + SIZE_RELADDR + 1)
 #define SIZE_OP_REPEAT_INC             (SIZE_OPCODE + SIZE_MEMNUM)
 #define SIZE_OP_REPEAT_INC_NG          (SIZE_OPCODE + SIZE_MEMNUM)
@@ -706,7 +710,9 @@ typedef int ModeType;
 #define SIZE_OP_PUSH                    1
 #define SIZE_OP_PUSH_SUPER              1
 #define SIZE_OP_POP_OUT                 1
+#ifdef USE_OP_PUSH_OR_JUMP_EXACT
 #define SIZE_OP_PUSH_OR_JUMP_EXACT1     1
+#endif
 #define SIZE_OP_PUSH_IF_PEEK_NEXT       1
 #define SIZE_OP_REPEAT                  1
 #define SIZE_OP_REPEAT_INC              1
