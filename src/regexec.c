@@ -2436,18 +2436,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
          MatchArg* msa)
 {
 
-#ifdef ONIG_DEBUG
 #if defined(USE_DIRECT_THREADED_CODE)
-  static Operation FinishCode[] = { {.opcode=OP_FINISH, .opaddr=&&L_FINISH } };
+  static Operation FinishCode[] = { { .opaddr=&&L_FINISH, .opcode=OP_FINISH } };
 #else
-  static Operation FinishCode[] = { {OP_FINISH } };
-#endif
-#else
-#if defined(USE_DIRECT_THREADED_CODE)
-  static Operation FinishCode[] = { { {.opaddr=&&L_FINISH} } };
-#else
-  static Operation FinishCode[] = { { {OP_FINISH} } };
-#endif
+  static Operation FinishCode[] = { { OP_FINISH } };
 #endif
 
 #ifdef USE_GOTO_LABELS_AS_VALUES

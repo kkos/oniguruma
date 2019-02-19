@@ -802,14 +802,10 @@ typedef int ModeType;
 
 
 typedef struct {
-#ifdef ONIG_DEBUG
-  enum OpCode opcode;
+#ifdef USE_DIRECT_THREADED_CODE
   const void* opaddr;
 #else
-  union {
-    enum OpCode opcode;
-    const void* opaddr;
-  };
+  enum OpCode opcode;
 #endif
   union {
     struct {
@@ -914,8 +910,11 @@ typedef struct {
       MemNumType id;
     } callout_name;
 #endif
-
   };
+
+#ifdef USE_DIRECT_THREADED_CODE
+  enum OpCode opcode;
+#endif
 } Operation;
 
 typedef struct {
