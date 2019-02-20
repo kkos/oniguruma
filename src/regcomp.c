@@ -1142,7 +1142,7 @@ compile_length_bag_node(BagNode* node, regex_t* reg)
     break;
 
   case BAG_OPTION:
-    len = tlen;
+    /* never come here */
     break;
   }
 
