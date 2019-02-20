@@ -637,6 +637,17 @@ extern int main(int argc, char* argv[])
   x2("(abc|def|ghi|jkl|mno|pqr|stu){0,10}?\\z", "admno", 2, 5);
   x2("(abc|(def|ghi|jkl|mno|pqr){0,7}?){5}\\z", "adpqrpqrpqr", 2, 11); // cover OP_REPEAT_INC_NG_SG
   x2("(?!abc).*\\z", "abcde", 1, 5); // cover OP_PREC_READ_NOT_END
+  x2("(.{2,})?", "abcde", 0, 5); // up coverage
+  x2("((a|b|c|d|e|f|g|h|i|j|k|l|m|n)+)?", "abcde", 0, 5); // up coverage
+  x2("((a|b|c|d|e|f|g|h|i|j|k|l|m|n){3,})?", "abcde", 0, 5); // up coverage
+  x2("((?:a(?:b|c|d|e|f|g|h|i|j|k|l|m|n))+)?", "abacadae", 0, 8); // up coverage
+  x2("((?:a(?:b|c|d|e|f|g|h|i|j|k|l|m|n))+?)?z", "abacadaez", 0, 9); // up coverage
+  x2("\\A((a|b)\?\?)?z", "bz", 0, 2); // up coverage
+  x2("((?<x>abc){0}a\\g<x>d)+", "aabcd", 0, 5); // up coverage
+  x2("((?(abc)true|false))+", "false", 0, 5); // up coverage
+  x2("((?i:abc)d)+", "abcdABCd", 0, 8); // up coverage
+  x2("((?<!abc)def)+", "bcdef", 2, 5); // up coverage
+  x2("(\\ba)+", "aaa", 0, 1); // up coverage
 
   x2("(?~)", "", 0, 0);
   x2("(?~)", "A", 0, 0);
