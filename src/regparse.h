@@ -59,11 +59,10 @@ enum BagType {
 
 enum GimmickType {
   GIMMICK_FAIL       = 0,
-  GIMMICK_KEEP       = 1,
-  GIMMICK_SAVE       = 2,
-  GIMMICK_UPDATE_VAR = 3,
+  GIMMICK_SAVE       = 1,
+  GIMMICK_UPDATE_VAR = 2,
 #ifdef USE_CALLOUT
-  GIMMICK_CALLOUT    = 4,
+  GIMMICK_CALLOUT    = 3,
 #endif
 };
 

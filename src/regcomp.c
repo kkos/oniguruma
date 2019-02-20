@@ -1496,13 +1496,6 @@ compile_gimmick_node(GimmickNode* node, regex_t* reg)
     r = add_op(reg, OP_FAIL);
     break;
 
-  case GIMMICK_KEEP:
-    r = add_op(reg, OP_PUSH_SAVE_VAL);
-    if (r != 0) return r;
-    COP(reg)->push_save_val.type = SAVE_KEEP;
-    COP(reg)->push_save_val.id   = node->id;
-    break;
-
   case GIMMICK_SAVE:
     r = add_op(reg, OP_PUSH_SAVE_VAL);
     if (r != 0) return r;
@@ -1557,7 +1550,6 @@ compile_length_gimmick_node(GimmickNode* node, regex_t* reg)
     len = SIZE_OP_FAIL;
     break;
 
-  case GIMMICK_KEEP:
   case GIMMICK_SAVE:
     len = SIZE_OP_PUSH_SAVE_VAL;
     break;
@@ -6721,9 +6713,6 @@ print_indent_tree(FILE* f, Node* node, int indent)
     switch (GIMMICK_(node)->type) {
     case GIMMICK_FAIL:
       fprintf(f, "fail");
-      break;
-    case GIMMICK_KEEP:
-      fprintf(f, "keep:%d", GIMMICK_(node)->id);
       break;
     case GIMMICK_SAVE:
       fprintf(f, "save:%d:%d", GIMMICK_(node)->detail_type, GIMMICK_(node)->id);
