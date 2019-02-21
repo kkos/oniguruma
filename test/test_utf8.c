@@ -648,6 +648,14 @@ extern int main(int argc, char* argv[])
   x2("((?i:abc)d)+", "abcdABCd", 0, 8); // up coverage
   x2("((?<!abc)def)+", "bcdef", 2, 5); // up coverage
   x2("(\\ba)+", "aaa", 0, 1); // up coverage
+  x2("()(?<x>ab)(?(<x>)a|b)", "aba", 0, 3); // up coverage
+  x2("(?<=a.b)c", "azbc", 3, 4); // up coverage
+  n("(?<=(?:abcde){30})z", "abc"); // up coverage
+  x2("(?<=(?(a)a|bb))z", "aaz", 2, 3); // up coverage
+  x2("[a]*\\W", "aa@", 0, 3); // up coverage
+  x2("[a]*[b]", "aab", 0, 3); // up coverage
+  n("a*\\W", "aaa"); // up coverage
+  n("(?W)a*\\W", "aaa"); // up coverage
 
   x2("(?~)", "", 0, 0);
   x2("(?~)", "A", 0, 0);
