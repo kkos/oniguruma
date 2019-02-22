@@ -29,6 +29,9 @@
 
 #include "regenc.h"
 
+/* U+0000 - U+10FFFF */
+#define USE_RFC3629_RANGE
+
 /* #define USE_INVALID_CODE_SCHEME */
 
 #ifdef USE_INVALID_CODE_SCHEME
@@ -153,8 +156,10 @@ code_to_mbclen(OnigCodePoint code)
   else if ((code & 0xfffff800) == 0) return 2;
   else if ((code & 0xffff0000) == 0) return 3;
   else if ((code & 0xffe00000) == 0) return 4;
+#ifndef USE_RFC3629_RANGE
   else if ((code & 0xfc000000) == 0) return 5;
   else if ((code & 0x80000000) == 0) return 6;
+#endif
 #ifdef USE_INVALID_CODE_SCHEME
   else if (code == INVALID_CODE_FE) return 1;
   else if (code == INVALID_CODE_FF) return 1;
@@ -188,6 +193,7 @@ code_to_mbc(OnigCodePoint code, UChar *buf)
       *p++ = UTF8_TRAILS(code, 12);
       *p++ = UTF8_TRAILS(code,  6);
     }
+#ifndef USE_RFC3629_RANGE
     else if ((code & 0xfc000000) == 0) {
       *p++ = (UChar )(((code>>24) & 0x03) | 0xf8);
       *p++ = UTF8_TRAILS(code, 18);
@@ -201,6 +207,7 @@ code_to_mbc(OnigCodePoint code, UChar *buf)
       *p++ = UTF8_TRAILS(code, 12);
       *p++ = UTF8_TRAILS(code,  6);
     }
+#endif
 #ifdef USE_INVALID_CODE_SCHEME
     else if (code == INVALID_CODE_FE) {
       *p = 0xfe;
