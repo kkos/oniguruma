@@ -6070,18 +6070,6 @@ onig_free(regex_t* reg)
   }
 }
 
-#define REGEX_TRANSFER(to,from) do {\
-  onig_free_body(to);\
-  xmemcpy(to, from, sizeof(regex_t));\
-  xfree(from);\
-} while (0)
-
-extern void
-onig_transfer(regex_t* to, regex_t* from)
-{
-  REGEX_TRANSFER(to, from);
-}
-
 
 #ifdef ONIG_DEBUG_PARSE
 static void print_tree P_((FILE* f, Node* node));
