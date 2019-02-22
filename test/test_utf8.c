@@ -656,6 +656,25 @@ extern int main(int argc, char* argv[])
   x2("[a]*[b]", "aab", 0, 3); // up coverage
   n("a*\\W", "aaa"); // up coverage
   n("(?W)a*\\W", "aaa"); // up coverage
+  x2("(?<=ab(?<=ab))", "ab", 2, 2); // up coverage
+  x2("(?<x>a)(?<x>b)(\\k<x>)+", "abbaab", 0, 6); // up coverage
+  x2("()(\\1)(\\2)", "abc", 0, 0); // up coverage
+  x2("((?(a)b|c))(\\1)", "abab", 0, 4); // up coverage
+  x2("(?<x>$|b\\g<x>)", "bbb", 0, 3); // up coverage
+  x2("(?<x>(?(a)a|b)|c\\g<x>)", "cccb", 0, 4); // up coverage
+  x2("(a)(?(1)a*|b*)+", "aaaa", 0, 4); // up coverage
+  x2("[[^abc]&&cde]*", "de", 0, 2); // up coverage
+  n("(a){10}{10}", "aa"); // up coverage
+  x2("(?:a?)+", "aa", 0, 2); // up coverage
+  x2("(?:a?)*?", "a", 0, 0); // up coverage
+  x2("(?:a*)*?", "a", 0, 0); // up coverage
+  x2("(?:a+?)*", "a", 0, 1); // up coverage
+  x2("\\h", "5", 0, 1); // up coverage
+  x2("\\H", "z", 0, 1); // up coverage
+  x2("[\\h]", "5", 0, 1); // up coverage
+  x2("[\\H]", "z", 0, 1); // up coverage
+  x2("[\\o{101}]", "A", 0, 1); // up coverage
+  x2("[\\u0041]", "A", 0, 1); // up coverage
 
   x2("(?~)", "", 0, 0);
   x2("(?~)", "A", 0, 0);
