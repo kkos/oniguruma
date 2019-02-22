@@ -53,3 +53,7 @@ lcov:
 
 lcov-clear:
 	lcov -z -d .
+
+cov-clean: clean
+	rm -rf coverage coverage.info
+	find . -name '*.gcno' | xargs rm -f
