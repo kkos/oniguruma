@@ -1142,7 +1142,8 @@ compile_length_bag_node(BagNode* node, regex_t* reg)
     break;
 
   case BAG_OPTION:
-    /* never come here */
+    /* never come here, but set for escape warning */
+    len = 0;
     break;
   }
 
