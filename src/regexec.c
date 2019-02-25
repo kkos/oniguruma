@@ -2947,7 +2947,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     CASE_OP(CCLASS)
       DATA_ENSURE(1);
       if (BITSET_AT(p->cclass.bsp, *s) == 0) goto fail;
-      s += enclen(encode, s);   /* OP_CCLASS can match mb-code. \D, \S */
+      s++;
       INC_OP;
       NEXT_OUT;
 
