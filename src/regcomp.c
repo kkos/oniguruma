@@ -225,7 +225,6 @@ ops_free(regex_t* reg)
     case OP_EXACT1: case OP_EXACT2: case OP_EXACT3: case OP_EXACT4:
     case OP_EXACT5: case OP_EXACTMB2N1: case OP_EXACTMB2N2:
     case OP_EXACTMB2N3: case OP_EXACT1_IC:
-      xfree(op->exact.s);
       break;
 
     case OP_CCLASS_NOT: case OP_CCLASS:
@@ -555,6 +554,7 @@ add_compile_string(UChar* s, int mb_len, int str_len,
 {
   int op;
   int r;
+  int byte_len;
   UChar* p;
   UChar* end;
 
@@ -562,25 +562,31 @@ add_compile_string(UChar* s, int mb_len, int str_len,
   r = add_op(reg, op);
   if (r != 0) return r;
 
-  end = s + (mb_len * str_len);
-  p = onigenc_strdup(reg->enc, s, end);
-  CHECK_NULL_RETURN_MEMERR(p);
+  byte_len = mb_len * str_len;
+  end = s + byte_len;
 
   if (op == OP_EXACTMBN) {
+    p = onigenc_strdup(reg->enc, s, end);
+    CHECK_NULL_RETURN_MEMERR(p);
+
     COP(reg)->exact_len_n.len = mb_len;
     COP(reg)->exact_len_n.n   = str_len;
     COP(reg)->exact_len_n.s   = p;
   }
   else if (IS_NEED_STR_LEN_OP_EXACT(op)) {
+    p = onigenc_strdup(reg->enc, s, end);
+    CHECK_NULL_RETURN_MEMERR(p);
+
     if (op == OP_EXACTN_IC)
-      COP(reg)->exact_n.n = mb_len * str_len;
+      COP(reg)->exact_n.n = byte_len;
     else
       COP(reg)->exact_n.n = str_len;
 
     COP(reg)->exact_n.s = p;
   }
   else {
-    COP(reg)->exact.s = p;
+    xmemcpy(COP(reg)->exact.s, s, (size_t )byte_len);
+    COP(reg)->exact.s[byte_len] = '\0';
   }
 
   return 0;

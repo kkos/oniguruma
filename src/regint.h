@@ -809,7 +809,7 @@ typedef struct {
 #endif
   union {
     struct {
-      UChar* s;
+      UChar s[16];  /* Now used first 7 bytes only. */
     } exact;
     struct {
       UChar* s;
