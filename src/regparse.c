@@ -6600,7 +6600,7 @@ parse_callout_of_contents(Node** np, int cterm, UChar** src, UChar* end, ScanEnv
   PFETCH_S(c);
   if (c == '[') {
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
-    tag_start = p;
+    tag_end = tag_start = p;
     while (! PEND) {
       if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
       tag_end = p;
@@ -6890,7 +6890,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
 
   if (c == '[') {
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
-    tag_start = p;
+    tag_end = tag_start = p;
     while (! PEND) {
       if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
       tag_end = p;
@@ -7331,9 +7331,9 @@ parse_bag(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
           int then_is_empty;
           Node *Then, *Else;
 
+          Then = 0;
           if (PPEEK_IS('|')) {
             PFETCH(c);
-            Then = 0;
             then_is_empty = 1;
           }
           else
