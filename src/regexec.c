@@ -297,9 +297,9 @@ bitset_on_num(BitSetRef bs)
   return n;
 }
 
-extern void
-onig_print_compiled_byte_code(FILE* f, regex_t* reg, int index,
-                              Operation* start, OnigEncoding enc)
+static void
+print_compiled_byte_code(FILE* f, regex_t* reg, int index,
+                         Operation* start, OnigEncoding enc)
 {
   int i, n;
   RelAddrType addr;
@@ -609,7 +609,7 @@ onig_print_compiled_byte_code(FILE* f, regex_t* reg, int index,
     break;
 
   default:
-    fprintf(stderr, "onig_print_compiled_byte_code: undefined code %d\n", opcode);
+    fprintf(stderr, "print_compiled_byte_code: undefined code %d\n", opcode);
     break;
   }
 }
@@ -632,7 +632,7 @@ onig_print_compiled_byte_code_list(FILE* f, regex_t* reg)
     int pos = bp - start;
 
     fprintf(f, "%4d: ", pos);
-    onig_print_compiled_byte_code(f, reg, pos, start, reg->enc);
+    print_compiled_byte_code(f, reg, pos, start, reg->enc);
     fprintf(f, "\n");
     bp++;
   }
@@ -2431,7 +2431,7 @@ typedef struct {
         fprintf(stderr, "----: finish");\
       else {\
         fprintf(stderr, "%4d: ", (int )(xp - reg->ops));\
-        onig_print_compiled_byte_code(stderr, reg, (int )(xp - reg->ops), reg->ops, encode);\
+        print_compiled_byte_code(stderr, reg, (int )(xp - reg->ops), reg->ops, encode);\
       }\
       fprintf(stderr, "\n");\
   } while(0);
