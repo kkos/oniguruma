@@ -298,7 +298,8 @@ bitset_on_num(BitSetRef bs)
 }
 
 extern void
-onig_print_compiled_byte_code(FILE* f, Operation* p, Operation* start, OnigEncoding enc)
+onig_print_compiled_byte_code(FILE* f, regex_t* reg, int index,
+                              Operation* start, OnigEncoding enc)
 {
   int i, n;
   RelAddrType addr;
@@ -307,9 +308,19 @@ onig_print_compiled_byte_code(FILE* f, Operation* p, Operation* start, OnigEncod
   OnigCodePoint  code;
   ModeType mode;
   UChar *q;
+  Operation* p;
+  enum OpCode opcode;
 
-  fprintf(f, "%s", op2name(p->opcode));
-  switch (p->opcode) {
+  p = reg->ops + index;
+
+#ifdef USE_DIRECT_THREADED_CODE
+  opcode = reg->ocs[index];
+#else
+  opcode = p->opcode;
+#endif
+
+  fprintf(f, "%s", op2name(opcode));
+  switch (opcode) {
   case OP_EXACT1:
     p_string(f, 1, p->exact.s); break;
   case OP_EXACT2:
@@ -358,7 +369,7 @@ onig_print_compiled_byte_code(FILE* f, Operation* p, Operation* start, OnigEncod
 
   case OP_CCLASS:
   case OP_CCLASS_NOT:
-    n = bitset_on_num(p->cclass.bs);
+    n = bitset_on_num(p->cclass.bsp);
     fprintf(f, ":%d", n);
     break;
   case OP_CCLASS_MB:
@@ -381,7 +392,7 @@ onig_print_compiled_byte_code(FILE* f, Operation* p, Operation* start, OnigEncod
       OnigCodePoint* codes;
 
       codes = (OnigCodePoint* )p->cclass_mix.mb;
-      n = bitset_on_num(p->cclass_mix.bs);
+      n = bitset_on_num(p->cclass_mix.bsp);
 
       GET_CODE_POINT(ncode, codes);
       codes++;
@@ -598,7 +609,7 @@ onig_print_compiled_byte_code(FILE* f, Operation* p, Operation* start, OnigEncod
     break;
 
   default:
-    fprintf(stderr, "onig_print_compiled_byte_code: undefined code %d\n", p->opcode);
+    fprintf(stderr, "onig_print_compiled_byte_code: undefined code %d\n", opcode);
     break;
   }
 }
@@ -621,7 +632,7 @@ onig_print_compiled_byte_code_list(FILE* f, regex_t* reg)
     int pos = bp - start;
 
     fprintf(f, "%4d: ", pos);
-    onig_print_compiled_byte_code(f, bp, start, reg->enc);
+    onig_print_compiled_byte_code(f, reg, pos, start, reg->enc);
     fprintf(f, "\n");
     bp++;
   }
@@ -2417,10 +2428,11 @@ typedef struct {
       fputs((char* )buf, stderr);\
       for (i = 0; i < 20 - (bp - buf); i++) fputc(' ', stderr);\
       if (xp == FinishCode)\
-        fprintf(stderr, "----: ");\
-      else\
+        fprintf(stderr, "----: finish");\
+      else {\
         fprintf(stderr, "%4d: ", (int )(xp - reg->ops));\
-      onig_print_compiled_byte_code(stderr, xp, reg->ops, encode);\
+        onig_print_compiled_byte_code(stderr, reg, (int )(xp - reg->ops), reg->ops, encode);\
+      }\
       fprintf(stderr, "\n");\
   } while(0);
 #else
@@ -2437,7 +2449,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 {
 
 #if defined(USE_DIRECT_THREADED_CODE)
-  static Operation FinishCode[] = { { .opaddr=&&L_FINISH, .opcode=OP_FINISH } };
+  static Operation FinishCode[] = { { .opaddr=&&L_FINISH } };
 #else
   static Operation FinishCode[] = { { OP_FINISH } };
 #endif
@@ -2579,7 +2591,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   if (IS_NULL(msa)) {
     for (i = 0; i < reg->ops_used; i++) {
        const void* addr;
-       addr = opcode_to_label[p->opcode];
+       addr = opcode_to_label[reg->ocs[i]];
        p->opaddr = addr;
        p++;
     }
@@ -3606,7 +3618,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
         empty_check_found:
           /* empty loop founded, skip next instruction */
-#ifdef ONIG_DEBUG
+#if defined(ONIG_DEBUG) && !defined(USE_DIRECT_THREADED_CODE)
           switch (p->opcode) {
           case OP_JUMP:
           case OP_PUSH:
@@ -4061,7 +4073,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   STACK_SAVE;
   return ONIGERR_UNDEFINED_BYTECODE;
 
-#ifdef ONIG_DEBUG
+#if defined(ONIG_DEBUG) && !defined(USE_DIRECT_THREADED_CODE)
  unexpected_bytecode_error:
   STACK_SAVE;
   return ONIGERR_UNEXPECTED_BYTECODE;

@@ -112,14 +112,27 @@ static int
 ops_init(regex_t* reg, int init_alloc_size)
 {
   Operation* p;
-  size_t size = sizeof(Operation) * init_alloc_size;
+  size_t size;
 
   if (init_alloc_size > 0) {
+    size = sizeof(Operation) * init_alloc_size;
     p = (Operation* )xrealloc(reg->ops, size);
     CHECK_NULL_RETURN_MEMERR(p);
+#ifdef USE_DIRECT_THREADED_CODE
+    {
+      enum OpCode* cp;
+      size = sizeof(enum OpCode) * init_alloc_size;
+      cp = (enum OpCode* )xrealloc(reg->ocs, size);
+      CHECK_NULL_RETURN_MEMERR(cp);
+      reg->ocs = cp;
+    }
+#endif
   }
   else {
-    p = (Operation* )0;
+    p  = (Operation* )0;
+#ifdef USE_DIRECT_THREADED_CODE
+    reg->ocs = (enum OpCode* )0;
+#endif
   }
 
   reg->ops = p;
@@ -135,16 +148,26 @@ ops_expand(regex_t* reg, int n)
 {
 #define MIN_OPS_EXPAND_SIZE   4
 
+#ifdef USE_DIRECT_THREADED_CODE
+  enum OpCode* cp;
+#endif
   Operation* p;
   size_t size;
 
   if (n <= 0) n = MIN_OPS_EXPAND_SIZE;
 
   n += reg->ops_alloc;
-  size = sizeof(Operation) * n;
 
+  size = sizeof(Operation) * n;
   p = (Operation* )xrealloc(reg->ops, size);
   CHECK_NULL_RETURN_MEMERR(p);
+
+#ifdef USE_DIRECT_THREADED_CODE
+  size = sizeof(enum OpCode) * n;
+  cp = (enum OpCode* )xrealloc(reg->ocs, size);
+  CHECK_NULL_RETURN_MEMERR(cp);
+  reg->ocs = cp;
+#endif
 
   reg->ops = p;
   reg->ops_alloc = n;
@@ -181,8 +204,18 @@ ops_free(regex_t* reg)
   if (IS_NULL(reg->ops)) return ;
 
   for (i = 0; i < (int )reg->ops_used; i++) {
-    Operation* op = reg->ops + i;
-    switch (op->opcode) {
+    enum OpCode opcode;
+    Operation* op;
+
+    op = reg->ops + i;
+
+#ifdef USE_DIRECT_THREADED_CODE
+    opcode = *(reg->ocs + i);
+#else
+    opcode = op->opcode;
+#endif
+
+    switch (opcode) {
     case OP_EXACTMBN:
       xfree(op->exact_len_n.s);
       break;
@@ -224,6 +257,10 @@ ops_free(regex_t* reg)
   }
 
   xfree(reg->ops);
+#ifdef USE_DIRECT_THREADED_CODE
+  xfree(reg->ocs);
+  reg->ocs = 0;
+#endif
 
   reg->ops = 0;
   reg->ops_curr  = 0;
@@ -383,7 +420,12 @@ add_op(regex_t* reg, int opcode)
   r = ops_new(reg);
   if (r != ONIG_NORMAL) return r;
 
+#ifdef USE_DIRECT_THREADED_CODE
+  *(reg->ocs + (reg->ops_curr - reg->ops)) = opcode;
+#else
   reg->ops_curr->opcode = opcode;
+#endif
+
   return 0;
 }
 

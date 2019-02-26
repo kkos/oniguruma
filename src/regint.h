@@ -911,10 +911,6 @@ typedef struct {
     } callout_name;
 #endif
   };
-
-#ifdef USE_DIRECT_THREADED_CODE
-  enum OpCode opcode;
-#endif
 } Operation;
 
 typedef struct {
@@ -931,6 +927,9 @@ typedef struct {
 struct re_pattern_buffer {
   /* common members of BBuf(bytes-buffer) */
   Operation*   ops;
+#ifdef USE_DIRECT_THREADED_CODE
+  enum OpCode* ocs;
+#endif
   Operation*   ops_curr;
   unsigned int ops_used;    /* used space for ops */
   unsigned int ops_alloc;   /* allocated space for ops */
