@@ -78,11 +78,11 @@ is_valid_mbc_string(const UChar* p, const UChar* end)
     len = mbc_enc_len(p++);
     if (len > 1) {
       for (i = 1; i < len; i++) {
-	if (p == end)
-	  return FALSE;
+        if (p == end)
+          return FALSE;
 
-	if (! utf8_istail(*p++))
-	  return FALSE;
+        if (! utf8_istail(*p++))
+          return FALSE;
       }
     }
   }
@@ -222,7 +222,7 @@ code_to_mbc(OnigCodePoint code, UChar *buf)
 
 static int
 mbc_case_fold(OnigCaseFoldType flag, const UChar** pp,
-	      const UChar* end, UChar* fold)
+              const UChar* end, UChar* fold)
 {
   const UChar* p = *pp;
 
@@ -244,13 +244,13 @@ mbc_case_fold(OnigCaseFoldType flag, const UChar** pp,
   }
   else {
     return onigenc_unicode_mbc_case_fold(ONIG_ENCODING_UTF8, flag,
-					 pp, end, fold);
+                                         pp, end, fold);
   }
 }
 
 static int
 get_ctype_code_range(OnigCtype ctype, OnigCodePoint *sb_out,
-		     const OnigCodePoint* ranges[])
+                     const OnigCodePoint* ranges[])
 {
   *sb_out = 0x80;
   return onigenc_unicode_ctype_code_range(ctype, ranges);
@@ -274,7 +274,7 @@ get_case_fold_codes_by_str(OnigCaseFoldType flag,
     const OnigUChar* p, const OnigUChar* end, OnigCaseFoldCodeItem items[])
 {
   return onigenc_unicode_get_case_fold_codes_by_str(ONIG_ENCODING_UTF8,
-						    flag, p, end, items);
+                                                    flag, p, end, items);
 }
 
 OnigEncodingType OnigEncodingUTF8 = {

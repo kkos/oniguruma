@@ -184,7 +184,7 @@ utf16le_code_to_mbc(OnigCodePoint code, UChar *buf)
 
 static int
 utf16le_mbc_case_fold(OnigCaseFoldType flag,
-		      const UChar** pp, const UChar* end, UChar* fold)
+                      const UChar** pp, const UChar* end, UChar* fold)
 {
   const UChar* p = *pp;
 
@@ -207,13 +207,13 @@ utf16le_mbc_case_fold(OnigCaseFoldType flag,
   }
   else
     return onigenc_unicode_mbc_case_fold(ONIG_ENCODING_UTF16_LE, flag, pp, end,
-					 fold);
+                                         fold);
 }
 
 #if 0
 static int
 utf16le_is_mbc_ambiguous(OnigCaseFoldType flag, const UChar** pp,
-			 const UChar* end)
+                         const UChar* end)
 {
   const UChar* p = *pp;
 
@@ -263,7 +263,7 @@ utf16le_get_case_fold_codes_by_str(OnigCaseFoldType flag,
     const OnigUChar* p, const OnigUChar* end, OnigCaseFoldCodeItem items[])
 {
   return onigenc_unicode_get_case_fold_codes_by_str(ONIG_ENCODING_UTF16_LE,
-						    flag, p, end, items);
+                                                    flag, p, end, items);
 }
 
 OnigEncodingType OnigEncodingUTF16_LE = {
