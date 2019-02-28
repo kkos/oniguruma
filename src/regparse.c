@@ -7759,7 +7759,7 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 {
   int r, len, group = 0;
   Node* qn;
-  Node** targetp;
+  Node** tp;
 
   *np = NULL;
   if (tok->type == (enum TokenSyms )term)
@@ -7832,7 +7832,7 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
       }
 
     string_end:
-      targetp = np;
+      tp = np;
       goto repeat;
     }
     break;
@@ -8076,7 +8076,7 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
   }
 
   {
-    targetp = np;
+    tp = np;
 
   re_entry:
     r = fetch_token(tok, src, end, env);
@@ -8086,7 +8086,7 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
     if (r == TK_OP_REPEAT || r == TK_INTERVAL) {
       Node* target;
 
-      if (is_invalid_quantifier_target(*targetp))
+      if (is_invalid_quantifier_target(*tp))
         return ONIGERR_TARGET_OF_REPEAT_OPERATOR_INVALID;
 
       qn = node_new_quantifier(tok->u.repeat.lower, tok->u.repeat.upper,
@@ -8098,7 +8098,7 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
         *np = NULL_NODE;
       }
       else {
-        target = *targetp;
+        target = *tp;
       }
       r = set_quantifier(qn, target, group, env);
       if (r < 0) {
@@ -8118,25 +8118,26 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
       }
 
       if (r == 0) {
-        *targetp = qn;
+        *tp = qn;
       }
       else if (r == 1) {
         onig_node_free(qn);
+        *tp = target;
       }
       else if (r == 2) { /* split case: /abc+/ */
         Node *tmp;
 
-        *targetp = node_new_list(*targetp, NULL);
-        if (IS_NULL(*targetp)) {
+        *tp = node_new_list(*tp, NULL);
+        if (IS_NULL(*tp)) {
           onig_node_free(qn);
           return ONIGERR_MEMORY;
         }
-        tmp = NODE_CDR(*targetp) = node_new_list(qn, NULL);
+        tmp = NODE_CDR(*tp) = node_new_list(qn, NULL);
         if (IS_NULL(tmp)) {
           onig_node_free(qn);
           return ONIGERR_MEMORY;
         }
-        targetp = &(NODE_CAR(tmp));
+        tp = &(NODE_CAR(tmp));
       }
       goto re_entry;
     }
