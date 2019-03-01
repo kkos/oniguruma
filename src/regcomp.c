@@ -217,10 +217,10 @@ ops_free(regex_t* reg)
 
     switch (opcode) {
     case OP_EXACTMBN:
-      xfree(op->exact_len_n.s);
+      // IN STRING POOL xfree(op->exact_len_n.s);
       break;
     case OP_EXACTN: case OP_EXACTMB2N: case OP_EXACTMB3N: case OP_EXACTN_IC:
-      xfree(op->exact_n.s);
+      // IN STRING POOL xfree(op->exact_n.s);
       break;
     case OP_EXACT1: case OP_EXACT2: case OP_EXACT3: case OP_EXACT4:
     case OP_EXACT5: case OP_EXACTMB2N1: case OP_EXACTMB2N2:
@@ -265,6 +265,112 @@ ops_free(regex_t* reg)
   reg->ops_curr  = 0;
   reg->ops_alloc = 0;
   reg->ops_used  = 0;
+}
+
+static int
+ops_calc_size_of_string_pool(regex_t* reg)
+{
+  int i;
+  int total;
+
+  if (IS_NULL(reg->ops)) return 0;
+
+  total = 0;
+  for (i = 0; i < (int )reg->ops_used; i++) {
+    enum OpCode opcode;
+    Operation* op;
+
+    op = reg->ops + i;
+#ifdef USE_DIRECT_THREADED_CODE
+    opcode = *(reg->ocs + i);
+#else
+    opcode = op->opcode;
+#endif
+
+    switch (opcode) {
+    case OP_EXACTMBN:
+      total += op->exact_len_n.len * op->exact_len_n.n;
+      break;
+    case OP_EXACTN:
+    case OP_EXACTN_IC:
+      total += op->exact_n.n;
+      break;
+    case OP_EXACTMB2N:
+      total += op->exact_n.n * 2;
+      break;
+    case OP_EXACTMB3N:
+      total += op->exact_n.n * 3;
+      break;
+
+    default:
+      break;
+    }
+  }
+
+  return total;
+}
+
+static int
+ops_make_string_pool(regex_t* reg)
+{
+  int i;
+  int len;
+  int size;
+  UChar* pool;
+  UChar* curr;
+
+  size = ops_calc_size_of_string_pool(reg);
+  if (size <= 0) {
+    return 0;
+  }
+
+  curr = pool = (UChar* )xmalloc((size_t )size);
+  CHECK_NULL_RETURN_MEMERR(pool);
+
+  for (i = 0; i < (int )reg->ops_used; i++) {
+    enum OpCode opcode;
+    Operation* op;
+
+    op = reg->ops + i;
+#ifdef USE_DIRECT_THREADED_CODE
+    opcode = *(reg->ocs + i);
+#else
+    opcode = op->opcode;
+#endif
+
+    switch (opcode) {
+    case OP_EXACTMBN:
+      len = op->exact_len_n.len * op->exact_len_n.n;
+      xmemcpy(curr, op->exact_len_n.s, len);
+      xfree(op->exact_len_n.s);
+      op->exact_len_n.s = curr;
+      curr += len;
+      break;
+    case OP_EXACTN:
+    case OP_EXACTN_IC:
+      len = op->exact_n.n;
+    copy:
+      xmemcpy(curr, op->exact_n.s, len);
+      xfree(op->exact_n.s);
+      op->exact_n.s = curr;
+      curr += len;
+      break;
+    case OP_EXACTMB2N:
+      len = op->exact_n.n * 2;
+      goto copy;
+      break;
+    case OP_EXACTMB3N:
+      len = op->exact_n.n * 3;
+      goto copy;
+      break;
+
+    default:
+      break;
+    }
+  }
+
+  reg->string_pool = pool;
+  return 0;
 }
 
 extern OnigCaseFoldType
@@ -6099,6 +6205,10 @@ onig_free_body(regex_t* reg)
 {
   if (IS_NOT_NULL(reg)) {
     ops_free(reg);
+    if (IS_NOT_NULL(reg->string_pool)) {
+      xfree(reg->string_pool);
+      reg->string_pool = 0;
+    }
     if (IS_NOT_NULL(reg->exact))            xfree(reg->exact);
     if (IS_NOT_NULL(reg->repeat_range))     xfree(reg->repeat_range);
     if (IS_NOT_NULL(reg->extp)) {
@@ -6156,6 +6266,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   else
     reg->ops_used = 0;
 
+  reg->string_pool        = 0;
   reg->num_mem            = 0;
   reg->num_repeat         = 0;
   reg->num_null_check     = 0;
@@ -6262,6 +6373,9 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
       else
         reg->stack_pop_level = STACK_POP_LEVEL_FREE;
     }
+
+    r = ops_make_string_pool(reg);
+    if (r != 0) goto err;
   }
 #ifdef USE_CALL
   else if (scan_env.num_call > 0) {

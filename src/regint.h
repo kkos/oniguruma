@@ -933,6 +933,7 @@ struct re_pattern_buffer {
   Operation*   ops_curr;
   unsigned int ops_used;    /* used space for ops */
   unsigned int ops_alloc;   /* allocated space for ops */
+  unsigned char* string_pool;
 
   int num_mem;                   /* used memory(...) num counted from 1 */
   int num_repeat;                /* OP_REPEAT/OP_REPEAT_NG id-counter */
