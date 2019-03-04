@@ -205,7 +205,7 @@ static void sprint_byte_with_x(char* s, unsigned int v)
 }
 
 static int to_ascii(OnigEncoding enc, UChar *s, UChar *end,
-		    UChar buf[], int buf_size, int *is_over)
+                    UChar buf[], int buf_size, int *is_over)
 {
   int len;
   UChar *p;

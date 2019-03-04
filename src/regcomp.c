@@ -1918,10 +1918,10 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
       else {
 #ifdef USE_BACKREF_WITH_LEVEL
         if (NODE_IS_NEST_LEVEL(node)) {
-	  if ((reg->options & ONIG_OPTION_IGNORECASE) != 0)
-	    r = add_op(reg, OP_BACKREF_WITH_LEVEL_IC);
-	  else
-	    r = add_op(reg, OP_BACKREF_WITH_LEVEL);
+          if ((reg->options & ONIG_OPTION_IGNORECASE) != 0)
+            r = add_op(reg, OP_BACKREF_WITH_LEVEL_IC);
+          else
+            r = add_op(reg, OP_BACKREF_WITH_LEVEL);
 
           if (r != 0) return r;
           COP(reg)->backref_general.nest_level = br->nest_level;
