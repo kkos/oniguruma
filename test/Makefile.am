@@ -7,9 +7,9 @@ AM_CPPFLAGS = -I$(top_srcdir)/src -I$(includedir)
 
 TESTS = test_utf8 testc testp testcu
 
-check_PROGRAMS = test_utf8 testc testp testcu
+check_PROGRAMS = $(TESTS)
 
-test: test_uchar test_utf8 testc testp testcu
+test: test_uchar $(TESTS)
 	@echo "[Oniguruma API, UTF-8 check]"
 	@./test_utf8  | grep RESULT
 	@echo "[Oniguruma API, ASCII/EUC-JP check]"
