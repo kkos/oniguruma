@@ -29,6 +29,8 @@
 
 #include "regparse.h"
 
+#define OPS_INIT_SIZE  8
+
 OnigCaseFoldType OnigDefaultCaseFoldFlag = ONIGENC_CASE_FOLD_MIN;
 
 #if 0
@@ -6238,8 +6240,6 @@ extern int
 onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
              OnigErrorInfo* einfo)
 {
-#define OPS_INIT_SIZE  8
-
   extern int onig_init_for_match_at(regex_t* reg);
 
   int r;
