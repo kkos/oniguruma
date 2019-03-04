@@ -5,7 +5,11 @@ AM_LDFLAGS  = -L$(prefix)/lib
 AM_CFLAGS = -Wall -Wno-invalid-source-encoding
 AM_CPPFLAGS = -I$(top_srcdir)/src -I$(includedir)
 
+if ENABLE_POSIX_API
 TESTS = test_utf8 testc testp testcu
+else
+TESTS = test_utf8 testc testcu
+endif
 
 check_PROGRAMS = $(TESTS)
 
@@ -14,8 +18,10 @@ test: test_uchar $(TESTS)
 	@./test_utf8  | grep RESULT
 	@echo "[Oniguruma API, ASCII/EUC-JP check]"
 	@./testc  | grep RESULT
+if ENABLE_POSIX_API
 	@echo "[POSIX API, ASCII/EUC-JP check]"
 	@./testp  | grep RESULT
+endif
 	@echo "[Oniguruma API, UTF-16 check]"
 	@./testcu | grep RESULT
 
