@@ -4041,7 +4041,7 @@ enum TokenSyms {
   TK_BACKREF,
   TK_CALL,
   TK_ANCHOR,
-  TK_OP_REPEAT,
+  TK_REPEAT,
   TK_INTERVAL,
   TK_ANYCHAR_ANYTIME,  /* SQL '%' == .* */
   TK_ALT,
@@ -4947,7 +4947,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     switch (c) {
     case '*':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_ASTERISK_ZERO_INF)) break;
-      tok->type = TK_OP_REPEAT;
+      tok->type = TK_REPEAT;
       tok->u.repeat.lower = 0;
       tok->u.repeat.upper = REPEAT_INFINITE;
       goto greedy_check;
@@ -4955,7 +4955,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
     case '+':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_PLUS_ONE_INF)) break;
-      tok->type = TK_OP_REPEAT;
+      tok->type = TK_REPEAT;
       tok->u.repeat.lower = 1;
       tok->u.repeat.upper = REPEAT_INFINITE;
       goto greedy_check;
@@ -4963,7 +4963,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
     case '?':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_QMARK_ZERO_ONE)) break;
-      tok->type = TK_OP_REPEAT;
+      tok->type = TK_REPEAT;
       tok->u.repeat.lower = 0;
       tok->u.repeat.upper = 1;
     greedy_check:
@@ -5502,7 +5502,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 #ifdef USE_VARIABLE_META_CHARS
     anytime:
 #endif
-      tok->type = TK_OP_REPEAT;
+      tok->type = TK_REPEAT;
       tok->u.repeat.lower = 0;
       tok->u.repeat.upper = REPEAT_INFINITE;
       goto greedy_check;
@@ -5513,7 +5513,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 #ifdef USE_VARIABLE_META_CHARS
     one_or_more_time:
 #endif
-      tok->type = TK_OP_REPEAT;
+      tok->type = TK_REPEAT;
       tok->u.repeat.lower = 1;
       tok->u.repeat.upper = REPEAT_INFINITE;
       goto greedy_check;
@@ -5524,7 +5524,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 #ifdef USE_VARIABLE_META_CHARS
     zero_or_one_time:
 #endif
-      tok->type = TK_OP_REPEAT;
+      tok->type = TK_REPEAT;
       tok->u.repeat.lower = 0;
       tok->u.repeat.upper = 1;
       goto greedy_check;
@@ -8047,7 +8047,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
     }
     break;
 
-  case TK_OP_REPEAT:
+  case TK_REPEAT:
   case TK_INTERVAL:
     if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_CONTEXT_INDEP_REPEAT_OPS)) {
       if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_CONTEXT_INVALID_REPEAT_OPS))
@@ -8100,7 +8100,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
     if (r < 0) return r;
 
   repeat:
-    if (r == TK_OP_REPEAT || r == TK_INTERVAL) {
+    if (r == TK_REPEAT || r == TK_INTERVAL) {
       Node* target;
 
       if (is_invalid_quantifier_target(*tp))
