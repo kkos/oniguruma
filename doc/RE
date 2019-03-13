@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.8.0    2018/07/26
+Oniguruma Regular Expressions Version 6.9.2    2019/03/13
 
 syntax: ONIG_SYNTAX_ONIGURUMA (default)
 
@@ -139,7 +139,8 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
     *+      0 or more times
     ++      1 or more times
 
-    ({n,m}+, {n,}+, {n}+ are possessive op. in ONIG_SYNTAX_JAVA only)
+    ({n,m}+, {n,}+, {n}+ are possessive op.
+     in ONIG_SYNTAX_JAVA and ONIG_SYNTAX_PERL only)
 
     ex. /a*+/ === /(?>a*)/
 

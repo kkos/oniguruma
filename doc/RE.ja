@@ -1,4 +1,4 @@
-鬼車 正規表現 Version 6.8.0    2018/07/26
+鬼車 正規表現 Version 6.9.2    2019/03/13
 
 使用文法: ONIG_SYNTAX_ONIGURUMA (既定値)
 
@@ -139,7 +139,7 @@
     *+      零回以上
     ++      一回以上
 
-    ({n,m}+, {n,}+, {n}+ は、ONIG_SYNTAX_JAVAでのみ強欲な指定子)
+    ({n,m}+, {n,}+, {n}+ は、ONIG_SYNTAX_JAVAとONIG_SYNTAX_PERLでのみ強欲な指定子)
 
     例. /a*+/ === /(?>a*)/
 
