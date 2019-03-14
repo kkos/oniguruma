@@ -43,9 +43,6 @@
 /* The size of `long', as computed by sizeof. */
 #cmakedefine SIZEOF_LONG  ${SIZEOF_LONG}
 
-/* The size of `short', as computed by sizeof. */
-#cmakedefine SIZEOF_SHORT  ${SIZEOF_SHORT}
-
 /* Define if enable CR+NL as line terminator */
 #cmakedefine USE_CRNL_AS_LINE_TERMINATOR  ${USE_CRNL_AS_LINE_TERMINATOR}
 

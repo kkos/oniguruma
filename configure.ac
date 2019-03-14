@@ -52,9 +52,8 @@ dnl Checks for header files.
 AC_CHECK_HEADERS(sys/time.h unistd.h sys/times.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
-AC_CHECK_SIZEOF(int, 4)
-AC_CHECK_SIZEOF(short, 2)
-AC_CHECK_SIZEOF(long, 4)
+AC_CHECK_SIZEOF([int])
+AC_CHECK_SIZEOF([long])
 
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
