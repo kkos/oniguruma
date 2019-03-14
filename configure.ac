@@ -9,15 +9,17 @@ AC_CONFIG_HEADERS([src/config.h])
 
 dnl default value for STATISTICS
 STATISTICS=""
-AC_ARG_WITH(statistics,
-	[  --with-statistics       take matching time statistical data],
-	[ STATISTICS=-DONIG_DEBUG_STATISTICS ])
+AC_ARG_WITH([statistics],
+  [AS_HELP_STRING([--with-statistics],
+    [take matching time statistical data])],
+  [STATISTICS=-DONIG_DEBUG_STATISTICS])
 AC_SUBST(STATISTICS)
 
 
 dnl check for POSIX API
-AC_ARG_ENABLE(posix-api,
-[  --enable-posix-api      turn on to include POSIX API [[default=yes]]],
+AC_ARG_ENABLE([posix-api],
+  [AS_HELP_STRING([--enable-posix-api],
+    [turn on to include POSIX API [default=yes]])],
 [\
 case "${enableval}" in
  yes) enable_posix_api=yes ;;
@@ -29,9 +31,10 @@ AM_CONDITIONAL(ENABLE_POSIX_API, test x"${enable_posix_api}" = xyes)
 
 
 dnl check for CRNL_AS_LINE_TERMINATOR
-AC_ARG_ENABLE(crnl-as-line-terminator,
-	[  --enable-crnl-as-line-terminator   deprecated],
-	[crnl_as_line_terminator=$enableval])
+AC_ARG_ENABLE([crnl-as-line-terminator],
+  [AS_HELP_STRING([--enable-crnl-as-line-terminator],
+    [deprecated])],
+  [crnl_as_line_terminator=$enableval])
 if test "${crnl_as_line_terminator}" = yes; then
   AC_DEFINE(USE_CRNL_AS_LINE_TERMINATOR,1,[Define if enable CR+NL as line terminator])
 fi
