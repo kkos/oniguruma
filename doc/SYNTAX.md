@@ -191,7 +191,7 @@ Enables support for the common `(...)` grouping-and-capturing operators.  You us
 want this flag set.
 
 
-### 13. ONIG_SYN_OP_ESC_LPAREN_SUBEXP (disable `\(` and `\)`)
+### 13. ONIG_SYN_OP_ESC_LPAREN_SUBEXP (enable `\(` and `\)`)
 
 _Set in: PosixBasic, Emacs, Grep_
 
