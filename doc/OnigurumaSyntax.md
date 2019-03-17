@@ -9,6 +9,10 @@ _Documented for Oniguruma 6.9.1_
 
 ## Overview
 
+This document details how to configure Oniguruma's syntax, by describing the desired
+syntax operators and behaviors in an instance of the OnigSyntaxType struct, just like
+the built-in Oniguruma syntaxes do.
+
 Configuration operators are bit flags, and are broken into multiple groups, somewhat arbitrarily,
 because Oniguruma takes its configuration as a trio of 32-bit `unsigned int` values, assigned as
 the first three fields in an `OnigSyntaxType` struct:
@@ -27,7 +31,16 @@ The first group of configuration flags (`op`) roughly corresponds to the
 configuration for "basic regex."  The second group (`op2`) roughly corresponds
 to the configuration for "advanced regex."  And the third group (`behavior`)
 describes more-or-less what to do for broken input, bad input, or other corner-case
-regular expressions whose meaning is not well-defined.
+regular expressions whose meaning is not well-defined.  These three groups of
+flags are described in full below, and tables of their usages for various syntaxes
+follow.
+
+The `options` field describes the default compile options to use if the caller does
+not specify any options when invoking `onig_new()`.
+
+The `meta_char_table` field is used exclusively by the ONIG_SYN_OP_VARIABLE_META_CHARACTERS
+option, which allows the various regex metacharacters, like `*` and `?`, to be replaced
+with alternates (for example, SQL typically uses `%` instead of `.*` and `_` instead of `?`).
 
 
 ----------
