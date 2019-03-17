@@ -91,12 +91,14 @@ You usually want this flag set unless you have turned on `ONIG_SYN_OP_VARIABLE_M
 so that you can use a metacharacter other than `*` instead.
 
 
-### 3. ONIG_SYN_OP_ESC_ASTERISK_ZERO_INF (disable `\*`)
+### 3. ONIG_SYN_OP_ESC_ASTERISK_ZERO_INF (enable `r\*`)
 
 _Set in: none_
 
-This flag _disables_ the ability of the escape metacharacter (usually `\`) to escape
-the `*` metacharacter.  You usually want to leave this flag unset.
+Enables support for an escaped `r\*` metacharacter, meaning "zero or more r's."  This is
+useful if you have disabled support for the normal `r*` metacharacter because you want `*`
+to simply match a literal `*` character, but you still want some way of activating "zero or more"
+behavior.
 
 
 ### 4. ONIG_SYN_OP_PLUS_ONE_INF (enable `r+`)
@@ -108,12 +110,14 @@ You usually want this flag set unless you have turned on `ONIG_SYN_OP_VARIABLE_M
 so that you can use a metacharacter other than `+` instead.
 
 
-### 5. ONIG_SYN_OP_ESC_PLUS_ONE_INF (disable `\+`)
+### 5. ONIG_SYN_OP_ESC_PLUS_ONE_INF (enable `r\+`)
 
 _Set in: Grep_
 
-This flag _disables_ the ability of the escape metacharacter (usually `\`) to escape
-the `+` metacharacter.  You usually want to leave this flag unset.
+Enables support for an escaped `r\+` metacharacter, meaning "one or more r's."  This is
+useful if you have disabled support for the normal `r+` metacharacter because you want `+`
+to simply match a literal `+` character, but you still want some way of activating "one or more"
+behavior.
 
 
 ### 6. ONIG_SYN_OP_QMARK_ZERO_ONE (enable `r?`)
@@ -125,12 +129,14 @@ You usually want this flag set unless you have turned on `ONIG_SYN_OP_VARIABLE_M
 so that you can use a metacharacter other than `?` instead.
 
 
-### 7. ONIG_SYN_OP_ESC_QMARK_ZERO_ONE (disable `\?`)
+### 7. ONIG_SYN_OP_ESC_QMARK_ZERO_ONE (enable `r\?`)
 
 _Set in: Grep_
 
-This flag _disables_ the ability of the escape metacharacter (usually `\`) to escape
-the `?` metacharacter.  You usually want to leave this flag unset.
+Enables support for an escaped `r\?` metacharacter, meaning "zero or one r" or "an optional
+r."  This is useful if you have disabled support for the normal `r?` metacharacter because
+you want `?` to simply match a literal `?` character, but you still want some way of activating
+"optional" behavior.
 
 
 ### 8. ONIG_SYN_OP_BRACE_INTERVAL (enable `r{l,u}`)
@@ -150,15 +156,14 @@ this form also allows `r{,upper}` to be equivalent to `r{0,upper}`; otherwise,
 `r{,upper}` will be treated as an error.
 
 
-### 9. ONIG_SYN_OP_ESC_BRACE_INTERVAL (disable `\{` and `\}`)
+### 9. ONIG_SYN_OP_ESC_BRACE_INTERVAL (enable `\{` and `\}`)
 
 _Set in: PosixBasic, Emacs, Grep_
 
-This flag _disables_ the ability of the escape metacharacter (usually `\`) to escape
-the `{` and `}` metacharacters.  With this flag clear, `\{` and `\}` can be used to
-escape curly braces, if curly braces are special; but with this flag set, `\` will
-have no special meaning before a curly brace and will simply be treated as a literal
-backslash (or as whatever metacharacter escaping has been assigned to).
+Enables support for an escaped `r\{lower,upper\}` range form.  This is useful if you
+have disabled support for the normal `r{...}` range form and want curly braces to simply
+match literal curly brace characters, but you still want some way of activating
+"range" behavior.
 
 
 ### 10. ONIG_SYN_OP_VBAR_ALT (enable `r|s`)
@@ -169,15 +174,13 @@ Enables support for the common `r|s` alternation operator.  You usually want thi
 flag set.
 
 
-### 11. ONIG_SYN_OP_VBAR_ALT (disable `\|`)
+### 11. ONIG_SYN_OP_VBAR_ALT (enable `\|`)
 
 _Set in: Emacs, Grep_
 
-This flag _disables_ the ability of the escape metacharacter (usually `\`) to escape
-the `|` metacharacter.  With this flag clear, `\|` can be used to escape vertical bars,
-if vertical bars are special; but with this flag set, `\` will have no special meaning
-before a vertical bar and will simply be treated as a literal backslash (or as whatever
-metacharacter escaping has been assigned to).
+Enables support for an escaped `r\|s` alternation form.  This is useful if you
+have disabled support for the normal `r|s` alternation form and want `|` to simply
+match a literal `|` character, but you still want some way of activating "alternate" behavior.
 
 
 ### 12. ONIG_SYN_OP_LPAREN_SUBEXP (enable `(r)`)
@@ -192,11 +195,10 @@ want this flag set.
 
 _Set in: PosixBasic, Emacs, Grep_
 
-This flag _disables_ the ability of the escape metacharacter (usually `\`) to escape
-the `(` and `)` grouping metacharacters.  With this flag clear, `\(` and `\)` can be
-used to escape parentheses, if parentheses are special; but with this flag set, `\`
-will have no special meaning before a parenthesis and will simply be treated as a
-literal backslash (or as whatever metacharacter escaping has been assigned to).
+Enables support for escaped `\(...\)` grouping-and-capturing operators.  This is useful if you
+have disabled support for the normal `(...)` grouping-and-capturing operators and want
+parentheses to simply match literal parenthesis characters, but you still want some way of
+activating "grouping" or "capturing" behavior.
 
 
 ### 14. ONIG_SYN_OP_ESC_AZ_BUF_ANCHOR (enable `\A` and `\Z` and `\z`)
