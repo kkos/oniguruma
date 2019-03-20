@@ -1,6 +1,6 @@
 #!/bin/sh
 
-GPERF=/usr/bin/gperf
+GPERF=/usr/local/bin/gperf
 
 TMP0=gperf0.tmp
 TMP1=gperf1.tmp

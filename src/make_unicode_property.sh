@@ -4,7 +4,7 @@ NAME=unicode_property_data
 TMP1=gperf1.tmp
 TMP2=gperf2.tmp
 TMP=
-GPERF=/usr/bin/gperf
+GPERF=/usr/local/bin/gperf
 
 GPERF_OPT='-T -C -c -t -j1 -L ANSI-C --ignore-case --pic -Q unicode_prop_name_pool'
 POOL_CAST='s/\(int *\)\(size_t *\)&\(\(struct +unicode_prop_name_pool_t *\* *\) *0\)->unicode_prop_name_pool_str([^,]+)/pool_offset(\1)/g'

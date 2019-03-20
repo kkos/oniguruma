@@ -2,7 +2,7 @@
 
 TMP1=gperf1.tmp
 TMP2=gperf2.tmp
-GPERF=/usr/bin/gperf
+GPERF=/usr/local/bin/gperf
 
 GPERF_OPT='-pt -T -L ANSI-C'
 
