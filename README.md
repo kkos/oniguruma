@@ -24,6 +24,13 @@ Supported character encodings:
 
 * GB18030: contributed by KUBO Takehiro
 * CP1251:  contributed by Byte
+* doc/SYNTAX.md: contributed by seanofw
+
+
+New feature of version 6.9.2 (Plan)
+-----------------------------------
+
+* Update Unicode version 12.0.0
 
 
 New feature of version 6.9.1
