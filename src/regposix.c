@@ -149,6 +149,8 @@ regcomp(regex_t* reg, const char* pattern, int posix_options)
   OnigSyntaxType* syntax = OnigDefaultSyntax;
   OnigOptionType options;
 
+  reg->onig = (void* )0;
+
   if ((posix_options & REG_EXTENDED) == 0)
     syntax = ONIG_SYNTAX_POSIX_BASIC;
 
