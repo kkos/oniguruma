@@ -112,7 +112,6 @@ onig_set_callout_user_data_of_match_param(OnigMatchParam* param, void* user_data
 }
 
 
-
 typedef struct {
   void* stack_p;
   int   stack_n;
@@ -134,14 +133,14 @@ typedef struct {
 
 /* arguments type */
 typedef enum {
-  ARG_SPECIAL =  -1,
-  ARG_NON     =   0,
-  ARG_RELADDR =   1,
-  ARG_ABSADDR =   2,
-  ARG_LENGTH  =   3,
-  ARG_MEMNUM  =   4,
-  ARG_OPTION  =   5,
-  ARG_MODE    =   6
+  ARG_SPECIAL = -1,
+  ARG_NON     =  0,
+  ARG_RELADDR =  1,
+  ARG_ABSADDR =  2,
+  ARG_LENGTH  =  3,
+  ARG_MEMNUM  =  4,
+  ARG_OPTION  =  5,
+  ARG_MODE    =  6
 } OpArgType;
 
 typedef struct {
@@ -255,9 +254,9 @@ op2name(int opcode)
   int i;
 
   for (i = 0; OpInfo[i].opcode >= 0; i++) {
-    if (opcode == OpInfo[i].opcode)
-      return OpInfo[i].name;
+    if (opcode == OpInfo[i].opcode) return OpInfo[i].name;
   }
+
   return "";
 }
 
@@ -294,6 +293,7 @@ bitset_on_num(BitSetRef bs)
   for (i = 0; i < SINGLE_BYTE_SIZE; i++) {
     if (BITSET_AT(bs, i)) n++;
   }
+
   return n;
 }
 
@@ -305,7 +305,7 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
   RelAddrType addr;
   LengthType  len;
   MemNumType  mem;
-  OnigCodePoint  code;
+  OnigCodePoint code;
   ModeType mode;
   UChar *q;
   Operation* p;
@@ -649,36 +649,38 @@ history_tree_clear(OnigCaptureTreeNode* node)
 {
   int i;
 
-  if (IS_NOT_NULL(node)) {
-    for (i = 0; i < node->num_childs; i++) {
-      if (IS_NOT_NULL(node->childs[i])) {
-        history_tree_free(node->childs[i]);
-      }
+  if (IS_NULL(node)) return ;
+
+  for (i = 0; i < node->num_childs; i++) {
+    if (IS_NOT_NULL(node->childs[i])) {
+      history_tree_free(node->childs[i]);
     }
-    for (i = 0; i < node->allocated; i++) {
-      node->childs[i] = (OnigCaptureTreeNode* )0;
-    }
-    node->num_childs = 0;
-    node->beg = ONIG_REGION_NOTPOS;
-    node->end = ONIG_REGION_NOTPOS;
-    node->group = -1;
   }
+  for (i = 0; i < node->allocated; i++) {
+    node->childs[i] = (OnigCaptureTreeNode* )0;
+  }
+  node->num_childs = 0;
+  node->beg = ONIG_REGION_NOTPOS;
+  node->end = ONIG_REGION_NOTPOS;
+  node->group = -1;
 }
 
 static void
 history_tree_free(OnigCaptureTreeNode* node)
 {
   history_tree_clear(node);
+  if (IS_NOT_NULL(node->childs)) xfree(node->childs);
+
   xfree(node);
 }
 
 static void
 history_root_free(OnigRegion* r)
 {
-  if (IS_NOT_NULL(r->history_root)) {
-    history_tree_free(r->history_root);
-    r->history_root = (OnigCaptureTreeNode* )0;
-  }
+  if (IS_NULL(r->history_root)) return ;
+
+  history_tree_free(r->history_root);
+  r->history_root = (OnigCaptureTreeNode* )0;
 }
 
 static OnigCaptureTreeNode*
@@ -688,9 +690,10 @@ history_node_new(void)
 
   node = (OnigCaptureTreeNode* )xmalloc(sizeof(OnigCaptureTreeNode));
   CHECK_NULL_RETURN(node);
+
   node->childs     = (OnigCaptureTreeNode** )0;
-  node->allocated  = 0;
-  node->num_childs = 0;
+  node->allocated  =  0;
+  node->num_childs =  0;
   node->group      = -1;
   node->beg        = ONIG_REGION_NOTPOS;
   node->end        = ONIG_REGION_NOTPOS;
@@ -709,13 +712,13 @@ history_tree_add_child(OnigCaptureTreeNode* parent, OnigCaptureTreeNode* child)
     if (IS_NULL(parent->childs)) {
       n = HISTORY_TREE_INIT_ALLOC_SIZE;
       parent->childs =
-        (OnigCaptureTreeNode** )xmalloc(sizeof(OnigCaptureTreeNode*) * n);
+        (OnigCaptureTreeNode** )xmalloc(sizeof(parent->childs[0]) * n);
     }
     else {
       n = parent->allocated * 2;
       parent->childs =
         (OnigCaptureTreeNode** )xrealloc(parent->childs,
-                                         sizeof(OnigCaptureTreeNode*) * n);
+                                         sizeof(parent->childs[0]) * n);
     }
     CHECK_NULL_RETURN_MEMERR(parent->childs);
     for (i = parent->allocated; i < n; i++) {
