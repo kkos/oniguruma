@@ -2,7 +2,7 @@
   regparse.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2018  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2019  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -195,6 +195,23 @@ onig_set_parse_depth_limit(unsigned int depth)
     ParseDepthLimit = DEFAULT_PARSE_DEPTH_LIMIT;
   else
     ParseDepthLimit = depth;
+  return 0;
+}
+
+static int
+bbuf_init(BBuf* buf, int size)
+{
+  if (size <= 0) {
+    size   = 0;
+    buf->p = NULL;
+  }
+  else {
+    buf->p = (UChar* )xmalloc(size);
+    if (IS_NULL(buf->p)) return(ONIGERR_MEMORY);
+  }
+
+  buf->alloc = size;
+  buf->used  = 0;
   return 0;
 }
 
@@ -4024,7 +4041,7 @@ enum TokenSyms {
   TK_BACKREF,
   TK_CALL,
   TK_ANCHOR,
-  TK_OP_REPEAT,
+  TK_REPEAT,
   TK_INTERVAL,
   TK_ANYCHAR_ANYTIME,  /* SQL '%' == .* */
   TK_ALT,
@@ -4085,11 +4102,11 @@ typedef struct {
       int not;
     } prop;
   } u;
-} OnigToken;
+} PToken;
 
 
 static int
-fetch_range_quantifier(UChar** src, UChar* end, OnigToken* tok, ScanEnv* env)
+fetch_range_quantifier(UChar** src, UChar* end, PToken* tok, ScanEnv* env)
 {
   int low, up, syn_allow, non_low = 0;
   int r = 0;
@@ -4252,7 +4269,7 @@ fetch_escaped_value(UChar** src, UChar* end, ScanEnv* env, OnigCodePoint* val)
   return 0;
 }
 
-static int fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env);
+static int fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env);
 
 static OnigCodePoint
 get_name_end_code_point(OnigCodePoint start)
@@ -4646,7 +4663,7 @@ str_exist_check_with_esc(OnigCodePoint s[], int n, UChar* from, UChar* to,
 }
 
 static int
-fetch_token_in_cc(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
+fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 {
   int num;
   OnigCodePoint c, c2;
@@ -4898,7 +4915,7 @@ fetch_token_in_cc(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
 }
 
 static int
-fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
+fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 {
   int r, num;
   OnigCodePoint c;
@@ -4930,7 +4947,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
     switch (c) {
     case '*':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_ASTERISK_ZERO_INF)) break;
-      tok->type = TK_OP_REPEAT;
+      tok->type = TK_REPEAT;
       tok->u.repeat.lower = 0;
       tok->u.repeat.upper = REPEAT_INFINITE;
       goto greedy_check;
@@ -4938,7 +4955,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
     case '+':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_PLUS_ONE_INF)) break;
-      tok->type = TK_OP_REPEAT;
+      tok->type = TK_REPEAT;
       tok->u.repeat.lower = 1;
       tok->u.repeat.upper = REPEAT_INFINITE;
       goto greedy_check;
@@ -4946,7 +4963,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
     case '?':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_QMARK_ZERO_ONE)) break;
-      tok->type = TK_OP_REPEAT;
+      tok->type = TK_REPEAT;
       tok->u.repeat.lower = 0;
       tok->u.repeat.upper = 1;
     greedy_check:
@@ -5485,7 +5502,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
 #ifdef USE_VARIABLE_META_CHARS
     anytime:
 #endif
-      tok->type = TK_OP_REPEAT;
+      tok->type = TK_REPEAT;
       tok->u.repeat.lower = 0;
       tok->u.repeat.upper = REPEAT_INFINITE;
       goto greedy_check;
@@ -5496,7 +5513,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
 #ifdef USE_VARIABLE_META_CHARS
     one_or_more_time:
 #endif
-      tok->type = TK_OP_REPEAT;
+      tok->type = TK_REPEAT;
       tok->u.repeat.lower = 1;
       tok->u.repeat.upper = REPEAT_INFINITE;
       goto greedy_check;
@@ -5507,7 +5524,7 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
 #ifdef USE_VARIABLE_META_CHARS
     zero_or_one_time:
 #endif
-      tok->type = TK_OP_REPEAT;
+      tok->type = TK_REPEAT;
       tok->u.repeat.lower = 0;
       tok->u.repeat.upper = 1;
       goto greedy_check;
@@ -6055,7 +6072,7 @@ fetch_char_property_to_ctype(UChar** src, UChar* end, ScanEnv* env)
 }
 
 static int
-parse_char_property(Node** np, OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
+parse_char_property(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 {
   int r, ctype;
   CClassNode* cc;
@@ -6205,7 +6222,7 @@ code_exist_check(OnigCodePoint c, UChar* from, UChar* end, int ignore_escaped,
 }
 
 static int
-parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
+parse_char_class(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 {
   int r, neg, len, fetched, and_start;
   OnigCodePoint v, vs;
@@ -6542,7 +6559,7 @@ parse_char_class(Node** np, OnigToken* tok, UChar** src, UChar* end, ScanEnv* en
   return r;
 }
 
-static int parse_subexp(Node** top, OnigToken* tok, int term,
+static int parse_subexp(Node** top, PToken* tok, int term,
                         UChar** src, UChar* end, ScanEnv* env, int group_head);
 
 #ifdef USE_CALLOUT
@@ -7000,7 +7017,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
 #endif
 
 static int
-parse_bag(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
+parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
           ScanEnv* env)
 {
   int r, num;
@@ -7754,7 +7771,7 @@ i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[], int to_len, void* arg)
 }
 
 static int
-parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
+parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
           ScanEnv* env, int group_head)
 {
   int r, len, group = 0;
@@ -8030,7 +8047,7 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
     }
     break;
 
-  case TK_OP_REPEAT:
+  case TK_REPEAT:
   case TK_INTERVAL:
     if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_CONTEXT_INDEP_REPEAT_OPS)) {
       if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_CONTEXT_INVALID_REPEAT_OPS))
@@ -8083,7 +8100,7 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
     if (r < 0) return r;
 
   repeat:
-    if (r == TK_OP_REPEAT || r == TK_INTERVAL) {
+    if (r == TK_REPEAT || r == TK_INTERVAL) {
       Node* target;
 
       if (is_invalid_quantifier_target(*tp))
@@ -8147,7 +8164,7 @@ parse_exp(Node** np, OnigToken* tok, int term, UChar** src, UChar* end,
 }
 
 static int
-parse_branch(Node** top, OnigToken* tok, int term, UChar** src, UChar* end,
+parse_branch(Node** top, PToken* tok, int term, UChar** src, UChar* end,
              ScanEnv* env, int group_head)
 {
   int r;
@@ -8195,7 +8212,7 @@ parse_branch(Node** top, OnigToken* tok, int term, UChar** src, UChar* end,
 
 /* term_tok: TK_EOT or TK_SUBEXP_CLOSE */
 static int
-parse_subexp(Node** top, OnigToken* tok, int term, UChar** src, UChar* end,
+parse_subexp(Node** top, PToken* tok, int term, UChar** src, UChar* end,
              ScanEnv* env, int group_head)
 {
   int r;
@@ -8261,7 +8278,7 @@ static int
 parse_regexp(Node** top, UChar** src, UChar* end, ScanEnv* env)
 {
   int r;
-  OnigToken tok;
+  PToken tok;
 
   r = fetch_token(&tok, src, end, env);
   if (r < 0) return r;

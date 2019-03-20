@@ -4,7 +4,7 @@
   regint.h -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2018  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2019  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,10 @@
 #define PLATFORM_UNALIGNED_WORD_ACCESS
 #endif
 
+#ifdef __GNUC__
+#define USE_GOTO_LABELS_AS_VALUES
+#endif
+
 /* config */
 /* spec. config */
 #define USE_CALL
@@ -63,6 +67,10 @@
 #define USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE     /* /\n$/ =~ "\n" */
 #define USE_WARNING_REDUNDANT_NESTED_REPEAT_OPERATOR
 #define USE_RETRY_LIMIT_IN_MATCH
+#ifdef USE_GOTO_LABELS_AS_VALUES
+#define USE_THREADED_CODE
+#define USE_DIRECT_THREADED_CODE
+#endif
 
 /* internal config */
 #define USE_OP_PUSH_OR_JUMP_EXACT
@@ -251,57 +259,6 @@ typedef struct {
 
 #endif
 
-typedef struct {
-  const UChar* pattern;
-  const UChar* pattern_end;
-#ifdef USE_CALLOUT
-  void*  tag_table;
-  int    callout_num;
-  int    callout_list_alloc;
-  CalloutListEntry* callout_list;    /* index: callout num */
-#endif
-} RegexExt;
-
-struct re_pattern_buffer {
-  /* common members of BBuf(bytes-buffer) */
-  unsigned char* p;         /* compiled pattern */
-  unsigned int used;        /* used space for p */
-  unsigned int alloc;       /* allocated space for p */
-
-  int num_mem;                   /* used memory(...) num counted from 1 */
-  int num_repeat;                /* OP_REPEAT/OP_REPEAT_NG id-counter */
-  int num_null_check;            /* OP_EMPTY_CHECK_START/END id counter */
-  int num_call;                  /* number of subexp call */
-  unsigned int capture_history;  /* (?@...) flag (1-31) */
-  unsigned int bt_mem_start;     /* need backtrack flag */
-  unsigned int bt_mem_end;       /* need backtrack flag */
-  int stack_pop_level;
-  int repeat_range_alloc;
-  OnigRepeatRange* repeat_range;
-
-  OnigEncoding      enc;
-  OnigOptionType    options;
-  OnigSyntaxType*   syntax;
-  OnigCaseFoldType  case_fold_flag;
-  void*             name_table;
-
-  /* optimization info (string search, char-map and anchors) */
-  int            optimize;          /* optimize flag */
-  int            threshold_len;     /* search str-length for apply optimize */
-  int            anchor;            /* BEGIN_BUF, BEGIN_POS, (SEMI_)END_BUF */
-  OnigLen        anchor_dmin;       /* (SEMI_)END_BUF anchor distance */
-  OnigLen        anchor_dmax;       /* (SEMI_)END_BUF anchor distance */
-  int            sub_anchor;        /* start-anchor for exact or map */
-  unsigned char *exact;
-  unsigned char *exact_end;
-  unsigned char  map[CHAR_MAP_SIZE]; /* used as BMH skip or char-map */
-  int            map_offset;
-  OnigLen        dmin;                      /* min-distance of exact or map */
-  OnigLen        dmax;                      /* max-distance of exact or map */
-  RegexExt*      extp;
-};
-
-
 /* stack pop level */
 enum StackPopLevel {
   STACK_POP_LEVEL_FREE      = 0,
@@ -430,7 +387,7 @@ typedef struct _BBuf {
   unsigned int alloc;
 } BBuf;
 
-#define BB_INIT(buf,size)    onig_bbuf_init((BBuf* )(buf), (size))
+#define BB_INIT(buf,size)    bbuf_init((BBuf* )(buf), (size))
 
 #define BB_SIZE_INC(buf,inc) do{\
   (buf)->alloc += (inc);\
@@ -559,9 +516,6 @@ enum OpCode {
   OP_CCLASS_NOT,
   OP_CCLASS_MB_NOT,
   OP_CCLASS_MIX_NOT,
-#ifdef USE_OP_CCLASS_NODE
-  OP_CCLASS_NODE,       /* pointer to CClassNode node */
-#endif
 
   OP_ANYCHAR,                 /* "."  */
   OP_ANYCHAR_ML,              /* "."  multi-line */
@@ -596,6 +550,7 @@ enum OpCode {
   OP_BACKREF_MULTI,
   OP_BACKREF_MULTI_IC,
   OP_BACKREF_WITH_LEVEL,        /* \k<xxx+n>, \k<xxx-n> */
+  OP_BACKREF_WITH_LEVEL_IC,     /* \k<xxx+n>, \k<xxx-n> */
   OP_BACKREF_CHECK,             /* (?(n)), (?('name')) */
   OP_BACKREF_CHECK_WITH_LEVEL,  /* (?(n-level)), (?('name-level')) */
 
@@ -611,7 +566,9 @@ enum OpCode {
   OP_PUSH,
   OP_PUSH_SUPER,
   OP_POP_OUT,
+#ifdef USE_OP_PUSH_OR_JUMP_EXACT
   OP_PUSH_OR_JUMP_EXACT1,  /* if match exact then push, else jump. */
+#endif
   OP_PUSH_IF_PEEK_NEXT,    /* if match exact then push, else none. */
   OP_REPEAT,               /* {n,m} */
   OP_REPEAT_NG,            /* {n,m}? (non greedy) */
@@ -701,13 +658,16 @@ typedef int ModeType;
 
 
 /* op-code + arg size */
+#if 0
 #define SIZE_OP_ANYCHAR_STAR            SIZE_OPCODE
 #define SIZE_OP_ANYCHAR_STAR_PEEK_NEXT (SIZE_OPCODE + 1)
 #define SIZE_OP_JUMP                   (SIZE_OPCODE + SIZE_RELADDR)
 #define SIZE_OP_PUSH                   (SIZE_OPCODE + SIZE_RELADDR)
 #define SIZE_OP_PUSH_SUPER             (SIZE_OPCODE + SIZE_RELADDR)
 #define SIZE_OP_POP_OUT                 SIZE_OPCODE
+#ifdef USE_OP_PUSH_OR_JUMP_EXACT
 #define SIZE_OP_PUSH_OR_JUMP_EXACT1    (SIZE_OPCODE + SIZE_RELADDR + 1)
+#endif
 #define SIZE_OP_PUSH_IF_PEEK_NEXT      (SIZE_OPCODE + SIZE_RELADDR + 1)
 #define SIZE_OP_REPEAT_INC             (SIZE_OPCODE + SIZE_MEMNUM)
 #define SIZE_OP_REPEAT_INC_NG          (SIZE_OPCODE + SIZE_MEMNUM)
@@ -739,6 +699,56 @@ typedef int ModeType;
 #define SIZE_OP_CALLOUT_CONTENTS       (SIZE_OPCODE + SIZE_MEMNUM)
 #define SIZE_OP_CALLOUT_NAME           (SIZE_OPCODE + SIZE_MEMNUM + SIZE_MEMNUM)
 #endif
+
+#else  /* if 0 */
+
+/* for relative address increment to go next op. */
+#define SIZE_INC_OP                     1
+
+#define SIZE_OP_ANYCHAR_STAR            1
+#define SIZE_OP_ANYCHAR_STAR_PEEK_NEXT  1
+#define SIZE_OP_JUMP                    1
+#define SIZE_OP_PUSH                    1
+#define SIZE_OP_PUSH_SUPER              1
+#define SIZE_OP_POP_OUT                 1
+#ifdef USE_OP_PUSH_OR_JUMP_EXACT
+#define SIZE_OP_PUSH_OR_JUMP_EXACT1     1
+#endif
+#define SIZE_OP_PUSH_IF_PEEK_NEXT       1
+#define SIZE_OP_REPEAT                  1
+#define SIZE_OP_REPEAT_INC              1
+#define SIZE_OP_REPEAT_INC_NG           1
+#define SIZE_OP_WORD_BOUNDARY           1
+#define SIZE_OP_PREC_READ_START         1
+#define SIZE_OP_PREC_READ_NOT_START     1
+#define SIZE_OP_PREC_READ_END           1
+#define SIZE_OP_PREC_READ_NOT_END       1
+#define SIZE_OP_BACKREF                 1
+#define SIZE_OP_FAIL                    1
+#define SIZE_OP_MEMORY_START            1
+#define SIZE_OP_MEMORY_START_PUSH       1
+#define SIZE_OP_MEMORY_END_PUSH         1
+#define SIZE_OP_MEMORY_END_PUSH_REC     1
+#define SIZE_OP_MEMORY_END              1
+#define SIZE_OP_MEMORY_END_REC          1
+#define SIZE_OP_ATOMIC_START            1
+#define SIZE_OP_ATOMIC_END              1
+#define SIZE_OP_EMPTY_CHECK_START       1
+#define SIZE_OP_EMPTY_CHECK_END         1
+#define SIZE_OP_LOOK_BEHIND             1
+#define SIZE_OP_LOOK_BEHIND_NOT_START   1
+#define SIZE_OP_LOOK_BEHIND_NOT_END     1
+#define SIZE_OP_CALL                    1
+#define SIZE_OP_RETURN                  1
+#define SIZE_OP_PUSH_SAVE_VAL           1
+#define SIZE_OP_UPDATE_VAR              1
+
+#ifdef USE_CALLOUT
+#define SIZE_OP_CALLOUT_CONTENTS        1
+#define SIZE_OP_CALLOUT_NAME            1
+#endif
+#endif /* if 0 */
+
 
 #define MC_ESC(syn)               (syn)->meta_char_table.esc
 #define MC_ANYCHAR(syn)           (syn)->meta_char_table.anychar
@@ -791,8 +801,181 @@ typedef int ModeType;
 #define NCCLASS_CLEAR_NOT(nd)   NCCLASS_FLAG_CLEAR(nd, FLAG_NCCLASS_NOT)
 #define IS_NCCLASS_NOT(nd)      IS_NCCLASS_FLAG_ON(nd, FLAG_NCCLASS_NOT)
 
-extern void onig_add_end_call(void (*func)(void));
 
+typedef struct {
+#ifdef USE_DIRECT_THREADED_CODE
+  const void* opaddr;
+#else
+  enum OpCode opcode;
+#endif
+  union {
+    struct {
+      UChar s[16];  /* Now used first 7 bytes only. */
+    } exact;
+    struct {
+      UChar* s;
+      LengthType n;   /* number of chars */
+    } exact_n; /* EXACTN, EXACTN_IC, EXACTMB2N, EXACTMB3N */
+    struct {
+      UChar* s;
+      LengthType n;   /* number of chars */
+      LengthType len; /* char byte length */
+    } exact_len_n; /* EXACTMBN */
+    struct {
+      BitSetRef bsp;
+    } cclass;
+    struct {
+      void*  mb;
+    } cclass_mb;
+    struct {
+      void*  mb; /* mb must be same position with cclass_mb for match_at(). */
+      BitSetRef bsp;
+    } cclass_mix;
+    struct {
+      UChar c;
+    } anychar_star_peek_next;
+    struct {
+      ModeType mode;
+    } word_boundary; /* OP_WORD_BOUNDARY, OP_NO_WORD_BOUNDARY, OP_WORD_BEGIN, OP_WORD_END */
+    struct {
+      union {
+        MemNumType  n1; /* num == 1 */
+        MemNumType* ns; /* num >  1 */
+      };
+      int num;
+      int nest_level;
+    } backref_general; /* BACKREF_MULTI, BACKREF_MULTI_IC, BACKREF_WITH_LEVEL, BACKREF_CHECK, BACKREF_CHECK_WITH_LEVEL, */
+    struct {
+      MemNumType n1;
+    } backref_n; /* BACKREF_N, BACKREF_N_IC */
+    struct {
+      MemNumType num;
+    } memory_start; /* MEMORY_START, MEMORY_START_PUSH */
+    struct {
+      MemNumType num;
+    } memory_end; /* MEMORY_END, MEMORY_END_REC, MEMORY_END_PUSH, MEMORY_END_PUSH_REC */
+    struct {
+      RelAddrType addr;
+    } jump;
+    struct {
+      RelAddrType addr;
+    } push;
+    struct {
+      RelAddrType addr;
+      UChar c;
+    } push_or_jump_exact1;
+    struct {
+      RelAddrType addr;
+      UChar c;
+    } push_if_peek_next;
+    struct {
+      MemNumType  id;
+      RelAddrType addr;
+    } repeat; /* REPEAT, REPEAT_NG */
+    struct {
+      MemNumType  id;
+    } repeat_inc; /* REPEAT_INC, REPEAT_INC_SG, REPEAT_INC_NG, REPEAT_INC_NG_SG */
+    struct {
+      MemNumType mem;
+    } empty_check_start;
+    struct {
+      MemNumType mem;
+    } empty_check_end; /* EMPTY_CHECK_END, EMPTY_CHECK_END_MEMST, EMPTY_CHECK_END_MEMST_PUSH */
+    struct {
+      RelAddrType addr;
+    } prec_read_not_start;
+    struct {
+      LengthType len;
+    } look_behind;
+    struct {
+      LengthType  len;
+      RelAddrType addr;
+    } look_behind_not_start;
+    struct {
+      AbsAddrType addr;
+    } call;
+    struct {
+      SaveType   type;
+      MemNumType id;
+    } push_save_val;
+    struct {
+      UpdateVarType type;
+      MemNumType id;
+    } update_var;
+#ifdef USE_CALLOUT
+    struct {
+      MemNumType num;
+    } callout_contents;
+    struct {
+      MemNumType num;
+      MemNumType id;
+    } callout_name;
+#endif
+  };
+} Operation;
+
+typedef struct {
+  const UChar* pattern;
+  const UChar* pattern_end;
+#ifdef USE_CALLOUT
+  void*  tag_table;
+  int    callout_num;
+  int    callout_list_alloc;
+  CalloutListEntry* callout_list;    /* index: callout num */
+#endif
+} RegexExt;
+
+struct re_pattern_buffer {
+  /* common members of BBuf(bytes-buffer) */
+  Operation*   ops;
+#ifdef USE_DIRECT_THREADED_CODE
+  enum OpCode* ocs;
+#endif
+  Operation*   ops_curr;
+  unsigned int ops_used;    /* used space for ops */
+  unsigned int ops_alloc;   /* allocated space for ops */
+  unsigned char* string_pool;
+
+  int num_mem;                   /* used memory(...) num counted from 1 */
+  int num_repeat;                /* OP_REPEAT/OP_REPEAT_NG id-counter */
+  int num_null_check;            /* OP_EMPTY_CHECK_START/END id counter */
+  int num_call;                  /* number of subexp call */
+  unsigned int capture_history;  /* (?@...) flag (1-31) */
+  unsigned int bt_mem_start;     /* need backtrack flag */
+  unsigned int bt_mem_end;       /* need backtrack flag */
+  int stack_pop_level;
+  int repeat_range_alloc;
+  OnigRepeatRange* repeat_range;
+
+  OnigEncoding      enc;
+  OnigOptionType    options;
+  OnigSyntaxType*   syntax;
+  OnigCaseFoldType  case_fold_flag;
+  void*             name_table;
+
+  /* optimization info (string search, char-map and anchors) */
+  int            optimize;          /* optimize flag */
+  int            threshold_len;     /* search str-length for apply optimize */
+  int            anchor;            /* BEGIN_BUF, BEGIN_POS, (SEMI_)END_BUF */
+  OnigLen        anchor_dmin;       /* (SEMI_)END_BUF anchor distance */
+  OnigLen        anchor_dmax;       /* (SEMI_)END_BUF anchor distance */
+  int            sub_anchor;        /* start-anchor for exact or map */
+  unsigned char *exact;
+  unsigned char *exact_end;
+  unsigned char  map[CHAR_MAP_SIZE]; /* used as BMH skip or char-map */
+  int            map_offset;
+  OnigLen        dmin;                      /* min-distance of exact or map */
+  OnigLen        dmax;                      /* max-distance of exact or map */
+  RegexExt*      extp;
+};
+
+#define COP(reg)            ((reg)->ops_curr)
+#define COP_CURR_OFFSET(reg)  ((reg)->ops_used - 1)
+#define COP_CURR_OFFSET_BYTES(reg, p)  \
+  ((int )((char* )(&((reg)->ops_curr->p)) - (char* )((reg)->ops)))
+
+
+extern void onig_add_end_call(void (*func)(void));
 
 #ifdef ONIG_DEBUG
 
@@ -809,9 +992,7 @@ extern int  onig_print_statistics P_((FILE* f));
 extern void   onig_warning(const char* s);
 extern UChar* onig_error_code_to_format P_((int code));
 extern void   onig_snprintf_with_pattern PV_((UChar buf[], int bufsize, OnigEncoding enc, UChar* pat, UChar* pat_end, const UChar *fmt, ...));
-extern int    onig_bbuf_init P_((BBuf* buf, int size));
 extern int    onig_compile P_((regex_t* reg, const UChar* pattern, const UChar* pattern_end, OnigErrorInfo* einfo));
-extern void   onig_transfer P_((regex_t* to, regex_t* from));
 extern int    onig_is_code_in_cc_len P_((int enclen, OnigCodePoint code, void* /* CClassNode* */ cc));
 extern RegexExt* onig_get_regex_ext(regex_t* reg);
 extern int    onig_ext_set_pattern(regex_t* reg, const UChar* pattern, const UChar* pattern_end);

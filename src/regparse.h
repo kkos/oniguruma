@@ -4,7 +4,7 @@
   regparse.h -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2018  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2019  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,11 +59,10 @@ enum BagType {
 
 enum GimmickType {
   GIMMICK_FAIL       = 0,
-  GIMMICK_KEEP       = 1,
-  GIMMICK_SAVE       = 2,
-  GIMMICK_UPDATE_VAR = 3,
+  GIMMICK_SAVE       = 1,
+  GIMMICK_UPDATE_VAR = 2,
 #ifdef USE_CALLOUT
-  GIMMICK_CALLOUT    = 4,
+  GIMMICK_CALLOUT    = 3,
 #endif
 };
 

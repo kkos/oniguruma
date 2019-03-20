@@ -61,7 +61,7 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not,
 
     if (error_no == 0) {
       onig_error_code_to_str((UChar* )s, r);
-      fprintf(err_file, "ERROR: %s\n", s);
+      fprintf(err_file, "ERROR: %s  /%s/\n", s, pattern);
       nerror++;
     }
     else {
@@ -141,7 +141,9 @@ extern int main(int argc, char* argv[])
 
   x2("", "", 0, 0);
   x2("^", "", 0, 0);
+  x2("^a", "\na", 1, 2);
   x2("$", "", 0, 0);
+  x2("$\\O", "bb\n", 2, 3);
   x2("\\G", "", 0, 0);
   x2("\\A", "", 0, 0);
   x2("\\Z", "", 0, 0);
@@ -176,6 +178,7 @@ extern int main(int argc, char* argv[])
   n("\\D", "4");
   x2("\\b", "z ", 0, 0);
   x2("\\b", " z", 1, 1);
+  x2("\\b", "  z ", 2, 2);
   x2("\\B", "zz ", 1, 1);
   x2("\\B", "z ", 2, 2);
   x2("\\B", " z", 0, 0);
@@ -576,6 +579,7 @@ extern int main(int argc, char* argv[])
   x2("(?<pare>\\(([^\\(\\)]++|\\g<pare>)*+\\))", "((a))", 0, 5);
   x2("()*\\1", "", 0, 0);
   x2("(?:()|())*\\1\\2", "", 0, 0);
+  x2("(?:a*|b*)*c", "abadc", 4, 5);
   x3("(?:\\1a|())*", "a", 0, 0, 1);
   x2("x((.)*)*x", "0x1x2x3", 1, 6);
   x2("x((.)*)*x(?i:\\1)\\Z", "0x1x2x1X2", 1, 9);
@@ -585,6 +589,10 @@ extern int main(int argc, char* argv[])
   n("[0-9-a]", ":");          // PR#44
   x3("(\\(((?:[^(]|\\g<1>)*)\\))", "(abc)(abc)", 1, 4, 2); // PR#43
   x2("\\o{101}", "A", 0, 1);
+  x2("\\A(a|b\\g<1>c)\\k<1+3>\\z", "bbacca", 0, 6);
+  n("\\A(a|b\\g<1>c)\\k<1+3>\\z", "bbaccb");
+  x2("(?i)\\A(a|b\\g<1>c)\\k<1+2>\\z", "bBACcbac", 0, 8);
+  x2("(?i)(?<X>aa)|(?<X>bb)\\k<X>", "BBbb", 0, 4);
   x2("(?:\\k'+1'B|(A)C)*", "ACAB", 0, 4); // relative backref by postitive number
   x2("\\g<+2>(abc)(ABC){0}", "ABCabc", 0, 6); // relative call by positive number
   x2("A\\g'0'|B()", "AAAAB", 0, 5);
@@ -626,6 +634,47 @@ extern int main(int argc, char* argv[])
   x2("(?:()|()|())*\\3\\1", "abc", 0, 0);
   x2("(|(?:a(?:\\g'1')*))b|", "abc", 0, 2);
   x2("^(\"|)(.*)\\1$", "XX", 0, 2);
+  x2("(abc|def|ghi|jkl|mno|pqr|stu){0,10}?\\z", "admno", 2, 5);
+  x2("(abc|(def|ghi|jkl|mno|pqr){0,7}?){5}\\z", "adpqrpqrpqr", 2, 11); // cover OP_REPEAT_INC_NG_SG
+  x2("(?!abc).*\\z", "abcde", 1, 5); // cover OP_PREC_READ_NOT_END
+  x2("(.{2,})?", "abcde", 0, 5); // up coverage
+  x2("((a|b|c|d|e|f|g|h|i|j|k|l|m|n)+)?", "abcde", 0, 5); // up coverage
+  x2("((a|b|c|d|e|f|g|h|i|j|k|l|m|n){3,})?", "abcde", 0, 5); // up coverage
+  x2("((?:a(?:b|c|d|e|f|g|h|i|j|k|l|m|n))+)?", "abacadae", 0, 8); // up coverage
+  x2("((?:a(?:b|c|d|e|f|g|h|i|j|k|l|m|n))+?)?z", "abacadaez", 0, 9); // up coverage
+  x2("\\A((a|b)\?\?)?z", "bz", 0, 2); // up coverage
+  x2("((?<x>abc){0}a\\g<x>d)+", "aabcd", 0, 5); // up coverage
+  x2("((?(abc)true|false))+", "false", 0, 5); // up coverage
+  x2("((?i:abc)d)+", "abcdABCd", 0, 8); // up coverage
+  x2("((?<!abc)def)+", "bcdef", 2, 5); // up coverage
+  x2("(\\ba)+", "aaa", 0, 1); // up coverage
+  x2("()(?<x>ab)(?(<x>)a|b)", "aba", 0, 3); // up coverage
+  x2("(?<=a.b)c", "azbc", 3, 4); // up coverage
+  n("(?<=(?:abcde){30})z", "abc"); // up coverage
+  x2("(?<=(?(a)a|bb))z", "aaz", 2, 3); // up coverage
+  x2("[a]*\\W", "aa@", 0, 3); // up coverage
+  x2("[a]*[b]", "aab", 0, 3); // up coverage
+  n("a*\\W", "aaa"); // up coverage
+  n("(?W)a*\\W", "aaa"); // up coverage
+  x2("(?<=ab(?<=ab))", "ab", 2, 2); // up coverage
+  x2("(?<x>a)(?<x>b)(\\k<x>)+", "abbaab", 0, 6); // up coverage
+  x2("()(\\1)(\\2)", "abc", 0, 0); // up coverage
+  x2("((?(a)b|c))(\\1)", "abab", 0, 4); // up coverage
+  x2("(?<x>$|b\\g<x>)", "bbb", 0, 3); // up coverage
+  x2("(?<x>(?(a)a|b)|c\\g<x>)", "cccb", 0, 4); // up coverage
+  x2("(a)(?(1)a*|b*)+", "aaaa", 0, 4); // up coverage
+  x2("[[^abc]&&cde]*", "de", 0, 2); // up coverage
+  n("(a){10}{10}", "aa"); // up coverage
+  x2("(?:a?)+", "aa", 0, 2); // up coverage
+  x2("(?:a?)*?", "a", 0, 0); // up coverage
+  x2("(?:a*)*?", "a", 0, 0); // up coverage
+  x2("(?:a+?)*", "a", 0, 1); // up coverage
+  x2("\\h", "5", 0, 1); // up coverage
+  x2("\\H", "z", 0, 1); // up coverage
+  x2("[\\h]", "5", 0, 1); // up coverage
+  x2("[\\H]", "z", 0, 1); // up coverage
+  x2("[\\o{101}]", "A", 0, 1); // up coverage
+  x2("[\\u0041]", "A", 0, 1); // up coverage
 
   x2("(?~)", "", 0, 0);
   x2("(?~)", "A", 0, 0);
@@ -957,6 +1006,8 @@ extern int main(int argc, char* argv[])
   x2("a<b>バージョンのダウンロード<\\/b>", "a<b>バージョンのダウンロード</b>", 0, 44);
   x2(".<b>バージョンのダウンロード<\\/b>", "a<b>バージョンのダウンロード</b>", 0, 44);
   x2("\\n?\\z", "こんにちは", 15, 15);
+  x2("(?m).*", "青赤黄", 0, 9);
+  x2("(?m).*a", "青赤黄a", 0, 10);
 
   x2("\\p{Hiragana}", "ぴ", 0, 3);
   n("\\P{Hiragana}", "ぴ");

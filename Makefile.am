@@ -38,3 +38,22 @@ pkgconfig_DATA = oniguruma.pc
 
 all-test:
 	cd test; make test
+
+cov:
+	make lcov-clear
+	cd test; make CFLAGS="--coverage" test
+	make lcov
+
+gcov:
+	make CFLAGS="--coverage"
+
+lcov:
+	lcov -c -d src/.libs -o coverage.info
+	genhtml -o coverage coverage.info
+
+lcov-clear:
+	lcov -z -d .
+
+cov-clean: clean
+	rm -rf coverage coverage.info
+	find . -name '*.gcno' | xargs rm -f
