@@ -30,6 +30,7 @@
 #define regex_t   onig_regex_t
 #include "regint.h"
 #undef regex_t
+
 #include "onigposix.h"
 
 #define ONIG_C(reg)    ((onig_regex_t* )((reg)->onig))
@@ -235,6 +236,7 @@ extern void
 regfree(regex_t* reg)
 {
   onig_free(ONIG_C(reg));
+  reg->onig = (void* )0;
 }
 
 
