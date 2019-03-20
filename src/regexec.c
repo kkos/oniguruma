@@ -2366,7 +2366,7 @@ typedef struct {
 
 
 
-#ifdef USE_GOTO_LABELS_AS_VALUES
+#ifdef USE_THREADED_CODE
 
 #define BYTECODE_INTERPRETER_START      GOTO_OP;
 #define BYTECODE_INTERPRETER_END
@@ -2396,7 +2396,7 @@ typedef struct {
 #define GOTO_OP      continue; break
 #define BREAK_OP     break
 
-#endif /* USE_GOTO_LABELS_AS_VALUES */
+#endif /* USE_THREADED_CODE */
 
 #define INC_OP       p++
 #define NEXT_OUT     SOP_OUT; NEXT_OP
@@ -2457,7 +2457,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   static Operation FinishCode[] = { { OP_FINISH } };
 #endif
 
-#ifdef USE_GOTO_LABELS_AS_VALUES
+#ifdef USE_THREADED_CODE
   static const void *opcode_to_label[] = {
   &&L_FINISH,
   &&L_END,
