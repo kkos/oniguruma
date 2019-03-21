@@ -3,7 +3,7 @@ lib_onig = ../src/libonig.la
 
 AM_LDFLAGS  = -L$(prefix)/lib
 AM_CFLAGS = -Wall -Wno-invalid-source-encoding
-AM_CPPFLAGS = -I$(top_srcdir)/src -I$(includedir)
+AM_CPPFLAGS = -I$(top_srcdir)/src
 
 if ENABLE_POSIX_API
 TESTS = test_utf8 testc testp testcu

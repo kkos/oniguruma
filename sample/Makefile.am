@@ -4,7 +4,7 @@ lib_onig = ../src/libonig.la
 LDADD  = $(lib_onig)
 
 AM_LDFLAGS  = -L$(prefix)/lib
-AM_CPPFLAGS = -I$(top_srcdir)/src -I$(includedir)
+AM_CPPFLAGS = -I$(top_srcdir)/src
 
 TESTS = encode listcap names posix simple sql syntax user_property callout echo count bug_fix
 

@@ -2,7 +2,7 @@
 libname = libonig.la
 
 AM_CFLAGS = -Wall
-AM_CPPFLAGS = -I$(top_srcdir) -I$(includedir)
+AM_CPPFLAGS = -I$(top_srcdir)
 
 include_HEADERS = oniguruma.h oniggnu.h
 
