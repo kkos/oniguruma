@@ -1519,8 +1519,8 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
     len = SIZE_OP_WORD_BOUNDARY;
     break;
 
-  case ANCR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
-  case ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
+  case ANCR_TEXT_SEGMENT_BOUNDARY:
+  case ANCR_NO_TEXT_SEGMENT_BOUNDARY:
     len = SIZE_OPCODE;
     break;
 
@@ -1566,12 +1566,12 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     break;
 #endif
 
-  case ANCR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
-  case ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
+  case ANCR_TEXT_SEGMENT_BOUNDARY:
+  case ANCR_NO_TEXT_SEGMENT_BOUNDARY:
     r = add_op(reg, OP_TEXT_SEGMENT_BOUNDARY);
     if (r != 0) return r;
     COP(reg)->text_segment_boundary.not =
-      (node->type == ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY ? 1 : 0);
+      (node->type == ANCR_NO_TEXT_SEGMENT_BOUNDARY ? 1 : 0);
     break;
 
   case ANCR_PREC_READ:
@@ -4499,15 +4499,14 @@ setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
   ( ANCR_LOOK_BEHIND | ANCR_BEGIN_LINE | ANCR_END_LINE | ANCR_BEGIN_BUF \
   | ANCR_BEGIN_POSITION | ANCR_WORD_BOUNDARY | ANCR_NO_WORD_BOUNDARY \
   | ANCR_WORD_BEGIN | ANCR_WORD_END \
-  | ANCR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY \
-  | ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY )
+  | ANCR_TEXT_SEGMENT_BOUNDARY \
+  | ANCR_NO_TEXT_SEGMENT_BOUNDARY )
 
 #define ALLOWED_ANCHOR_IN_LB_NOT \
   ( ANCR_LOOK_BEHIND | ANCR_LOOK_BEHIND_NOT | ANCR_BEGIN_LINE \
   | ANCR_END_LINE | ANCR_BEGIN_BUF | ANCR_BEGIN_POSITION | ANCR_WORD_BOUNDARY \
   | ANCR_NO_WORD_BOUNDARY | ANCR_WORD_BEGIN | ANCR_WORD_END \
-  | ANCR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY \
-  | ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY )
+  | ANCR_TEXT_SEGMENT_BOUNDARY | ANCR_NO_TEXT_SEGMENT_BOUNDARY )
 
   int r;
   AnchorNode* an = ANCHOR_(node);
@@ -6782,10 +6781,10 @@ print_indent_tree(FILE* f, Node* node, int indent)
     case ANCR_WORD_BEGIN:       fputs("word begin", f);     break;
     case ANCR_WORD_END:         fputs("word end", f);       break;
 #endif
-    case ANCR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
-      fputs("extended-grapheme-cluster boundary", f); break;
-    case ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
-      fputs("no-extended-grapheme-cluster boundary", f); break;
+    case ANCR_TEXT_SEGMENT_BOUNDARY:
+      fputs("text-segment boundary", f); break;
+    case ANCR_NO_TEXT_SEGMENT_BOUNDARY:
+      fputs("no text-segment boundary", f); break;
     case ANCR_PREC_READ:
       fprintf(f, "prec read\n");
       print_indent_tree(f, NODE_BODY(node), indent + add);

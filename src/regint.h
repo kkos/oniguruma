@@ -479,8 +479,8 @@ typedef struct _BBuf {
 #define ANCR_WORD_END         (1<<13)
 #define ANCR_ANYCHAR_INF      (1<<14)
 #define ANCR_ANYCHAR_INF_ML   (1<<15)
-#define ANCR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY    (1<<16)
-#define ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY (1<<17)
+#define ANCR_TEXT_SEGMENT_BOUNDARY    (1<<16)
+#define ANCR_NO_TEXT_SEGMENT_BOUNDARY (1<<17)
 
 
 #define ANCHOR_HAS_BODY(a)      ((a)->type < ANCR_BEGIN_BUF)

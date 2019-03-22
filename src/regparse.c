@@ -2671,7 +2671,7 @@ node_new_callout(Node** node, OnigCalloutOf callout_of, int num, int id,
 #endif
 
 static int
-make_extended_grapheme_cluster(Node** node, ScanEnv* env)
+make_text_segment(Node** node, ScanEnv* env)
 {
   int r;
   int i;
@@ -2683,7 +2683,7 @@ make_extended_grapheme_cluster(Node** node, ScanEnv* env)
   ns[1] = NULL_NODE;
 
   r = ONIGERR_MEMORY;
-  ns[0] = onig_node_new_anchor(ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY, 0);
+  ns[0] = onig_node_new_anchor(ANCR_NO_TEXT_SEGMENT_BOUNDARY, 0);
   if (IS_NULL(ns[0])) goto err;
 
   r = node_new_true_anychar(&ns[1], env);
@@ -4054,7 +4054,7 @@ enum TokenSyms {
   TK_GENERAL_NEWLINE,  /* \R */
   TK_NO_NEWLINE,       /* \N */
   TK_TRUE_ANYCHAR,     /* \O */
-  TK_EXTENDED_GRAPHEME_CLUSTER, /* \X */
+  TK_TEXT_SEGMENT,     /* \X */
 
   /* in cc */
   TK_CC_CLOSE,
@@ -5049,13 +5049,13 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case 'y':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER)) break;
       tok->type = TK_ANCHOR;
-      tok->u.anchor = ANCR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY;
+      tok->u.anchor = ANCR_TEXT_SEGMENT_BOUNDARY;
       break;
 
     case 'Y':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER)) break;
       tok->type = TK_ANCHOR;
-      tok->u.anchor = ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY;
+      tok->u.anchor = ANCR_NO_TEXT_SEGMENT_BOUNDARY;
       break;
 
 #ifdef USE_WORD_BEGIN_END
@@ -5136,7 +5136,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
     case 'X':
       if (! IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER)) break;
-      tok->type = TK_EXTENDED_GRAPHEME_CLUSTER;
+      tok->type = TK_TEXT_SEGMENT;
       break;
 
     case 'A':
@@ -8082,8 +8082,8 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
     if (r < 0) return r;
     break;
 
-  case TK_EXTENDED_GRAPHEME_CLUSTER:
-    r = make_extended_grapheme_cluster(np, env);
+  case TK_TEXT_SEGMENT:
+    r = make_text_segment(np, env);
     if (r < 0) return r;
     break;
 
