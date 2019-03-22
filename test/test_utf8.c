@@ -1149,10 +1149,25 @@ extern int main(int argc, char* argv[])
 
   // Text Segment: Extended Grapheme Cluster <-> Word Boundary
   x2("(?y{g})\\yabc\\y", "abc", 0, 3);
-  x2("(?y{w})\\yabc\\y", "abc", 0, 3);
   x2("(?y{g})\\y\\X\\y", "abc", 0, 1);
-  x2("(?y{w})\\y\\X\\y", "abc", 0, 3);
-  x2("(?y{w})\\y\\X\\y", "ケン", 0, 6);
+  x2("(?y{w})\\yabc\\y", "abc", 0, 3); // WB1, WB2
+  x2("(?y{w})\\X", "\r\n", 0, 2); // WB3
+  x2("(?y{w})\\X", "\x0cz", 0, 1); // WB3a
+  x2("(?y{w})\\X", "q\x0c", 0, 1); // WB3b
+  x2("(?y{w})\\X", "\xE2\x80\x8D\xE2\x9D\x87", 0, 6); // WB3c
+  x2("(?y{w})\\X", "\x20\x20", 0, 2); // WB3d
+  x2("(?y{w})\\X", "a\xE2\x80\x8D", 0, 4); // WB4
+  x2("(?y{w})\\y\\X\\y", "abc", 0, 3); // WB5
+  x2("(?y{w})\\y\\X\\y", "v\xCE\x87w", 0, 4); // WB6, WB7
+  x2("(?y{w})\\y\\X\\y", "\xD7\x93\x27", 0, 3); // WB7a
+  x2("(?y{w})\\y\\X\\y", "\xD7\x93\x22\xD7\x93", 0, 5); // WB7b, WB7c
+  x2("(?y{w})\\X", "14 45", 0, 2); // WB8
+  x2("(?y{w})\\X", "a14", 0, 3); // WB9
+  x2("(?y{w})\\X", "832e", 0, 4); // WB10
+  x2("(?y{w})\\X", "8\xEF\xBC\x8C\xDB\xB0", 0, 6); // WB11, WB12
+  x2("(?y{w})\\y\\X\\y", "ケン", 0, 6); // WB13
+  x2("(?y{w})\\y\\X\\y", "ケン\xE2\x80\xAFタ", 0, 12); // WB13a, WB13b
+  x2("(?y{w})\\y\\X\\y", "\x21\x23", 0, 1); // WB999
   x2("(?y{w})\\y\\X\\y", "山ア", 0, 3);
   x2("(?y{w})\\X", "3.14", 0, 4);
   x2("(?y{w})\\X", "3 14", 0, 1);
