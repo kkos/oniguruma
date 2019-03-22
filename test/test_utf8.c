@@ -1146,6 +1146,16 @@ extern int main(int argc, char* argv[])
   // a + COMBINING GRAVE ACCENT (U+0300)
   x2("h\\Xllo", "ha\xCC\x80llo", 0, 7);
 
+  // Text Segment: Extended Grapheme Cluster <-> Word Boundary
+  x2("(?y{g})\\yabc\\y", "abc", 0, 3);
+  x2("(?y{w})\\yabc\\y", "abc", 0, 3);
+  x2("(?y{g})\\y\\X\\y", "abc", 0, 1);
+  x2("(?y{w})\\y\\X\\y", "abc", 0, 3);
+  x2("(?y{w})\\y\\X\\y", "ケン", 0, 6);
+  x2("(?y{w})\\y\\X\\y", "山ア", 0, 3);
+  x2("(?y{w})\\X", "3.14", 0, 4);
+  x2("(?y{w})\\X", "3 14", 0, 1);
+
   x2("\\x40", "@", 0, 1);
   x2("\\x1", "\x01", 0, 1);
   x2("\\x{1}", "\x01", 0, 1);
