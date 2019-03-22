@@ -60,7 +60,7 @@ OnigSyntaxType OnigSyntaxOniguruma = {
       ONIG_SYN_OP2_QMARK_TILDE_ABSENT_GROUP |
       ONIG_SYN_OP2_QMARK_BRACE_CALLOUT_CONTENTS |
       ONIG_SYN_OP2_ASTERISK_CALLOUT_NAME    |
-      ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER |
+      ONIG_SYN_OP2_ESC_X_Y_TEXT_SEGMENT |
       ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE |
       ONIG_SYN_OP2_ESC_CAPITAL_N_O_SUPER_DOT |
       ONIG_SYN_OP2_ESC_CAPITAL_K_KEEP |
@@ -103,7 +103,7 @@ OnigSyntaxType OnigSyntaxRuby = {
       ONIG_SYN_OP2_QMARK_LT_NAMED_GROUP | ONIG_SYN_OP2_ESC_K_NAMED_BACKREF |
       ONIG_SYN_OP2_QMARK_LPAREN_IF_ELSE |
       ONIG_SYN_OP2_QMARK_TILDE_ABSENT_GROUP |
-      ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER |
+      ONIG_SYN_OP2_ESC_X_Y_TEXT_SEGMENT |
       ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE |
       ONIG_SYN_OP2_ESC_CAPITAL_K_KEEP |
       ONIG_SYN_OP2_ESC_G_SUBEXP_CALL |
@@ -5047,13 +5047,13 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       break;
 
     case 'y':
-      if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER)) break;
+      if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP2_ESC_X_Y_TEXT_SEGMENT)) break;
       tok->type = TK_ANCHOR;
       tok->u.anchor = ANCR_TEXT_SEGMENT_BOUNDARY;
       break;
 
     case 'Y':
-      if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER)) break;
+      if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP2_ESC_X_Y_TEXT_SEGMENT)) break;
       tok->type = TK_ANCHOR;
       tok->u.anchor = ANCR_NO_TEXT_SEGMENT_BOUNDARY;
       break;
@@ -5135,7 +5135,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       break;
 
     case 'X':
-      if (! IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER)) break;
+      if (! IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_X_Y_TEXT_SEGMENT)) break;
       tok->type = TK_TEXT_SEGMENT;
       break;
 
