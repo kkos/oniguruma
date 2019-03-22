@@ -385,8 +385,10 @@ typedef unsigned int        OnigOptionType;
 #define ONIG_OPTION_DIGIT_IS_ASCII       (ONIG_OPTION_WORD_IS_ASCII << 1)
 #define ONIG_OPTION_SPACE_IS_ASCII       (ONIG_OPTION_DIGIT_IS_ASCII << 1)
 #define ONIG_OPTION_POSIX_IS_ASCII       (ONIG_OPTION_SPACE_IS_ASCII << 1)
+#define ONIG_OPTION_TEXT_SEGMENT_EXTENDED_GRAPHEME_CLUSTER  (ONIG_OPTION_POSIX_IS_ASCII << 1)
+#define ONIG_OPTION_TEXT_SEGMENT_WORD    (ONIG_OPTION_TEXT_SEGMENT_EXTENDED_GRAPHEME_CLUSTER << 1)
 
-#define ONIG_OPTION_MAXBIT               ONIG_OPTION_POSIX_IS_ASCII  /* limit */
+#define ONIG_OPTION_MAXBIT               ONIG_OPTION_TEXT_SEGMENT_WORD  /* limit */
 
 #define ONIG_OPTION_ON(options,regopt)      ((options) |= (regopt))
 #define ONIG_OPTION_OFF(options,regopt)     ((options) &= ~(regopt))
