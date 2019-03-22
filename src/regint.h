@@ -533,8 +533,7 @@ enum OpCode {
   OP_WORD_BEGIN,
   OP_WORD_END,
 
-  OP_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY,
-  OP_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY,
+  OP_TEXT_SEGMENT_BOUNDARY,
 
   OP_BEGIN_BUF,
   OP_END_BUF,
@@ -613,6 +612,11 @@ enum UpdateVarType {
   UPDATE_VAR_RIGHT_RANGE_FROM_STACK   = 2,
   UPDATE_VAR_RIGHT_RANGE_FROM_S_STACK = 3,
   UPDATE_VAR_RIGHT_RANGE_INIT         = 4,
+};
+
+enum TextSegmentBoundaryType {
+  EXTENDED_GRAPHEME_CLUSTER_BOUNDARY = 0,
+  WORD_BOUNDARY = 1,
 };
 
 typedef int RelAddrType;
@@ -837,6 +841,10 @@ typedef struct {
     struct {
       ModeType mode;
     } word_boundary; /* OP_WORD_BOUNDARY, OP_NO_WORD_BOUNDARY, OP_WORD_BEGIN, OP_WORD_END */
+    struct {
+      enum TextSegmentBoundaryType type;
+      int not;
+    } text_segment_boundary;
     struct {
       union {
         MemNumType  n1; /* num == 1 */

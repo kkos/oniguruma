@@ -185,8 +185,7 @@ static OpInfoType OpInfo[] = {
   { OP_NO_WORD_BOUNDARY,      "not-word-boundary" },
   { OP_WORD_BEGIN,            "word-begin" },
   { OP_WORD_END,              "word-end"   },
-  { OP_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY,    "extended-grapheme-cluster-boundary" },
-  { OP_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY, "no-extended-grapheme-cluster-boundary" },
+  { OP_TEXT_SEGMENT_BOUNDARY, "text-segment-boundary" },
   { OP_BEGIN_BUF,             "begin-buf"  },
   { OP_END_BUF,               "end-buf"    },
   { OP_BEGIN_LINE,            "begin-line" },
@@ -577,6 +576,11 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
     break;
 #endif
 
+  case OP_TEXT_SEGMENT_BOUNDARY:
+    if (p->text_segment_boundary.not != 0)
+      fprintf(f, ":not");
+    break;
+
   case OP_FINISH:
   case OP_END:
   case OP_ANYCHAR:
@@ -587,8 +591,6 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
   case OP_WORD_ASCII:
   case OP_NO_WORD:
   case OP_NO_WORD_ASCII:
-  case OP_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
-  case OP_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
   case OP_BEGIN_BUF:
   case OP_END_BUF:
   case OP_BEGIN_LINE:
@@ -2495,8 +2497,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_NO_WORD_BOUNDARY,
   &&L_WORD_BEGIN,
   &&L_WORD_END,
-  &&L_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY,
-  &&L_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY,
+  &&L_TEXT_SEGMENT_BOUNDARY,
   &&L_BEGIN_BUF,
   &&L_END_BUF,
   &&L_BEGIN_LINE,
@@ -3250,19 +3251,30 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       goto fail;
 #endif
 
-    CASE_OP(EXTENDED_GRAPHEME_CLUSTER_BOUNDARY)
-      if (onigenc_egcb_is_break_position(encode, s, sprev, str, end)) {
-        INC_OP;
-        JUMP_OUT;
+    CASE_OP(TEXT_SEGMENT_BOUNDARY)
+      {
+        int is_break;
+
+        switch (p->text_segment_boundary.type) {
+        case EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
+          is_break = onigenc_egcb_is_break_position(encode, s, sprev, str, end);
+          break;
+        default:
+          goto bytecode_error;
+          break;
+        }
+
+        if (p->text_segment_boundary.not != 0)
+          is_break = ! is_break;
+
+        if (is_break != 0) {
+          INC_OP;
+          JUMP_OUT;
+        }
+        else {
+          goto fail;
+        }
       }
-      goto fail;
-
-    CASE_OP(NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY)
-      if (onigenc_egcb_is_break_position(encode, s, sprev, str, end))
-        goto fail;
-
-      INC_OP;
-      JUMP_OUT;
 
     CASE_OP(BEGIN_BUF)
       if (! ON_STR_BEGIN(s)) goto fail;

@@ -1567,11 +1567,11 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
 #endif
 
   case ANCR_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
-    r = add_op(reg, OP_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY);
-    break;
-
   case ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
-    r = add_op(reg, OP_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY);
+    r = add_op(reg, OP_TEXT_SEGMENT_BOUNDARY);
+    if (r != 0) return r;
+    COP(reg)->text_segment_boundary.not =
+      (node->type == ANCR_NO_EXTENDED_GRAPHEME_CLUSTER_BOUNDARY ? 1 : 0);
     break;
 
   case ANCR_PREC_READ:
