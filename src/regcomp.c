@@ -1568,10 +1568,22 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
 
   case ANCR_TEXT_SEGMENT_BOUNDARY:
   case ANCR_NO_TEXT_SEGMENT_BOUNDARY:
-    r = add_op(reg, OP_TEXT_SEGMENT_BOUNDARY);
-    if (r != 0) return r;
-    COP(reg)->text_segment_boundary.not =
-      (node->type == ANCR_NO_TEXT_SEGMENT_BOUNDARY ? 1 : 0);
+    {
+      enum TextSegmentBoundaryType type;
+
+      r = add_op(reg, OP_TEXT_SEGMENT_BOUNDARY);
+      if (r != 0) return r;
+
+      type = EXTENDED_GRAPHEME_CLUSTER_BOUNDARY;
+#ifdef USE_UNICODE_WORD_BREAK
+      if (ONIG_IS_OPTION_ON(reg->options, ONIG_OPTION_TEXT_SEGMENT_WORD))
+        type = WORD_BOUNDARY;
+#endif
+
+      COP(reg)->text_segment_boundary.type = type;
+      COP(reg)->text_segment_boundary.not =
+        (node->type == ANCR_NO_TEXT_SEGMENT_BOUNDARY ? 1 : 0);
+    }
     break;
 
   case ANCR_PREC_READ:

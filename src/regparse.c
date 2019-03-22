@@ -7437,6 +7437,7 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
 #endif
     case '-': case 'i': case 'm': case 's': case 'x':
     case 'W': case 'D': case 'S': case 'P':
+    case 'y':
       {
         int neg = 0;
 
@@ -7477,6 +7478,40 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
           case 'S': OPTION_NEGATE(option, ONIG_OPTION_SPACE_IS_ASCII, neg); break;
           case 'P': OPTION_NEGATE(option, ONIG_OPTION_POSIX_IS_ASCII, neg); break;
 
+          case 'y': /* y{g}, y{w} */
+            {
+              if (neg != 0) return ONIGERR_UNDEFINED_GROUP_OPTION;
+
+              if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+              if (! PPEEK_IS('{')) return ONIGERR_UNDEFINED_GROUP_OPTION;
+              PFETCH(c);
+              if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+              PFETCH(c);
+              switch (c) {
+              case 'g':
+                OPTION_NEGATE(option, ONIG_OPTION_TEXT_SEGMENT_EXTENDED_GRAPHEME_CLUSTER, 0);
+                OPTION_NEGATE(option, ONIG_OPTION_TEXT_SEGMENT_WORD, 1);
+                break;
+#ifdef USE_UNICODE_WORD_BREAK
+              case 'w':
+                if (! ONIGENC_IS_UNICODE_ENCODING(enc))
+                  return ONIGERR_UNDEFINED_GROUP_OPTION;
+
+                OPTION_NEGATE(option, ONIG_OPTION_TEXT_SEGMENT_WORD, 0);
+                OPTION_NEGATE(option, ONIG_OPTION_TEXT_SEGMENT_EXTENDED_GRAPHEME_CLUSTER, 1);
+                break;
+#endif
+              default:
+                return ONIGERR_UNDEFINED_GROUP_OPTION;
+                break;
+              }
+              if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+              PFETCH(c);
+              if (c != '}')
+                return ONIGERR_UNDEFINED_GROUP_OPTION;
+              break;
+            } /* case 'y' */
+
           default:
             return ONIGERR_UNDEFINED_GROUP_OPTION;
           }
@@ -7508,7 +7543,7 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
 
           if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
           PFETCH(c);
-        }
+        } /* while (1) */
       }
       break;
 
