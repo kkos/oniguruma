@@ -3259,6 +3259,11 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         case EXTENDED_GRAPHEME_CLUSTER_BOUNDARY:
           is_break = onigenc_egcb_is_break_position(encode, s, sprev, str, end);
           break;
+#ifdef USE_UNICODE_WORD_BREAK
+        case WORD_BOUNDARY:
+          is_break = onigenc_wb_is_break_position(encode, s, sprev, str, end);
+          break;
+#endif
         default:
           goto bytecode_error;
           break;
