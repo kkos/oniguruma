@@ -1,7 +1,7 @@
 
 # Oniguruma syntax (operator) configuration
 
-_Documented for Oniguruma 6.9.1_
+_Documented for Oniguruma 6.9.1 (2019/03/25)_
 
 
 ----------
@@ -174,7 +174,7 @@ Enables support for the common `r|s` alternation operator.  You usually want thi
 flag set.
 
 
-### 11. ONIG_SYN_OP_VBAR_ALT (enable `\|`)
+### 11. ONIG_SYN_OP_ESC_VBAR_ALT (enable `\|`)
 
 _Set in: Emacs, Grep_
 
@@ -475,7 +475,7 @@ before matching `b`, while `a(?-i)b` will turn off case-insensitivity in
 the same location.  The supported toggle-able options for this flag are:
 
   - `i` - Case-insensitivity
-  - `m` - Multi-line mode (`^` and `$` match at `\n` as well as start/end of buffer)
+  - `m` - Multi-line mode (`.` can match `\n`)
   - `x` - Extended pattern (free-formatting: whitespace will ignored)
 
 
@@ -665,16 +665,15 @@ You usually do not want this flag to be enabled.
 _Set in: Perl, Perl_NG, Ruby, Oniguruma_
 
 Enables support for conditional inclusion of subsequent regex patterns based on whether
-a prior named or numbered capture matched, or based on whether a lookhead pattern will
+a prior named or numbered capture matched, or based on whether a pattern will
 match.  This supports many different forms, including:
 
-  - `(?(foo)then|else)` - condition based on a capture by name.
   - `(?(<foo>)then|else)` - condition based on a capture by name.
   - `(?('foo')then|else)` - condition based on a capture by name.
   - `(?(3)then|else)` - condition based on a capture by number.
   - `(?(+3)then|else)` - forward conditional to a future match, by relative position.
   - `(?(-3)then|else)` - backward conditional to a prior match, by relative position.
-  - `(?(foo)then|else)` - if there is no capture named `foo`, this matches a literal pattern `foo` as lookahead.
+  - `(?(foo)then|else)` - this matches a pattern `foo`. (foo is any sub-expression)
 
 (New feature as of Oniguruma 6.5.)
 
@@ -948,10 +947,8 @@ will be silently discarded.
 
 _Set in: Ruby, Oniguruma_
 
-If this flag is set, Oniguruma will warn about nested repeat operators that may cause
-significant performance problems, like `(?:a*)+`, which has extremely poor _O(n²)_ growth
-and may take an extremely long time to match.  If this flag is clear, Oniguruma will
-allow the nested repeat operators without warning about them.
+If this flag is set, Oniguruma will warn about nested repeat operators those have no meaning, like `(?:a*)+`.
+If this flag is clear, Oniguruma will allow the nested repeat operators without warning about them.
 
 ### 31. ONIG_SYN_CONTEXT_INDEP_ANCHORS
 
