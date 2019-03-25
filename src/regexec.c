@@ -3610,9 +3610,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         mems = tlen == 1 ? &(p->backref_general.n1) : p->backref_general.ns;
 
         if (backref_check_at_nested_level(reg, stk, stk_base,
-                                          (int )level, (int )tlen, mems) != 0) {
-        }
-        else
+                                          (int )level, (int )tlen, mems) == 0)
           goto fail;
       }
       INC_OP;

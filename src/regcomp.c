@@ -6246,12 +6246,12 @@ onig_free(regex_t* reg)
 static void print_tree P_((FILE* f, Node* node));
 #endif
 
+extern int onig_init_for_match_at(regex_t* reg);
+
 extern int
 onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
              OnigErrorInfo* einfo)
 {
-  extern int onig_init_for_match_at(regex_t* reg);
-
   int r;
   Node*  root;
   ScanEnv  scan_env;
