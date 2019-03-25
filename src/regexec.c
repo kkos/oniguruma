@@ -5162,6 +5162,16 @@ onig_copy_encoding(OnigEncoding to, OnigEncoding from)
   *to = *from;
 }
 
+#ifdef USE_DIRECT_THREADED_CODE
+extern int
+onig_init_for_match_at(regex_t* reg)
+{
+  return match_at(reg, (const UChar* )NULL, (const UChar* )NULL,
+                  (const UChar* )NULL, (const UChar* )NULL, (UChar* )NULL,
+                  (MatchArg* )NULL);
+}
+#endif
+
 
 /* for callout functions */
 
@@ -5394,16 +5404,6 @@ onig_get_used_stack_size_in_callout(OnigCalloutArgs* a, int* used_num, int* used
 
   return ONIG_NORMAL;
 }
-
-#ifdef USE_DIRECT_THREADED_CODE
-extern int
-onig_init_for_match_at(regex_t* reg)
-{
-  return match_at(reg, (const UChar* )NULL, (const UChar* )NULL,
-                  (const UChar* )NULL, (const UChar* )NULL, (UChar* )NULL,
-                  (MatchArg* )NULL);
-}
-#endif
 
 
 /* builtin callout functions */
