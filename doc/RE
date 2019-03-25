@@ -569,17 +569,4 @@ A-5. Features disabled in default syntax
 
      see sample/listcap.c file.
 
-
-A-6. Problems
-
-   + Invalid encoding byte sequence is not checked.
-
-     ex. UTF-8
-
-     * Invalid first byte is treated as a character.
-       /./u =~ "\xa3"
-
-     * Incomplete byte sequence is not checked.
-       /\w+/ =~ "a\xf3\x8ec"
-
 // END
