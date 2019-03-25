@@ -4,7 +4,7 @@
   regenc.h -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2018  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2019  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -182,7 +182,9 @@ extern int onigenc_unicode_ctype_code_range P_((OnigCtype ctype, const OnigCodeP
 extern int onigenc_unicode_get_case_fold_codes_by_str P_((OnigEncoding enc, OnigCaseFoldType flag, const OnigUChar* p, const OnigUChar* end, OnigCaseFoldCodeItem items[]));
 extern int onigenc_unicode_mbc_case_fold P_((OnigEncoding enc, OnigCaseFoldType flag, const UChar** pp, const UChar* end, UChar* fold));
 extern int onigenc_unicode_apply_all_case_fold P_((OnigCaseFoldType flag, OnigApplyAllCaseFoldFunc f, void* arg));
+
 extern int onigenc_egcb_is_break_position P_((OnigEncoding enc, UChar* p, UChar* prev, const UChar* start, const UChar* end));
+
 #ifdef USE_UNICODE_WORD_BREAK
 extern int onigenc_wb_is_break_position P_((OnigEncoding enc, UChar* p, UChar* prev, const UChar* start, const UChar* end));
 #endif
