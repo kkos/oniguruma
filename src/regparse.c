@@ -54,7 +54,7 @@ OnigSyntaxType OnigSyntaxOniguruma = {
      ONIG_SYN_OP_ESC_C_CONTROL )
    & ~ONIG_SYN_OP_ESC_LTGT_WORD_BEGIN_END )
   , ( ONIG_SYN_OP2_QMARK_GROUP_EFFECT |
-      ONIG_SYN_OP2_OPTION_RUBY |
+      ONIG_SYN_OP2_OPTION_ONIGURUMA |
       ONIG_SYN_OP2_QMARK_LT_NAMED_GROUP | ONIG_SYN_OP2_ESC_K_NAMED_BACKREF |
       ONIG_SYN_OP2_QMARK_LPAREN_IF_ELSE |
       ONIG_SYN_OP2_QMARK_TILDE_ABSENT_GROUP |
@@ -7462,7 +7462,8 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
             if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_OPTION_PERL)) {
               OPTION_NEGATE(option, ONIG_OPTION_SINGLELINE, (neg == 0 ? 1 : 0));
             }
-            else if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_OPTION_RUBY)) {
+            else if (IS_SYNTAX_OP2(env->syntax,
+                        ONIG_SYN_OP2_OPTION_ONIGURUMA|ONIG_SYN_OP2_OPTION_RUBY)) {
               OPTION_NEGATE(option, ONIG_OPTION_MULTILINE,  neg);
             }
             else
@@ -7480,6 +7481,9 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
 
           case 'y': /* y{g}, y{w} */
             {
+              if (! IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_OPTION_ONIGURUMA))
+                return ONIGERR_UNDEFINED_GROUP_OPTION;
+
               if (neg != 0) return ONIGERR_UNDEFINED_GROUP_OPTION;
 
               if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
