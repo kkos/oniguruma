@@ -966,7 +966,7 @@ extern int main(int argc, char* argv[])
 #endif
 
   fprintf(stdout,
-       "\nRESULT   SUCC: %d,  FAIL: %d,  ERROR: %d      (by Oniguruma %s)\n",
+       "\nRESULT   SUCC: %4d,  FAIL: %d,  ERROR: %d      (by Oniguruma %s)\n",
        nsucc, nfail, nerror, onig_version());
 
 #ifndef POSIX_TEST
