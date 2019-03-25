@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.9.2    2019/03/13
+Oniguruma Regular Expressions Version 6.9.2    2019/03/25
 
 syntax: ONIG_SYNTAX_ONIGURUMA (default)
 
@@ -81,15 +81,23 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
 
   \O       true anychar      (?m:.)    (* original function)
 
-  \X       Extended Grapheme Cluster    (?>\O(?:\Y\O)*)
+  \X       Text Segment    (?>\O(?:\Y\O)*)
 
-           \X doesn't check whether matching start position is boundary.
-           Write as \y\X if you want to ensure it.
+           The meaning of this operator changes depending on the setting of
+           the option (?y{..}).
 
-           Unicode case:
+           \X doesn't check whether matching start position is boundary or not.
+           Please write as \y\X if you want to ensure it.
+
+           [Extended Grapheme Cluster mode] (default)
+             Unicode case:
+               See [Unicode Standard Annex #29: http://unicode.org/reports/tr29/]
+
+             Not Unicode:   (?>\r\n|\O)
+
+           [Word mode]
+             Currently, this mode is supported in Unicode only.
              See [Unicode Standard Annex #29: http://unicode.org/reports/tr29/]
-
-           Not Unicode:   (?>\r\n|\O)
 
 
   Character Property
@@ -126,7 +134,7 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
 
   reluctant
 
-    ??      1 or 0 times
+    ??      0 or 1 times
     *?      0 or more times
     +?      1 or more times
     {n,m}?  at least n but not more than m times
@@ -151,14 +159,30 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
   $       end of the line
   \b      word boundary
   \B      non-word boundary
-  \y      Extended Grapheme Cluster boundary
-  \Y      Extended Grapheme Cluster non-boundary
 
   \A      beginning of string
   \Z      end of string, or before newline at the end
   \z      end of string
   \G      where the current search attempt begins
   \K      keep (keep start position of the result string)
+
+
+  \y      Text Segment boundary
+  \Y      Text Segment non-boundary
+
+          The meaning of these operators(\y, \Y) changes depending on the setting
+          of the option (?y{..}).
+
+          [Extended Grapheme Cluster mode] (default)
+            Unicode case:
+              See [Unicode Standard Annex #29: http://unicode.org/reports/tr29/]
+
+            Not Unicode:
+              All positions except between \r and \n.
+
+          [Word mode]
+            Currently, this mode is supported in Unicode only.
+            See [Unicode Standard Annex #29: http://unicode.org/reports/tr29/]
 
 
 
@@ -222,7 +246,7 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
 
   (?#...)            comment
 
-  (?imxWDSP-imxWDSP:subexp)  option on/off for subexp
+  (?imxWDSPy-imxWDSP:subexp)  option on/off for subexp
 
                                i: ignore case
                                m: multi-line (dot (.) also matches newline)
@@ -235,7 +259,12 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
                                   (alnum, alpha, blank, cntrl, digit, graph,
                                    lower, print, punct, space, upper, xdigit, word)
 
-  (?imxWDSP-imxWDSP)  isolated option
+                               y{?}: Text Segment mode
+                                  y{g}: Extended Grapheme Cluster mode (default)
+                                  y{w}: Word mode
+                                  See [Unicode Standard Annex #29]
+
+  (?imxWDSPy-imxWDSP)  isolated option
 
                       * It makes a group to the next ')' or end of the pattern.
                         /ab(?i)c|def|gh/ == /ab(?i:c|def|gh)/

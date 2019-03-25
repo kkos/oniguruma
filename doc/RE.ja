@@ -1,4 +1,4 @@
-鬼車 正規表現 Version 6.9.2    2019/03/13
+鬼車 正規表現 Version 6.9.2    2019/03/25
 
 使用文法: ONIG_SYNTAX_ONIGURUMA (既定値)
 
@@ -81,15 +81,22 @@
 
   \O       真任意文字  (?m:.)      (* 原作)
 
-  \X       拡張書記素房     (?>\O(?:\Y\O)*)
+  \X       文章区分    (?>\O(?:\Y\O)*)
 
-           \Xは照合の開始位置が拡張書記素房の境界かどうかを確認しない。
+           この演算子の意味は、オプション (?y{..})の設定によって変化する。
+
+           \Xは照合の開始位置が区分の境界かどうかを確認しない。
            それを確実にしたければ、\y\Xと書けば良い。
 
-           Unicodeの場合:
-             参照 [Unicode Standard Annex #29: http://unicode.org/reports/tr29/]
+           [拡張書記素房-状態のとき] (デフォルト)
+             Unicodeの場合:
+               参照 [Unicode Standard Annex #29: http://unicode.org/reports/tr29/]
 
-           Unicode以外の場合:   (?>\r\n|\O)
+             Unicode以外の場合:   (?>\r\n|\O)
+
+           [単語-状態のとき]
+             現在、Unicodeしかサポートしていない。
+             参照 [Unicode Standard Annex #29: http://unicode.org/reports/tr29/]
 
 
   Character Property
@@ -126,7 +133,7 @@
 
   無欲
 
-    ??      一回または零回
+    ??      零回または一回
     *?      零回以上
     +?      一回以上
     {n,m}?  n回以上m回以下
@@ -150,14 +157,29 @@
   $       行末
   \b      単語境界
   \B      非単語境界
-  \y      拡張書記素房 境界
-  \Y      拡張書記素房 非境界
 
   \A      文字列先頭
   \Z      文字列末尾、または文字列末尾の改行の直前
   \z      文字列末尾
   \G      探索開始位置
   \K      保持 (結果の開始位置をこの位置に保つ)
+
+
+  \y      文章区分 境界
+  \Y      文章 非境界
+
+          この演算子の意味は、オプション (?y{..})の設定によって変化する。
+
+           [拡張書記素房-状態のとき] (デフォルト)
+             Unicodeの場合:
+               参照 [Unicode Standard Annex #29: http://unicode.org/reports/tr29/]
+
+             Unicode以外の場合:
+               \rと\nの間を除く全ての位置
+
+           [単語-状態のとき]
+             現在、Unicodeしかサポートしていない。
+             参照 [Unicode Standard Annex #29: http://unicode.org/reports/tr29/]
 
 
 
@@ -220,7 +242,7 @@
 
   (?#...)           注釈
 
-  (?imxWDSP-imxWDSP:式)   式オプション
+  (?imxWDSPy-imxWDSP:式)   式オプション
 
                             i: 大文字小文字照合
                             m: 複数行
@@ -233,7 +255,12 @@
                                (alnum, alpha, blank, cntrl, digit, graph,
                                 lower, print, punct, space, upper, xdigit, word)
 
-  (?imxWDSP-imxWDSP)  孤立オプション
+                            y{?}: 文章区分状態
+                               y{g}: 拡張書記素房-状態 (デフォルト)
+                               y{w}: 単語-状態
+                               参照 [Unicode Standard Annex #29]
+
+  (?imxWDSPy-imxWDSP)  孤立オプション
 
                       * これは次の')'またはパターンの終わりまでのグループを形成する
                         /ab(?i)c|def|gh/ == /ab(?i:c|def|gh)/
