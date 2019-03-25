@@ -497,6 +497,7 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIG_SYN_OP2_QMARK_PERL_SUBEXP_CALL     (1U<<27) /* (?R), (?&name)... */
 #define ONIG_SYN_OP2_QMARK_BRACE_CALLOUT_CONTENTS (1U<<28) /* (?{...}) (?{{...}}) */
 #define ONIG_SYN_OP2_ASTERISK_CALLOUT_NAME      (1U<<29) /* (*name) (*name{a,..}) */
+#define ONIG_SYN_OP2_OPTION_ONIGURUMA           (1U<<30) /* (?imxWDSPy) */
 
 /* syntax (behavior) */
 #define ONIG_SYN_CONTEXT_INDEP_ANCHORS           (1U<<31) /* not implemented */
