@@ -50,8 +50,9 @@ libonig_la_LDFLAGS = -version-info $(LTVERSION)
 EXTRA_DIST = koi8.c mktable.c \
 	unicode_fold_data.c unicode_property_data.c \
 	unicode_property_data_posix.c \
-	unicode_egcb_data.c \
+	unicode_egcb_data.c unicode_wb_data.c \
 	make_unicode_egcb.sh make_unicode_egcb_data.py \
+	make_unicode_wb.sh make_unicode_wb_data.py \
 	make_unicode_fold.sh make_unicode_fold_data.py \
 	make_unicode_property.sh make_unicode_property_data.py \
 	make_property.sh \
