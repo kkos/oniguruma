@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.8.0   2018/03/13
+鬼車インターフェース Version 6.9.2   2019/03/25
 
 #include <oniguruma.h>
 
@@ -91,6 +91,8 @@
                                      (alnum, alpha, blank, cntrl, digit, graph,
                                       lower, print, punct, space, upper, xdigit,
                                       word)
+      ONIG_OPTION_TEXT_SEGMENT_EXTENDED_GRAPHEME_CLUSTER  拡張書記素房モード
+      ONIG_OPTION_TEXT_SEGMENT_WORD                       単語モード
 
   5 enc:        文字エンコーディング
 
