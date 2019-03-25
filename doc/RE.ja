@@ -256,6 +256,7 @@
                                 lower, print, punct, space, upper, xdigit, word)
 
                             y{?}: 文章区分状態
+                               このオプションは\X, \y, \Yの意味を変更する。
                                y{g}: 拡張書記素房-状態 (デフォルト)
                                y{w}: 単語-状態
                                参照 [Unicode Standard Annex #29]

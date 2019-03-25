@@ -260,6 +260,7 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
                                    lower, print, punct, space, upper, xdigit, word)
 
                                y{?}: Text Segment mode
+                                  This option changes the meaning of \X, \y, \Y.
                                   y{g}: Extended Grapheme Cluster mode (default)
                                   y{w}: Word mode
                                   See [Unicode Standard Annex #29]
