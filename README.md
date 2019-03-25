@@ -32,10 +32,10 @@ New feature of version 6.9.2 (Plan)
 
 * Update Unicode version 12.0.0
 * NEW: Text Segment mode option (?y{g}) (?y{w}) (* Unicode only)
-  Unicode Standard Annex #29 [http://unicode.org/reports/tr29/]
+
   Extended Grapheme Cluster mode (g) / Word mode (w)
-  \X: Text Segment op.
-  \y, \Y: Text Segment Boundary op.
+
+  Unicode Standard Annex #29 [http://unicode.org/reports/tr29/]
 
 
 New feature of version 6.9.1
