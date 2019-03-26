@@ -77,6 +77,17 @@ enc_is_inited(OnigEncoding enc)
   return 0;
 }
 
+static int OnigEncInited;
+
+extern int
+onigenc_init(void)
+{
+  if (OnigEncInited != 0) return 0;
+
+  OnigEncInited = 1;
+  return 0;
+}
+
 extern int
 onigenc_end(void)
 {
@@ -86,15 +97,10 @@ onigenc_end(void)
     InitedList[i].enc    = 0;
     InitedList[i].inited = 0;
   }
-
   InitedListNum = 0;
-  return ONIG_NORMAL;
-}
 
-extern int
-onigenc_init(void)
-{
-  return 0;
+  OnigEncInited = 0;
+  return ONIG_NORMAL;
 }
 
 extern int
