@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.9.2    2019/03/25
+Oniguruma Regular Expressions Version 6.9.2    2019/03/26
 
 syntax: ONIG_SYNTAX_ONIGURUMA (default)
 
@@ -263,7 +263,8 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
                                   This option changes the meaning of \X, \y, \Y.
                                   y{g}: Extended Grapheme Cluster mode (default)
                                   y{w}: Word mode
-                                  See [Unicode Standard Annex #29]
+                                        This mode is supported in Unicode only.
+                                        See [Unicode Standard Annex #29]
 
   (?imxWDSPy-imxWDSP)  isolated option
 

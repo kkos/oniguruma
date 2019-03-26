@@ -1,4 +1,4 @@
-鬼車 正規表現 Version 6.9.2    2019/03/25
+鬼車 正規表現 Version 6.9.2    2019/03/26
 
 使用文法: ONIG_SYNTAX_ONIGURUMA (既定値)
 
@@ -259,7 +259,8 @@
                                このオプションは\X, \y, \Yの意味を変更する。
                                y{g}: 拡張書記素房-状態 (デフォルト)
                                y{w}: 単語-状態
-                               参照 [Unicode Standard Annex #29]
+                                     現在このモードはUnicodeでしかサポートしていない
+                                     参照 [Unicode Standard Annex #29]
 
   (?imxWDSPy-imxWDSP)  孤立オプション
 
