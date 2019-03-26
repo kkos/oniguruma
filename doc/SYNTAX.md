@@ -1,7 +1,7 @@
 
 # Oniguruma syntax (operator) configuration
 
-_Documented for Oniguruma 6.9.1 (2019/03/25)_
+_Documented for Oniguruma 6.9.2 (2019/03/26)_
 
 
 ----------
@@ -454,10 +454,8 @@ controls precedence but which does _not_ capture its contents.
 
 _Set in: Java, Perl, Perl_NG_
 
-Enables support for changing regex options in the middle of a regex:  So
-`a(?i)b` can be used to turn on case-insensitivity after matching `a` but
-before matching `b`, while `a(?-i)b` will turn off case-insensitivity in
-the same location.  The supported toggle-able options for this flag are:
+Enables support of regex options. (i,m,s,x)
+The supported toggle-able options for this flag are:
 
   - `i` - Case-insensitivity
   - `m` - Multi-line mode (`^` and `$` match at `\n` as well as start/end of buffer)
@@ -469,10 +467,8 @@ the same location.  The supported toggle-able options for this flag are:
 
 _Set in: Ruby, Oniguruma_
 
-Enables support for changing regex options in the middle of a regex:  So
-`a(?i)b` can be used to turn on case-insensitivity after matching `a` but
-before matching `b`, while `a(?-i)b` will turn off case-insensitivity in
-the same location.  The supported toggle-able options for this flag are:
+Enables support of regex options. (i,m,x)
+The supported toggle-able options for this flag are:
 
   - `i` - Case-insensitivity
   - `m` - Multi-line mode (`.` can match `\n`)
@@ -733,7 +729,7 @@ excellent article about it is [available on Medium](https://medium.com/rubyinsid
 (New feature as of Oniguruma 6.5.)
 
 
-### 26. ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER (enable `\X` and `\Y` and `\y`)
+### 26. ONIG_SYN_OP2_ESC_X_Y_TEXT_SEGMENT (enable `\X` and `\Y` and `\y`)
 
 _Set in: Perl, Perl_NG, Ruby, Oniguruma_
 
@@ -745,8 +741,6 @@ would naively match only one or two bytes, depending on the encoding, and would
 likely incorrectly match anything from just `a` to a broken half of a code point.
 `\X` is designed to fix this:  It matches the full `à`, no matter how `à` is
 encoded or decomposed.
-
-`\X` will _not_ match a newline.
 
 `\y` matches a cluster boundary, i.e., a zero-width position between
 graphemes, somewhat like `\b` matches boundaries between words.  `\Y` matches
@@ -798,6 +792,22 @@ Full documentation for this advanced feature can be found in the Oniguruma
 
 (New feature as of Oniguruma 6.8.)
 
+
+### 30. ONIG_SYN_OP2_OPTION_ONIGURUMA (enable options `(?imxWSDPy)` and `(?-imxWDSP)`)
+
+_Set in: Oniguruma_
+
+Enables support of regex options. (i,m,x,W,S,D,P,y)
+
+(New feature as of Oniguruma 6.9.2)
+
+  - `i` - Case-insensitivity
+  - `m` - Multi-line mode (`.` can match `\n`)
+  - `x` - Extended pattern (free-formatting: whitespace will ignored)
+  - `W` - ASCII only word.
+  - `D` - ASCII only digit.
+  - `S` - ASCII only space.
+  - `P` - ASCII only POSIX properties. (includes W,D,S)
 
 ----------
 
@@ -1007,7 +1017,7 @@ These tables show which of the built-in syntaxes use which flags and options, fo
 | 0     | `ONIG_SYN_OP2_ESC_CAPITAL_Q_QUOTE`            | -     | -     | -     | -     | -     | Yes   | Yes   | Yes   | -     | -     |
 | 1     | `ONIG_SYN_OP2_QMARK_GROUP_EFFECT`             | -     | -     | -     | -     | -     | Yes   | Yes   | Yes   | Yes   | Yes   |
 | 2     | `ONIG_SYN_OP2_OPTION_PERL`                    | -     | -     | -     | -     | -     | Yes   | Yes   | Yes   | -     | -     |
-| 3     | `ONIG_SYN_OP2_OPTION_RUBY`                    | -     | -     | -     | -     | -     | -     | -     | -     | Yes   | Yes   |
+| 3     | `ONIG_SYN_OP2_OPTION_RUBY`                    | -     | -     | -     | -     | -     | -     | -     | -     | Yes   | -     |
 | 4     | `ONIG_SYN_OP2_PLUS_POSSESSIVE_REPEAT`         | -     | -     | -     | -     | -     | -     | -     | -     | Yes   | Yes   |
 | 5     | `ONIG_SYN_OP2_PLUS_POSSESSIVE_INTERVAL`       | -     | -     | -     | -     | -     | Yes   | -     | -     | -     | -     |
 | 6     | `ONIG_SYN_OP2_CCLASS_SET_OP`                  | -     | -     | -     | -     | -     | -     | -     | Yes   | Yes   | Yes   |
@@ -1030,10 +1040,11 @@ These tables show which of the built-in syntaxes use which flags and options, fo
 | 23    | `ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE`  | -     | -     | -     | -     | -     | -     | Yes   | Yes   | Yes   | Yes   |
 | 24    | `ONIG_SYN_OP2_ESC_CAPITAL_N_O_SUPER_DOT`      | -     | -     | -     | -     | -     | -     | Yes   | Yes   | -     | Yes   |
 | 25    | `ONIG_SYN_OP2_QMARK_TILDE_ABSENT_GROUP`       | -     | -     | -     | -     | -     | -     | -     | -     | Yes   | Yes   |
-| 26    | `ONIG_SYN_OP2_ESC_X_Y_GRAPHEME_CLUSTER`       | -     | -     | -     | -     | -     | -     | Yes   | Yes   | Yes   | Yes   |
+| 26    | `ONIG_SYN_OP2_ESC_X_Y_TEXT_SEGMENT`           | -     | -     | -     | -     | -     | -     | Yes   | Yes   | Yes   | Yes   |
 | 27    | `ONIG_SYN_OP2_QMARK_PERL_SUBEXP_CALL`         | -     | -     | -     | -     | -     | -     | -     | Yes   | -     | -     |
 | 28    | `ONIG_SYN_OP2_QMARK_BRACE_CALLOUT_CONTENTS`   | -     | -     | -     | -     | -     | -     | Yes   | Yes   | Yes   | -     |
 | 29    | `ONIG_SYN_OP2_ASTERISK_CALLOUT_NAME`          | -     | -     | -     | -     | -     | -     | Yes   | Yes   | Yes   | -     |
+| 3     | `ONIG_SYN_OP2_OPTION_ONIGURUMA`               | -     | -     | -     | -     | -     | -     | -     | -     | -     | Yes   |
 
 ### Syntax Flags (syn)
 
