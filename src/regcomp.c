@@ -198,6 +198,12 @@ ops_new(regex_t* reg)
   return ONIG_NORMAL;
 }
 
+static int
+is_in_string_pool(regex_t* reg, UChar* s)
+{
+  return (s >= reg->string_pool && s < reg->string_pool_end);
+}
+
 static void
 ops_free(regex_t* reg)
 {
@@ -219,10 +225,12 @@ ops_free(regex_t* reg)
 
     switch (opcode) {
     case OP_EXACTMBN:
-      // IN STRING POOL xfree(op->exact_len_n.s);
+      if (! is_in_string_pool(reg, op->exact_len_n.s))
+        xfree(op->exact_len_n.s);
       break;
     case OP_EXACTN: case OP_EXACTMB2N: case OP_EXACTMB3N: case OP_EXACTN_IC:
-      // IN STRING POOL xfree(op->exact_n.s);
+      if (! is_in_string_pool(reg, op->exact_n.s))
+        xfree(op->exact_n.s);
       break;
     case OP_EXACT1: case OP_EXACT2: case OP_EXACT3: case OP_EXACT4:
     case OP_EXACT5: case OP_EXACTMB2N1: case OP_EXACTMB2N2:
