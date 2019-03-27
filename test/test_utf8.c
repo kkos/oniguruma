@@ -1190,6 +1190,8 @@ extern int main(int argc, char* argv[])
   x2("(?(?{....})123|456)", "123", 0, 3);
   x2("(?(*FAIL)123|456)", "456", 0, 3);
 
+  x2("\\g'0'++{,0}",  "abcdefgh", 0, 0);
+  x2("\\g'0'++{,0}?", "abcdefgh", 0, 0);
 
   e("\\u040", "@", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("(?<abc>\\g<abc>)", "zzzz", ONIGERR_NEVER_ENDING_RECURSION);
