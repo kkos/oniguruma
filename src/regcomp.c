@@ -998,8 +998,12 @@ compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
     else
       len += SIZE_OP_JUMP + mod_tlen + SIZE_OP_PUSH;
   }
-  else if (qn->upper == 0 && qn->is_refered != 0) { /* /(?<n>..){0}/ */
-    len = SIZE_OP_JUMP + tlen;
+  else if (qn->upper == 0) {
+    if (qn->is_refered != 0) { /* /(?<n>..){0}/ */
+      len = SIZE_OP_JUMP + tlen;
+    }
+    else
+      len = 0;
   }
   else if (!infinite && qn->greedy &&
            (qn->upper == 1 ||
@@ -1138,12 +1142,18 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
       COP(reg)->push.addr = -mod_tlen;
     }
   }
-  else if (qn->upper == 0 && qn->is_refered != 0) { /* /(?<n>..){0}/ */
-    r = add_op(reg, OP_JUMP);
-    if (r != 0) return r;
-    COP(reg)->jump.addr = tlen + SIZE_INC_OP;
+  else if (qn->upper == 0) {
+    if (qn->is_refered != 0) { /* /(?<n>..){0}/ */
+      r = add_op(reg, OP_JUMP);
+      if (r != 0) return r;
+      COP(reg)->jump.addr = tlen + SIZE_INC_OP;
 
-    r = compile_tree(NODE_QUANT_BODY(qn), reg, env);
+      r = compile_tree(NODE_QUANT_BODY(qn), reg, env);
+    }
+    else {
+      /* Nothing output */
+      r = 0;
+    }
   }
   else if (! infinite && qn->greedy &&
            (qn->upper == 1 ||
