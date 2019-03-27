@@ -371,7 +371,8 @@ ops_make_string_pool(regex_t* reg)
     }
   }
 
-  reg->string_pool = pool;
+  reg->string_pool     = pool;
+  reg->string_pool_end = pool + size;
   return 0;
 }
 
@@ -6219,7 +6220,7 @@ onig_free_body(regex_t* reg)
     ops_free(reg);
     if (IS_NOT_NULL(reg->string_pool)) {
       xfree(reg->string_pool);
-      reg->string_pool = 0;
+      reg->string_pool_end = reg->string_pool = 0;
     }
     if (IS_NOT_NULL(reg->exact))            xfree(reg->exact);
     if (IS_NOT_NULL(reg->repeat_range))     xfree(reg->repeat_range);
@@ -6277,6 +6278,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
     reg->ops_used = 0;
 
   reg->string_pool        = 0;
+  reg->string_pool_end    = 0;
   reg->num_mem            = 0;
   reg->num_repeat         = 0;
   reg->num_null_check     = 0;
