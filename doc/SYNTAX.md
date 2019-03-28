@@ -1,7 +1,7 @@
 
 # Oniguruma syntax (operator) configuration
 
-_Documented for Oniguruma 6.9.2 (2019/03/26)_
+_Documented for Oniguruma 6.9.2 (2019/03/28)_
 
 
 ----------
@@ -1044,7 +1044,7 @@ These tables show which of the built-in syntaxes use which flags and options, fo
 | 27    | `ONIG_SYN_OP2_QMARK_PERL_SUBEXP_CALL`         | -     | -     | -     | -     | -     | -     | -     | Yes   | -     | -     |
 | 28    | `ONIG_SYN_OP2_QMARK_BRACE_CALLOUT_CONTENTS`   | -     | -     | -     | -     | -     | -     | Yes   | Yes   | Yes   | -     |
 | 29    | `ONIG_SYN_OP2_ASTERISK_CALLOUT_NAME`          | -     | -     | -     | -     | -     | -     | Yes   | Yes   | Yes   | -     |
-| 3     | `ONIG_SYN_OP2_OPTION_ONIGURUMA`               | -     | -     | -     | -     | -     | -     | -     | -     | -     | Yes   |
+| 30    | `ONIG_SYN_OP2_OPTION_ONIGURUMA`               | -     | -     | -     | -     | -     | -     | -     | -     | -     | Yes   |
 
 ### Syntax Flags (syn)
 
