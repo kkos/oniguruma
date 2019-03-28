@@ -7493,6 +7493,9 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
               PFETCH(c);
               switch (c) {
               case 'g':
+                if (! ONIGENC_IS_UNICODE_ENCODING(enc))
+                  return ONIGERR_UNDEFINED_GROUP_OPTION;
+
                 OPTION_NEGATE(option, ONIG_OPTION_TEXT_SEGMENT_EXTENDED_GRAPHEME_CLUSTER, 0);
                 OPTION_NEGATE(option, ONIG_OPTION_TEXT_SEGMENT_WORD, 1);
                 break;
