@@ -31,11 +31,11 @@ New feature of version 6.9.2 (Plan)
 -----------------------------------
 
 * Update Unicode version 12.0.0
-* NEW: Text Segment mode option (?y{g}) (?y{w}) (* Unicode only)
+* NEW: Unicode Text Segment mode option (?y{g}) (?y{w})
 
   Extended Grapheme Cluster mode (g) / Word mode (w)
 
-  Unicode Standard Annex #29 [http://unicode.org/reports/tr29/]
+  (Unicode Standard Annex #29 [http://unicode.org/reports/tr29/])
 
 
 New feature of version 6.9.1
@@ -96,7 +96,7 @@ New feature of version 6.6.0
 --------------------------
 
 * NEW: ASCII only mode options for character type/property (?WDSP)
-* NEW: Extended Grapheme Cluster boundary \y, \Y (*original)
+* NEW: Extended Grapheme Cluster boundary \y, \Y
 * NEW: Extended Grapheme Cluster \X
 * Range-clear (Absent-clear) operator restores previous range in retractions.
 
