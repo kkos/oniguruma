@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.9.2    2019/03/26
+Oniguruma Regular Expressions Version 6.9.2    2019/03/28
 
 syntax: ONIG_SYNTAX_ONIGURUMA (default)
 
@@ -81,7 +81,7 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
 
   \O       true anychar      (?m:.)    (* original function)
 
-  \X       Text Segment    (?>\O(?:\Y\O)*)
+  \X       Text Segment    \X === (?>\O(?:\Y\O)*)
 
            The meaning of this operator changes depending on the setting of
            the option (?y{..}).
@@ -93,7 +93,7 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
              Unicode case:
                See [Unicode Standard Annex #29: http://unicode.org/reports/tr29/]
 
-             Not Unicode:   (?>\r\n|\O)
+             Not Unicode case:  \X === (?>\r\n|\O)
 
            [Word mode]
              Currently, this mode is supported in Unicode only.
@@ -147,8 +147,8 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
     *+      0 or more times
     ++      1 or more times
 
-    ({n,m}+, {n,}+, {n}+ are possessive op.
-     in ONIG_SYNTAX_JAVA and ONIG_SYNTAX_PERL only)
+    {n,m}+, {n,}+, {n}+ are possessive operators in ONIG_SYNTAX_JAVA and
+    ONIG_SYNTAX_PERL only.
 
     ex. /a*+/ === /(?>a*)/
 
@@ -368,7 +368,7 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
                else_exp can be omitted.
                Then it works as a backreference validity checker.
 
-  [ backreference validity checker ]   (* original)
+  [ Backreference validity checker ]   (* original)
 
     (?(n)), (?(-n)), (?(+n)), (?(n+level)) ...
     (?(<n>)), (?('-n')), (?(<+n>)) ...

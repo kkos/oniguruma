@@ -1,4 +1,4 @@
-鬼車 正規表現 Version 6.9.2    2019/03/26
+鬼車 正規表現 Version 6.9.2    2019/03/28
 
 使用文法: ONIG_SYNTAX_ONIGURUMA (既定値)
 
@@ -81,7 +81,7 @@
 
   \O       真任意文字  (?m:.)      (* 原作)
 
-  \X       文章区分    (?>\O(?:\Y\O)*)
+  \X       文章区分    \X === (?>\O(?:\Y\O)*)
 
            この演算子の意味は、オプション (?y{..})の設定によって変化する。
 
@@ -92,7 +92,7 @@
              Unicodeの場合:
                参照 [Unicode Standard Annex #29: http://unicode.org/reports/tr29/]
 
-             Unicode以外の場合:   (?>\r\n|\O)
+             Unicode以外の場合:  \X === (?>\r\n|\O)
 
            [単語-状態のとき]
              現在、Unicodeしかサポートしていない。
@@ -146,7 +146,7 @@
     *+      零回以上
     ++      一回以上
 
-    ({n,m}+, {n,}+, {n}+ は、ONIG_SYNTAX_JAVAとONIG_SYNTAX_PERLでのみ強欲な指定子)
+    {n,m}+, {n,}+, {n}+ は、ONIG_SYNTAX_JAVAとONIG_SYNTAX_PERLでのみ強欲な指定子
 
     例. /a*+/ === /(?>a*)/
 
@@ -166,7 +166,7 @@
 
 
   \y      文章区分 境界
-  \Y      文章 非境界
+  \Y      文章区分 非境界
 
           この演算子の意味は、オプション (?y{..})の設定によって変化する。
 
