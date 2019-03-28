@@ -66,7 +66,7 @@ enum GimmickType {
 #endif
 };
 
-enum QuantBodyEmpty {
+enum BodyEmpty {
   BODY_IS_NOT_EMPTY = 0,
   BODY_IS_EMPTY     = 1,
   BODY_IS_EMPTY_MEM = 2,
@@ -101,7 +101,7 @@ typedef struct {
   int lower;
   int upper;
   int greedy;
-  enum QuantBodyEmpty empty_info;
+  enum BodyEmpty empty_info;
   struct _Node* head_exact;
   struct _Node* next_head_exact;
   int is_refered;     /* include called node. don't eliminate even if {0} */
