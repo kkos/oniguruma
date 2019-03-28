@@ -952,7 +952,7 @@ compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
 {
   int len, mod_tlen;
   int infinite = IS_REPEAT_INFINITE(qn->upper);
-  enum QuantBodyEmpty empty_info = qn->body_empty_info;
+  enum QuantBodyEmpty empty_info = qn->empty_info;
   int tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
 
   if (tlen < 0) return tlen;
@@ -1027,7 +1027,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
 {
   int i, r, mod_tlen;
   int infinite = IS_REPEAT_INFINITE(qn->upper);
-  enum QuantBodyEmpty empty_info = qn->body_empty_info;
+  enum QuantBodyEmpty empty_info = qn->empty_info;
   int tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
 
   if (tlen < 0) return tlen;
@@ -4604,15 +4604,15 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
     d = tree_min_len(body, env);
     if (d == 0) {
 #ifdef USE_INSISTENT_CHECK_CAPTURES_IN_EMPTY_REPEAT
-      qn->body_empty_info = quantifiers_memory_node_info(body);
-      if (qn->body_empty_info == QUANT_BODY_IS_EMPTY_REC) {
+      qn->empty_info = quantifiers_memory_node_info(body);
+      if (qn->empty_info == QUANT_BODY_IS_EMPTY_REC) {
         if (NODE_TYPE(body) == NODE_BAG &&
             BAG_(body)->type == BAG_MEMORY) {
           MEM_STATUS_ON(env->bt_mem_end, BAG_(body)->m.regnum);
         }
       }
 #else
-      qn->body_empty_info = QUANT_BODY_IS_EMPTY;
+      qn->empty_info = QUANT_BODY_IS_EMPTY;
 #endif
     }
   }
@@ -4646,7 +4646,7 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
     }
   }
 
-  if (qn->greedy && (qn->body_empty_info == QUANT_BODY_IS_NOT_EMPTY)) {
+  if (qn->greedy && (qn->empty_info == QUANT_BODY_IS_NOT_EMPTY)) {
     if (NODE_TYPE(body) == NODE_QUANT) {
       QuantNode* tqn = QUANT_(body);
       if (IS_NOT_NULL(tqn->head_exact)) {
@@ -4663,7 +4663,7 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
 }
 
 /* setup_tree does the following work.
- 1. check empty loop. (set qn->body_empty_info)
+ 1. check empty loop. (set qn->empty_info)
  2. expand ignore-case in char class.
  3. set memory status bit flags. (reg->mem_stats)
  4. set qn->head_exact for [push, exact] -> [push_or_jump_exact1, exact].
