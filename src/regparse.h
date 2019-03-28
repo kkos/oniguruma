@@ -67,10 +67,10 @@ enum GimmickType {
 };
 
 enum QuantBodyEmpty {
-  QUANT_BODY_IS_NOT_EMPTY = 0,
-  QUANT_BODY_IS_EMPTY     = 1,
-  QUANT_BODY_IS_EMPTY_MEM = 2,
-  QUANT_BODY_IS_EMPTY_REC = 3
+  BODY_IS_NOT_EMPTY = 0,
+  BODY_IS_EMPTY     = 1,
+  BODY_IS_EMPTY_MEM = 2,
+  BODY_IS_EMPTY_REC = 3
 };
 
 typedef struct {
