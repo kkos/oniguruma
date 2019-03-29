@@ -30,10 +30,10 @@ Supported character encodings:
 New feature of version 6.9.2 (Plan)
 -----------------------------------
 
-* Update Unicode version 12.0.0
+* Update Unicode version 12.0.0 or 12.1
 * NEW: Unicode Text Segment mode option (?y{g}) (?y{w})
 
-  Extended Grapheme Cluster mode (g) / Word mode (w)
+  g: Extended Grapheme Cluster mode / w: Word mode
 
   (Unicode Standard Annex #29 [http://unicode.org/reports/tr29/])
 
