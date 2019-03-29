@@ -4179,8 +4179,18 @@ fetch_range_quantifier(UChar** src, UChar* end, PToken* tok, ScanEnv* env)
   if (c != '}') goto invalid;
 
   if (!IS_REPEAT_INFINITE(up) && low > up) {
-    return ONIGERR_UPPER_SMALLER_THAN_LOWER_IN_REPEAT_RANGE;
+    /* {n,m}+ supported case */
+    if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_PLUS_POSSESSIVE_INTERVAL))
+      return ONIGERR_UPPER_SMALLER_THAN_LOWER_IN_REPEAT_RANGE;
+
+    tok->u.repeat.possessive = 1;
+    {
+      int tmp;
+      tmp = low; low = up; up = tmp;
+    }
   }
+  else
+    tok->u.repeat.possessive = 0;
 
   tok->type = TK_INTERVAL;
   tok->u.repeat.lower = low;
@@ -4967,26 +4977,23 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       tok->u.repeat.lower = 0;
       tok->u.repeat.upper = 1;
     greedy_check:
+      tok->u.repeat.possessive = 0;
+    greedy_check2:
       if (!PEND && PPEEK_IS('?') &&
           IS_SYNTAX_OP(syn, ONIG_SYN_OP_QMARK_NON_GREEDY)) {
         PFETCH(c);
-        tok->u.repeat.greedy     = 0;
-        tok->u.repeat.possessive = 0;
+        tok->u.repeat.greedy = 0;
       }
       else {
       possessive_check:
+        tok->u.repeat.greedy = 1;
         if (!PEND && PPEEK_IS('+') &&
             ((IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_PLUS_POSSESSIVE_REPEAT) &&
               tok->type != TK_INTERVAL)  ||
              (IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_PLUS_POSSESSIVE_INTERVAL) &&
               tok->type == TK_INTERVAL))) {
           PFETCH(c);
-          tok->u.repeat.greedy     = 1;
           tok->u.repeat.possessive = 1;
-        }
-        else {
-          tok->u.repeat.greedy     = 1;
-          tok->u.repeat.possessive = 0;
         }
       }
       break;
@@ -4995,12 +5002,12 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_BRACE_INTERVAL)) break;
       r = fetch_range_quantifier(&p, end, tok, env);
       if (r < 0) return r;  /* error */
-      if (r == 0) goto greedy_check;
+      if (r == 0) goto greedy_check2;
       else if (r == 2) { /* {n} */
         if (IS_SYNTAX_BV(syn, ONIG_SYN_FIXED_INTERVAL_IS_GREEDY_ONLY))
           goto possessive_check;
 
-        goto greedy_check;
+        goto greedy_check2;
       }
       /* r == 1 : normal char */
       break;
@@ -5534,12 +5541,12 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_BRACE_INTERVAL)) break;
       r = fetch_range_quantifier(&p, end, tok, env);
       if (r < 0) return r;  /* error */
-      if (r == 0) goto greedy_check;
+      if (r == 0) goto greedy_check2;
       else if (r == 2) { /* {n} */
         if (IS_SYNTAX_BV(syn, ONIG_SYN_FIXED_INTERVAL_IS_GREEDY_ONLY))
           goto possessive_check;
 
-        goto greedy_check;
+        goto greedy_check2;
       }
       /* r == 1 : normal char */
       break;
