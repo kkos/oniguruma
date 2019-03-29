@@ -129,55 +129,55 @@ extern int main(int argc, char* argv[])
   static unsigned char pattern[] = { 0xe7, 0xf6, 0xde, '\\', 'w', '+', 0x00 };
 
   r = exec(ONIG_ENCODING_SJIS, ONIG_OPTION_NONE,
-	   "^a\\p{Hiragana}c$", "a\202\274c");
+           "^a\\p{Hiragana}c$", "a\202\274c");
 
   r = exec(ONIG_ENCODING_EUC_JP, ONIG_OPTION_NONE,
-	   "^a\\p{Hiragana}c$", "a\244\276c");
+           "^a\\p{Hiragana}c$", "a\244\276c");
 
   r = exec(ONIG_ENCODING_CP1251, ONIG_OPTION_IGNORECASE,
-	   "aBc", " AbC");
+           "aBc", " AbC");
 
   r = exec(ONIG_ENCODING_ISO_8859_1, ONIG_OPTION_IGNORECASE,
-	   " [a-c\337z] ", "  SS  ");
+           " [a-c\337z] ", "  SS  ");
   r = exec(ONIG_ENCODING_ISO_8859_1, ONIG_OPTION_IGNORECASE,
-	   " [\330-\341] ", "  SS  ");
+           " [\330-\341] ", "  SS  ");
 
   r = exec(ONIG_ENCODING_ISO_8859_2, ONIG_OPTION_IGNORECASE,
-	   "\337          ", "          Ss          ");
+           "\337          ", "          Ss          ");
   r = exec(ONIG_ENCODING_ISO_8859_2, ONIG_OPTION_IGNORECASE,
-	   "SS          ", "          \337          ");
+           "SS          ", "          \337          ");
   r = exec(ONIG_ENCODING_ISO_8859_2, ONIG_OPTION_IGNORECASE,
-	   "\\A\\S\\z", "ss");
+           "\\A\\S\\z", "ss");
 
   r = exec(ONIG_ENCODING_ISO_8859_2, ONIG_OPTION_IGNORECASE,
-	   "[ac]+", "bbbaAaCCC");
+           "[ac]+", "bbbaAaCCC");
 
   r = exec(ONIG_ENCODING_ISO_8859_3, ONIG_OPTION_IGNORECASE,
-	   "[ac]+", "bbbaAaCCC");
+           "[ac]+", "bbbaAaCCC");
   r = exec(ONIG_ENCODING_ISO_8859_4, ONIG_OPTION_IGNORECASE,
-	   "[ac]+", "bbbaAaCCC");
+           "[ac]+", "bbbaAaCCC");
   r = exec(ONIG_ENCODING_ISO_8859_5, ONIG_OPTION_IGNORECASE,
-	   "[ac]+", "bbbaAaCCC");
+           "[ac]+", "bbbaAaCCC");
   r = exec(ONIG_ENCODING_ISO_8859_6, ONIG_OPTION_IGNORECASE,
-	   "[ac]+", "bbbaAaCCC");
+           "[ac]+", "bbbaAaCCC");
   r = exec(ONIG_ENCODING_ISO_8859_7, ONIG_OPTION_IGNORECASE,
-	   "[ac]+", "bbbaAaCCC");
+           "[ac]+", "bbbaAaCCC");
   r = exec(ONIG_ENCODING_ISO_8859_8, ONIG_OPTION_IGNORECASE,
-	   "[ac]+", "bbbaAaCCC");
+           "[ac]+", "bbbaAaCCC");
   r = exec(ONIG_ENCODING_ISO_8859_9, ONIG_OPTION_IGNORECASE,
-	   "[ac]+", "bbbaAaCCC");
+           "[ac]+", "bbbaAaCCC");
   r = exec(ONIG_ENCODING_ISO_8859_10, ONIG_OPTION_IGNORECASE,
-	   "[ac]+", "bbbaAaCCC");
+           "[ac]+", "bbbaAaCCC");
   r = exec(ONIG_ENCODING_ISO_8859_11, ONIG_OPTION_IGNORECASE,
-	   "[ac]+", "bbbaAaCCC");
+           "[ac]+", "bbbaAaCCC");
   r = exec(ONIG_ENCODING_ISO_8859_13, ONIG_OPTION_IGNORECASE,
-	   "[ac]+", "bbbaAaCCC");
+           "[ac]+", "bbbaAaCCC");
   r = exec(ONIG_ENCODING_ISO_8859_14, ONIG_OPTION_IGNORECASE,
-	   "[ac]+", "bbbaAaCCC");
+           "[ac]+", "bbbaAaCCC");
   r = exec(ONIG_ENCODING_ISO_8859_15, ONIG_OPTION_IGNORECASE,
-	   (char* )pattern, (char* )str);
+           (char* )pattern, (char* )str);
   r = exec(ONIG_ENCODING_ISO_8859_16, ONIG_OPTION_IGNORECASE,
-	   (char* )pattern, (char* )str);
+           (char* )pattern, (char* )str);
 
   r = exec(ONIG_ENCODING_KOI8_R, ONIG_OPTION_NONE, "a+", "bbbaaaccc");
   r = exec(ONIG_ENCODING_EUC_TW, ONIG_OPTION_NONE, "b*a+?c+", "bbbaaaccc");
@@ -230,45 +230,45 @@ extern int main(int argc, char* argv[])
                   "\337", "S\000\000\000S\000\000\000\000\000\000\000");
 
   r = exec(ONIG_ENCODING_UTF16_BE, ONIG_OPTION_NONE,
-	   "\000[\000[\000:\000a\000l\000n\000u\000m\000:\000]\000]\000+\000\000",
+           "\000[\000[\000:\000a\000l\000n\000u\000m\000:\000]\000]\000+\000\000",
            "\000#\002\120\000a\000Z\012\077\012\076\012\075\000\000");
   /* 0x0a3d == \012\075 : is not alnum */
   /* 0x0a3e == \012\076 : is alnum */
 
   r = exec(ONIG_ENCODING_UTF16_BE, ONIG_OPTION_NONE,
-	   "\000\\\000d\000+\000\000",
+           "\000\\\000d\000+\000\000",
            "\0003\0001\377\020\377\031\377\032\000\000");
 
   r = exec(ONIG_ENCODING_GB18030, ONIG_OPTION_IGNORECASE,
-	   "(Aa\\d)+", "BaA5Aa0234");
+           "(Aa\\d)+", "BaA5Aa0234");
 
   r = exec_deluxe(ONIG_ENCODING_ISO_8859_1, ONIG_ENCODING_UTF16_BE,
                   ONIG_OPTION_NONE,
-		  "^\\P{Hiragana}\\p{^Hiragana}(\\p{Hiragana}+)$",
-		  "\060\100\060\240\060\101\060\102\060\226\060\237\000\000");
+                  "^\\P{Hiragana}\\p{^Hiragana}(\\p{Hiragana}+)$",
+                  "\060\100\060\240\060\101\060\102\060\226\060\237\000\000");
 
   r = exec_deluxe(ONIG_ENCODING_UTF16_BE, ONIG_ENCODING_UTF16_BE,
                   ONIG_OPTION_IGNORECASE,
-		  "\000[\000\337\000]\000\000", "\000S\000S\000\000");
+                  "\000[\000\337\000]\000\000", "\000S\000S\000\000");
 
   r = exec_deluxe(ONIG_ENCODING_UTF16_BE, ONIG_ENCODING_UTF16_BE,
                   ONIG_OPTION_IGNORECASE,
-		  "\000[\000\337\000]\000\000", "\000s\000S\000\000");
+                  "\000[\000\337\000]\000\000", "\000s\000S\000\000");
 
   r = exec_deluxe(ONIG_ENCODING_UTF16_BE, ONIG_ENCODING_UTF16_BE,
                   ONIG_OPTION_IGNORECASE,
-		  "\000^\000[\000\001\000-\377\375\000]\000$\000\000",
-		  "\000s\000S\000\000");
+                  "\000^\000[\000\001\000-\377\375\000]\000$\000\000",
+                  "\000s\000S\000\000");
 
   r = exec_deluxe(ONIG_ENCODING_UTF16_BE, ONIG_ENCODING_UTF16_BE,
                   ONIG_OPTION_IGNORECASE,
-		  "\000S\000S\000\000",
-		  "\000S\000T\000\337\000\000");
+                  "\000S\000S\000\000",
+                  "\000S\000T\000\337\000\000");
 
   r = exec_deluxe(ONIG_ENCODING_UTF16_BE, ONIG_ENCODING_UTF16_BE,
                   ONIG_OPTION_IGNORECASE,
-		  "\000S\000T\000S\000S\000\000",
-		  "\000S\000t\000s\000S\000\000");
+                  "\000S\000T\000S\000S\000\000",
+                  "\000S\000t\000s\000S\000\000");
 
   {
     UChar pat[]  = { 0x1f, 0xfc, 0x00, 0x00 };
@@ -276,12 +276,10 @@ extern int main(int argc, char* argv[])
     UChar str2[] = { 0x1f, 0xf3, 0x00, 0x00 };
 
     r = exec_deluxe(ONIG_ENCODING_UTF16_BE, ONIG_ENCODING_UTF16_BE,
-		    ONIG_OPTION_IGNORECASE,
-		    (char* )pat, (char* )str1);
+                    ONIG_OPTION_IGNORECASE, (char* )pat, (char* )str1);
 
     r = exec_deluxe(ONIG_ENCODING_UTF16_BE, ONIG_ENCODING_UTF16_BE,
-		    ONIG_OPTION_IGNORECASE,
-		    (char* )pat, (char* )str2);
+                    ONIG_OPTION_IGNORECASE, (char* )pat, (char* )str2);
   }
 
 #if 0
@@ -291,15 +289,15 @@ extern int main(int argc, char* argv[])
 
   r = exec_deluxe(ONIG_ENCODING_UTF8, ONIG_ENCODING_UTF8,
                   ONIG_OPTION_IGNORECASE,
-		  "Ii", "\304\261\304\260");
+                  "Ii", "\304\261\304\260");
 
   r = exec_deluxe(ONIG_ENCODING_UTF16_BE, ONIG_ENCODING_UTF16_BE,
                   ONIG_OPTION_IGNORECASE,
-		  "\000I\000i\000\000", "\001\061\001\060\000\000");
+                  "\000I\000i\000\000", "\001\061\001\060\000\000");
 
   r = exec_deluxe(ONIG_ENCODING_UTF16_BE, ONIG_ENCODING_UTF16_BE,
                   ONIG_OPTION_IGNORECASE,
-		  "\001\061\001\060\000\000", "\000I\000i\000\000");
+                  "\001\061\001\060\000\000", "\000I\000i\000\000");
 
   set_case_fold(ONIGENC_CASE_FOLD_MIN);
 #endif

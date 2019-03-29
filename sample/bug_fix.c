@@ -95,8 +95,8 @@ exec(OnigEncoding enc, OnigOptionType options, char* apattern, char* astr)
   onig_initialize(&enc, 1);
 
   r = onig_new(&reg, pattern,
-	       pattern + onigenc_str_bytelen_null(enc, pattern),
-	       options, enc, ONIG_SYNTAX_DEFAULT, &einfo);
+               pattern + onigenc_str_bytelen_null(enc, pattern),
+               options, enc, ONIG_SYNTAX_DEFAULT, &einfo);
   if (r != ONIG_NORMAL) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
     onig_error_code_to_str((UChar* )s, r, &einfo);
