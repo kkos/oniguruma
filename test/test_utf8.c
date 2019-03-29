@@ -1194,6 +1194,14 @@ extern int main(int argc, char* argv[])
   x2("\\g'0'++{,0}?",  "abcdefgh", 0, 0);
   x2("\\g'0'++{,0}b",  "abcdefgh", 1, 2);
   x2("\\g'0'++{,0}?def", "abcdefgh", 3, 6);
+  n("a{2,3}?",  "a");
+  n("a{3,2}a", "aaa");
+  x2("a{3,2}b", "aaab", 0, 4);
+  x2("a{3,2}b", "aaaab", 1, 5);
+  x2("a{3,2}b", "aab", 0, 3);
+  x2("a{3,2}?", "", 0, 0);     /* == (?:a{3,2})?*/
+  x2("a{2,3}+a", "aaa", 0, 3); /* == (?:a{2,3})+*/
+
 
   e("\\u040", "@", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("(?<abc>\\g<abc>)", "zzzz", ONIGERR_NEVER_ENDING_RECURSION);
