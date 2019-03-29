@@ -4980,7 +4980,8 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       tok->u.repeat.possessive = 0;
     greedy_check2:
       if (!PEND && PPEEK_IS('?') &&
-          IS_SYNTAX_OP(syn, ONIG_SYN_OP_QMARK_NON_GREEDY)) {
+          IS_SYNTAX_OP(syn, ONIG_SYN_OP_QMARK_NON_GREEDY) &&
+          tok->u.repeat.possessive == 0) {
         PFETCH(c);
         tok->u.repeat.greedy = 0;
         tok->u.repeat.possessive = 0;
@@ -4992,7 +4993,8 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
             ((IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_PLUS_POSSESSIVE_REPEAT) &&
               tok->type != TK_INTERVAL)  ||
              (IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_PLUS_POSSESSIVE_INTERVAL) &&
-              tok->type == TK_INTERVAL))) {
+              tok->type == TK_INTERVAL)) &&
+          tok->u.repeat.possessive == 0) {
           PFETCH(c);
           tok->u.repeat.possessive = 1;
         }
