@@ -30,7 +30,7 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not,
   OnigErrorInfo einfo;
 
   r = onig_new(&reg, (UChar* )pattern, (UChar* )(pattern + SLEN(pattern)),
-	       ONIG_OPTION_DEFAULT, ONIG_ENCODING_UTF8, ONIG_SYNTAX_DEFAULT, &einfo);
+         ONIG_OPTION_DEFAULT, ONIG_ENCODING_UTF8, ONIG_SYNTAX_DEFAULT, &einfo);
   if (r) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
 
@@ -55,8 +55,8 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not,
   }
 
   r = onig_search(reg, (UChar* )str, (UChar* )(str + SLEN(str)),
-		  (UChar* )str, (UChar* )(str + SLEN(str)),
-		  region, ONIG_OPTION_NONE);
+                  (UChar* )str, (UChar* )(str + SLEN(str)),
+                  region, ONIG_OPTION_NONE);
   if (r < ONIG_MISMATCH) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
 
@@ -102,7 +102,7 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not,
       }
       else {
         fprintf(stdout, "FAIL: /%s/ '%s' %d-%d : %d-%d\n", pattern, str,
-	        from, to, region->beg[mem], region->end[mem]);
+                from, to, region->beg[mem], region->end[mem]);
         nfail++;
       }
     }

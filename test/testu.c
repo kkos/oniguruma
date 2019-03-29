@@ -107,7 +107,7 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not)
       }
       else {
         fprintf(stdout, "FAIL: /%s/ '%s' %d-%d : %d-%d\n", cpat, cstr,
-	        from, to, pmatch[mem].rm_so, pmatch[mem].rm_eo);
+                from, to, pmatch[mem].rm_so, pmatch[mem].rm_eo);
         nfail++;
       }
     }
@@ -124,7 +124,7 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not)
 
 #if 0
   r = onig_new(&reg, (UChar* )pattern, (UChar* )(pattern + ulen(pattern)),
-	       ONIG_OPTION_DEFAULT, ENC, ONIG_SYNTAX_DEFAULT, &einfo);
+               ONIG_OPTION_DEFAULT, ENC, ONIG_SYNTAX_DEFAULT, &einfo);
 #else
   ci.num_of_elements = 5;
   ci.pattern_enc = ENC;
@@ -147,8 +147,8 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not)
   }
 
   r = onig_search(reg, (UChar* )str, (UChar* )(str + ulen(str)),
-		  (UChar* )str, (UChar* )(str + ulen(str)),
-		  region, ONIG_OPTION_NONE);
+                  (UChar* )str, (UChar* )(str + ulen(str)),
+                  region, ONIG_OPTION_NONE);
   if (r < ONIG_MISMATCH) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
     onig_error_code_to_str((UChar* )s, r);
@@ -179,7 +179,7 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not)
       }
       else {
         fprintf(stdout, "FAIL: /%s/ '%s' %d-%d : %d-%d\n", cpat, cstr,
-	        from, to, region->beg[mem], region->end[mem]);
+                from, to, region->beg[mem], region->end[mem]);
         nfail++;
       }
     }
