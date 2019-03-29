@@ -4983,6 +4983,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
           IS_SYNTAX_OP(syn, ONIG_SYN_OP_QMARK_NON_GREEDY)) {
         PFETCH(c);
         tok->u.repeat.greedy = 0;
+        tok->u.repeat.possessive = 0;
       }
       else {
       possessive_check:
