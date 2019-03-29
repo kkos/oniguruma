@@ -127,7 +127,7 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
     ?       1 or 0 times
     *       0 or more times
     +       1 or more times
-    {n,m}   at least n but no more than m times
+    {n,m}   (n <= m)  at least n but no more than m times
     {n,}    at least n times
     {,n}    at least 0 but no more than n times ({0,n})
     {n}     n times
@@ -137,7 +137,7 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
     ??      0 or 1 times
     *?      0 or more times
     +?      1 or more times
-    {n,m}?  at least n but not more than m times
+    {n,m}?  at least min(n,m) but not more than max(n,m) times
     {n,}?   at least n times
     {,n}?   at least 0 but not more than n times (== {0,n}?)
 
@@ -146,6 +146,7 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
     ?+      1 or 0 times
     *+      0 or more times
     ++      1 or more times
+    {n,m}   (n > m)  at least m but not more than n times
 
     {n,m}+, {n,}+, {n}+ are possessive operators in ONIG_SYNTAX_JAVA and
     ONIG_SYNTAX_PERL only.
