@@ -1,5 +1,7 @@
 History
 
+2019/03/29: allow {n,m} (n>m) as possessive interval
+2019/03/25: add ONIG_SYN_OP2_OPTION_ONIGURUMA
 2019/03/22: add new options ONIG_OPTION_TEXT_SEGMENT_EXTENDED_GRAPHEME_CLUSTER and
             ONIG_OPTION_TEXT_SEGMENT_WORD
 2019/03/21: PR #137: fix cross-compilation
