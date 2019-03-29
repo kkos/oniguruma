@@ -4106,7 +4106,7 @@ typedef struct {
 
 
 static int
-fetch_range_quantifier(UChar** src, UChar* end, PToken* tok, ScanEnv* env)
+fetch_interval_quantifier(UChar** src, UChar* end, PToken* tok, ScanEnv* env)
 {
   int low, up, syn_allow, non_low = 0;
   int r = 0;
@@ -5001,7 +5001,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
     case '{':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_BRACE_INTERVAL)) break;
-      r = fetch_range_quantifier(&p, end, tok, env);
+      r = fetch_interval_quantifier(&p, end, tok, env);
       if (r < 0) return r;  /* error */
       if (r == 0) goto greedy_check2;
       else if (r == 2) { /* {n} */
@@ -5540,7 +5540,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
     case '{':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_BRACE_INTERVAL)) break;
-      r = fetch_range_quantifier(&p, end, tok, env);
+      r = fetch_interval_quantifier(&p, end, tok, env);
       if (r < 0) return r;  /* error */
       if (r == 0) goto greedy_check2;
       else if (r == 2) { /* {n} */
