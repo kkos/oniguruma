@@ -137,7 +137,7 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
     ??      0 or 1 times
     *?      0 or more times
     +?      1 or more times
-    {n,m}?  at least min(n,m) but not more than max(n,m) times
+    {n,m}?  (n <= m)  at least n but not more than m times
     {n,}?   at least n times
     {,n}?   at least 0 but not more than n times (== {0,n}?)
 
