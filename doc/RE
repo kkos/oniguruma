@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.9.2    2019/03/28
+Oniguruma Regular Expressions Version 6.9.2    2019/03/29
 
 syntax: ONIG_SYNTAX_ONIGURUMA (default)
 
@@ -248,23 +248,24 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default)
 
   (?imxWDSPy-imxWDSP:subexp)  option on/off for subexp
 
-                               i: ignore case
-                               m: multi-line (dot (.) also matches newline)
-                               x: extended form
-                               W: ASCII only word (\w, \p{Word}, [[:word:]])
-                                  ASCII only word bound (\b)
-                               D: ASCII only digit (\d, \p{Digit}, [[:digit:]])
-                               S: ASCII only space (\s, \p{Space}, [[:space:]])
-                               P: ASCII only POSIX properties (includes W,D,S)
-                                  (alnum, alpha, blank, cntrl, digit, graph,
-                                   lower, print, punct, space, upper, xdigit, word)
+                           i: ignore case
+                           m: multi-line (dot (.) also matches newline)
+                           x: extended form
+                           W: ASCII only word (\w, \p{Word}, [[:word:]])
+                              ASCII only word bound (\b)
+                           D: ASCII only digit (\d, \p{Digit}, [[:digit:]])
+                           S: ASCII only space (\s, \p{Space}, [[:space:]])
+                           P: ASCII only POSIX properties (includes W,D,S)
+                              (alnum, alpha, blank, cntrl, digit, graph,
+                               lower, print, punct, space, upper, xdigit, word)
 
-                               y{?}: Text Segment mode
-                                  This option changes the meaning of \X, \y, \Y.
-                                  y{g}: Extended Grapheme Cluster mode (default)
-                                  y{w}: Word mode
-                                        This mode is supported in Unicode only.
-                                        See [Unicode Standard Annex #29]
+                           y{?}: Text Segment mode
+                              This option changes the meaning of \X, \y, \Y.
+                              Currently, this option is supported in Unicode only.
+
+                              y{g}: Extended Grapheme Cluster mode (default)
+                              y{w}: Word mode
+                              See [Unicode Standard Annex #29]
 
   (?imxWDSPy-imxWDSP)  isolated option
 
@@ -502,10 +503,15 @@ A-1. Syntax-dependent options
 
 A-2. Original extensions
 
-   + hexadecimal digit char type  \h, \H
-   + named group                  (?<name>...), (?'name'...)
-   + named backref                \k<name>
-   + subexp call                  \g<name>, \g<group-num>
+   + hexadecimal digit char type     \h, \H
+   + true anychar                    \O
+   + text segment boundary           \y, \Y
+   + backreference validity checker  (?(...))
+   + named group                     (?<name>...), (?'name'...)
+   + named backref                   \k<name>
+   + subexp call                     \g<name>, \g<group-num>
+   + absent expression               (?~|...|...)
+   + absent stopper                  (?|...)
 
 
 A-3. Missing features compared with perl 5.8.0
@@ -559,16 +565,5 @@ A-4. Differences with Japanized GNU regex(version 0.12) of Ruby 1.8
      then changes of the capture group status are checked as stop condition.
      /(?:()|())*\1\2/ =~ ""
      /(?:\1a|())*/ =~ "a"
-
-
-A-5. Features disabled in default syntax
-
-   + capture history
-
-     (?@...) and (?@<name>...)
-
-     ex. /(?@a)*/.match("aaa") ==> [<0-1>, <1-2>, <2-3>]
-
-     see sample/listcap.c file.
 
 // END
