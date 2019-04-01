@@ -1202,6 +1202,8 @@ extern int main(int argc, char* argv[])
   x2("a{3,2}?", "", 0, 0);     /* == (?:a{3,2})?*/
   x2("a{2,3}+a", "aaa", 0, 3); /* == (?:a{2,3})+*/
 
+  x2("\\p{Common}", "\xe3\x8b\xbf", 0, 3);   /* U+32FF */
+  x2("\\p{In_Enclosed_CJK_Letters_and_Months}", "\xe3\x8b\xbf", 0, 3); /* U+32FF */
 
   e("\\u040", "@", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("(?<abc>\\g<abc>)", "zzzz", ONIGERR_NEVER_ENDING_RECURSION);
