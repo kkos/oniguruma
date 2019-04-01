@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(oniguruma VERSION 6.9.1)
+project(oniguruma VERSION 6.9.2)
 
 set(PACKAGE onig)
 set(PACKAGE_VERSION ${PROJECT_VERSION})
