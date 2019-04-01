@@ -27,10 +27,10 @@ Supported character encodings:
 * doc/SYNTAX.md: contributed by seanofw
 
 
-New feature of version 6.9.2 (Plan)
+New feature of version 6.9.2
 -----------------------------------
 
-* Update Unicode version 12.0.0 or 12.1
+* Update Unicode version 12.1.0
 * NEW: Unicode Text Segment mode option (?y{g}) (?y{w})
 
   g: Extended Grapheme Cluster mode / w: Word mode
