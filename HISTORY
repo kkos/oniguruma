@@ -1,5 +1,8 @@
 History
 
+2019/04/01: Release Candidate 1 for 6.9.2
+
+2019/04/01: update Unicode version to 12.1.0 (draft)
 2019/03/29: allow {n,m} (n>m) as possessive interval
 2019/03/25: add ONIG_SYN_OP2_OPTION_ONIGURUMA
 2019/03/22: add new options ONIG_OPTION_TEXT_SEGMENT_EXTENDED_GRAPHEME_CLUSTER and
