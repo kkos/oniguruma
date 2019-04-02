@@ -8163,8 +8163,8 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
       CHECK_NULL_RETURN_MEMERR(qn);
       QUANT_(qn)->greedy = tok->u.repeat.greedy;
       if (group == 2) {
-        target = node_drop_group(*np);
-        *np = NULL_NODE;
+        target = node_drop_group(*tp);
+        *tp = NULL_NODE;
       }
       else {
         target = *tp;
@@ -8189,7 +8189,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
       if (r == 0) {
         *tp = qn;
       }
-      else if (r == 1) {
+      else if (r == 1) { /* x{1,1} ==> x */
         onig_node_free(qn);
         *tp = target;
       }
@@ -8208,6 +8208,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
         }
         tp = &(NODE_CAR(tmp));
       }
+      group = 0;
       goto re_entry;
     }
   }
