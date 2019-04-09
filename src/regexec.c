@@ -3393,8 +3393,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     CASE_OP(MEMORY_END_PUSH_REC)
       mem = p->memory_end.num;
       STACK_GET_MEM_START(mem, stkp); /* should be before push mem-end. */
+      si = GET_STACK_INDEX(stkp);
       STACK_PUSH_MEM_END(mem, s);
-      mem_start_stk[mem] = GET_STACK_INDEX(stkp);
+      mem_start_stk[mem] = si;
       INC_OP;
       JUMP_OUT;
 
