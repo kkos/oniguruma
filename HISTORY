@@ -1,5 +1,7 @@
 History
 
+2019/04/23: Release Candidate 3 for 6.9.2
+2019/04/23: add doc/SYNTAX.md into distribution file
 2019/04/09: Release Candidate 2 for 6.9.2
 2019/04/09: fix #139: UAF in match_at()
 2019/04/01: Release Candidate 1 for 6.9.2
