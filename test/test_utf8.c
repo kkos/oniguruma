@@ -1203,6 +1203,14 @@ extern int main(int argc, char* argv[])
   x2("a{3,2}?", "", 0, 0);     /* == (?:a{3,2})?*/
   x2("a{2,3}+a", "aaa", 0, 3); /* == (?:a{2,3})+*/
 
+  n("   \\xfd", ""); /* https://bugs.php.net/bug.php?id=77370 */
+  n("()0\\xfc00000\\xfc00000\\xfc00000\\xfc", ""); /* https://bugs.php.net/bug.php?id=77371 */
+  x2("000||0\\xfa", "0", 0, 0); /* https://bugs.php.net/bug.php?id=77381 */
+  e("(?i)000000000000000000000\\xf0", "", ONIGERR_TOO_SHORT_MULTI_BYTE_STRING); /* https://bugs.php.net/bug.php?id=77382 */
+  n("0000\\\\xf5", "0"); /* https://bugs.php.net/bug.php?id=77385 */
+  n("(?i)FFF00000000000000000\xfd", ""); /* https://bugs.php.net/bug.php?id=77394 */
+
+
   x2("\\p{Common}", "\xe3\x8b\xbf", 0, 3);   /* U+32FF */
   x2("\\p{In_Enclosed_CJK_Letters_and_Months}", "\xe3\x8b\xbf", 0, 3); /* U+32FF */
 
