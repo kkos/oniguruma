@@ -39,6 +39,12 @@ pkgconfig_DATA = oniguruma.pc
 all-test:
 	cd test; make test
 
+sanitize:
+	make clean
+	./configure CC=clang CFLAGS="-O -g -fsanitize=address"
+	make
+	make all-test
+
 cov:
 	make lcov-clear
 	cd test; make CFLAGS="--coverage" test
