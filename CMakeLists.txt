@@ -75,6 +75,7 @@ if(MSVC)
 	  $<$<CONFIG:MinSizeRel>:/MT>
 	  $<$<CONFIG:RelWithDebgInfo>:/MTd>
 	  )
+	target_compile_definitions(onig PUBLIC -DONIG_STATIC)
   endif()
 elseif(CMAKE_COMPILER_IS_GNUCC)
   target_compile_options(onig PRIVATE
