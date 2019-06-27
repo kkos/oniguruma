@@ -116,28 +116,13 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not)
 
 #else
   regex_t* reg;
-  OnigCompileInfo ci;
   OnigErrorInfo einfo;
 
   uconv(pattern, cpat, ulen(pattern));
   uconv(str,     cstr, ulen(str));
 
-#if 0
   r = onig_new(&reg, (UChar* )pattern, (UChar* )(pattern + ulen(pattern)),
                ONIG_OPTION_DEFAULT, ENC, ONIG_SYNTAX_DEFAULT, &einfo);
-#else
-  ci.num_of_elements = 5;
-  ci.pattern_enc = ENC;
-  ci.target_enc  = ENC;
-  ci.syntax      = ONIG_SYNTAX_DEFAULT;
-  ci.option      = ONIG_OPTION_DEFAULT;
-  ci.case_fold_flag = ONIGENC_CASE_FOLD_DEFAULT;
-
-  r = onig_new_deluxe(&reg, (UChar* )pattern,
-          (UChar* )(pattern + ulen(pattern)),
-          &ci, &einfo);
-#endif
-
   if (r) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
     onig_error_code_to_str((UChar* )s, r, &einfo);
