@@ -1,4 +1,4 @@
-Oniguruma API  Version 6.9.2  2019/03/25
+Oniguruma API  Version 6.9.3  2019/06/27
 
 #include <oniguruma.h>
 
@@ -167,6 +167,10 @@ Oniguruma API  Version 6.9.2  2019/03/25
 
 # int onig_new_deluxe(regex_t** reg, const UChar* pattern, const UChar* pattern_end,
                       OnigCompileInfo* ci, OnigErrorInfo* einfo)
+
+  From 6.9.3:
+    This function is obsolete, and it does not allow the case where
+    the encoding of pattern and target is different.
 
   Create a regex object.
   This function is deluxe version of onig_new().

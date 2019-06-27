@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.9.2   2019/03/29
+鬼車インターフェース Version 6.9.3   2019/06/27
 
 #include <oniguruma.h>
 
@@ -166,6 +166,11 @@
 
 # int onig_new_deluxe(regex_t** reg, const UChar* pattern, const UChar* pattern_end,
                       OnigCompileInfo* ci, OnigErrorInfo* einfo)
+
+  6.9.3から:
+    この関数は廃止された。
+    パターンと対象文字列の文字エンコーディングが異なる場合を許さなくなった。
+
 
   正規表現オブジェクト(regex)を作成する。
   この関数は、onig_new()のデラックス版。
