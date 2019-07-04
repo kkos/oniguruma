@@ -2,7 +2,7 @@
   utf16_be.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2018  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2019  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -103,7 +103,25 @@ utf16be_mbc_enc_len(const UChar* p)
 static int
 is_valid_mbc_string(const UChar* s, const UChar* end)
 {
-  return onigenc_length_check_is_valid_mbc_string(ONIG_ENCODING_UTF16_BE, s, end);
+  while (s < end) {
+    int len = utf16be_mbc_enc_len(s);
+    if (len == 4) {
+      if (s + 2 >= end)
+        return FALSE;
+      if (! UTF16_IS_SURROGATE_SECOND(*(s+2)))
+        return FALSE;
+    }
+    else
+      if (UTF16_IS_SURROGATE_SECOND(*s))
+        return FALSE;
+
+    s += len;
+  }
+
+  if (s != end)
+    return FALSE;
+  else
+    return TRUE;
 }
 
 static int
@@ -243,7 +261,8 @@ utf16be_left_adjust_char_head(const UChar* start, const UChar* s)
     s--;
   }
 
-  if (UTF16_IS_SURROGATE_SECOND(*s) && s > start + 1)
+  if (UTF16_IS_SURROGATE_SECOND(*s) && s > start + 1 &&
+      UTF16_IS_SURROGATE_FIRST(*(s-2)))
     s -= 2;
 
   return (UChar* )s;
