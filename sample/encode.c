@@ -34,6 +34,7 @@ search(regex_t* reg, unsigned char* str, unsigned char* end)
     onig_error_code_to_str((UChar* )s, r);
     fprintf(stderr, "ERROR: %s\n", s);
     fprintf(stderr, "  (%s)\n", ONIGENC_NAME(onig_get_encoding(reg)));
+    onig_region_free(region, 1 /* 1:free self, 0:free contents only */);
     return -1;
   }
 

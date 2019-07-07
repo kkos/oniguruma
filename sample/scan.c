@@ -36,6 +36,7 @@ scan(regex_t* reg, unsigned char* str, unsigned char* end)
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
     onig_error_code_to_str((OnigUChar* )s, r);
     fprintf(stderr, "ERROR: %s\n", s);
+    onig_region_free(region, 1 /* 1:free self, 0:free contents only */);
     return -1;
   }
 
@@ -63,6 +64,7 @@ exec(OnigEncoding enc, OnigOptionType options, char* apattern, char* astr)
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
     onig_error_code_to_str((OnigUChar* )s, r, &einfo);
     fprintf(stderr, "ERROR: %s\n", s);
+    onig_end();
     return -1;
   }
 

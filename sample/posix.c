@@ -49,6 +49,7 @@ extern int main(int argc, char* argv[])
     regerror(r, &reg, buf, sizeof(buf));
     fprintf(stderr, "ERROR: %s\n", buf);
     regfree(&reg);
+    onig_end();
     return -1;
   }
   x(&reg, pattern, (UChar* )"aaabbbbd");
@@ -60,6 +61,7 @@ extern int main(int argc, char* argv[])
     regerror(r, &reg, buf, sizeof(buf));
     fprintf(stderr, "ERROR: %s\n", buf);
     regfree(&reg);
+    onig_end();
     return -1;
   }
   x(&reg, pattern, (UChar* )"a+b{2,7}d?|uuu");
@@ -71,6 +73,7 @@ extern int main(int argc, char* argv[])
     regerror(r, &reg, buf, sizeof(buf));
     fprintf(stderr, "ERROR: %s\n", buf);
     regfree(&reg);
+    onig_end();
     return -1;
   }
   x(&reg, pattern, (UChar* )"aaaabbbbbbd");
@@ -83,6 +86,7 @@ extern int main(int argc, char* argv[])
     regerror(r, &reg, buf, sizeof(buf));
     fprintf(stderr, "ERROR: %s\n", buf);
     regfree(&reg);
+    onig_end();
     return -1;
   }
   x(&reg, pattern, (UChar* )"aaabbbbd)");
@@ -93,6 +97,7 @@ extern int main(int argc, char* argv[])
     regerror(r, &reg, buf, sizeof(buf));
     fprintf(stderr, "ERROR: %s\n", buf);
     regfree(&reg);
+    onig_end();
     return -1;
   }
   x(&reg, pattern, (UChar* )"a\nb\n");

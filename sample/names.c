@@ -65,6 +65,9 @@ extern int main(int argc, char* argv[])
   else { /* error */
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
     onig_error_code_to_str((UChar* )s, r);
+    onig_region_free(region, 1 /* 1:free self, 0:free contents only */);
+    onig_free(reg);
+    onig_end();
     return -1;
   }
 

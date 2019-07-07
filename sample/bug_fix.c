@@ -36,6 +36,7 @@ search(regex_t* reg, unsigned char* str, unsigned char* end)
     onig_error_code_to_str((UChar* )s, r);
     fprintf(stderr, "ERROR: %s\n", s);
     fprintf(stderr, "  (%s)\n", ONIGENC_NAME(onig_get_encoding(reg)));
+    onig_region_free(region, 1 /* 1:free self, 0:free contents only */);
     return -1;
   }
 
@@ -53,8 +54,6 @@ exec(OnigEncoding enc, OnigOptionType options, char* apattern, char* astr)
   UChar* pattern = (UChar* )apattern;
   UChar* str     = (UChar* )astr;
 
-  onig_initialize(&enc, 1);
-
   r = onig_new(&reg, pattern,
                pattern + onigenc_str_bytelen_null(enc, pattern),
                options, enc, ONIG_SYNTAX_DEFAULT, &einfo);
@@ -69,7 +68,6 @@ exec(OnigEncoding enc, OnigOptionType options, char* apattern, char* astr)
   r = search(reg, str, end);
 
   onig_free(reg);
-  onig_end();
   return 0;
 }
 
@@ -77,6 +75,11 @@ exec(OnigEncoding enc, OnigOptionType options, char* apattern, char* astr)
 
 extern int main(int argc, char* argv[])
 {
+  OnigEncoding use_encs[1];
+
+  use_encs[0] = ONIG_ENCODING_UTF8;
+  onig_initialize(use_encs, 1);
+
   /* fix ignore case in look-behind
      commit: 3340ec2cc5627172665303fe248c9793354d2251 */
   exec(ONIG_ENCODING_UTF8, ONIG_OPTION_IGNORECASE,
@@ -87,5 +90,6 @@ extern int main(int argc, char* argv[])
   exec(ONIG_ENCODING_UTF8, ONIG_OPTION_FIND_LONGEST,
        "a*", "aa aaa aaaa aaaaa "); /* match 12-17 */
 
+  onig_end();
   return 0;
 }
