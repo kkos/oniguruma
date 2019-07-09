@@ -6301,10 +6301,11 @@ parse_char_class(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case TK_RAW_BYTE:
       /* tok->base != 0 : octal or hexadec. */
       if (! ONIGENC_IS_SINGLEBYTE(env->enc) && tok->base != 0) {
+        int i, j;
         UChar buf[ONIGENC_CODE_TO_MBC_MAXLEN];
         UChar* bufe = buf + ONIGENC_CODE_TO_MBC_MAXLEN;
         UChar* psave = p;
-        int i, base = tok->base;
+        int base = tok->base;
 
         buf[0] = tok->u.c;
         for (i = 1; i < ONIGENC_MBC_MAXLEN(env->enc); i++) {
@@ -6321,6 +6322,9 @@ parse_char_class(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
           r = ONIGERR_TOO_SHORT_MULTI_BYTE_STRING;
           goto err;
         }
+
+        /* clear buf tail */
+        for (j = i; j < ONIGENC_CODE_TO_MBC_MAXLEN; j++) buf[j] = '\0';
 
         len = enclen(env->enc, buf);
         if (i < len) {
