@@ -853,6 +853,8 @@ onigenc_mbn_is_mbc_ambiguous(OnigEncoding enc, OnigCaseFoldType flag,
 extern int
 onigenc_mb2_code_to_mbclen(OnigCodePoint code)
 {
+  if ((code & (~0xffff)) != 0) return ONIGERR_INVALID_CODE_POINT_VALUE;
+
   if ((code & 0xff00) != 0) return 2;
   else return 1;
 }
