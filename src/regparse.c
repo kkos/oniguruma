@@ -3236,10 +3236,18 @@ node_new_empty(void)
 static Node*
 node_new_str_raw_char(UChar c)
 {
+  int i;
   UChar p[1];
+  Node* node;
 
   p[0] = c;
-  return node_new_str_raw(p, p + 1);
+  node = node_new_str_raw(p, p + 1);
+
+  /* clear buf tail */
+  for (i = 1; i < NODE_STRING_BUF_SIZE; i++)
+    STR_(node)->buf[i] = '\0';
+
+  return node;
 }
 
 static Node*
