@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include "oniguruma.h"
 
-static OnigCaseFoldType CF = ONIGENC_CASE_FOLD_MIN;
-
 static int
 search(regex_t* reg, unsigned char* str, unsigned char* end)
 {
