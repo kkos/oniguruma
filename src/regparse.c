@@ -7928,8 +7928,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
         if (len >= ONIGENC_MBC_MINLEN(env->enc)) {
           if (len == enclen(env->enc, STR_(*np)->s)) {/* should not enclen_end() */
             r = fetch_token(tok, src, end, env);
-            NODE_STRING_CLEAR_RAW(*np);
-            goto string_end;
+            goto tk_raw_byte_end;
           }
         }
 
@@ -7943,8 +7942,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
             rem = ONIGENC_MBC_MINLEN(env->enc) - len;
             (void )node_str_head_pad(STR_(*np), rem, (UChar )0);
             if (len + rem == enclen(env->enc, STR_(*np)->s)) {
-              NODE_STRING_CLEAR_RAW(*np);
-              goto string_end;
+              goto tk_raw_byte_end;
             }
           }
 #endif
@@ -7956,6 +7954,13 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
 
         len++;
       }
+
+    tk_raw_byte_end:
+      if (! ONIGENC_IS_VALID_MBC_STRING(env->enc, STR_(*np)->s, STR_(*np)->end))
+        return ONIGERR_INVALID_WIDE_CHAR_VALUE;
+
+      NODE_STRING_CLEAR_RAW(*np);
+      goto string_end;
     }
     break;
 
