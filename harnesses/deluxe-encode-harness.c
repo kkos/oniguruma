@@ -99,6 +99,8 @@ exec_deluxe(OnigEncoding pattern_enc, OnigEncoding str_enc,
   unsigned char* end = (unsigned char* )astr_end;
 
   onig_initialize(&str_enc, 1);
+  onig_set_retry_limit_in_match(DEFAULT_LIMIT);
+  onig_set_parse_depth_limit(DEFAULT_LIMIT);
 
   ci.num_of_elements = 5;
   ci.pattern_enc = pattern_enc;
