@@ -32,6 +32,7 @@ Makefile.in
 m4/*.m4
 /coverage
 /coverage.info
+/fuzzers
 
 # src/
 /src/CaseFolding.txt
