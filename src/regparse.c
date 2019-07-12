@@ -3283,24 +3283,6 @@ str_node_can_be_split(Node* node, OnigEncoding enc)
   return 0;
 }
 
-#ifdef USE_PAD_TO_SHORT_BYTE_CHAR
-static int
-node_str_head_pad(StrNode* sn, int num, UChar val)
-{
-  UChar buf[NODE_STRING_BUF_SIZE];
-  int i, len;
-
-  len = sn->end - sn->s;
-  onig_strcpy(buf, sn->s, sn->end);
-  onig_strcpy(&(sn->s[num]), buf, buf + len);
-  sn->end += num;
-
-  for (i = 0; i < num; i++) {
-    sn->s[i] = val;
-  }
-}
-#endif
-
 extern int
 onig_scan_unsigned_number(UChar** src, const UChar* end, OnigEncoding enc)
 {
@@ -7926,7 +7908,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
       len = 1;
       while (1) {
         if (len >= ONIGENC_MBC_MINLEN(env->enc)) {
-          if (len == enclen(env->enc, STR_(*np)->s)) {/* should not enclen_end() */
+          if (len == enclen(env->enc, STR_(*np)->s)) {
             r = fetch_token(tok, src, end, env);
             goto tk_raw_byte_end;
           }
@@ -7934,20 +7916,8 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
 
         r = fetch_token(tok, src, end, env);
         if (r < 0) return r;
-        if (r != TK_RAW_BYTE) {
-          /* Don't use this, it is wrong for little endian encodings. */
-#ifdef USE_PAD_TO_SHORT_BYTE_CHAR
-          int rem;
-          if (len < ONIGENC_MBC_MINLEN(env->enc)) {
-            rem = ONIGENC_MBC_MINLEN(env->enc) - len;
-            (void )node_str_head_pad(STR_(*np), rem, (UChar )0);
-            if (len + rem == enclen(env->enc, STR_(*np)->s)) {
-              goto tk_raw_byte_end;
-            }
-          }
-#endif
+        if (r != TK_RAW_BYTE)
           return ONIGERR_TOO_SHORT_MULTI_BYTE_STRING;
-        }
 
         r = node_str_cat_char(*np, (UChar )tok->u.c);
         if (r < 0) return r;
