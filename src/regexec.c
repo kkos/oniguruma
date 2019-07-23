@@ -2968,7 +2968,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       NEXT_OUT;
 
     CASE_OP(CCLASS_MB)
-      DATA_ENSURE(ONIGENC_MBC_MINLEN(encode));
+      DATA_ENSURE(1);
       if (! ONIGENC_IS_MBC_HEAD(encode, s)) goto fail;
 
     cclass_mb:
@@ -2989,7 +2989,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       NEXT_OUT;
 
     CASE_OP(CCLASS_MIX)
-      DATA_ENSURE(ONIGENC_MBC_MINLEN(encode));
+      DATA_ENSURE(1);
       if (ONIGENC_IS_MBC_HEAD(encode, s)) {
         goto cclass_mb;
       }
@@ -3010,7 +3010,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       NEXT_OUT;
 
     CASE_OP(CCLASS_MB_NOT)
-      DATA_ENSURE(ONIGENC_MBC_MINLEN(encode));
+      DATA_ENSURE(1);
       if (! ONIGENC_IS_MBC_HEAD(encode, s)) {
         s++;
         goto cc_mb_not_success;
@@ -3039,7 +3039,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       NEXT_OUT;
 
     CASE_OP(CCLASS_MIX_NOT)
-      DATA_ENSURE(ONIGENC_MBC_MINLEN(encode));
+      DATA_ENSURE(1);
       if (ONIGENC_IS_MBC_HEAD(encode, s)) {
         goto cclass_mb_not;
       }
