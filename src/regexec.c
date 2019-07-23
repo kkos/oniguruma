@@ -3445,8 +3445,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         DATA_ENSURE(n);
         sprev = s;
         STRING_CMP(pstart, s, n);
-        while (sprev + (len = enclen(encode, sprev)) < s)
-          sprev += len;
+        if (sprev < s) {
+          while (sprev + (len = enclen(encode, sprev)) < s)
+            sprev += len;
+        }
       }
       INC_OP;
       JUMP_OUT;
@@ -3472,8 +3474,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         DATA_ENSURE(n);
         sprev = s;
         STRING_CMP_IC(case_fold_flag, pstart, &s, n);
-        while (sprev + (len = enclen(encode, sprev)) < s)
-          sprev += len;
+        if (sprev < s) {
+          while (sprev + (len = enclen(encode, sprev)) < s)
+            sprev += len;
+        }
       }
       INC_OP;
       JUMP_OUT;
@@ -3505,9 +3509,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           STRING_CMP_VALUE(pstart, swork, n, is_fail);
           if (is_fail) continue;
           s = swork;
-          while (sprev + (len = enclen(encode, sprev)) < s)
-            sprev += len;
-
+          if (sprev < s) {
+            while (sprev + (len = enclen(encode, sprev)) < s)
+              sprev += len;
+          }
           break; /* success */
         }
         if (i == tlen) goto fail;
@@ -3542,9 +3547,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           STRING_CMP_VALUE_IC(case_fold_flag, pstart, &swork, n, is_fail);
           if (is_fail) continue;
           s = swork;
-          while (sprev + (len = enclen(encode, sprev)) < s)
-            sprev += len;
-
+          if (sprev < s) {
+            while (sprev + (len = enclen(encode, sprev)) < s)
+              sprev += len;
+          }
           break; /* success */
         }
         if (i == tlen) goto fail;
@@ -3571,7 +3577,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         sprev = s;
         if (backref_match_at_nested_level(reg, stk, stk_base, n,
                     case_fold_flag, level, (int )tlen, mems, &s, end)) {
-          if (sprev < end) {
+          if (sprev < s) {
             while (sprev + (len = enclen(encode, sprev)) < s)
               sprev += len;
           }
