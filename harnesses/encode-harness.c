@@ -126,12 +126,22 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 	  ONIG_ENCODING_CP1251,
 	  ONIG_ENCODING_ISO_8859_1,
 	  ONIG_ENCODING_UTF8,
-          ONIG_ENCODING_UTF16_BE,
-          ONIG_ENCODING_KOI8_R,
-          ONIG_ENCODING_BIG5
+    ONIG_ENCODING_KOI8_R,
+    ONIG_ENCODING_BIG5
   };
+
+  OnigEncodingType *enc;
+
+#ifdef UTF16_BE
+  enc = ONIG_ENCODING_UTF16_BE;
+#else
+#ifdef UTF16_LE
+  enc = ONIG_ENCODING_UTF16_LE;
+#else
   int num_encodings = sizeof(encodings)/sizeof(encodings[0]);
-  OnigEncodingType *enc = encodings[encoding_choice % num_encodings];
+  enc = encodings[encoding_choice % num_encodings];
+#endif
+#endif
 
   r = exec(enc, ONIG_OPTION_NONE, (char *)pattern, (char *)pattern_end,
            (char *)str, (char *)str_null_end);
