@@ -3442,10 +3442,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
                 ? STACK_AT(mem_end_stk[mem])->u.mem.pstr
                 : (UChar* )((void* )mem_end_stk[mem]));
         n = (int )(pend - pstart);
-        DATA_ENSURE(n);
-        sprev = s;
-        STRING_CMP(pstart, s, n);
-        if (sprev < s) {
+        if (n != 0) {
+          DATA_ENSURE(n);
+          sprev = s;
+          STRING_CMP(s, pstart, n);
           while (sprev + (len = enclen(encode, sprev)) < s)
             sprev += len;
         }
@@ -3471,10 +3471,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
                 ? STACK_AT(mem_end_stk[mem])->u.mem.pstr
                 : (UChar* )((void* )mem_end_stk[mem]));
         n = (int )(pend - pstart);
-        DATA_ENSURE(n);
-        sprev = s;
-        STRING_CMP_IC(case_fold_flag, pstart, &s, n);
-        if (sprev < s) {
+        if (n != 0) {
+          DATA_ENSURE(n);
+          sprev = s;
+          STRING_CMP_IC(case_fold_flag, pstart, &s, n);
           while (sprev + (len = enclen(encode, sprev)) < s)
             sprev += len;
         }
@@ -3503,13 +3503,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
                   ? STACK_AT(mem_end_stk[mem])->u.mem.pstr
                   : (UChar* )((void* )mem_end_stk[mem]));
           n = (int )(pend - pstart);
-          DATA_ENSURE(n);
-          sprev = s;
-          swork = s;
-          STRING_CMP_VALUE(pstart, swork, n, is_fail);
-          if (is_fail) continue;
-          s = swork;
-          if (sprev < s) {
+          if (n != 0) {
+            DATA_ENSURE(n);
+            sprev = s;
+            swork = s;
+            STRING_CMP_VALUE(swork, pstart, n, is_fail);
+            if (is_fail) continue;
+            s = swork;
             while (sprev + (len = enclen(encode, sprev)) < s)
               sprev += len;
           }
@@ -3541,13 +3541,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
                   ? STACK_AT(mem_end_stk[mem])->u.mem.pstr
                   : (UChar* )((void* )mem_end_stk[mem]));
           n = (int )(pend - pstart);
-          DATA_ENSURE(n);
-          sprev = s;
-          swork = s;
-          STRING_CMP_VALUE_IC(case_fold_flag, pstart, &swork, n, is_fail);
-          if (is_fail) continue;
-          s = swork;
-          if (sprev < s) {
+          if (n != 0) {
+            DATA_ENSURE(n);
+            sprev = s;
+            swork = s;
+            STRING_CMP_VALUE_IC(case_fold_flag, pstart, &swork, n, is_fail);
+            if (is_fail) continue;
+            s = swork;
             while (sprev + (len = enclen(encode, sprev)) < s)
               sprev += len;
           }
@@ -3567,6 +3567,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         int len;
         int level;
         MemNumType* mems;
+        UChar* ssave;
 
         n = 0;
       backref_with_level:
@@ -3574,10 +3575,11 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         tlen  = p->backref_general.num;
         mems = tlen == 1 ? &(p->backref_general.n1) : p->backref_general.ns;
 
-        sprev = s;
+        ssave = s;
         if (backref_match_at_nested_level(reg, stk, stk_base, n,
                     case_fold_flag, level, (int )tlen, mems, &s, end)) {
-          if (sprev < s) {
+          if (ssave != s) {
+            sprev = ssave;
             while (sprev + (len = enclen(encode, sprev)) < s)
               sprev += len;
           }
