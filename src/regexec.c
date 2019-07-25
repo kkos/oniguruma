@@ -5452,6 +5452,9 @@ onig_builtin_error(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
   if (n >= 0) {
     n = ONIGERR_INVALID_CALLOUT_BODY;
   }
+  else if (onig_is_error_code_needs_param(n)) {
+    n = ONIGERR_INVALID_CALLOUT_BODY;
+  }
 
   return n;
 }
