@@ -770,6 +770,8 @@ int onig_init P_((void));
 ONIG_EXTERN
 int onig_error_code_to_str PV_((OnigUChar* s, int err_code, ...));
 ONIG_EXTERN
+int onig_is_error_code_needs_param PV_((int code));
+ONIG_EXTERN
 void onig_set_warn_func P_((OnigWarnFunc f));
 ONIG_EXTERN
 void onig_set_verb_warn_func P_((OnigWarnFunc f));
