@@ -219,3 +219,21 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 
   return r;
 }
+
+
+#ifdef WITH_READ_MAIN
+
+#include <unistd.h>
+
+extern int main(int argc, char* argv[])
+{
+  size_t n;
+  uint8_t Data[10000];
+
+  n = read(0, Data, sizeof(Data));
+  fprintf(stdout, "n: %ld\n", n);
+  LLVMFuzzerTestOneInput(Data, n);
+
+  return 0;
+}
+#endif /* WITH_READ_MAIN */
