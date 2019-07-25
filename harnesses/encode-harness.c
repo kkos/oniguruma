@@ -51,10 +51,9 @@ search(regex_t* reg, unsigned char* str, unsigned char* end)
 
 static int
 exec(OnigEncoding enc, OnigOptionType options,
-     char* apattern, char* apattern_end, char* astr, char* str_null_end)
+     char* apattern, char* apattern_end, char* astr, UChar* end)
 {
   int r;
-  unsigned char *end;
   regex_t* reg;
   OnigErrorInfo einfo;
   UChar* pattern = (UChar* )apattern;
@@ -75,8 +74,7 @@ exec(OnigEncoding enc, OnigOptionType options,
     return -1;
   }
 
-  if (onigenc_is_valid_mbc_string(enc, str, (UChar* )str_null_end) != 0) {
-    end = str + onigenc_str_bytelen_null(enc, str);
+  if (onigenc_is_valid_mbc_string(enc, str, end) != 0) {
     r = search(reg, str, end);
   }
 
@@ -117,7 +115,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   unsigned char *str = (unsigned char*)malloc(remaining_size+4);
   memset(str, 0, remaining_size+4);
   memcpy(str, data, remaining_size);
-  str_null_end = str + (remaining_size+4);
+  str_null_end = str + remaining_size;
 
   int r;
   OnigEncodingType *encodings[] = {
@@ -144,7 +142,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 #endif
 
   r = exec(enc, ONIG_OPTION_NONE, (char *)pattern, (char *)pattern_end,
-           (char *)str, (char *)str_null_end);
+           (char *)str, str_null_end);
 
   free(pattern);
   free(str);
