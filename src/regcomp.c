@@ -603,9 +603,14 @@ is_simple_type_node(Node* node)
 {
   switch (NODE_TYPE(node)) {
   case NODE_STRING:
+    {
+      StrNode* sn = STR_(node);
+      return (sn->end != sn->s);
+    }
+    break;
+
   case NODE_CCLASS:
   case NODE_CTYPE:
-  case NODE_BACKREF:
     return 1;
     break;
 
