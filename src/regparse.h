@@ -310,7 +310,7 @@ typedef struct _Node {
 #define NODE_ST_CLEN_FIXED            (1<<2)
 #define NODE_ST_MARK1                 (1<<3)
 #define NODE_ST_MARK2                 (1<<4)
-#define NODE_ST_STOP_BT_SIMPLE_REPEAT (1<<5)
+#define NODE_ST_STRICT_REAL_REPEAT    (1<<5)
 #define NODE_ST_RECURSION             (1<<6)
 #define NODE_ST_CALLED                (1<<7)
 #define NODE_ST_ADDR_FIXED            (1<<8)
@@ -353,8 +353,8 @@ typedef struct _Node {
 #define NODE_IS_SUPER(node)           ((NODE_STATUS(node) & NODE_ST_SUPER)        != 0)
 #define NODE_IS_PROHIBIT_RECURSION(node) \
     ((NODE_STATUS(node) & NODE_ST_PROHIBIT_RECURSION) != 0)
-#define NODE_IS_STOP_BT_SIMPLE_REPEAT(node) \
-    ((NODE_STATUS(node) & NODE_ST_STOP_BT_SIMPLE_REPEAT) != 0)
+#define NODE_IS_STRICT_REAL_REPEAT(node) \
+    ((NODE_STATUS(node) & NODE_ST_STRICT_REAL_REPEAT) != 0)
 
 #define NODE_BODY(node)           ((node)->u.base.body)
 #define NODE_QUANT_BODY(node)     ((node)->body)

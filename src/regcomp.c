@@ -1293,7 +1293,7 @@ compile_length_bag_node(BagNode* node, regex_t* reg)
     break;
 
   case BAG_STOP_BACKTRACK:
-    if (NODE_IS_STOP_BT_SIMPLE_REPEAT(node)) {
+    if (NODE_IS_STRICT_REAL_REPEAT(node)) {
       int v;
       QuantNode* qn;
 
@@ -1444,7 +1444,7 @@ compile_bag_node(BagNode* node, regex_t* reg, ScanEnv* env)
     break;
 
   case BAG_STOP_BACKTRACK:
-    if (NODE_IS_STOP_BT_SIMPLE_REPEAT(node)) {
+    if (NODE_IS_STRICT_REAL_REPEAT(node)) {
       QuantNode* qn = QUANT_(NODE_BAG_BODY(node));
       r = compile_tree_n_times(NODE_QUANT_BODY(qn), qn->lower, reg, env);
       if (r != 0) return r;
@@ -3628,7 +3628,7 @@ next_setup(Node* node, Node* next_node, regex_t* reg)
             if (IS_NOT_NULL(y) && is_exclusive(x, y, reg)) {
               Node* en = onig_node_new_bag(BAG_STOP_BACKTRACK);
               CHECK_NULL_RETURN_MEMERR(en);
-              NODE_STATUS_ADD(en, STOP_BT_SIMPLE_REPEAT);
+              NODE_STATUS_ADD(en, STRICT_REAL_REPEAT);
               swap_node(node, en);
               NODE_BODY(node) = en;
             }
@@ -4784,7 +4784,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
             if (IS_INFINITE_REPEAT(tqn->upper) && tqn->lower <= 1 &&
                 tqn->greedy != 0) {  /* (?>a*), a*+ etc... */
               if (is_strict_real_node(NODE_BODY(target)))
-                NODE_STATUS_ADD(node, STOP_BT_SIMPLE_REPEAT);
+                NODE_STATUS_ADD(node, STRICT_REAL_REPEAT);
             }
           }
         }
