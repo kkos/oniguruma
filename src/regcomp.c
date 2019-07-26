@@ -986,10 +986,9 @@ compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
     }
   }
 
-  if (empty_info == BODY_IS_NOT_EMPTY)
-    mod_tlen = tlen;
-  else
-    mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
+  mod_tlen = tlen;
+  if (empty_info != BODY_IS_NOT_EMPTY)
+    mod_tlen += SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END;
 
   if (infinite &&
       (qn->lower <= 1 ||
@@ -1072,10 +1071,9 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
     }
   }
 
-  if (empty_info == BODY_IS_NOT_EMPTY)
-    mod_tlen = tlen;
-  else
-    mod_tlen = tlen + (SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END);
+  mod_tlen = tlen;
+  if (empty_info != BODY_IS_NOT_EMPTY)
+    mod_tlen += SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END;
 
   if (infinite &&
       (qn->lower <= 1 ||
