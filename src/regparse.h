@@ -101,7 +101,7 @@ typedef struct {
   int lower;
   int upper;
   int greedy;
-  enum BodyEmpty empty_info;
+  enum BodyEmpty emptiness;
   struct _Node* head_exact;
   struct _Node* next_head_exact;
   int is_refered;     /* include called node. don't eliminate even if {0} */

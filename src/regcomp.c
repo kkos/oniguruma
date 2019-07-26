@@ -621,12 +621,12 @@ is_simple_type_node(Node* node)
 }
 
 static int
-compile_tree_empty_check(Node* node, regex_t* reg, int empty_info, ScanEnv* env)
+compile_tree_empty_check(Node* node, regex_t* reg, int emptiness, ScanEnv* env)
 {
   int r;
   int saved_num_null_check = reg->num_null_check;
 
-  if (empty_info != BODY_IS_NOT_EMPTY) {
+  if (emptiness != BODY_IS_NOT_EMPTY) {
     r = add_op(reg, OP_EMPTY_CHECK_START);
     if (r != 0) return r;
     COP(reg)->empty_check_start.mem = reg->num_null_check; /* NULL CHECK ID */
@@ -636,12 +636,12 @@ compile_tree_empty_check(Node* node, regex_t* reg, int empty_info, ScanEnv* env)
   r = compile_tree(node, reg, env);
   if (r != 0) return r;
 
-  if (empty_info != BODY_IS_NOT_EMPTY) {
-    if (empty_info == BODY_IS_EMPTY_POSSIBILITY)
+  if (emptiness != BODY_IS_NOT_EMPTY) {
+    if (emptiness == BODY_IS_EMPTY_POSSIBILITY)
       r = add_op(reg, OP_EMPTY_CHECK_END);
-    else if (empty_info == BODY_IS_EMPTY_POSSIBILITY_MEM)
+    else if (emptiness == BODY_IS_EMPTY_POSSIBILITY_MEM)
       r = add_op(reg, OP_EMPTY_CHECK_END_MEMST);
-    else if (empty_info == BODY_IS_EMPTY_POSSIBILITY_REC)
+    else if (emptiness == BODY_IS_EMPTY_POSSIBILITY_REC)
       r = add_op(reg, OP_EMPTY_CHECK_END_MEMST_PUSH);
 
     if (r != 0) return r;
@@ -922,7 +922,7 @@ entry_repeat_range(regex_t* reg, int id, int lower, int upper)
 }
 
 static int
-compile_range_repeat_node(QuantNode* qn, int target_len, int empty_info,
+compile_range_repeat_node(QuantNode* qn, int target_len, int emptiness,
                           regex_t* reg, ScanEnv* env)
 {
   int r;
@@ -937,7 +937,7 @@ compile_range_repeat_node(QuantNode* qn, int target_len, int empty_info,
   r = entry_repeat_range(reg, num_repeat, qn->lower, qn->upper);
   if (r != 0) return r;
 
-  r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, empty_info, env);
+  r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, emptiness, env);
   if (r != 0) return r;
 
   if (
@@ -974,7 +974,7 @@ compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
 {
   int len, mod_tlen;
   int infinite = IS_INFINITE_REPEAT(qn->upper);
-  enum BodyEmpty empty_info = qn->empty_info;
+  enum BodyEmpty emptiness = qn->emptiness;
   int tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
 
   if (tlen < 0) return tlen;
@@ -992,7 +992,7 @@ compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
   }
 
   mod_tlen = tlen;
-  if (empty_info != BODY_IS_NOT_EMPTY)
+  if (emptiness != BODY_IS_NOT_EMPTY)
     mod_tlen += SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END;
 
   if (infinite &&
@@ -1048,7 +1048,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
 {
   int i, r, mod_tlen;
   int infinite = IS_INFINITE_REPEAT(qn->upper);
-  enum BodyEmpty empty_info = qn->empty_info;
+  enum BodyEmpty emptiness = qn->emptiness;
   int tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
 
   if (tlen < 0) return tlen;
@@ -1077,7 +1077,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
   }
 
   mod_tlen = tlen;
-  if (empty_info != BODY_IS_NOT_EMPTY)
+  if (emptiness != BODY_IS_NOT_EMPTY)
     mod_tlen += SIZE_OP_EMPTY_CHECK_START + SIZE_OP_EMPTY_CHECK_END;
 
   if (infinite &&
@@ -1116,7 +1116,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
         COP(reg)->push_or_jump_exact1.addr = SIZE_INC_OP + mod_tlen + SIZE_OP_JUMP;
         COP(reg)->push_or_jump_exact1.c    = STR_(qn->head_exact)->s[0];
 
-        r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, empty_info, env);
+        r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, emptiness, env);
         if (r != 0) return r;
 
         addr = -(mod_tlen + (int )SIZE_OP_PUSH_OR_JUMP_EXACT1);
@@ -1129,7 +1129,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
         COP(reg)->push_if_peek_next.addr = SIZE_INC_OP + mod_tlen + SIZE_OP_JUMP;
         COP(reg)->push_if_peek_next.c    = STR_(qn->next_head_exact)->s[0];
 
-        r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, empty_info, env);
+        r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, emptiness, env);
         if (r != 0) return r;
 
         addr = -(mod_tlen + (int )SIZE_OP_PUSH_IF_PEEK_NEXT);
@@ -1139,7 +1139,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
         if (r != 0) return r;
         COP(reg)->push.addr = SIZE_INC_OP + mod_tlen + SIZE_OP_JUMP;
 
-        r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, empty_info, env);
+        r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, emptiness, env);
         if (r != 0) return r;
 
         addr = -(mod_tlen + (int )SIZE_OP_PUSH);
@@ -1154,7 +1154,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
       if (r != 0) return r;
       COP(reg)->jump.addr = mod_tlen + SIZE_INC_OP;
 
-      r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, empty_info, env);
+      r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, emptiness, env);
       if (r != 0) return r;
 
       r = add_op(reg, OP_PUSH);
@@ -1208,7 +1208,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
     r = compile_tree(NODE_QUANT_BODY(qn), reg, env);
   }
   else {
-    r = compile_range_repeat_node(qn, mod_tlen, empty_info, reg, env);
+    r = compile_range_repeat_node(qn, mod_tlen, emptiness, reg, env);
   }
   return r;
 }
@@ -4633,15 +4633,15 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
     d = tree_min_len(body, env);
     if (d == 0) {
 #ifdef USE_INSISTENT_CHECK_CAPTURES_IN_EMPTY_REPEAT
-      qn->empty_info = quantifiers_memory_node_info(body);
-      if (qn->empty_info == BODY_IS_EMPTY_POSSIBILITY_REC) {
+      qn->emptiness = quantifiers_memory_node_info(body);
+      if (qn->emptiness == BODY_IS_EMPTY_POSSIBILITY_REC) {
         if (NODE_TYPE(body) == NODE_BAG &&
             BAG_(body)->type == BAG_MEMORY) {
           MEM_STATUS_ON(env->bt_mem_end, BAG_(body)->m.regnum);
         }
       }
 #else
-      qn->empty_info = BODY_IS_EMPTY_POSSIBILITY;
+      qn->emptiness = BODY_IS_EMPTY_POSSIBILITY;
 #endif
     }
   }
@@ -4675,7 +4675,7 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
     }
   }
 
-  if (qn->greedy && (qn->empty_info == BODY_IS_NOT_EMPTY)) {
+  if (qn->greedy && (qn->emptiness == BODY_IS_NOT_EMPTY)) {
     if (NODE_TYPE(body) == NODE_QUANT) {
       QuantNode* tqn = QUANT_(body);
       if (IS_NOT_NULL(tqn->head_exact)) {
@@ -4692,7 +4692,7 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
 }
 
 /* setup_tree does the following work.
- 1. check empty loop. (set qn->empty_info)
+ 1. check empty loop. (set qn->emptiness)
  2. expand ignore-case in char class.
  3. set memory status bit flags. (reg->mem_stats)
  4. set qn->head_exact for [push, exact] -> [push_or_jump_exact1, exact].
