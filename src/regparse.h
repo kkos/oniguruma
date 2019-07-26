@@ -252,10 +252,6 @@ typedef struct _Node {
 #define NODE_BIT_CALL       NODE_TYPE2BIT(NODE_CALL)
 #define NODE_BIT_GIMMICK    NODE_TYPE2BIT(NODE_GIMMICK)
 
-#define NODE_IS_SIMPLE_TYPE(node) \
-  ((NODE_TYPE2BIT(NODE_TYPE(node)) & \
-    (NODE_BIT_STRING | NODE_BIT_CCLASS | NODE_BIT_CTYPE | NODE_BIT_BACKREF)) != 0)
-
 #define NODE_TYPE(node)             ((node)->u.base.node_type)
 #define NODE_SET_TYPE(node, ntype)   (node)->u.base.node_type = (ntype)
 
