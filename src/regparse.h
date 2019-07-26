@@ -67,10 +67,10 @@ enum GimmickType {
 };
 
 enum BodyEmpty {
-  BODY_IS_NOT_EMPTY = 0,
-  BODY_IS_EMPTY     = 1,
-  BODY_IS_EMPTY_MEM = 2,
-  BODY_IS_EMPTY_REC = 3
+  BODY_IS_NOT_EMPTY             = 0,
+  BODY_IS_EMPTY_POSSIBILITY     = 1,
+  BODY_IS_EMPTY_POSSIBILITY_MEM = 2,
+  BODY_IS_EMPTY_POSSIBILITY_REC = 3
 };
 
 typedef struct {

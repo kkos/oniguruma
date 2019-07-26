@@ -637,11 +637,11 @@ compile_tree_empty_check(Node* node, regex_t* reg, int empty_info, ScanEnv* env)
   if (r != 0) return r;
 
   if (empty_info != BODY_IS_NOT_EMPTY) {
-    if (empty_info == BODY_IS_EMPTY)
+    if (empty_info == BODY_IS_EMPTY_POSSIBILITY)
       r = add_op(reg, OP_EMPTY_CHECK_END);
-    else if (empty_info == BODY_IS_EMPTY_MEM)
+    else if (empty_info == BODY_IS_EMPTY_POSSIBILITY_MEM)
       r = add_op(reg, OP_EMPTY_CHECK_END_MEMST);
-    else if (empty_info == BODY_IS_EMPTY_REC)
+    else if (empty_info == BODY_IS_EMPTY_POSSIBILITY_REC)
       r = add_op(reg, OP_EMPTY_CHECK_END_MEMST_PUSH);
 
     if (r != 0) return r;
@@ -4034,7 +4034,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
 static enum BodyEmpty
 quantifiers_memory_node_info(Node* node)
 {
-  int r = BODY_IS_EMPTY;
+  int r = BODY_IS_EMPTY_POSSIBILITY;
 
   switch (NODE_TYPE(node)) {
   case NODE_LIST:
@@ -4051,7 +4051,7 @@ quantifiers_memory_node_info(Node* node)
 #ifdef USE_CALL
   case NODE_CALL:
     if (NODE_IS_RECURSION(node)) {
-      return BODY_IS_EMPTY_REC; /* tiny version */
+      return BODY_IS_EMPTY_POSSIBILITY_REC; /* tiny version */
     }
     else
       r = quantifiers_memory_node_info(NODE_BODY(node));
@@ -4073,9 +4073,9 @@ quantifiers_memory_node_info(Node* node)
       switch (en->type) {
       case BAG_MEMORY:
         if (NODE_IS_RECURSION(node)) {
-          return BODY_IS_EMPTY_REC;
+          return BODY_IS_EMPTY_POSSIBILITY_REC;
         }
-        return BODY_IS_EMPTY_MEM;
+        return BODY_IS_EMPTY_POSSIBILITY_MEM;
         break;
 
       case BAG_OPTION:
@@ -4634,14 +4634,14 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
     if (d == 0) {
 #ifdef USE_INSISTENT_CHECK_CAPTURES_IN_EMPTY_REPEAT
       qn->empty_info = quantifiers_memory_node_info(body);
-      if (qn->empty_info == BODY_IS_EMPTY_REC) {
+      if (qn->empty_info == BODY_IS_EMPTY_POSSIBILITY_REC) {
         if (NODE_TYPE(body) == NODE_BAG &&
             BAG_(body)->type == BAG_MEMORY) {
           MEM_STATUS_ON(env->bt_mem_end, BAG_(body)->m.regnum);
         }
       }
 #else
-      qn->empty_info = BODY_IS_EMPTY;
+      qn->empty_info = BODY_IS_EMPTY_POSSIBILITY;
 #endif
     }
   }
