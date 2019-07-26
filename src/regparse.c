@@ -2694,7 +2694,7 @@ make_text_segment(Node** node, ScanEnv* env)
   ns[0] = x;
   ns[1] = NULL_NODE;
 
-  x = node_new_quantifier(0, REPEAT_INFINITE, 1);
+  x = node_new_quantifier(0, INFINITE_REPEAT, 1);
   if (IS_NULL(x)) goto err;
 
   NODE_BODY(x) = ns[0];
@@ -3044,7 +3044,7 @@ make_absent_tree(Node** node, Node* absent, Node* expr, int is_range_cutter,
 
     if (expr == NULL_NODE) {
       /* default expr \O* */
-      quant = node_new_quantifier(0, REPEAT_INFINITE, 0);
+      quant = node_new_quantifier(0, INFINITE_REPEAT, 0);
       if (IS_NULL(quant)) goto err0;
 
       r = node_new_true_anychar(&body, env);
@@ -3086,7 +3086,7 @@ make_absent_tree(Node** node, Node* absent, Node* expr, int is_range_cutter,
   if (r != 0) goto err;
 
   possessive = 1;
-  r = make_absent_engine(&ns[2], id1, absent, ns[3], 0, REPEAT_INFINITE,
+  r = make_absent_engine(&ns[2], id1, absent, ns[3], 0, INFINITE_REPEAT,
                          possessive, is_range_cutter, env);
   if (r != 0) goto err;
 
@@ -3867,19 +3867,19 @@ quantifier_type_num(QuantNode* q)
   if (q->greedy) {
     if (q->lower == 0) {
       if (q->upper == 1) return 0;
-      else if (IS_REPEAT_INFINITE(q->upper)) return 1;
+      else if (IS_INFINITE_REPEAT(q->upper)) return 1;
     }
     else if (q->lower == 1) {
-      if (IS_REPEAT_INFINITE(q->upper)) return 2;
+      if (IS_INFINITE_REPEAT(q->upper)) return 2;
     }
   }
   else {
     if (q->lower == 0) {
       if (q->upper == 1) return 3;
-      else if (IS_REPEAT_INFINITE(q->upper)) return 4;
+      else if (IS_INFINITE_REPEAT(q->upper)) return 4;
     }
     else if (q->lower == 1) {
-      if (IS_REPEAT_INFINITE(q->upper)) return 5;
+      if (IS_INFINITE_REPEAT(q->upper)) return 5;
     }
   }
   return -1;
@@ -3916,8 +3916,8 @@ onig_reduce_nested_quantifier(Node* pnode, Node* cnode)
   pnum = quantifier_type_num(p);
   cnum = quantifier_type_num(c);
   if (pnum < 0 || cnum < 0) {
-    if ((p->lower == p->upper) && ! IS_REPEAT_INFINITE(p->upper)) {
-      if ((c->lower == c->upper) && ! IS_REPEAT_INFINITE(c->upper)) {
+    if ((p->lower == p->upper) && ! IS_INFINITE_REPEAT(p->upper)) {
+      if ((c->lower == c->upper) && ! IS_INFINITE_REPEAT(c->upper)) {
         int n = onig_positive_int_multiply(p->lower, c->lower);
         if (n >= 0) {
           p->lower = p->upper = n;
@@ -3936,11 +3936,11 @@ onig_reduce_nested_quantifier(Node* pnode, Node* cnode)
     break;
   case RQ_A:
     NODE_BODY(pnode) = NODE_BODY(cnode);
-    p->lower  = 0;  p->upper = REPEAT_INFINITE;  p->greedy = 1;
+    p->lower  = 0;  p->upper = INFINITE_REPEAT;  p->greedy = 1;
     break;
   case RQ_AQ:
     NODE_BODY(pnode) = NODE_BODY(cnode);
-    p->lower  = 0;  p->upper = REPEAT_INFINITE;  p->greedy = 0;
+    p->lower  = 0;  p->upper = INFINITE_REPEAT;  p->greedy = 0;
     break;
   case RQ_QQ:
     NODE_BODY(pnode) = NODE_BODY(cnode);
@@ -3949,13 +3949,13 @@ onig_reduce_nested_quantifier(Node* pnode, Node* cnode)
   case RQ_P_QQ:
     NODE_BODY(pnode) = cnode;
     p->lower  = 0;  p->upper = 1;  p->greedy = 0;
-    c->lower  = 1;  c->upper = REPEAT_INFINITE;  c->greedy = 1;
+    c->lower  = 1;  c->upper = INFINITE_REPEAT;  c->greedy = 1;
     return ;
     break;
   case RQ_PQ_Q:
     NODE_BODY(pnode) = cnode;
     p->lower  = 0;  p->upper = 1;  p->greedy = 1;
-    c->lower  = 1;  c->upper = REPEAT_INFINITE;  c->greedy = 0;
+    c->lower  = 1;  c->upper = INFINITE_REPEAT;  c->greedy = 0;
     return ;
     break;
   case RQ_ASIS:
@@ -4148,7 +4148,7 @@ fetch_interval_quantifier(UChar** src, UChar* end, PToken* tok, ScanEnv* env)
     if (p == prev) {
       if (non_low != 0)
         goto invalid;
-      up = REPEAT_INFINITE;  /* {n,} : {n,infinite} */
+      up = INFINITE_REPEAT;  /* {n,} : {n,infinite} */
     }
   }
   else {
@@ -4168,7 +4168,7 @@ fetch_interval_quantifier(UChar** src, UChar* end, PToken* tok, ScanEnv* env)
   }
   if (c != '}') goto invalid;
 
-  if (!IS_REPEAT_INFINITE(up) && low > up) {
+  if (!IS_INFINITE_REPEAT(up) && low > up) {
     /* {n,m}+ supported case */
     if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_PLUS_POSSESSIVE_INTERVAL))
       return ONIGERR_UPPER_SMALLER_THAN_LOWER_IN_REPEAT_RANGE;
@@ -4949,7 +4949,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_ASTERISK_ZERO_INF)) break;
       tok->type = TK_REPEAT;
       tok->u.repeat.lower = 0;
-      tok->u.repeat.upper = REPEAT_INFINITE;
+      tok->u.repeat.upper = INFINITE_REPEAT;
       goto greedy_check;
       break;
 
@@ -4957,7 +4957,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_PLUS_ONE_INF)) break;
       tok->type = TK_REPEAT;
       tok->u.repeat.lower = 1;
-      tok->u.repeat.upper = REPEAT_INFINITE;
+      tok->u.repeat.upper = INFINITE_REPEAT;
       goto greedy_check;
       break;
 
@@ -5504,7 +5504,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 #endif
       tok->type = TK_REPEAT;
       tok->u.repeat.lower = 0;
-      tok->u.repeat.upper = REPEAT_INFINITE;
+      tok->u.repeat.upper = INFINITE_REPEAT;
       goto greedy_check;
       break;
 
@@ -5515,7 +5515,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 #endif
       tok->type = TK_REPEAT;
       tok->u.repeat.lower = 1;
-      tok->u.repeat.upper = REPEAT_INFINITE;
+      tok->u.repeat.upper = INFINITE_REPEAT;
       goto greedy_check;
       break;
 
@@ -7682,7 +7682,7 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
       if (targetq_num >= 0 && nestq_num < 0) {
         if (targetq_num == 1 || targetq_num == 2) { /* * or + */
           /* (?:a*){n,m}, (?:a+){n,m} => (?:a*){n,n}, (?:a+){n,n} */
-          if (! IS_REPEAT_INFINITE(qn->upper) && qn->upper > 1 && qn->greedy) {
+          if (! IS_INFINITE_REPEAT(qn->upper) && qn->upper > 1 && qn->greedy) {
             qn->upper = (qn->lower == 0 ? 1 : qn->lower);
           }
         }
@@ -8042,7 +8042,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
   case TK_ANYCHAR_ANYTIME:
     *np = node_new_anychar();
     CHECK_NULL_RETURN_MEMERR(*np);
-    qn = node_new_quantifier(0, REPEAT_INFINITE, 0);
+    qn = node_new_quantifier(0, INFINITE_REPEAT, 0);
     CHECK_NULL_RETURN_MEMERR(qn);
     NODE_BODY(qn) = *np;
     *np = qn;

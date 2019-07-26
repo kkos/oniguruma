@@ -912,7 +912,7 @@ entry_repeat_range(regex_t* reg, int id, int lower, int upper)
   }
 
   p[id].lower = lower;
-  p[id].upper = (IS_REPEAT_INFINITE(upper) ? 0x7fffffff : upper);
+  p[id].upper = (IS_INFINITE_REPEAT(upper) ? 0x7fffffff : upper);
   return 0;
 }
 
@@ -954,7 +954,7 @@ compile_range_repeat_node(QuantNode* qn, int target_len, int empty_info,
 static int
 is_anychar_infinite_greedy(QuantNode* qn)
 {
-  if (qn->greedy && IS_REPEAT_INFINITE(qn->upper) &&
+  if (qn->greedy && IS_INFINITE_REPEAT(qn->upper) &&
       NODE_IS_ANYCHAR(NODE_QUANT_BODY(qn)))
     return 1;
   else
@@ -968,7 +968,7 @@ static int
 compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
 {
   int len, mod_tlen;
-  int infinite = IS_REPEAT_INFINITE(qn->upper);
+  int infinite = IS_INFINITE_REPEAT(qn->upper);
   enum BodyEmpty empty_info = qn->empty_info;
   int tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
 
@@ -1042,7 +1042,7 @@ static int
 compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
 {
   int i, r, mod_tlen;
-  int infinite = IS_REPEAT_INFINITE(qn->upper);
+  int infinite = IS_INFINITE_REPEAT(qn->upper);
   enum BodyEmpty empty_info = qn->empty_info;
   int tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
 
@@ -3059,7 +3059,7 @@ tree_max_len(Node* node, ScanEnv* env)
       if (qn->upper != 0) {
         len = tree_max_len(NODE_BODY(node), env);
         if (len != 0) {
-          if (! IS_REPEAT_INFINITE(qn->upper))
+          if (! IS_INFINITE_REPEAT(qn->upper))
             len = distance_multiply(len, qn->upper);
           else
             len = INFINITE_LEN;
@@ -3605,7 +3605,7 @@ next_setup(Node* node, Node* next_node, regex_t* reg)
   type = NODE_TYPE(node);
   if (type == NODE_QUANT) {
     QuantNode* qn = QUANT_(node);
-    if (qn->greedy && IS_REPEAT_INFINITE(qn->upper)) {
+    if (qn->greedy && IS_INFINITE_REPEAT(qn->upper)) {
 #ifdef USE_QUANT_PEEK_NEXT
       Node* n = get_head_value_node(next_node, 1, reg);
       /* '\0': for UTF-16BE etc... */
@@ -4375,7 +4375,7 @@ setup_called_state_call(Node* node, int state)
     {
       QuantNode* qn = QUANT_(node);
 
-      if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 2)
+      if (IS_INFINITE_REPEAT(qn->upper) || qn->upper >= 2)
         state |= IN_REAL_REPEAT;
       if (qn->lower != qn->upper)
         state |= IN_VAR_REPEAT;
@@ -4492,7 +4492,7 @@ setup_called_state(Node* node, int state)
     {
       QuantNode* qn = QUANT_(node);
 
-      if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 2)
+      if (IS_INFINITE_REPEAT(qn->upper) || qn->upper >= 2)
         state |= IN_REAL_REPEAT;
       if (qn->lower != qn->upper)
         state |= IN_VAR_REPEAT;
@@ -4624,7 +4624,7 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
     NODE_STATUS_ADD(node, IN_MULTI_ENTRY);
   }
 
-  if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 1) {
+  if (IS_INFINITE_REPEAT(qn->upper) || qn->upper >= 1) {
     d = tree_min_len(body, env);
     if (d == 0) {
 #ifdef USE_INSISTENT_CHECK_CAPTURES_IN_EMPTY_REPEAT
@@ -4641,7 +4641,7 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
     }
   }
 
-  if (IS_REPEAT_INFINITE(qn->upper) || qn->upper >= 2)
+  if (IS_INFINITE_REPEAT(qn->upper) || qn->upper >= 2)
     state |= IN_REAL_REPEAT;
   if (qn->lower != qn->upper)
     state |= IN_VAR_REPEAT;
@@ -4652,7 +4652,7 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
   /* expand string */
 #define EXPAND_STRING_MAX_LENGTH  100
   if (NODE_TYPE(body) == NODE_STRING) {
-    if (!IS_REPEAT_INFINITE(qn->lower) && qn->lower == qn->upper &&
+    if (!IS_INFINITE_REPEAT(qn->lower) && qn->lower == qn->upper &&
         qn->lower > 1 && qn->lower <= EXPAND_STRING_MAX_LENGTH) {
       int len = NODE_STRING_LEN(body);
       StrNode* sn = STR_(body);
@@ -4776,7 +4776,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
           r = setup_tree(target, reg, state, env);
           if (NODE_TYPE(target) == NODE_QUANT) {
             QuantNode* tqn = QUANT_(target);
-            if (IS_REPEAT_INFINITE(tqn->upper) && tqn->lower <= 1 &&
+            if (IS_INFINITE_REPEAT(tqn->upper) && tqn->lower <= 1 &&
                 tqn->greedy != 0) {  /* (?>a*), a*+ etc... */
               if (is_simple_type_node(NODE_BODY(target)))
                 NODE_STATUS_ADD(node, STOP_BT_SIMPLE_REPEAT);
@@ -5776,7 +5776,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
           opt->sm.reach_end = 0;
       }
 
-      if (IS_REPEAT_INFINITE(qn->upper)) {
+      if (IS_INFINITE_REPEAT(qn->upper)) {
         if (env->mmd.max == 0 &&
             NODE_IS_ANYCHAR(NODE_BODY(node)) && qn->greedy != 0) {
           if (IS_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), env)))
