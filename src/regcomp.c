@@ -599,6 +599,23 @@ select_str_opcode(int mb_len, int str_len, int ignore_case)
 }
 
 static int
+is_simple_type_node(Node* node)
+{
+  switch (NODE_TYPE(node)) {
+  case NODE_STRING:
+  case NODE_CCLASS:
+  case NODE_CTYPE:
+  case NODE_BACKREF:
+    return 1;
+    break;
+
+  default:
+    return 0;
+    break;
+  }
+}
+
+static int
 compile_tree_empty_check(Node* node, regex_t* reg, int empty_info, ScanEnv* env)
 {
   int r;
@@ -3600,7 +3617,7 @@ next_setup(Node* node, Node* next_node, regex_t* reg)
 #endif
       /* automatic posseivation a*b ==> (?>a*)b */
       if (qn->lower <= 1) {
-        if (NODE_IS_SIMPLE_TYPE(NODE_BODY(node))) {
+        if (is_simple_type_node(NODE_BODY(node))) {
           Node *x, *y;
           x = get_head_value_node(NODE_BODY(node), 0, reg);
           if (IS_NOT_NULL(x)) {
@@ -4763,7 +4780,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
             QuantNode* tqn = QUANT_(target);
             if (IS_REPEAT_INFINITE(tqn->upper) && tqn->lower <= 1 &&
                 tqn->greedy != 0) {  /* (?>a*), a*+ etc... */
-              if (NODE_IS_SIMPLE_TYPE(NODE_BODY(target)))
+              if (is_simple_type_node(NODE_BODY(target)))
                 NODE_STATUS_ADD(node, STOP_BT_SIMPLE_REPEAT);
             }
           }
