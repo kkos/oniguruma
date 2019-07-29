@@ -6239,6 +6239,7 @@ parse_char_class(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   env->parse_depth++;
   if (env->parse_depth > ParseDepthLimit)
     return ONIGERR_PARSE_DEPTH_LIMIT_OVER;
+
   prev_cc = (CClassNode* )NULL;
   r = fetch_token_in_cc(tok, src, end, env);
   if (r == TK_CHAR && tok->u.c == '^' && tok->escaped == 0) {
@@ -7820,13 +7821,17 @@ static int
 parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
           ScanEnv* env, int group_head)
 {
-  int r, len, group = 0;
+  int r, len, group;
   Node* qn;
   Node** tp;
+  unsigned int parse_depth;
 
+  group = 0;
   *np = NULL;
   if (tok->type == (enum TokenSyms )term)
     goto end_of_token;
+
+  parse_depth = env->parse_depth;
 
   switch (tok->type) {
   case TK_ALT:
@@ -8144,6 +8149,10 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
 
       if (is_invalid_quantifier_target(*tp))
         return ONIGERR_TARGET_OF_REPEAT_OPERATOR_INVALID;
+
+      parse_depth++;
+      if (parse_depth > ParseDepthLimit)
+        return ONIGERR_PARSE_DEPTH_LIMIT_OVER;
 
       qn = node_new_quantifier(tok->u.repeat.lower, tok->u.repeat.upper,
                                r == TK_INTERVAL);
