@@ -1898,8 +1898,8 @@ callout_tag_table_new(CalloutTagTable** rt)
 }
 
 static int
-callout_tag_entry_raw(CalloutTagTable* t, UChar* name, UChar* name_end,
-                      CalloutTagVal entry_val)
+callout_tag_entry_raw(ScanEnv* env, CalloutTagTable* t, UChar* name,
+                      UChar* name_end, CalloutTagVal entry_val)
 {
   int r;
   CalloutTagVal val;
@@ -1908,8 +1908,11 @@ callout_tag_entry_raw(CalloutTagTable* t, UChar* name, UChar* name_end,
     return ONIGERR_INVALID_CALLOUT_TAG_NAME;
 
   val = callout_tag_find(t, name, name_end);
-  if (val >= 0)
+  if (val >= 0) {
+    onig_scan_env_set_error_string(env, ONIGERR_MULTIPLEX_DEFINED_NAME,
+                                   name, name_end);
     return ONIGERR_MULTIPLEX_DEFINED_NAME;
+  }
 
   r = onig_st_insert_strend(t, name, name_end, (HashDataType )entry_val);
   if (r < 0) return r;
@@ -1938,7 +1941,7 @@ ext_ensure_tag_table(regex_t* reg)
 }
 
 static int
-callout_tag_entry(regex_t* reg, UChar* name, UChar* name_end,
+callout_tag_entry(ScanEnv* env, regex_t* reg, UChar* name, UChar* name_end,
                   CalloutTagVal entry_val)
 {
   int r;
@@ -1950,7 +1953,7 @@ callout_tag_entry(regex_t* reg, UChar* name, UChar* name_end,
 
   ext = onig_get_regex_ext(reg);
   CHECK_NULL_RETURN_MEMERR(ext);
-  r = callout_tag_entry_raw(ext->tag_table, name, name_end, entry_val);
+  r = callout_tag_entry_raw(env, ext->tag_table, name, name_end, entry_val);
 
   e = onig_reg_callout_list_at(reg, (int )entry_val);
   CHECK_NULL_RETURN_MEMERR(e);
@@ -6695,7 +6698,7 @@ parse_callout_of_contents(Node** np, int cterm, UChar** src, UChar* end, ScanEnv
   }
 
   if (tag_start != tag_end) {
-    r = callout_tag_entry(env->reg, tag_start, tag_end, num);
+    r = callout_tag_entry(env, env->reg, tag_start, tag_end, num);
     if (r != ONIG_NORMAL) return r;
   }
 
@@ -7016,7 +7019,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
   }
 
   if (tag_start != tag_end) {
-    r = callout_tag_entry(env->reg, tag_start, tag_end, num);
+    r = callout_tag_entry(env, env->reg, tag_start, tag_end, num);
     if (r != ONIG_NORMAL) return r;
   }
 
