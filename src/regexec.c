@@ -980,6 +980,8 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_CALL_FRAME             0x0400
 #define STK_RETURN                 0x0500
 #define STK_SAVE_VAL               0x0600
+#define STK_PREC_READ_START        0x0700
+#define STK_PREC_READ_END          0x0800
 
 /* stack type check mask */
 #define STK_MASK_POP_USED          STK_ALT_FLAG
@@ -1544,8 +1546,8 @@ stack_double(int is_alloca, char** arg_alloc_base,
 
 #define STACK_PUSH_ALT(pat,s,sprev)       STACK_PUSH(STK_ALT,pat,s,sprev)
 #define STACK_PUSH_SUPER_ALT(pat,s,sprev) STACK_PUSH(STK_SUPER_ALT,pat,s,sprev)
-#define STACK_PUSH_POS(s,sprev) \
-  STACK_PUSH(STK_TO_VOID_START,(Operation* )0,s,sprev)
+#define STACK_PUSH_PREC_READ_START(s,sprev) \
+  STACK_PUSH(STK_PREC_READ_START,(Operation* )0,s,sprev)
 #define STACK_PUSH_ALT_PREC_READ_NOT(pat,s,sprev) \
   STACK_PUSH(STK_ALT_PREC_READ_NOT,pat,s,sprev)
 #define STACK_PUSH_TO_VOID_START        STACK_PUSH_TYPE(STK_TO_VOID_START)
@@ -1883,6 +1885,27 @@ stack_double(int is_alloca, char** arg_alloc_base,
         break;\
       }\
       k->type = STK_VOID;\
+    }\
+  }\
+} while(0)
+
+#define STACK_GET_PREC_READ_START(k) do {\
+  int level = 0;\
+  k = stk;\
+  while (1) {\
+    k--;\
+    STACK_BASE_CHECK(k, "STACK_GET_PREC_READ_START");\
+    if (IS_TO_VOID_TARGET(k)) {\
+      k->type = STK_VOID;\
+    }\
+    else if (k->type == STK_PREC_READ_START) {\
+      if (level == 0) {\
+        break;\
+      }\
+      level--;\
+    }\
+    else if (k->type == STK_PREC_READ_END) {\
+      level++;\
     }\
   }\
 } while(0)
@@ -3860,14 +3883,15 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       goto repeat_inc_ng;
 
     CASE_OP(PREC_READ_START)
-      STACK_PUSH_POS(s, sprev);
+      STACK_PUSH_PREC_READ_START(s, sprev);
       INC_OP;
       JUMP_OUT;
 
     CASE_OP(PREC_READ_END)
-      STACK_EXEC_TO_VOID(stkp);
+      STACK_GET_PREC_READ_START(stkp);
       s     = stkp->u.state.pstr;
       sprev = stkp->u.state.pstr_prev;
+      STACK_PUSH(STK_PREC_READ_END,0,0,0);
       INC_OP;
       JUMP_OUT;
 
