@@ -5628,7 +5628,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
               tok->u.call.gnum      = 0;
               tok->u.call.name      = p;
               PINC;
-              if (! PPEEK_IS(')')) return ONIGERR_INVALID_GROUP_NAME;
+              if (! PPEEK_IS(')')) return ONIGERR_UNDEFINED_GROUP_OPTION;
               tok->u.call.name_end  = p;
               break;
 
