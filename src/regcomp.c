@@ -4030,7 +4030,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
   return r;
 }
 
-#ifdef USE_INSISTENT_CHECK_CAPTURES_IN_EMPTY_REPEAT
+#ifdef USE_STUBBORN_CHECK_CAPTURES_IN_EMPTY_REPEAT
 static enum BodyEmptyType
 quantifiers_memory_node_info(Node* node)
 {
@@ -4112,7 +4112,7 @@ quantifiers_memory_node_info(Node* node)
 
   return r;
 }
-#endif /* USE_INSISTENT_CHECK_CAPTURES_IN_EMPTY_REPEAT */
+#endif /* USE_STUBBORN_CHECK_CAPTURES_IN_EMPTY_REPEAT */
 
 
 #ifdef USE_CALL
@@ -4632,7 +4632,7 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
   if (IS_INFINITE_REPEAT(qn->upper) || qn->upper >= 1) {
     d = tree_min_len(body, env);
     if (d == 0) {
-#ifdef USE_INSISTENT_CHECK_CAPTURES_IN_EMPTY_REPEAT
+#ifdef USE_STUBBORN_CHECK_CAPTURES_IN_EMPTY_REPEAT
       qn->emptiness = quantifiers_memory_node_info(body);
       if (qn->emptiness == BODY_IS_EMPTY_POSSIBILITY_REC) {
         if (NODE_TYPE(body) == NODE_BAG &&
