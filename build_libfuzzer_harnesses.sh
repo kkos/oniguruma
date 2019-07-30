@@ -9,8 +9,8 @@ make -j4
 OUT=`pwd`/fuzzers
 mkdir -p $OUT
 LIBFUZZER_FLAGS="-fsanitize=fuzzer,address -fno-omit-frame-pointer"
-LIBS="src/.libs/libonig.a"
-#LIBS="src/.libs/libonig.a /usr/local/lib/libLLVMFuzzerMain.a"
+#LIBS="src/.libs/libonig.a"
+LIBS="src/.libs/libonig.a /usr/local/lib/libLLVMFuzzerMain.a"
 
 # Libfuzzer builds
 clang++ contributed/libfuzzer-onig.cpp $LIBS -Isrc/ -g $LIBFUZZER_FLAGS -o $OUT/libfuzzer-onig
