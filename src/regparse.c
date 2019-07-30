@@ -7442,6 +7442,7 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
       }
       break;
 
+#ifdef USE_CAPTURE_HISTORY
     case '@':
       if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_ATMARK_CAPTURE_HISTORY)) {
         if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_LT_NAMED_GROUP)) {
@@ -7469,6 +7470,7 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
         return ONIGERR_UNDEFINED_GROUP_OPTION;
       }
       break;
+#endif
 
 #ifdef USE_POSIXLINE_OPTION
     case 'p':
