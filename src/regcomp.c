@@ -974,7 +974,7 @@ compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
 {
   int len, mod_tlen;
   int infinite = IS_INFINITE_REPEAT(qn->upper);
-  enum BodyEmpty emptiness = qn->emptiness;
+  enum BodyEmptyType emptiness = qn->emptiness;
   int tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
 
   if (tlen < 0) return tlen;
@@ -1048,7 +1048,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
 {
   int i, r, mod_tlen;
   int infinite = IS_INFINITE_REPEAT(qn->upper);
-  enum BodyEmpty emptiness = qn->emptiness;
+  enum BodyEmptyType emptiness = qn->emptiness;
   int tlen = compile_length_tree(NODE_QUANT_BODY(qn), reg);
 
   if (tlen < 0) return tlen;
@@ -4031,7 +4031,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
 }
 
 #ifdef USE_INSISTENT_CHECK_CAPTURES_IN_EMPTY_REPEAT
-static enum BodyEmpty
+static enum BodyEmptyType
 quantifiers_memory_node_info(Node* node)
 {
   int r = BODY_IS_EMPTY_POSSIBILITY;
