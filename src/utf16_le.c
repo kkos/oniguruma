@@ -95,7 +95,15 @@ static const int EncLen_UTF16[] = {
 static int
 utf16le_code_to_mbclen(OnigCodePoint code)
 {
-  return (code > 0xffff ? 4 : 2);
+  if (code > 0xffff) {
+    if (code > 0x10ffff)
+      return ONIGERR_INVALID_CODE_POINT_VALUE;
+    else
+      return 4;
+  }
+  else {
+    return 2;
+  }
 }
 
 static int
