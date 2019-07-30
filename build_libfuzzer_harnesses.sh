@@ -1,7 +1,7 @@
 #!/bin/bash
 
 make clean
-autoreconf -vfi
+#autoreconf -vfi
 # build the library with ASAN
 ./configure CC=clang LD=clang CFLAGS="-g -fsanitize=address -fno-omit-frame-pointer -fsanitize=fuzzer-no-link" LDFLAGS="-g -fsanitize=address -fno-omit-frame-pointer -fsanitize=fuzzer-no-link"
 make -j4
