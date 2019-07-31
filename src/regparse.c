@@ -77,7 +77,7 @@ OnigSyntaxType OnigSyntaxOniguruma = {
       ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP |
       ONIG_SYN_ALLOW_MULTIPLEX_DEFINITION_NAME |
       ONIG_SYN_FIXED_INTERVAL_IS_GREEDY_ONLY |
-      ONIG_SYN_ALLOW_INVALID_CODE_END_OF_RANGE |
+      ONIG_SYN_ALLOW_INVALID_CODE_END_OF_RANGE_IN_CC |
       ONIG_SYN_WARN_CC_OP_NOT_ESCAPED |
       ONIG_SYN_WARN_REDUNDANT_NESTED_REPEAT )
   , ONIG_OPTION_NONE
@@ -6386,7 +6386,8 @@ parse_char_class(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       len = ONIGENC_CODE_TO_MBCLEN(env->enc, v);
       if (len < 0) {
         if (state != CCS_RANGE ||
-            ! IS_SYNTAX_BV(env->syntax, ONIG_SYN_ALLOW_INVALID_CODE_END_OF_RANGE) ||
+            ! IS_SYNTAX_BV(env->syntax,
+                           ONIG_SYN_ALLOW_INVALID_CODE_END_OF_RANGE_IN_CC) ||
             v < 0x100 || ONIGENC_MBC_MAXLEN(env->enc) == 1) {
           r = len;
           goto err;
