@@ -2,8 +2,11 @@
 
 make clean
 autoreconf -vfi
+
 # build the library with ASAN
-./configure CC=clang LD=clang CFLAGS="-g -fsanitize=address -fno-omit-frame-pointer -fsanitize=fuzzer-no-link" LDFLAGS="-g -fsanitize=address -fno-omit-frame-pointer -fsanitize=fuzzer-no-link"
+#NO_LINK="-fsanitize=fuzzer-no-link"
+NO_LINK=""
+./configure CC=clang LD=clang CFLAGS="-g -fsanitize=address -fno-omit-frame-pointer $NO_LINK" LDFLAGS="-g -fsanitize=address -fno-omit-frame-pointer $NO_LINK"
 make -j4
 
 OUT=`pwd`/fuzzers
