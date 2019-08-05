@@ -8,7 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DEFAULT_LIMIT 120
+#define PARSE_DEPTH_LIMIT  120
+#define RETRY_LIMIT        120
 typedef unsigned char uint8_t;
 
 static int
@@ -61,8 +62,8 @@ exec(OnigEncoding enc, OnigOptionType options,
   UChar* pattern_end = (UChar* )apattern_end;
 
   onig_initialize(&enc, 1);
-  onig_set_retry_limit_in_match(DEFAULT_LIMIT);
-  onig_set_parse_depth_limit(DEFAULT_LIMIT);
+  onig_set_retry_limit_in_match(RETRY_LIMIT);
+  onig_set_parse_depth_limit(PARSE_DEPTH_LIMIT);
 
   r = onig_new(&reg, pattern, pattern_end,
                options, enc, ONIG_SYNTAX_DEFAULT, &einfo);
