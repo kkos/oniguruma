@@ -8,8 +8,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define PARSE_DEPTH_LIMIT  120
-#define RETRY_LIMIT        120
+#define PARSE_DEPTH_LIMIT   120
+#define RETRY_LIMIT        4000
+
 typedef unsigned char uint8_t;
 
 static int
