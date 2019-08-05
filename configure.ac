@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(onig, 6.9.2)
+AC_INIT(onig, 6.9.3)
 
 AC_CONFIG_MACRO_DIR([m4])
 

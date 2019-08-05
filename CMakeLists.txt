@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 project(oniguruma
-  VERSION 6.9.2
+  VERSION 6.9.3
   LANGUAGES C)
 
 set(PACKAGE onig)
