@@ -1,6 +1,6 @@
 History
 
-2019/08/XX: Version 6.9.3 (fixed security-related issues)
+2019/08/06: Version 6.9.3 (secirity fix release)
 
 2019/07/30: add ONIG_SYN_ALLOW_INVALID_CODE_END_OF_RANGE
 2019/07/29: add STK_PREC_READ_START/END stack type
