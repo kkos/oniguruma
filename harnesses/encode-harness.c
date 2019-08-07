@@ -9,7 +9,7 @@
 #include <string.h>
 
 #define PARSE_DEPTH_LIMIT   120
-#define RETRY_LIMIT        4000
+#define RETRY_LIMIT        3500
 
 typedef unsigned char uint8_t;
 
