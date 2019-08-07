@@ -10,6 +10,7 @@ onig-config
 libtool
 aclocal.m4
 Makefile.in
+.python-version
 *.o
 *.obj
 *.so
@@ -35,7 +36,6 @@ m4/*.m4
 /fuzzers
 
 # src/
-/src/CaseFolding.txt
 /src/unicode_fold?_key.gperf
 /src/unicode_unfold_key.gperf
 /src/UNICODE_PROPERTIES
