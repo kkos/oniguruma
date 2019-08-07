@@ -3,7 +3,7 @@
 **********************************************************************/
 /*-
  * Copyright (c) 2005-2019  KUBO Takehiro <kubo AT jiubao DOT org>
- *                          K.Kosako <sndgk393 AT ybb DOT ne DOT jp>
+ *                          K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
