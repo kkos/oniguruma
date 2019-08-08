@@ -65,3 +65,7 @@ m4/*.m4
 /sample/log*
 
 /harnesses/utf16*.dict
+/harnesses/*-libfuzzer
+/harnesses/main-*
+/harnesses/libfuzzer-onig
+/harnesses/libfuzzer-onig-full
