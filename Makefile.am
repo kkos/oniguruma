@@ -14,7 +14,7 @@ EXTRA_DIST = oniguruma.pc.in HISTORY README_japanese README.md \
 	doc/SYNTAX.md doc/UNICODE_PROPERTIES \
 	src/Makefile.windows src/config.h.windows.in \
 	src/config.h.win32 src/config.h.win64 \
-	windows/testc.c contributed/libfuzzer-onig.cpp contributed/makefile
+	windows/testc.c
 
 bin_SCRIPTS = onig-config
 
