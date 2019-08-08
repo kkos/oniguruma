@@ -51,7 +51,7 @@ libfuzzer-onig-full: libfuzzer-onig.cpp $(ONIG_LIB)
 
 $(ONIG_LIB):
 	cd ..; make clean
-	cd ..; autoreconf -vfi
+	#cd ..; autoreconf -vfi
 	cd ..; ./configure CC=clang LD=clang CFLAGS="-g -fsanitize=address -fno-omit-frame-pointer" LDFLAGS="-g -fsanitize=address -fno-omit-frame-pointer"
 	cd ..; make -j4
 
