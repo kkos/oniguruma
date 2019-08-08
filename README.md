@@ -118,7 +118,7 @@ Version 6.5.0
 * NEW: \O (true anychar)
 * NEW: if-then-else   (?(...)...\|...)
 * NEW: Backreference validity checker (?(xxx)) (*original)
-* NEW: Absent repeater (?~absent)  \[is equal to (?\~\|absent|\O*)]
+* NEW: Absent repeater (?~absent)  \[is equal to (?\~\|(?:absent)|\O*)]
 * NEW: Absent expression   (?~|absent|expr)  (*original)
 * NEW: Absent stopper (?~|absent)     (*original)
 
