@@ -49,39 +49,6 @@ search(regex_t* reg, unsigned char* str, unsigned char* end)
   return 0;
 }
 
-static int
-exec(OnigEncoding enc, OnigOptionType options,
-     char* apattern, char* apattern_end, char* astr, char* astr_end)
-{
-  int r;
-  regex_t* reg;
-  OnigErrorInfo einfo;
-  UChar* pattern = (UChar* )apattern;
-  UChar* str     = (UChar* )astr;
-  UChar* pattern_end = (UChar* )apattern_end;
-  unsigned char *end = (unsigned char* )astr_end;
-
-  onig_initialize(&enc, 1);
-  onig_set_retry_limit_in_match(DEFAULT_LIMIT);
-  onig_set_parse_depth_limit(DEFAULT_LIMIT);
-
-  r = onig_new(&reg, pattern, pattern_end,
-               options, enc, ONIG_SYNTAX_DEFAULT, &einfo);
-  if (r != ONIG_NORMAL) {
-    char s[ONIG_MAX_ERROR_MESSAGE_LEN];
-    onig_error_code_to_str((UChar* )s, r, &einfo);
-    fprintf(stdout, "ERROR: %s\n", s);
-    onig_end();
-    return -1;
-  }
-
-  r = search(reg, str, end);
-
-  onig_free(reg);
-  onig_end();
-  return 0;
-}
-
 static OnigCaseFoldType CF = ONIGENC_CASE_FOLD_MIN;
 
 static int
