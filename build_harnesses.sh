@@ -15,7 +15,7 @@ CFLAGS="-Isrc -g -fsanitize=fuzzer,address -fno-omit-frame-pointer"
 CFLAGS_M="-Isrc -g -fsanitize=fuzzer-no-link,address -fno-omit-frame-pointer"
 
 # Libfuzzer builds
-clang++ contributed/libfuzzer-onig.cpp $LIBS $CFLAGS -o $OUT/libfuzzer-onig
+clang++ harnesses/libfuzzer-onig.cpp $LIBS $CFLAGS -o $OUT/libfuzzer-onig
 clang harnesses/syntax-harness.c $LIBS $CFLAGS -o $OUT/syntax-libfuzzer
 clang harnesses/encode-harness.c $LIBS $CFLAGS -o $OUT/encode-libfuzzer
 clang harnesses/deluxe-encode-harness.c $LIBS $CFLAGS -o $OUT/deluxe-encode-libfuzzer
