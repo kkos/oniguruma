@@ -69,3 +69,7 @@ m4/*.m4
 /harnesses/main-*
 /harnesses/libfuzzer-onig
 /harnesses/libfuzzer-onig-full
+/harnesses/slow-unit-*
+/harnesses/timeout-*
+/harnesses/crash-*
+/harnesses/oom-*
