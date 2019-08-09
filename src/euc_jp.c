@@ -120,25 +120,6 @@ code_to_mbclen(OnigCodePoint code)
     return ONIGERR_INVALID_CODE_POINT_VALUE;
 }
 
-#if 0
-static int
-code_to_mbc_first(OnigCodePoint code)
-{
-  int first;
-
-  if ((code & 0xff0000) != 0) {
-    first = (code >> 16) & 0xff;
-  }
-  else if ((code & 0xff00) != 0) {
-    first = (code >> 8) & 0xff;
-  }
-  else {
-    return (int )code;
-  }
-  return first;
-}
-#endif
-
 static int
 code_to_mbc(OnigCodePoint code, UChar *buf)
 {

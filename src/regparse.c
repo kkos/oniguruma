@@ -292,15 +292,6 @@ bitset_set_range(BitSetRef bs, int from, int to)
   }
 }
 
-#if 0
-static void
-bitset_set_all(BitSetRef bs)
-{
-  int i;
-  for (i = 0; i < BITSET_SIZE; i++) { bs[i] = ~((Bits )0); }
-}
-#endif
-
 static void
 bitset_invert(BitSetRef bs)
 {
@@ -362,24 +353,6 @@ static int
 save_entry(ScanEnv* env, enum SaveType type, int* id)
 {
   int nid = env->save_num;
-
-#if 0
-  if (IS_NULL(env->saves)) {
-    int n = 10;
-    env->saves = (SaveItem* )xmalloc(sizeof(SaveItem) * n);
-    CHECK_NULL_RETURN_MEMERR(env->saves);
-    env->save_alloc_num = n;
-  }
-  else if (env->save_alloc_num <= nid) {
-    int n = env->save_alloc_num * 2;
-    SaveItem* p = (SaveItem* )xrealloc(env->saves, sizeof(SaveItem) * n);
-    CHECK_NULL_RETURN_MEMERR(p);
-    env->saves = p;
-    env->save_alloc_num = n;
-  }
-
-  env->saves[nid].type = type;
-#endif
 
   env->save_num++;
   *id = nid;
@@ -2025,10 +1998,6 @@ scan_env_add_mem_entry(ScanEnv* env)
 
       for (i = env->num_mem + 1; i < alloc; i++) {
         p[i].node = NULL_NODE;
-#if 0
-        p[i].in   = 0;
-        p[i].recursion = 0;
-#endif
       }
 
       env->mem_env_dynamic = p;

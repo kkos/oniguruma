@@ -5423,14 +5423,6 @@ onig_get_capture_range_in_callout(OnigCalloutArgs* a, int mem_num, int* begin, i
       *begin = *end = ONIG_REGION_NOTPOS;
     }
   }
-  else if (i == 0) {
-#if 0
-    *begin = a->start   - str;
-    *end   = a->current - str;
-#else
-    return ONIGERR_INVALID_ARGUMENT;
-#endif
-  }
   else
     return ONIGERR_INVALID_ARGUMENT;
 
@@ -5467,14 +5459,6 @@ onig_builtin_mismatch(OnigCalloutArgs* args ARG_UNUSED, void* user_data ARG_UNUS
 {
   return ONIG_MISMATCH;
 }
-
-#if 0
-extern int
-onig_builtin_success(OnigCalloutArgs* args ARG_UNUSED, void* user_data ARG_UNUSED)
-{
-  return ONIG_CALLOUT_SUCCESS;
-}
-#endif
 
 extern int
 onig_builtin_error(OnigCalloutArgs* args, void* user_data ARG_UNUSED)

@@ -662,49 +662,6 @@ typedef int ModeType;
 
 
 /* op-code + arg size */
-#if 0
-#define SIZE_OP_ANYCHAR_STAR            SIZE_OPCODE
-#define SIZE_OP_ANYCHAR_STAR_PEEK_NEXT (SIZE_OPCODE + 1)
-#define SIZE_OP_JUMP                   (SIZE_OPCODE + SIZE_RELADDR)
-#define SIZE_OP_PUSH                   (SIZE_OPCODE + SIZE_RELADDR)
-#define SIZE_OP_PUSH_SUPER             (SIZE_OPCODE + SIZE_RELADDR)
-#define SIZE_OP_POP_OUT                 SIZE_OPCODE
-#ifdef USE_OP_PUSH_OR_JUMP_EXACT
-#define SIZE_OP_PUSH_OR_JUMP_EXACT1    (SIZE_OPCODE + SIZE_RELADDR + 1)
-#endif
-#define SIZE_OP_PUSH_IF_PEEK_NEXT      (SIZE_OPCODE + SIZE_RELADDR + 1)
-#define SIZE_OP_REPEAT_INC             (SIZE_OPCODE + SIZE_MEMNUM)
-#define SIZE_OP_REPEAT_INC_NG          (SIZE_OPCODE + SIZE_MEMNUM)
-#define SIZE_OP_WORD_BOUNDARY          (SIZE_OPCODE + SIZE_MODE)
-#define SIZE_OP_PREC_READ_START         SIZE_OPCODE
-#define SIZE_OP_PREC_READ_NOT_START    (SIZE_OPCODE + SIZE_RELADDR)
-#define SIZE_OP_PREC_READ_END           SIZE_OPCODE
-#define SIZE_OP_PREC_READ_NOT_END       SIZE_OPCODE
-#define SIZE_OP_FAIL                    SIZE_OPCODE
-#define SIZE_OP_MEMORY_START           (SIZE_OPCODE + SIZE_MEMNUM)
-#define SIZE_OP_MEMORY_START_PUSH      (SIZE_OPCODE + SIZE_MEMNUM)
-#define SIZE_OP_MEMORY_END_PUSH        (SIZE_OPCODE + SIZE_MEMNUM)
-#define SIZE_OP_MEMORY_END_PUSH_REC    (SIZE_OPCODE + SIZE_MEMNUM)
-#define SIZE_OP_MEMORY_END             (SIZE_OPCODE + SIZE_MEMNUM)
-#define SIZE_OP_MEMORY_END_REC         (SIZE_OPCODE + SIZE_MEMNUM)
-#define SIZE_OP_ATOMIC_START            SIZE_OPCODE
-#define SIZE_OP_ATOMIC_END              SIZE_OPCODE
-#define SIZE_OP_EMPTY_CHECK_START       (SIZE_OPCODE + SIZE_MEMNUM)
-#define SIZE_OP_EMPTY_CHECK_END         (SIZE_OPCODE + SIZE_MEMNUM)
-#define SIZE_OP_LOOK_BEHIND            (SIZE_OPCODE + SIZE_LENGTH)
-#define SIZE_OP_LOOK_BEHIND_NOT_START  (SIZE_OPCODE + SIZE_RELADDR + SIZE_LENGTH)
-#define SIZE_OP_LOOK_BEHIND_NOT_END     SIZE_OPCODE
-#define SIZE_OP_CALL                   (SIZE_OPCODE + SIZE_ABSADDR)
-#define SIZE_OP_RETURN                  SIZE_OPCODE
-#define SIZE_OP_PUSH_SAVE_VAL          (SIZE_OPCODE + SIZE_SAVE_TYPE + SIZE_MEMNUM)
-#define SIZE_OP_UPDATE_VAR             (SIZE_OPCODE + SIZE_UPDATE_VAR_TYPE + SIZE_MEMNUM)
-
-#ifdef USE_CALLOUT
-#define SIZE_OP_CALLOUT_CONTENTS       (SIZE_OPCODE + SIZE_MEMNUM)
-#define SIZE_OP_CALLOUT_NAME           (SIZE_OPCODE + SIZE_MEMNUM + SIZE_MEMNUM)
-#endif
-
-#else  /* if 0 */
 
 /* for relative address increment to go next op. */
 #define SIZE_INC_OP                     1
@@ -751,7 +708,6 @@ typedef int ModeType;
 #define SIZE_OP_CALLOUT_CONTENTS        1
 #define SIZE_OP_CALLOUT_NAME            1
 #endif
-#endif /* if 0 */
 
 
 #define MC_ESC(syn)               (syn)->meta_char_table.esc

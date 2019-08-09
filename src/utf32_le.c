@@ -120,38 +120,6 @@ utf32le_mbc_case_fold(OnigCaseFoldType flag,
                                          fold);
 }
 
-#if 0
-static int
-utf32le_is_mbc_ambiguous(OnigCaseFoldType flag, const UChar** pp, const UChar* end)
-{
-  const UChar* p = *pp;
-
-  (*pp) += 4;
-
-  if (*(p+1) == 0 && *(p+2) == 0 && *(p+3) == 0) {
-    int c, v;
-
-    if (*p == 0xdf && (flag & INTERNAL_ONIGENC_CASE_FOLD_MULTI_CHAR) != 0) {
-      return TRUE;
-    }
-
-    c = *p;
-    v = ONIGENC_IS_UNICODE_ISO_8859_1_BIT_CTYPE(c,
-                       (BIT_CTYPE_UPPER | BIT_CTYPE_LOWER));
-    if ((v | BIT_CTYPE_LOWER) != 0) {
-      /* 0xaa, 0xb5, 0xba are lower case letter, but can't convert. */
-      if (c >= 0xaa && c <= 0xba)
-        return FALSE;
-      else
-        return TRUE;
-    }
-    return (v != 0 ? TRUE : FALSE);
-  }
-
-  return FALSE;
-}
-#endif
-
 static UChar*
 utf32le_left_adjust_char_head(const UChar* start, const UChar* s)
 {

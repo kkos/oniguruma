@@ -99,15 +99,6 @@ big5_mbc_case_fold(OnigCaseFoldType flag, const UChar** pp, const UChar* end,
                                    pp, end, lower);
 }
 
-#if 0
-static int
-big5_is_mbc_ambiguous(OnigCaseFoldType flag,
-                      const UChar** pp, const UChar* end)
-{
-  return onigenc_mbn_is_mbc_ambiguous(ONIG_ENCODING_BIG5, flag, pp, end);
-}
-#endif
-
 static int
 big5_is_code_ctype(OnigCodePoint code, unsigned int ctype)
 {

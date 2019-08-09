@@ -98,15 +98,6 @@ euckr_mbc_case_fold(OnigCaseFoldType flag, const UChar** pp, const UChar* end,
                                    pp, end, lower);
 }
 
-#if 0
-static int
-euckr_is_mbc_ambiguous(OnigCaseFoldType flag,
-                       const UChar** pp, const UChar* end)
-{
-  return onigenc_mbn_is_mbc_ambiguous(ONIG_ENCODING_EUC_KR, flag, pp, end);
-}
-#endif
-
 static int
 euckr_is_code_ctype(OnigCodePoint code, unsigned int ctype)
 {

@@ -135,15 +135,6 @@ gb18030_mbc_case_fold(OnigCaseFoldType flag, const UChar** pp, const UChar* end,
                                    pp, end, lower);
 }
 
-#if 0
-static int
-gb18030_is_mbc_ambiguous(OnigCaseFoldType flag,
-                         const UChar** pp, const UChar* end)
-{
-  return onigenc_mbn_is_mbc_ambiguous(ONIG_ENCODING_GB18030, flag, pp, end);
-}
-#endif
-
 static int
 gb18030_is_code_ctype(OnigCodePoint code, unsigned int ctype)
 {
