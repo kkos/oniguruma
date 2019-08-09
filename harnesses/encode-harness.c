@@ -109,7 +109,9 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 	  ONIG_ENCODING_ISO_8859_1,
 	  ONIG_ENCODING_UTF8,
     ONIG_ENCODING_KOI8_R,
-    ONIG_ENCODING_BIG5
+    ONIG_ENCODING_BIG5,
+    ONIG_ENCODING_GB18030,
+    ONIG_ENCODING_EUC_TW
   };
 
   unsigned char encoding_choice;
