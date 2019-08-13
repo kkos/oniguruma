@@ -64,6 +64,9 @@ target_include_directories(onig PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 
+target_compile_definitions(onig PUBLIC
+  $<$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:ONIG_STATIC>)
+
 if(MSVC)
   target_compile_options(onig PRIVATE
 	#/W4
@@ -75,7 +78,6 @@ if(MSVC)
 	  $<$<CONFIG:MinSizeRel>:/MT>
 	  $<$<CONFIG:RelWithDebgInfo>:/MTd>
 	  )
-	target_compile_definitions(onig PUBLIC -DONIG_STATIC)
   endif()
 elseif(CMAKE_COMPILER_IS_GNUCC)
   target_compile_options(onig PRIVATE
