@@ -5497,9 +5497,6 @@ concat_left_node_opt_info(OnigEncoding enc, OptNode* to, OptNode* add)
 
   if (to->spr.len > 0) {
     if (add->len.max > 0) {
-      if (to->spr.len > (int )add->len.max)
-        to->spr.len = add->len.max;
-
       if (to->spr.mmd.max == 0)
         select_opt_exact(enc, &to->sb, &to->spr);
       else
