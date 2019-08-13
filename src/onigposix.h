@@ -95,6 +95,7 @@ typedef struct {
 #endif
 #endif
 
+#ifndef ONIG_STATIC
 #ifndef ONIG_EXTERN
 #if defined(_WIN32) && !defined(__GNUC__)
 #if defined(ONIGURUMA_EXPORT)
@@ -106,6 +107,9 @@ typedef struct {
 #endif
 
 #ifndef ONIG_EXTERN
+#define ONIG_EXTERN   extern
+#endif
+#else
 #define ONIG_EXTERN   extern
 #endif
 
