@@ -29,7 +29,6 @@
 
 #include "regparse.h"
 #include "st.h"
-#include <stdint.h>
 
 #ifdef DEBUG_NODE_FREE
 #include <stdio.h>

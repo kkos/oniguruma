@@ -27,7 +27,6 @@
  * SUCH DAMAGE.
  */
 #include "regint.h"
-#include <stdint.h>
 
 #define IS_MBC_WORD_ASCII_MODE(enc,s,end,mode) \
   ((mode) == 0 ? ONIGENC_IS_MBC_WORD(enc,s,end) : ONIGENC_IS_MBC_WORD_ASCII(enc,s,end))
