@@ -6755,6 +6755,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
 
   case NODE_STRING:
     {
+      char* str;
       char* mode;
       char* dont;
       char* good;
@@ -6776,7 +6777,12 @@ print_indent_tree(FILE* f, Node* node, int indent)
       else
         dont = "";
 
-      fprintf(f, "<string%s%s%s:%p>", mode, good, dont, node);
+      if (STR_(node)->s == STR_(node)->end)
+        str = "empty-string";
+      else
+        str = "string";
+
+      fprintf(f, "<%s%s%s%s:%p>", str, mode, good, dont, node);
       for (p = STR_(node)->s; p < STR_(node)->end; p++) {
         if (*p >= 0x20 && *p < 0x7f)
           fputc(*p, f);
@@ -6898,6 +6904,34 @@ print_indent_tree(FILE* f, Node* node, int indent)
 
   case NODE_BAG:
     fprintf(f, "<bag:%p> ", node);
+    if (BAG_(node)->type == BAG_IF_ELSE) {
+      Node* Then;
+      Node* Else;
+      BagNode* bn;
+
+      bn = BAG_(node);
+      fprintf(f, "if-else\n");
+      print_indent_tree(f, NODE_BODY(node), indent + add);
+
+      Then = bn->te.Then;
+      Else = bn->te.Else;
+      if (IS_NULL(Then)) {
+        Indent(f, indent + add);
+        fprintf(f, "THEN empty\n");
+      }
+      else
+        print_indent_tree(f, Then, indent + add);
+
+      if (IS_NULL(Else)) {
+        Indent(f, indent + add);
+        fprintf(f, "ELSE empty\n");
+      }
+      else
+        print_indent_tree(f, Else, indent + add);
+
+      break;
+    }
+
     switch (BAG_(node)->type) {
     case BAG_OPTION:
       fprintf(f, "option:%d", BAG_(node)->o.options);
@@ -6908,8 +6942,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
     case BAG_STOP_BACKTRACK:
       fprintf(f, "stop-bt");
       break;
-    case BAG_IF_ELSE:
-      fprintf(f, "if-else");
+    default:
       break;
     }
     fprintf(f, "\n");
