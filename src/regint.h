@@ -54,8 +54,10 @@
 #define PLATFORM_UNALIGNED_WORD_ACCESS
 #endif
 
+#ifndef ONIG_DISABLE_DIRECT_THREADING
 #ifdef __GNUC__
 #define USE_GOTO_LABELS_AS_VALUES
+#endif
 #endif
 
 /* config */
