@@ -129,7 +129,7 @@ typedef struct {
 } MatchArg;
 
 
-#ifdef ONIG_DEBUG
+#if defined(ONIG_DEBUG_COMPILE) || defined(ONIG_DEBUG_MATCH)
 
 /* arguments type */
 typedef enum {
@@ -615,7 +615,7 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
     break;
   }
 }
-#endif /* ONIG_DEBUG */
+#endif /* defined(ONIG_DEBUG_COMPILE) || defined(ONIG_DEBUG_MATCH) */
 
 #ifdef ONIG_DEBUG_COMPILE
 extern void
