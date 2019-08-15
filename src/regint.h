@@ -391,11 +391,13 @@ typedef struct _BBuf {
 
 #define BB_INIT(buf,size)    bbuf_init((BBuf* )(buf), (size))
 
+/*
 #define BB_SIZE_INC(buf,inc) do{\
   (buf)->alloc += (inc);\
   (buf)->p = (UChar* )xrealloc((buf)->p, (buf)->alloc);\
   if (IS_NULL((buf)->p)) return(ONIGERR_MEMORY);\
 } while (0)
+*/
 
 #define BB_EXPAND(buf,low) do{\
   do { (buf)->alloc *= 2; } while ((buf)->alloc < (unsigned int )low);\
@@ -654,49 +656,49 @@ typedef int ModeType;
 /* op-code + arg size */
 
 /* for relative address increment to go next op. */
-#define SIZE_INC_OP                     1
+#define SIZE_INC                       1
 
-#define SIZE_OP_ANYCHAR_STAR            1
-#define SIZE_OP_ANYCHAR_STAR_PEEK_NEXT  1
-#define SIZE_OP_JUMP                    1
-#define SIZE_OP_PUSH                    1
-#define SIZE_OP_PUSH_SUPER              1
-#define SIZE_OP_POP_OUT                 1
+#define OPSIZE_ANYCHAR_STAR            1
+#define OPSIZE_ANYCHAR_STAR_PEEK_NEXT  1
+#define OPSIZE_JUMP                    1
+#define OPSIZE_PUSH                    1
+#define OPSIZE_PUSH_SUPER              1
+#define OPSIZE_POP_OUT                 1
 #ifdef USE_OP_PUSH_OR_JUMP_EXACT
-#define SIZE_OP_PUSH_OR_JUMP_EXACT1     1
+#define OPSIZE_PUSH_OR_JUMP_EXACT1     1
 #endif
-#define SIZE_OP_PUSH_IF_PEEK_NEXT       1
-#define SIZE_OP_REPEAT                  1
-#define SIZE_OP_REPEAT_INC              1
-#define SIZE_OP_REPEAT_INC_NG           1
-#define SIZE_OP_WORD_BOUNDARY           1
-#define SIZE_OP_PREC_READ_START         1
-#define SIZE_OP_PREC_READ_NOT_START     1
-#define SIZE_OP_PREC_READ_END           1
-#define SIZE_OP_PREC_READ_NOT_END       1
-#define SIZE_OP_BACKREF                 1
-#define SIZE_OP_FAIL                    1
-#define SIZE_OP_MEMORY_START            1
-#define SIZE_OP_MEMORY_START_PUSH       1
-#define SIZE_OP_MEMORY_END_PUSH         1
-#define SIZE_OP_MEMORY_END_PUSH_REC     1
-#define SIZE_OP_MEMORY_END              1
-#define SIZE_OP_MEMORY_END_REC          1
-#define SIZE_OP_ATOMIC_START            1
-#define SIZE_OP_ATOMIC_END              1
-#define SIZE_OP_EMPTY_CHECK_START       1
-#define SIZE_OP_EMPTY_CHECK_END         1
-#define SIZE_OP_LOOK_BEHIND             1
-#define SIZE_OP_LOOK_BEHIND_NOT_START   1
-#define SIZE_OP_LOOK_BEHIND_NOT_END     1
-#define SIZE_OP_CALL                    1
-#define SIZE_OP_RETURN                  1
-#define SIZE_OP_PUSH_SAVE_VAL           1
-#define SIZE_OP_UPDATE_VAR              1
+#define OPSIZE_PUSH_IF_PEEK_NEXT       1
+#define OPSIZE_REPEAT                  1
+#define OPSIZE_REPEAT_INC              1
+#define OPSIZE_REPEAT_INC_NG           1
+#define OPSIZE_WORD_BOUNDARY           1
+#define OPSIZE_PREC_READ_START         1
+#define OPSIZE_PREC_READ_NOT_START     1
+#define OPSIZE_PREC_READ_END           1
+#define OPSIZE_PREC_READ_NOT_END       1
+#define OPSIZE_BACKREF                 1
+#define OPSIZE_FAIL                    1
+#define OPSIZE_MEMORY_START            1
+#define OPSIZE_MEMORY_START_PUSH       1
+#define OPSIZE_MEMORY_END_PUSH         1
+#define OPSIZE_MEMORY_END_PUSH_REC     1
+#define OPSIZE_MEMORY_END              1
+#define OPSIZE_MEMORY_END_REC          1
+#define OPSIZE_ATOMIC_START            1
+#define OPSIZE_ATOMIC_END              1
+#define OPSIZE_EMPTY_CHECK_START       1
+#define OPSIZE_EMPTY_CHECK_END         1
+#define OPSIZE_LOOK_BEHIND             1
+#define OPSIZE_LOOK_BEHIND_NOT_START   1
+#define OPSIZE_LOOK_BEHIND_NOT_END     1
+#define OPSIZE_CALL                    1
+#define OPSIZE_RETURN                  1
+#define OPSIZE_PUSH_SAVE_VAL           1
+#define OPSIZE_UPDATE_VAR              1
 
 #ifdef USE_CALLOUT
-#define SIZE_OP_CALLOUT_CONTENTS        1
-#define SIZE_OP_CALLOUT_NAME            1
+#define OPSIZE_CALLOUT_CONTENTS        1
+#define OPSIZE_CALLOUT_NAME            1
 #endif
 
 
