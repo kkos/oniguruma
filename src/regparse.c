@@ -1945,7 +1945,7 @@ callout_tag_entry(ScanEnv* env, regex_t* reg, UChar* name, UChar* name_end,
 static void
 scan_env_clear(ScanEnv* env)
 {
-  MEM_STATUS_CLEAR(env->capture_history);
+  MEM_STATUS_CLEAR(env->cap_history);
   MEM_STATUS_CLEAR(env->st_mem_start);
   MEM_STATUS_CLEAR(env->st_mem_end);
   MEM_STATUS_CLEAR(env->backrefed_mem);
@@ -7115,7 +7115,7 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
           CHECK_NULL_RETURN_MEMERR(*np);
           BAG_(*np)->m.regnum = num;
           if (list_capture != 0)
-            MEM_STATUS_ON_SIMPLE(env->capture_history, num);
+            MEM_STATUS_ON_SIMPLE(env->cap_history, num);
           env->num_named++;
         }
         else {
@@ -7434,7 +7434,7 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
           return ONIGERR_GROUP_NUMBER_OVER_FOR_CAPTURE_HISTORY;
         }
         BAG_(*np)->m.regnum = num;
-        MEM_STATUS_ON_SIMPLE(env->capture_history, num);
+        MEM_STATUS_ON_SIMPLE(env->cap_history, num);
       }
       else {
         return ONIGERR_UNDEFINED_GROUP_OPTION;

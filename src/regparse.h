@@ -380,7 +380,7 @@ typedef struct {
   OnigCaseFoldType case_fold_flag;
   OnigEncoding     enc;
   OnigSyntaxType*  syntax;
-  MemStatusType    capture_history;
+  MemStatusType    cap_history;
   MemStatusType    st_mem_start;
   MemStatusType    st_mem_end;
   MemStatusType    backrefed_mem;

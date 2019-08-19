@@ -2303,11 +2303,11 @@ disable_noname_group_capture(Node** root, regex_t* reg, ScanEnv* env)
     }
   }
 
-  loc = env->capture_history;
-  MEM_STATUS_CLEAR(env->capture_history);
+  loc = env->cap_history;
+  MEM_STATUS_CLEAR(env->cap_history);
   for (i = 1; i <= ONIG_MAX_CAPTURE_HISTORY_GROUP; i++) {
     if (MEM_STATUS_AT(loc, i)) {
-      MEM_STATUS_ON_SIMPLE(env->capture_history, map[i].new_val);
+      MEM_STATUS_ON_SIMPLE(env->cap_history, map[i].new_val);
     }
   }
 
@@ -6374,7 +6374,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   print_tree(stderr, root);
 #endif
 
-  reg->capture_history  = scan_env.capture_history;
+  reg->capture_history  = scan_env.cap_history;
   reg->bt_mem_start     = scan_env.st_mem_start;
   reg->bt_mem_start    |= reg->capture_history;
   if (IS_FIND_CONDITION(reg->options))
