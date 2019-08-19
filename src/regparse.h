@@ -381,8 +381,8 @@ typedef struct {
   OnigEncoding     enc;
   OnigSyntaxType*  syntax;
   MemStatusType    capture_history;
-  MemStatusType    bt_mem_start;
-  MemStatusType    bt_mem_end;
+  MemStatusType    st_mem_start;
+  MemStatusType    st_mem_end;
   MemStatusType    backrefed_mem;
   UChar*           pattern;
   UChar*           pattern_end;
