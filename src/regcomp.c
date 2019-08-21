@@ -1020,7 +1020,7 @@ compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
       len += OPSIZE_JUMP + mod_tlen + OPSIZE_PUSH;
   }
   else if (qn->upper == 0) {
-    if (qn->is_refered != 0) { /* /(?<n>..){0}/ */
+    if (qn->include_referred != 0) { /* /(?<n>..){0}/ */
       len = OPSIZE_JUMP + tlen;
     }
     else
@@ -1163,7 +1163,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
     }
   }
   else if (qn->upper == 0) {
-    if (qn->is_refered != 0) { /* /(?<n>..){0}/ */
+    if (qn->include_referred != 0) { /* /(?<n>..){0}/ */
       r = add_op(reg, OP_JUMP);
       if (r != 0) return r;
       COP(reg)->jump.addr = tlen + SIZE_INC;
@@ -3472,7 +3472,7 @@ recursive_call_check_trav(Node* node, ScanEnv* env, int state)
     r = recursive_call_check_trav(NODE_BODY(node), env, state);
     if (QUANT_(node)->upper == 0) {
       if (r == FOUND_CALLED_NODE)
-        QUANT_(node)->is_refered = 1;
+        QUANT_(node)->include_referred = 1;
     }
     break;
 

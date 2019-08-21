@@ -104,7 +104,7 @@ typedef struct {
   enum BodyEmptyType emptiness;
   struct _Node* head_exact;
   struct _Node* next_head_exact;
-  int is_refered;     /* include called node. don't eliminate even if {0} */
+  int include_referred;   /* include called node. don't eliminate even if {0} */
 } QuantNode;
 
 typedef struct {
