@@ -6263,7 +6263,7 @@ parse_char_class(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   CClassNode work_cc;
 
   enum CCSTATE state;
-  enum CCVALTYPE val_type, in_type;
+  enum CCVALTYPE val_type = -1, in_type;
   int val_israw, in_israw;
 
   *np = NULL_NODE;
@@ -6783,7 +6783,7 @@ parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
   UChar* s;
   UChar* e;
   UChar* eesc;
-  OnigCodePoint c;
+  OnigCodePoint c = 0;
   UChar* bufend;
   UChar buf[MAX_CALLOUT_ARG_BYTE_LENGTH];
   OnigEncoding enc = env->enc;
@@ -6793,7 +6793,6 @@ parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
 
   n = 0;
   while (n < ONIG_CALLOUT_MAX_ARGS_NUM) {
-    c   = 0;
     cn  = 0;
     esc = 0;
     eesc = 0;

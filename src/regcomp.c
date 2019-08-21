@@ -6304,7 +6304,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   Node*  root;
   ScanEnv  scan_env;
 #ifdef USE_CALL
-  UnsetAddrList  uslist;
+  UnsetAddrList  uslist = {0};
 #endif
 
   root = 0;

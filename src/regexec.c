@@ -4044,14 +4044,14 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         OnigCalloutFunc func;
         OnigCalloutArgs args;
 
-        of = ONIG_CALLOUT_OF_NAME;
-        name_id = p->callout_name.id;
-        mem     = p->callout_name.num;
+        of  = ONIG_CALLOUT_OF_NAME;
+        mem = p->callout_name.num;
 
       callout_common_entry:
         e = onig_reg_callout_list_at(reg, mem);
         in = e->in;
         if (of == ONIG_CALLOUT_OF_NAME) {
+          name_id = p->callout_name.id;
           func = onig_get_callout_start_func(reg, mem);
         }
         else {
