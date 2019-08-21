@@ -6230,12 +6230,13 @@ parse_char_class(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   Node* node;
   CClassNode *cc, *prev_cc;
   CClassNode work_cc;
-
-  enum CCSTATE state;
-  enum CCVALTYPE val_type = -1, in_type;
   int val_israw, in_israw;
+  enum CCSTATE state;
+  enum CCVALTYPE in_type;
+  enum CCVALTYPE val_type;
 
   *np = NULL_NODE;
+  val_type = -1;
   env->parse_depth++;
   if (env->parse_depth > ParseDepthLimit)
     return ONIGERR_PARSE_DEPTH_LIMIT_OVER;
@@ -6752,7 +6753,7 @@ parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
   UChar* s;
   UChar* e;
   UChar* eesc;
-  OnigCodePoint c = 0;
+  OnigCodePoint c;
   UChar* bufend;
   UChar buf[MAX_CALLOUT_ARG_BYTE_LENGTH];
   OnigEncoding enc = env->enc;
@@ -6760,6 +6761,7 @@ parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
 
   if (PEND) return ONIGERR_INVALID_CALLOUT_PATTERN;
 
+  c = 0;
   n = 0;
   while (n < ONIG_CALLOUT_MAX_ARGS_NUM) {
     cn  = 0;
