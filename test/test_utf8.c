@@ -1205,6 +1205,9 @@ extern int main(int argc, char* argv[])
   x2("[\\x{0}-\\x{7fffffff}]", "a", 0, 1);
   x2("[\\x{7f}-\\x{7fffffff}]", "\xe5\xae\xb6", 0, 3);
 
+  x2("((?(a)\\g<1>|b))", "aab", 0, 3);
+  x2("((?(a)\\g<1>))", "aab", 0, 2);
+
   n("   \xfd", ""); /* https://bugs.php.net/bug.php?id=77370 */
   /* can't use \xfc00.. because compiler error: hex escape sequence out of range */
   n("()0\\xfc00000\\xfc00000\\xfc00000\xfc", ""); /* https://bugs.php.net/bug.php?id=77371 */
