@@ -3298,6 +3298,9 @@ infinite_recursive_call_check(Node* node, ScanEnv* env, int head)
           if ((eret & RECURSION_MUST) == 0)
             r &= ~RECURSION_MUST;
         }
+        else {
+          r &= ~RECURSION_MUST;
+        }
       }
       else {
         r = infinite_recursive_call_check(NODE_BODY(node), env, head);
