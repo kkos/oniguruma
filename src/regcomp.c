@@ -2871,9 +2871,9 @@ tree_min_len(Node* node, ScanEnv* env)
       if (NODE_IS_RECURSION(node)) break;
 
       backs = BACKREFS_P(br);
-      len = tree_min_len(mem_env[backs[0]].node, env);
+      len = tree_min_len(mem_env[backs[0]].mem_node, env);
       for (i = 1; i < br->back_num; i++) {
-        tmin = tree_min_len(mem_env[backs[i]].node, env);
+        tmin = tree_min_len(mem_env[backs[i]].mem_node, env);
         if (len > tmin) len = tmin;
       }
     }
@@ -3042,7 +3042,7 @@ tree_max_len(Node* node, ScanEnv* env)
       }
       backs = BACKREFS_P(br);
       for (i = 0; i < br->back_num; i++) {
-        tmax = tree_max_len(mem_env[backs[i]].node, env);
+        tmax = tree_max_len(mem_env[backs[i]].mem_node, env);
         if (len < tmax) len = tmax;
       }
     }
@@ -3179,7 +3179,7 @@ check_backrefs(Node* node, ScanEnv* env)
         if (backs[i] > env->num_mem)
           return ONIGERR_INVALID_BACKREF;
 
-        NODE_STATUS_ADD(mem_env[backs[i]].node, BACKREF);
+        NODE_STATUS_ADD(mem_env[backs[i]].mem_node, BACKREF);
       }
       r = 0;
     }
@@ -4144,7 +4144,7 @@ setup_call_node_call(CallNode* cn, ScanEnv* env, int state)
     }
 
   set_call_attr:
-    NODE_CALL_BODY(cn) = mem_env[cn->group_num].node;
+    NODE_CALL_BODY(cn) = mem_env[cn->group_num].mem_node;
     if (IS_NULL(NODE_CALL_BODY(cn))) {
       onig_scan_env_set_error_string(env, ONIGERR_UNDEFINED_NAME_REFERENCE,
                                      cn->name, cn->name_end);
@@ -5731,11 +5731,11 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
         break;
       }
       backs = BACKREFS_P(br);
-      min = tree_min_len(mem_env[backs[0]].node, env->scan_env);
-      max = tree_max_len(mem_env[backs[0]].node, env->scan_env);
+      min = tree_min_len(mem_env[backs[0]].mem_node, env->scan_env);
+      max = tree_max_len(mem_env[backs[0]].mem_node, env->scan_env);
       for (i = 1; i < br->back_num; i++) {
-        tmin = tree_min_len(mem_env[backs[i]].node, env->scan_env);
-        tmax = tree_max_len(mem_env[backs[i]].node, env->scan_env);
+        tmin = tree_min_len(mem_env[backs[i]].mem_node, env->scan_env);
+        tmax = tree_max_len(mem_env[backs[i]].mem_node, env->scan_env);
         if (min > tmin) min = tmin;
         if (max < tmax) max = tmax;
       }

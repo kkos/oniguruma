@@ -368,7 +368,8 @@ typedef struct _Node {
     (senv)->mem_env_dynamic : (senv)->mem_env_static)
 
 typedef struct {
-  Node* node;
+  Node* mem_node;
+  Node* empty_repeat_node;
 } MemEnv;
 
 typedef struct {

@@ -1997,7 +1997,8 @@ scan_env_add_mem_entry(ScanEnv* env)
       }
 
       for (i = env->num_mem + 1; i < alloc; i++) {
-        p[i].node = NULL_NODE;
+        p[i].mem_node = NULL_NODE;
+        p[i].empty_repeat_node = NULL_NODE;
       }
 
       env->mem_env_dynamic = p;
@@ -2013,7 +2014,7 @@ static int
 scan_env_set_mem_node(ScanEnv* env, int num, Node* node)
 {
   if (env->num_mem >= num)
-    SCANENV_MEMENV(env)[num].node = node;
+    SCANENV_MEMENV(env)[num].mem_node = node;
   else
     return ONIGERR_PARSER_BUG;
   return 0;
@@ -2326,7 +2327,7 @@ node_new_backref(int back_num, int* backrefs, int by_name,
 
   for (i = 0; i < back_num; i++) {
     if (backrefs[i] <= env->num_mem &&
-        IS_NULL(SCANENV_MEMENV(env)[backrefs[i]].node)) {
+        IS_NULL(SCANENV_MEMENV(env)[backrefs[i]].mem_node)) {
       NODE_STATUS_ADD(node, RECURSION);   /* /...(\1).../ */
       break;
     }
@@ -5270,7 +5271,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       if (IS_SYNTAX_OP(syn, ONIG_SYN_OP_DECIMAL_BACKREF) &&
           (num <= env->num_mem || num <= 9)) { /* This spec. from GNU regex */
         if (IS_SYNTAX_BV(syn, ONIG_SYN_STRICT_CHECK_BACKREF)) {
-          if (num > env->num_mem || IS_NULL(SCANENV_MEMENV(env)[num].node))
+          if (num > env->num_mem || IS_NULL(SCANENV_MEMENV(env)[num].mem_node))
             return ONIGERR_INVALID_BACKREF;
         }
 
@@ -5341,7 +5342,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
             if (IS_SYNTAX_BV(syn, ONIG_SYN_STRICT_CHECK_BACKREF)) {
               if (back_num > env->num_mem ||
-                  IS_NULL(SCANENV_MEMENV(env)[back_num].node))
+                  IS_NULL(SCANENV_MEMENV(env)[back_num].mem_node))
                 return ONIGERR_INVALID_BACKREF;
             }
             tok->type = TK_BACKREF;
@@ -5358,7 +5359,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
               int i;
               for (i = 0; i < num; i++) {
                 if (backs[i] > env->num_mem ||
-                    IS_NULL(SCANENV_MEMENV(env)[backs[i]].node))
+                    IS_NULL(SCANENV_MEMENV(env)[backs[i]].mem_node))
                   return ONIGERR_INVALID_BACKREF;
               }
             }
@@ -7258,7 +7259,7 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
 
             if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_STRICT_CHECK_BACKREF)) {
               if (back_num > env->num_mem ||
-                  IS_NULL(SCANENV_MEMENV(env)[back_num].node))
+                  IS_NULL(SCANENV_MEMENV(env)[back_num].mem_node))
                 return ONIGERR_INVALID_BACKREF;
             }
 
@@ -7280,7 +7281,7 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
               int i;
               for (i = 0; i < num; i++) {
                 if (backs[i] > env->num_mem ||
-                    IS_NULL(SCANENV_MEMENV(env)[backs[i]].node))
+                    IS_NULL(SCANENV_MEMENV(env)[backs[i]].mem_node))
                   return ONIGERR_INVALID_BACKREF;
               }
             }
