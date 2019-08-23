@@ -4430,6 +4430,8 @@ setup_called_state_call(Node* node, int state)
         }
       }
       else if (en->type == BAG_IF_ELSE) {
+        state |= IN_ALT;
+        setup_called_state_call(NODE_BODY(node), state);
         if (IS_NOT_NULL(en->te.Then)) {
           setup_called_state_call(en->te.Then, state);
         }
@@ -4486,6 +4488,7 @@ setup_called_state(Node* node, int state)
         setup_called_state(NODE_BODY(node), state);
         break;
       case BAG_IF_ELSE:
+        state |= IN_ALT;
         setup_called_state(NODE_BODY(node), state);
         if (IS_NOT_NULL(en->te.Then))
           setup_called_state(en->te.Then, state);
