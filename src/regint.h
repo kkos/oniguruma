@@ -304,6 +304,14 @@ typedef unsigned int  MemStatusType;
     (stats) |= ((MemStatusType )1 << (n));\
 } while (0)
 
+#define MEM_STATUS_LIMIT_AT(stats,n) \
+  ((n) < (int )MEM_STATUS_BITS_NUM  ?  ((stats) & ((MemStatusType )1 << n)) : 0)
+#define MEM_STATUS_LIMIT_ON(stats,n) do {\
+  if ((n) < (int )MEM_STATUS_BITS_NUM && (n) != 0) {\
+    (stats) |= ((MemStatusType )1 << (n));\
+  }\
+} while (0)
+
 
 #define INT_MAX_LIMIT           ((1UL << (SIZEOF_INT * 8 - 1)) - 1)
 
@@ -900,6 +908,7 @@ struct re_pattern_buffer {
   unsigned int capture_history;  /* (?@...) flag (1-31) */
   unsigned int bt_mem_start;     /* need backtrack flag */
   unsigned int bt_mem_end;       /* need backtrack flag */
+  unsigned int empty_status_mem;
   int stack_pop_level;
   int repeat_range_alloc;
   OnigRepeatRange* repeat_range;

@@ -6528,6 +6528,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   reg->num_null_check     = 0;
   reg->repeat_range_alloc = 0;
   reg->repeat_range       = (OnigRepeatRange* )NULL;
+  reg->empty_status_mem   = 0;
 
   r = onig_parse_tree(&root, pattern, pattern_end, reg, &scan_env);
   if (r != 0) goto err;
