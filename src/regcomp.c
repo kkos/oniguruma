@@ -3332,7 +3332,7 @@ set_empty_status_check_trav(Node* node, ScanEnv* env)
       for (i = 0; i < br->back_num; i++) {
 	Node* ernode = mem_env[backs[i]].empty_repeat_node;
 	if (IS_NOT_NULL(ernode)) {
-	  if (is_ancestor_node(ernode, node))
+	  if (! is_ancestor_node(ernode, node))
 	    NODE_STATUS_ADD(mem_env[backs[i]].mem_node, EMPTY_STATUS_CHECK);
 	}
       }
