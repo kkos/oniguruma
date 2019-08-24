@@ -73,9 +73,12 @@ enum BodyEmptyType {
   BODY_IS_EMPTY_POSSIBILITY_REC = 3
 };
 
+struct _Node;
+
 typedef struct {
   NodeType node_type;
   int status;
+  struct _Node* parent;
 
   UChar* s;
   UChar* end;
@@ -87,6 +90,7 @@ typedef struct {
 typedef struct {
   NodeType node_type;
   int status;
+  struct _Node* parent;
 
   unsigned int flags;
   BitSet bs;
@@ -96,6 +100,7 @@ typedef struct {
 typedef struct {
   NodeType node_type;
   int status;
+  struct _Node* parent;
   struct _Node* body;
 
   int lower;
@@ -110,6 +115,7 @@ typedef struct {
 typedef struct {
   NodeType node_type;
   int status;
+  struct _Node* parent;
   struct _Node* body;
 
   enum BagType type;
@@ -152,6 +158,7 @@ typedef struct {
 typedef struct {
   NodeType node_type;
   int status;
+  struct _Node* parent;
   struct _Node* body; /* to BagNode : BAG_MEMORY */
 
   int     by_number;
@@ -166,6 +173,7 @@ typedef struct {
 typedef struct {
   NodeType node_type;
   int status;
+  struct _Node* parent;
 
   int  back_num;
   int  back_static[NODE_BACKREFS_SIZE];
@@ -176,6 +184,7 @@ typedef struct {
 typedef struct {
   NodeType node_type;
   int status;
+  struct _Node* parent;
   struct _Node* body;
 
   int type;
@@ -186,6 +195,7 @@ typedef struct {
 typedef struct {
   NodeType node_type;
   int status;
+  struct _Node* parent;
 
   struct _Node* car;
   struct _Node* cdr;
@@ -194,6 +204,7 @@ typedef struct {
 typedef struct {
   NodeType node_type;
   int status;
+  struct _Node* parent;
 
   int ctype;
   int not;
@@ -204,6 +215,7 @@ typedef struct {
 typedef struct {
   NodeType node_type;
   int status;
+  struct _Node* parent;
 
   enum GimmickType type;
   int  detail_type;
@@ -216,6 +228,7 @@ typedef struct _Node {
     struct {
       NodeType node_type;
       int status;
+      struct _Node* parent;
       struct _Node* body;
     } base;
 
@@ -356,6 +369,7 @@ typedef struct _Node {
 #define NODE_IS_STRICT_REAL_REPEAT(node) \
     ((NODE_STATUS(node) & NODE_ST_STRICT_REAL_REPEAT) != 0)
 
+#define NODE_PARENT(node)         ((node)->u.base.parent)
 #define NODE_BODY(node)           ((node)->u.base.body)
 #define NODE_QUANT_BODY(node)     ((node)->body)
 #define NODE_BAG_BODY(node)       ((node)->body)
