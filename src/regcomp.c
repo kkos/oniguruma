@@ -621,10 +621,16 @@ is_strict_real_node(Node* node)
 }
 
 static int
-compile_tree_empty_check(Node* node, regex_t* reg, int emptiness, ScanEnv* env)
+compile_tree_empty_check(QuantNode* qn, regex_t* reg, ScanEnv* env)
 {
   int r;
-  int saved_num_null_check = reg->num_null_check;
+  int saved_num_null_check;
+  int emptiness;
+  Node* body;
+
+  body = NODE_BODY((Node* )qn);
+  emptiness = qn->emptiness;
+  saved_num_null_check = reg->num_null_check;
 
   if (emptiness != BODY_IS_NOT_EMPTY) {
     r = add_op(reg, OP_EMPTY_CHECK_START);
@@ -633,14 +639,18 @@ compile_tree_empty_check(Node* node, regex_t* reg, int emptiness, ScanEnv* env)
     reg->num_null_check++;
   }
 
-  r = compile_tree(node, reg, env);
+  r = compile_tree(body, reg, env);
   if (r != 0) return r;
 
   if (emptiness != BODY_IS_NOT_EMPTY) {
     if (emptiness == BODY_IS_EMPTY_POSSIBILITY)
       r = add_op(reg, OP_EMPTY_CHECK_END);
-    else if (emptiness == BODY_IS_EMPTY_POSSIBILITY_MEM)
-      r = add_op(reg, OP_EMPTY_CHECK_END_MEMST);
+    else if (emptiness == BODY_IS_EMPTY_POSSIBILITY_MEM) {
+      if (NODE_IS_EMPTY_STATUS_CHECK(qn) != 0)
+        r = add_op(reg, OP_EMPTY_CHECK_END_MEMST);
+      else
+        r = add_op(reg, OP_EMPTY_CHECK_END);
+    }
     else if (emptiness == BODY_IS_EMPTY_POSSIBILITY_REC)
       r = add_op(reg, OP_EMPTY_CHECK_END_MEMST_PUSH);
 
@@ -937,7 +947,7 @@ compile_range_repeat_node(QuantNode* qn, int target_len, int emptiness,
   r = entry_repeat_range(reg, num_repeat, qn->lower, qn->upper);
   if (r != 0) return r;
 
-  r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, emptiness, env);
+  r = compile_tree_empty_check(qn, reg, env);
   if (r != 0) return r;
 
   if (
@@ -1116,7 +1126,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
         COP(reg)->push_or_jump_exact1.addr = SIZE_INC + mod_tlen + OPSIZE_JUMP;
         COP(reg)->push_or_jump_exact1.c    = STR_(qn->head_exact)->s[0];
 
-        r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, emptiness, env);
+        r = compile_tree_empty_check(qn, reg, env);
         if (r != 0) return r;
 
         addr = -(mod_tlen + (int )OPSIZE_PUSH_OR_JUMP_EXACT1);
@@ -1129,7 +1139,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
         COP(reg)->push_if_peek_next.addr = SIZE_INC + mod_tlen + OPSIZE_JUMP;
         COP(reg)->push_if_peek_next.c    = STR_(qn->next_head_exact)->s[0];
 
-        r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, emptiness, env);
+        r = compile_tree_empty_check(qn, reg, env);
         if (r != 0) return r;
 
         addr = -(mod_tlen + (int )OPSIZE_PUSH_IF_PEEK_NEXT);
@@ -1139,7 +1149,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
         if (r != 0) return r;
         COP(reg)->push.addr = SIZE_INC + mod_tlen + OPSIZE_JUMP;
 
-        r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, emptiness, env);
+        r = compile_tree_empty_check(qn, reg, env);
         if (r != 0) return r;
 
         addr = -(mod_tlen + (int )OPSIZE_PUSH);
@@ -1154,7 +1164,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
       if (r != 0) return r;
       COP(reg)->jump.addr = mod_tlen + SIZE_INC;
 
-      r = compile_tree_empty_check(NODE_QUANT_BODY(qn), reg, emptiness, env);
+      r = compile_tree_empty_check(qn, reg, env);
       if (r != 0) return r;
 
       r = add_op(reg, OP_PUSH);
