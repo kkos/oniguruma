@@ -3247,8 +3247,10 @@ set_empty_repeat_node_trav(Node* node, Node* empty, ScanEnv* env)
     break;
 
   case NODE_BAG:
-    if (IS_NOT_NULL(NODE_BODY(node)))
+    if (IS_NOT_NULL(NODE_BODY(node))) {
       r = set_empty_repeat_node_trav(NODE_BODY(node), empty, env);
+      if (r != 0) return r;
+    }
     {
       BagNode* en = BAG_(node);
 
@@ -3259,7 +3261,6 @@ set_empty_repeat_node_trav(Node* node, Node* empty, ScanEnv* env)
         }
       }
       else if (en->type == BAG_IF_ELSE) {
-        if (r != 0) return r;
         if (IS_NOT_NULL(en->te.Then)) {
           r = set_empty_repeat_node_trav(en->te.Then, empty, env);
           if (r != 0) return r;
