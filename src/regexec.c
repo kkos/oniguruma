@@ -1953,7 +1953,8 @@ stack_double(int is_alloca, char** arg_alloc_base,
           int level = 0;\
           (isnull) = 1;\
           while (k < stk) {\
-            if (k->type == STK_MEM_START && level == 0) {\
+            if (k->type == STK_MEM_START && level == 0 &&\
+		MEM_STATUS_LIMIT_AT((reg)->empty_status_mem, k->zid)) {\
               STACK_MEM_START_GET_PREV_END_ADDR(k, reg, endp);\
               if (endp == 0) {\
                 (isnull) = 0; break;\
@@ -1999,7 +2000,9 @@ stack_double(int is_alloca, char** arg_alloc_base,
             (isnull) = 1;\
             while (k < stk) {\
               if (k->type == STK_MEM_START) {\
-                if (level == 0 && prec_level == 0) {\
+                if (level == 0 && \
+		    MEM_STATUS_LIMIT_AT((reg)->empty_status_mem, k->zid) !=0 \
+		    && prec_level == 0) {\
                   STACK_MEM_START_GET_PREV_END_ADDR(k, reg, endp);\
                   if (endp == 0) {\
                     (isnull) = 0; break;\
