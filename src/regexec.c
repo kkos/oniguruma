@@ -1950,11 +1950,10 @@ stack_double(int is_alloca, char** arg_alloc_base,
         }\
         else {\
           UChar* endp;\
-          int level = 0;\
           (isnull) = 1;\
           while (k < stk) {\
-            if (k->type == STK_MEM_START && level == 0 &&\
-		MEM_STATUS_LIMIT_AT((reg)->empty_status_mem, k->zid)) {\
+            if (k->type == STK_MEM_START &&\
+              MEM_STATUS_LIMIT_AT((reg)->empty_status_mem, k->zid)) {\
               STACK_MEM_START_GET_PREV_END_ADDR(k, reg, endp);\
               if (endp == 0) {\
                 (isnull) = 0; break;\
@@ -1965,12 +1964,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
               else if (endp != s) {\
                 (isnull) = -1; /* empty, but position changed */ \
               }\
-            }\
-            else if (k->type == STK_PREC_READ_START) {\
-              level++;\
-            }\
-            else if (k->type == STK_PREC_READ_END) {\
-              level--;\
             }\
             k++;\
           }\
@@ -1996,13 +1989,11 @@ stack_double(int is_alloca, char** arg_alloc_base,
           }\
           else {\
             UChar* endp;\
-            int prec_level = 0;\
             (isnull) = 1;\
             while (k < stk) {\
               if (k->type == STK_MEM_START) {\
                 if (level == 0 && \
-		    MEM_STATUS_LIMIT_AT((reg)->empty_status_mem, k->zid) !=0 \
-		    && prec_level == 0) {\
+                  MEM_STATUS_LIMIT_AT((reg)->empty_status_mem, k->zid) !=0) {\
                   STACK_MEM_START_GET_PREV_END_ADDR(k, reg, endp);\
                   if (endp == 0) {\
                     (isnull) = 0; break;\
@@ -2020,12 +2011,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
               }\
               else if (k->type == STK_EMPTY_CHECK_END) {\
                 if (k->zid == (sid)) level--;\
-              }\
-              else if (k->type == STK_PREC_READ_START) {\
-                prec_level++;\
-              }\
-              else if (k->type == STK_PREC_READ_END) {\
-                prec_level--;\
               }\
               k++;\
             }\
