@@ -3221,17 +3221,17 @@ set_empty_repeat_node_trav(Node* node, Node* empty, ScanEnv* env)
       AnchorNode* an = ANCHOR_(node);
 
       if (! ANCHOR_HAS_BODY(an)) {
-	r = 0;
-	break;
+        r = 0;
+        break;
       }
 
       switch (an->type) {
       case ANCR_PREC_READ:
       case ANCR_LOOK_BEHIND:
-	empty = NULL_NODE;
-	break;
+        empty = NULL_NODE;
+        break;
       default:
-	break;
+        break;
       }
       r = set_empty_repeat_node_trav(NODE_BODY(node), empty, env);
     }
@@ -3253,19 +3253,19 @@ set_empty_repeat_node_trav(Node* node, Node* empty, ScanEnv* env)
       BagNode* en = BAG_(node);
 
       if (en->type == BAG_MEMORY) {
-	if (NODE_IS_BACKREF(node)) {
-	  if (IS_NOT_NULL(empty))
-	    SCANENV_MEMENV(env)[en->m.regnum].empty_repeat_node = empty;
-	}
+        if (NODE_IS_BACKREF(node)) {
+          if (IS_NOT_NULL(empty))
+            SCANENV_MEMENV(env)[en->m.regnum].empty_repeat_node = empty;
+        }
       }
       else if (en->type == BAG_IF_ELSE) {
         if (r != 0) return r;
         if (IS_NOT_NULL(en->te.Then)) {
-	  r = set_empty_repeat_node_trav(en->te.Then, empty, env);
+          r = set_empty_repeat_node_trav(en->te.Then, empty, env);
           if (r != 0) return r;
         }
         if (IS_NOT_NULL(en->te.Else)) {
-	  r = set_empty_repeat_node_trav(en->te.Else, empty, env);
+          r = set_empty_repeat_node_trav(en->te.Else, empty, env);
         }
       }
     }
@@ -3323,10 +3323,10 @@ set_empty_status_check_trav(Node* node, ScanEnv* env)
 
       if (en->type == BAG_IF_ELSE) {
         if (IS_NOT_NULL(en->te.Then)) {
-	  set_empty_status_check_trav(en->te.Then, env);
+          set_empty_status_check_trav(en->te.Then, env);
         }
         if (IS_NOT_NULL(en->te.Else)) {
-	  set_empty_status_check_trav(en->te.Else, env);
+          set_empty_status_check_trav(en->te.Else, env);
         }
       }
     }
@@ -3340,14 +3340,14 @@ set_empty_status_check_trav(Node* node, ScanEnv* env)
       BackRefNode* br = BACKREF_(node);
       backs = BACKREFS_P(br);
       for (i = 0; i < br->back_num; i++) {
-	Node* ernode = mem_env[backs[i]].empty_repeat_node;
-	if (IS_NOT_NULL(ernode)) {
-	  if (! is_ancestor_node(ernode, node)) {
-	    MEM_STATUS_LIMIT_ON(env->reg->empty_status_mem, backs[i]);
-	    NODE_STATUS_ADD(ernode, EMPTY_STATUS_CHECK);
-	    NODE_STATUS_ADD(mem_env[backs[i]].mem_node, EMPTY_STATUS_CHECK);
-	  }
-	}
+        Node* ernode = mem_env[backs[i]].empty_repeat_node;
+        if (IS_NOT_NULL(ernode)) {
+          if (! is_ancestor_node(ernode, node)) {
+            MEM_STATUS_LIMIT_ON(env->reg->empty_status_mem, backs[i]);
+            NODE_STATUS_ADD(ernode, EMPTY_STATUS_CHECK);
+            NODE_STATUS_ADD(mem_env[backs[i]].mem_node, EMPTY_STATUS_CHECK);
+          }
+        }
       }
     }
     break;
@@ -3387,9 +3387,9 @@ set_parent_node_trav(Node* node, Node* parent)
 
       if (en->type == BAG_IF_ELSE) {
         if (IS_NOT_NULL(en->te.Then))
-	  set_parent_node_trav(en->te.Then, node);
+          set_parent_node_trav(en->te.Then, node);
         if (IS_NOT_NULL(en->te.Else)) {
-	  set_parent_node_trav(en->te.Else, node);
+          set_parent_node_trav(en->te.Else, node);
         }
       }
     }
