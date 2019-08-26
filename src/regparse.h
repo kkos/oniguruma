@@ -418,7 +418,7 @@ typedef struct {
   MemEnv           mem_env_static[SCANENV_MEMENV_SIZE];
   MemEnv*          mem_env_dynamic;
   unsigned int     parse_depth;
-
+  int backref_num;
   int keep_num;
   int save_num;
   int save_alloc_num;

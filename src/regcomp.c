@@ -6585,11 +6585,12 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   r = setup_tree(root, reg, 0, &scan_env);
   if (r != 0) goto err_unset;
 
-  set_parent_node_trav(root, NULL_NODE);
-  r = set_empty_repeat_node_trav(root, NULL_NODE, &scan_env);
-  if (r != 0) goto err_unset;
-  set_empty_status_check_trav(root, &scan_env);
-
+  if (scan_env.backref_num != 0) {
+    set_parent_node_trav(root, NULL_NODE);
+    r = set_empty_repeat_node_trav(root, NULL_NODE, &scan_env);
+    if (r != 0) goto err_unset;
+    set_empty_status_check_trav(root, &scan_env);
+  }
 
 #ifdef ONIG_DEBUG_PARSE
   print_tree(stderr, root);

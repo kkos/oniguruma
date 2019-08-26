@@ -1966,6 +1966,7 @@ scan_env_clear(ScanEnv* env)
   xmemset(env->mem_env_static, 0, sizeof(env->mem_env_static));
 
   env->parse_depth         = 0;
+  env->backref_num         = 0;
   env->keep_num            = 0;
   env->save_num            = 0;
   env->save_alloc_num      = 0;
@@ -2347,6 +2348,8 @@ node_new_backref(int back_num, int* backrefs, int by_name,
     for (i = 0; i < back_num; i++)
       p[i] = backrefs[i];
   }
+
+  env->backref_num++;
   return node;
 }
 
