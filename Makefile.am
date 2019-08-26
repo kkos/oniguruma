@@ -44,7 +44,7 @@ archive:
 
 sanitize:
 	make clean
-	./configure CC=clang CFLAGS="-O -g -fsanitize=address"
+	./configure --enable-posix-api=no CC=clang CFLAGS="-O -g -fsanitize=address"
 	make
 	make all-test
 
