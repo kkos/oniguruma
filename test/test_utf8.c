@@ -1208,6 +1208,7 @@ extern int main(int argc, char* argv[])
   x2("((?(a)\\g<1>|b))", "aab", 0, 3);
   x2("((?(a)\\g<1>))", "aab", 0, 2);
   x2("(b(?(a)|\\g<1>))", "bba", 0, 3);
+  e("(()(?(2)\\g<1>))", "", ONIGERR_NEVER_ENDING_RECURSION);
 
   n("   \xfd", ""); /* https://bugs.php.net/bug.php?id=77370 */
   /* can't use \xfc00.. because compiler error: hex escape sequence out of range */
