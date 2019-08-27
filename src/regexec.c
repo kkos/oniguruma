@@ -5391,22 +5391,26 @@ onig_get_capture_range_in_callout(OnigCalloutArgs* a, int mem_num, int* begin, i
   const UChar* str;
   StackType*   stk_base;
   int i;
+  StackIndex* mem_start_stk;
+  StackIndex* mem_end_stk;
 
   i = mem_num;
   reg = a->regex;
   str = a->string;
   stk_base = a->stk_base;
+  mem_start_stk = a->mem_start_stk;
+  mem_end_stk   = a->mem_end_stk;
 
   if (i > 0) {
     if (a->mem_end_stk[i] != INVALID_STACK_INDEX) {
       if (MEM_STATUS_AT(reg->bt_mem_start, i))
-        *begin = (int )(STACK_AT(a->mem_start_stk[i])->u.mem.pstr - str);
+        *begin = (int )(STACK_AT(mem_start_stk[i])->u.mem.pstr - str);
       else
-        *begin = (int )((UChar* )((void* )a->mem_start_stk[i]) - str);
+        *begin = (int )((UChar* )((void* )mem_start_stk[i]) - str);
 
       *end = (int )((MEM_STATUS_AT(reg->bt_mem_end, i)
-                     ? STACK_AT(a->mem_end_stk[i])->u.mem.pstr
-                     : (UChar* )((void* )a->mem_end_stk[i])) - str);
+                     ? STACK_AT(mem_end_stk[i])->u.mem.pstr
+                     : (UChar* )((void* )mem_end_stk[i])) - str);
     }
     else {
       *begin = *end = ONIG_REGION_NOTPOS;
