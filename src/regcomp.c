@@ -3706,8 +3706,10 @@ recursive_call_check_trav(Node* node, ScanEnv* env, int state)
           if (! NODE_IS_RECURSION(node)) {
             NODE_STATUS_ADD(node, MARK1);
             r = recursive_call_check(NODE_BODY(node));
-            if (r != 0)
+            if (r != 0) {
               NODE_STATUS_ADD(node, RECURSION);
+              MEM_STATUS_ON(env->backtrack_mem, en->m.regnum);
+            }
             NODE_STATUS_REMOVE(node, MARK1);
           }
 
@@ -4985,6 +4987,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         if ((state & (IN_ALT | IN_NOT | IN_VAR_REPEAT | IN_MULTI_ENTRY)) != 0
             || NODE_IS_RECURSION(node)) {
           MEM_STATUS_ON(env->st_mem_start, en->m.regnum);
+          MEM_STATUS_ON(env->backtrack_mem, en->m.regnum);
         }
         r = setup_tree(NODE_BODY(node), reg, state, env);
         break;

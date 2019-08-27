@@ -1948,6 +1948,7 @@ scan_env_clear(ScanEnv* env)
   MEM_STATUS_CLEAR(env->cap_history);
   MEM_STATUS_CLEAR(env->st_mem_start);
   MEM_STATUS_CLEAR(env->st_mem_end);
+  MEM_STATUS_CLEAR(env->backtrack_mem);
   MEM_STATUS_CLEAR(env->backrefed_mem);
   env->error      = (UChar* )NULL;
   env->error_end  = (UChar* )NULL;
