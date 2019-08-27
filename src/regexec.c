@@ -39,6 +39,10 @@
 
 #define CHECK_INTERRUPT_IN_MATCH
 
+#define STACK_MEM_START(reg, i) \
+  (MEM_STATUS_AT((reg)->bt_mem_start, (i)) != 0 ? \
+   STACK_AT(mem_start_stk[i])->u.mem.pstr : (UChar* )((void* )(mem_start_stk[i])))
+
 #ifdef USE_CALLOUT
 typedef struct {
   int last_match_at_call_counter;
@@ -2688,11 +2692,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
             rmt[0].rm_eo = (regoff_t )(s    - str);
             for (i = 1; i <= num_mem; i++) {
               if (mem_end_stk[i] != INVALID_STACK_INDEX) {
-                if (MEM_STATUS_AT(reg->bt_mem_start, i))
-                  rmt[i].rm_so = (regoff_t )(STACK_AT(mem_start_stk[i])->u.mem.pstr - str);
-                else
-                  rmt[i].rm_so = (regoff_t )((UChar* )((void* )(mem_start_stk[i])) - str);
-
+                rmt[i].rm_so = (regoff_t )(STACK_MEM_START(reg, i) - str);
                 rmt[i].rm_eo = (regoff_t )((MEM_STATUS_AT(reg->bt_mem_end, i)
                                             ? STACK_AT(mem_end_stk[i])->u.mem.pstr
                                             : (UChar* )((void* )mem_end_stk[i]))
@@ -2709,11 +2709,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
             region->end[0] = (int )(s    - str);
             for (i = 1; i <= num_mem; i++) {
               if (mem_end_stk[i] != INVALID_STACK_INDEX) {
-                if (MEM_STATUS_AT(reg->bt_mem_start, i))
-                  region->beg[i] = (int )(STACK_AT(mem_start_stk[i])->u.mem.pstr - str);
-                else
-                  region->beg[i] = (int )((UChar* )((void* )mem_start_stk[i]) - str);
-
+                region->beg[i] = (int )(STACK_MEM_START(reg, i) - str);
                 region->end[i] = (int )((MEM_STATUS_AT(reg->bt_mem_end, i)
                                          ? STACK_AT(mem_end_stk[i])->u.mem.pstr
                                          : (UChar* )((void* )mem_end_stk[i])) - str);
@@ -3458,11 +3454,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         if (mem_end_stk[mem]   == INVALID_STACK_INDEX) goto fail;
         if (mem_start_stk[mem] == INVALID_STACK_INDEX) goto fail;
 
-        if (MEM_STATUS_AT(reg->bt_mem_start, mem))
-          pstart = STACK_AT(mem_start_stk[mem])->u.mem.pstr;
-        else
-          pstart = (UChar* )((void* )mem_start_stk[mem]);
-
+        pstart = STACK_MEM_START(reg, mem);
         pend = (MEM_STATUS_AT(reg->bt_mem_end, mem)
                 ? STACK_AT(mem_end_stk[mem])->u.mem.pstr
                 : (UChar* )((void* )mem_end_stk[mem]));
@@ -3487,11 +3479,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         if (mem_end_stk[mem]   == INVALID_STACK_INDEX) goto fail;
         if (mem_start_stk[mem] == INVALID_STACK_INDEX) goto fail;
 
-        if (MEM_STATUS_AT(reg->bt_mem_start, mem))
-          pstart = STACK_AT(mem_start_stk[mem])->u.mem.pstr;
-        else
-          pstart = (UChar* )((void* )mem_start_stk[mem]);
-
+        pstart = STACK_MEM_START(reg, mem);
         pend = (MEM_STATUS_AT(reg->bt_mem_end, mem)
                 ? STACK_AT(mem_end_stk[mem])->u.mem.pstr
                 : (UChar* )((void* )mem_end_stk[mem]));
@@ -3519,11 +3507,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           if (mem_end_stk[mem]   == INVALID_STACK_INDEX) continue;
           if (mem_start_stk[mem] == INVALID_STACK_INDEX) continue;
 
-          if (MEM_STATUS_AT(reg->bt_mem_start, mem))
-            pstart = STACK_AT(mem_start_stk[mem])->u.mem.pstr;
-          else
-            pstart = (UChar* )((void* )mem_start_stk[mem]);
-
+          pstart = STACK_MEM_START(reg, mem);
           pend = (MEM_STATUS_AT(reg->bt_mem_end, mem)
                   ? STACK_AT(mem_end_stk[mem])->u.mem.pstr
                   : (UChar* )((void* )mem_end_stk[mem]));
@@ -3557,11 +3541,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           if (mem_end_stk[mem]   == INVALID_STACK_INDEX) continue;
           if (mem_start_stk[mem] == INVALID_STACK_INDEX) continue;
 
-          if (MEM_STATUS_AT(reg->bt_mem_start, mem))
-            pstart = STACK_AT(mem_start_stk[mem])->u.mem.pstr;
-          else
-            pstart = (UChar* )((void* )mem_start_stk[mem]);
-
+          pstart = STACK_MEM_START(reg, mem);
           pend = (MEM_STATUS_AT(reg->bt_mem_end, mem)
                   ? STACK_AT(mem_end_stk[mem])->u.mem.pstr
                   : (UChar* )((void* )mem_end_stk[mem]));
@@ -5403,11 +5383,7 @@ onig_get_capture_range_in_callout(OnigCalloutArgs* a, int mem_num, int* begin, i
 
   if (i > 0) {
     if (a->mem_end_stk[i] != INVALID_STACK_INDEX) {
-      if (MEM_STATUS_AT(reg->bt_mem_start, i))
-        *begin = (int )(STACK_AT(mem_start_stk[i])->u.mem.pstr - str);
-      else
-        *begin = (int )((UChar* )((void* )mem_start_stk[i]) - str);
-
+      *begin = (int )(STACK_MEM_START(reg, i) - str);
       *end = (int )((MEM_STATUS_AT(reg->bt_mem_end, i)
                      ? STACK_AT(mem_end_stk[i])->u.mem.pstr
                      : (UChar* )((void* )mem_end_stk[i])) - str);
