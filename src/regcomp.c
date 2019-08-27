@@ -4958,6 +4958,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         MEM_STATUS_ON(env->st_mem_start, p[i]);
 #ifdef USE_BACKREF_WITH_LEVEL
         if (NODE_IS_NEST_LEVEL(node)) {
+          MEM_STATUS_ON(env->backtrack_mem, p[i]);
           MEM_STATUS_ON(env->st_mem_end, p[i]);
         }
 #endif
@@ -6600,15 +6601,26 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 #endif
 
   reg->capture_history  = scan_env.cap_history;
-  reg->bt_mem_start     = scan_env.st_mem_start;
-  reg->bt_mem_start    |= reg->capture_history;
-  if (IS_FIND_CONDITION(reg->options))
-    MEM_STATUS_ON_ALL(reg->bt_mem_end);
-  else {
-    reg->bt_mem_end  = scan_env.st_mem_end;
-    reg->bt_mem_end |= reg->capture_history;
+  reg->bt_mem_start     = scan_env.backtrack_mem | scan_env.cap_history;
+
+#ifdef USE_CALLOUT
+  if (IS_NOT_NULL(reg->extp) && reg->extp->callout_num != 0) {
+    reg->bt_mem_end = reg->bt_mem_start;
   }
-  reg->bt_mem_start |= reg->bt_mem_end;
+  else {
+    if (MEM_STATUS_IS_ALL_ON(reg->bt_mem_start))
+      reg->bt_mem_end = scan_env.backrefed_mem | scan_env.cap_history;
+    else
+      reg->bt_mem_end = reg->bt_mem_start &
+                        (scan_env.backrefed_mem | scan_env.cap_history);
+  }
+#else
+  if (MEM_STATUS_IS_ALL_ON(reg->bt_mem_start))
+    reg->bt_mem_end = scan_env.backrefed_mem | scan_env.cap_history;
+  else
+    reg->bt_mem_end = reg->bt_mem_start &
+                      (scan_env.backrefed_mem | scan_env.cap_history);
+#endif
 
   clear_optimize_info(reg);
 #ifndef ONIG_DONT_OPTIMIZE
