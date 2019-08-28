@@ -399,8 +399,6 @@ typedef struct {
   OnigEncoding     enc;
   OnigSyntaxType*  syntax;
   MemStatusType    cap_history;
-  MemStatusType    st_mem_start;
-  MemStatusType    st_mem_end;
   MemStatusType    backtrack_mem; /* backtrack/recursion */
   MemStatusType    backrefed_mem;
   UChar*           pattern;

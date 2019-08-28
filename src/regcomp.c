@@ -4850,12 +4850,6 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
     if (d == 0) {
 #ifdef USE_STUBBORN_CHECK_CAPTURES_IN_EMPTY_REPEAT
       qn->emptiness = quantifiers_memory_node_info(body);
-      if (qn->emptiness == BODY_IS_EMPTY_POSSIBILITY_REC) {
-        if (NODE_TYPE(body) == NODE_BAG &&
-            BAG_(body)->type == BAG_MEMORY) {
-          MEM_STATUS_ON(env->st_mem_end, BAG_(body)->m.regnum);
-        }
-      }
 #else
       qn->emptiness = BODY_IS_EMPTY_POSSIBILITY;
 #endif
@@ -4955,11 +4949,9 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
       for (i = 0; i < br->back_num; i++) {
         if (p[i] > env->num_mem)  return ONIGERR_INVALID_BACKREF;
         MEM_STATUS_ON(env->backrefed_mem, p[i]);
-        MEM_STATUS_ON(env->st_mem_start, p[i]);
 #ifdef USE_BACKREF_WITH_LEVEL
         if (NODE_IS_NEST_LEVEL(node)) {
           MEM_STATUS_ON(env->backtrack_mem, p[i]);
-          MEM_STATUS_ON(env->st_mem_end, p[i]);
         }
 #endif
       }
@@ -4987,7 +4979,6 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
         if ((state & (IN_ALT | IN_NOT | IN_VAR_REPEAT | IN_MULTI_ENTRY)) != 0
             || NODE_IS_RECURSION(node)) {
-          MEM_STATUS_ON(env->st_mem_start, en->m.regnum);
           MEM_STATUS_ON(env->backtrack_mem, en->m.regnum);
         }
         r = setup_tree(NODE_BODY(node), reg, state, env);
