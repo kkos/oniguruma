@@ -897,29 +897,29 @@ struct re_pattern_buffer {
 #ifdef USE_DIRECT_THREADED_CODE
   enum OpCode* ocs;
 #endif
-  Operation*   ops_curr;
-  unsigned int ops_used;    /* used space for ops */
-  unsigned int ops_alloc;   /* allocated space for ops */
+  Operation*     ops_curr;
+  unsigned int   ops_used;    /* used space for ops */
+  unsigned int   ops_alloc;   /* allocated space for ops */
   unsigned char* string_pool;
   unsigned char* string_pool_end;
 
-  int num_mem;                   /* used memory(...) num counted from 1 */
-  int num_repeat;                /* OP_REPEAT/OP_REPEAT_NG id-counter */
-  int num_null_check;            /* OP_EMPTY_CHECK_START/END id counter */
-  int num_call;                  /* number of subexp call */
-  unsigned int capture_history;  /* (?@...) flag (1-31) */
-  unsigned int push_mem_start;   /* need backtrack flag */
-  unsigned int push_mem_end;     /* need backtrack flag */
-  unsigned int empty_status_mem;
-  int stack_pop_level;
-  int repeat_range_alloc;
+  int            num_mem;          /* used memory(...) num counted from 1 */
+  int            num_repeat;       /* OP_REPEAT/OP_REPEAT_NG id-counter */
+  int            num_null_check;   /* OP_EMPTY_CHECK_START/END id counter */
+  int            num_call;         /* number of subexp call */
+  MemStatusType  capture_history;  /* (?@...) flag (1-31) */
+  MemStatusType  push_mem_start;   /* need backtrack flag */
+  MemStatusType  push_mem_end;     /* need backtrack flag */
+  MemStatusType  empty_status_mem;
+  int            stack_pop_level;
+  int              repeat_range_alloc;
   OnigRepeatRange* repeat_range;
 
-  OnigEncoding      enc;
-  OnigOptionType    options;
-  OnigSyntaxType*   syntax;
-  OnigCaseFoldType  case_fold_flag;
-  void*             name_table;
+  OnigEncoding     enc;
+  OnigOptionType   options;
+  OnigSyntaxType*  syntax;
+  OnigCaseFoldType case_fold_flag;
+  void*            name_table;
 
   /* optimization info (string search, char-map and anchors) */
   int            optimize;          /* optimize flag */
