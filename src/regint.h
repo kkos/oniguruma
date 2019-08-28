@@ -908,8 +908,8 @@ struct re_pattern_buffer {
   int num_null_check;            /* OP_EMPTY_CHECK_START/END id counter */
   int num_call;                  /* number of subexp call */
   unsigned int capture_history;  /* (?@...) flag (1-31) */
-  unsigned int bt_mem_start;     /* need backtrack flag */
-  unsigned int bt_mem_end;       /* need backtrack flag */
+  unsigned int push_mem_start;   /* need backtrack flag */
+  unsigned int push_mem_end;     /* need backtrack flag */
   unsigned int empty_status_mem;
   int stack_pop_level;
   int repeat_range_alloc;

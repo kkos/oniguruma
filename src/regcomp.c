@@ -1277,7 +1277,7 @@ compile_length_bag_node(BagNode* node, regex_t* reg)
     if (NODE_IS_CALLED(node)) {
       len = OPSIZE_MEMORY_START_PUSH + tlen
         + OPSIZE_CALL + OPSIZE_JUMP + OPSIZE_RETURN;
-      if (MEM_STATUS_AT0(reg->bt_mem_end, node->m.regnum))
+      if (MEM_STATUS_AT0(reg->push_mem_end, node->m.regnum))
         len += (NODE_IS_RECURSION(node)
                 ? OPSIZE_MEMORY_END_PUSH_REC : OPSIZE_MEMORY_END_PUSH);
       else
@@ -1286,18 +1286,18 @@ compile_length_bag_node(BagNode* node, regex_t* reg)
     }
     else if (NODE_IS_RECURSION(node)) {
       len = OPSIZE_MEMORY_START_PUSH;
-      len += tlen + (MEM_STATUS_AT0(reg->bt_mem_end, node->m.regnum)
+      len += tlen + (MEM_STATUS_AT0(reg->push_mem_end, node->m.regnum)
                      ? OPSIZE_MEMORY_END_PUSH_REC : OPSIZE_MEMORY_END_REC);
     }
     else
 #endif
     {
-      if (MEM_STATUS_AT0(reg->bt_mem_start, node->m.regnum))
+      if (MEM_STATUS_AT0(reg->push_mem_start, node->m.regnum))
         len = OPSIZE_MEMORY_START_PUSH;
       else
         len = OPSIZE_MEMORY_START;
 
-      len += tlen + (MEM_STATUS_AT0(reg->bt_mem_end, node->m.regnum)
+      len += tlen + (MEM_STATUS_AT0(reg->push_mem_end, node->m.regnum)
                      ? OPSIZE_MEMORY_END_PUSH : OPSIZE_MEMORY_END);
     }
     break;
@@ -1390,7 +1390,7 @@ compile_bag_memory_node(BagNode* node, regex_t* reg, ScanEnv* env)
     else {
       len = compile_length_tree(NODE_BAG_BODY(node), reg);
       len += (OPSIZE_MEMORY_START_PUSH + OPSIZE_RETURN);
-      if (MEM_STATUS_AT0(reg->bt_mem_end, node->m.regnum))
+      if (MEM_STATUS_AT0(reg->push_mem_end, node->m.regnum))
         len += (NODE_IS_RECURSION(node)
                 ? OPSIZE_MEMORY_END_PUSH_REC : OPSIZE_MEMORY_END_PUSH);
       else
@@ -1404,7 +1404,7 @@ compile_bag_memory_node(BagNode* node, regex_t* reg, ScanEnv* env)
   }
 #endif
 
-  if (MEM_STATUS_AT0(reg->bt_mem_start, node->m.regnum))
+  if (MEM_STATUS_AT0(reg->push_mem_start, node->m.regnum))
     r = add_op(reg, OP_MEMORY_START_PUSH);
   else
     r = add_op(reg, OP_MEMORY_START);
@@ -1415,7 +1415,7 @@ compile_bag_memory_node(BagNode* node, regex_t* reg, ScanEnv* env)
   if (r != 0) return r;
 
 #ifdef USE_CALL
-  if (MEM_STATUS_AT0(reg->bt_mem_end, node->m.regnum))
+  if (MEM_STATUS_AT0(reg->push_mem_end, node->m.regnum))
     r = add_op(reg, (NODE_IS_RECURSION(node)
                      ? OP_MEMORY_END_PUSH_REC : OP_MEMORY_END_PUSH));
   else
@@ -1428,7 +1428,7 @@ compile_bag_memory_node(BagNode* node, regex_t* reg, ScanEnv* env)
     r = add_op(reg, OP_RETURN);
   }
 #else
-  if (MEM_STATUS_AT0(reg->bt_mem_end, node->m.regnum))
+  if (MEM_STATUS_AT0(reg->push_mem_end, node->m.regnum))
     r = add_op(reg, OP_MEMORY_END_PUSH);
   else
     r = add_op(reg, OP_MEMORY_END);
@@ -6592,24 +6592,24 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 #endif
 
   reg->capture_history  = scan_env.cap_history;
-  reg->bt_mem_start     = scan_env.backtrack_mem | scan_env.cap_history;
+  reg->push_mem_start     = scan_env.backtrack_mem | scan_env.cap_history;
 
 #ifdef USE_CALLOUT
   if (IS_NOT_NULL(reg->extp) && reg->extp->callout_num != 0) {
-    reg->bt_mem_end = reg->bt_mem_start;
+    reg->push_mem_end = reg->push_mem_start;
   }
   else {
-    if (MEM_STATUS_IS_ALL_ON(reg->bt_mem_start))
-      reg->bt_mem_end = scan_env.backrefed_mem | scan_env.cap_history;
+    if (MEM_STATUS_IS_ALL_ON(reg->push_mem_start))
+      reg->push_mem_end = scan_env.backrefed_mem | scan_env.cap_history;
     else
-      reg->bt_mem_end = reg->bt_mem_start &
+      reg->push_mem_end = reg->push_mem_start &
                         (scan_env.backrefed_mem | scan_env.cap_history);
   }
 #else
-  if (MEM_STATUS_IS_ALL_ON(reg->bt_mem_start))
-    reg->bt_mem_end = scan_env.backrefed_mem | scan_env.cap_history;
+  if (MEM_STATUS_IS_ALL_ON(reg->push_mem_start))
+    reg->push_mem_end = scan_env.backrefed_mem | scan_env.cap_history;
   else
-    reg->bt_mem_end = reg->bt_mem_start &
+    reg->push_mem_end = reg->push_mem_start &
                       (scan_env.backrefed_mem | scan_env.cap_history);
 #endif
 
@@ -6645,14 +6645,14 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
     }
 #endif
 
-    if ((reg->num_repeat != 0) || (reg->bt_mem_end != 0)
+    if ((reg->num_repeat != 0) || (reg->push_mem_end != 0)
 #ifdef USE_CALLOUT
         || (IS_NOT_NULL(reg->extp) && reg->extp->callout_num != 0)
 #endif
         )
       reg->stack_pop_level = STACK_POP_LEVEL_ALL;
     else {
-      if (reg->bt_mem_start != 0)
+      if (reg->push_mem_start != 0)
         reg->stack_pop_level = STACK_POP_LEVEL_MEM_START;
       else
         reg->stack_pop_level = STACK_POP_LEVEL_FREE;

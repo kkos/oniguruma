@@ -40,11 +40,11 @@
 #define CHECK_INTERRUPT_IN_MATCH
 
 #define STACK_MEM_START(reg, i) \
-  (MEM_STATUS_AT((reg)->bt_mem_start, (i)) != 0 ? \
+  (MEM_STATUS_AT((reg)->push_mem_start, (i)) != 0 ? \
    STACK_AT(mem_start_stk[i])->u.mem.pstr : (UChar* )((void* )(mem_start_stk[i])))
 
 #define STACK_MEM_END(reg, i) \
-  (MEM_STATUS_AT((reg)->bt_mem_end, (i)) != 0 ? \
+  (MEM_STATUS_AT((reg)->push_mem_end, (i)) != 0 ? \
    STACK_AT(mem_end_stk[i])->u.mem.pstr : (UChar* )((void* )(mem_end_stk[i])))
 
 
@@ -634,8 +634,8 @@ onig_print_compiled_byte_code_list(FILE* f, regex_t* reg)
   Operation* start = reg->ops;
   Operation* end   = reg->ops + reg->ops_used;
 
-  fprintf(f, "bt_mem_start: 0x%x, bt_mem_end: 0x%x\n",
-          reg->bt_mem_start, reg->bt_mem_end);
+  fprintf(f, "push_mem_start: 0x%x, push_mem_end: 0x%x\n",
+          reg->push_mem_start, reg->push_mem_end);
   fprintf(f, "code-length: %d\n", reg->ops_used);
 
   bp = start;
@@ -1938,7 +1938,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
     (addr) = 0;\
   }\
   else {\
-    if (MEM_STATUS_AT((reg)->bt_mem_end, k->zid))\
+    if (MEM_STATUS_AT((reg)->push_mem_end, k->zid))\
       (addr) = STACK_AT(k->u.mem.prev_end)->u.mem.pstr;\
     else\
       (addr) = (UChar* )k->u.mem.prev_end;\
@@ -3426,7 +3426,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       mem_end_stk[mem] = (StackIndex )((void* )s);
       STACK_GET_MEM_START(mem, stkp);
 
-      if (MEM_STATUS_AT(reg->bt_mem_start, mem))
+      if (MEM_STATUS_AT(reg->push_mem_start, mem))
         mem_start_stk[mem] = GET_STACK_INDEX(stkp);
       else
         mem_start_stk[mem] = (StackIndex )((void* )stkp->u.mem.pstr);
