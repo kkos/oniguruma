@@ -6048,10 +6048,12 @@ fetch_char_property_to_ctype(UChar** src, UChar* end, ScanEnv* env)
 {
   int r;
   OnigCodePoint c;
-  OnigEncoding enc = env->enc;
-  UChar *prev, *start, *p = *src;
+  OnigEncoding enc;
+  UChar *prev, *start, *p;
 
-  r = 0;
+  p = *src;
+  enc = env->enc;
+  r = ONIGERR_END_PATTERN_WITH_UNMATCHED_PARENTHESIS;
   start = prev = p;
 
   while (!PEND) {
@@ -6059,18 +6061,20 @@ fetch_char_property_to_ctype(UChar** src, UChar* end, ScanEnv* env)
     PFETCH_S(c);
     if (c == '}') {
       r = ONIGENC_PROPERTY_NAME_TO_CTYPE(enc, start, prev);
-      if (r < 0) break;
+      if (r >= 0) {
+        *src = p;
+      }
+      else {
+        onig_scan_env_set_error_string(env, r, *src, prev);
+      }
 
-      *src = p;
       return r;
     }
     else if (c == '(' || c == ')' || c == '{' || c == '|') {
-      r = ONIGERR_INVALID_CHAR_PROPERTY_NAME;
       break;
     }
   }
 
-  onig_scan_env_set_error_string(env, r, *src, prev);
   return r;
 }
 
