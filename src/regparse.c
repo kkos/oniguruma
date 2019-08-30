@@ -6749,7 +6749,8 @@ parse_long(OnigEncoding enc, UChar* s, UChar* end, int sign_on, long max, long* 
 
 static int
 parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
-                   unsigned int types[], OnigValue vals[], ScanEnv* env)
+                   int max_arg_num, unsigned int types[], OnigValue vals[],
+                   ScanEnv* env)
 {
 #define MAX_CALLOUT_ARG_BYTE_LENGTH   128
 
@@ -6817,6 +6818,9 @@ parse_callout_args(int skip_mode, int cterm, UChar** src, UChar* end,
     }
 
     if (cn != 0) {
+      if (max_arg_num >= 0 && n >= max_arg_num)
+        return ONIGERR_INVALID_CALLOUT_ARG;
+
       if (skip_mode == 0) {
         if ((types[n] & ONIG_TYPE_LONG) != 0) {
           int fixed = 0;
@@ -6949,7 +6953,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
 
     /* read for single check only */
     save = p;
-    arg_num = parse_callout_args(1, '}', &p, end, 0, 0, env);
+    arg_num = parse_callout_args(1, '}', &p, end, -1, 0, 0, env);
     if (arg_num < 0) return arg_num;
 
     is_not_single = PPEEK_IS(cterm) ?  0 : 1;
@@ -6963,7 +6967,7 @@ parse_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* en
       types[i] = get_callout_arg_type_by_name_id(name_id, i);
     }
 
-    arg_num = parse_callout_args(0, '}', &p, end, types, vals, env);
+    arg_num = parse_callout_args(0, '}', &p, end, max_arg_num, types, vals, env);
     if (arg_num < 0) return arg_num;
 
     if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
