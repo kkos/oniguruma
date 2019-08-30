@@ -3,10 +3,15 @@
  * contributed by Mark Griffin
  */
 #include <stdio.h>
-#include "oniguruma.h"
-
+#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+#include "oniguruma.h"
+
 
 #define PARSE_DEPTH_LIMIT   120
 #define RETRY_LIMIT        3500
@@ -73,7 +78,15 @@ exec(OnigEncoding enc, OnigOptionType options,
     onig_error_code_to_str((UChar* )s, r, &einfo);
     fprintf(stdout, "ERROR: %s\n", s);
     onig_end();
-    return -1;
+
+    if (r == ONIGERR_PARSER_BUG ||
+        r == ONIGERR_STACK_BUG  ||
+        r == ONIGERR_UNDEFINED_BYTECODE ||
+        r == ONIGERR_UNEXPECTED_BYTECODE) {
+      return -2;
+    }
+    else
+      return -1;
   }
 
   if (onigenc_is_valid_mbc_string(enc, str, end) != 0) {
@@ -84,6 +97,28 @@ exec(OnigEncoding enc, OnigOptionType options,
   onig_end();
   return 0;
 }
+
+#if 0
+static void
+output_data(char* path, const uint8_t * data, size_t size)
+{
+  int fd;
+  ssize_t n;
+
+  fd = open(path, O_CREAT|O_RDWR, S_IRUSR|S_IRGRP|S_IROTH);
+  if (fd == -1) {
+    fprintf(stderr, "ERROR: output_data(): can't open(%s)\n", path);
+    return ;
+  }
+
+  n = write(fd, (const void* )data, size);
+  if (n != size) {
+    fprintf(stderr, "ERROR: output_data(): n: %ld, size: %ld\n", n, size);
+  }
+  close(fd);
+}
+#endif
+
 
 #define PATTERN_SIZE 32
 #define NUM_CONTROL_BYTES 1
@@ -165,12 +200,15 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   free(pattern);
   free(str);
 
+  if (r == -2) {
+    //output_data("parser-bug", Data, Size);
+    exit(-2);
+  }
+
   return r;
 }
 
 #ifdef WITH_READ_MAIN
-
-#include <unistd.h>
 
 extern int main(int argc, char* argv[])
 {
