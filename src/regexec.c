@@ -4466,17 +4466,17 @@ onig_match_with_param(regex_t* reg, const UChar* str, const UChar* end,
 }
 
 static int
-forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
-                     UChar* range, UChar** low, UChar** high, UChar** low_prev)
+forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
+               UChar* range, UChar** low, UChar** high, UChar** low_prev)
 {
   UChar *p, *pprev = (UChar* )NULL;
 
 #ifdef ONIG_DEBUG_SEARCH
-  fprintf(stderr, "forward_search_range: str: %p, end: %p, s: %p, range: %p\n",
-          str, end, s, range);
+  fprintf(stderr, "forward_search: str: %p, end: %p, start: %p, range: %p\n",
+          str, end, start, range);
 #endif
 
-  p = s;
+  p = start;
   if (reg->dmin > 0) {
     if (ONIGENC_IS_SINGLEBYTE(reg->enc)) {
       p += reg->dmin;
@@ -4519,7 +4519,7 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
   }
 
   if (p && p < range) {
-    if (p - reg->dmin < s) {
+    if (p - reg->dmin < start) {
     retry_gate:
       pprev = p;
       p += enclen(reg->enc, p);
@@ -4532,8 +4532,7 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
       switch (reg->sub_anchor) {
       case ANCR_BEGIN_LINE:
         if (!ON_STR_BEGIN(p)) {
-          prev = onigenc_get_prev_char_head(reg->enc,
-                                            (pprev ? pprev : str), p);
+          prev = onigenc_get_prev_char_head(reg->enc, (pprev ? pprev : str), p);
           if (!ONIGENC_IS_MBC_NEWLINE(reg->enc, prev, end))
             goto retry_gate;
         }
@@ -4554,6 +4553,7 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
 #endif
                  )
           goto retry_gate;
+
         break;
       }
     }
@@ -4561,8 +4561,8 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
     if (reg->dmax == 0) {
       *low = p;
       if (low_prev) {
-        if (*low > s)
-          *low_prev = onigenc_get_prev_char_head(reg->enc, s, p);
+        if (*low > start)
+          *low_prev = onigenc_get_prev_char_head(reg->enc, start, p);
         else
           *low_prev = onigenc_get_prev_char_head(reg->enc,
                                                  (pprev ? pprev : str), p);
@@ -4577,12 +4577,12 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
         }
         else {
           *low = p - reg->dmax;
-          if (*low > s) {
-            *low = onigenc_get_right_adjust_char_head_with_prev(reg->enc, s,
+          if (*low > start) {
+            *low = onigenc_get_right_adjust_char_head_with_prev(reg->enc, start,
                                                  *low, (const UChar** )low_prev);
             if (low_prev && IS_NULL(*low_prev))
               *low_prev = onigenc_get_prev_char_head(reg->enc,
-                                                     (pprev ? pprev : s), *low);
+                                                     (pprev ? pprev : start), *low);
           }
           else {
             if (low_prev)
@@ -4597,7 +4597,7 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
 
 #ifdef ONIG_DEBUG_SEARCH
     fprintf(stderr,
-            "forward_search_range success: low: %d, high: %d, dmin: %d, dmax: %d\n",
+            "forward_search success: low: %d, high: %d, dmin: %d, dmax: %d\n",
             (int )(*low - str), (int )(*high - str), reg->dmin, reg->dmax);
 #endif
     return 1; /* success */
@@ -4608,9 +4608,8 @@ forward_search_range(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
 
 
 static int
-backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
-                      UChar* s, const UChar* range, UChar* adjrange,
-                      UChar** low, UChar** high)
+backward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
+                const UChar* range, UChar* adjrange, UChar** low, UChar** high)
 {
   UChar *p;
 
@@ -4691,7 +4690,7 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
     }
 
 #ifdef ONIG_DEBUG_SEARCH
-    fprintf(stderr, "backward_search_range: low: %d, high: %d\n",
+    fprintf(stderr, "backward_search: low: %d, high: %d\n",
             (int )(*low - str), (int )(*high - str));
 #endif
     return 1; /* success */
@@ -4699,7 +4698,7 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
 
  fail:
 #ifdef ONIG_DEBUG_SEARCH
-  fprintf(stderr, "backward_search_range: fail.\n");
+  fprintf(stderr, "backward_search: fail.\n");
 #endif
   return 0; /* fail */
 }
@@ -4918,8 +4917,8 @@ onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
 
       if (reg->dmax != INFINITE_LEN) {
         do {
-          if (! forward_search_range(reg, str, end, s, sch_range,
-                                     &low, &high, &low_prev)) goto mismatch;
+          if (! forward_search(reg, str, end, s, sch_range, &low, &high,
+                               &low_prev)) goto mismatch;
           if (s < low) {
             s    = low;
             prev = low_prev;
@@ -4933,8 +4932,8 @@ onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
         goto mismatch;
       }
       else { /* check only. */
-        if (! forward_search_range(reg, str, end, s, sch_range,
-                                   &low, &high, (UChar** )NULL)) goto mismatch;
+        if (! forward_search(reg, str, end, s, sch_range, &low, &high,
+                             (UChar** )NULL)) goto mismatch;
 
         if ((reg->anchor & ANCR_ANYCHAR_INF) != 0) {
           do {
@@ -4983,8 +4982,8 @@ onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
         do {
           sch_start = s + reg->dmax;
           if (sch_start > end) sch_start = (UChar* )end;
-          if (backward_search_range(reg, str, end, sch_start, range, adjrange,
-                                    &low, &high) <= 0)
+          if (backward_search(reg, str, end, sch_start, range, adjrange,
+                              &low, &high) <= 0)
             goto mismatch;
 
           if (s > high)
@@ -5013,8 +5012,8 @@ onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
                                                         start, sch_start);
           }
         }
-        if (backward_search_range(reg, str, end, sch_start, range, adjrange,
-                                  &low, &high) <= 0) goto mismatch;
+        if (backward_search(reg, str, end, sch_start, range, adjrange,
+                            &low, &high) <= 0) goto mismatch;
       }
     }
 
