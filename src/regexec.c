@@ -4580,9 +4580,6 @@ forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
           if (*low > start) {
             *low = onigenc_get_right_adjust_char_head_with_prev(reg->enc, start,
                                                  *low, (const UChar** )low_prev);
-            if (low_prev && IS_NULL(*low_prev))
-              *low_prev = onigenc_get_prev_char_head(reg->enc,
-                                                     (pprev ? pprev : start), *low);
           }
           else {
             if (low_prev)
