@@ -1405,9 +1405,9 @@ compile_bag_memory_node(BagNode* node, regex_t* reg, ScanEnv* env)
 #endif
 
   if (MEM_STATUS_AT0(reg->push_mem_start, node->m.regnum))
-    r = add_op(reg, OP_MEMORY_START_PUSH);
+    r = add_op(reg, OP_MEM_START_PUSH);
   else
-    r = add_op(reg, OP_MEMORY_START);
+    r = add_op(reg, OP_MEM_START);
   if (r != 0) return r;
   COP(reg)->memory_start.num = node->m.regnum;
 
@@ -1417,9 +1417,9 @@ compile_bag_memory_node(BagNode* node, regex_t* reg, ScanEnv* env)
 #ifdef USE_CALL
   if (MEM_STATUS_AT0(reg->push_mem_end, node->m.regnum))
     r = add_op(reg, (NODE_IS_RECURSION(node)
-                     ? OP_MEMORY_END_PUSH_REC : OP_MEMORY_END_PUSH));
+                     ? OP_MEM_END_PUSH_REC : OP_MEM_END_PUSH));
   else
-    r = add_op(reg, (NODE_IS_RECURSION(node) ? OP_MEMORY_END_REC : OP_MEMORY_END));
+    r = add_op(reg, (NODE_IS_RECURSION(node) ? OP_MEM_END_REC : OP_MEM_END));
   if (r != 0) return r;
   COP(reg)->memory_end.num = node->m.regnum;
 
@@ -1429,9 +1429,9 @@ compile_bag_memory_node(BagNode* node, regex_t* reg, ScanEnv* env)
   }
 #else
   if (MEM_STATUS_AT0(reg->push_mem_end, node->m.regnum))
-    r = add_op(reg, OP_MEMORY_END_PUSH);
+    r = add_op(reg, OP_MEM_END_PUSH);
   else
-    r = add_op(reg, OP_MEMORY_END);
+    r = add_op(reg, OP_MEM_END);
   if (r != 0) return r;
   COP(reg)->memory_end.num = node->m.regnum;
 #endif

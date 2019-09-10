@@ -558,12 +558,12 @@ enum OpCode {
   OP_BACKREF_WITH_LEVEL_IC,     /* \k<xxx+n>, \k<xxx-n> */
   OP_BACKREF_CHECK,             /* (?(n)), (?('name')) */
   OP_BACKREF_CHECK_WITH_LEVEL,  /* (?(n-level)), (?('name-level')) */
-  OP_MEMORY_START,
-  OP_MEMORY_START_PUSH,   /* push back-tracker to stack */
-  OP_MEMORY_END_PUSH,     /* push back-tracker to stack */
-  OP_MEMORY_END_PUSH_REC, /* push back-tracker to stack */
-  OP_MEMORY_END,
-  OP_MEMORY_END_REC,      /* push marker to stack */
+  OP_MEM_START,
+  OP_MEM_START_PUSH,     /* push back-tracker to stack */
+  OP_MEM_END_PUSH,       /* push back-tracker to stack */
+  OP_MEM_END_PUSH_REC,   /* push back-tracker to stack */
+  OP_MEM_END,
+  OP_MEM_END_REC,        /* push marker to stack */
   OP_FAIL,               /* pop stack and move */
   OP_JUMP,
   OP_PUSH,
