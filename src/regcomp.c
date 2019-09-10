@@ -1275,30 +1275,30 @@ compile_length_bag_node(BagNode* node, regex_t* reg)
     }
 
     if (NODE_IS_CALLED(node)) {
-      len = OPSIZE_MEMORY_START_PUSH + tlen
+      len = OPSIZE_MEM_START_PUSH + tlen
         + OPSIZE_CALL + OPSIZE_JUMP + OPSIZE_RETURN;
       if (MEM_STATUS_AT0(reg->push_mem_end, node->m.regnum))
         len += (NODE_IS_RECURSION(node)
-                ? OPSIZE_MEMORY_END_PUSH_REC : OPSIZE_MEMORY_END_PUSH);
+                ? OPSIZE_MEM_END_PUSH_REC : OPSIZE_MEM_END_PUSH);
       else
         len += (NODE_IS_RECURSION(node)
-                ? OPSIZE_MEMORY_END_REC : OPSIZE_MEMORY_END);
+                ? OPSIZE_MEM_END_REC : OPSIZE_MEM_END);
     }
     else if (NODE_IS_RECURSION(node)) {
-      len = OPSIZE_MEMORY_START_PUSH;
+      len = OPSIZE_MEM_START_PUSH;
       len += tlen + (MEM_STATUS_AT0(reg->push_mem_end, node->m.regnum)
-                     ? OPSIZE_MEMORY_END_PUSH_REC : OPSIZE_MEMORY_END_REC);
+                     ? OPSIZE_MEM_END_PUSH_REC : OPSIZE_MEM_END_REC);
     }
     else
 #endif
     {
       if (MEM_STATUS_AT0(reg->push_mem_start, node->m.regnum))
-        len = OPSIZE_MEMORY_START_PUSH;
+        len = OPSIZE_MEM_START_PUSH;
       else
-        len = OPSIZE_MEMORY_START;
+        len = OPSIZE_MEM_START;
 
       len += tlen + (MEM_STATUS_AT0(reg->push_mem_end, node->m.regnum)
-                     ? OPSIZE_MEMORY_END_PUSH : OPSIZE_MEMORY_END);
+                     ? OPSIZE_MEM_END_PUSH : OPSIZE_MEM_END);
     }
     break;
 
@@ -1389,13 +1389,12 @@ compile_bag_memory_node(BagNode* node, regex_t* reg, ScanEnv* env)
     }
     else {
       len = compile_length_tree(NODE_BAG_BODY(node), reg);
-      len += (OPSIZE_MEMORY_START_PUSH + OPSIZE_RETURN);
+      len += (OPSIZE_MEM_START_PUSH + OPSIZE_RETURN);
       if (MEM_STATUS_AT0(reg->push_mem_end, node->m.regnum))
         len += (NODE_IS_RECURSION(node)
-                ? OPSIZE_MEMORY_END_PUSH_REC : OPSIZE_MEMORY_END_PUSH);
+                ? OPSIZE_MEM_END_PUSH_REC : OPSIZE_MEM_END_PUSH);
       else
-        len += (NODE_IS_RECURSION(node)
-                ? OPSIZE_MEMORY_END_REC : OPSIZE_MEMORY_END);
+        len += (NODE_IS_RECURSION(node) ? OPSIZE_MEM_END_REC : OPSIZE_MEM_END);
 
       r = add_op(reg, OP_JUMP);
       if (r != 0) return r;
