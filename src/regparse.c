@@ -7773,7 +7773,8 @@ i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[], int to_len, void* arg)
 #ifdef CASE_FOLD_IS_APPLIED_INSIDE_NEGATIVE_CCLASS
     if ((is_in != 0 && !IS_NCCLASS_NOT(cc)) ||
         (is_in == 0 &&  IS_NCCLASS_NOT(cc))) {
-      if (ONIGENC_MBC_MINLEN(env->enc) > 1 || *to >= SINGLE_BYTE_SIZE) {
+      if (ONIGENC_MBC_MINLEN(env->enc) > 1 ||
+          ONIGENC_CODE_TO_MBCLEN(env->enc, *to) != 1) {
         add_code_range(&(cc->mbuf), env, *to, *to);
       }
       else {
@@ -7782,7 +7783,8 @@ i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[], int to_len, void* arg)
     }
 #else
     if (is_in != 0) {
-      if (ONIGENC_MBC_MINLEN(env->enc) > 1 || *to >= SINGLE_BYTE_SIZE) {
+      if (ONIGENC_MBC_MINLEN(env->enc) > 1 ||
+          ONIGENC_CODE_TO_MBCLEN(env->enc, *to) != 1) {
         if (IS_NCCLASS_NOT(cc)) clear_not_flag_cclass(cc, env->enc);
         add_code_range(&(cc->mbuf), env, *to, *to);
       }
