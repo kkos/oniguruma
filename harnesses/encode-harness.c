@@ -31,6 +31,7 @@ search(regex_t* reg, unsigned char* str, unsigned char* end)
   range = end;
   r = onig_search(reg, str, end, start, range, region, ONIG_OPTION_NONE);
   if (r >= 0) {
+#ifdef WITH_READ_MAIN
     int i;
 
     fprintf(stdout, "match at %d  (%s)\n", r,
@@ -38,16 +39,22 @@ search(regex_t* reg, unsigned char* str, unsigned char* end)
     for (i = 0; i < region->num_regs; i++) {
       fprintf(stdout, "%d: (%d-%d)\n", i, region->beg[i], region->end[i]);
     }
+#endif
   }
   else if (r == ONIG_MISMATCH) {
+#ifdef WITH_READ_MAIN
     fprintf(stdout, "search fail (%s)\n",
             ONIGENC_NAME(onig_get_encoding(reg)));
+#endif
   }
   else { /* error */
+#ifdef WITH_READ_MAIN
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
+
     onig_error_code_to_str((UChar* )s, r);
     fprintf(stdout, "ERROR: %s\n", s);
     fprintf(stdout, "  (%s)\n", ONIGENC_NAME(onig_get_encoding(reg)));
+#endif
     onig_region_free(region, 1 /* 1:free self, 0:free contents only */);
     return -1;
   }
@@ -76,7 +83,9 @@ exec(OnigEncoding enc, OnigOptionType options,
   if (r != ONIG_NORMAL) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
     onig_error_code_to_str((UChar* )s, r, &einfo);
+#ifdef WITH_READ_MAIN
     fprintf(stdout, "ERROR: %s\n", s);
+#endif
     onig_end();
 
     if (r == ONIGERR_PARSER_BUG ||
