@@ -8253,6 +8253,8 @@ parse_branch(Node** top, PToken* tok, int term, UChar** src, UChar* end,
   Node *node, **headp;
 
   *top = NULL;
+  INC_PARSE_DEPTH(env->parse_depth);
+
   r = parse_exp(&node, tok, term, src, end, env, group_head);
   if (r < 0) {
     onig_node_free(node);
@@ -8263,7 +8265,7 @@ parse_branch(Node** top, PToken* tok, int term, UChar** src, UChar* end,
     *top = node;
   }
   else {
-    *top  = node_new_list(node, NULL);
+    *top = node_new_list(node, NULL);
     if (IS_NULL(*top)) {
       onig_node_free(node);
       return ONIGERR_MEMORY;
@@ -8289,6 +8291,7 @@ parse_branch(Node** top, PToken* tok, int term, UChar** src, UChar* end,
     }
   }
 
+  env->parse_depth--;
   return r;
 }
 
