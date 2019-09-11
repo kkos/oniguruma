@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <time.h>
 
 #include "oniguruma.h"
 
@@ -63,6 +64,11 @@ search(regex_t* reg, unsigned char* str, unsigned char* end)
   return 0;
 }
 
+static long INPUT_COUNT;
+static long EXEC_COUNT;
+static long REGEX_SUCCESS_COUNT;
+static long VALID_STRING_COUNT;
+
 static int
 exec(OnigEncoding enc, OnigOptionType options,
      char* apattern, char* apattern_end, char* astr, UChar* end)
@@ -73,6 +79,8 @@ exec(OnigEncoding enc, OnigOptionType options,
   UChar* pattern = (UChar* )apattern;
   UChar* str     = (UChar* )astr;
   UChar* pattern_end = (UChar* )apattern_end;
+
+  EXEC_COUNT++;
 
   onig_initialize(&enc, 1);
   onig_set_retry_limit_in_match(RETRY_LIMIT);
@@ -97,8 +105,10 @@ exec(OnigEncoding enc, OnigOptionType options,
     else
       return -1;
   }
+  REGEX_SUCCESS_COUNT++;
 
   if (onigenc_is_valid_mbc_string(enc, str, end) != 0) {
+    VALID_STRING_COUNT++;
     r = search(reg, str, end);
   }
 
@@ -134,6 +144,8 @@ output_data(char* path, const uint8_t * data, size_t size)
 #define MIN_STR_SIZE  1
 int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 {
+  INPUT_COUNT++;
+
   if (Size <= (NUM_CONTROL_BYTES + PATTERN_SIZE + MIN_STR_SIZE))
     return 0;
   if (Size > 0x1000)
@@ -214,6 +226,21 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
     exit(-2);
   }
 
+  if (EXEC_COUNT % 10000000 == 0) {
+    char d[64];
+    time_t t;
+    float fexec, freg, fvalid;
+
+    t = time(NULL);
+    strftime(d, sizeof(d), "%m/%d %H:%M:%S", localtime(&t));
+
+    fexec  = (float )EXEC_COUNT / INPUT_COUNT;
+    freg   = (float )REGEX_SUCCESS_COUNT / INPUT_COUNT;
+    fvalid = (float )VALID_STRING_COUNT / INPUT_COUNT;
+
+    fprintf(stdout, "%s: %ld: EXEC:%.2f, REG:%.2f, VALID:%.2f\n",
+            d, EXEC_COUNT, fexec, freg, fvalid);
+  }
   return r;
 }
 
