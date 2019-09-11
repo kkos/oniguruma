@@ -214,6 +214,9 @@ onig_set_parse_depth_limit(unsigned int depth)
 } while (0)
 #endif
 
+#define DEC_PARSE_DEPTH(d)  (d)--
+
+
 static int
 bbuf_init(BBuf* buf, int size)
 {
@@ -6584,7 +6587,7 @@ parse_char_class(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     }
   }
   *src = p;
-  env->parse_depth--;
+  DEC_PARSE_DEPTH(env->parse_depth);
   return 0;
 
  err:
@@ -8291,7 +8294,7 @@ parse_branch(Node** top, PToken* tok, int term, UChar** src, UChar* end,
     }
   }
 
-  env->parse_depth--;
+  DEC_PARSE_DEPTH(env->parse_depth);
   return r;
 }
 
@@ -8353,7 +8356,7 @@ parse_subexp(Node** top, PToken* tok, int term, UChar** src, UChar* end,
       return ONIGERR_PARSER_BUG;
   }
 
-  env->parse_depth--;
+  DEC_PARSE_DEPTH(env->parse_depth);
   return r;
 }
 
