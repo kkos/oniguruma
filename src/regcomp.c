@@ -6587,6 +6587,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   }
 
 #ifdef ONIG_DEBUG_PARSE
+  fprintf(stderr, "MAX PARSE DEPTH: %d\n", scan_env.max_parse_depth);
   print_tree(stderr, root);
 #endif
 
