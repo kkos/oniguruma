@@ -66,6 +66,7 @@ search(regex_t* reg, unsigned char* str, unsigned char* end)
 
 static long INPUT_COUNT;
 static long EXEC_COUNT;
+static long EXEC_COUNT_INTERVAL;
 static long REGEX_SUCCESS_COUNT;
 static long VALID_STRING_COUNT;
 
@@ -81,6 +82,7 @@ exec(OnigEncoding enc, OnigOptionType options,
   UChar* pattern_end = (UChar* )apattern_end;
 
   EXEC_COUNT++;
+  EXEC_COUNT_INTERVAL++;
 
   onig_initialize(&enc, 1);
   onig_set_retry_limit_in_match(RETRY_LIMIT);
@@ -139,18 +141,20 @@ output_data(char* path, const uint8_t * data, size_t size)
 #endif
 
 
-#define PATTERN_SIZE 32
-#define NUM_CONTROL_BYTES 1
-#define MIN_STR_SIZE  1
+#define MAX_DATA_SIZE       1024
+#define MAX_PATTERN_SIZE     100
+#define NUM_CONTROL_BYTES      1
+
+#define EXEC_PRINT_INTERVAL  20000000
+
 int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 {
   INPUT_COUNT++;
 
-  if (Size <= (NUM_CONTROL_BYTES + PATTERN_SIZE + MIN_STR_SIZE))
-    return 0;
-  if (Size > 0x1000)
-    return 0;
+  if (Size < NUM_CONTROL_BYTES) return 0;
+  if (Size > MAX_DATA_SIZE)     return 0;
 
+  int pattern_size;
   unsigned char *pattern_end;
   unsigned char *str_null_end;
   size_t remaining_size;
@@ -183,21 +187,28 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   data++;
   remaining_size--;
 
-  // copy first PATTERN_SIZE bytes off to be the pattern
-  unsigned char *pattern = (unsigned char *)malloc(PATTERN_SIZE+4);
-  memset(pattern, 0, PATTERN_SIZE+4);
-  memcpy(pattern, data, PATTERN_SIZE);
-  pattern_end = pattern + PATTERN_SIZE;
-  data += PATTERN_SIZE;
-  remaining_size -= PATTERN_SIZE;
+  pattern_size = remaining_size / 2;
+  if (pattern_size > MAX_PATTERN_SIZE)
+    pattern_size = MAX_PATTERN_SIZE;
 
 #if defined(UTF16_BE) || defined(UTF16_LE)
-  if (remaining_size % 2 == 1)
-    remaining_size--;
+  if (pattern_size % 2 == 1) pattern_size--;
 #endif
 
-  unsigned char *str = (unsigned char*)malloc(remaining_size+4);
-  memset(str, 0, remaining_size+4);
+  // copy first PATTERN_SIZE bytes off to be the pattern
+  unsigned char *pattern = (unsigned char *)malloc(MAX_PATTERN_SIZE + 4);
+  memset(pattern, 0, pattern_size + 4);
+  memcpy(pattern, data, pattern_size);
+  pattern_end = pattern + pattern_size;
+  data += pattern_size;
+  remaining_size -= pattern_size;
+
+#if defined(UTF16_BE) || defined(UTF16_LE)
+  if (remaining_size % 2 == 1) remaining_size--;
+#endif
+
+  unsigned char *str = (unsigned char*)malloc(MAX_DATA_SIZE + 4);
+  memset(str, 0, remaining_size + 4);
   memcpy(str, data, remaining_size);
   str_null_end = str + remaining_size;
 
@@ -226,7 +237,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
     exit(-2);
   }
 
-  if (EXEC_COUNT % 10000000 == 0) {
+  if (EXEC_COUNT_INTERVAL == EXEC_PRINT_INTERVAL) {
     char d[64];
     time_t t;
     float fexec, freg, fvalid;
@@ -240,6 +251,8 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 
     fprintf(stdout, "%s: %ld: EXEC:%.2f, REG:%.2f, VALID:%.2f\n",
             d, EXEC_COUNT, fexec, freg, fvalid);
+
+    EXEC_COUNT_INTERVAL = 0;
   }
   return r;
 }
