@@ -4155,10 +4155,10 @@ typedef struct {
   }
 
 static inline int
-regset_search_body(OnigRegSet* set,
+regset_search_body_position_lead(OnigRegSet* set,
            const UChar* str, const UChar* end,
            const UChar* start, const UChar* range,
-           const UChar* orig_start, const UChar* orig_range,
+           const UChar* orig_range,
            OnigOptionType option, MatchArg* msas, int* rmatch_pos)
 {
   int r, n, i;
@@ -4190,8 +4190,7 @@ regset_search_body(OnigRegSet* set,
         sch_range = (UChar* )range + reg->dmax;
         if (sch_range > end) sch_range = (UChar* )end;
 
-        if (forward_search(reg, str, end, s, sch_range,
-                           &low, &high, &low_prev)) {
+        if (forward_search(reg, str, end, s, sch_range, &low, &high, &low_prev)) {
           sr[i].state = SRS_LOW_HIGH;
           sr[i].low  = low;
           sr[i].high = high;
@@ -4317,11 +4316,46 @@ regset_search_body(OnigRegSet* set,
   return i;
 }
 
+static inline int
+regset_search_body_regex_lead(OnigRegSet* set,
+              const UChar* str, const UChar* end,
+              const UChar* start, const UChar* orig_range,
+              OnigOptionType option, OnigMatchParam* mps[], int* rmatch_pos)
+{
+  int r;
+  int i;
+  int n;
+  int match_index;
+  const UChar* ep;
+  regex_t* reg;
+  OnigRegion* region;
+
+  n = set->n;
+
+  match_index = ONIG_MISMATCH;
+  ep = orig_range;
+  for (i = 0; i < n; i++) {
+    reg    = set->rs[i].reg;
+    region = set->rs[i].region;
+    r = onig_search_with_param(reg, str, end, start, ep, region, option, mps[i]);
+    if (r >= 0) {
+      if (str + r < ep) {
+        ep = str + r;
+        match_index = i;
+        *rmatch_pos = r;
+      }
+    }
+  }
+
+  return match_index;
+}
+
 extern int
 onig_regset_search_with_param(OnigRegSet* set,
            const UChar* str, const UChar* end,
            const UChar* start, const UChar* range,
-           OnigOptionType option, OnigMatchParam* mps[], int* rmatch_pos)
+           OnigRegsetLead lead, OnigOptionType option, OnigMatchParam* mps[],
+           int* rmatch_pos)
 {
   int r;
   int i;
@@ -4449,8 +4483,14 @@ onig_regset_search_with_param(OnigRegSet* set,
                    orig_start, mps[i]);
   }
 
-  r = regset_search_body(set, str, end, start, range, orig_start, orig_range,
-                         option, msas, rmatch_pos);
+  if (lead == ONIG_REGSET_POSITION_LEAD) {
+    r = regset_search_body_position_lead(set, str, end, start, range,
+                                         orig_range, option, msas, rmatch_pos);
+  }
+  else {
+    r = regset_search_body_regex_lead(set, str, end, start, orig_range,
+                                      option, mps, rmatch_pos);
+  }
   if (r < 0) goto finish;
   else       goto match2;
 
@@ -4488,7 +4528,8 @@ onig_regset_search_with_param(OnigRegSet* set,
 
 extern int
 onig_regset_search(OnigRegSet* set, const UChar* str, const UChar* end,
-   const UChar* start, const UChar* range, OnigOptionType option, int* rmatch_pos)
+                   const UChar* start, const UChar* range,
+                   OnigRegsetLead lead, OnigOptionType option, int* rmatch_pos)
 {
   int r;
   int i;
@@ -4505,7 +4546,7 @@ onig_regset_search(OnigRegSet* set, const UChar* str, const UChar* end,
     mps[i] = mp + i;
   }
 
-  r = onig_regset_search_with_param(set, str, end, start, range, option, mps,
+  r = onig_regset_search_with_param(set, str, end, start, range, lead, option, mps,
                                     rmatch_pos);
   for (i = 0; i < set->n; i++)
     onig_free_match_param_content(mp + i);
