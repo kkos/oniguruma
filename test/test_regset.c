@@ -139,20 +139,6 @@ time_test(int repeat, int n, char* ps[], char* s, char* end, double* rt_set, dou
   return 0;
 }
 
-#if 0
-static void
-rotate_ps(int n, char* ps[], char* cps[], int index)
-{
-  int i;
-
-  for (i = 0; i < n; i++) {
-    int x = i + index;
-    if (x >= n) x -= n;
-    cps[x] = ps[i];
-  }
-}
-#endif
-
 static void
 fisher_yates_shuffle(int n, char* ps[], char* cps[])
 {
@@ -186,7 +172,6 @@ time_compare(int n, char* ps[], char* s, char* end)
   repeat = 100 / n;
   total_set = total_reg = 0.0;
   for (i = 0; i < n; i++) {
-    //rotate_ps(n, ps, cps, i);
     fisher_yates_shuffle(n, ps, cps);
     r = time_test(repeat, n, cps, s, end, &t_set, &t_reg);
     if (r != 0) return ;
@@ -408,6 +393,7 @@ extern int
 main(int argc, char* argv[])
 {
   int r;
+  int file_exist;
   char *s, *end;
 
   static OnigEncoding use_encs[] = { ONIG_ENCODING_UTF8 };
@@ -422,27 +408,33 @@ main(int argc, char* argv[])
   r = get_all_content_of_file(TEXT_PATH, &s, &end);
   if (r == 0) {
     fprintf(stdout, "FILE: %s, size: %d\n", TEXT_PATH, (int )(end - s));
-
-    X2(p2, s, 10, 22);
-    X2(p3, s, 496079, 496088);
-    X2(p4, s, 1294, 1315);
-
-    time_compare(ASIZE(p2), p2, s, end);
-    time_compare(ASIZE(p3), p3, s, end);
-    time_compare(ASIZE(p4), p4, s, end);
-    time_compare(ASIZE(p5), p5, s, end);
-    time_compare(ASIZE(p6), p6, s, end);
+    file_exist = 1;
   }
   else {
     fprintf(stdout, "Ignore %s\n", TEXT_PATH);
+    file_exist = 0;
   }
 
-
-  onig_end();
+  if (file_exist != 0) {
+    X2(p2, s, 10, 22);
+    X2(p3, s, 496079, 496088);
+    X2(p4, s, 1294, 1315);
+  }
 
   fprintf(stdout,
           "\nRESULT   SUCC: %4d,  FAIL: %d,  ERROR: %d      (by Oniguruma %s)\n",
           nsucc, nfail, nerror, onig_version());
 
+  if (file_exist != 0) {
+    fprintf(stdout, "\n");
+    time_compare(ASIZE(p2), p2, s, end);
+    time_compare(ASIZE(p3), p3, s, end);
+    time_compare(ASIZE(p4), p4, s, end);
+    time_compare(ASIZE(p5), p5, s, end);
+    time_compare(ASIZE(p6), p6, s, end);
+    fprintf(stdout, "\n");
+  }
+
+  onig_end();
   return ((nfail == 0 && nerror == 0) ? 0 : -1);
 }
