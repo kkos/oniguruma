@@ -80,9 +80,8 @@ static int
 time_test(int repeat, int n, char* ps[], char* s, char* end, double* rt_set, double* rt_reg)
 {
   int r;
-  int i, j;
+  int i;
   int match_pos;
-  char* ep;
   OnigRegSet* set;
   regex_t* regs[20];
   OnigErrorInfo einfo;
@@ -97,9 +96,9 @@ time_test(int repeat, int n, char* ps[], char* s, char* end, double* rt_set, dou
 
   for (i = 0; i < repeat; i++) {
     r = onig_regset_search(set, (UChar* )s, (UChar* )end, (UChar* )s, (UChar* )end,
-                           ONIG_OPTION_NONE, &match_pos);
+                           ONIG_REGSET_POSITION_LEAD, ONIG_OPTION_NONE, &match_pos);
     if (r < 0) {
-      fprintf(stderr, "FAIL onig_regset_search(): %d\n", r);
+      fprintf(stderr, "FAIL onig_regset_search(POSITION_LEAD): %d\n", r);
       return r;
     }
   }
@@ -118,14 +117,11 @@ time_test(int repeat, int n, char* ps[], char* s, char* end, double* rt_set, dou
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts1);
 
   for (i = 0; i < repeat; i++) {
-    ep = end;
-    for (j = 0; j < n; j++) {
-      r = onig_search(regs[j], (UChar* )s, (UChar* )end, (UChar* )s, (UChar* )ep,
-                      region, ONIG_OPTION_NONE);
-      if (r >= 0) {
-        if (s + r < ep) ep = s + r;
-      }
-      /* printf("r: %d\n", r); */
+    r = onig_regset_search(set, (UChar* )s, (UChar* )end, (UChar* )s, (UChar* )end,
+                           ONIG_REGSET_REGEX_LEAD, ONIG_OPTION_NONE, &match_pos);
+    if (r < 0) {
+      fprintf(stderr, "FAIL onig_regset_search(REGEX_LEAD): %d\n", r);
+      return r;
     }
   }
 
@@ -181,7 +177,7 @@ time_compare(int n, char* ps[], char* s, char* end)
 
   free(cps);
 
-  fprintf(stdout, "RegSet: %6.2lfmsec.  Reg: %6.2lfmsec.\n",
+  fprintf(stdout, "POS lead: %6.2lfmsec.  REG lead: %6.2lfmsec.\n",
           total_set * 1000.0, total_reg * 1000.0);
 }
 
@@ -200,7 +196,7 @@ xx(int line_no, int n, char* ps[], char* s, int from, int to, int mem, int not, 
   end = s + strlen(s);
 
   r = onig_regset_search(set, (UChar* )s, (UChar* )end, (UChar* )s, (UChar* )end,
-                         ONIG_OPTION_NONE, &match_pos);
+                         ONIG_REGSET_POSITION_LEAD, ONIG_OPTION_NONE, &match_pos);
   if (r < 0) {
     if (r == ONIG_MISMATCH) {
       if (not) {
