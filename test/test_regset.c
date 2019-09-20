@@ -181,6 +181,9 @@ time_compare(int n, char* ps[], char* s, char* end)
           total_set * 1000.0, total_reg * 1000.0);
 }
 
+
+static OnigRegsetLead XX_LEAD = ONIG_REGSET_POSITION_LEAD;
+
 static void
 xx(int line_no, int n, char* ps[], char* s, int from, int to, int mem, int not, int error_no)
 {
@@ -196,7 +199,7 @@ xx(int line_no, int n, char* ps[], char* s, int from, int to, int mem, int not, 
   end = s + strlen(s);
 
   r = onig_regset_search(set, (UChar* )s, (UChar* )end, (UChar* )s, (UChar* )end,
-                         ONIG_REGSET_POSITION_LEAD, ONIG_OPTION_NONE, &match_pos);
+                         XX_LEAD, ONIG_OPTION_NONE, &match_pos);
   if (r < 0) {
     if (r == ONIG_MISMATCH) {
       if (not) {
@@ -385,6 +388,10 @@ static char* p6[] = {
   "筑摩書房",
 };
 
+static char* p7[] = {
+  "0+", "1+", "2+", "3+", "4+", "5+", "6+", "7+", "8+", "9+",
+};
+
 extern int
 main(int argc, char* argv[])
 {
@@ -397,11 +404,23 @@ main(int argc, char* argv[])
   srand(12345);
   onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
 
+  XX_LEAD = ONIG_REGSET_POSITION_LEAD;
+
   N(p0, " abab bccab ca");
   X2(p1, " abab bccab ca", 8, 11);
   X3(p1, " abab bccab ca", 8, 11, 1);
   N(p2, " XXXX AAA 1223 012345678bbb");
   X2(p2, "0123456789", 9, 10);
+  X2(p7, "abcde 555 qwert", 6, 9);
+
+  XX_LEAD = ONIG_REGSET_REGEX_LEAD;
+
+  N(p0, " abab bccab ca");
+  X2(p1, " abab bccab ca", 8, 11);
+  X3(p1, " abab bccab ca", 8, 11, 1);
+  N(p2, " XXXX AAA 1223 012345678bbb");
+  X2(p2, "0123456789", 9, 10);
+  X2(p7, "abcde 555 qwert", 6, 9);
 
   r = get_all_content_of_file(TEXT_PATH, &s, &end);
   if (r == 0) {
