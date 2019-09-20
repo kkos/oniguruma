@@ -4468,6 +4468,9 @@ onig_regset_search_with_param(OnigRegSet* set,
     for (i = 0; i < set->n; i++) {
       reg = set->rs[i].reg;
       MATCH_ARG_INIT(msas[i], reg, option, set->rs[i].region, start, mps[i]);
+    }
+    for (i = 0; i < set->n; i++) {
+      reg = set->rs[i].reg;
       if (reg->threshold_len == 0) {
         REGSET_MATCH_AND_RETURN_CHECK(end);
       }
