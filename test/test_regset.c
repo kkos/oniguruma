@@ -85,7 +85,6 @@ time_test(int repeat, int n, char* ps[], char* s, char* end, double* rt_set, dou
   OnigRegSet* set;
   regex_t* regs[20];
   OnigErrorInfo einfo;
-  OnigRegion* region;
   struct timespec ts1, ts2;
   double t_set, t_reg;
 
@@ -106,7 +105,6 @@ time_test(int repeat, int n, char* ps[], char* s, char* end, double* rt_set, dou
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts2);
   t_set = get_sec(&ts1, &ts2);
 
-  region = onig_region_new();
   for (i = 0; i < n; i++) {
     r = onig_new(&regs[i], (UChar* )ps[i], (UChar* )(ps[i] + strlen(ps[i])),
                  ONIG_OPTION_DEFAULT, ONIG_ENCODING_UTF8, ONIG_SYNTAX_DEFAULT, &einfo);
@@ -127,8 +125,6 @@ time_test(int repeat, int n, char* ps[], char* s, char* end, double* rt_set, dou
 
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts2);
   t_reg = get_sec(&ts1, &ts2);
-
-  onig_region_free(region, 1);
 
   *rt_set = t_set;
   *rt_reg = t_reg;
