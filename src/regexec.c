@@ -3759,7 +3759,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
         addr = p->push_if_peek_next.addr;
         c    = p->push_if_peek_next.c;
-        if (c == *s) {
+        if (DATA_ENSURE_CHECK1 && c == *s) {
           STACK_PUSH_ALT(p + addr, s, sprev);
           INC_OP;
           JUMP_OUT;
