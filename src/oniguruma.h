@@ -687,6 +687,9 @@ typedef OnigRegexType*  OnigRegex;
   typedef OnigRegexType  regex_t;
 #endif
 
+struct OnigRegSetStruct;
+typedef struct OnigRegSetStruct OnigRegSet;
+
 
 typedef struct {
   int             num_of_elements;
@@ -797,6 +800,20 @@ ONIG_EXTERN
 int onig_match P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option));
 ONIG_EXTERN
 int onig_match_with_param P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option, OnigMatchParam* mp));
+
+ONIG_EXTERN
+int onig_regset_new P_((OnigRegSet** rset, int n, regex_t* regs[]));
+ONIG_EXTERN
+int onig_regset_add P_((OnigRegSet* set, regex_t* reg));
+ONIG_EXTERN
+void onig_regset_free P_((OnigRegSet* set));
+ONIG_EXTERN
+OnigRegion* onig_regset_get_region P_((OnigRegSet* set, int at));
+ONIG_EXTERN
+int onig_regset_search P_((OnigRegSet* set, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigOptionType option, int* rmatch_pos));
+ONIG_EXTERN
+int onig_regset_search_with_param P_((OnigRegSet* set, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigOptionType option, OnigMatchParam* mps[], int* rmatch_pos));
+
 ONIG_EXTERN
 OnigRegion* onig_region_new P_((void));
 ONIG_EXTERN
