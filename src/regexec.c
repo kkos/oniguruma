@@ -4354,7 +4354,7 @@ extern int
 onig_regset_search_with_param(OnigRegSet* set,
            const UChar* str, const UChar* end,
            const UChar* start, const UChar* range,
-           OnigRegsetLead lead, OnigOptionType option, OnigMatchParam* mps[],
+           OnigRegSetLead lead, OnigOptionType option, OnigMatchParam* mps[],
            int* rmatch_pos)
 {
   int r;
@@ -4532,7 +4532,7 @@ onig_regset_search_with_param(OnigRegSet* set,
 extern int
 onig_regset_search(OnigRegSet* set, const UChar* str, const UChar* end,
                    const UChar* start, const UChar* range,
-                   OnigRegsetLead lead, OnigOptionType option, int* rmatch_pos)
+                   OnigRegSetLead lead, OnigOptionType option, int* rmatch_pos)
 {
   int r;
   int i;

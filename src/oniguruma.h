@@ -693,7 +693,7 @@ typedef struct OnigRegSetStruct OnigRegSet;
 typedef enum {
   ONIG_REGSET_POSITION_LEAD = 0,
   ONIG_REGSET_REGEX_LEAD    = 1
-} OnigRegsetLead;
+} OnigRegSetLead;
 
 typedef struct {
   int             num_of_elements;
@@ -814,9 +814,9 @@ void onig_regset_free P_((OnigRegSet* set));
 ONIG_EXTERN
 OnigRegion* onig_regset_get_region P_((OnigRegSet* set, int at));
 ONIG_EXTERN
-int onig_regset_search P_((OnigRegSet* set, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegsetLead lead, OnigOptionType option, int* rmatch_pos));
+int onig_regset_search P_((OnigRegSet* set, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegSetLead lead, OnigOptionType option, int* rmatch_pos));
 ONIG_EXTERN
-int onig_regset_search_with_param P_((OnigRegSet* set, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range,  OnigRegsetLead lead, OnigOptionType option, OnigMatchParam* mps[], int* rmatch_pos));
+int onig_regset_search_with_param P_((OnigRegSet* set, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range,  OnigRegSetLead lead, OnigOptionType option, OnigMatchParam* mps[], int* rmatch_pos));
 
 ONIG_EXTERN
 OnigRegion* onig_region_new P_((void));

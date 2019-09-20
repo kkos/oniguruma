@@ -178,7 +178,7 @@ time_compare(int n, char* ps[], char* s, char* end)
 }
 
 
-static OnigRegsetLead XX_LEAD = ONIG_REGSET_POSITION_LEAD;
+static OnigRegSetLead XX_LEAD = ONIG_REGSET_POSITION_LEAD;
 
 static void
 xx(int line_no, int n, char* ps[], char* s, int from, int to, int mem, int not, int error_no)
