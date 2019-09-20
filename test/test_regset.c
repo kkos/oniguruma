@@ -1,5 +1,5 @@
 /*
- * test_regset.c
+ * test_regset.c  --- test for regset API
  * Copyright (c) 2019  K.Kosako
  */
 #include <stdlib.h>
@@ -312,11 +312,11 @@ get_all_content_of_file(char* path, char** rs, char** rend)
 
 #define TEXT_PATH    "kofu-utf8.txt"
 
-/*
-$ wget https://www.aozora.gr.jp/cards/000148/files/774_ruby_1640.zip
-$ unzip 774_ruby_1640.zip
-$ nkf -Lu -w8 kofu.txt > kofu-utf8.txt
-  (convert encoding to utf-8 with BOM and line terminator to \n)
+/* --- To get kofu.txt ---
+   $ wget https://www.aozora.gr.jp/cards/000148/files/774_ruby_1640.zip
+   $ unzip 774_ruby_1640.zip
+   $ nkf -Lu -w8 kofu.txt > kofu-utf8.txt
+     (convert encoding to utf-8 with BOM and line terminator to be Unix-form)
 */
 
 static char* p0[] = {
@@ -400,6 +400,8 @@ main(int argc, char* argv[])
   N(p0, " abab bccab ca");
   X2(p1, " abab bccab ca", 8, 11);
   X3(p1, " abab bccab ca", 8, 11, 1);
+  N(p2, " XXXX AAA 1223 012345678bbb");
+  X2(p2, "0123456789", 9, 10);
 
   r = get_all_content_of_file(TEXT_PATH, &s, &end);
   if (r == 0) {
