@@ -4375,6 +4375,7 @@ onig_regset_search_with_param(OnigRegSet* set,
 
   r = 0;
   enc = set->enc;
+  msas = (MatchArg* )NULL;
 
   for (i = 0; i < set->n; i++) {
     reg    = set->rs[i].reg;
@@ -4475,15 +4476,15 @@ onig_regset_search_with_param(OnigRegSet* set,
     goto mismatch;
   }
 
-  msas = (MatchArg* )xmalloc(sizeof(*msas) * set->n);
-  CHECK_NULL_RETURN_MEMERR(msas);
-
-  for (i = 0; i < set->n; i++) {
-    MATCH_ARG_INIT(msas[i], set->rs[i].reg, option, set->rs[i].region,
-                   orig_start, mps[i]);
-  }
-
   if (lead == ONIG_REGSET_POSITION_LEAD) {
+    msas = (MatchArg* )xmalloc(sizeof(*msas) * set->n);
+    CHECK_NULL_RETURN_MEMERR(msas);
+
+    for (i = 0; i < set->n; i++) {
+      MATCH_ARG_INIT(msas[i], set->rs[i].reg, option, set->rs[i].region,
+                     orig_start, mps[i]);
+    }
+
     r = regset_search_body_position_lead(set, str, end, start, range,
                                          orig_range, option, msas, rmatch_pos);
   }
@@ -4498,13 +4499,14 @@ onig_regset_search_with_param(OnigRegSet* set,
   r = ONIG_MISMATCH;
  finish:
   for (i = 0; i < set->n; i++) {
-    MATCH_ARG_FREE(msas[i]);
+    if (IS_NOT_NULL(msas))
+      MATCH_ARG_FREE(msas[i]);
     if (IS_FIND_NOT_EMPTY(set->rs[i].reg->options) &&
         IS_NOT_NULL(set->rs[i].region)) {
       onig_region_clear(set->rs[i].region);
     }
   }
-  xfree(msas);
+  if (IS_NOT_NULL(msas)) xfree(msas);
   return r;
 
  mismatch_no_msa:
@@ -4516,13 +4518,14 @@ onig_regset_search_with_param(OnigRegSet* set,
   *rmatch_pos = (int )(s - str);
  match2:
   for (i = 0; i < set->n; i++) {
-    MATCH_ARG_FREE(msas[i]);
+    if (IS_NOT_NULL(msas))
+      MATCH_ARG_FREE(msas[i]);
     if (IS_FIND_NOT_EMPTY(set->rs[i].reg->options) &&
         IS_NOT_NULL(set->rs[i].region)) {
       onig_region_clear(set->rs[i].region);
     }
   }
-  xfree(msas);
+  if (IS_NOT_NULL(msas)) xfree(msas);
   return r; /* regex index */
 }
 
