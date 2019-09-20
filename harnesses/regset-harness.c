@@ -200,6 +200,10 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   memcpy(str, data, remaining_size);
   str_null_end = str + remaining_size;
 
+#ifdef WITH_READ_MAIN
+  fprintf(stdout, "reg num: %d, pattern size: %d\n", reg_num, pattern_size);
+#endif
+
   //ENC = ONIG_ENCODING_UTF8;
   ENC = ONIG_ENCODING_ISO_8859_1;
 
