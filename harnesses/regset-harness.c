@@ -139,7 +139,6 @@ exec(OnigEncoding enc, OnigOptionType options,
   return 0;
 }
 
-#define MAX_DATA_SIZE       1024
 #define MAX_PATTERN_SIZE      30
 #define NUM_CONTROL_BYTES      1
 
@@ -163,7 +162,6 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   INPUT_COUNT++;
 
   if (Size < NUM_CONTROL_BYTES) return 0;
-  if (Size > MAX_DATA_SIZE)     return 0;
 
   remaining_size = Size;
   data = (unsigned char* )(Data);

@@ -141,7 +141,6 @@ output_data(char* path, const uint8_t * data, size_t size)
 #endif
 
 
-#define MAX_DATA_SIZE       1024
 #define MAX_PATTERN_SIZE     100
 #define NUM_CONTROL_BYTES      1
 
@@ -152,7 +151,6 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   INPUT_COUNT++;
 
   if (Size < NUM_CONTROL_BYTES) return 0;
-  if (Size > MAX_DATA_SIZE)     return 0;
 
   int pattern_size;
   unsigned char *pattern_end;
