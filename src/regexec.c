@@ -4120,9 +4120,9 @@ typedef struct {
 } RR;
 
 struct OnigRegSetStruct {
-  RR* rs;
-  int n;
-  int alloc;
+  RR*          rs;
+  int          n;
+  int          alloc;
   OnigEncoding enc;
   int          anchor;      /* BEGIN_BUF, BEGIN_POS, (SEMI_)END_BUF */
   OnigLen      anc_dmin;    /* (SEMI_)END_BUF anchor distance */
@@ -4157,8 +4157,8 @@ typedef struct {
 static inline int
 regset_search_body_position_lead(OnigRegSet* set,
            const UChar* str, const UChar* end,
-           const UChar* start, const UChar* range,
-           const UChar* orig_range,
+           const UChar* start, const UChar* range, /* match start range */
+           const UChar* orig_range, /* data range */
            OnigOptionType option, MatchArg* msas, int* rmatch_pos)
 {
   int r, n, i;
