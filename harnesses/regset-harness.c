@@ -97,8 +97,7 @@ exec(OnigEncoding enc, OnigOptionType options,
 
   for (i = 0; i < reg_num; i++) {
     r = onig_new(&reg, pat[i], pat_end[i],
-                 ONIG_OPTION_DEFAULT, ONIG_ENCODING_UTF8, ONIG_SYNTAX_DEFAULT,
-                 &einfo);
+                 ONIG_OPTION_DEFAULT, ENC, ONIG_SYNTAX_DEFAULT, &einfo);
     if (r != 0) {
 #ifdef WITH_READ_MAIN
       char s[ONIG_MAX_ERROR_MESSAGE_LEN];
