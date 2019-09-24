@@ -143,6 +143,8 @@ exec(OnigEncoding enc, OnigOptionType options,
 
 #define EXEC_PRINT_INTERVAL  2000000
 
+static int MaxRegNum;
+
 extern int
 LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 {
@@ -173,6 +175,9 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   if (remaining_size < reg_num * 2) {
     reg_num = reg_num % 15;  // zero is OK.
   }
+
+  if (MaxRegNum < reg_num)
+    MaxRegNum = reg_num;
 
   if (reg_num == 0)
     pattern_size = 1;
@@ -226,8 +231,8 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
     freg   = (float )REGEX_SUCCESS_COUNT / INPUT_COUNT;
     fvalid = (float )VALID_STRING_COUNT / INPUT_COUNT;
 
-    fprintf(stdout, "%s: %ld: EXEC:%.2f, REG:%.2f, VALID:%.2f\n",
-            d, EXEC_COUNT, fexec, freg, fvalid);
+    fprintf(stdout, "%s: %ld: EXEC:%.2f, REG:%.2f, VALID:%.2f MAX REG:%d\n",
+            d, EXEC_COUNT, fexec, freg, fvalid, MaxRegNum);
 
     EXEC_COUNT_INTERVAL = 0;
   }
