@@ -21,7 +21,7 @@ typedef unsigned char uint8_t;
 static OnigEncoding ENC;
 
 static int
-search(OnigRegSet* set, unsigned char* str, unsigned char* end)
+search(OnigRegSet* set, OnigRegSetLead lead, unsigned char* str, unsigned char* end)
 {
   int r;
   int match_pos;
@@ -29,8 +29,8 @@ search(OnigRegSet* set, unsigned char* str, unsigned char* end)
 
   start = str;
   range = end;
-  r = onig_regset_search(set, str, end, start, range,
-                         ONIG_REGSET_POSITION_LEAD, ONIG_OPTION_NONE, &match_pos);
+  r = onig_regset_search(set, str, end, start, range, lead,
+                         ONIG_OPTION_NONE, &match_pos);
   if (r >= 0) {
 #ifdef WITH_READ_MAIN
     int i;
@@ -77,7 +77,8 @@ static long VALID_STRING_COUNT;
 
 static int
 exec(OnigEncoding enc, OnigOptionType options,
-     int reg_num, UChar* pat[], UChar* pat_end[], char* astr, UChar* end)
+     int reg_num, UChar* pat[], UChar* pat_end[], OnigRegSetLead lead,
+     char* astr, UChar* end)
 {
   int r;
   int i;
@@ -130,7 +131,7 @@ exec(OnigEncoding enc, OnigOptionType options,
 
   if (onigenc_is_valid_mbc_string(enc, str, end) != 0) {
     VALID_STRING_COUNT++;
-    r = search(set, str, end);
+    r = search(set, lead, str, end);
   }
 
   onig_regset_free(set);
@@ -139,7 +140,7 @@ exec(OnigEncoding enc, OnigOptionType options,
 }
 
 #define MAX_PATTERN_SIZE      30
-#define NUM_CONTROL_BYTES      1
+#define NUM_CONTROL_BYTES      2
 
 #define EXEC_PRINT_INTERVAL  2000000
 
@@ -159,6 +160,8 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   unsigned char *alloc_pattern;
   unsigned char *p;
   int len;
+  unsigned int lead_num;
+  OnigRegSetLead lead;
 
   INPUT_COUNT++;
 
@@ -168,9 +171,13 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   data = (unsigned char* )(Data);
 
   reg_num = data[0];
-
   data++;
   remaining_size--;
+
+  lead_num = data[0];
+  data++;
+  remaining_size--;
+  lead = (lead_num % 2 == 0 ? ONIG_REGSET_POSITION_LEAD : ONIG_REGSET_REGEX_LEAD);
 
   if (remaining_size < reg_num * 2) {
     reg_num = reg_num % 15;  // zero is OK.
@@ -209,7 +216,8 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   //ENC = ONIG_ENCODING_UTF8;
   ENC = ONIG_ENCODING_ISO_8859_1;
 
-  r = exec(ENC, ONIG_OPTION_NONE, reg_num, pat, pat_end, (char* )str, str_null_end);
+  r = exec(ENC, ONIG_OPTION_NONE, reg_num, pat, pat_end, lead,
+           (char* )str, str_null_end);
 
   free(alloc_pattern);
   free(str);
