@@ -5351,9 +5351,19 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 {
   int r;
   OnigMatchParam mp;
+  const UChar* data_range;
 
   onig_initialize_match_param(&mp);
-  r = onig_search_with_param(reg, str, end, start, range, region, option, &mp);
+
+  /* The following is an expanded code of onig_search_with_param()  */
+  if (range < start)
+    data_range = end;
+  else
+    data_range = range;
+
+  r = search_in_range(reg, str, end, start, range, data_range, region,
+                      option, &mp);
+
   onig_free_match_param_content(&mp);
   return r;
 
