@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.9.4   2019/09/24
+鬼車インターフェース Version 6.9.4   2019/09/25
 
 #include <oniguruma.h>
 
@@ -393,6 +393,8 @@
 # int onig_regset_new(OnigRegSet** rset, int n, regex_t* regs[])
 
   regsetオブジェクトを生成する。
+  全ての正規表現オブジェクトは、同じ文字エンコーディングでなければならない。
+  全ての正規表現オブジェクトは、ONIG_OPTION_FIND_LONGESTオプションでコンパイルされていてはならない。
 
   引数
   1 rset: regsetオブジェクトを返すためのアドレス
@@ -405,6 +407,8 @@
 # int onig_regset_add(OnigRegSet* set, regex_t* reg)
 
   regsetオブジェクトに正規表現を追加する。
+  正規表現オブジェクトは、regsetと同じ文字エンコーディングでなければならない。
+  正規表現オブジェクトは、ONIG_OPTION_FIND_LONGESTオプションでコンパイルされていてはならない。
 
   引数
   1 set: regsetオブジェクト

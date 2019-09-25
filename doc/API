@@ -1,4 +1,4 @@
-Oniguruma API  Version 6.9.4  2019/09/24
+Oniguruma API  Version 6.9.4  2019/09/25
 
 #include <oniguruma.h>
 
@@ -396,6 +396,8 @@ Oniguruma API  Version 6.9.4  2019/09/24
 # int onig_regset_new(OnigRegSet** rset, int n, regex_t* regs[])
 
   Create a regset object.
+  All regex objects must have the same character encoding.
+  All regex objects are prohibited from having the ONIG_OPTION_FIND_LONGEST option.
 
   arguments
   1 rset: return address of regset object
@@ -408,6 +410,8 @@ Oniguruma API  Version 6.9.4  2019/09/24
 # int onig_regset_add(OnigRegSet* set, regex_t* reg)
 
   Add a regex into regset.
+  The regex object must have the same character encoding with the regset.
+  The regex object is prohibited from having the ONIG_OPTION_FIND_LONGEST option.
 
   arguments
   1 set: regset object
