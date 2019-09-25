@@ -4746,6 +4746,12 @@ onig_regset_free(OnigRegSet* set)
   xfree(set);
 }
 
+extern int
+onig_regset_number_of_regex(OnigRegSet* set)
+{
+  return set->n;
+}
+
 extern regex_t*
 onig_regset_get_regex(OnigRegSet* set, int at)
 {
