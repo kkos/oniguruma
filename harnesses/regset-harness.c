@@ -281,8 +281,8 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   }
 #endif
 
-  //ENC = ONIG_ENCODING_UTF8;
-  ENC = ONIG_ENCODING_ISO_8859_1;
+  ENC = ONIG_ENCODING_UTF8;
+  //ENC = ONIG_ENCODING_ISO_8859_1;
 
   r = exec(ENC, ONIG_OPTION_NONE, reg_num, pat, pat_end, lead,
            (char* )str, str_null_end);
