@@ -812,6 +812,8 @@ int onig_regset_add P_((OnigRegSet* set, regex_t* reg));
 ONIG_EXTERN
 void onig_regset_free P_((OnigRegSet* set));
 ONIG_EXTERN
+regex_t* onig_regset_get_regex P_((OnigRegSet* set, int at));
+ONIG_EXTERN
 OnigRegion* onig_regset_get_region P_((OnigRegSet* set, int at));
 ONIG_EXTERN
 int onig_regset_search P_((OnigRegSet* set, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegSetLead lead, OnigOptionType option, int* rmatch_pos));
