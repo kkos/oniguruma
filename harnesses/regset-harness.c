@@ -20,6 +20,54 @@ typedef unsigned char uint8_t;
 
 static OnigEncoding ENC;
 
+#if 0
+static double
+get_sec(struct timespec* ts, struct timespec* te)
+{
+  double t;
+
+  t = (te->tv_sec - ts->tv_sec) +
+      (double )(te->tv_nsec - ts->tv_nsec) / 1000000000.0;
+  return t;
+}
+
+static int
+check_each_regex_search_time(OnigRegSet* set, unsigned char* str, unsigned char* end)
+{
+  int n;
+  int i;
+  int r;
+  OnigRegion* region;
+
+  n = onig_regset_number_of_regex(set);
+  region = onig_region_new();
+
+  for (i = 0; i < n; i++) {
+    regex_t* reg;
+    unsigned char* start;
+    unsigned char* range;
+    struct timespec ts1, ts2;
+    double t;
+
+    reg = onig_regset_get_regex(set, i);
+    start = str;
+    range = end;
+
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts1);
+
+    r = onig_search(reg, str, end, start, range, region, ONIG_OPTION_NONE);
+
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts2);
+    t = get_sec(&ts1, &ts2);
+
+    fprintf(stdout, "regex search time %d: %6.2lfmsec.\n", i, t * 1000.0);
+  }
+
+  onig_region_free(region, 1);
+  return 0;
+}
+#endif
+
 static int
 search(OnigRegSet* set, OnigRegSetLead lead, unsigned char* str, unsigned char* end)
 {
@@ -132,6 +180,9 @@ exec(OnigEncoding enc, OnigOptionType options,
   if (onigenc_is_valid_mbc_string(enc, str, end) != 0) {
     VALID_STRING_COUNT++;
     r = search(set, lead, str, end);
+#ifdef WITH_READ_MAIN
+    //r = check_each_regex_search_time(set, str, end);
+#endif
   }
 
   onig_regset_free(set);
@@ -200,7 +251,8 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   for (i = 0; i < reg_num; i++) {
     pat[i] = p;
     memcpy(p, data, pattern_size);
-    pat_end[i] = p + pattern_size;
+    p += pattern_size;
+    pat_end[i] = p;
     data += pattern_size;
     remaining_size -= pattern_size;
   }
@@ -213,6 +265,17 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   fprintf(stdout, "reg num: %d, pattern size: %d, lead: %s\n",
           reg_num, pattern_size,
           lead == ONIG_REGSET_POSITION_LEAD ? "position" : "regex");
+
+  if (reg_num != 0) {
+    i = 0;
+    p = pat[0];
+    while (p < pat_end[0]) {
+      fprintf(stdout, " 0x%02x", (int )*p++);
+      i++;
+      if (i % 8 == 0) fprintf(stdout, "\n");
+    }
+    fprintf(stdout, "\n");
+  }
 #endif
 
   //ENC = ONIG_ENCODING_UTF8;
