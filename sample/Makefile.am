@@ -6,7 +6,7 @@ LDADD  = $(lib_onig)
 AM_LDFLAGS  = -L$(prefix)/lib
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
-TESTS = encode listcap names posix simple sql syntax user_property callout echo count bug_fix
+TESTS = encode listcap names posix simple sql syntax user_property callout echo count bug_fix regset
 
 check_PROGRAMS = $(TESTS)
 
@@ -22,6 +22,7 @@ callout_SOURCES = callout.c
 echo_SOURCES    = echo.c
 count_SOURCES   = count.c
 bug_fix         = bug_fix.c
+regset_SOURCES  = regset.c
 
 sampledir = .
 
@@ -38,3 +39,4 @@ test: $(TESTS)
 	$(sampledir)/echo
 	$(sampledir)/count
 	$(sampledir)/bug_fix
+	$(sampledir)/regset
