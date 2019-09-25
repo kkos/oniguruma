@@ -16,11 +16,14 @@
 
 #define RETRY_LIMIT    500
 
-typedef unsigned char uint8_t;
+#ifdef WITH_READ_MAIN
+//#define CHECK_EACH_REGEX_SEARCH_TIME
+#endif
 
+typedef unsigned char uint8_t;
 static OnigEncoding ENC;
 
-#if 0
+#ifdef CHECK_EACH_REGEX_SEARCH_TIME
 static double
 get_sec(struct timespec* ts, struct timespec* te)
 {
@@ -180,8 +183,8 @@ exec(OnigEncoding enc, OnigOptionType options,
   if (onigenc_is_valid_mbc_string(enc, str, end) != 0) {
     VALID_STRING_COUNT++;
     r = search(set, lead, str, end);
-#ifdef WITH_READ_MAIN
-    //r = check_each_regex_search_time(set, str, end);
+#ifdef CHECK_EACH_REGEX_SEARCH_TIME
+    r = check_each_regex_search_time(set, str, end);
 #endif
   }
 
