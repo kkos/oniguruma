@@ -425,6 +425,14 @@
   1 set: regsetオブジェクト
 
 
+# int onig_regset_number_of_regex(OnigRegSet* set)
+
+  regsetの中の正規表現オブジェクトの個数を返す。
+
+  引数
+  1 set: regsetオブジェクト
+
+
 # regex_t* onig_regset_get_regex(OnigRegSet* set, int at)
 
   regsetのat番目の正規表現を返す。
