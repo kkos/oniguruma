@@ -14,7 +14,7 @@
 #include "oniguruma.h"
 
 
-#define RETRY_LIMIT    3500
+#define RETRY_LIMIT    500
 
 typedef unsigned char uint8_t;
 
@@ -210,7 +210,9 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   str_null_end = str + remaining_size;
 
 #ifdef WITH_READ_MAIN
-  fprintf(stdout, "reg num: %d, pattern size: %d\n", reg_num, pattern_size);
+  fprintf(stdout, "reg num: %d, pattern size: %d, lead: %s\n",
+          reg_num, pattern_size,
+          lead == ONIG_REGSET_POSITION_LEAD ? "position" : "regex");
 #endif
 
   //ENC = ONIG_ENCODING_UTF8;
