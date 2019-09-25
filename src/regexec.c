@@ -5356,10 +5356,10 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
   onig_initialize_match_param(&mp);
 
   /* The following is an expanded code of onig_search_with_param()  */
-  if (range < start)
-    data_range = end;
-  else
+  if (range > start)
     data_range = range;
+  else
+    data_range = end;
 
   r = search_in_range(reg, str, end, start, range, data_range, region,
                       option, &mp);
@@ -5371,7 +5371,7 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 
 static int
 search_in_range(regex_t* reg, const UChar* str, const UChar* end,
-                const UChar* start, const UChar* range, /* match range */
+                const UChar* start, const UChar* range, /* match start range */
                 const UChar* data_range, /* subject string range */
                 OnigRegion* region,
                 OnigOptionType option, OnigMatchParam* mp)
@@ -5726,10 +5726,10 @@ onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
 {
   const UChar* data_range;
 
-  if (range < start)
-    data_range = end;
-  else
+  if (range > start)
     data_range = range;
+  else
+    data_range = end;
 
   return search_in_range(reg, str, end, start, range, data_range, region,
                          option, mp);
