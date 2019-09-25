@@ -428,6 +428,15 @@ Oniguruma API  Version 6.9.4  2019/09/25
   1 set: regset object
 
 
+# regex_t* onig_regset_get_regex(OnigRegSet* set, int at)
+
+  Returns the regex object corresponding to the at-th regex.
+
+  arguments
+  1 set: regset object
+  2 at:  index of regex array (zero origin)
+
+
 # OnigRegion* onig_regset_get_region(OnigRegSet* set, int at)
 
   Returns the region object corresponding to the at-th regex.
