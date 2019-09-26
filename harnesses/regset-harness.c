@@ -20,6 +20,8 @@
 //#define CHECK_EACH_REGEX_SEARCH_TIME
 #endif
 
+#define MAX_REG_NUM   256
+
 typedef unsigned char uint8_t;
 static OnigEncoding ENC;
 
@@ -128,15 +130,15 @@ static long VALID_STRING_COUNT;
 
 static int
 exec(OnigEncoding enc, OnigOptionType options,
-     int reg_num, UChar* pat[], UChar* pat_end[], OnigRegSetLead lead,
-     char* astr, UChar* end)
+     int reg_num, int init_reg_num, UChar* pat[], UChar* pat_end[],
+     OnigRegSetLead lead, UChar* str, UChar* end)
 {
   int r;
-  int i;
+  int i, j;
   OnigRegSet* set;
   regex_t* reg;
   OnigErrorInfo einfo;
-  UChar* str = (UChar* )astr;
+  regex_t* regs[MAX_REG_NUM];
 
   EXEC_COUNT++;
   EXEC_COUNT_INTERVAL++;
@@ -144,10 +146,36 @@ exec(OnigEncoding enc, OnigOptionType options,
   onig_initialize(&enc, 1);
   onig_set_retry_limit_in_match(RETRY_LIMIT);
 
-  r = onig_regset_new(&set, 0, NULL);
+  for (i = 0; i < init_reg_num; i++) {
+    r = onig_new(&regs[i], pat[i], pat_end[i],
+                 ONIG_OPTION_DEFAULT, ENC, ONIG_SYNTAX_DEFAULT, &einfo);
+    if (r != 0) {
+#ifdef WITH_READ_MAIN
+      char s[ONIG_MAX_ERROR_MESSAGE_LEN];
+
+      onig_error_code_to_str((UChar* )s, r, &einfo);
+      fprintf(stdout, "ERROR: %s  /%s/\n", s, pat[i]);
+#endif
+
+      for (j = 0; j < i; j++) onig_free(regs[j]);
+
+      onig_end();
+
+      if (r == ONIGERR_PARSER_BUG ||
+          r == ONIGERR_STACK_BUG  ||
+          r == ONIGERR_UNDEFINED_BYTECODE ||
+          r == ONIGERR_UNEXPECTED_BYTECODE) {
+        return -2;
+      }
+      else
+        return -1;
+    }
+  }
+
+  r = onig_regset_new(&set, init_reg_num, regs);
   if (r != 0) return -1;
 
-  for (i = 0; i < reg_num; i++) {
+  for (i = init_reg_num; i < reg_num; i++) {
     r = onig_new(&reg, pat[i], pat_end[i],
                  ONIG_OPTION_DEFAULT, ENC, ONIG_SYNTAX_DEFAULT, &einfo);
     if (r != 0) {
@@ -194,11 +222,12 @@ exec(OnigEncoding enc, OnigOptionType options,
 }
 
 #define MAX_PATTERN_SIZE      30
-#define NUM_CONTROL_BYTES      2
+#define NUM_CONTROL_BYTES      3
 
 #define EXEC_PRINT_INTERVAL  2000000
 
 static int MaxRegNum;
+static int MaxInitRegNum;
 
 extern int
 LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
@@ -209,6 +238,7 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   size_t remaining_size;
   unsigned char *data;
   unsigned int reg_num;
+  unsigned int init_reg_num;
   unsigned char* pat[256];
   unsigned char* pat_end[256];
   unsigned char *alloc_pattern;
@@ -228,6 +258,10 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   data++;
   remaining_size--;
 
+  init_reg_num = data[0];
+  data++;
+  remaining_size--;
+
   lead_num = data[0];
   data++;
   remaining_size--;
@@ -237,8 +271,13 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
     reg_num = reg_num % 15;  // zero is OK.
   }
 
+  init_reg_num %= (reg_num + 1);
+
   if (MaxRegNum < reg_num)
     MaxRegNum = reg_num;
+
+  if (MaxInitRegNum < init_reg_num)
+    MaxInitRegNum = init_reg_num;
 
   if (reg_num == 0)
     pattern_size = 1;
@@ -284,8 +323,8 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   ENC = ONIG_ENCODING_UTF8;
   //ENC = ONIG_ENCODING_ISO_8859_1;
 
-  r = exec(ENC, ONIG_OPTION_NONE, reg_num, pat, pat_end, lead,
-           (char* )str, str_null_end);
+  r = exec(ENC, ONIG_OPTION_NONE, reg_num, init_reg_num, pat, pat_end, lead,
+           str, str_null_end);
 
   free(alloc_pattern);
   free(str);
@@ -307,8 +346,8 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
     freg   = (float )REGEX_SUCCESS_COUNT / INPUT_COUNT;
     fvalid = (float )VALID_STRING_COUNT / INPUT_COUNT;
 
-    fprintf(stdout, "%s: %ld: EXEC:%.2f, REG:%.2f, VALID:%.2f MAX REG:%d\n",
-            d, EXEC_COUNT, fexec, freg, fvalid, MaxRegNum);
+    fprintf(stdout, "%s: %ld: EXEC:%.2f, REG:%.2f, VALID:%.2f MAX REG:%d-%d\n",
+            d, EXEC_COUNT, fexec, freg, fvalid, MaxRegNum, MaxInitRegNum);
 
     EXEC_COUNT_INTERVAL = 0;
   }
