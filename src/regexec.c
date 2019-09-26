@@ -4341,12 +4341,17 @@ regset_search_body_regex_lead(OnigRegSet* set,
     reg    = set->rs[i].reg;
     region = set->rs[i].region;
     r = search_in_range(reg, str, end, start, ep, orig_range, region, option, mps[i]);
-    if (r >= 0) {
+    if (r > 0) {
       if (str + r < ep) {
         ep = str + r;
         match_index = i;
         *rmatch_pos = r;
       }
+    }
+    else if (r == 0) {
+      match_index = i;
+      *rmatch_pos = r;
+      break;
     }
   }
 
