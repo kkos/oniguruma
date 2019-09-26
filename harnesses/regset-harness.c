@@ -90,8 +90,9 @@ search(OnigRegSet* set, OnigRegSetLead lead, unsigned char* str, unsigned char* 
     int match_index;
     OnigRegion* region;
 
-    fprintf(stdout, "match at %d  (%s)\n", r, ONIGENC_NAME(ENC));
     match_index = r;
+    fprintf(stdout, "match reg index: %d, pos: %d  (%s)\n",
+            match_index, match_pos, ONIGENC_NAME(ENC));
     region = onig_regset_get_region(set, match_index);
     if (region == 0) {
       fprintf(stdout, "ERROR: can't get region.\n");
