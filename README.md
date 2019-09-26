@@ -27,6 +27,12 @@ Supported character encodings:
 * doc/SYNTAX.md: contributed by seanofw
 
 
+Master branch
+-------------
+
+* NEW API: RegSet APIs
+
+
 Version 6.9.3 (security fix release)
 ------------------------------------
 
