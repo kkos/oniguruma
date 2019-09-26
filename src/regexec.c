@@ -5647,7 +5647,9 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
           (end - range) >= reg->threshold_len) {
         do {
           sch_start = s + reg->dmax;
-          if (sch_start > end) sch_start = (UChar* )end;
+          if (sch_start >= end)
+            sch_start = onigenc_get_prev_char_head(reg->enc, str, end);
+
           if (backward_search(reg, str, end, sch_start, range, adjrange,
                               &low, &high) <= 0)
             goto mismatch;
@@ -5672,11 +5674,13 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
             sch_start = (UChar* )end;
           else {
             sch_start += reg->dmax;
-            if (sch_start > end) sch_start = (UChar* )end;
+            if (sch_start >= end) sch_start = (UChar* )end;
             else
               sch_start = ONIGENC_LEFT_ADJUST_CHAR_HEAD(reg->enc,
                                                         start, sch_start);
           }
+          if (sch_start >= end)
+            sch_start = onigenc_get_prev_char_head(reg->enc, str, end);
         }
         if (backward_search(reg, str, end, sch_start, range, adjrange,
                             &low, &high) <= 0) goto mismatch;
