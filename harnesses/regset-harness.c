@@ -242,8 +242,6 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   unsigned int init_reg_num;
   unsigned char* pat[256];
   unsigned char* pat_end[256];
-  unsigned char *alloc_pattern;
-  unsigned char *p;
   int len;
   unsigned int lead_num;
   OnigRegSetLead lead;
@@ -290,12 +288,11 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 
   len = pattern_size * reg_num;
   if (len == 0) len = 1;
-  p = alloc_pattern = (unsigned char* )malloc(len);
+
   for (i = 0; i < reg_num; i++) {
-    pat[i] = p;
-    memcpy(p, data, pattern_size);
-    p += pattern_size;
-    pat_end[i] = p;
+    pat[i] = (unsigned char* )malloc(pattern_size);
+    memcpy(pat[i], data, pattern_size);
+    pat_end[i] = pat[i] + pattern_size;
     data += pattern_size;
     remaining_size -= pattern_size;
   }
@@ -310,6 +307,7 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
           lead == ONIG_REGSET_POSITION_LEAD ? "position" : "regex");
 
   if (reg_num != 0) {
+    unsigned char* p;
     i = 0;
     p = pat[0];
     while (p < pat_end[0]) {
@@ -327,7 +325,9 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   r = exec(ENC, ONIG_OPTION_NONE, reg_num, init_reg_num, pat, pat_end, lead,
            str, str_null_end);
 
-  free(alloc_pattern);
+  for (i = 0; i < reg_num; i++) {
+    free(pat[i]);
+  }
   free(str);
 
   if (r == -2) {
