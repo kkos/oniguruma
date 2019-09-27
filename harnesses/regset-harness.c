@@ -155,7 +155,7 @@ exec(OnigEncoding enc, OnigOptionType options,
       char s[ONIG_MAX_ERROR_MESSAGE_LEN];
 
       onig_error_code_to_str((UChar* )s, r, &einfo);
-      fprintf(stdout, "ERROR: %s  /%s/\n", s, pat[i]);
+      fprintf(stdout, "ERROR: index: %d, %s\n", i, s);
 #endif
 
       for (j = 0; j < i; j++) onig_free(regs[j]);
@@ -184,7 +184,7 @@ exec(OnigEncoding enc, OnigOptionType options,
       char s[ONIG_MAX_ERROR_MESSAGE_LEN];
 
       onig_error_code_to_str((UChar* )s, r, &einfo);
-      fprintf(stdout, "ERROR: %s  /%s/\n", s, pat[i]);
+      fprintf(stdout, "ERROR: index: %d, %s\n", i, s);
 #endif
       onig_regset_free(set);
       onig_end();
@@ -202,7 +202,7 @@ exec(OnigEncoding enc, OnigOptionType options,
     r = onig_regset_add(set, reg);
     if (r != 0) {
       onig_regset_free(set);
-      fprintf(stdout, "ERROR: onig_regset_add(): /%s/\n", pat[i]);
+      fprintf(stdout, "ERROR: onig_regset_add(): %d\n", i);
       return r;
     }
   }
