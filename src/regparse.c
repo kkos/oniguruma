@@ -467,14 +467,14 @@ static int
 str_end_hash(st_str_end_key* x)
 {
   UChar *p;
-  int val = 0;
+  unsigned val = 0;
 
   p = x->s;
   while (p < x->end) {
-    val = val * 997 + (int )*p++;
+    val = val * 997 + (unsigned )*p++;
   }
 
-  return val + (val >> 5);
+  return (int) (val + (val >> 5));
 }
 
 extern hash_table_type*
