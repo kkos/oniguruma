@@ -29,7 +29,7 @@ extern int main(int argc, char* argv[])
 
   r = onig_regset_new(&set, 0, NULL);
   if (r != ONIG_NORMAL) {
-    onig_error_code_to_str((UChar* )ebuf, r, &einfo);
+    onig_error_code_to_str((UChar* )ebuf, r);
     fprintf(stderr, "ERROR: %s\n", ebuf);
     onig_end();
     return -1;
