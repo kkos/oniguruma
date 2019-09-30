@@ -4570,249 +4570,6 @@ onig_regset_search(OnigRegSet* set, const UChar* str, const UChar* end,
   return r;
 }
 
-extern int
-onig_regset_new(OnigRegSet** rset, int n, regex_t* regs[])
-{
-#define REGSET_INITIAL_ALLOC_SIZE   10
-
-  int i;
-  int alloc;
-  OnigRegSet* set;
-  RR* rs;
-  OnigEncoding enc;
-  int anchor;
-  int all_low_high;
-  int anychar_inf;
-  OnigLen anc_dmin;
-  OnigLen anc_dmax;
-
-  *rset = 0;
-
-  enc = (OnigEncoding )0;
-  anchor   = 0;
-  anc_dmax = 0;
-  anc_dmin = 0;
-
-  anychar_inf  = 0;
-  all_low_high = 1;
-  for (i = 0; i < n; i++) {
-    regex_t* reg = regs[i];
-
-    if (IS_FIND_LONGEST(reg->options))
-      return ONIGERR_INVALID_ARGUMENT;
-
-    if (i == 0) {
-      enc = reg->enc;
-      anchor = reg->anchor;
-      anc_dmin = reg->anchor_dmin;
-      anc_dmax = reg->anchor_dmax;
-    }
-    else {
-      if (enc != reg->enc)
-        return ONIGERR_INVALID_ARGUMENT;
-
-      anchor &= reg->anchor;
-      if (anchor != 0) {
-        if (anc_dmin > reg->anchor_dmin) anc_dmin = reg->anchor_dmin;
-        if (anc_dmax < reg->anchor_dmax) anc_dmax = reg->anchor_dmax;
-      }
-    }
-
-    if (reg->optimize == OPTIMIZE_NONE || reg->dmax == INFINITE_LEN)
-      all_low_high = 0;
-    if ((reg->anchor & ANCR_ANYCHAR_INF) != 0)
-      anychar_inf = 1;
-  }
-
-  set = (OnigRegSet* )xmalloc(sizeof(*set));
-  CHECK_NULL_RETURN_MEMERR(set);
-
-  alloc = n > REGSET_INITIAL_ALLOC_SIZE ? n : REGSET_INITIAL_ALLOC_SIZE;
-  rs = (RR* )xmalloc(sizeof(set->rs[0]) * alloc);
-  if (IS_NULL(rs)) {
-    xfree(set);
-    return ONIGERR_MEMORY;
-  }
-
-  for (i = 0; i < n; i++) {
-    OnigRegion* region = onig_region_new();
-    if (IS_NULL(region)) {
-      int j;
-      for (j = 0; j < i; j++)
-        onig_region_free(rs[j].region, 1);
-
-      xfree(rs);
-      xfree(set);
-      return ONIGERR_MEMORY;
-    }
-
-    rs[i].reg    = regs[i];
-    rs[i].region = region;
-  }
-
-  set->rs           = rs;
-  set->n            = n;
-  set->alloc        = alloc;
-  set->enc          = enc;
-  set->anchor       = anchor;
-  set->anc_dmin     = anc_dmin;
-  set->anc_dmax     = anc_dmax;
-  set->all_low_high = all_low_high;
-  set->anychar_inf  = anychar_inf;
-
-  *rset = set;
-  return 0;
-}
-
-static void
-update_regset_by_reg(OnigRegSet* set, regex_t* reg)
-{
-  if (set->n == 1) {
-    set->enc          = reg->enc;
-    set->anchor       = reg->anchor;
-    set->anc_dmin     = reg->anchor_dmin;
-    set->anc_dmax     = reg->anchor_dmax;
-    set->all_low_high =
-      (reg->optimize == OPTIMIZE_NONE || reg->dmax == INFINITE_LEN) ? 0 : 1;
-    set->anychar_inf  = (reg->anchor & ANCR_ANYCHAR_INF) != 0 ? 1 : 0;
-  }
-  else {
-    int anchor;
-
-    anchor = set->anchor & reg->anchor;
-    if (anchor != 0) {
-      OnigLen anc_dmin;
-      OnigLen anc_dmax;
-
-      anc_dmin = set->anc_dmin;
-      anc_dmax = set->anc_dmax;
-      if (anc_dmin > reg->anchor_dmin) anc_dmin = reg->anchor_dmin;
-      if (anc_dmax < reg->anchor_dmax) anc_dmax = reg->anchor_dmax;
-      set->anc_dmin = anc_dmin;
-      set->anc_dmax = anc_dmax;
-    }
-
-    set->anchor = anchor;
-
-    if (reg->optimize == OPTIMIZE_NONE || reg->dmax == INFINITE_LEN)
-      set->all_low_high = 0;
-
-    if ((reg->anchor & ANCR_ANYCHAR_INF) != 0)
-      set->anychar_inf = 1;
-  }
-}
-
-extern int
-onig_regset_add(OnigRegSet* set, regex_t* reg)
-{
-  OnigRegion* region;
-
-  if (IS_FIND_LONGEST(reg->options))
-    return ONIGERR_INVALID_ARGUMENT;
-
-  if (set->n != 0 && reg->enc != set->enc)
-    return ONIGERR_INVALID_ARGUMENT;
-
-  if (set->n >= set->alloc) {
-    RR* nrs;
-    int new_alloc;
-
-    new_alloc = set->alloc * 2;
-    nrs = (RR* )xrealloc(set->rs, sizeof(set->rs[0]) * new_alloc);
-    CHECK_NULL_RETURN_MEMERR(nrs);
-
-    set->rs    = nrs;
-    set->alloc = new_alloc;
-  }
-
-  region = onig_region_new();
-  CHECK_NULL_RETURN_MEMERR(region);
-
-  set->rs[set->n].reg    = reg;
-  set->rs[set->n].region = region;
-  set->n++;
-
-  update_regset_by_reg(set, reg);
-  return 0;
-}
-
-extern int
-onig_regset_replace(OnigRegSet* set, int at, regex_t* reg)
-{
-  int i;
-
-  if (at < 0 || at >= set->n)
-    return ONIGERR_INVALID_ARGUMENT;
-
-  if (IS_NULL(reg)) {
-    onig_region_free(set->rs[at].region, 1);
-    for (i = at; i < set->n - 1; i++) {
-      set->rs[i].reg    = set->rs[i+1].reg;
-      set->rs[i].region = set->rs[i+1].region;
-    }
-    set->n--;
-  }
-  else {
-    if (IS_FIND_LONGEST(reg->options))
-      return ONIGERR_INVALID_ARGUMENT;
-
-    if (set->n > 1 && reg->enc != set->enc)
-      return ONIGERR_INVALID_ARGUMENT;
-
-    set->rs[at].reg = reg;
-  }
-
-  for (i = 0; i < set->n; i++)
-    update_regset_by_reg(set, set->rs[i].reg);
-
-  return 0;
-}
-
-extern void
-onig_regset_free(OnigRegSet* set)
-{
-  int i;
-
-  for (i = 0; i < set->n; i++) {
-    regex_t* reg;
-    OnigRegion* region;
-
-    reg    = set->rs[i].reg;
-    region = set->rs[i].region;
-    onig_free(reg);
-    if (IS_NOT_NULL(region))
-      onig_region_free(region, 1);
-  }
-
-  xfree(set->rs);
-  xfree(set);
-}
-
-extern int
-onig_regset_number_of_regex(OnigRegSet* set)
-{
-  return set->n;
-}
-
-extern regex_t*
-onig_regset_get_regex(OnigRegSet* set, int at)
-{
-  if (at < 0 || at >= set->n)
-    return (regex_t* )0;
-
-  return set->rs[at].reg;
-}
-
-extern OnigRegion*
-onig_regset_get_region(OnigRegSet* set, int at)
-{
-  if (at < 0 || at >= set->n)
-    return (OnigRegion* )0;
-
-  return set->rs[at].region;
-}
-
-
 static UChar*
 slow_search(OnigEncoding enc, UChar* target, UChar* target_end,
             const UChar* text, const UChar* text_end, UChar* text_range)
@@ -5897,6 +5654,249 @@ onig_copy_encoding(OnigEncoding to, OnigEncoding from)
 {
   *to = *from;
 }
+
+extern int
+onig_regset_new(OnigRegSet** rset, int n, regex_t* regs[])
+{
+#define REGSET_INITIAL_ALLOC_SIZE   10
+
+  int i;
+  int alloc;
+  OnigRegSet* set;
+  RR* rs;
+  OnigEncoding enc;
+  int anchor;
+  int all_low_high;
+  int anychar_inf;
+  OnigLen anc_dmin;
+  OnigLen anc_dmax;
+
+  *rset = 0;
+
+  enc = (OnigEncoding )0;
+  anchor   = 0;
+  anc_dmax = 0;
+  anc_dmin = 0;
+
+  anychar_inf  = 0;
+  all_low_high = 1;
+  for (i = 0; i < n; i++) {
+    regex_t* reg = regs[i];
+
+    if (IS_FIND_LONGEST(reg->options))
+      return ONIGERR_INVALID_ARGUMENT;
+
+    if (i == 0) {
+      enc = reg->enc;
+      anchor = reg->anchor;
+      anc_dmin = reg->anchor_dmin;
+      anc_dmax = reg->anchor_dmax;
+    }
+    else {
+      if (enc != reg->enc)
+        return ONIGERR_INVALID_ARGUMENT;
+
+      anchor &= reg->anchor;
+      if (anchor != 0) {
+        if (anc_dmin > reg->anchor_dmin) anc_dmin = reg->anchor_dmin;
+        if (anc_dmax < reg->anchor_dmax) anc_dmax = reg->anchor_dmax;
+      }
+    }
+
+    if (reg->optimize == OPTIMIZE_NONE || reg->dmax == INFINITE_LEN)
+      all_low_high = 0;
+    if ((reg->anchor & ANCR_ANYCHAR_INF) != 0)
+      anychar_inf = 1;
+  }
+
+  set = (OnigRegSet* )xmalloc(sizeof(*set));
+  CHECK_NULL_RETURN_MEMERR(set);
+
+  alloc = n > REGSET_INITIAL_ALLOC_SIZE ? n : REGSET_INITIAL_ALLOC_SIZE;
+  rs = (RR* )xmalloc(sizeof(set->rs[0]) * alloc);
+  if (IS_NULL(rs)) {
+    xfree(set);
+    return ONIGERR_MEMORY;
+  }
+
+  for (i = 0; i < n; i++) {
+    OnigRegion* region = onig_region_new();
+    if (IS_NULL(region)) {
+      int j;
+      for (j = 0; j < i; j++)
+        onig_region_free(rs[j].region, 1);
+
+      xfree(rs);
+      xfree(set);
+      return ONIGERR_MEMORY;
+    }
+
+    rs[i].reg    = regs[i];
+    rs[i].region = region;
+  }
+
+  set->rs           = rs;
+  set->n            = n;
+  set->alloc        = alloc;
+  set->enc          = enc;
+  set->anchor       = anchor;
+  set->anc_dmin     = anc_dmin;
+  set->anc_dmax     = anc_dmax;
+  set->all_low_high = all_low_high;
+  set->anychar_inf  = anychar_inf;
+
+  *rset = set;
+  return 0;
+}
+
+static void
+update_regset_by_reg(OnigRegSet* set, regex_t* reg)
+{
+  if (set->n == 1) {
+    set->enc          = reg->enc;
+    set->anchor       = reg->anchor;
+    set->anc_dmin     = reg->anchor_dmin;
+    set->anc_dmax     = reg->anchor_dmax;
+    set->all_low_high =
+      (reg->optimize == OPTIMIZE_NONE || reg->dmax == INFINITE_LEN) ? 0 : 1;
+    set->anychar_inf  = (reg->anchor & ANCR_ANYCHAR_INF) != 0 ? 1 : 0;
+  }
+  else {
+    int anchor;
+
+    anchor = set->anchor & reg->anchor;
+    if (anchor != 0) {
+      OnigLen anc_dmin;
+      OnigLen anc_dmax;
+
+      anc_dmin = set->anc_dmin;
+      anc_dmax = set->anc_dmax;
+      if (anc_dmin > reg->anchor_dmin) anc_dmin = reg->anchor_dmin;
+      if (anc_dmax < reg->anchor_dmax) anc_dmax = reg->anchor_dmax;
+      set->anc_dmin = anc_dmin;
+      set->anc_dmax = anc_dmax;
+    }
+
+    set->anchor = anchor;
+
+    if (reg->optimize == OPTIMIZE_NONE || reg->dmax == INFINITE_LEN)
+      set->all_low_high = 0;
+
+    if ((reg->anchor & ANCR_ANYCHAR_INF) != 0)
+      set->anychar_inf = 1;
+  }
+}
+
+extern int
+onig_regset_add(OnigRegSet* set, regex_t* reg)
+{
+  OnigRegion* region;
+
+  if (IS_FIND_LONGEST(reg->options))
+    return ONIGERR_INVALID_ARGUMENT;
+
+  if (set->n != 0 && reg->enc != set->enc)
+    return ONIGERR_INVALID_ARGUMENT;
+
+  if (set->n >= set->alloc) {
+    RR* nrs;
+    int new_alloc;
+
+    new_alloc = set->alloc * 2;
+    nrs = (RR* )xrealloc(set->rs, sizeof(set->rs[0]) * new_alloc);
+    CHECK_NULL_RETURN_MEMERR(nrs);
+
+    set->rs    = nrs;
+    set->alloc = new_alloc;
+  }
+
+  region = onig_region_new();
+  CHECK_NULL_RETURN_MEMERR(region);
+
+  set->rs[set->n].reg    = reg;
+  set->rs[set->n].region = region;
+  set->n++;
+
+  update_regset_by_reg(set, reg);
+  return 0;
+}
+
+extern int
+onig_regset_replace(OnigRegSet* set, int at, regex_t* reg)
+{
+  int i;
+
+  if (at < 0 || at >= set->n)
+    return ONIGERR_INVALID_ARGUMENT;
+
+  if (IS_NULL(reg)) {
+    onig_region_free(set->rs[at].region, 1);
+    for (i = at; i < set->n - 1; i++) {
+      set->rs[i].reg    = set->rs[i+1].reg;
+      set->rs[i].region = set->rs[i+1].region;
+    }
+    set->n--;
+  }
+  else {
+    if (IS_FIND_LONGEST(reg->options))
+      return ONIGERR_INVALID_ARGUMENT;
+
+    if (set->n > 1 && reg->enc != set->enc)
+      return ONIGERR_INVALID_ARGUMENT;
+
+    set->rs[at].reg = reg;
+  }
+
+  for (i = 0; i < set->n; i++)
+    update_regset_by_reg(set, set->rs[i].reg);
+
+  return 0;
+}
+
+extern void
+onig_regset_free(OnigRegSet* set)
+{
+  int i;
+
+  for (i = 0; i < set->n; i++) {
+    regex_t* reg;
+    OnigRegion* region;
+
+    reg    = set->rs[i].reg;
+    region = set->rs[i].region;
+    onig_free(reg);
+    if (IS_NOT_NULL(region))
+      onig_region_free(region, 1);
+  }
+
+  xfree(set->rs);
+  xfree(set);
+}
+
+extern int
+onig_regset_number_of_regex(OnigRegSet* set)
+{
+  return set->n;
+}
+
+extern regex_t*
+onig_regset_get_regex(OnigRegSet* set, int at)
+{
+  if (at < 0 || at >= set->n)
+    return (regex_t* )0;
+
+  return set->rs[at].reg;
+}
+
+extern OnigRegion*
+onig_regset_get_region(OnigRegSet* set, int at)
+{
+  if (at < 0 || at >= set->n)
+    return (OnigRegion* )0;
+
+  return set->rs[at].region;
+}
+
 
 #ifdef USE_DIRECT_THREADED_CODE
 extern int
