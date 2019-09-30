@@ -417,9 +417,23 @@
   正常終了戻り値: ONIG_NORMAL
 
 
+# int onig_regset_replace(OnigRegSet* set, int at, regex_t* reg)
+
+  regsetの中の一個の正規表現オブジェクトを別のものに変更する。
+  若しreg引数の値がNULLであれば、at番目の正規表現オブジェクトを外す。(そして、以降の正規表現オブジェクトのインデックスは変化する)
+
+  引数
+  1 set: regsetオブジェクト
+  2 at:  変更する場所のインデックス
+  2 reg: 正規表現オブジェクト
+
+  正常終了戻り値: ONIG_NORMAL
+
+
 # void onig_regset_free(OnigRegSet* set)
 
   regsetオブジェクトとその中の正規表現オブジェクトの使用メモリを開放する。
+  若し、同一の正規表現オブジェクトを重複して登録していれば、破壊的な状況になる。
 
   引数
   1 set: regsetオブジェクト

@@ -420,9 +420,23 @@ Oniguruma API  Version 6.9.4  2019/09/30
   normal return: ONIG_NORMAL
 
 
+# int onig_regset_replace(OnigRegSet* set, int at, regex_t* reg)
+
+  Replace a regex in regset with another one.
+  If the reg argument value is NULL, then remove at-th regex. (and indexes of other regexes are changed)
+
+  arguments
+  1 set: regset object
+  2 at:  index of regex (zero origin)
+  3 reg: regex object
+
+  normal return: ONIG_NORMAL
+
+
 # void onig_regset_free(OnigRegSet* set)
 
   Free memory used by regset object and regex objects in the regset.
+  If the same regex object is registered twice, the situation becomes destructive.
 
   arguments
   1 set: regset object
