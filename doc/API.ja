@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.9.4   2019/09/25
+鬼車インターフェース Version 6.9.4   2019/09/30
 
 #include <oniguruma.h>
 
@@ -467,11 +467,18 @@
   4 start:  検索対象文字列の検索先頭位置アドレス
   5 range:  検索対象文字列の検索終了位置アドレス
             (start <= 探索される文字列 < range)
-  6 lead:   外側のループ要素 (ONIG_REGSET_POSITION_LEAD or ONIG_REGSET_REGEX_LEAD)
+  6 lead:   外側のループ要素
+    ONIG_REGSET_POSITION_LEAD   (最左位置でマッチした結果を返す)
+    ONIG_REGSET_REGEX_LEAD      (最左位置でマッチした結果を返す)
+    ONIG_REGSET_PRIORITY_TO_REGEX_ORDER (最初にマッチした正規表現の結果を返す)
   7 option: 検索時オプション
     ONIG_OPTION_NOTBOL        文字列の先頭(str)を行頭と看做さない
     ONIG_OPTION_NOTEOL        文字列の終端(end)を行末と看做さない
   8 rmatch_pos: マッチした位置を返すためのアドレス (match_address - str)
+
+  * ONIG_REGSET_POSITION_LEADとONIG_REGSET_REGEX_LEADは同じ結果を返す。
+    これらの違いは検索時間にしか現れない。
+    ほとんどの場合、ONIG_REGSET_POSITION_LEADのほうが速いと思われる。
 
 
 # int onig_regset_search_with_param(OnigRegSet* set, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range,  OnigRegSetLead lead, OnigOptionType option, OnigMatchParam* mps[], int* rmatch_pos)
@@ -490,7 +497,10 @@
   4 start:  検索対象文字列の検索先頭位置アドレス
   5 range:  検索対象文字列の検索終了位置アドレス
             (start <= 探索される文字列 < range)
-  6 lead:   外側のループ要素 (ONIG_REGSET_POSITION_LEAD or ONIG_REGSET_REGEX_LEAD)
+  6 lead:   外側のループ要素
+    ONIG_REGSET_POSITION_LEAD   (最左位置でマッチした結果を返す)
+    ONIG_REGSET_REGEX_LEAD      (最左位置でマッチした結果を返す)
+    ONIG_REGSET_PRIORITY_TO_REGEX_ORDER (最初にマッチした正規表現の結果を返す)
   7 option: 検索時オプション
     ONIG_OPTION_NOTBOL        文字列の先頭(str)を行頭と看做さない
     ONIG_OPTION_NOTEOL        文字列の終端(end)を行末と看做さない
