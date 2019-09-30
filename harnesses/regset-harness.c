@@ -174,7 +174,13 @@ exec(OnigEncoding enc, OnigOptionType options,
   }
 
   r = onig_regset_new(&set, init_reg_num, regs);
-  if (r != 0) return -1;
+  if (r != 0) {
+    for (i = 0; i < init_reg_num; i++) {
+      onig_free(regs[i]);
+    }
+    onig_end();
+    return -1;
+  }
 
   for (i = init_reg_num; i < reg_num; i++) {
     r = onig_new(&reg, pat[i], pat_end[i],
@@ -202,6 +208,7 @@ exec(OnigEncoding enc, OnigOptionType options,
     r = onig_regset_add(set, reg);
     if (r != 0) {
       onig_regset_free(set);
+      onig_end();
       fprintf(stdout, "ERROR: onig_regset_add(): %d\n", i);
       return r;
     }
