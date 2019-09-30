@@ -5664,53 +5664,12 @@ onig_regset_new(OnigRegSet** rset, int n, regex_t* regs[])
 #define REGSET_INITIAL_ALLOC_SIZE   10
 
   int i;
+  int r;
   int alloc;
   OnigRegSet* set;
   RR* rs;
-  OnigEncoding enc;
-  int anchor;
-  int all_low_high;
-  int anychar_inf;
-  OnigLen anc_dmin;
-  OnigLen anc_dmax;
 
   *rset = 0;
-
-  enc = (OnigEncoding )0;
-  anchor   = 0;
-  anc_dmax = 0;
-  anc_dmin = 0;
-
-  anychar_inf  = 0;
-  all_low_high = 1;
-  for (i = 0; i < n; i++) {
-    regex_t* reg = regs[i];
-
-    if (IS_FIND_LONGEST(reg->options))
-      return ONIGERR_INVALID_ARGUMENT;
-
-    if (i == 0) {
-      enc = reg->enc;
-      anchor = reg->anchor;
-      anc_dmin = reg->anchor_dmin;
-      anc_dmax = reg->anchor_dmax;
-    }
-    else {
-      if (enc != reg->enc)
-        return ONIGERR_INVALID_ARGUMENT;
-
-      anchor &= reg->anchor;
-      if (anchor != 0) {
-        if (anc_dmin > reg->anchor_dmin) anc_dmin = reg->anchor_dmin;
-        if (anc_dmax < reg->anchor_dmax) anc_dmax = reg->anchor_dmax;
-      }
-    }
-
-    if (reg->optimize == OPTIMIZE_NONE || reg->dmax == INFINITE_LEN)
-      all_low_high = 0;
-    if ((reg->anchor & ANCR_ANYCHAR_INF) != 0)
-      anychar_inf = 1;
-  }
 
   set = (OnigRegSet* )xmalloc(sizeof(*set));
   CHECK_NULL_RETURN_MEMERR(set);
@@ -5722,31 +5681,25 @@ onig_regset_new(OnigRegSet** rset, int n, regex_t* regs[])
     return ONIGERR_MEMORY;
   }
 
+  set->rs    = rs;
+  set->n     = 0;
+  set->alloc = alloc;
+
   for (i = 0; i < n; i++) {
-    OnigRegion* region = onig_region_new();
-    if (IS_NULL(region)) {
-      int j;
-      for (j = 0; j < i; j++)
-        onig_region_free(rs[j].region, 1);
+    regex_t* reg = regs[i];
 
-      xfree(rs);
+    r = onig_regset_add(set, reg);
+    if (r != 0) {
+      for (i = 0; i < set->n; i++) {
+        OnigRegion* region = set->rs[i].region;
+        if (IS_NOT_NULL(region))
+          onig_region_free(region, 1);
+      }
+      xfree(set->rs);
       xfree(set);
-      return ONIGERR_MEMORY;
+      return r;
     }
-
-    rs[i].reg    = regs[i];
-    rs[i].region = region;
   }
-
-  set->rs           = rs;
-  set->n            = n;
-  set->alloc        = alloc;
-  set->enc          = enc;
-  set->anchor       = anchor;
-  set->anc_dmin     = anc_dmin;
-  set->anc_dmax     = anc_dmax;
-  set->all_low_high = all_low_high;
-  set->anychar_inf  = anychar_inf;
 
   *rset = set;
   return 0;
