@@ -4322,7 +4322,7 @@ regset_search_body_position_lead(OnigRegSet* set,
 static inline int
 regset_search_body_regex_lead(OnigRegSet* set,
               const UChar* str, const UChar* end,
-              const UChar* start, const UChar* orig_range,
+              const UChar* start, const UChar* orig_range, OnigRegSetLead lead,
               OnigOptionType option, OnigMatchParam* mps[], int* rmatch_pos)
 {
   int r;
@@ -4343,9 +4343,12 @@ regset_search_body_regex_lead(OnigRegSet* set,
     r = search_in_range(reg, str, end, start, ep, orig_range, region, option, mps[i]);
     if (r > 0) {
       if (str + r < ep) {
-        ep = str + r;
         match_index = i;
         *rmatch_pos = r;
+        if (lead == ONIG_REGSET_PRIORITY_TO_REGEX_ORDER)
+          break;
+
+        ep = str + r;
       }
     }
     else if (r == 0) {
@@ -4501,7 +4504,7 @@ onig_regset_search_with_param(OnigRegSet* set,
   }
   else {
     r = regset_search_body_regex_lead(set, str, end, start, orig_range,
-                                      option, mps, rmatch_pos);
+                                      lead, option, mps, rmatch_pos);
   }
   if (r < 0) goto finish;
   else       goto match2;

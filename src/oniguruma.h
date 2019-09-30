@@ -692,7 +692,8 @@ typedef struct OnigRegSetStruct OnigRegSet;
 
 typedef enum {
   ONIG_REGSET_POSITION_LEAD = 0,
-  ONIG_REGSET_REGEX_LEAD    = 1
+  ONIG_REGSET_REGEX_LEAD    = 1,
+  ONIG_REGSET_PRIORITY_TO_REGEX_ORDER = 2
 } OnigRegSetLead;
 
 typedef struct {
