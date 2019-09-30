@@ -810,6 +810,8 @@ int onig_regset_new P_((OnigRegSet** rset, int n, regex_t* regs[]));
 ONIG_EXTERN
 int onig_regset_add P_((OnigRegSet* set, regex_t* reg));
 ONIG_EXTERN
+int onig_regset_replace P_((OnigRegSet* set, int at, regex_t* reg));
+ONIG_EXTERN
 void onig_regset_free P_((OnigRegSet* set));
 ONIG_EXTERN
 int onig_regset_number_of_regex P_((OnigRegSet* set));

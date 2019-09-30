@@ -4664,33 +4664,9 @@ onig_regset_new(OnigRegSet** rset, int n, regex_t* regs[])
   return 0;
 }
 
-extern int
-onig_regset_add(OnigRegSet* set, regex_t* reg)
+static void
+update_regset_by_reg(OnigRegSet* set, regex_t* reg)
 {
-  OnigRegion* region;
-
-  if (IS_FIND_LONGEST(reg->options))
-    return ONIGERR_INVALID_ARGUMENT;
-
-  if (set->n >= set->alloc) {
-    RR* nrs;
-    int new_alloc;
-
-    new_alloc = set->alloc * 2;
-    nrs = (RR* )xrealloc(set->rs, sizeof(set->rs[0]) * new_alloc);
-    CHECK_NULL_RETURN_MEMERR(nrs);
-
-    set->rs    = nrs;
-    set->alloc = new_alloc;
-  }
-
-  region = onig_region_new();
-  CHECK_NULL_RETURN_MEMERR(region);
-
-  set->rs[set->n].reg    = reg;
-  set->rs[set->n].region = region;
-  set->n++;
-
   if (set->n == 1) {
     set->enc          = reg->enc;
     set->anchor       = reg->anchor;
@@ -4702,9 +4678,6 @@ onig_regset_add(OnigRegSet* set, regex_t* reg)
   }
   else {
     int anchor;
-
-    if (reg->enc != set->enc)
-      return ONIGERR_INVALID_ARGUMENT;
 
     anchor = set->anchor & reg->anchor;
     if (anchor != 0) {
@@ -4727,6 +4700,70 @@ onig_regset_add(OnigRegSet* set, regex_t* reg)
     if ((reg->anchor & ANCR_ANYCHAR_INF) != 0)
       set->anychar_inf = 1;
   }
+}
+
+extern int
+onig_regset_add(OnigRegSet* set, regex_t* reg)
+{
+  OnigRegion* region;
+
+  if (IS_FIND_LONGEST(reg->options))
+    return ONIGERR_INVALID_ARGUMENT;
+
+  if (set->n != 0 && reg->enc != set->enc)
+    return ONIGERR_INVALID_ARGUMENT;
+
+  if (set->n >= set->alloc) {
+    RR* nrs;
+    int new_alloc;
+
+    new_alloc = set->alloc * 2;
+    nrs = (RR* )xrealloc(set->rs, sizeof(set->rs[0]) * new_alloc);
+    CHECK_NULL_RETURN_MEMERR(nrs);
+
+    set->rs    = nrs;
+    set->alloc = new_alloc;
+  }
+
+  region = onig_region_new();
+  CHECK_NULL_RETURN_MEMERR(region);
+
+  set->rs[set->n].reg    = reg;
+  set->rs[set->n].region = region;
+  set->n++;
+
+  update_regset_by_reg(set, reg);
+  return 0;
+}
+
+extern int
+onig_regset_replace(OnigRegSet* set, int at, regex_t* reg)
+{
+  int i;
+
+  if (at < 0 || at >= set->n)
+    return ONIGERR_INVALID_ARGUMENT;
+
+  if (IS_NULL(reg)) {
+    onig_region_free(set->rs[at].region, 1);
+    for (i = at; i < set->n - 1; i++) {
+      set->rs[i].reg    = set->rs[i+1].reg;
+      set->rs[i].region = set->rs[i+1].region;
+    }
+    set->n--;
+  }
+  else {
+    if (IS_FIND_LONGEST(reg->options))
+      return ONIGERR_INVALID_ARGUMENT;
+
+    if (set->n > 1 && reg->enc != set->enc)
+      return ONIGERR_INVALID_ARGUMENT;
+
+    set->rs[at].reg = reg;
+  }
+
+  for (i = 0; i < set->n; i++)
+    update_regset_by_reg(set, set->rs[i].reg);
 
   return 0;
 }
