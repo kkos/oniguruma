@@ -12,6 +12,7 @@ extern int main(int argc, char* argv[])
   int match_pos;
   unsigned char *start, *range, *end;
   OnigRegSet* set;
+  OnigRegSetLead lead;
   regex_t* reg;
   OnigErrorInfo einfo;
   char ebuf[ONIG_MAX_ERROR_MESSAGE_LEN];
@@ -19,7 +20,7 @@ extern int main(int argc, char* argv[])
   static UChar* str = (UChar* )"aaaaaaaaaaaaaaaaaaaaaaca";
 
   static char* pat[] = {
-    "a(.*)b|[e-f]+",
+    "a(.*)b|a(.)c",
     "^(abc)",
     "a(.....)c"
   };
@@ -61,8 +62,10 @@ extern int main(int argc, char* argv[])
   end   = str + strlen((char* )str);
   start = str;
   range = end;
-  r = onig_regset_search(set, str, end, start, range, ONIG_REGSET_POSITION_LEAD,
-                         ONIG_OPTION_NONE, &match_pos);
+  lead = ONIG_REGSET_POSITION_LEAD;
+  //lead = ONIG_REGSET_PRIORITY_TO_REGEX_ORDER;
+  r = onig_regset_search(set, str, end, start, range, lead, ONIG_OPTION_NONE,
+                         &match_pos);
   if (r >= 0) {
     OnigRegion *region;
 
