@@ -4063,7 +4063,7 @@ enum TokenSyms {
   TK_ALT,
   TK_SUBEXP_OPEN,
   TK_SUBEXP_CLOSE,
-  TK_CC_OPEN,
+  TK_OPEN_CC,
   TK_QUOTE_OPEN,
   TK_CHAR_PROPERTY,    /* \p{...}, \P{...} */
   TK_KEEP,             /* \K */
@@ -4076,8 +4076,8 @@ enum TokenSyms {
   TK_CC_CLOSE,
   TK_CC_RANGE,
   TK_CC_POSIX_BRACKET_OPEN,
-  TK_CC_AND,             /* && */
-  TK_CC_CC_OPEN          /* [ */
+  TK_CC_AND,           /* && */
+  TK_CC_OPEN_CC        /* [ */
 };
 
 typedef struct {
@@ -4920,7 +4920,7 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     else {
     cc_in_cc:
       if (IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_CCLASS_SET_OP)) {
-        tok->type = TK_CC_CC_OPEN;
+        tok->type = TK_CC_OPEN_CC;
       }
       else {
         CC_ESC_WARN(env, (UChar* )"[");
@@ -5693,7 +5693,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
     case '[':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_BRACKET_CC)) break;
-      tok->type = TK_CC_OPEN;
+      tok->type = TK_OPEN_CC;
       break;
 
     case ']':
@@ -6491,7 +6491,7 @@ parse_char_class(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       }
       break;
 
-    case TK_CC_CC_OPEN: /* [ */
+    case TK_CC_OPEN_CC: /* [ */
       {
         Node *anode;
         CClassNode* acc;
@@ -8043,7 +8043,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
     if (r != 0) return r;
     break;
 
-  case TK_CC_OPEN:
+  case TK_OPEN_CC:
     {
       CClassNode* cc;
 
