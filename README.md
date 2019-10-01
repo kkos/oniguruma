@@ -252,15 +252,18 @@ Sample Programs
 
 |File                  |Description                               |
 |:---------------------|:-----------------------------------------|
+|sample/callout.c      |example of callouts                       |
+|sample/count.c        |example of built-in callout *COUNT        |
+|sample/echo.c         |example of user defined callouts of name  |
+|sample/encode.c       |example of some encodings                 |
+|sample/listcap.c      |example of the capture history            |
+|sample/names.c        |example of the named group callback       |
+|sample/posix.c        |POSIX API sample                          |
+|sample/regset.c       |example of using RegSet API               |
+|sample/scan.c         |example of using onig_scan()              |
 |sample/simple.c       |example of the minimum (Oniguruma API)    |
-|sample/names.c        |example of the named group callback.      |
-|sample/encode.c       |example of some encodings.                |
-|sample/listcap.c      |example of the capture history.           |
-|sample/posix.c        |POSIX API sample.                         |
-|sample/scan.c         |example of using onig_scan().             |
-|sample/sql.c          |example of the variable meta characters.  |
-|sample/user_property.c|example of user defined Unicode property. |
-|sample/callout.c      |example of callouts.                      |
+|sample/sql.c          |example of the variable meta characters   |
+|sample/user_property.c|example of user defined Unicode property  |
 
 
 Test Programs
