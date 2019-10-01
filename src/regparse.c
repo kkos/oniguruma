@@ -3309,8 +3309,8 @@ str_node_can_be_split(Node* node, OnigEncoding enc)
   return 0;
 }
 
-extern int
-onig_scan_unsigned_number(UChar** src, const UChar* end, OnigEncoding enc)
+static int
+scan_unsigned_number(UChar** src, const UChar* end, OnigEncoding enc)
 {
   unsigned int num, val;
   OnigCodePoint c;
@@ -4147,7 +4147,7 @@ fetch_interval_quantifier(UChar** src, UChar* end, PToken* tok, ScanEnv* env)
     }
   }
 
-  low = onig_scan_unsigned_number(&p, end, env->enc);
+  low = scan_unsigned_number(&p, end, env->enc);
   if (low < 0) return ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE;
   if (low > ONIG_MAX_REPEAT_NUM)
     return ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE;
@@ -4166,7 +4166,7 @@ fetch_interval_quantifier(UChar** src, UChar* end, PToken* tok, ScanEnv* env)
   PFETCH(c);
   if (c == ',') {
     UChar* prev = p;
-    up = onig_scan_unsigned_number(&p, end, env->enc);
+    up = scan_unsigned_number(&p, end, env->enc);
     if (up < 0) return ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE;
     if (up > ONIG_MAX_REPEAT_NUM)
       return ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE;
@@ -4412,7 +4412,7 @@ fetch_name_with_level(OnigCodePoint start_code, UChar** src, UChar* end,
       PFETCH(c);
       if (! IS_CODE_DIGIT_ASCII(enc, c)) goto err;
       PUNFETCH;
-      level = onig_scan_unsigned_number(&p, end, enc);
+      level = scan_unsigned_number(&p, end, enc);
       if (level < 0) return ONIGERR_TOO_BIG_NUMBER;
       *rlevel = (level * flag);
       exist_level = 1;
@@ -4433,7 +4433,7 @@ fetch_name_with_level(OnigCodePoint start_code, UChar** src, UChar* end,
  end:
   if (r == 0) {
     if (*num_type != IS_NOT_NUM) {
-      *rback_num = onig_scan_unsigned_number(&pnum_head, name_end, enc);
+      *rback_num = scan_unsigned_number(&pnum_head, name_end, enc);
       if (*rback_num < 0) return ONIGERR_TOO_BIG_NUMBER;
       else if (*rback_num == 0) {
         if (*num_type == IS_REL_NUM)
@@ -4559,7 +4559,7 @@ fetch_name(OnigCodePoint start_code, UChar** src, UChar* end,
     }
 
     if (*num_type != IS_NOT_NUM) {
-      *rback_num = onig_scan_unsigned_number(&pnum_head, name_end, enc);
+      *rback_num = scan_unsigned_number(&pnum_head, name_end, enc);
       if (*rback_num < 0) return ONIGERR_TOO_BIG_NUMBER;
       else if (*rback_num == 0) {
         if (*num_type == IS_REL_NUM) {
@@ -5286,7 +5286,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case '5': case '6': case '7': case '8': case '9':
       PUNFETCH;
       prev = p;
-      num = onig_scan_unsigned_number(&p, end, enc);
+      num = scan_unsigned_number(&p, end, enc);
       if (num < 0 || num > ONIG_MAX_BACKREF_NUM) {
         goto skip_backref;
       }
