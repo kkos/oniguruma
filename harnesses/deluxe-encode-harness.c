@@ -163,15 +163,13 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   remaining_size--;
 
   // copy first PATTERN_SIZE bytes off to be the pattern
-  pattern = (unsigned char *)malloc(PATTERN_SIZE+4);
-  memset(pattern, 0, PATTERN_SIZE+4);
+  pattern = (unsigned char *)malloc(PATTERN_SIZE);
   memcpy(pattern, data, PATTERN_SIZE);
   pattern_end = pattern + PATTERN_SIZE;
   data += PATTERN_SIZE;
   remaining_size -= PATTERN_SIZE;
 
-  str = (unsigned char*)malloc(remaining_size+4);
-  memset(str, 0, remaining_size+4);
+  str = (unsigned char*)malloc(remaining_size);
   memcpy(str, data, remaining_size);
   str_end = str + remaining_size;
 

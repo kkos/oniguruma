@@ -79,14 +79,12 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   remaining_size--;
 
   // copy first PATTERN_SIZE bytes off to be the pattern
-  unsigned char *pattern = (unsigned char *)malloc(PATTERN_SIZE+1);
-  memset(pattern, 0, PATTERN_SIZE+1);
+  unsigned char *pattern = (unsigned char *)malloc(PATTERN_SIZE);
   memcpy(pattern, data, PATTERN_SIZE);
   data += PATTERN_SIZE;
   remaining_size -= PATTERN_SIZE;
 
-  unsigned char *str = (unsigned char*)malloc(remaining_size+1);
-  memset(str, 0, remaining_size+1);
+  unsigned char *str = (unsigned char*)malloc(remaining_size);
   memcpy(str, data, remaining_size);
   
   OnigEncoding use_encs[] = { ONIG_ENCODING_ASCII };
