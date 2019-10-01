@@ -3310,7 +3310,7 @@ str_node_can_be_split(Node* node, OnigEncoding enc)
 }
 
 static int
-scan_unsigned_number(UChar** src, const UChar* end, OnigEncoding enc)
+scan_number(UChar** src, const UChar* end, OnigEncoding enc)
 {
   unsigned int num, val;
   OnigCodePoint c;
@@ -3337,8 +3337,8 @@ scan_unsigned_number(UChar** src, const UChar* end, OnigEncoding enc)
 }
 
 static int
-scan_unsigned_hexadecimal_number(UChar** src, UChar* end, int minlen,
-                                 int maxlen, OnigEncoding enc)
+scan_hexadecimal_number(UChar** src, UChar* end, int minlen, int maxlen,
+                        OnigEncoding enc)
 {
   OnigCodePoint c;
   unsigned int num, val;
@@ -3372,8 +3372,7 @@ scan_unsigned_hexadecimal_number(UChar** src, UChar* end, int minlen,
 }
 
 static int
-scan_unsigned_octal_number(UChar** src, UChar* end, int maxlen,
-                           OnigEncoding enc)
+scan_octal_number(UChar** src, UChar* end, int maxlen, OnigEncoding enc)
 {
   OnigCodePoint c;
   unsigned int num, val;
@@ -4147,7 +4146,7 @@ fetch_interval_quantifier(UChar** src, UChar* end, PToken* tok, ScanEnv* env)
     }
   }
 
-  low = scan_unsigned_number(&p, end, env->enc);
+  low = scan_number(&p, end, env->enc);
   if (low < 0) return ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE;
   if (low > ONIG_MAX_REPEAT_NUM)
     return ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE;
@@ -4166,7 +4165,7 @@ fetch_interval_quantifier(UChar** src, UChar* end, PToken* tok, ScanEnv* env)
   PFETCH(c);
   if (c == ',') {
     UChar* prev = p;
-    up = scan_unsigned_number(&p, end, env->enc);
+    up = scan_number(&p, end, env->enc);
     if (up < 0) return ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE;
     if (up > ONIG_MAX_REPEAT_NUM)
       return ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE;
@@ -4412,7 +4411,7 @@ fetch_name_with_level(OnigCodePoint start_code, UChar** src, UChar* end,
       PFETCH(c);
       if (! IS_CODE_DIGIT_ASCII(enc, c)) goto err;
       PUNFETCH;
-      level = scan_unsigned_number(&p, end, enc);
+      level = scan_number(&p, end, enc);
       if (level < 0) return ONIGERR_TOO_BIG_NUMBER;
       *rlevel = (level * flag);
       exist_level = 1;
@@ -4433,7 +4432,7 @@ fetch_name_with_level(OnigCodePoint start_code, UChar** src, UChar* end,
  end:
   if (r == 0) {
     if (*num_type != IS_NOT_NUM) {
-      *rback_num = scan_unsigned_number(&pnum_head, name_end, enc);
+      *rback_num = scan_number(&pnum_head, name_end, enc);
       if (*rback_num < 0) return ONIGERR_TOO_BIG_NUMBER;
       else if (*rback_num == 0) {
         if (*num_type == IS_REL_NUM)
@@ -4559,7 +4558,7 @@ fetch_name(OnigCodePoint start_code, UChar** src, UChar* end,
     }
 
     if (*num_type != IS_NOT_NUM) {
-      *rback_num = scan_unsigned_number(&pnum_head, name_end, enc);
+      *rback_num = scan_number(&pnum_head, name_end, enc);
       if (*rback_num < 0) return ONIGERR_TOO_BIG_NUMBER;
       else if (*rback_num == 0) {
         if (*num_type == IS_REL_NUM) {
@@ -4797,7 +4796,7 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       prev = p;
       if (PPEEK_IS('{') && IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_O_BRACE_OCTAL)) {
         PINC;
-        num = scan_unsigned_octal_number(&p, end, 11, enc);
+        num = scan_octal_number(&p, end, 11, enc);
         if (num < 0) return ONIGERR_TOO_BIG_WIDE_CHAR_VALUE;
         if (!PEND) {
           c2 = PPEEK;
@@ -4824,7 +4823,7 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       prev = p;
       if (PPEEK_IS('{') && IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_X_BRACE_HEX8)) {
         PINC;
-        num = scan_unsigned_hexadecimal_number(&p, end, 0, 8, enc);
+        num = scan_hexadecimal_number(&p, end, 0, 8, enc);
         if (num < 0) {
           if (num == ONIGERR_TOO_BIG_NUMBER)
             return ONIGERR_TOO_BIG_WIDE_CHAR_VALUE;
@@ -4849,7 +4848,7 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         }
       }
       else if (IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_X_HEX2)) {
-        num = scan_unsigned_hexadecimal_number(&p, end, 0, 2, enc);
+        num = scan_hexadecimal_number(&p, end, 0, 2, enc);
         if (num < 0) return num;
         if (p == prev) {  /* can't read nothing. */
           num = 0; /* but, it's not error */
@@ -4865,7 +4864,7 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
       prev = p;
       if (IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_U_HEX4)) {
-        num = scan_unsigned_hexadecimal_number(&p, end, 4, 4, enc);
+        num = scan_hexadecimal_number(&p, end, 4, 4, enc);
         if (num < 0) return num;
         if (p == prev) {  /* can't read nothing. */
           num = 0; /* but, it's not error */
@@ -4881,7 +4880,7 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       if (IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_OCTAL3)) {
         PUNFETCH;
         prev = p;
-        num = scan_unsigned_octal_number(&p, end, 3, enc);
+        num = scan_octal_number(&p, end, 3, enc);
         if (num < 0 || num >= 256) return ONIGERR_TOO_BIG_NUMBER;
         if (p == prev) {  /* can't read nothing. */
           num = 0; /* but, it's not error */
@@ -5207,7 +5206,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       prev = p;
       if (PPEEK_IS('{') && IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_O_BRACE_OCTAL)) {
         PINC;
-        num = scan_unsigned_octal_number(&p, end, 11, enc);
+        num = scan_octal_number(&p, end, 11, enc);
         if (num < 0) return ONIGERR_TOO_BIG_WIDE_CHAR_VALUE;
         if (!PEND) {
           if (IS_CODE_DIGIT_ASCII(enc, PPEEK))
@@ -5232,7 +5231,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       prev = p;
       if (PPEEK_IS('{') && IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_X_BRACE_HEX8)) {
         PINC;
-        num = scan_unsigned_hexadecimal_number(&p, end, 0, 8, enc);
+        num = scan_hexadecimal_number(&p, end, 0, 8, enc);
         if (num < 0) {
           if (num == ONIGERR_TOO_BIG_NUMBER)
             return ONIGERR_TOO_BIG_WIDE_CHAR_VALUE;
@@ -5255,7 +5254,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         }
       }
       else if (IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_X_HEX2)) {
-        num = scan_unsigned_hexadecimal_number(&p, end, 0, 2, enc);
+        num = scan_hexadecimal_number(&p, end, 0, 2, enc);
         if (num < 0) return num;
         if (p == prev) {  /* can't read nothing. */
           num = 0; /* but, it's not error */
@@ -5271,7 +5270,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
       prev = p;
       if (IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_U_HEX4)) {
-        num = scan_unsigned_hexadecimal_number(&p, end, 4, 4, enc);
+        num = scan_hexadecimal_number(&p, end, 4, 4, enc);
         if (num < 0) return num;
         if (p == prev) {  /* can't read nothing. */
           num = 0; /* but, it's not error */
@@ -5286,7 +5285,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case '5': case '6': case '7': case '8': case '9':
       PUNFETCH;
       prev = p;
-      num = scan_unsigned_number(&p, end, enc);
+      num = scan_number(&p, end, enc);
       if (num < 0 || num > ONIG_MAX_BACKREF_NUM) {
         goto skip_backref;
       }
@@ -5320,7 +5319,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case '0':
       if (IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_OCTAL3)) {
         prev = p;
-        num = scan_unsigned_octal_number(&p, end, (c == '0' ? 2:3), enc);
+        num = scan_octal_number(&p, end, (c == '0' ? 2:3), enc);
         if (num < 0 || num >= 256) return ONIGERR_TOO_BIG_NUMBER;
         if (p == prev) {  /* can't read nothing. */
           num = 0; /* but, it's not error */
