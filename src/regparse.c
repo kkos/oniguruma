@@ -6250,7 +6250,7 @@ code_exist_check(OnigCodePoint c, UChar* from, UChar* end, int ignore_escaped,
 }
 
 static int
-parse_char_class(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
+parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 {
   int r, neg, len, fetched, and_start;
   OnigCodePoint v, vs;
@@ -6496,7 +6496,7 @@ parse_char_class(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         Node *anode;
         CClassNode* acc;
 
-        r = parse_char_class(&anode, tok, &p, end, env);
+        r = parse_cc(&anode, tok, &p, end, env);
         if (r != 0) {
           onig_node_free(anode);
           goto cc_open_err;
@@ -6596,8 +6596,8 @@ parse_char_class(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   return r;
 }
 
-static int parse_subexp(Node** top, PToken* tok, int term,
-                        UChar** src, UChar* end, ScanEnv* env, int group_head);
+static int parse_alts(Node** top, PToken* tok, int term,
+                      UChar** src, UChar* end, ScanEnv* env, int group_head);
 
 #ifdef USE_CALLOUT
 
@@ -7086,7 +7086,7 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
     group:
       r = fetch_token(tok, &p, end, env);
       if (r < 0) return r;
-      r = parse_subexp(np, tok, term, &p, end, env, 0);
+      r = parse_alts(np, tok, term, &p, end, env, 0);
       if (r < 0) return r;
       *src = p;
       return 1; /* group */
@@ -7181,7 +7181,7 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
 
         r = fetch_token(tok, &p, end, env);
         if (r < 0) return r;
-        r = parse_subexp(&absent, tok, term, &p, end, env, 1);
+        r = parse_alts(&absent, tok, term, &p, end, env, 1);
         if (r < 0) {
           onig_node_free(absent);
           return r;
@@ -7357,7 +7357,7 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
           condition_is_checker = 0;
           r = fetch_token(tok, &p, end, env);
           if (r < 0) return r;
-          r = parse_subexp(&condition, tok, term, &p, end, env, 0);
+          r = parse_alts(&condition, tok, term, &p, end, env, 0);
           if (r < 0) {
             onig_node_free(condition);
             return r;
@@ -7400,7 +7400,7 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
             onig_node_free(condition);
             return r;
           }
-          r = parse_subexp(&target, tok, term, &p, end, env, 1);
+          r = parse_alts(&target, tok, term, &p, end, env, 1);
           if (r < 0) {
             onig_node_free(condition);
             onig_node_free(target);
@@ -7576,7 +7576,7 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
             env->options = option;
             r = fetch_token(tok, &p, end, env);
             if (r < 0) return r;
-            r = parse_subexp(&target, tok, term, &p, end, env, 0);
+            r = parse_alts(&target, tok, term, &p, end, env, 0);
             env->options = prev;
             if (r < 0) {
               onig_node_free(target);
@@ -7623,7 +7623,7 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
   CHECK_NULL_RETURN_MEMERR(*np);
   r = fetch_token(tok, &p, end, env);
   if (r < 0) return r;
-  r = parse_subexp(&target, tok, term, &p, end, env, 0);
+  r = parse_alts(&target, tok, term, &p, end, env, 0);
   if (r < 0) {
     onig_node_free(target);
     return r;
@@ -7633,7 +7633,7 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
 
   if (NODE_TYPE(*np) == NODE_BAG) {
     if (BAG_(*np)->type == BAG_MEMORY) {
-      /* Don't move this to previous of parse_subexp() */
+      /* Don't move this to previous of parse_alts() */
       r = scan_env_set_mem_node(env, BAG_(*np)->m.regnum, *np);
       if (r != 0) return r;
     }
@@ -7903,7 +7903,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
       env->options = BAG_(*np)->o.options;
       r = fetch_token(tok, src, end, env);
       if (r < 0) return r;
-      r = parse_subexp(&target, tok, term, src, end, env, 0);
+      r = parse_alts(&target, tok, term, src, end, env, 0);
       env->options = prev;
       if (r < 0) {
         onig_node_free(target);
@@ -8047,7 +8047,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
     {
       CClassNode* cc;
 
-      r = parse_char_class(np, tok, src, end, env);
+      r = parse_cc(np, tok, src, end, env);
       if (r != 0) return r;
 
       cc = CCLASS_(*np);
@@ -8300,8 +8300,8 @@ parse_branch(Node** top, PToken* tok, int term, UChar** src, UChar* end,
 
 /* term_tok: TK_EOT or TK_SUBEXP_CLOSE */
 static int
-parse_subexp(Node** top, PToken* tok, int term, UChar** src, UChar* end,
-             ScanEnv* env, int group_head)
+parse_alts(Node** top, PToken* tok, int term, UChar** src, UChar* end,
+           ScanEnv* env, int group_head)
 {
   int r;
   Node *node, **headp;
@@ -8368,7 +8368,7 @@ parse_regexp(Node** top, UChar** src, UChar* end, ScanEnv* env)
 
   r = fetch_token(&tok, src, end, env);
   if (r < 0) return r;
-  r = parse_subexp(top, &tok, TK_EOT, src, end, env, 0);
+  r = parse_alts(top, &tok, TK_EOT, src, end, env, 0);
   if (r < 0) return r;
 
   return 0;
