@@ -3374,19 +3374,23 @@ scan_hexadecimal_number(UChar** src, UChar* end, int minlen, int maxlen,
 }
 
 static int
-scan_octal_number(UChar** src, UChar* end, int maxlen, OnigEncoding enc, OnigCodePoint* rcode)
+scan_octal_number(UChar** src, UChar* end, int minlen, int maxlen,
+                  OnigEncoding enc, OnigCodePoint* rcode)
 {
-  OnigCodePoint c;
   OnigCodePoint code;
+  OnigCodePoint c;
   unsigned int val;
+  int n;
   UChar* p = *src;
   PFETCH_READY;
 
   code = 0;
-  while (! PEND && maxlen-- != 0) {
+  n = 0;
+  while (! PEND && n < maxlen) {
     PFETCH(c);
     if (IS_CODE_DIGIT_ASCII(enc, c) && c < '8') {
-      val = ODIGITVAL(c);
+      n++;
+      val = (unsigned int )ODIGITVAL(c);
       if ((UINT_MAX - val) / 8UL < code)
         return ONIGERR_TOO_BIG_NUMBER; /* overflow */
 
@@ -3397,6 +3401,9 @@ scan_octal_number(UChar** src, UChar* end, int maxlen, OnigEncoding enc, OnigCod
       break;
     }
   }
+
+  if (n < minlen)
+    return ONIGERR_INVALID_CODE_POINT_VALUE;
 
   *rcode = code;
   *src = p;
@@ -4802,7 +4809,7 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       prev = p;
       if (PPEEK_IS('{') && IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_O_BRACE_OCTAL)) {
         PINC;
-        r = scan_octal_number(&p, end, 11, enc, &code);
+        r = scan_octal_number(&p, end, 0, 11, enc, &code);
         if (r < 0) return r;
         if (!PEND) {
           c2 = PPEEK;
@@ -4881,7 +4888,7 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       if (IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_OCTAL3)) {
         PUNFETCH;
         prev = p;
-        r = scan_octal_number(&p, end, 3, enc, &code);
+        r = scan_octal_number(&p, end, 0, 3, enc, &code);
         if (r < 0) return r;
         if (code >= 256) return ONIGERR_TOO_BIG_NUMBER;
         if (p == prev) {  /* can't read nothing. */
@@ -5209,7 +5216,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       prev = p;
       if (PPEEK_IS('{') && IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_O_BRACE_OCTAL)) {
         PINC;
-        r = scan_octal_number(&p, end, 11, enc, &code);
+        r = scan_octal_number(&p, end, 0, 11, enc, &code);
         if (r < 0) return r;
         if (!PEND) {
           if (IS_CODE_DIGIT_ASCII(enc, PPEEK))
@@ -5317,7 +5324,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case '0':
       if (IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_OCTAL3)) {
         prev = p;
-        r = scan_octal_number(&p, end, (c == '0' ? 2:3), enc, &code);
+        r = scan_octal_number(&p, end, 0, (c == '0' ? 2:3), enc, &code);
         if (r < 0 || r >= 256) return ONIGERR_TOO_BIG_NUMBER;
         if (p == prev) {  /* can't read nothing. */
           code = 0; /* but, it's not error */
