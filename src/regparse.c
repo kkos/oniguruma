@@ -4086,7 +4086,7 @@ typedef struct {
   UChar* backp;
   union {
     UChar* s;
-    int   c;
+    UChar byte;
     OnigCodePoint code;
     int   anchor;
     int   subtype;
@@ -4706,7 +4706,7 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   PFETCH(c);
   tok->type = TK_CHAR;
   tok->base = 0;
-  tok->u.c  = c;
+  tok->u.code = c;
   tok->escaped = 0;
 
   if (c == ']') {
@@ -4723,7 +4723,7 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
     PFETCH(c);
     tok->escaped = 1;
-    tok->u.c = c;
+    tok->u.code = c;
     switch (c) {
     case 'w':
       tok->type = TK_CHAR_TYPE;
@@ -4855,7 +4855,7 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         }
         tok->type = TK_RAW_BYTE;
         tok->base = 16;
-        tok->u.c  = num;
+        tok->u.byte = (UChar )num;
       }
       break;
 
@@ -4887,7 +4887,7 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         }
         tok->type = TK_RAW_BYTE;
         tok->base = 8;
-        tok->u.c  = num;
+        tok->u.byte = (UChar )num;
       }
       break;
 
@@ -4895,7 +4895,7 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       PUNFETCH;
       num = fetch_escaped_value(&p, end, env, &c2);
       if (num < 0) return num;
-      if (tok->u.c != c2) {
+      if (tok->u.code != c2) {
         tok->u.code = c2;
         tok->type   = TK_CODE_POINT;
       }
@@ -4967,7 +4967,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     tok->backp = p;
     PFETCH(c);
 
-    tok->u.c = c;
+    tok->u.code = c;
     tok->escaped = 1;
     switch (c) {
     case '*':
@@ -5261,7 +5261,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         }
         tok->type = TK_RAW_BYTE;
         tok->base = 16;
-        tok->u.c  = num;
+        tok->u.byte = (UChar )num;
       }
       break;
 
@@ -5326,7 +5326,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         }
         tok->type = TK_RAW_BYTE;
         tok->base = 8;
-        tok->u.c  = num;
+        tok->u.byte = (UChar )num;
       }
       else if (c != '0') {
         PINC;
@@ -5478,7 +5478,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         num = fetch_escaped_value(&p, end, env, &c2);
         if (num < 0) return num;
         /* set_raw: */
-        if (tok->u.c != c2) {
+        if (tok->u.code != c2) {
           tok->type = TK_CODE_POINT;
           tok->u.code = c2;
         }
@@ -5490,7 +5490,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     }
   }
   else {
-    tok->u.c = c;
+    tok->u.code = c;
     tok->escaped = 0;
 
 #ifdef USE_VARIABLE_META_CHARS
@@ -6268,7 +6268,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
   prev_cc = (CClassNode* )NULL;
   r = fetch_token_in_cc(tok, src, end, env);
-  if (r == TK_CHAR && tok->u.c == '^' && tok->escaped == 0) {
+  if (r == TK_CHAR && tok->u.code == (OnigCodePoint )'^' && tok->escaped == 0) {
     neg = 1;
     r = fetch_token_in_cc(tok, src, end, env);
   }
@@ -6298,7 +6298,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     switch (r) {
     case TK_CHAR:
     any_char_in:
-      len = ONIGENC_CODE_TO_MBCLEN(env->enc, tok->u.c);
+      len = ONIGENC_CODE_TO_MBCLEN(env->enc, tok->u.code);
       if (len > 1) {
         in_type = CCV_CODE_POINT;
       }
@@ -6310,7 +6310,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         /* sb_char: */
         in_type = CCV_SB;
       }
-      v = (OnigCodePoint )tok->u.c;
+      v = tok->u.code;
       in_israw = 0;
       goto val_entry2;
       break;
@@ -6324,7 +6324,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         UChar* psave = p;
         int base = tok->base;
 
-        buf[0] = tok->u.c;
+        buf[0] = tok->u.byte;
         for (i = 1; i < ONIGENC_MBC_MAXLEN(env->enc); i++) {
           r = fetch_token_in_cc(tok, &p, end, env);
           if (r < 0) goto err;
@@ -6332,7 +6332,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
             fetched = 1;
             break;
           }
-          buf[i] = tok->u.c;
+          buf[i] = tok->u.byte;
         }
 
         if (i < ONIGENC_MBC_MINLEN(env->enc)) {
@@ -6366,7 +6366,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         }
       }
       else {
-        v = (OnigCodePoint )tok->u.c;
+        v = (OnigCodePoint )tok->u.byte;
       raw_single:
         in_type = CCV_SB;
       }
@@ -6401,7 +6401,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       if (r == 1) {  /* is not POSIX bracket */
         CC_ESC_WARN(env, (UChar* )"[");
         p = tok->backp;
-        v = (OnigCodePoint )tok->u.c;
+        v = tok->u.code;
         in_israw = 0;
         goto val_entry;
       }
@@ -6455,7 +6455,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       }
       else if (state == CCS_START) {
         /* [-xa] is allowed */
-        v = (OnigCodePoint )tok->u.c;
+        v = tok->u.code;
         in_israw = 0;
 
         r = fetch_token_in_cc(tok, &p, end, env);
@@ -7945,7 +7945,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
   case TK_RAW_BYTE:
   tk_raw_byte:
     {
-      *np = node_new_str_raw_char((UChar )tok->u.c);
+      *np = node_new_str_raw_char(tok->u.byte);
       CHECK_NULL_RETURN_MEMERR(*np);
       len = 1;
       while (1) {
@@ -7961,7 +7961,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
         if (r != TK_RAW_BYTE)
           return ONIGERR_TOO_SHORT_MULTI_BYTE_STRING;
 
-        r = node_str_cat_char(*np, (UChar )tok->u.c);
+        r = node_str_cat_char(*np, tok->u.byte);
         if (r < 0) return r;
 
         len++;
