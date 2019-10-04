@@ -6130,14 +6130,14 @@ enum CSTATE {
   CS_START
 };
 
-enum CVALTYPE {
+enum CVAL {
   CV_SB,
   CV_MB,
   CV_CLASS
 };
 
 static int
-next_state_class(CClassNode* cc, OnigCodePoint* vs, enum CVALTYPE* type,
+next_state_class(CClassNode* cc, OnigCodePoint* vs, enum CVAL* type,
                  enum CSTATE* state, ScanEnv* env)
 {
   int r;
@@ -6162,7 +6162,7 @@ next_state_class(CClassNode* cc, OnigCodePoint* vs, enum CVALTYPE* type,
 static int
 next_state_val(CClassNode* cc, OnigCodePoint *from, OnigCodePoint to,
                int* from_israw, int to_israw,
-               enum CVALTYPE intype, enum CVALTYPE* type,
+               enum CVAL intype, enum CVAL* type,
                enum CSTATE* state, ScanEnv* env)
 {
   int r;
@@ -6264,8 +6264,8 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   CClassNode work_cc;
   int val_israw, in_israw;
   enum CSTATE state;
-  enum CVALTYPE in_type;
-  enum CVALTYPE val_type;
+  enum CVAL in_type;
+  enum CVAL val_type;
 
   *np = NULL_NODE;
   val_type = -1;
