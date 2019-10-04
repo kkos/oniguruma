@@ -6131,14 +6131,15 @@ typedef enum {
 } CSTATE;
 
 typedef enum {
+  CV_UNDEF,
   CV_SB,
   CV_MB,
   CV_CPROP
 } CVAL;
 
 static int
-cc_cprop_next_state(CClassNode* cc, OnigCodePoint* pcode, CVAL* val,
-                    CSTATE* state, ScanEnv* env)
+cc_cprop_next(CClassNode* cc, OnigCodePoint* pcode, CVAL* val, CSTATE* state,
+              ScanEnv* env)
 {
   int r;
 
@@ -6160,9 +6161,9 @@ cc_cprop_next_state(CClassNode* cc, OnigCodePoint* pcode, CVAL* val,
 }
 
 static int
-cc_char_next_state(CClassNode* cc, OnigCodePoint *from, OnigCodePoint to,
-                   int* from_israw, int to_israw, CVAL intype, CVAL* type,
-                   CSTATE* state, ScanEnv* env)
+cc_char_next(CClassNode* cc, OnigCodePoint *from, OnigCodePoint to,
+             int* from_raw, int to_raw, CVAL intype, CVAL* type,
+             CSTATE* state, ScanEnv* env)
 {
   int r;
 
@@ -6223,9 +6224,9 @@ cc_char_next_state(CClassNode* cc, OnigCodePoint *from, OnigCodePoint to,
     break;
   }
 
-  *from_israw = to_israw;
-  *from       = to;
-  *type       = intype;
+  *from_raw = to_raw;
+  *from     = to;
+  *type     = intype;
   return 0;
 }
 
@@ -6261,13 +6262,12 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   Node* node;
   CClassNode *cc, *prev_cc;
   CClassNode work_cc;
-  int val_israw, in_israw;
+  int val_raw, in_raw;
   CSTATE state;
   CVAL in_type;
   CVAL val_type;
 
   *np = NULL_NODE;
-  val_type = -1;
   INC_PARSE_DEPTH(env->parse_depth);
 
   prev_cc = (CClassNode* )NULL;
@@ -6296,6 +6296,8 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
   and_start = 0;
   state = CS_START;
+  val_type = CV_UNDEF;
+
   p = *src;
   while (r != TK_CC_CLOSE) {
     fetched = 0;
@@ -6303,19 +6305,13 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case TK_CHAR:
     any_char_in:
       len = ONIGENC_CODE_TO_MBCLEN(env->enc, tok->u.code);
-      if (len > 1) {
-        in_type = CV_MB;
-      }
-      else if (len < 0) {
+      if (len < 0) {
         r = len;
         goto err;
       }
-      else {
-        /* sb_char: */
-        in_type = CV_SB;
-      }
+      in_type = (len == 1) ? CV_SB : CV_MB;
       v = tok->u.code;
-      in_israw = 0;
+      in_raw = 0;
       goto val_entry2;
       break;
 
@@ -6374,13 +6370,13 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       raw_single:
         in_type = CV_SB;
       }
-      in_israw = 1;
+      in_raw = 1;
       goto val_entry2;
       break;
 
     case TK_CODE_POINT:
       v = tok->u.code;
-      in_israw = 1;
+      in_raw = 1;
     val_entry:
       len = ONIGENC_CODE_TO_MBCLEN(env->enc, v);
       if (len < 0) {
@@ -6394,8 +6390,8 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       }
       in_type = (len == 1 ? CV_SB : CV_MB);
     val_entry2:
-      r = cc_char_next_state(cc, &vs, v, &val_israw, in_israw, in_type, &val_type,
-                             &state, env);
+      r = cc_char_next(cc, &vs, v, &val_raw, in_raw, in_type, &val_type,
+                       &state, env);
       if (r != 0) goto err;
       break;
 
@@ -6406,7 +6402,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         CC_ESC_WARN(env, (UChar* )"[");
         p = tok->backp;
         v = tok->u.code;
-        in_israw = 0;
+        in_raw = 0;
         goto val_entry;
       }
       goto next_class;
@@ -6417,7 +6413,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       if (r != 0) goto err;
 
     next_class:
-      r = cc_cprop_next_state(cc, &vs, &val_type, &state, env);
+      r = cc_cprop_next(cc, &vs, &val_type, &state, env);
       if (r != 0) goto err;
       break;
 
@@ -6442,7 +6438,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         if (r == TK_CC_CLOSE) { /* allow [x-] */
         range_end_val:
           v = (OnigCodePoint )'-';
-          in_israw = 0;
+          in_raw = 0;
           goto val_entry;
         }
         else if (r == TK_CC_AND) {
@@ -6460,7 +6456,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       else if (state == CS_START) {
         /* [-xa] is allowed */
         v = tok->u.code;
-        in_israw = 0;
+        in_raw = 0;
 
         r = fetch_token_in_cc(tok, &p, end, env);
         if (r < 0) goto err;
@@ -6516,8 +6512,8 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case TK_CC_AND: /* && */
       {
         if (state == CS_VALUE) {
-          r = cc_char_next_state(cc, &vs, 0, &val_israw, 0, val_type,
-                                 &val_type, &state, env);
+          r = cc_char_next(cc, &vs, 0, &val_raw, 0, val_type, &val_type,
+                           &state, env);
           if (r != 0) goto err;
         }
         /* initialize local variables */
@@ -6556,8 +6552,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   }
 
   if (state == CS_VALUE) {
-    r = cc_char_next_state(cc, &vs, 0, &val_israw, 0, val_type,
-                           &val_type, &state, env);
+    r = cc_char_next(cc, &vs, 0, &val_raw, 0, val_type, &val_type, &state, env);
     if (r != 0) goto err;
   }
 
