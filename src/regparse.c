@@ -6405,14 +6405,14 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         in_raw = 0;
         goto val_entry;
       }
-      goto next_class;
+      goto next_cprop;
       break;
 
     case TK_CHAR_TYPE:
       r = add_ctype_to_cc(cc, tok->u.prop.ctype, tok->u.prop.not, env);
       if (r != 0) goto err;
 
-    next_class:
+    next_cprop:
       r = cc_cprop_next(cc, &curr_code, &curr_type, &state, env);
       if (r != 0) goto err;
       break;
@@ -6426,7 +6426,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         }
         r = add_ctype_to_cc(cc, ctype, tok->u.prop.not, env);
         if (r != 0) goto err;
-        goto next_class;
+        goto next_cprop;
       }
       break;
 
@@ -6471,7 +6471,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       }
       else if (state == CS_RANGE) {
         CC_ESC_WARN(env, (UChar* )"-");
-        goto any_char_in;  /* [!--x] is allowed */
+        goto any_char_in;  /* [!--] is allowed */
       }
       else { /* CS_COMPLETE */
         r = fetch_token_in_cc(tok, &p, end, env);
@@ -6498,6 +6498,13 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       {
         Node *anode;
         CClassNode* acc;
+
+        if (state == CS_VALUE) {
+          r = cc_char_next(cc, &curr_code, 0, &curr_raw, 0, curr_type, &curr_type,
+                           &state, env);
+          if (r != 0) goto err;
+        }
+        state = CS_COMPLETE;
 
         r = parse_cc(&anode, tok, &p, end, env);
         if (r != 0) {
