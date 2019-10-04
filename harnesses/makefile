@@ -8,8 +8,8 @@ LIBS     = $(ONIG_LIB)
 TARGETS = encode-libfuzzer syntax-libfuzzer deluxe-encode-libfuzzer \
           utf16-be-libfuzzer utf16-le-libfuzzer main-encode main-syntax \
           main-deluxe-encode main-utf16-be main-utf16-le main-regset \
-          regset-libfuzzer \
-          libfuzzer-onig libfuzzer-onig-full
+          regset-libfuzzer
+OTHER_TARGETS = libfuzzer-onig libfuzzer-onig-full
 
 default: $(TARGETS)
 
@@ -64,4 +64,4 @@ $(ONIG_LIB):
 
 
 clean:
-	rm -f $(TARGETS)
+	rm -f $(TARGETS) $(OTHER_TARGETS)
