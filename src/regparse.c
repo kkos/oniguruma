@@ -6130,14 +6130,14 @@ enum CCSTATE {
   CCS_START
 };
 
-enum CCVALTYPE {
-  CCV_SB,
-  CCV_MB,
-  CCV_CLASS
+enum CVALTYPE {
+  CV_SB,
+  CV_MB,
+  CV_CLASS
 };
 
 static int
-next_state_class(CClassNode* cc, OnigCodePoint* vs, enum CCVALTYPE* type,
+next_state_class(CClassNode* cc, OnigCodePoint* vs, enum CVALTYPE* type,
                  enum CCSTATE* state, ScanEnv* env)
 {
   int r;
@@ -6145,37 +6145,37 @@ next_state_class(CClassNode* cc, OnigCodePoint* vs, enum CCVALTYPE* type,
   if (*state == CCS_RANGE)
     return ONIGERR_CHAR_CLASS_VALUE_AT_END_OF_RANGE;
 
-  if (*state == CCS_VALUE && *type != CCV_CLASS) {
-    if (*type == CCV_SB)
+  if (*state == CCS_VALUE && *type != CV_CLASS) {
+    if (*type == CV_SB)
       BITSET_SET_BIT(cc->bs, (int )(*vs));
-    else if (*type == CCV_MB) {
+    else if (*type == CV_MB) {
       r = add_code_range(&(cc->mbuf), env, *vs, *vs);
       if (r < 0) return r;
     }
   }
 
   *state = CCS_VALUE;
-  *type  = CCV_CLASS;
+  *type  = CV_CLASS;
   return 0;
 }
 
 static int
 next_state_val(CClassNode* cc, OnigCodePoint *from, OnigCodePoint to,
                int* from_israw, int to_israw,
-               enum CCVALTYPE intype, enum CCVALTYPE* type,
+               enum CVALTYPE intype, enum CVALTYPE* type,
                enum CCSTATE* state, ScanEnv* env)
 {
   int r;
 
   switch (*state) {
   case CCS_VALUE:
-    if (*type == CCV_SB) {
+    if (*type == CV_SB) {
       if (*from > 0xff)
           return ONIGERR_INVALID_CODE_POINT_VALUE;
 
       BITSET_SET_BIT(cc->bs, (int )(*from));
     }
-    else if (*type == CCV_MB) {
+    else if (*type == CV_MB) {
       r = add_code_range(&(cc->mbuf), env, *from, *from);
       if (r < 0) return r;
     }
@@ -6183,7 +6183,7 @@ next_state_val(CClassNode* cc, OnigCodePoint *from, OnigCodePoint to,
 
   case CCS_RANGE:
     if (intype == *type) {
-      if (intype == CCV_SB) {
+      if (intype == CV_SB) {
         if (*from > 0xff || to > 0xff)
           return ONIGERR_INVALID_CODE_POINT_VALUE;
 
@@ -6264,8 +6264,8 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   CClassNode work_cc;
   int val_israw, in_israw;
   enum CCSTATE state;
-  enum CCVALTYPE in_type;
-  enum CCVALTYPE val_type;
+  enum CVALTYPE in_type;
+  enum CVALTYPE val_type;
 
   *np = NULL_NODE;
   val_type = -1;
@@ -6305,7 +6305,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     any_char_in:
       len = ONIGENC_CODE_TO_MBCLEN(env->enc, tok->u.code);
       if (len > 1) {
-        in_type = CCV_MB;
+        in_type = CV_MB;
       }
       else if (len < 0) {
         r = len;
@@ -6313,7 +6313,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       }
       else {
         /* sb_char: */
-        in_type = CCV_SB;
+        in_type = CV_SB;
       }
       v = tok->u.code;
       in_israw = 0;
@@ -6367,13 +6367,13 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         }
         else {
           v = ONIGENC_MBC_TO_CODE(env->enc, buf, bufe);
-          in_type = CCV_MB;
+          in_type = CV_MB;
         }
       }
       else {
         v = (OnigCodePoint )tok->u.byte;
       raw_single:
-        in_type = CCV_SB;
+        in_type = CV_SB;
       }
       in_israw = 1;
       goto val_entry2;
@@ -6393,7 +6393,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
           goto err;
         }
       }
-      in_type = (len == 1 ? CCV_SB : CCV_MB);
+      in_type = (len == 1 ? CV_SB : CV_MB);
     val_entry2:
       r = next_state_val(cc, &vs, v, &val_israw, in_israw, in_type, &val_type,
                          &state, env);
@@ -6451,7 +6451,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
           goto range_end_val;
         }
 
-        if (val_type == CCV_CLASS) {
+        if (val_type == CV_CLASS) {
           r = ONIGERR_UNMATCHED_RANGE_SPECIFIER_IN_CHAR_CLASS;
           goto err;
         }
