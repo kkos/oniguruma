@@ -6137,7 +6137,7 @@ enum CVAL {
 };
 
 static int
-next_state_class(CClassNode* cc, OnigCodePoint* vs, enum CVAL* type,
+next_state_class(CClassNode* cc, OnigCodePoint* pcode, enum CVAL* val,
                  enum CSTATE* state, ScanEnv* env)
 {
   int r;
@@ -6145,24 +6145,23 @@ next_state_class(CClassNode* cc, OnigCodePoint* vs, enum CVAL* type,
   if (*state == CS_RANGE)
     return ONIGERR_CHAR_CLASS_VALUE_AT_END_OF_RANGE;
 
-  if (*state == CS_VALUE && *type != CV_CLASS) {
-    if (*type == CV_SB)
-      BITSET_SET_BIT(cc->bs, (int )(*vs));
-    else if (*type == CV_MB) {
-      r = add_code_range(&(cc->mbuf), env, *vs, *vs);
+  if (*state == CS_VALUE && *val != CV_CLASS) {
+    if (*val == CV_SB)
+      BITSET_SET_BIT(cc->bs, (int )(*pcode));
+    else if (*val == CV_MB) {
+      r = add_code_range(&(cc->mbuf), env, *pcode, *pcode);
       if (r < 0) return r;
     }
   }
 
   *state = CS_VALUE;
-  *type  = CV_CLASS;
+  *val   = CV_CLASS;
   return 0;
 }
 
 static int
 next_state_val(CClassNode* cc, OnigCodePoint *from, OnigCodePoint to,
-               int* from_israw, int to_israw,
-               enum CVAL intype, enum CVAL* type,
+               int* from_israw, int to_israw, enum CVAL intype, enum CVAL* type,
                enum CSTATE* state, ScanEnv* env)
 {
   int r;
