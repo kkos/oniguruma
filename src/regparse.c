@@ -6123,11 +6123,11 @@ parse_char_property(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* en
 }
 
 
-enum CCSTATE {
-  CCS_VALUE,
-  CCS_RANGE,
-  CCS_COMPLETE,
-  CCS_START
+enum CSTATE {
+  CS_VALUE,
+  CS_RANGE,
+  CS_COMPLETE,
+  CS_START
 };
 
 enum CVALTYPE {
@@ -6138,14 +6138,14 @@ enum CVALTYPE {
 
 static int
 next_state_class(CClassNode* cc, OnigCodePoint* vs, enum CVALTYPE* type,
-                 enum CCSTATE* state, ScanEnv* env)
+                 enum CSTATE* state, ScanEnv* env)
 {
   int r;
 
-  if (*state == CCS_RANGE)
+  if (*state == CS_RANGE)
     return ONIGERR_CHAR_CLASS_VALUE_AT_END_OF_RANGE;
 
-  if (*state == CCS_VALUE && *type != CV_CLASS) {
+  if (*state == CS_VALUE && *type != CV_CLASS) {
     if (*type == CV_SB)
       BITSET_SET_BIT(cc->bs, (int )(*vs));
     else if (*type == CV_MB) {
@@ -6154,7 +6154,7 @@ next_state_class(CClassNode* cc, OnigCodePoint* vs, enum CVALTYPE* type,
     }
   }
 
-  *state = CCS_VALUE;
+  *state = CS_VALUE;
   *type  = CV_CLASS;
   return 0;
 }
@@ -6163,12 +6163,12 @@ static int
 next_state_val(CClassNode* cc, OnigCodePoint *from, OnigCodePoint to,
                int* from_israw, int to_israw,
                enum CVALTYPE intype, enum CVALTYPE* type,
-               enum CCSTATE* state, ScanEnv* env)
+               enum CSTATE* state, ScanEnv* env)
 {
   int r;
 
   switch (*state) {
-  case CCS_VALUE:
+  case CS_VALUE:
     if (*type == CV_SB) {
       if (*from > 0xff)
           return ONIGERR_INVALID_CODE_POINT_VALUE;
@@ -6181,7 +6181,7 @@ next_state_val(CClassNode* cc, OnigCodePoint *from, OnigCodePoint to,
     }
     break;
 
-  case CCS_RANGE:
+  case CS_RANGE:
     if (intype == *type) {
       if (intype == CV_SB) {
         if (*from > 0xff || to > 0xff)
@@ -6212,12 +6212,12 @@ next_state_val(CClassNode* cc, OnigCodePoint *from, OnigCodePoint to,
       if (r < 0) return r;
     }
   ccs_range_end:
-    *state = CCS_COMPLETE;
+    *state = CS_COMPLETE;
     break;
 
-  case CCS_COMPLETE:
-  case CCS_START:
-    *state = CCS_VALUE;
+  case CS_COMPLETE:
+  case CS_START:
+    *state = CS_VALUE;
     break;
 
   default:
@@ -6263,7 +6263,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   CClassNode *cc, *prev_cc;
   CClassNode work_cc;
   int val_israw, in_israw;
-  enum CCSTATE state;
+  enum CSTATE state;
   enum CVALTYPE in_type;
   enum CVALTYPE val_type;
 
@@ -6296,7 +6296,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   cc = CCLASS_(node);
 
   and_start = 0;
-  state = CCS_START;
+  state = CS_START;
   p = *src;
   while (r != TK_CC_CLOSE) {
     fetched = 0;
@@ -6385,7 +6385,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     val_entry:
       len = ONIGENC_CODE_TO_MBCLEN(env->enc, v);
       if (len < 0) {
-        if (state != CCS_RANGE ||
+        if (state != CS_RANGE ||
             ! IS_SYNTAX_BV(env->syntax,
                            ONIG_SYN_ALLOW_INVALID_CODE_END_OF_RANGE_IN_CC) ||
             v < 0x100 || ONIGENC_MBC_MAXLEN(env->enc) == 1) {
@@ -6436,7 +6436,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       break;
 
     case TK_CC_RANGE:
-      if (state == CCS_VALUE) {
+      if (state == CS_VALUE) {
         r = fetch_token_in_cc(tok, &p, end, env);
         if (r < 0) goto err;
         fetched = 1;
@@ -6456,9 +6456,9 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
           goto err;
         }
 
-        state = CCS_RANGE;
+        state = CS_RANGE;
       }
-      else if (state == CCS_START) {
+      else if (state == CS_START) {
         /* [-xa] is allowed */
         v = tok->u.code;
         in_israw = 0;
@@ -6472,11 +6472,11 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
         goto val_entry;
       }
-      else if (state == CCS_RANGE) {
+      else if (state == CS_RANGE) {
         CC_ESC_WARN(env, (UChar* )"-");
         goto any_char_in;  /* [!--x] is allowed */
       }
-      else { /* CCS_COMPLETE */
+      else { /* CS_COMPLETE */
         r = fetch_token_in_cc(tok, &p, end, env);
         if (r < 0) goto err;
         fetched = 1;
@@ -6516,14 +6516,14 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
     case TK_CC_AND: /* && */
       {
-        if (state == CCS_VALUE) {
+        if (state == CS_VALUE) {
           r = next_state_val(cc, &vs, 0, &val_israw, 0, val_type,
                              &val_type, &state, env);
           if (r != 0) goto err;
         }
         /* initialize local variables */
         and_start = 1;
-        state = CCS_START;
+        state = CS_START;
 
         if (IS_NOT_NULL(prev_cc)) {
           r = and_cclass(prev_cc, cc, env->enc);
@@ -6556,7 +6556,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     }
   }
 
-  if (state == CCS_VALUE) {
+  if (state == CS_VALUE) {
     r = next_state_val(cc, &vs, 0, &val_israw, 0, val_type,
                        &val_type, &state, env);
     if (r != 0) goto err;
