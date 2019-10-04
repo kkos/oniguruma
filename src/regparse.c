@@ -6123,22 +6123,22 @@ parse_char_property(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* en
 }
 
 
-enum CSTATE {
+typedef enum {
   CS_VALUE,
   CS_RANGE,
   CS_COMPLETE,
   CS_START
-};
+} CSTATE;
 
-enum CVAL {
+typedef enum {
   CV_SB,
   CV_MB,
   CV_CLASS
-};
+} CVAL;
 
 static int
-next_state_class(CClassNode* cc, OnigCodePoint* pcode, enum CVAL* val,
-                 enum CSTATE* state, ScanEnv* env)
+next_state_class(CClassNode* cc, OnigCodePoint* pcode, CVAL* val,
+                 CSTATE* state, ScanEnv* env)
 {
   int r;
 
@@ -6161,8 +6161,8 @@ next_state_class(CClassNode* cc, OnigCodePoint* pcode, enum CVAL* val,
 
 static int
 next_state_val(CClassNode* cc, OnigCodePoint *from, OnigCodePoint to,
-               int* from_israw, int to_israw, enum CVAL intype, enum CVAL* type,
-               enum CSTATE* state, ScanEnv* env)
+               int* from_israw, int to_israw, CVAL intype, CVAL* type,
+               CSTATE* state, ScanEnv* env)
 {
   int r;
 
@@ -6262,9 +6262,9 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   CClassNode *cc, *prev_cc;
   CClassNode work_cc;
   int val_israw, in_israw;
-  enum CSTATE state;
-  enum CVAL in_type;
-  enum CVAL val_type;
+  CSTATE state;
+  CVAL in_type;
+  CVAL val_type;
 
   *np = NULL_NODE;
   val_type = -1;
