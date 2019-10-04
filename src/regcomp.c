@@ -754,6 +754,9 @@ compile_length_string_node(Node* node, regex_t* reg)
     return 0;
 
   ambig = NODE_STRING_IS_AMBIG(node);
+  if (ambig != 0) {
+    return 1;
+  }
 
   p = prev = sn->s;
   prev_len = enclen(enc, p);
@@ -792,6 +795,40 @@ compile_length_string_raw_node(StrNode* sn, regex_t* reg)
 }
 
 static int
+compile_ambig_string_node(Node* node, regex_t* reg)
+{
+  int r;
+  int len;
+  int byte_len;
+  UChar* p;
+  StrNode* sn;
+  OnigEncoding enc = reg->enc;
+
+  sn = STR_(node);
+  len = enclen(enc, sn->s);
+  byte_len = sn->end - sn->s;
+  if (len == byte_len) {
+    r = add_op(reg, OP_EXACT1_IC);
+    if (r != 0) return r;
+
+    xmemset(COP(reg)->exact.s, 0, sizeof(COP(reg)->exact.s));
+    xmemcpy(COP(reg)->exact.s, sn->s, (size_t )byte_len);
+  }
+  else {
+    r = add_op(reg, OP_EXACTN_IC);
+    if (r != 0) return r;
+
+    p = onigenc_strdup(enc, sn->s, sn->end);
+    CHECK_NULL_RETURN_MEMERR(p);
+
+    COP(reg)->exact_n.s = p;
+    COP(reg)->exact_n.n = byte_len;
+  }
+
+  return 0;
+}
+
+static int
 compile_string_node(Node* node, regex_t* reg)
 {
   int r, len, prev_len, slen, ambig;
@@ -805,6 +842,9 @@ compile_string_node(Node* node, regex_t* reg)
 
   end = sn->end;
   ambig = NODE_STRING_IS_AMBIG(node);
+  if (ambig != 0) {
+    return compile_ambig_string_node(node, reg);
+  }
 
   p = prev = sn->s;
   prev_len = enclen(enc, p);
@@ -6139,7 +6179,13 @@ set_optimize_exact(regex_t* reg, OptStr* e)
   reg->dmax = e->mmd.max;
 
   if (reg->dmin != INFINITE_LEN) {
-    reg->threshold_len = reg->dmin + (int )(reg->exact_end - reg->exact);
+    int n;
+    if (e->case_fold != 0 && e->good_case_fold == 0)
+      n = 1;
+    else
+      n = (int )(reg->exact_end - reg->exact);
+
+    reg->threshold_len = reg->dmin + n;
   }
 
   return 0;
