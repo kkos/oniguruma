@@ -753,7 +753,7 @@ compile_length_string_node(Node* node, regex_t* reg)
   if (sn->end <= sn->s)
     return 0;
 
-  ambig = NODE_STRING_IS_AMBIG(node);
+  ambig = NODE_STRING_IS_CASE_EXPANDED(node);
   if (ambig != 0) {
     return 1;
   }
@@ -841,7 +841,7 @@ compile_string_node(Node* node, regex_t* reg)
     return 0;
 
   end = sn->end;
-  ambig = NODE_STRING_IS_AMBIG(node);
+  ambig = NODE_STRING_IS_CASE_EXPANDED(node);
   if (ambig != 0) {
     return compile_ambig_string_node(node, reg);
   }
@@ -2732,7 +2732,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
 
           len = NODE_STRING_LEN(x);
           if (len > NODE_STRING_LEN(y)) len = NODE_STRING_LEN(y);
-          if (NODE_STRING_IS_AMBIG(x) || NODE_STRING_IS_AMBIG(y)) {
+          if (NODE_STRING_IS_CASE_EXPANDED(x) || NODE_STRING_IS_CASE_EXPANDED(y)) {
             /* tiny version */
             return 0;
           }
@@ -3956,7 +3956,7 @@ expand_case_fold_make_rem_string(Node** rnode, UChar *s, UChar *end, regex_t* re
     return r;
   }
 
-  NODE_STRING_SET_AMBIG(node);
+  NODE_STRING_SET_CASE_EXPANDED(node);
   NODE_STRING_SET_DONT_GET_OPT_INFO(node);
   *rnode = node;
   return 0;
@@ -4109,7 +4109,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
   UChar buf[ONIGENC_MBC_CASE_FOLD_MAXLEN];
   StrNode* sn;
 
-  if (NODE_STRING_IS_AMBIG(node)) return 0;
+  if (NODE_STRING_IS_CASE_EXPANDED(node)) return 0;
 
   sn = STR_(node);
 
@@ -4161,7 +4161,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
         prev_is_good  =  0; /* escape compiler warning */
       }
       else {
-        prev_is_ambig = NODE_STRING_IS_AMBIG(snode);
+        prev_is_ambig = NODE_STRING_IS_CASE_EXPANDED(snode);
         prev_is_good  = NODE_STRING_IS_GOOD_AMBIG(snode);
       }
 
@@ -4197,7 +4197,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
         if (r != 0) goto err;
       }
 
-      if (n != 0) NODE_STRING_SET_AMBIG(snode);
+      if (n != 0) NODE_STRING_SET_CASE_EXPANDED(snode);
       if (is_good != 0) NODE_STRING_SET_GOOD_AMBIG(snode);
     }
     else {
@@ -5824,7 +5824,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
       int slen = (int )(sn->end - sn->s);
       /* int is_raw = NODE_STRING_IS_RAW(node); */
 
-      if (! NODE_STRING_IS_AMBIG(node)) {
+      if (! NODE_STRING_IS_CASE_EXPANDED(node)) {
         concat_opt_exact_str(&opt->sb, sn->s, sn->end, enc);
         if (slen > 0) {
           add_char_opt_map(&opt->map, *(sn->s), enc);
@@ -7039,8 +7039,8 @@ print_indent_tree(FILE* f, Node* node, int indent)
 
       if (NODE_STRING_IS_RAW(node))
         mode = "-raw";
-      else if (NODE_STRING_IS_AMBIG(node))
-        mode = "-ambig";
+      else if (NODE_STRING_IS_CASE_EXPANDED(node))
+        mode = "-case_expanded";
       else
         mode = "";
 

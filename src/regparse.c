@@ -7845,7 +7845,7 @@ i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[], int to_len, void* arg)
 
           /* char-class expanded multi-char only
              compare with string folded at match time. */
-          NODE_STRING_SET_AMBIG(snode);
+          NODE_STRING_SET_CASE_EXPANDED(snode);
         }
         else {
           r = onig_node_str_cat(snode, buf, buf + len);
