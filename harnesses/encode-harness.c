@@ -157,6 +157,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   unsigned char *str_null_end;
   size_t remaining_size;
   unsigned char *data;
+  OnigOptionType options;
 
   // pull off one byte to switch off
 #if !defined(UTF16_BE) && !defined(UTF16_LE)
@@ -222,7 +223,13 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 #endif
 #endif
 
-  r = exec(enc, ONIG_OPTION_NONE, (char *)pattern, (char *)pattern_end,
+#ifdef OPT_IGNORECASE
+  options = ONIG_OPTION_IGNORECASE;
+#else
+  options = ONIG_OPTION_NONE;
+#endif
+
+  r = exec(enc, options, (char *)pattern, (char *)pattern_end,
            (char *)str, str_null_end);
 
   free(pattern);
