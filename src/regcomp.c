@@ -3981,20 +3981,20 @@ expand_case_fold_make_rem_string(Node** rnode, UChar *s, UChar *end, regex_t* re
 }
 
 static int
-expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[], UChar *p,
-                            int slen, UChar *end, regex_t* reg, Node **rnode)
+expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[], UChar* p,
+                            UChar* end, int plen, regex_t* reg, Node **rnode)
 {
   int r, i, j;
   int len;
   int varlen;
-  Node *anode, *var_anode, *snode, *xnode, *an;
+  Node *anode, *var_anode, *snode, *xnode, *an, *rem_node;
   UChar buf[ONIGENC_CODE_TO_MBC_MAXLEN];
 
   *rnode = var_anode = NULL_NODE;
 
   varlen = 0;
   for (i = 0; i < item_num; i++) {
-    if (items[i].byte_len != slen) {
+    if (items[i].byte_len != plen) {
       varlen = 1;
       break;
     }
@@ -4017,7 +4017,7 @@ expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[], UChar *p
     if (IS_NULL(anode)) return ONIGERR_MEMORY;
   }
 
-  snode = onig_node_new_str(p, p + slen);
+  snode = onig_node_new_str(p, p + plen);
   if (IS_NULL(snode)) goto mem_err;
 
   NODE_CAR(anode) = snode;
@@ -4042,28 +4042,22 @@ expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[], UChar *p
       goto mem_err2;
     }
 
-    if (items[i].byte_len != slen && IS_NOT_NULL(var_anode)) {
-      Node *rem;
+    if (items[i].byte_len != plen) {
       UChar *q = p + items[i].byte_len;
 
       if (q < end) {
-        r = expand_case_fold_make_rem_string(&rem, q, end, reg);
+        r = expand_case_fold_make_rem_string(&rem_node, q, end, reg);
         if (r != 0) {
           onig_node_free(an);
           goto mem_err2;
         }
 
         xnode = node_list_add(NULL_NODE, snode);
-        if (IS_NULL(xnode)) {
-          onig_node_free(an);
-          onig_node_free(rem);
-          goto mem_err2;
-        }
-        if (IS_NULL(node_list_add(xnode, rem))) {
-          onig_node_free(an);
+        if (IS_NULL(xnode)) goto mem_err3;
+        if (IS_NULL(node_list_add(xnode, rem_node))) {
           onig_node_free(xnode);
-          onig_node_free(rem);
-          goto mem_err;
+          snode = NULL_NODE;
+          goto mem_err3;
         }
 
         NODE_CAR(an) = xnode;
@@ -4076,7 +4070,7 @@ expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[], UChar *p
       var_anode = an;
     }
     else {
-      NODE_CAR(an)     = snode;
+      NODE_CAR(an)    = snode;
       NODE_CDR(anode) = an;
       anode = an;
     }
@@ -4084,12 +4078,15 @@ expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[], UChar *p
 
   return varlen;
 
+ mem_err3:
+  onig_node_free(an);
+  onig_node_free(rem_node);
+
  mem_err2:
   onig_node_free(snode);
 
  mem_err:
   onig_node_free(*rnode);
-
   return ONIGERR_MEMORY;
 }
 
@@ -4228,7 +4225,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
         }
       }
 
-      r = expand_case_fold_string_alt(n, items, p, len, end, reg, &prev_node);
+      r = expand_case_fold_string_alt(n, items, p, end, len, reg, &prev_node);
       if (r < 0) goto mem_err;
       if (r == 1) {
         if (IS_NULL(root)) {
