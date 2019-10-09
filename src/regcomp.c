@@ -452,6 +452,24 @@ swap_node(Node* a, Node* b)
   }
 }
 
+static Node*
+node_list_add(Node* list, Node* x)
+{
+  Node *n;
+
+  n = onig_node_new_list(x, NULL);
+  if (IS_NULL(n)) return NULL_NODE;
+
+  if (IS_NOT_NULL(list)) {
+    while (IS_NOT_NULL(NODE_CDR(list)))
+      list = NODE_CDR(list);
+
+    NODE_CDR(list) = n;
+  }
+
+  return n;
+}
+
 static OnigLen
 distance_add(OnigLen d1, OnigLen d2)
 {
@@ -4035,13 +4053,13 @@ expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[], UChar *p
           goto mem_err2;
         }
 
-        xnode = onig_node_list_add(NULL_NODE, snode);
+        xnode = node_list_add(NULL_NODE, snode);
         if (IS_NULL(xnode)) {
           onig_node_free(an);
           onig_node_free(rem);
           goto mem_err2;
         }
-        if (IS_NULL(onig_node_list_add(xnode, rem))) {
+        if (IS_NULL(node_list_add(xnode, rem))) {
           onig_node_free(an);
           onig_node_free(xnode);
           onig_node_free(rem);
@@ -4141,7 +4159,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
           && !(p == start && p + len >= end)))) {
       if (IS_NULL(snode)) {
         if (IS_NULL(root) && IS_NOT_NULL(prev_node)) {
-          top_root = root = onig_node_list_add(NULL_NODE, prev_node);
+          top_root = root = node_list_add(NULL_NODE, prev_node);
           if (IS_NULL(root)) {
             onig_node_free(prev_node);
             goto mem_err;
@@ -4151,7 +4169,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
         prev_node = snode = onig_node_new_str(NULL, NULL);
         if (IS_NULL(snode)) goto mem_err;
         if (IS_NOT_NULL(root)) {
-          if (IS_NULL(onig_node_list_add(root, snode))) {
+          if (IS_NULL(node_list_add(root, snode))) {
             onig_node_free(snode);
             goto mem_err;
           }
@@ -4178,7 +4196,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
       if ((prev_is_ambig == 0 && n != 0) ||
           (prev_is_ambig > 0 && (n == 0 || prev_is_good != is_good))) {
         if (IS_NULL(root) /* && IS_NOT_NULL(prev_node) */) {
-          top_root = root = onig_node_list_add(NULL_NODE, prev_node);
+          top_root = root = node_list_add(NULL_NODE, prev_node);
           if (IS_NULL(root)) {
             onig_node_free(prev_node);
             goto mem_err;
@@ -4187,7 +4205,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
 
         prev_node = snode = onig_node_new_str(foldp, foldp + fold_len);
         if (IS_NULL(snode)) goto mem_err;
-        if (IS_NULL(onig_node_list_add(root, snode))) {
+        if (IS_NULL(node_list_add(root, snode))) {
           onig_node_free(snode);
           goto mem_err;
         }
@@ -4205,7 +4223,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
       if (alt_num > THRESHOLD_CASE_FOLD_ALT_FOR_EXPANSION) break;
 
       if (IS_NULL(root) && IS_NOT_NULL(prev_node)) {
-        top_root = root = onig_node_list_add(NULL_NODE, prev_node);
+        top_root = root = node_list_add(NULL_NODE, prev_node);
         if (IS_NULL(root)) {
           onig_node_free(prev_node);
           goto mem_err;
@@ -4219,7 +4237,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
           top_root = prev_node;
         }
         else {
-          if (IS_NULL(onig_node_list_add(root, prev_node))) {
+          if (IS_NULL(node_list_add(root, prev_node))) {
             onig_node_free(prev_node);
             goto mem_err;
           }
@@ -4229,7 +4247,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
       }
       else { /* r == 0 */
         if (IS_NOT_NULL(root)) {
-          if (IS_NULL(onig_node_list_add(root, prev_node))) {
+          if (IS_NULL(node_list_add(root, prev_node))) {
             onig_node_free(prev_node);
             goto mem_err;
           }
@@ -4249,7 +4267,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
     if (r != 0) goto mem_err;
 
     if (IS_NOT_NULL(prev_node) && IS_NULL(root)) {
-      top_root = root = onig_node_list_add(NULL_NODE, prev_node);
+      top_root = root = node_list_add(NULL_NODE, prev_node);
       if (IS_NULL(root)) {
         onig_node_free(rem_node);
         onig_node_free(prev_node);
@@ -4261,7 +4279,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
       prev_node = rem_node;
     }
     else {
-      if (IS_NULL(onig_node_list_add(root, rem_node))) {
+      if (IS_NULL(node_list_add(root, rem_node))) {
         onig_node_free(rem_node);
         goto mem_err;
       }

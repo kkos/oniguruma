@@ -2233,24 +2233,6 @@ onig_node_new_list(Node* left, Node* right)
 }
 
 extern Node*
-onig_node_list_add(Node* list, Node* x)
-{
-  Node *n;
-
-  n = onig_node_new_list(x, NULL);
-  if (IS_NULL(n)) return NULL_NODE;
-
-  if (IS_NOT_NULL(list)) {
-    while (IS_NOT_NULL(NODE_CDR(list)))
-      list = NODE_CDR(list);
-
-    NODE_CDR(list) = n;
-  }
-
-  return n;
-}
-
-extern Node*
 onig_node_new_alt(Node* left, Node* right)
 {
   Node* node = node_new();

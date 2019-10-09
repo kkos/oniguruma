@@ -450,7 +450,6 @@ extern Node*  onig_node_new_bag P_((enum BagType type));
 extern Node*  onig_node_new_anchor P_((int type, int ascii_mode));
 extern Node*  onig_node_new_str P_((const UChar* s, const UChar* end));
 extern Node*  onig_node_new_list P_((Node* left, Node* right));
-extern Node*  onig_node_list_add P_((Node* list, Node* x));
 extern Node*  onig_node_new_alt P_((Node* left, Node* right));
 extern void   onig_node_str_clear P_((Node* node));
 extern int    onig_names_free P_((regex_t* reg));
