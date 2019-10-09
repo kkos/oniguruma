@@ -4119,7 +4119,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
 {
   int r, n, len, alt_num;
   int fold_len;
-  int prev_is_ambig, prev_is_good, is_good, is_in_look_behind;
+  int prev_expanded, prev_is_good, is_good, is_in_look_behind;
   UChar *start, *end, *p;
   UChar* foldp;
   Node *top_root, *root, *snode, *prev_node;
@@ -4152,11 +4152,9 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
     len = enclen(reg->enc, p);
     is_good = is_good_case_fold_items_for_search(reg->enc, len, n, items);
 
-    if (is_in_look_behind ||
-        (IS_NOT_NULL(snode) ||
-         (is_good
-          /* expand single char case: ex. /(?i:a)/ */
-          && !(p == start && p + len >= end)))) {
+    if (is_in_look_behind || IS_NOT_NULL(snode) ||
+        /* expand single char: ex. /(?i:a)/ */
+        (is_good && !(p == start && p + len >= end))) {
       if (IS_NULL(snode)) {
         if (IS_NULL(root) && IS_NOT_NULL(prev_node)) {
           top_root = root = node_list_add(NULL_NODE, prev_node);
@@ -4175,11 +4173,11 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
           }
         }
 
-        prev_is_ambig = -1; /* -1: new */
+        prev_expanded = -1; /* -1: new */
         prev_is_good  =  0; /* escape compiler warning */
       }
       else {
-        prev_is_ambig = NODE_STRING_IS_CASE_EXPANDED(snode);
+        prev_expanded = NODE_STRING_IS_CASE_EXPANDED(snode);
         prev_is_good  = NODE_STRING_IS_GOOD_AMBIG(snode);
       }
 
@@ -4193,8 +4191,8 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
         foldp = p; fold_len = len;
       }
 
-      if ((prev_is_ambig == 0 && n != 0) ||
-          (prev_is_ambig > 0 && (n == 0 || prev_is_good != is_good))) {
+      if ((prev_expanded == 0 && n != 0) ||
+          (prev_expanded > 0 && (n == 0 || prev_is_good != is_good))) {
         if (IS_NULL(root) /* && IS_NOT_NULL(prev_node) */) {
           top_root = root = node_list_add(NULL_NODE, prev_node);
           if (IS_NULL(root)) {
@@ -4253,8 +4251,6 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
           }
         }
       }
-
-      snode = NULL_NODE;
     }
 
     p += len;
