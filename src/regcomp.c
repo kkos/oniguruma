@@ -4243,33 +4243,35 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
   }
 
   if (p < end) {
-    Node *srem;
+    Node* rem_node;
 
-    r = expand_case_fold_make_rem_string(&srem, p, end, reg);
+    r = expand_case_fold_make_rem_string(&rem_node, p, end, reg);
     if (r != 0) goto mem_err;
 
     if (IS_NOT_NULL(prev_node) && IS_NULL(root)) {
       top_root = root = onig_node_list_add(NULL_NODE, prev_node);
       if (IS_NULL(root)) {
-        onig_node_free(srem);
+        onig_node_free(rem_node);
         onig_node_free(prev_node);
         goto mem_err;
       }
     }
 
     if (IS_NULL(root)) {
-      prev_node = srem;
+      prev_node = rem_node;
     }
     else {
-      if (IS_NULL(onig_node_list_add(root, srem))) {
-        onig_node_free(srem);
+      if (IS_NULL(onig_node_list_add(root, rem_node))) {
+        onig_node_free(rem_node);
         goto mem_err;
       }
     }
   }
 
   /* ending */
-  top_root = (IS_NOT_NULL(top_root) ? top_root : prev_node);
+  if (IS_NULL(top_root))
+    top_root = prev_node;
+
   swap_node(node, top_root);
   onig_node_free(top_root);
   return 0;
