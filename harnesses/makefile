@@ -7,8 +7,8 @@ LIBS     = $(ONIG_LIB)
 
 TARGETS = encode-libfuzzer syntax-libfuzzer deluxe-encode-libfuzzer \
           utf16-be-libfuzzer utf16-le-libfuzzer main-encode main-syntax \
-          main-deluxe-encode main-utf16-be main-utf16-le main-ignorecase \
-          main-regset ignorecase-libfuzzer regset-libfuzzer
+          main-deluxe-encode main-utf16-be main-utf16-le \
+          main-regset regset-libfuzzer
 OTHER_TARGETS = libfuzzer-onig libfuzzer-onig-full
 
 default: $(TARGETS)
@@ -28,9 +28,6 @@ utf16-be-libfuzzer: encode-harness.c $(ONIG_LIB)
 utf16-le-libfuzzer: encode-harness.c $(ONIG_LIB)
 	clang -DUTF16_LE $(CFLAGS) $< $(LIBS) -o $@
 
-ignorecase-libfuzzer: encode-harness.c $(ONIG_LIB)
-	clang -DOPT_IGNORECASE $(CFLAGS) $< $(LIBS) -o $@
-
 regset-libfuzzer: regset-harness.c $(ONIG_LIB)
 	clang $(CFLAGS) $< $(LIBS) -o $@
 
@@ -48,9 +45,6 @@ main-utf16-be: encode-harness.c $(ONIG_LIB)
 
 main-utf16-le: encode-harness.c $(ONIG_LIB)
 	clang -DUTF16_LE $(CFLAGS_M) $< $(LIBS) -o $@
-
-main-ignorecase: encode-harness.c $(ONIG_LIB)
-	clang -DOPT_IGNORECASE $(CFLAGS_M) $< $(LIBS) -o $@
 
 main-regset: regset-harness.c $(ONIG_LIB)
 	clang $(CFLAGS_M) $< $(LIBS) -o $@
