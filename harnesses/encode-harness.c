@@ -142,7 +142,7 @@ output_data(char* path, const uint8_t * data, size_t size)
 
 
 #define MAX_PATTERN_SIZE     100
-#define NUM_CONTROL_BYTES      1
+#define NUM_CONTROL_BYTES      2
 
 #define EXEC_PRINT_INTERVAL  20000000
 
@@ -157,6 +157,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   unsigned char *str_null_end;
   size_t remaining_size;
   unsigned char *data;
+  unsigned char options_choice;
   OnigOptionType options;
 
   // pull off one byte to switch off
@@ -183,6 +184,11 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   encoding_choice = data[0];
 #endif
 
+  data++;
+  remaining_size--;
+
+  options_choice = data[0];
+  options = (options_choice % 2 == 0) ? ONIG_OPTION_NONE : ONIG_OPTION_IGNORECASE;
   data++;
   remaining_size--;
 
@@ -223,10 +229,8 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 #endif
 #endif
 
-#ifdef OPT_IGNORECASE
-  options = ONIG_OPTION_IGNORECASE;
-#else
-  options = ONIG_OPTION_NONE;
+#ifdef WITH_READ_MAIN
+  fprintf(stdout, "enc: %s, options: %u\n", ONIGENC_NAME(enc), options);
 #endif
 
   r = exec(enc, options, (char *)pattern, (char *)pattern_end,
