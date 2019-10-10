@@ -395,7 +395,7 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
       GET_CODE_POINT(ncode, codes);
       codes++;
       GET_CODE_POINT(code, codes);
-      fprintf(f, ":%u:%u", code, ncode);
+      fprintf(f, ":%d:0x%x", ncode, code);
     }
     break;
   case OP_CCLASS_MIX:
