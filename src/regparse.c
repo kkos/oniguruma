@@ -7759,6 +7759,15 @@ clear_not_flag_cclass(CClassNode* cc, OnigEncoding enc)
 }
 #endif /* CASE_FOLD_IS_APPLIED_INSIDE_NEGATIVE_CCLASS */
 
+#define ADD_CODE_INTO_CC(cc, code, enc) do {\
+  if (ONIGENC_MBC_MINLEN(enc) > 1 || ONIGENC_CODE_TO_MBCLEN(enc, code) != 1) {\
+    add_code_range_to_buf(&((cc)->mbuf), code, code);\
+  }\
+  else {\
+    BITSET_SET_BIT((cc)->bs, code);\
+  }\
+} while (0)
+
 typedef struct {
   ScanEnv*    env;
   CClassNode* cc;
@@ -7772,25 +7781,17 @@ i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[], int to_len, void* arg)
   IApplyCaseFoldArg* iarg;
   ScanEnv* env;
   CClassNode* cc;
-  BitSetRef bs;
 
   iarg = (IApplyCaseFoldArg* )arg;
   env = iarg->env;
   cc  = iarg->cc;
-  bs = cc->bs;
 
   if (to_len == 1) {
     int is_in = onig_is_code_in_cc(env->enc, from, cc);
 #ifdef CASE_FOLD_IS_APPLIED_INSIDE_NEGATIVE_CCLASS
     if ((is_in != 0 && !IS_NCCLASS_NOT(cc)) ||
         (is_in == 0 &&  IS_NCCLASS_NOT(cc))) {
-      if (ONIGENC_MBC_MINLEN(env->enc) > 1 ||
-          ONIGENC_CODE_TO_MBCLEN(env->enc, *to) != 1) {
-        add_code_range(&(cc->mbuf), env, *to, *to);
-      }
-      else {
-        BITSET_SET_BIT(bs, *to);
-      }
+      ADD_CODE_INTO_CC(cc, *to, env->enc);
     }
 #else
     if (is_in != 0) {
@@ -7801,10 +7802,10 @@ i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[], int to_len, void* arg)
       }
       else {
         if (IS_NCCLASS_NOT(cc)) {
-          BITSET_CLEAR_BIT(bs, *to);
+          BITSET_CLEAR_BIT(cc->bs, *to);
         }
         else
-          BITSET_SET_BIT(bs, *to);
+          BITSET_SET_BIT(cc->bs, *to);
       }
     }
 #endif /* CASE_FOLD_IS_APPLIED_INSIDE_NEGATIVE_CCLASS */
@@ -7812,35 +7813,65 @@ i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[], int to_len, void* arg)
   else {
     int r, i, len;
     UChar buf[ONIGENC_CODE_TO_MBC_MAXLEN];
-    Node *snode = NULL_NODE;
 
     if (onig_is_code_in_cc(env->enc, from, cc)
 #ifdef CASE_FOLD_IS_APPLIED_INSIDE_NEGATIVE_CCLASS
         && !IS_NCCLASS_NOT(cc)
 #endif
         ) {
-      for (i = 0; i < to_len; i++) {
-        len = ONIGENC_CODE_TO_MBC(env->enc, to[i], buf);
-        if (i == 0) {
-          snode = onig_node_new_str(buf, buf + len);
-          CHECK_NULL_RETURN_MEMERR(snode);
+      int n, j, m, index;
+      Node* list_node;
+      Node* ns[3];
 
-          /* char-class expanded multi-char only
-             compare with string folded at match time. */
-          NODE_STRING_SET_CASE_EXPANDED(snode);
-          NODE_STRING_SET_CASE_FOLD_MATCH(snode);
+      n = 0;
+      for (i = 0; i < to_len; i++) {
+        OnigCodePoint code;
+        Node* csnode;
+        CClassNode* cs_cc;
+
+        index = onigenc_unicode_fold1_key(&to[i]);
+        if (index >= 0) {
+          csnode = node_new_cclass();
+          cs_cc = CCLASS_(csnode);
+          if (IS_NULL(csnode)) {
+          err_free_ns:
+            for (j = 0; j < n; j++) onig_node_free(ns[j]);
+            return ONIGERR_MEMORY;
+          }
+          m = FOLDS1_UNFOLDS_NUM(index);
+          for (j = 0; j < m; j++) {
+            code = FOLDS1_UNFOLDS(index)[j];
+            ADD_CODE_INTO_CC(cs_cc, code, env->enc);
+          }
+          ADD_CODE_INTO_CC(cs_cc, to[i], env->enc);
+          ns[n++] = csnode;
         }
         else {
-          r = onig_node_str_cat(snode, buf, buf + len);
-          if (r < 0) {
-            onig_node_free(snode);
-            return r;
+          len = ONIGENC_CODE_TO_MBC(env->enc, to[i], buf);
+          if (n == 0 || NODE_TYPE(ns[n-1]) != NODE_STRING) {
+            csnode = onig_node_new_str(buf, buf + len);
+            if (IS_NULL(csnode)) goto err_free_ns;
+
+            NODE_STRING_SET_CASE_EXPANDED(csnode);
+            ns[n++] = csnode;
+          }
+          else {
+            r = onig_node_str_cat(csnode, buf, buf + len);
+            if (r < 0) goto err_free_ns;
           }
         }
       }
 
-      *(iarg->ptail) = onig_node_new_alt(snode, NULL_NODE);
-      CHECK_NULL_RETURN_MEMERR(*(iarg->ptail));
+      if (n == 1)
+        list_node = ns[0];
+      else
+        list_node = make_list(n, ns);
+
+      *(iarg->ptail) = onig_node_new_alt(list_node, NULL_NODE);
+      if (IS_NULL(*(iarg->ptail))) {
+        onig_node_free(list_node);
+        return ONIGERR_MEMORY;
+      }
       iarg->ptail = &(NODE_CDR((*(iarg->ptail))));
     }
   }
