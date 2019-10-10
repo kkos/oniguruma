@@ -7856,7 +7856,7 @@ i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[], int to_len, void* arg)
             ns[n++] = csnode;
           }
           else {
-            r = onig_node_str_cat(csnode, buf, buf + len);
+            r = onig_node_str_cat(ns[n-1], buf, buf + len);
             if (r < 0) goto err_free_ns;
           }
         }
