@@ -6639,6 +6639,13 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   reg->num_call = scan_env.num_call;
 #endif
 
+#ifdef ONIG_DEBUG_PARSE
+  fprintf(stderr, "MAX PARSE DEPTH: %d\n", scan_env.max_parse_depth);
+  fprintf(stderr, "TREE (parsed)\n");
+  print_tree(stderr, root);
+  fprintf(stderr, "\n");
+#endif
+
   r = setup_tree(root, reg, 0, &scan_env);
   if (r != 0) goto err_unset;
 
@@ -6650,8 +6657,9 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   }
 
 #ifdef ONIG_DEBUG_PARSE
-  fprintf(stderr, "MAX PARSE DEPTH: %d\n", scan_env.max_parse_depth);
+  fprintf(stderr, "TREE (after setup)\n");
   print_tree(stderr, root);
+  fprintf(stderr, "\n");
 #endif
 
   reg->capture_history  = scan_env.cap_history;
