@@ -3982,7 +3982,7 @@ case_fold_remaining_string(Node** rnode, UChar *s, UChar *end, regex_t* reg)
 }
 
 static int
-expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[], UChar* p,
+string_case_expand_to_alts(int item_num, OnigCaseFoldCodeItem items[], UChar* p,
                             UChar* end, int plen, regex_t* reg, Node **rnode)
 {
   int r, i, j;
@@ -4120,7 +4120,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
   int prev_fold, prev_is_good, is_good, is_in_look_behind;
   UChar *start, *end, *p;
   UChar* foldp;
-  Node *top_root, *root, *snode, *prev_node;
+  Node *top, *root, *snode, *prev_node;
   OnigCaseFoldCodeItem items[ONIGENC_GET_CASE_FOLD_CODES_MAX_NUM];
   UChar buf[ONIGENC_MBC_CASE_FOLD_MAXLEN];
   StrNode* sn;
@@ -4136,7 +4136,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
   is_in_look_behind = (state & IN_LOOK_BEHIND) != 0;
 
   r = 0;
-  top_root = root = prev_node = snode = NULL_NODE;
+  top = root = prev_node = snode = NULL_NODE;
   alt_num = 1;
   p = start;
   while (p < end) {
@@ -4155,7 +4155,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
         (is_good && !(p == start && p + len >= end))) {
       if (IS_NULL(snode)) {
         if (IS_NULL(root) && IS_NOT_NULL(prev_node)) {
-          top_root = root = node_list_add(NULL_NODE, prev_node);
+          top = root = node_list_add(NULL_NODE, prev_node);
           if (IS_NULL(root)) {
             onig_node_free(prev_node);
             goto mem_err;
@@ -4192,7 +4192,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
       if ((prev_fold == 0 && n != 0) ||
           (prev_fold > 0 && (n == 0 || prev_is_good != is_good))) {
         if (IS_NULL(root) /* && IS_NOT_NULL(prev_node) */) {
-          top_root = root = node_list_add(NULL_NODE, prev_node);
+          top = root = node_list_add(NULL_NODE, prev_node);
           if (IS_NULL(root)) {
             onig_node_free(prev_node);
             goto mem_err;
@@ -4222,18 +4222,18 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
       if (alt_num > THRESHOLD_CASE_FOLD_ALT_FOR_EXPANSION) break;
 
       if (IS_NULL(root) && IS_NOT_NULL(prev_node)) {
-        top_root = root = node_list_add(NULL_NODE, prev_node);
+        top = root = node_list_add(NULL_NODE, prev_node);
         if (IS_NULL(root)) {
           onig_node_free(prev_node);
           goto mem_err;
         }
       }
 
-      r = expand_case_fold_string_alt(n, items, p, end, len, reg, &prev_node);
+      r = string_case_expand_to_alts(n, items, p, end, len, reg, &prev_node);
       if (r < 0) goto mem_err;
       if (r == 1) {
         if (IS_NULL(root)) {
-          top_root = prev_node;
+          top = prev_node;
         }
         else {
           if (IS_NULL(node_list_add(root, prev_node))) {
@@ -4264,7 +4264,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
     if (r != 0) goto mem_err;
 
     if (IS_NOT_NULL(prev_node) && IS_NULL(root)) {
-      top_root = root = node_list_add(NULL_NODE, prev_node);
+      top = root = node_list_add(NULL_NODE, prev_node);
       if (IS_NULL(root)) {
         onig_node_free(rem_node);
         onig_node_free(prev_node);
@@ -4284,18 +4284,18 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
   }
 
   /* ending */
-  if (IS_NULL(top_root))
-    top_root = prev_node;
+  if (IS_NULL(top))
+    top = prev_node;
 
-  swap_node(node, top_root);
-  onig_node_free(top_root);
+  swap_node(node, top);
+  onig_node_free(top);
   return 0;
 
  mem_err:
   r = ONIGERR_MEMORY;
 
  err:
-  onig_node_free(top_root);
+  onig_node_free(top);
   return r;
 }
 
