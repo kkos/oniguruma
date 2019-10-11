@@ -3960,7 +3960,7 @@ update_string_node_case_fold(regex_t* reg, Node *node)
 }
 
 static int
-expand_case_fold_make_rem_string(Node** rnode, UChar *s, UChar *end, regex_t* reg)
+case_fold_remaining_string(Node** rnode, UChar *s, UChar *end, regex_t* reg)
 {
   int r;
   Node *node;
@@ -4047,7 +4047,7 @@ expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[], UChar* p
       UChar *q = p + items[i].byte_len;
 
       if (q < end) {
-        r = expand_case_fold_make_rem_string(&rem_node, q, end, reg);
+        r = case_fold_remaining_string(&rem_node, q, end, reg);
         if (r != 0) {
           onig_node_free(an);
           goto mem_err2;
@@ -4260,7 +4260,7 @@ expand_case_fold_string(Node* node, regex_t* reg, int state)
   if (p < end) {
     Node* rem_node;
 
-    r = expand_case_fold_make_rem_string(&rem_node, p, end, reg);
+    r = case_fold_remaining_string(&rem_node, p, end, reg);
     if (r != 0) goto mem_err;
 
     if (IS_NOT_NULL(prev_node) && IS_NULL(root)) {
