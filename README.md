@@ -50,10 +50,6 @@ Version 6.9.2 (Reiwa)
 * Update Unicode version 12.1.0
 * NEW: Unicode Text Segment mode option (?y{g}) (?y{w})  (*original)
 
-  g: Extended Grapheme Cluster mode / w: Word mode
-
-  (Unicode Standard Annex #29 [http://unicode.org/reports/tr29/])
-
 
 Version 6.9.1
 -------------
