@@ -803,7 +803,7 @@ compile_length_string_node(Node* node, regex_t* reg)
 }
 
 static int
-compile_length_string_raw_node(StrNode* sn, regex_t* reg)
+compile_length_string_crude_node(StrNode* sn, regex_t* reg)
 {
   if (sn->end <= sn->s)
     return 0;
@@ -890,7 +890,7 @@ compile_string_node(Node* node, regex_t* reg)
 }
 
 static int
-compile_string_raw_node(StrNode* sn, regex_t* reg)
+compile_string_crude_node(StrNode* sn, regex_t* reg)
 {
   if (sn->end <= sn->s)
     return 0;
@@ -1893,8 +1893,8 @@ compile_length_tree(Node* node, regex_t* reg)
     break;
 
   case NODE_STRING:
-    if (NODE_STRING_IS_RAW(node))
-      r = compile_length_string_raw_node(STR_(node), reg);
+    if (NODE_STRING_IS_CRUDE(node))
+      r = compile_length_string_crude_node(STR_(node), reg);
     else
       r = compile_length_string_node(node, reg);
     break;
@@ -1986,8 +1986,8 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
     break;
 
   case NODE_STRING:
-    if (NODE_STRING_IS_RAW(node))
-      r = compile_string_raw_node(STR_(node), reg);
+    if (NODE_STRING_IS_CRUDE(node))
+      r = compile_string_crude_node(STR_(node), reg);
     else
       r = compile_string_node(node, reg);
     break;
@@ -2810,7 +2810,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
         break;
 
       if (exact == 0 ||
-          ! IS_IGNORECASE(reg->options) || NODE_STRING_IS_RAW(node)) {
+          ! IS_IGNORECASE(reg->options) || NODE_STRING_IS_CRUDE(node)) {
         n = node;
       }
     }
@@ -4991,7 +4991,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     break;
 
   case NODE_STRING:
-    if (IS_IGNORECASE(reg->options) && !NODE_STRING_IS_RAW(node)) {
+    if (IS_IGNORECASE(reg->options) && !NODE_STRING_IS_CRUDE(node)) {
       r = expand_case_fold_string(node, reg, state);
     }
     break;
@@ -5839,7 +5839,6 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
     {
       StrNode* sn = STR_(node);
       int slen = (int )(sn->end - sn->s);
-      /* int is_raw = NODE_STRING_IS_RAW(node); */
 
       if (! NODE_STRING_IS_CASE_FOLD_MATCH(node)) {
         concat_opt_exact_str(&opt->sb, sn->s, sn->end, enc);
@@ -7062,8 +7061,8 @@ print_indent_tree(FILE* f, Node* node, int indent)
       char* dont;
       char* good;
 
-      if (NODE_STRING_IS_RAW(node))
-        mode = "-raw";
+      if (NODE_STRING_IS_CRUDE(node))
+        mode = "-crude";
       else if (NODE_STRING_IS_CASE_FOLD_MATCH(node))
         mode = "-case_fold_match";
       else

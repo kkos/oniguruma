@@ -3227,11 +3227,11 @@ onig_node_new_str(const UChar* s, const UChar* end)
 }
 
 static Node*
-node_new_str_raw(UChar* s, UChar* end)
+node_new_str_crude(UChar* s, UChar* end)
 {
   Node* node = node_new_str(s, end);
   CHECK_NULL_RETURN(node);
-  NODE_STRING_SET_RAW(node);
+  NODE_STRING_SET_CRUDE(node);
   return node;
 }
 
@@ -3242,14 +3242,14 @@ node_new_empty(void)
 }
 
 static Node*
-node_new_str_raw_char(UChar c)
+node_new_str_crude_char(UChar c)
 {
   int i;
   UChar p[1];
   Node* node;
 
   p[0] = c;
-  node = node_new_str_raw(p, p + 1);
+  node = node_new_str_crude(p, p + 1);
 
   /* clear buf tail */
   for (i = 1; i < NODE_STRING_BUF_SIZE; i++)
@@ -3272,8 +3272,8 @@ str_node_split_last_char(Node* node, OnigEncoding enc)
     if (p && p > sn->s) { /* can be split. */
       rn = node_new_str(p, sn->end);
       CHECK_NULL_RETURN(rn);
-      if (NODE_STRING_IS_RAW(node))
-        NODE_STRING_SET_RAW(rn);
+      if (NODE_STRING_IS_CRUDE(node))
+        NODE_STRING_SET_CRUDE(rn);
 
       sn->end = (UChar* )p;
     }
@@ -4004,7 +4004,7 @@ node_new_general_newline(Node** node, ScanEnv* env)
   alen = ONIGENC_CODE_TO_MBC(env->enc, 0x0a, buf + dlen);
   if (alen < 0) return alen;
 
-  crnl = node_new_str_raw(buf, buf + dlen + alen);
+  crnl = node_new_str_crude(buf, buf + dlen + alen);
   CHECK_NULL_RETURN_MEMERR(crnl);
 
   ncc = node_new_cclass();
@@ -4041,7 +4041,7 @@ node_new_general_newline(Node** node, ScanEnv* env)
 
 enum TokenSyms {
   TK_EOT      = 0,   /* end of token */
-  TK_RAW_BYTE = 1,
+  TK_CRUDE_BYTE = 1,
   TK_CHAR,
   TK_STRING,
   TK_CODE_POINT,
@@ -4843,7 +4843,7 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         if (p == prev) {  /* can't read nothing. */
           code = 0; /* but, it's not error */
         }
-        tok->type = TK_RAW_BYTE;
+        tok->type = TK_CRUDE_BYTE;
         tok->base = 16;
         tok->u.byte = (UChar )code;
       }
@@ -4876,7 +4876,7 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         if (p == prev) {  /* can't read nothing. */
           code = 0; /* but, it's not error */
         }
-        tok->type = TK_RAW_BYTE;
+        tok->type = TK_CRUDE_BYTE;
         tok->base = 8;
         tok->u.byte = (UChar )code;
       }
@@ -5246,7 +5246,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         if (p == prev) {  /* can't read nothing. */
           code = 0; /* but, it's not error */
         }
-        tok->type = TK_RAW_BYTE;
+        tok->type = TK_CRUDE_BYTE;
         tok->base = 16;
         tok->u.byte = (UChar )code;
       }
@@ -5311,7 +5311,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         if (p == prev) {  /* can't read nothing. */
           code = 0; /* but, it's not error */
         }
-        tok->type = TK_RAW_BYTE;
+        tok->type = TK_CRUDE_BYTE;
         tok->base = 8;
         tok->u.byte = (UChar )code;
       }
@@ -5464,7 +5464,6 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         PUNFETCH;
         r = fetch_escaped_value(&p, end, env, &c2);
         if (r < 0) return r;
-        /* set_raw: */
         if (tok->u.code != c2) {
           tok->type = TK_CODE_POINT;
           tok->u.code = c2;
@@ -6297,7 +6296,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       goto val_entry2;
       break;
 
-    case TK_RAW_BYTE:
+    case TK_CRUDE_BYTE:
       /* tok->base != 0 : octal or hexadec. */
       if (! ONIGENC_IS_SINGLEBYTE(env->enc) && tok->base != 0) {
         int i, j;
@@ -6310,7 +6309,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         for (i = 1; i < ONIGENC_MBC_MAXLEN(env->enc); i++) {
           r = fetch_token_in_cc(tok, &p, end, env);
           if (r < 0) goto err;
-          if (r != TK_RAW_BYTE || tok->base != base) {
+          if (r != TK_CRUDE_BYTE || tok->base != base) {
             fetched = 1;
             break;
           }
@@ -6340,7 +6339,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
         if (i == 1) {
           in_code = (OnigCodePoint )buf[0];
-          goto raw_single;
+          goto crude_single;
         }
         else {
           in_code = ONIGENC_MBC_TO_CODE(env->enc, buf, bufe);
@@ -6349,7 +6348,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       }
       else {
         in_code = (OnigCodePoint )tok->u.byte;
-      raw_single:
+      crude_single:
         in_type = CV_SB;
       }
       in_raw = 1;
@@ -7942,7 +7941,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
     if (! IS_SYNTAX_BV(env->syntax, ONIG_SYN_ALLOW_UNMATCHED_CLOSE_SUBEXP))
       return ONIGERR_UNMATCHED_CLOSE_PARENTHESIS;
 
-    if (tok->escaped) goto tk_raw_byte;
+    if (tok->escaped) goto tk_crude_byte;
     else goto tk_byte;
     break;
 
@@ -7967,23 +7966,23 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
     }
     break;
 
-  case TK_RAW_BYTE:
-  tk_raw_byte:
+  case TK_CRUDE_BYTE:
+  tk_crude_byte:
     {
-      *np = node_new_str_raw_char(tok->u.byte);
+      *np = node_new_str_crude_char(tok->u.byte);
       CHECK_NULL_RETURN_MEMERR(*np);
       len = 1;
       while (1) {
         if (len >= ONIGENC_MBC_MINLEN(env->enc)) {
           if (len == enclen(env->enc, STR_(*np)->s)) {
             r = fetch_token(tok, src, end, env);
-            goto tk_raw_byte_end;
+            goto tk_crude_byte_end;
           }
         }
 
         r = fetch_token(tok, src, end, env);
         if (r < 0) return r;
-        if (r != TK_RAW_BYTE)
+        if (r != TK_CRUDE_BYTE)
           return ONIGERR_TOO_SHORT_MULTI_BYTE_STRING;
 
         r = node_str_cat_char(*np, tok->u.byte);
@@ -7992,11 +7991,11 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
         len++;
       }
 
-    tk_raw_byte_end:
+    tk_crude_byte_end:
       if (! ONIGENC_IS_VALID_MBC_STRING(env->enc, STR_(*np)->s, STR_(*np)->end))
         return ONIGERR_INVALID_WIDE_CHAR_VALUE;
 
-      NODE_STRING_CLEAR_RAW(*np);
+      NODE_STRING_CLEAR_CRUDE(*np);
       goto string_end;
     }
     break;
@@ -8007,7 +8006,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
       len = ONIGENC_CODE_TO_MBC(env->enc, tok->u.code, buf);
       if (len < 0) return len;
 #ifdef NUMBERED_CHAR_IS_NOT_CASE_AMBIG
-      *np = node_new_str_raw(buf, buf + len);
+      *np = node_new_str_crude(buf, buf + len);
 #else
       *np = node_new_str(buf, buf + len);
 #endif
