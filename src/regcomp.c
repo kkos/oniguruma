@@ -470,6 +470,16 @@ node_list_add(Node* list, Node* x)
   return n;
 }
 
+static void
+node_conv_to_str_node(Node* node, int flag)
+{
+  NODE_SET_TYPE(node, NODE_STRING);
+  STR_(node)->flag     = flag;
+  STR_(node)->capacity = 0;
+  STR_(node)->s        = STR_(node)->buf;
+  STR_(node)->end      = STR_(node)->buf;
+}
+
 static OnigLen
 distance_add(OnigLen d1, OnigLen d2)
 {
@@ -4930,7 +4940,7 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
 
       if (len * qn->lower <= EXPAND_STRING_MAX_LENGTH) {
         int i, n = qn->lower;
-        onig_node_conv_to_str_node(node, STR_(body)->flag);
+        node_conv_to_str_node(node, STR_(body)->flag);
         for (i = 0; i < n; i++) {
           r = onig_node_str_cat(node, sn->s, sn->end);
           if (r != 0) return r;

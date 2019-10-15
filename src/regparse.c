@@ -3179,16 +3179,6 @@ node_str_cat_char(Node* node, UChar c)
 }
 
 extern void
-onig_node_conv_to_str_node(Node* node, int flag)
-{
-  NODE_SET_TYPE(node, NODE_STRING);
-  STR_(node)->flag     = flag;
-  STR_(node)->capacity = 0;
-  STR_(node)->s        = STR_(node)->buf;
-  STR_(node)->end      = STR_(node)->buf;
-}
-
-extern void
 onig_node_str_clear(Node* node)
 {
   if (STR_(node)->capacity != 0 &&
