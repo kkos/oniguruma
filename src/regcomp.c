@@ -3817,6 +3817,96 @@ recursive_call_check_trav(Node* node, ScanEnv* env, int state)
 
 #endif
 
+static void
+remove_from_list(Node* prev, Node* a)
+{
+  if (NODE_CDR(prev) != a) return ;
+
+  NODE_CDR(prev) = NODE_CDR(a);
+  NODE_CDR(a) = NULL_NODE;
+}
+
+static int
+reduce_string_list(Node* node)
+{
+  int r = 0;
+
+  switch (NODE_TYPE(node)) {
+  case NODE_LIST:
+    {
+      Node* prev;
+      Node* curr;
+      Node* prev_node;
+      Node* next_node;
+
+      prev = NULL_NODE;
+      do {
+        next_node = NODE_CDR(node);
+        curr = NODE_CAR(node);
+        if (NODE_TYPE(curr) == NODE_STRING) {
+          if (IS_NULL(prev) || STR_(curr)->flag != STR_(prev)->flag) {
+            prev = curr;
+            prev_node = node;
+          }
+          else {
+            r = onig_node_str_cat(prev, STR_(curr)->s, STR_(curr)->end);
+            if (r != 0) return r;
+            remove_from_list(prev_node, node);
+            onig_node_free(node);
+          }
+        }
+        else {
+          prev = NULL_NODE;
+          prev_node = node;
+        }
+
+        node = next_node;
+      } while (r == 0 && IS_NOT_NULL(node));
+    }
+    break;
+
+  case NODE_ALT:
+    do {
+      r = reduce_string_list(NODE_CAR(node));
+    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
+    break;
+
+  case NODE_ANCHOR:
+    if (IS_NULL(NODE_BODY(node)))
+      break;
+    /* fall */
+  case NODE_QUANT:
+    r = reduce_string_list(NODE_BODY(node));
+    break;
+
+  case NODE_BAG:
+    {
+      BagNode* en = BAG_(node);
+
+      r = reduce_string_list(NODE_BODY(node));
+      if (r != 0) return r;
+
+      if (en->type == BAG_IF_ELSE) {
+        if (IS_NOT_NULL(en->te.Then)) {
+          r = reduce_string_list(en->te.Then);
+          if (r != 0) return r;
+        }
+        if (IS_NOT_NULL(en->te.Else)) {
+          r = reduce_string_list(en->te.Else);
+          if (r != 0) return r;
+        }
+      }
+    }
+    break;
+
+  default:
+    break;
+  }
+
+  return r;
+}
+
+
 #define IN_ALT          (1<<0)
 #define IN_NOT          (1<<1)
 #define IN_REAL_REPEAT  (1<<2)
@@ -6611,6 +6701,9 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   reg->empty_status_mem   = 0;
 
   r = onig_parse_tree(&root, pattern, pattern_end, reg, &scan_env);
+  if (r != 0) goto err;
+
+  r = reduce_string_list(root);
   if (r != 0) goto err;
 
   /* mixed use named group and no-named group */
