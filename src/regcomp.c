@@ -4213,7 +4213,7 @@ is_good_case_fold_items_for_search(OnigEncoding enc, int slen,
 #define THRESHOLD_CASE_FOLD_ALT_FOR_EXPANSION  8
 
 static int
-expand_case_fold_string(Node* node, regex_t* reg, int state)
+resolve_case_fold_string(Node* node, regex_t* reg, int state)
 {
   int r, n, len, alt_num;
   int fold_len;
@@ -5092,7 +5092,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
   case NODE_STRING:
     if (IS_IGNORECASE(reg->options) && !NODE_STRING_IS_CRUDE(node)) {
-      r = expand_case_fold_string(node, reg, state);
+      r = resolve_case_fold_string(node, reg, state);
     }
     break;
 
