@@ -81,7 +81,7 @@ extern int main(int argc, char* argv[])
   /* fix ignore case in look-behind
      commit: 3340ec2cc5627172665303fe248c9793354d2251 */
   exec(ONIG_ENCODING_UTF8, ONIG_OPTION_IGNORECASE,
-       "(?<=\305\211)a", "\312\274na"); /* \u{0149}a  \u{02bc}na */
+       "\305\211a", "\312\274na"); /* \u{0149}a  \u{02bc}na */
 
   exec(ONIG_ENCODING_UTF8, ONIG_OPTION_NONE, "(\\2)(\\1)", "aa"); /* fail. */
 
