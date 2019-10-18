@@ -298,6 +298,8 @@ extern int main(int argc, char* argv[])
   x2("(?i:xssy)", "xs\xc5\xbfy", 0, 5);
   x2("(?i:xssy)", "x\xc3\x9fy", 0, 4);
   x2("(?i:xssy)", "x\xe1\xba\x9ey", 0, 5);
+  x2("(?i:x\xc3\x9fy)", "xssy", 0, 4);
+  x2("(?i:x\xc3\x9fy)", "xSSy", 0, 4);
   x2("(?i:\xc3\x9f)", "ss", 0, 2);
   x2("(?i:\xc3\x9f)", "SS", 0, 2);
   x2("(?i:[\xc3\x9f])", "ss", 0, 2);
@@ -1214,6 +1216,47 @@ extern int main(int argc, char* argv[])
   x2("((?(a)\\g<1>))", "aab", 0, 2);
   x2("(b(?(a)|\\g<1>))", "bba", 0, 3);
   e("(()(?(2)\\g<1>))", "", ONIGERR_NEVER_ENDING_RECURSION);
+
+  x2("(?i)st", "st", 0, 2);
+  x2("(?i)st", "St", 0, 2);
+  x2("(?i)st", "sT", 0, 2);
+  x2("(?i)st", "\xC5\xBFt", 0, 3); // U+017F
+  x2("(?i)st", "\xEF\xAC\x85", 0, 3); // U+FB05
+  x2("(?i)st", "\xEF\xAC\x86", 0, 3); // U+FB06
+  x2("(?i)ast", "Ast", 0, 3);
+  x2("(?i)ast", "ASt", 0, 3);
+  x2("(?i)ast", "AsT", 0, 3);
+  x2("(?i)ast", "A\xC5\xBFt", 0, 4); // U+017F
+  x2("(?i)ast", "A\xEF\xAC\x85", 0, 4); // U+FB05
+  x2("(?i)ast", "A\xEF\xAC\x86", 0, 4); // U+FB06
+  x2("(?i)stZ", "stz", 0, 3);
+  x2("(?i)stZ", "Stz", 0, 3);
+  x2("(?i)stZ", "sTz", 0, 3);
+  x2("(?i)stZ", "\xC5\xBFtz", 0, 4); // U+017F
+  x2("(?i)stZ", "\xEF\xAC\x85z", 0, 4); // U+FB05
+  x2("(?i)stZ", "\xEF\xAC\x86z", 0, 4); // U+FB06
+  x2("(?i)BstZ", "bstz", 0, 4);
+  x2("(?i)BstZ", "bStz", 0, 4);
+  x2("(?i)BstZ", "bsTz", 0, 4);
+  x2("(?i)BstZ", "b\xC5\xBFtz", 0, 5); // U+017F
+  x2("(?i)BstZ", "b\xEF\xAC\x85z", 0, 5); // U+FB05
+  x2("(?i)BstZ", "b\xEF\xAC\x86z", 0, 5); // U+FB06
+
+  /* #156 U+01F0 (UTF-8: C7 B0) */
+  x2("(?i).+Isssǰ", ".+Isssǰ", 0, 8);
+  x2(".+Isssǰ", ".+Isssǰ", 0, 8);
+  x2("(?i)ǰ", "ǰ", 0, 2);
+  x2("(?i)ǰ", "j\xcc\x8c", 0, 3);
+  x2("(?i)j\xcc\x8c", "ǰ", 0, 2);
+  x2("(?i)5ǰ", "5ǰ", 0, 3);
+  x2("(?i)5ǰ", "5j\xcc\x8c", 0, 4);
+  x2("(?i)5j\xcc\x8c", "5ǰ", 0, 3);
+  x2("(?i)ǰv", "ǰV", 0, 3);
+  x2("(?i)ǰv", "j\xcc\x8cV", 0, 4);
+  x2("(?i)j\xcc\x8cv", "ǰV", 0, 3);
+  x2("(?i)[ǰ]", "ǰ", 0, 2);
+  x2("(?i)[ǰ]", "j\xcc\x8c", 0, 3);
+  //x2("(?i)[j]\xcc\x8c", "ǰ", 0, 2);
 
   n("   \xfd", ""); /* https://bugs.php.net/bug.php?id=77370 */
   /* can't use \xfc00.. because compiler error: hex escape sequence out of range */
