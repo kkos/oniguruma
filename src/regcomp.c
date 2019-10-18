@@ -4018,6 +4018,363 @@ next_setup(Node* node, Node* next_node, regex_t* reg)
 }
 
 
+#if 1
+
+static int
+is_all_code_len_1_items(int n, OnigCaseFoldCodeItem items[])
+{
+  int i;
+
+  for (i = 0; i < n; i++) {
+    OnigCaseFoldCodeItem* item = items + i;
+    if (item->code_len != 1) return 0;
+  }
+
+  return 1;
+}
+
+static int
+get_min_max_byte_len_case_fold_items(int n, OnigCaseFoldCodeItem items[], int* rmin, int* rmax)
+{
+  int i, len, minlen, maxlen;
+
+  minlen = INT_MAX;
+  maxlen = 0;
+  for (i = 0; i < n; i++) {
+    OnigCaseFoldCodeItem* item = items + i;
+
+    len = item->byte_len;
+    /* fprintf(stdout, "%d: %d, %d, 0x%x\n", i, len, item->code_len, item->code[0]); */
+    if (len < minlen) minlen = len;
+    if (len > maxlen) maxlen = len;
+  }
+
+  *rmin = minlen;
+  *rmax = maxlen;
+  return 0;
+}
+
+static int
+conv_string_case_fold(OnigEncoding enc, OnigCaseFoldType case_fold_flag,
+                      UChar* s, UChar* end, UChar** rs, UChar** rend)
+{
+  UChar *p, buf[ONIGENC_MBC_CASE_FOLD_MAXLEN];
+  UChar *sbuf, *ebuf, *sp;
+  int i, len, sbuf_size;
+
+  *rs = NULL;
+  sbuf_size = (int )(end - s) * 2;
+  sbuf = (UChar* )xmalloc(sbuf_size);
+  CHECK_NULL_RETURN_MEMERR(sbuf);
+  ebuf = sbuf + sbuf_size;
+
+  sp = sbuf;
+  p = s;
+  while (p < end) {
+    len = ONIGENC_MBC_CASE_FOLD(enc, case_fold_flag, &p, end, buf);
+    for (i = 0; i < len; i++) {
+      if (sp >= ebuf) {
+        sbuf = (UChar* )xrealloc(sbuf, sbuf_size * 2);
+        CHECK_NULL_RETURN_MEMERR(sbuf);
+        sp = sbuf + sbuf_size;
+        sbuf_size *= 2;
+        ebuf = sbuf + sbuf_size;
+      }
+
+      *sp++ = buf[i];
+    }
+  }
+
+  *rs = sbuf;
+  *rend = sp;
+  return 0;
+}
+
+static int
+make_code_list_to_string(Node** rnode, OnigEncoding enc,
+                         int n, OnigCodePoint codes[])
+{
+  int r, i, len;
+  Node* node;
+  UChar buf[ONIGENC_CODE_TO_MBC_MAXLEN];
+
+  *rnode = NULL_NODE;
+  node = onig_node_new_str(NULL, NULL);
+  CHECK_NULL_RETURN_MEMERR(node);
+
+  for (i = 0; i < n; i++) {
+    len = ONIGENC_CODE_TO_MBC(enc, codes[i], buf);
+    if (len < 0) {
+      r = len;
+      goto err;
+    }
+
+    r = onig_node_str_cat(node, buf, buf + len);
+    if (r != 0) goto err;
+  }
+
+  *rnode = node;
+  return 0;
+
+ err:
+  onig_node_free(node);
+  return r;
+}
+
+static int
+resolove_case_fold_node_add(Node** rlist, Node* add)
+{
+  Node *list;
+
+  list = *rlist;
+  if (IS_NULL(list)) {
+    list = onig_node_new_list(add, NULL);
+    CHECK_NULL_RETURN_MEMERR(list);
+    *rlist = list;
+  }
+  else {
+    Node* r = node_list_add(list, add);
+    CHECK_NULL_RETURN_MEMERR(r);
+  }
+
+  return 0;
+}
+
+static int
+resolove_case_fold_string_add(Node** rlist, Node** rsn, UChar* s, UChar* end,
+                              unsigned int flag)
+{
+  int r;
+  Node *sn, *list;
+
+  list = *rlist;
+  sn   = *rsn;
+
+  if (IS_NOT_NULL(sn) && STR_(sn)->flag == flag) {
+    r = onig_node_str_cat(sn, s, end);
+  }
+  else {
+    sn = onig_node_new_str(s, end);
+    CHECK_NULL_RETURN_MEMERR(sn);
+
+    STR_(sn)->flag = flag;
+    r = resolove_case_fold_node_add(&list, sn);
+  }
+
+  if (r == 0) {
+    *rlist = list;
+    *rsn = sn;
+  }
+  return r;
+}
+
+static int
+resolove_case_fold_string_fold_add(Node** rlist, Node** rsn,
+    OnigEncoding enc, OnigCaseFoldType case_fold_flag, UChar* s, UChar* end)
+{
+  int r;
+  UChar *rs, *rend;
+
+  r = conv_string_case_fold(enc, case_fold_flag, s, end, &rs, &rend);
+  if (r != 0) return r;
+
+  r = resolove_case_fold_string_add(rlist, rsn, rs, rend, NODE_STRING_CASE_FOLD_MATCH);
+  xfree(rs);
+
+  return 0;
+}
+
+static int
+resolove_case_fold_string_alt_or_cc_add(Node** rlist, int n,
+            OnigCaseFoldCodeItem items[], int byte_len, OnigEncoding enc,
+            OnigCaseFoldType case_fold_flag, UChar* s, UChar* end)
+{
+  int r, i;
+  Node* node;
+
+  if (is_all_code_len_1_items(n, items)) {
+    OnigCodePoint codes[14];/* least ONIGENC_GET_CASE_FOLD_CODES_MAX_NUM + 1 */
+
+    codes[0] = ONIGENC_MBC_TO_CODE(enc, s, end);
+    for (i = 0; i < n; i++) {
+      OnigCaseFoldCodeItem* item = items + i;
+      codes[i+1] = item->code[0];
+    }
+    r = onig_new_cclass_with_code_list(&node, enc, n + 1, codes);
+    if (r != 0) return r;
+  }
+  else {
+    Node *snode, *alt, *curr;
+
+    snode = onig_node_new_str(s, end);
+    CHECK_NULL_RETURN_MEMERR(snode);
+    node = curr = onig_node_new_alt(snode, NULL_NODE);
+    if (IS_NULL(curr)) {
+      onig_node_free(snode);
+      return ONIGERR_MEMORY;
+    }
+
+    r = 0;
+    for (i = 0; i < n; i++) {
+      OnigCaseFoldCodeItem* item = items + i;
+      r = make_code_list_to_string(&snode, enc, item->code_len, item->code);
+      if (r != 0) {
+        onig_node_free(node);
+        return r;
+      }
+
+      alt = onig_node_new_alt(snode, NULL_NODE);
+      if (IS_NULL(alt)) {
+        onig_node_free(snode);
+        onig_node_free(node);
+        return ONIGERR_MEMORY;
+      }
+
+      NODE_CDR(curr) = alt;
+      curr = alt;
+    }
+  }
+
+  r = resolove_case_fold_node_add(rlist, node);
+  if (r != 0) onig_node_free(node);
+  return r;
+}
+
+static int
+resolove_case_fold_look_behind_add(Node** rlist, Node** rsn, int n, OnigCaseFoldCodeItem items[], OnigEncoding enc, UChar* s, int one_len)
+{
+  int r, i, found;
+
+  found = 0;
+  for (i = 0; i < n; i++) {
+    OnigCaseFoldCodeItem* item = items + i;
+    if (item->byte_len == one_len) {
+      if (item->code_len == 1) {
+        found = 1;
+      }
+    }
+  }
+
+  if (found == 0) {
+    unsigned int flag = 0;
+    r = resolove_case_fold_string_add(rlist, rsn, s, s + one_len, flag);
+  }
+  else {
+    Node* node;
+    OnigCodePoint codes[14];/* least ONIGENC_GET_CASE_FOLD_CODES_MAX_NUM + 1 */
+
+    found = 0;
+    codes[found++] = ONIGENC_MBC_TO_CODE(enc, s, s + one_len);
+    for (i = 0; i < n; i++) {
+      OnigCaseFoldCodeItem* item = items + i;
+      if (item->byte_len == one_len) {
+        if (item->code_len == 1) {
+          codes[found++] = item->code[0];
+        }
+      }
+    }
+    r = onig_new_cclass_with_code_list(&node, enc, found, codes);
+    if (r != 0) return r;
+
+    r = resolove_case_fold_node_add(rlist, node);
+    if (r != 0) onig_node_free(node);
+
+    *rsn = NULL_NODE;
+  }
+
+  return r;
+}
+
+static int
+resolve_case_fold_string(Node* node, regex_t* reg, int state)
+{
+  int r, n, one_len, min_len, max_len, in_look_behind;
+  unsigned int flag;
+  UChar *start, *end, *p, *q;
+  StrNode* snode;
+  Node *sn, *list;
+  OnigEncoding enc;
+  OnigCaseFoldCodeItem items[ONIGENC_GET_CASE_FOLD_CODES_MAX_NUM];
+
+  if (NODE_STRING_IS_CASE_EXPANDED(node)) return 0;
+
+  snode = STR_(node);
+
+  start = snode->s;
+  end   = snode->end;
+  if (start >= end) return 0;
+
+  in_look_behind = (state & IN_LOOK_BEHIND) != 0;
+  enc = reg->enc;
+
+  list = sn = NULL_NODE;
+  p = start;
+  while (p < end) {
+    n = ONIGENC_GET_CASE_FOLD_CODES_BY_STR(enc, reg->case_fold_flag, p, end,
+                                           items);
+    if (n < 0) {
+      r = n;
+      goto err;
+    }
+
+    one_len = enclen(enc, p);
+    if (n == 0) {
+      q = p + one_len;
+      flag = 0;
+      /*fprintf(stdout, "resolove_case_fold_string_add()\n"); */
+      r = resolove_case_fold_string_add(&list, &sn, p, q, flag);
+      if (r != 0) goto err;
+    }
+    else {
+      if (in_look_behind != 0) {
+        q = p + one_len;
+        /*fprintf(stdout, "resolove_case_fold_look_behind_add()\n"); */
+        r = resolove_case_fold_look_behind_add(&list, &sn, n, items, enc,
+                                               p, one_len);
+        if (r != 0) goto err;
+      }
+      else {
+        get_min_max_byte_len_case_fold_items(n, items, &min_len, &max_len);
+        q = p + max_len;
+        if (one_len == max_len && min_len == max_len) {
+          /*fprintf(stdout, "resolove_case_fold_string_alt_or_cc_add()\n"); */
+          r = resolove_case_fold_string_alt_or_cc_add(&list, n, items, max_len,
+                                            enc, reg->case_fold_flag, p, q);
+          if (r != 0) goto err;
+          sn = NULL_NODE;
+        }
+        else {
+          /* fprintf(stdout, "resolove_case_fold_string_fold_add()\n"); */
+          r = resolove_case_fold_string_fold_add(&list, &sn, enc,
+                                                 reg->case_fold_flag, p, q);
+          if (r != 0) goto err;
+        }
+      }
+    }
+
+    p = q;
+  }
+
+  if (IS_NOT_NULL(list)) {
+    swap_node(node, list);
+    onig_node_free(list);
+  }
+  else {
+    swap_node(node, sn);
+    onig_node_free(sn);
+  }
+  return 0;
+
+ err:
+  if (IS_NOT_NULL(list))
+    onig_node_free(list);
+  else if (IS_NOT_NULL(sn))
+    onig_node_free(sn);
+  return r;
+}
+
+#else
+
 static int
 update_string_node_case_fold(regex_t* reg, Node *node)
 {
@@ -4398,6 +4755,7 @@ resolve_case_fold_string(Node* node, regex_t* reg, int state)
   onig_node_free(top);
   return r;
 }
+#endif
 
 #ifdef USE_STUBBORN_CHECK_CAPTURES_IN_EMPTY_REPEAT
 static enum BodyEmptyType
@@ -5948,7 +6306,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
         set_mml(&opt->len, slen, slen);
       }
       else {
-        int max;
+        int max, min;
 
         if (NODE_STRING_IS_DONT_GET_OPT_INFO(node)) {
           int n = onigenc_strlen(enc, sn->s, sn->end);
@@ -5968,8 +6326,8 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
 
           max = slen;
         }
-
-        set_mml(&opt->len, slen, max);
+        min = ONIGENC_MBC_MINLEN(enc);
+        set_mml(&opt->len, min, max);
       }
     }
     break;
