@@ -1,7 +1,7 @@
 /* This file was converted by gperf_fold_key_conv.py
       from gperf output file. */
 /* ANSI-C code produced by gperf version 3.1 */
-/* Command-line: /usr/local/bin/gperf -n -C -T -c -t -j1 -L ANSI-C -F,-1 -N onigenc_unicode_fold3_key unicode_fold3_key.gperf  */
+/* Command-line: gperf -n -C -T -c -t -j1 -L ANSI-C -F,-1 -N onigenc_unicode_fold3_key unicode_fold3_key.gperf  */
 /* Computed positions: -k'3,6,9' */
 
 
@@ -121,13 +121,17 @@ onigenc_unicode_fold3_key(OnigCodePoint codes[])
       0
     };
 
-    int key = hash(codes);
-    if (key <= MAX_HASH_VALUE) {
-      int index = wordlist[key];
-      if (index >= 0 && onig_codes_cmp(codes, OnigUnicodeFolds3 + index, 3) == 0) {
-        return index;
-      }
-    }
 
+    {
+      int key = hash(codes);
+
+      if (key <= MAX_HASH_VALUE)
+        {
+          int index = wordlist[key];
+
+          if (index >= 0 && onig_codes_cmp(codes, OnigUnicodeFolds3 + index, 3) == 0)
+            return index;
+        }
+    }
   return -1;
 }
