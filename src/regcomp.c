@@ -663,7 +663,7 @@ is_strict_real_node(Node* node)
 }
 
 static int
-compile_tree_empty_check(QuantNode* qn, regex_t* reg, ScanEnv* env)
+compile_quant_body_with_empty_check(QuantNode* qn, regex_t* reg, ScanEnv* env)
 {
   int r;
   int saved_num_null_check;
@@ -1029,7 +1029,7 @@ compile_range_repeat_node(QuantNode* qn, int target_len, int emptiness,
   r = entry_repeat_range(reg, num_repeat, qn->lower, qn->upper);
   if (r != 0) return r;
 
-  r = compile_tree_empty_check(qn, reg, env);
+  r = compile_quant_body_with_empty_check(qn, reg, env);
   if (r != 0) return r;
 
   if (
@@ -1208,7 +1208,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
         COP(reg)->push_or_jump_exact1.addr = SIZE_INC + mod_tlen + OPSIZE_JUMP;
         COP(reg)->push_or_jump_exact1.c    = STR_(qn->head_exact)->s[0];
 
-        r = compile_tree_empty_check(qn, reg, env);
+        r = compile_quant_body_with_empty_check(qn, reg, env);
         if (r != 0) return r;
 
         addr = -(mod_tlen + (int )OPSIZE_PUSH_OR_JUMP_EXACT1);
@@ -1221,7 +1221,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
         COP(reg)->push_if_peek_next.addr = SIZE_INC + mod_tlen + OPSIZE_JUMP;
         COP(reg)->push_if_peek_next.c    = STR_(qn->next_head_exact)->s[0];
 
-        r = compile_tree_empty_check(qn, reg, env);
+        r = compile_quant_body_with_empty_check(qn, reg, env);
         if (r != 0) return r;
 
         addr = -(mod_tlen + (int )OPSIZE_PUSH_IF_PEEK_NEXT);
@@ -1231,7 +1231,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
         if (r != 0) return r;
         COP(reg)->push.addr = SIZE_INC + mod_tlen + OPSIZE_JUMP;
 
-        r = compile_tree_empty_check(qn, reg, env);
+        r = compile_quant_body_with_empty_check(qn, reg, env);
         if (r != 0) return r;
 
         addr = -(mod_tlen + (int )OPSIZE_PUSH);
@@ -1246,7 +1246,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
       if (r != 0) return r;
       COP(reg)->jump.addr = mod_tlen + SIZE_INC;
 
-      r = compile_tree_empty_check(qn, reg, env);
+      r = compile_quant_body_with_empty_check(qn, reg, env);
       if (r != 0) return r;
 
       r = add_op(reg, OP_PUSH);
