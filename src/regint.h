@@ -47,13 +47,6 @@
 #endif
 #endif
 
-#if defined(__i386) || defined(__i386__) || defined(_M_IX86) || \
-    (defined(__ppc__) && defined(__APPLE__)) || \
-    defined(__x86_64) || defined(__x86_64__) || \
-    defined(__mc68020__)
-#define PLATFORM_UNALIGNED_WORD_ACCESS
-#endif
-
 #ifndef ONIG_DISABLE_DIRECT_THREADING
 #ifdef __GNUC__
 #define USE_GOTO_LABELS_AS_VALUES
@@ -198,39 +191,6 @@ typedef unsigned int  uintptr_t;
 
 #define CHAR_MAP_SIZE       256
 #define INFINITE_LEN        ONIG_INFINITE_DISTANCE
-
-#ifdef PLATFORM_UNALIGNED_WORD_ACCESS
-
-#define PLATFORM_GET_INC(val,p,type) do{\
-  val  = *(type* )p;\
-  (p) += sizeof(type);\
-} while(0)
-
-#else
-
-#define PLATFORM_GET_INC(val,p,type) do{\
-  xmemcpy(&val, (p), sizeof(type));\
-  (p) += sizeof(type);\
-} while(0)
-
-/* sizeof(OnigCodePoint) */
-#ifdef SIZEOF_SIZE_T
-# define WORD_ALIGNMENT_SIZE     SIZEOF_SIZE_T
-#else
-# define WORD_ALIGNMENT_SIZE     SIZEOF_LONG
-#endif
-
-#define GET_ALIGNMENT_PAD_SIZE(addr,pad_size) do {\
-  (pad_size) = WORD_ALIGNMENT_SIZE - ((uintptr_t )(addr) % WORD_ALIGNMENT_SIZE);\
-  if ((pad_size) == WORD_ALIGNMENT_SIZE) (pad_size) = 0;\
-} while (0)
-
-#define ALIGNMENT_RIGHT(addr) do {\
-  (addr) += (WORD_ALIGNMENT_SIZE - 1);\
-  (addr) -= ((uintptr_t )(addr) % WORD_ALIGNMENT_SIZE);\
-} while (0)
-
-#endif /* PLATFORM_UNALIGNED_WORD_ACCESS */
 
 
 #ifdef USE_CALLOUT
@@ -638,23 +598,8 @@ typedef int ModeType;
 #define SIZE_UPDATE_VAR_TYPE  sizeof(UpdateVarType)
 #define SIZE_MODE             sizeof(ModeType)
 
-#define GET_RELADDR_INC(addr,p)    PLATFORM_GET_INC(addr,   p, RelAddrType)
-#define GET_ABSADDR_INC(addr,p)    PLATFORM_GET_INC(addr,   p, AbsAddrType)
-#define GET_LENGTH_INC(len,p)      PLATFORM_GET_INC(len,    p, LengthType)
-#define GET_MEMNUM_INC(num,p)      PLATFORM_GET_INC(num,    p, MemNumType)
-#define GET_REPEATNUM_INC(num,p)   PLATFORM_GET_INC(num,    p, RepeatNumType)
-#define GET_OPTION_INC(option,p)   PLATFORM_GET_INC(option, p, OnigOptionType)
-#define GET_POINTER_INC(ptr,p)     PLATFORM_GET_INC(ptr,    p, PointerType)
-#define GET_SAVE_TYPE_INC(type,p)       PLATFORM_GET_INC(type, p, SaveType)
-#define GET_UPDATE_VAR_TYPE_INC(type,p) PLATFORM_GET_INC(type, p, UpdateVarType)
-#define GET_MODE_INC(mode,p)            PLATFORM_GET_INC(mode, p, ModeType)
-
 /* code point's address must be aligned address. */
 #define GET_CODE_POINT(code,p)   code = *((OnigCodePoint* )(p))
-#define GET_BYTE_INC(byte,p) do{\
-  byte = *(p);\
-  (p)++;\
-} while(0)
 
 
 /* op-code + arg size */
