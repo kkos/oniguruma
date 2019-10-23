@@ -364,16 +364,12 @@ typedef unsigned int  MemStatusType;
 /* bitset */
 #define BITS_PER_BYTE      8
 #define SINGLE_BYTE_SIZE   (1 << BITS_PER_BYTE)
-#define BITS_IN_ROOM       (sizeof(Bits) * BITS_PER_BYTE)
+#define BITS_IN_ROOM       32   /* 4 * BITS_PER_BYTE */
 #define BITSET_SIZE        (SINGLE_BYTE_SIZE / BITS_IN_ROOM)
 
-#ifdef PLATFORM_UNALIGNED_WORD_ACCESS
-typedef unsigned int   Bits;
-#else
-typedef unsigned char  Bits;
-#endif
-typedef Bits           BitSet[BITSET_SIZE];
-typedef Bits*          BitSetRef;
+typedef uint32_t  Bits;
+typedef Bits      BitSet[BITSET_SIZE];
+typedef Bits*     BitSetRef;
 
 #define SIZE_BITSET        sizeof(BitSet)
 
@@ -382,8 +378,8 @@ typedef Bits*          BitSetRef;
   for (i = 0; i < (int )BITSET_SIZE; i++) { (bs)[i] = 0; } \
 } while (0)
 
-#define BS_ROOM(bs,pos)            (bs)[pos / BITS_IN_ROOM]
-#define BS_BIT(pos)                (1u << (pos % BITS_IN_ROOM))
+#define BS_ROOM(bs,pos)            (bs)[pos >> 5]
+#define BS_BIT(pos)                (1u << ((pos) & 0x1f))
 
 #define BITSET_AT(bs, pos)         (BS_ROOM(bs,pos) & BS_BIT(pos))
 #define BITSET_SET_BIT(bs, pos)     BS_ROOM(bs,pos) |= BS_BIT(pos)
