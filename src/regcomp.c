@@ -452,6 +452,20 @@ swap_node(Node* a, Node* b)
   }
 }
 
+static int
+node_list_len(Node* list)
+{
+  int len;
+
+  len = 1;
+  while (IS_NOT_NULL(NODE_CDR(list))) {
+    list = NODE_CDR(list);
+    len++;
+  }
+
+  return len;
+}
+
 static Node*
 node_list_add(Node* list, Node* x)
 {
@@ -4356,7 +4370,12 @@ resolve_case_fold_string(Node* node, regex_t* reg, int state)
   }
 
   if (IS_NOT_NULL(list)) {
-    swap_node(node, list);
+    if (node_list_len(list) == 1) {
+      swap_node(node, NODE_CAR(list));
+    }
+    else {
+      swap_node(node, list);
+    }
     onig_node_free(list);
   }
   else {
