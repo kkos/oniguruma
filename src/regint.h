@@ -378,8 +378,8 @@ typedef Bits*     BitSetRef;
   for (i = 0; i < (int )BITSET_SIZE; i++) { (bs)[i] = 0; } \
 } while (0)
 
-#define BS_ROOM(bs,pos)            (bs)[pos >> 5]
-#define BS_BIT(pos)                (1u << ((pos) & 0x1f))
+#define BS_ROOM(bs,pos)            (bs)[(unsigned int )(pos) >> 5]
+#define BS_BIT(pos)                (1u << ((unsigned int )(pos) & 0x1f))
 
 #define BITSET_AT(bs, pos)         (BS_ROOM(bs,pos) & BS_BIT(pos))
 #define BITSET_SET_BIT(bs, pos)     BS_ROOM(bs,pos) |= BS_BIT(pos)
