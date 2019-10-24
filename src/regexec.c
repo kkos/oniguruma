@@ -235,8 +235,6 @@ static OpInfoType OpInfo[] = {
   { OP_REPEAT_NG,             "repeat-ng"             },
   { OP_REPEAT_INC,            "repeat-inc"            },
   { OP_REPEAT_INC_NG,         "repeat-inc-ng"         },
-  { OP_REPEAT_INC_SG,         "repeat-inc-sg"         },
-  { OP_REPEAT_INC_NG_SG,      "repeat-inc-ng-sg"      },
   { OP_EMPTY_CHECK_START,     "empty-check-start"     },
   { OP_EMPTY_CHECK_END,       "empty-check-end"       },
   { OP_EMPTY_CHECK_END_MEMST, "empty-check-end-memst" },
@@ -513,8 +511,6 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
 
   case OP_REPEAT_INC:
   case OP_REPEAT_INC_NG:
-  case OP_REPEAT_INC_SG:
-  case OP_REPEAT_INC_NG_SG:
     mem = p->repeat.id;
     fprintf(f, ":%d", mem);
     break;
@@ -2081,31 +2077,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_GET_REPEAT_COUNT_SID(sid, c) do {\
-  StackType* k = stk;\
-  while (1) {\
-    (k)--;\
-    STACK_BASE_CHECK(k, "STACK_GET_REPEAT");\
-    if ((k)->zid == (sid)) {\
-      if ((k)->type == STK_REPEAT_INC) {\
-        (c) = (k)->u.repeat_inc.count;\
-        break;\
-      }\
-    }\
-    if ((k)->type == STK_RETURN) {\
-      int level = -1;\
-      while (1) {\
-        (k)--;\
-        if ((k)->type == STK_CALL_FRAME) {\
-          level++;\
-          if (level == 0) break;\
-        }\
-        else if ((k)->type == STK_RETURN) level--;\
-      }\
-    }\
-  }\
-} while(0)
-
 #define STACK_RETURN(addr)  do {\
   int level = 0;\
   StackType* k = stk;\
@@ -2596,8 +2567,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_REPEAT_NG,
   &&L_REPEAT_INC,
   &&L_REPEAT_INC_NG,
-  &&L_REPEAT_INC_SG,
-  &&L_REPEAT_INC_NG_SG,
   &&L_EMPTY_CHECK_START,
   &&L_EMPTY_CHECK_END,
   &&L_EMPTY_CHECK_END_MEMST,
@@ -3679,8 +3648,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           case OP_PUSH:
           case OP_REPEAT_INC:
           case OP_REPEAT_INC_NG:
-          case OP_REPEAT_INC_SG:
-          case OP_REPEAT_INC_NG_SG:
             INC_OP;
             break;
           default:
@@ -3823,8 +3790,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     CASE_OP(REPEAT_INC)
       mem  = p->repeat_inc.id;  /* mem: OP_REPEAT ID */
       STACK_GET_REPEAT_COUNT(mem, n);
-
-    repeat_inc:
       n++;
       if (n >= reg->repeat_range[mem].upper) {
         /* end of repeat. Nothing to do. */
@@ -3841,16 +3806,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       STACK_PUSH_REPEAT_INC(mem, n);
       CHECK_INTERRUPT_JUMP_OUT;
 
-    CASE_OP(REPEAT_INC_SG)
-      mem  = p->repeat_inc.id;  /* mem: OP_REPEAT ID */
-      STACK_GET_REPEAT_COUNT_SID(mem, n);
-      goto repeat_inc;
-
     CASE_OP(REPEAT_INC_NG)
       mem = p->repeat_inc.id;  /* mem: OP_REPEAT ID */
       STACK_GET_REPEAT_COUNT(mem, n);
-
-    repeat_inc_ng:
       n++;
       STACK_PUSH_REPEAT_INC(mem, n);
       if (n == reg->repeat_range[mem].upper) {
@@ -3866,11 +3824,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         }
       }
       CHECK_INTERRUPT_JUMP_OUT;
-
-    CASE_OP(REPEAT_INC_NG_SG)
-      mem  = p->repeat_inc.id;  /* mem: OP_REPEAT ID */
-      STACK_GET_REPEAT_COUNT_SID(mem, n);
-      goto repeat_inc_ng;
 
     CASE_OP(PREC_READ_START)
       STACK_PUSH_PREC_READ_START(s, sprev);

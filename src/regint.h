@@ -531,8 +531,6 @@ enum OpCode {
   OP_REPEAT_NG,             /* {n,m}? (non greedy) */
   OP_REPEAT_INC,
   OP_REPEAT_INC_NG,         /* non greedy */
-  OP_REPEAT_INC_SG,         /* search and get in stack */
-  OP_REPEAT_INC_NG_SG,      /* search and get in stack (non greedy) */
   OP_EMPTY_CHECK_START,     /* null loop checker start */
   OP_EMPTY_CHECK_END,       /* null loop checker end   */
   OP_EMPTY_CHECK_END_MEMST, /* null loop checker end (with capture status) */
@@ -779,7 +777,7 @@ typedef struct {
     } repeat; /* REPEAT, REPEAT_NG */
     struct {
       MemNumType  id;
-    } repeat_inc; /* REPEAT_INC, REPEAT_INC_SG, REPEAT_INC_NG, REPEAT_INC_NG_SG */
+    } repeat_inc; /* REPEAT_INC, REPEAT_INC_NG */
     struct {
       MemNumType mem;
     } empty_check_start;
