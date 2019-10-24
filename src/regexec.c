@@ -3843,7 +3843,11 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     repeat_inc_ng:
       stkp->u.repeat.count++;
-      if (stkp->u.repeat.count < reg->repeat_range[mem].upper) {
+      if (stkp->u.repeat.count == reg->repeat_range[mem].upper) {
+        STACK_PUSH_REPEAT_INC(mem, si);
+        INC_OP;
+      }
+      else {
         if (stkp->u.repeat.count >= reg->repeat_range[mem].lower) {
           Operation* pcode = stkp->u.repeat.pcode;
 
@@ -3855,10 +3859,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           p = stkp->u.repeat.pcode;
           STACK_PUSH_REPEAT_INC(mem, si);
         }
-      }
-      else if (stkp->u.repeat.count == reg->repeat_range[mem].upper) {
-        STACK_PUSH_REPEAT_INC(mem, si);
-        INC_OP;
       }
       CHECK_INTERRUPT_JUMP_OUT;
 
