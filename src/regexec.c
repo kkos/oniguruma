@@ -1580,7 +1580,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_REPEAT_INC(sid, sindex) do {\
   STACK_ENSURE(1);\
   stk->type = STK_REPEAT_INC;\
-  stk->zid  = (sid);\
   stk->u.repeat_inc.si  = (sindex);\
   STACK_INC;\
 } while(0)
@@ -2070,13 +2069,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
   while (1) {\
     (k)--;\
     STACK_BASE_CHECK(k, "STACK_GET_REPEAT");\
-    if ((k)->type == STK_REPEAT_INC) {\
-      if ((k)->zid == (sid)) {\
-        k = STACK_AT((k)->u.repeat_inc.si);\
-        break;\
-      }\
-    }\
-    else if ((k)->type == STK_REPEAT) {\
+    if ((k)->type == STK_REPEAT) {\
       if ((k)->zid == (sid)) {\
         break;\
       }\
