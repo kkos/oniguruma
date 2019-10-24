@@ -1046,11 +1046,7 @@ compile_range_repeat_node(QuantNode* qn, int target_len, int emptiness,
   r = compile_quant_body_with_empty_check(qn, reg, env);
   if (r != 0) return r;
 
-  if (num_repeat < 0)
-    r = add_op(reg, qn->greedy ? OP_REPEAT_INC : OP_REPEAT_INC_NG);
-  else
-    r = add_op(reg, qn->greedy ? OP_REPEAT_INC_SG : OP_REPEAT_INC_NG_SG);
-
+  r = add_op(reg, qn->greedy ? OP_REPEAT_INC : OP_REPEAT_INC_NG);
   if (r != 0) return r;
 
   COP(reg)->repeat_inc.id = num_repeat;
