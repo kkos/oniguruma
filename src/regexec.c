@@ -2081,6 +2081,31 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
+#define STACK_GET_REPEAT_COUNT_SID(sid, c) do {\
+  StackType* k = stk;\
+  while (1) {\
+    (k)--;\
+    STACK_BASE_CHECK(k, "STACK_GET_REPEAT");\
+    if ((k)->zid == (sid)) {\
+      if ((k)->type == STK_REPEAT_INC) {\
+        (c) = (k)->u.repeat_inc.count;\
+        break;\
+      }\
+    }\
+    if ((k)->type == STK_RETURN) {\
+      int level = -1;\
+      while (1) {\
+        (k)--;\
+        if ((k)->type == STK_CALL_FRAME) {\
+          level++;\
+          if (level == 0) break;\
+        }\
+        else if ((k)->type == STK_RETURN) level--;\
+      }\
+    }\
+  }\
+} while(0)
+
 #define STACK_RETURN(addr)  do {\
   int level = 0;\
   StackType* k = stk;\
@@ -3796,9 +3821,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       JUMP_OUT;
 
     CASE_OP(REPEAT_INC)
-    repeat_inc:
       mem  = p->repeat_inc.id;  /* mem: OP_REPEAT ID */
       STACK_GET_REPEAT_COUNT(mem, n);
+
+    repeat_inc:
       n++;
       if (n >= reg->repeat_range[mem].upper) {
         /* end of repeat. Nothing to do. */
@@ -3816,12 +3842,15 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       CHECK_INTERRUPT_JUMP_OUT;
 
     CASE_OP(REPEAT_INC_SG)
+      mem  = p->repeat_inc.id;  /* mem: OP_REPEAT ID */
+      STACK_GET_REPEAT_COUNT_SID(mem, n);
       goto repeat_inc;
 
     CASE_OP(REPEAT_INC_NG)
-    repeat_inc_ng:
       mem = p->repeat_inc.id;  /* mem: OP_REPEAT ID */
       STACK_GET_REPEAT_COUNT(mem, n);
+
+    repeat_inc_ng:
       n++;
       STACK_PUSH_REPEAT_INC(mem, n);
       if (n == reg->repeat_range[mem].upper) {
@@ -3839,6 +3868,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       CHECK_INTERRUPT_JUMP_OUT;
 
     CASE_OP(REPEAT_INC_NG_SG)
+      mem  = p->repeat_inc.id;  /* mem: OP_REPEAT ID */
+      STACK_GET_REPEAT_COUNT_SID(mem, n);
       goto repeat_inc_ng;
 
     CASE_OP(PREC_READ_START)
