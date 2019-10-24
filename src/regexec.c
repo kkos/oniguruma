@@ -1577,9 +1577,10 @@ stack_double(int is_alloca, char** arg_alloc_base,
   STACK_INC;\
 } while(0)
 
-#define STACK_PUSH_REPEAT_INC(sindex) do {\
+#define STACK_PUSH_REPEAT_INC(sid, sindex) do {\
   STACK_ENSURE(1);\
   stk->type = STK_REPEAT_INC;\
+  stk->zid  = (sid);\
   stk->u.repeat_inc.si  = (sindex);\
   STACK_INC;\
 } while(0)
@@ -3821,7 +3822,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       else {
         p = stkp->u.repeat.pcode;
       }
-      STACK_PUSH_REPEAT_INC(si);
+      STACK_PUSH_REPEAT_INC(mem, si);
       CHECK_INTERRUPT_JUMP_OUT;
 
     CASE_OP(REPEAT_INC_SG)
@@ -3841,17 +3842,17 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         if (stkp->u.repeat.count >= reg->repeat_range[mem].lower) {
           Operation* pcode = stkp->u.repeat.pcode;
 
-          STACK_PUSH_REPEAT_INC(si);
+          STACK_PUSH_REPEAT_INC(mem, si);
           STACK_PUSH_ALT(pcode, s, sprev);
           INC_OP;
         }
         else {
           p = stkp->u.repeat.pcode;
-          STACK_PUSH_REPEAT_INC(si);
+          STACK_PUSH_REPEAT_INC(mem, si);
         }
       }
       else if (stkp->u.repeat.count == reg->repeat_range[mem].upper) {
-        STACK_PUSH_REPEAT_INC(si);
+        STACK_PUSH_REPEAT_INC(mem, si);
         INC_OP;
       }
       CHECK_INTERRUPT_JUMP_OUT;
