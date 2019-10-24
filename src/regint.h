@@ -830,6 +830,15 @@ typedef struct {
 #endif
 } RegexExt;
 
+typedef struct {
+  int lower;
+  int upper;
+  union {
+    Operation* pcode; /* address of repeated body */
+    int offset;
+  } u;
+} RepeatRange;
+
 struct re_pattern_buffer {
   /* common members of BBuf(bytes-buffer) */
   Operation*   ops;
@@ -851,8 +860,8 @@ struct re_pattern_buffer {
   MemStatusType  push_mem_end;     /* need backtrack flag */
   MemStatusType  empty_status_mem;
   int            stack_pop_level;
-  int              repeat_range_alloc;
-  OnigRepeatRange* repeat_range;
+  int            repeat_range_alloc;
+  RepeatRange*   repeat_range;
 
   OnigEncoding     enc;
   OnigOptionType   options;

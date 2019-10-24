@@ -983,15 +983,27 @@ compile_cclass_node(CClassNode* cc, regex_t* reg)
   return 0;
 }
 
+static void
+set_addr_in_repeat_range(regex_t* reg)
+{
+  int i;
+
+  for (i = 0; i < reg->num_repeat; i++) {
+    RepeatRange* p = reg->repeat_range + i;
+    int offset = p->u.offset;
+    p->u.pcode = reg->ops + offset;
+  }
+}
+
 static int
-entry_repeat_range(regex_t* reg, int id, int lower, int upper)
+entry_repeat_range(regex_t* reg, int id, int lower, int upper, int ops_index)
 {
 #define REPEAT_RANGE_ALLOC  4
 
-  OnigRepeatRange* p;
+  RepeatRange* p;
 
   if (reg->repeat_range_alloc == 0) {
-    p = (OnigRepeatRange* )xmalloc(sizeof(OnigRepeatRange) * REPEAT_RANGE_ALLOC);
+    p = (RepeatRange* )xmalloc(sizeof(RepeatRange) * REPEAT_RANGE_ALLOC);
     CHECK_NULL_RETURN_MEMERR(p);
     reg->repeat_range = p;
     reg->repeat_range_alloc = REPEAT_RANGE_ALLOC;
@@ -999,7 +1011,7 @@ entry_repeat_range(regex_t* reg, int id, int lower, int upper)
   else if (reg->repeat_range_alloc <= id) {
     int n;
     n = reg->repeat_range_alloc + REPEAT_RANGE_ALLOC;
-    p = (OnigRepeatRange* )xrealloc(reg->repeat_range, sizeof(OnigRepeatRange) * n);
+    p = (RepeatRange* )xrealloc(reg->repeat_range, sizeof(RepeatRange) * n);
     CHECK_NULL_RETURN_MEMERR(p);
     reg->repeat_range = p;
     reg->repeat_range_alloc = n;
@@ -1008,8 +1020,9 @@ entry_repeat_range(regex_t* reg, int id, int lower, int upper)
     p = reg->repeat_range;
   }
 
-  p[id].lower = lower;
-  p[id].upper = (IS_INFINITE_REPEAT(upper) ? 0x7fffffff : upper);
+  p[id].lower    = lower;
+  p[id].upper    = (IS_INFINITE_REPEAT(upper) ? 0x7fffffff : upper);
+  p[id].u.offset = ops_index;
   return 0;
 }
 
@@ -1026,7 +1039,8 @@ compile_range_repeat_node(QuantNode* qn, int target_len, int emptiness,
   COP(reg)->repeat.id   = num_repeat;
   COP(reg)->repeat.addr = SIZE_INC + target_len + OPSIZE_REPEAT_INC;
 
-  r = entry_repeat_range(reg, num_repeat, qn->lower, qn->upper);
+  r = entry_repeat_range(reg, num_repeat, qn->lower, qn->upper,
+                         COP_CURR_OFFSET(reg) + OPSIZE_REPEAT);
   if (r != 0) return r;
 
   r = compile_quant_body_with_empty_check(qn, reg, env);
@@ -6686,7 +6700,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   reg->num_repeat         = 0;
   reg->num_null_check     = 0;
   reg->repeat_range_alloc = 0;
-  reg->repeat_range       = (OnigRepeatRange* )NULL;
+  reg->repeat_range       = (RepeatRange* )NULL;
   reg->empty_status_mem   = 0;
 
   r = onig_parse_tree(&root, pattern, pattern_end, reg, &scan_env);
@@ -6806,6 +6820,8 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
       if (r != 0) goto err;
     }
 #endif
+
+    set_addr_in_repeat_range(reg);
 
     if ((reg->num_repeat != 0) || (reg->push_mem_end != 0)
 #ifdef USE_CALLOUT

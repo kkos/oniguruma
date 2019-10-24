@@ -990,7 +990,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_EMPTY_CHECK_END        0x5000  /* for recursive call */
 #define STK_MEM_END_MARK           0x8100
 #define STK_TO_VOID_START          0x1200  /* mark for "(?>...)" */
-#define STK_REPEAT                 0x0300
+/* #define STK_REPEAT                 0x0300 */
 #define STK_CALL_FRAME             0x0400
 #define STK_RETURN                 0x0500
 #define STK_SAVE_VAL               0x0600
@@ -1016,11 +1016,7 @@ typedef struct _StackType {
       UChar*     pstr_prev; /* previous char position of pstr */
     } state;
     struct {
-      int        count;  /* for OP_REPEAT_INC, OP_REPEAT_INC_NG */
-      Operation* pcode;  /* byte code position (head of repeated target) */
-    } repeat;
-    struct {
-      StackIndex si;     /* index of stack */
+      int        count;
     } repeat_inc;
     struct {
       UChar *pstr;       /* start/end position */
@@ -1568,19 +1564,21 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_ALT_LOOK_BEHIND_NOT(pat,s,sprev) \
   STACK_PUSH(STK_ALT_LOOK_BEHIND_NOT,pat,s,sprev)
 
+#if 0
 #define STACK_PUSH_REPEAT(sid, pat) do {\
   STACK_ENSURE(1);\
   stk->type = STK_REPEAT;\
   stk->zid  = (sid);\
-  stk->u.repeat.pcode  = (pat);\
-  stk->u.repeat.count  = 0;\
+  stk->u.repeat.pcode = (pat);\
   STACK_INC;\
 } while(0)
+#endif
 
-#define STACK_PUSH_REPEAT_INC(sid, sindex) do {\
+#define STACK_PUSH_REPEAT_INC(sid, ct) do {\
   STACK_ENSURE(1);\
   stk->type = STK_REPEAT_INC;\
-  stk->u.repeat_inc.si  = (sindex);\
+  stk->zid  = (sid);\
+  stk->u.repeat_inc.count = (ct);\
   STACK_INC;\
 } while(0)
 
@@ -1841,9 +1839,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
           mem_start_stk[stk->zid] = stk->u.mem.prev_start;\
           mem_end_stk[stk->zid]   = stk->u.mem.prev_end;\
         }\
-        else if (stk->type == STK_REPEAT_INC) {\
-          STACK_AT(stk->u.repeat_inc.si)->u.repeat.count--;\
-        }\
         else if (stk->type == STK_MEM_END) {\
           mem_start_stk[stk->zid] = stk->u.mem.prev_start;\
           mem_end_stk[stk->zid]   = stk->u.mem.prev_end;\
@@ -1865,9 +1860,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
         if (stk->type == STK_MEM_START) {\
           mem_start_stk[stk->zid] = stk->u.mem.prev_start;\
           mem_end_stk[stk->zid]   = stk->u.mem.prev_end;\
-        }\
-        else if (stk->type == STK_REPEAT_INC) {\
-          STACK_AT(stk->u.repeat_inc.si)->u.repeat.count--;\
         }\
         else if (stk->type == STK_MEM_END) {\
           mem_start_stk[stk->zid] = stk->u.mem.prev_start;\
@@ -2064,13 +2056,14 @@ stack_double(int is_alloca, char** arg_alloc_base,
 } while(0)
 #endif /* USE_STUBBORN_CHECK_CAPTURES_IN_EMPTY_REPEAT */
 
-#define STACK_GET_REPEAT(sid, k) do {\
-  k = stk;\
+#define STACK_GET_REPEAT_COUNT(sid, c) do {\
+  StackType* k = stk;\
   while (1) {\
     (k)--;\
     STACK_BASE_CHECK(k, "STACK_GET_REPEAT");\
-    if ((k)->type == STK_REPEAT) {\
+    if ((k)->type == STK_REPEAT_INC) {\
       if ((k)->zid == (sid)) {\
+        (c) = (k)->u.repeat_inc.count;\
         break;\
       }\
     }\
@@ -3782,10 +3775,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       mem  = p->repeat.id;  /* mem: OP_REPEAT ID */
       addr = p->repeat.addr;
 
-      STACK_ENSURE(1);
-      repeat_stk[mem] = GET_STACK_INDEX(stk);
-      STACK_PUSH_REPEAT(mem, p + 1);
-
+      STACK_PUSH_REPEAT_INC(mem, 0);
       if (reg->repeat_range[mem].lower == 0) {
         STACK_PUSH_ALT(p + addr, s, sprev);
       }
@@ -3796,10 +3786,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       mem  = p->repeat.id;  /* mem: OP_REPEAT ID */
       addr = p->repeat.addr;
 
-      STACK_ENSURE(1);
-      repeat_stk[mem] = GET_STACK_INDEX(stk);
-      STACK_PUSH_REPEAT(mem, p + 1);
-
+      STACK_PUSH_REPEAT_INC(mem, 0);
       if (reg->repeat_range[mem].lower == 0) {
         STACK_PUSH_ALT(p + 1, s, sprev);
         p += addr;
@@ -3809,63 +3796,49 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       JUMP_OUT;
 
     CASE_OP(REPEAT_INC)
-      mem  = p->repeat_inc.id;  /* mem: OP_REPEAT ID */
-      si   = repeat_stk[mem];
-      stkp = STACK_AT(si);
-
     repeat_inc:
-      stkp->u.repeat.count++;
-      if (stkp->u.repeat.count >= reg->repeat_range[mem].upper) {
+      mem  = p->repeat_inc.id;  /* mem: OP_REPEAT ID */
+      STACK_GET_REPEAT_COUNT(mem, n);
+      n++;
+      if (n >= reg->repeat_range[mem].upper) {
         /* end of repeat. Nothing to do. */
         INC_OP;
       }
-      else if (stkp->u.repeat.count >= reg->repeat_range[mem].lower) {
+      else if (n >= reg->repeat_range[mem].lower) {
         INC_OP;
         STACK_PUSH_ALT(p, s, sprev);
-        p = STACK_AT(si)->u.repeat.pcode; /* Don't use stkp after PUSH. */
+        p = reg->repeat_range[mem].u.pcode;
       }
       else {
-        p = stkp->u.repeat.pcode;
+        p = reg->repeat_range[mem].u.pcode;
       }
-      STACK_PUSH_REPEAT_INC(mem, si);
+      STACK_PUSH_REPEAT_INC(mem, n);
       CHECK_INTERRUPT_JUMP_OUT;
 
     CASE_OP(REPEAT_INC_SG)
-      mem = p->repeat_inc.id;  /* mem: OP_REPEAT ID */
-      STACK_GET_REPEAT(mem, stkp);
-      si = GET_STACK_INDEX(stkp);
       goto repeat_inc;
 
     CASE_OP(REPEAT_INC_NG)
-      mem = p->repeat_inc.id;  /* mem: OP_REPEAT ID */
-      si = repeat_stk[mem];
-      stkp = STACK_AT(si);
-
     repeat_inc_ng:
-      stkp->u.repeat.count++;
-      if (stkp->u.repeat.count == reg->repeat_range[mem].upper) {
-        STACK_PUSH_REPEAT_INC(mem, si);
+      mem = p->repeat_inc.id;  /* mem: OP_REPEAT ID */
+      STACK_GET_REPEAT_COUNT(mem, n);
+      n++;
+      STACK_PUSH_REPEAT_INC(mem, n);
+      if (n == reg->repeat_range[mem].upper) {
         INC_OP;
       }
       else {
-        if (stkp->u.repeat.count >= reg->repeat_range[mem].lower) {
-          Operation* pcode = stkp->u.repeat.pcode;
-
-          STACK_PUSH_REPEAT_INC(mem, si);
-          STACK_PUSH_ALT(pcode, s, sprev);
+        if (n >= reg->repeat_range[mem].lower) {
+          STACK_PUSH_ALT(reg->repeat_range[mem].u.pcode, s, sprev);
           INC_OP;
         }
         else {
-          p = stkp->u.repeat.pcode;
-          STACK_PUSH_REPEAT_INC(mem, si);
+          p = reg->repeat_range[mem].u.pcode;
         }
       }
       CHECK_INTERRUPT_JUMP_OUT;
 
     CASE_OP(REPEAT_INC_NG_SG)
-      mem = p->repeat_inc.id;  /* mem: OP_REPEAT ID */
-      STACK_GET_REPEAT(mem, stkp);
-      si = GET_STACK_INDEX(stkp);
       goto repeat_inc_ng;
 
     CASE_OP(PREC_READ_START)
