@@ -2066,20 +2066,32 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #endif /* USE_STUBBORN_CHECK_CAPTURES_IN_EMPTY_REPEAT */
 
 #define STACK_GET_REPEAT(sid, k) do {\
-  int level = 0;\
   k = stk;\
   while (1) {\
-    k--;\
-    STACK_BASE_CHECK(k, "STACK_GET_REPEAT"); \
-    if (k->type == STK_REPEAT) {\
-      if (level == 0) {\
-        if (k->zid == (sid)) {\
-          break;\
-        }\
+    (k)--;\
+    STACK_BASE_CHECK(k, "STACK_GET_REPEAT");\
+    if ((k)->type == STK_REPEAT_INC) {\
+      if ((k)->zid == (sid)) {\
+        k = STACK_AT((k)->u.repeat_inc.si);\
+        break;\
       }\
     }\
-    else if (k->type == STK_CALL_FRAME) level--;\
-    else if (k->type == STK_RETURN)     level++;\
+    else if ((k)->type == STK_REPEAT) {\
+      if ((k)->zid == (sid)) {\
+        break;\
+      }\
+    }\
+    else if ((k)->type == STK_RETURN) {\
+      int level = -1;\
+      while (1) {\
+        (k)--;\
+        if ((k)->type == STK_CALL_FRAME) {\
+          level++;\
+          if (level == 0) break;\
+        }\
+        else if ((k)->type == STK_RETURN) level--;\
+      }\
+    }\
   }\
 } while(0)
 
