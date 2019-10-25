@@ -1078,7 +1078,7 @@ struct OnigCalloutArgsStruct {
   (msa).retry_limit_in_match = (mpv)->retry_limit_in_match;\
   (msa).mp = mpv;\
   (msa).best_len = ONIG_MISMATCH;\
-  (msa).ptr_num  = (reg)->num_repeat + ((reg)->num_mem + 1) * 2; \
+  (msa).ptr_num  = ((reg)->num_mem + 1) * 2; \
 } while(0)
 #else
 #define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start, mpv) do { \
@@ -1089,7 +1089,7 @@ struct OnigCalloutArgsStruct {
   (msa).match_stack_limit  = (mpv)->match_stack_limit;\
   (msa).retry_limit_in_match = (mpv)->retry_limit_in_match;\
   (msa).mp = mpv;\
-  (msa).ptr_num  = (reg)->num_repeat + ((reg)->num_mem + 1) * 2; \
+  (msa).ptr_num  = ((reg)->num_mem + 1) * 2; \
 } while(0)
 #endif
 
@@ -1145,8 +1145,7 @@ struct OnigCalloutArgsStruct {
 } while(0)
 
 #define UPDATE_FOR_STACK_REALLOC do{\
-  repeat_stk    = (StackIndex* )alloc_base;\
-  mem_start_stk = (StackIndex* )(repeat_stk + reg->num_repeat);\
+  mem_start_stk = (StackIndex* )alloc_base;\
   mem_end_stk   = mem_start_stk + num_mem + 1;\
 } while(0)
 
@@ -2602,7 +2601,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   StackType *stk_base, *stk, *stk_end;
   StackType *stkp; /* used as any purpose. */
   StackIndex si;
-  StackIndex *repeat_stk;
   StackIndex *mem_start_stk, *mem_end_stk;
   UChar* keep;
 #ifdef USE_RETRY_LIMIT_IN_MATCH
