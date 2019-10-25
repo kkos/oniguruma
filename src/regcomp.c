@@ -4198,7 +4198,7 @@ unravel_cf_string_fold_add(Node** rlist, Node** rsn, OnigEncoding enc,
   r = unravel_cf_string_add(rlist, rsn, rs, rend, NODE_STRING_CASE_FOLD_MATCH);
   xfree(rs);
 
-  return 0;
+  return r;
 }
 
 static int
