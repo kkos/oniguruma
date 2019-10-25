@@ -4308,7 +4308,6 @@ static int
 unravel_case_fold_string(Node* node, regex_t* reg, int state)
 {
   int r, n, one_len, min_len, max_len, in_look_behind;
-  unsigned int flag;
   UChar *start, *end, *p, *q;
   StrNode* snode;
   Node *sn, *list;
@@ -4339,8 +4338,7 @@ unravel_case_fold_string(Node* node, regex_t* reg, int state)
     one_len = enclen(enc, p);
     if (n == 0) {
       q = p + one_len;
-      flag = 0;
-      r = unravel_case_fold_string_add(&list, &sn, p, q, flag);
+      r = unravel_case_fold_string_add(&list, &sn, p, q, 0 /* flag */);
       if (r != 0) goto err;
     }
     else {
