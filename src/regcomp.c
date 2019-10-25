@@ -6477,7 +6477,7 @@ print_optimize_info(FILE* f, regex_t* reg)
 {
   static const char* on[] = { "NONE", "STR",
                               "STR_FAST", "STR_FAST_STEP_FORWARD",
-                              "STR_CASE_FOLD_FAST", "STR_CASE_FOLD", "MAP" };
+                              "STR_CASE_FOLD", "MAP" };
 
   fprintf(f, "optimize: %s\n", on[reg->optimize]);
   fprintf(f, "  anchor: "); print_anchor(f, reg->anchor);
