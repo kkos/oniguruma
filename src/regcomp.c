@@ -5941,24 +5941,18 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
       else {
         int max, min;
 
-        if (NODE_STRING_IS_DONT_GET_OPT_INFO(node)) {
-          int n = onigenc_strlen(enc, sn->s, sn->end);
-          max = ONIGENC_MBC_MAXLEN_DIST(enc) * n;
-        }
-        else {
-          concat_opt_exact_str(&opt->sb, sn->s, sn->end, enc);
-          opt->sb.case_fold = 1;
-          if (NODE_STRING_IS_GOOD_AMBIG(node))
-            opt->sb.good_case_fold = 1;
+        concat_opt_exact_str(&opt->sb, sn->s, sn->end, enc);
+        opt->sb.case_fold = 1;
+        if (NODE_STRING_IS_GOOD_AMBIG(node))
+          opt->sb.good_case_fold = 1;
 
-          if (slen > 0) {
-            r = add_char_amb_opt_map(&opt->map, sn->s, sn->end,
-                                     enc, env->case_fold_flag);
-            if (r != 0) break;
-          }
-
-          max = slen;
+        if (slen > 0) {
+          r = add_char_amb_opt_map(&opt->map, sn->s, sn->end,
+                                   enc, env->case_fold_flag);
+          if (r != 0) break;
         }
+
+        max = slen;
         min = ONIGENC_MBC_MINLEN(enc);
         set_mml(&opt->len, min, max);
       }
@@ -7168,11 +7162,6 @@ print_indent_tree(FILE* f, Node* node, int indent)
         good = "-good";
       else
         good = "";
-
-      if (NODE_STRING_IS_DONT_GET_OPT_INFO(node))
-        dont = " (dont-opt)";
-      else
-        dont = "";
 
       if (STR_(node)->s == STR_(node)->end)
         str = "empty-string";

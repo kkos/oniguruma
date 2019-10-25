@@ -297,7 +297,6 @@ typedef struct _Node {
 #define NODE_STRING_CASE_EXPANDED      (1<<1)
 #define NODE_STRING_CASE_FOLD_MATCH    (1<<2)
 #define NODE_STRING_GOOD_AMBIG         (1<<3)
-#define NODE_STRING_DONT_GET_OPT_INFO  (1<<4)
 
 #define NODE_STRING_LEN(node)            (int )((node)->u.str.end - (node)->u.str.s)
 #define NODE_STRING_SET_CRUDE(node)         (node)->u.str.flag |= NODE_STRING_CRUDE
@@ -305,8 +304,6 @@ typedef struct _Node {
 #define NODE_STRING_SET_CASE_EXPANDED(node) (node)->u.str.flag |= NODE_STRING_CASE_EXPANDED
 #define NODE_STRING_SET_CASE_FOLD_MATCH(node) (node)->u.str.flag |= NODE_STRING_CASE_FOLD_MATCH
 #define NODE_STRING_SET_GOOD_AMBIG(node) (node)->u.str.flag |= NODE_STRING_GOOD_AMBIG
-#define NODE_STRING_SET_DONT_GET_OPT_INFO(node) \
-  (node)->u.str.flag |= NODE_STRING_DONT_GET_OPT_INFO
 #define NODE_STRING_IS_CRUDE(node) \
   (((node)->u.str.flag & NODE_STRING_CRUDE) != 0)
 #define NODE_STRING_IS_CASE_EXPANDED(node) \
@@ -315,8 +312,6 @@ typedef struct _Node {
   (((node)->u.str.flag & NODE_STRING_CASE_FOLD_MATCH) != 0)
 #define NODE_STRING_IS_GOOD_AMBIG(node) \
   (((node)->u.str.flag & NODE_STRING_GOOD_AMBIG) != 0)
-#define NODE_STRING_IS_DONT_GET_OPT_INFO(node) \
-  (((node)->u.str.flag & NODE_STRING_DONT_GET_OPT_INFO) != 0)
 
 #define BACKREFS_P(br) \
   (IS_NOT_NULL((br)->back_dynamic) ? (br)->back_dynamic : (br)->back_static)
