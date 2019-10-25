@@ -4275,8 +4275,7 @@ unravel_cf_look_behind_add(Node** rlist, Node** rsn,
   }
 
   if (found == 0) {
-    unsigned int flag = 0;
-    r = unravel_cf_string_add(rlist, rsn, s, s + one_len, flag);
+    r = unravel_cf_string_add(rlist, rsn, s, s + one_len, 0 /* flag */);
   }
   else {
     Node* node;
@@ -4387,6 +4386,7 @@ unravel_case_fold_string(Node* node, regex_t* reg, int state)
     onig_node_free(list);
   else if (IS_NOT_NULL(sn))
     onig_node_free(sn);
+
   return r;
 }
 
