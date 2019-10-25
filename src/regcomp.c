@@ -5943,8 +5943,6 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
 
         concat_opt_exact_str(&opt->sb, sn->s, sn->end, enc);
         opt->sb.case_fold = 1;
-        if (NODE_STRING_IS_GOOD_AMBIG(node))
-          opt->sb.good_case_fold = 1;
 
         if (slen > 0) {
           r = add_char_amb_opt_map(&opt->map, sn->s, sn->end,
@@ -7148,8 +7146,6 @@ print_indent_tree(FILE* f, Node* node, int indent)
     {
       char* str;
       char* mode;
-      char* dont;
-      char* good;
 
       if (NODE_STRING_IS_CRUDE(node))
         mode = "-crude";
@@ -7158,17 +7154,12 @@ print_indent_tree(FILE* f, Node* node, int indent)
       else
         mode = "";
 
-      if (NODE_STRING_IS_GOOD_AMBIG(node))
-        good = "-good";
-      else
-        good = "";
-
       if (STR_(node)->s == STR_(node)->end)
         str = "empty-string";
       else
         str = "string";
 
-      fprintf(f, "<%s%s%s%s:%p>", str, mode, good, dont, node);
+      fprintf(f, "<%s%s:%p>", str, mode, node);
       for (p = STR_(node)->s; p < STR_(node)->end; p++) {
         if (*p >= 0x20 && *p < 0x7f)
           fputc(*p, f);
