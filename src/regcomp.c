@@ -5281,7 +5281,6 @@ typedef struct {
   OptAnc     anc;
   int        reach_end;
   int        case_fold;
-  int        good_case_fold;
   int        len;
   UChar      s[OPT_EXACT_MAXLEN];
 } OptStr;
@@ -5508,7 +5507,6 @@ clear_opt_exact(OptStr* e)
   clear_opt_anc_info(&e->anc);
   e->reach_end      = 0;
   e->case_fold      = 0;
-  e->good_case_fold = 0;
   e->len            = 0;
   e->s[0]           = '\0';
 }
@@ -5531,11 +5529,6 @@ concat_opt_exact(OptStr* to, OptStr* add, OnigEncoding enc)
       if (to->len > 1 || to->len >= add->len) return 0;  /* avoid */
 
       to->case_fold = 1;
-    }
-    else {
-      if (to->good_case_fold != 0) {
-        if (add->good_case_fold == 0) return 0;
-      }
     }
   }
 
@@ -5613,8 +5606,6 @@ alt_merge_opt_exact(OptStr* to, OptStr* add, OptEnv* env)
   to->len = i;
   if (add->case_fold != 0)
     to->case_fold = 1;
-  if (add->good_case_fold == 0)
-    to->good_case_fold = 0;
 
   alt_merge_opt_anc_info(&to->anc, &add->anc);
   if (! to->reach_end) to->anc.right = 0;
@@ -5646,9 +5637,6 @@ select_opt_exact(OnigEncoding enc, OptStr* now, OptStr* alt)
 
   if (now->case_fold == 0) vn *= 2;
   if (alt->case_fold == 0) va *= 2;
-
-  if (now->good_case_fold != 0) vn *= 4;
-  if (alt->good_case_fold != 0) va *= 4;
 
   if (comp_distance_value(&now->mmd, &alt->mmd, vn, va) > 0)
     copy_opt_exact(now, alt);
@@ -5748,10 +5736,7 @@ comp_opt_exact_or_map(OptStr* e, OptMap* m)
   if (m->value <= 0) return -1;
 
   if (e->case_fold != 0) {
-    if (e->good_case_fold != 0)
-      case_value = 2;
-    else
-      case_value = 1;
+    case_value = 1;
   }
   else
     case_value = 3;
@@ -6243,15 +6228,6 @@ set_optimize_exact(regex_t* reg, OptStr* e)
 
   if (e->case_fold) {
     reg->optimize = OPTIMIZE_STR_CASE_FOLD;
-    if (e->good_case_fold != 0) {
-      if (e->len >= 2) {
-        r = set_sunday_quick_search_or_bmh_skip_table(reg, 1,
-                             reg->exact, reg->exact_end,
-                             reg->map, &(reg->map_offset));
-        if (r != 0) return r;
-        reg->optimize = OPTIMIZE_STR_CASE_FOLD_FAST;
-      }
-    }
   }
   else {
     int allow_reverse;
@@ -6279,7 +6255,7 @@ set_optimize_exact(regex_t* reg, OptStr* e)
 
   if (reg->dmin != INFINITE_LEN) {
     int n;
-    if (e->case_fold != 0 && e->good_case_fold == 0)
+    if (e->case_fold != 0)
       n = 1;
     else
       n = (int )(reg->exact_end - reg->exact);
