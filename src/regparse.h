@@ -32,7 +32,7 @@
 #include "regint.h"
 
 #define NODE_STRING_MARGIN         16
-#define NODE_STRING_BUF_SIZE       24  /* sizeof(CClassNode) - sizeof(int)*4 */
+#define NODE_STRING_BUF_SIZE       20  /* sizeof(CClassNode) - sizeof(int)*4 */
 #define NODE_BACKREFS_SIZE          6
 
 /* node type */
@@ -83,8 +83,9 @@ typedef struct {
   UChar* s;
   UChar* end;
   unsigned int flag;
-  int    capacity;    /* (allocated size - 1) or 0: use buf[] */
   UChar  buf[NODE_STRING_BUF_SIZE];
+  int    capacity;    /* (allocated size - 1) or 0: use buf[] */
+  int    case_min_len;
 } StrNode;
 
 typedef struct {

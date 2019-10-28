@@ -484,14 +484,47 @@ node_list_add(Node* list, Node* x)
   return n;
 }
 
+static int
+node_str_node_cat(Node* node, Node* add)
+{
+  int r;
+
+  if (STR_(node)->flag != STR_(add)->flag)
+    return ONIGERR_TYPE_BUG;
+
+  r = onig_node_str_cat(node, STR_(add)->s, STR_(add)->end);
+  if (r != 0) return r;
+
+  if (NODE_STRING_IS_CASE_FOLD_MATCH(node))
+    STR_(node)->case_min_len += STR_(add)->case_min_len;
+
+  return 0;
+}
+
+static int
+node_str_cat_case_fold(Node* node, const UChar* s, const UChar* end, int case_min_len)
+{
+  int r;
+
+  if (! NODE_STRING_IS_CASE_FOLD_MATCH(node))
+    return ONIGERR_TYPE_BUG;
+
+  r = onig_node_str_cat(node, s, end);
+  if (r != 0) return r;
+
+  STR_(node)->case_min_len += case_min_len;
+  return 0;
+}
+
 static void
 node_conv_to_str_node(Node* node, int flag)
 {
   NODE_SET_TYPE(node, NODE_STRING);
   STR_(node)->flag     = flag;
-  STR_(node)->capacity = 0;
   STR_(node)->s        = STR_(node)->buf;
   STR_(node)->end      = STR_(node)->buf;
+  STR_(node)->capacity = 0;
+  STR_(node)->case_min_len = 0;
 }
 
 static OnigLen
@@ -3868,7 +3901,7 @@ reduce_string_list(Node* node)
             prev_node = node;
           }
           else {
-            r = onig_node_str_cat(prev, STR_(curr)->s, STR_(curr)->end);
+	    r = node_str_node_cat(prev, curr);
             if (r != 0) return r;
             remove_from_list(prev_node, node);
             onig_node_free(node);
@@ -4073,11 +4106,11 @@ get_min_max_byte_len_case_fold_items(int n, OnigCaseFoldCodeItem items[], int* r
 
 static int
 conv_string_case_fold(OnigEncoding enc, OnigCaseFoldType case_fold_flag,
-                      UChar* s, UChar* end, UChar** rs, UChar** rend)
+           UChar* s, UChar* end, UChar** rs, UChar** rend, int* rcase_min_len)
 {
   UChar *p, buf[ONIGENC_MBC_CASE_FOLD_MAXLEN];
   UChar *sbuf, *ebuf, *sp;
-  int i, len, sbuf_size;
+  int i, n, len, sbuf_size;
 
   *rs = NULL;
   sbuf_size = (int )(end - s) * 2;
@@ -4085,6 +4118,7 @@ conv_string_case_fold(OnigEncoding enc, OnigCaseFoldType case_fold_flag,
   CHECK_NULL_RETURN_MEMERR(sbuf);
   ebuf = sbuf + sbuf_size;
 
+  n = 0;
   sp = sbuf;
   p = s;
   while (p < end) {
@@ -4100,10 +4134,12 @@ conv_string_case_fold(OnigEncoding enc, OnigCaseFoldType case_fold_flag,
 
       *sp++ = buf[i];
     }
+    n++;
   }
 
   *rs = sbuf;
   *rend = sp;
+  *rcase_min_len = n;
   return 0;
 }
 
@@ -4159,7 +4195,7 @@ unravel_cf_node_add(Node** rlist, Node* add)
 
 static int
 unravel_cf_string_add(Node** rlist, Node** rsn, UChar* s, UChar* end,
-                      unsigned int flag)
+                      unsigned int flag, int case_min_len)
 {
   int r;
   Node *sn, *list;
@@ -4168,13 +4204,17 @@ unravel_cf_string_add(Node** rlist, Node** rsn, UChar* s, UChar* end,
   sn   = *rsn;
 
   if (IS_NOT_NULL(sn) && STR_(sn)->flag == flag) {
-    r = onig_node_str_cat(sn, s, end);
+    if (NODE_STRING_IS_CASE_FOLD_MATCH(sn))
+      r = node_str_cat_case_fold(sn, s, end, case_min_len);
+    else
+      r = onig_node_str_cat(sn, s, end);
   }
   else {
     sn = onig_node_new_str(s, end);
     CHECK_NULL_RETURN_MEMERR(sn);
 
     STR_(sn)->flag = flag;
+    STR_(sn)->case_min_len = case_min_len;
     r = unravel_cf_node_add(&list, sn);
   }
 
@@ -4190,12 +4230,15 @@ unravel_cf_string_fold_add(Node** rlist, Node** rsn, OnigEncoding enc,
                       OnigCaseFoldType case_fold_flag, UChar* s, UChar* end)
 {
   int r;
+  int case_min_len;
   UChar *rs, *rend;
 
-  r = conv_string_case_fold(enc, case_fold_flag, s, end, &rs, &rend);
+  r = conv_string_case_fold(enc, case_fold_flag, s, end,
+                            &rs, &rend, &case_min_len);
   if (r != 0) return r;
 
-  r = unravel_cf_string_add(rlist, rsn, rs, rend, NODE_STRING_CASE_FOLD_MATCH);
+  r = unravel_cf_string_add(rlist, rsn, rs, rend,
+                            NODE_STRING_CASE_FOLD_MATCH, case_min_len);
   xfree(rs);
 
   return r;
@@ -4275,7 +4318,7 @@ unravel_cf_look_behind_add(Node** rlist, Node** rsn,
   }
 
   if (found == 0) {
-    r = unravel_cf_string_add(rlist, rsn, s, s + one_len, 0 /* flag */);
+    r = unravel_cf_string_add(rlist, rsn, s, s + one_len, 0 /* flag */, 0);
   }
   else {
     Node* node;
@@ -4337,7 +4380,7 @@ unravel_case_fold_string(Node* node, regex_t* reg, int state)
     one_len = enclen(enc, p);
     if (n == 0) {
       q = p + one_len;
-      r = unravel_cf_string_add(&list, &sn, p, q, 0 /* flag */);
+      r = unravel_cf_string_add(&list, &sn, p, q, 0 /* flag */, 0);
       if (r != 0) goto err;
     }
     else {
@@ -5017,13 +5060,12 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
     if (!IS_INFINITE_REPEAT(qn->lower) && qn->lower == qn->upper &&
         qn->lower > 1 && qn->lower <= EXPAND_STRING_MAX_LENGTH) {
       int len = NODE_STRING_LEN(body);
-      StrNode* sn = STR_(body);
 
       if (len * qn->lower <= EXPAND_STRING_MAX_LENGTH) {
         int i, n = qn->lower;
         node_conv_to_str_node(node, STR_(body)->flag);
         for (i = 0; i < n; i++) {
-          r = onig_node_str_cat(node, sn->s, sn->end);
+	  r = node_str_node_cat(node, body);
           if (r != 0) return r;
         }
         onig_node_free(body);
@@ -5936,7 +5978,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
         }
 
         max = slen;
-        min = ONIGENC_MBC_MINLEN(enc);
+        min = sn->case_min_len * ONIGENC_MBC_MINLEN(enc);
         set_mml(&opt->len, min, max);
       }
     }
