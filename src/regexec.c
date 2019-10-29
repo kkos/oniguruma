@@ -28,6 +28,8 @@
  */
 #include "regint.h"
 
+/* #define USE_REPEAT_STK_VAR */
+
 #define IS_MBC_WORD_ASCII_MODE(enc,s,end,mode) \
   ((mode) == 0 ? ONIGENC_IS_MBC_WORD(enc,s,end) : ONIGENC_IS_MBC_WORD_ASCII(enc,s,end))
 
@@ -975,7 +977,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 /* handled by normal-POP */
 #define STK_MEM_START              0x0010
 #define STK_MEM_END                0x8030
-#define STK_REPEAT_INC             0x0050
+#define STK_REPEAT_INC             0x0040
 #ifdef USE_CALLOUT
 #define STK_CALLOUT                0x0070
 #endif
@@ -1013,6 +1015,9 @@ typedef struct _StackType {
     } state;
     struct {
       int        count;
+#ifdef USE_REPEAT_STK_VAR
+      StackIndex prev_index;  /* index of stack */
+#endif
     } repeat_inc;
     struct {
       UChar *pstr;       /* start/end position */
@@ -1067,6 +1072,11 @@ struct OnigCalloutArgsStruct {
 
 #endif
 
+#ifdef USE_REPEAT_STK_VAR
+#define PTR_NUM_SIZE(reg)  ((reg)->num_repeat + ((reg)->num_mem + 1) * 2)
+#else
+#define PTR_NUM_SIZE(reg)  (((reg)->num_mem + 1) * 2)
+#endif
 
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
 #define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start, mpv) do { \
@@ -1078,7 +1088,7 @@ struct OnigCalloutArgsStruct {
   (msa).retry_limit_in_match = (mpv)->retry_limit_in_match;\
   (msa).mp = mpv;\
   (msa).best_len = ONIG_MISMATCH;\
-  (msa).ptr_num  = ((reg)->num_mem + 1) * 2; \
+  (msa).ptr_num  = PTR_NUM_SIZE(reg);\
 } while(0)
 #else
 #define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start, mpv) do { \
@@ -1089,7 +1099,7 @@ struct OnigCalloutArgsStruct {
   (msa).match_stack_limit  = (mpv)->match_stack_limit;\
   (msa).retry_limit_in_match = (mpv)->retry_limit_in_match;\
   (msa).mp = mpv;\
-  (msa).ptr_num  = ((reg)->num_mem + 1) * 2; \
+  (msa).ptr_num  = PTR_NUM_SIZE(reg);\
 } while(0)
 #endif
 
@@ -1144,10 +1154,18 @@ struct OnigCalloutArgsStruct {
   };\
 } while(0)
 
+#ifdef USE_REPEAT_STK_VAR
+#define UPDATE_FOR_STACK_REALLOC do{\
+  repeat_stk    = (StackIndex* )alloc_base;\
+  mem_start_stk = (StackIndex* )(repeat_stk + reg->num_repeat);\
+  mem_end_stk   = mem_start_stk + num_mem + 1;\
+} while(0)
+#else
 #define UPDATE_FOR_STACK_REALLOC do{\
   mem_start_stk = (StackIndex* )alloc_base;\
   mem_end_stk   = mem_start_stk + num_mem + 1;\
 } while(0)
+#endif
 
 static unsigned int MatchStackLimit = DEFAULT_MATCH_STACK_LIMIT_SIZE;
 
@@ -1569,11 +1587,27 @@ stack_double(int is_alloca, char** arg_alloc_base,
 } while(0)
 #endif
 
+#ifdef USE_REPEAT_STK_VAR
+
+#define SAVE_REPEAT_STK_VAR(sid) stk->u.repeat_inc.prev_index = repeat_stk[sid]
+#define LOAD_TO_REPEAT_STK_VAR(sid)  repeat_stk[sid] = GET_STACK_INDEX(stk)
+#define POP_REPEAT_INC  else if (stk->type == STK_REPEAT_INC) {repeat_stk[stk->zid] = stk->u.repeat_inc.prev_index;}
+
+#else
+
+#define SAVE_REPEAT_STK_VAR(sid)
+#define LOAD_TO_REPEAT_STK_VAR(sid)
+#define POP_REPEAT_INC
+
+#endif
+
 #define STACK_PUSH_REPEAT_INC(sid, ct) do {\
   STACK_ENSURE(1);\
   stk->type = STK_REPEAT_INC;\
   stk->zid  = (sid);\
   stk->u.repeat_inc.count = (ct);\
+  SAVE_REPEAT_STK_VAR(sid);\
+  LOAD_TO_REPEAT_STK_VAR(sid);\
   STACK_INC;\
 } while(0)
 
@@ -1838,6 +1872,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
           mem_start_stk[stk->zid] = stk->u.mem.prev_start;\
           mem_end_stk[stk->zid]   = stk->u.mem.prev_end;\
         }\
+        POP_REPEAT_INC \
         POP_CALLOUT_CASE\
       }\
     }\
@@ -1860,6 +1895,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
           mem_start_stk[stk->zid] = stk->u.mem.prev_start;\
           mem_end_stk[stk->zid]   = stk->u.mem.prev_end;\
         }\
+        POP_REPEAT_INC \
         /* Don't call callout here because negation of total success by (?!..) (?<!..) */\
       }\
     }\
@@ -2051,11 +2087,11 @@ stack_double(int is_alloca, char** arg_alloc_base,
 } while(0)
 #endif /* USE_STUBBORN_CHECK_CAPTURES_IN_EMPTY_REPEAT */
 
-#define STACK_GET_REPEAT_COUNT(sid, c) do {\
+#define STACK_GET_REPEAT_COUNT_SEARCH(sid, c) do {\
   StackType* k = stk;\
   while (1) {\
     (k)--;\
-    STACK_BASE_CHECK(k, "STACK_GET_REPEAT");\
+    STACK_BASE_CHECK(k, "STACK_GET_REPEAT_COUNT_SEARCH");\
     if ((k)->type == STK_REPEAT_INC) {\
       if ((k)->zid == (sid)) {\
         (c) = (k)->u.repeat_inc.count;\
@@ -2075,6 +2111,20 @@ stack_double(int is_alloca, char** arg_alloc_base,
     }\
   }\
 } while(0)
+
+#ifdef USE_REPEAT_STK_VAR
+
+#define STACK_GET_REPEAT_COUNT(sid, c) do {\
+  if (reg->num_call == 0) {\
+    (c) = (STACK_AT(repeat_stk[sid]))->u.repeat_inc.count;\
+  }\
+  else {\
+    STACK_GET_REPEAT_COUNT_SEARCH(sid, c);\
+  }\
+} while(0)
+#else
+#define STACK_GET_REPEAT_COUNT(sid, c) STACK_GET_REPEAT_COUNT_SEARCH(sid, c)
+#endif
 
 #define STACK_RETURN(addr)  do {\
   int level = 0;\
@@ -2601,6 +2651,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   StackType *stk_base, *stk, *stk_end;
   StackType *stkp; /* used as any purpose. */
   StackIndex si;
+#ifdef USE_REPEAT_STK_VAR
+  StackIndex *repeat_stk;
+#endif
   StackIndex *mem_start_stk, *mem_end_stk;
   UChar* keep;
 #ifdef USE_RETRY_LIMIT_IN_MATCH
