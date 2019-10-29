@@ -77,6 +77,8 @@
 #define USE_VARIABLE_META_CHARS
 #define USE_POSIX_API_REGION_OPTION
 #define USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
+/* #define USE_REPEAT_AND_EMPTY_CHECK_LOCAL_VAR */
+
 
 #include "regenc.h"
 
@@ -850,7 +852,7 @@ struct re_pattern_buffer {
 
   int            num_mem;          /* used memory(...) num counted from 1 */
   int            num_repeat;       /* OP_REPEAT/OP_REPEAT_NG id-counter */
-  int            num_null_check;   /* OP_EMPTY_CHECK_START/END id counter */
+  int            num_empty_check;  /* OP_EMPTY_CHECK_START/END id counter */
   int            num_call;         /* number of subexp call */
   MemStatusType  capture_history;  /* (?@...) flag (1-31) */
   MemStatusType  push_mem_start;   /* need backtrack flag */

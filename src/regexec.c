@@ -28,8 +28,6 @@
  */
 #include "regint.h"
 
-/* #define USE_REPEAT_STK_VAR */
-
 #define IS_MBC_WORD_ASCII_MODE(enc,s,end,mode) \
   ((mode) == 0 ? ONIGENC_IS_MBC_WORD(enc,s,end) : ONIGENC_IS_MBC_WORD_ASCII(enc,s,end))
 
@@ -977,14 +975,22 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 /* handled by normal-POP */
 #define STK_MEM_START              0x0010
 #define STK_MEM_END                0x8030
+#ifdef USE_REPEAT_AND_EMPTY_CHECK_LOCAL_VAR
+#define STK_REPEAT_INC             (0x0040 | STK_MASK_POP_HANDLED)
+#else
 #define STK_REPEAT_INC             0x0040
+#endif
 #ifdef USE_CALLOUT
 #define STK_CALLOUT                0x0070
 #endif
 
 /* avoided by normal-POP */
 #define STK_VOID                   0x0000  /* for fill a blank */
+#ifdef USE_REPEAT_AND_EMPTY_CHECK_LOCAL_VAR
+#define STK_EMPTY_CHECK_START      (0x3000 | STK_MASK_POP_HANDLED)
+#else
 #define STK_EMPTY_CHECK_START      0x3000
+#endif
 #define STK_EMPTY_CHECK_END        0x5000  /* for recursive call */
 #define STK_MEM_END_MARK           0x8100
 #define STK_TO_VOID_START          0x1200  /* mark for "(?>...)" */
@@ -1015,7 +1021,7 @@ typedef struct _StackType {
     } state;
     struct {
       int        count;
-#ifdef USE_REPEAT_STK_VAR
+#ifdef USE_REPEAT_AND_EMPTY_CHECK_LOCAL_VAR
       StackIndex prev_index;  /* index of stack */
 #endif
     } repeat_inc;
@@ -1026,7 +1032,10 @@ typedef struct _StackType {
       StackIndex prev_end;    /* prev. info (for backtrack  "(...)*" ) */
     } mem;
     struct {
-      UChar *pstr;       /* start position */
+      UChar *pstr;            /* start position */
+#ifdef USE_REPEAT_AND_EMPTY_CHECK_LOCAL_VAR
+      StackIndex prev_index;  /* index of stack */
+#endif
     } empty_check;
 #ifdef USE_CALL
     struct {
@@ -1072,11 +1081,41 @@ struct OnigCalloutArgsStruct {
 
 #endif
 
-#ifdef USE_REPEAT_STK_VAR
-#define PTR_NUM_SIZE(reg)  ((reg)->num_repeat + ((reg)->num_mem + 1) * 2)
+#ifdef USE_REPEAT_AND_EMPTY_CHECK_LOCAL_VAR
+
+#define PTR_NUM_SIZE(reg)  ((reg)->num_repeat + (reg)->num_empty_check + ((reg)->num_mem + 1) * 2)
+#define UPDATE_FOR_STACK_REALLOC do{\
+  repeat_stk      = (StackIndex* )alloc_base;\
+  empty_check_stk = (StackIndex* )(repeat_stk + reg->num_repeat);\
+  mem_start_stk   = (StackIndex* )(empty_check_stk + reg->num_empty_check);\
+  mem_end_stk     = mem_start_stk + num_mem + 1;\
+} while(0)
+
+#define SAVE_REPEAT_STK_VAR(sid) stk->u.repeat_inc.prev_index = repeat_stk[sid]
+#define LOAD_TO_REPEAT_STK_VAR(sid)  repeat_stk[sid] = GET_STACK_INDEX(stk)
+#define POP_REPEAT_INC  else if (stk->type == STK_REPEAT_INC) {repeat_stk[stk->zid] = stk->u.repeat_inc.prev_index;}
+
+#define SAVE_EMPTY_CHECK_STK_VAR(sid) stk->u.empty_check.prev_index = empty_check_stk[sid]
+#define LOAD_TO_EMPTY_CHECK_STK_VAR(sid)  empty_check_stk[sid] = GET_STACK_INDEX(stk)
+#define POP_EMPTY_CHECK_START  else if (stk->type == STK_EMPTY_CHECK_START) {empty_check_stk[stk->zid] = stk->u.empty_check.prev_index;}
+
 #else
+
 #define PTR_NUM_SIZE(reg)  (((reg)->num_mem + 1) * 2)
-#endif
+#define UPDATE_FOR_STACK_REALLOC do{\
+  mem_start_stk = (StackIndex* )alloc_base;\
+  mem_end_stk   = mem_start_stk + num_mem + 1;\
+} while(0)
+
+#define SAVE_REPEAT_STK_VAR(sid)
+#define LOAD_TO_REPEAT_STK_VAR(sid)
+#define POP_REPEAT_INC
+
+#define SAVE_EMPTY_CHECK_STK_VAR(sid)
+#define LOAD_TO_EMPTY_CHECK_STK_VAR(sid)
+#define POP_EMPTY_CHECK_START
+
+#endif /* USE_REPEAT_AND_EMPTY_CHECK_LOCAL_VAR */
 
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
 #define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start, mpv) do { \
@@ -1153,19 +1192,6 @@ struct OnigCalloutArgsStruct {
     msa->stack_p = alloc_base;\
   };\
 } while(0)
-
-#ifdef USE_REPEAT_STK_VAR
-#define UPDATE_FOR_STACK_REALLOC do{\
-  repeat_stk    = (StackIndex* )alloc_base;\
-  mem_start_stk = (StackIndex* )(repeat_stk + reg->num_repeat);\
-  mem_end_stk   = mem_start_stk + num_mem + 1;\
-} while(0)
-#else
-#define UPDATE_FOR_STACK_REALLOC do{\
-  mem_start_stk = (StackIndex* )alloc_base;\
-  mem_end_stk   = mem_start_stk + num_mem + 1;\
-} while(0)
-#endif
 
 static unsigned int MatchStackLimit = DEFAULT_MATCH_STACK_LIMIT_SIZE;
 
@@ -1587,20 +1613,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
 } while(0)
 #endif
 
-#ifdef USE_REPEAT_STK_VAR
-
-#define SAVE_REPEAT_STK_VAR(sid) stk->u.repeat_inc.prev_index = repeat_stk[sid]
-#define LOAD_TO_REPEAT_STK_VAR(sid)  repeat_stk[sid] = GET_STACK_INDEX(stk)
-#define POP_REPEAT_INC  else if (stk->type == STK_REPEAT_INC) {repeat_stk[stk->zid] = stk->u.repeat_inc.prev_index;}
-
-#else
-
-#define SAVE_REPEAT_STK_VAR(sid)
-#define LOAD_TO_REPEAT_STK_VAR(sid)
-#define POP_REPEAT_INC
-
-#endif
-
 #define STACK_PUSH_REPEAT_INC(sid, ct) do {\
   STACK_ENSURE(1);\
   stk->type = STK_REPEAT_INC;\
@@ -1680,6 +1692,8 @@ stack_double(int is_alloca, char** arg_alloc_base,
   stk->type = STK_EMPTY_CHECK_START;\
   stk->zid  = (cnum);\
   stk->u.empty_check.pstr = (s);\
+  SAVE_EMPTY_CHECK_STK_VAR(cnum);\
+  LOAD_TO_EMPTY_CHECK_STK_VAR(cnum);\
   STACK_INC;\
 } while(0)
 
@@ -1873,6 +1887,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
           mem_end_stk[stk->zid]   = stk->u.mem.prev_end;\
         }\
         POP_REPEAT_INC \
+        POP_EMPTY_CHECK_START \
         POP_CALLOUT_CASE\
       }\
     }\
@@ -1896,6 +1911,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
           mem_end_stk[stk->zid]   = stk->u.mem.prev_end;\
         }\
         POP_REPEAT_INC \
+        POP_EMPTY_CHECK_START \
         /* Don't call callout here because negation of total success by (?!..) (?<!..) */\
       }\
     }\
@@ -1947,18 +1963,39 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define STACK_EMPTY_CHECK(isnull,sid,s) do {\
-  StackType* k = stk;\
+
+#define EMPTY_CHECK_START_SEARCH(sid, k) do {\
+  k = stk;\
   while (1) {\
     k--;\
-    STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK"); \
+    STACK_BASE_CHECK(k, "EMPTY_CHECK_START_SEARCH"); \
     if (k->type == STK_EMPTY_CHECK_START) {\
-      if (k->zid == (sid)) {\
-        (isnull) = (k->u.empty_check.pstr == (s));\
-        break;\
-      }\
+      if (k->zid == (sid)) break;\
     }\
   }\
+} while(0)
+
+#ifdef USE_REPEAT_AND_EMPTY_CHECK_LOCAL_VAR
+
+#define GET_EMPTY_CHECK_START(sid, k) do {\
+  if (reg->num_call == 0) {\
+    k = STACK_AT(empty_check_stk[sid]);\
+  }\
+  else {\
+    EMPTY_CHECK_START_SEARCH(sid, k);\
+  }\
+} while(0)
+#else
+
+#define GET_EMPTY_CHECK_START(sid, k)  EMPTY_CHECK_START_SEARCH(sid, k)
+
+#endif
+
+
+#define STACK_EMPTY_CHECK(isnull, sid, s) do {\
+  StackType* k;\
+  GET_EMPTY_CHECK_START(sid, k);\
+  (isnull) = (k->u.empty_check.pstr == (s));\
 } while(0)
 
 #define STACK_MEM_START_GET_PREV_END_ADDR(k /* STK_MEM_START*/, reg, addr) do {\
@@ -1974,39 +2011,30 @@ stack_double(int is_alloca, char** arg_alloc_base,
 } while (0)
 
 #ifdef USE_STUBBORN_CHECK_CAPTURES_IN_EMPTY_REPEAT
-#define STACK_EMPTY_CHECK_MEM(isnull,sid,s,reg) do {\
-  StackType* k = stk;\
-  while (1) {\
-    k--;\
-    STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_MEM"); \
-    if (k->type == STK_EMPTY_CHECK_START) {\
-      if (k->zid == (sid)) {\
-        if (k->u.empty_check.pstr != (s)) {\
-          (isnull) = 0;\
-          break;\
+#define STACK_EMPTY_CHECK_MEM(isnull, sid, s, reg) do {\
+  StackType* k;\
+  GET_EMPTY_CHECK_START(sid, k);\
+  if (k->u.empty_check.pstr != (s)) {\
+    (isnull) = 0;\
+  }\
+  else {\
+    UChar* endp;\
+    (isnull) = 1;\
+    while (k < stk) {\
+      if (k->type == STK_MEM_START &&\
+        MEM_STATUS_LIMIT_AT((reg)->empty_status_mem, k->zid)) {\
+        STACK_MEM_START_GET_PREV_END_ADDR(k, reg, endp);\
+        if (endp == 0) {\
+          (isnull) = 0; break;\
         }\
-        else {\
-          UChar* endp;\
-          (isnull) = 1;\
-          while (k < stk) {\
-            if (k->type == STK_MEM_START &&\
-              MEM_STATUS_LIMIT_AT((reg)->empty_status_mem, k->zid)) {\
-              STACK_MEM_START_GET_PREV_END_ADDR(k, reg, endp);\
-              if (endp == 0) {\
-                (isnull) = 0; break;\
-              }\
-              else if (STACK_AT(k->u.mem.prev_start)->u.mem.pstr != endp) {\
-                (isnull) = 0; break;\
-              }\
-              else if (endp != s) {\
-                (isnull) = -1; /* empty, but position changed */ \
-              }\
-            }\
-            k++;\
-          }\
-          break;\
+        else if (STACK_AT(k->u.mem.prev_start)->u.mem.pstr != endp) {\
+          (isnull) = 0; break;\
+        }\
+        else if (endp != s) {\
+          (isnull) = -1; /* empty, but position changed */ \
         }\
       }\
+      k++;\
     }\
   }\
 } while(0)
@@ -2112,7 +2140,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#ifdef USE_REPEAT_STK_VAR
+#ifdef USE_REPEAT_AND_EMPTY_CHECK_LOCAL_VAR
 
 #define STACK_GET_REPEAT_COUNT(sid, c) do {\
   if (reg->num_call == 0) {\
@@ -2651,8 +2679,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   StackType *stk_base, *stk, *stk_end;
   StackType *stkp; /* used as any purpose. */
   StackIndex si;
-#ifdef USE_REPEAT_STK_VAR
+#ifdef USE_REPEAT_AND_EMPTY_CHECK_LOCAL_VAR
   StackIndex *repeat_stk;
+  StackIndex *empty_check_stk;
 #endif
   StackIndex *mem_start_stk, *mem_end_stk;
   UChar* keep;

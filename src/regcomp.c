@@ -699,19 +699,19 @@ static int
 compile_quant_body_with_empty_check(QuantNode* qn, regex_t* reg, ScanEnv* env)
 {
   int r;
-  int saved_num_null_check;
+  int saved_num_empty_check;
   int emptiness;
   Node* body;
 
   body = NODE_BODY((Node* )qn);
   emptiness = qn->emptiness;
-  saved_num_null_check = reg->num_null_check;
+  saved_num_empty_check = reg->num_empty_check;
 
   if (emptiness != BODY_IS_NOT_EMPTY) {
     r = add_op(reg, OP_EMPTY_CHECK_START);
     if (r != 0) return r;
-    COP(reg)->empty_check_start.mem = reg->num_null_check; /* NULL CHECK ID */
-    reg->num_null_check++;
+    COP(reg)->empty_check_start.mem = reg->num_empty_check; /* NULL CHECK ID */
+    reg->num_empty_check++;
   }
 
   r = compile_tree(body, reg, env);
@@ -730,7 +730,7 @@ compile_quant_body_with_empty_check(QuantNode* qn, regex_t* reg, ScanEnv* env)
       r = add_op(reg, OP_EMPTY_CHECK_END_MEMST_PUSH);
 
     if (r != 0) return r;
-    COP(reg)->empty_check_end.mem = saved_num_null_check; /* NULL CHECK ID */
+    COP(reg)->empty_check_end.mem = saved_num_empty_check; /* NULL CHECK ID */
   }
   return r;
 }
@@ -6696,7 +6696,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   reg->string_pool_end    = 0;
   reg->num_mem            = 0;
   reg->num_repeat         = 0;
-  reg->num_null_check     = 0;
+  reg->num_empty_check    = 0;
   reg->repeat_range_alloc = 0;
   reg->repeat_range       = (RepeatRange* )NULL;
   reg->empty_status_mem   = 0;
@@ -6821,7 +6821,11 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 
     set_addr_in_repeat_range(reg);
 
-    if ((reg->num_repeat != 0) || (reg->push_mem_end != 0)
+    if ((reg->push_mem_end != 0)
+#ifdef USE_REPEAT_AND_EMPTY_CHECK_LOCAL_VAR
+        || (reg->num_repeat      != 0)
+        || (reg->num_empty_check != 0)
+#endif
 #ifdef USE_CALLOUT
         || (IS_NOT_NULL(reg->extp) && reg->extp->callout_num != 0)
 #endif
