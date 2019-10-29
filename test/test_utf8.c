@@ -1241,6 +1241,21 @@ extern int main(int argc, char* argv[])
   x2("(?i)BstZ", "b\xC5\xBFtz", 0, 5); // U+017F
   x2("(?i)BstZ", "b\xEF\xAC\x85z", 0, 5); // U+FB05
   x2("(?i)BstZ", "b\xEF\xAC\x86z", 0, 5); // U+FB06
+  x2("(?i).*st\\z", "tttssss\xC5\xBFt", 0, 10); // U+017F
+  x2("(?i).*st\\z", "tttssss\xEF\xAC\x85", 0, 10); // U+FB05
+  x2("(?i).*st\\z", "tttssss\xEF\xAC\x86", 0, 10); // U+FB06
+  x2("(?i).*あstい\\z", "tttssssあ\xC5\xBFtい", 0, 16); // U+017F
+  x2("(?i).*あstい\\z", "tttssssあ\xEF\xAC\x85い", 0, 16); // U+FB05
+  x2("(?i).*あstい\\z", "tttssssあ\xEF\xAC\x86い", 0, 16); // U+FB06
+  x2("(?i).*\xC5\xBFt\\z", "tttssssst", 0, 9); // U+017F
+  x2("(?i).*\xEF\xAC\x85\\z", "tttssssあst", 0, 12); // U+FB05
+  x2("(?i).*\xEF\xAC\x86い\\z", "tttssssstい", 0, 12); // U+FB06
+  x2("(?i).*\xEF\xAC\x85\\z", "tttssssあ\xEF\xAC\x85", 0, 13);
+
+  x2("(?i).*ss", "abcdefghijklmnopqrstuvwxyz\xc3\x9f", 0, 28); // U+00DF
+  x2("(?i).*ss.*", "abcdefghijklmnopqrstuvwxyz\xc3\x9fxyz", 0, 31); // U+00DF
+  x2("(?i).*\xc3\x9f", "abcdefghijklmnopqrstuvwxyzss", 0, 28); // U+00DF
+  x2("(?i).*ss.*", "abcdefghijklmnopqrstuvwxyzSSxyz", 0, 31);
 
   /* #156 U+01F0 (UTF-8: C7 B0) */
   x2("(?i).+Isssǰ", ".+Isssǰ", 0, 8);
