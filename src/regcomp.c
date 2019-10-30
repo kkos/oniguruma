@@ -629,47 +629,40 @@ static int compile_tree(Node* node, regex_t* reg, ScanEnv* env);
     (op) == OP_EXACTMB3N || (op) == OP_EXACTMBN  || (op) == OP_EXACTN_IC)
 
 static int
-select_str_opcode(int mb_len, int str_len, int ignore_case)
+select_str_opcode(int mb_len, int str_len)
 {
   int op;
 
-  if (ignore_case) {
+  switch (mb_len) {
+  case 1:
     switch (str_len) {
-    case 1:  op = OP_EXACT1_IC; break;
-    default: op = OP_EXACTN_IC; break;
+    case 1:  op = OP_EXACT1; break;
+    case 2:  op = OP_EXACT2; break;
+    case 3:  op = OP_EXACT3; break;
+    case 4:  op = OP_EXACT4; break;
+    case 5:  op = OP_EXACT5; break;
+    default: op = OP_EXACTN; break;
     }
-  }
-  else {
-    switch (mb_len) {
-    case 1:
-      switch (str_len) {
-      case 1:  op = OP_EXACT1; break;
-      case 2:  op = OP_EXACT2; break;
-      case 3:  op = OP_EXACT3; break;
-      case 4:  op = OP_EXACT4; break;
-      case 5:  op = OP_EXACT5; break;
-      default: op = OP_EXACTN; break;
-      }
-      break;
+    break;
 
-    case 2:
-      switch (str_len) {
-      case 1:  op = OP_EXACTMB2N1; break;
-      case 2:  op = OP_EXACTMB2N2; break;
-      case 3:  op = OP_EXACTMB2N3; break;
-      default: op = OP_EXACTMB2N;  break;
-      }
-      break;
-
-    case 3:
-      op = OP_EXACTMB3N;
-      break;
-
-    default:
-      op = OP_EXACTMBN;
-      break;
+  case 2:
+    switch (str_len) {
+    case 1:  op = OP_EXACTMB2N1; break;
+    case 2:  op = OP_EXACTMB2N2; break;
+    case 3:  op = OP_EXACTMB2N3; break;
+    default: op = OP_EXACTMB2N;  break;
     }
+    break;
+
+  case 3:
+    op = OP_EXACTMB3N;
+    break;
+
+  default:
+    op = OP_EXACTMBN;
+    break;
   }
+
   return op;
 }
 
@@ -767,14 +760,13 @@ compile_tree_n_times(Node* node, int n, regex_t* reg, ScanEnv* env)
 
 static int
 add_compile_string_length(UChar* s ARG_UNUSED, int mb_len, int str_len,
-                          regex_t* reg ARG_UNUSED, int ignore_case)
+                          regex_t* reg ARG_UNUSED)
 {
   return 1;
 }
 
 static int
-add_compile_string(UChar* s, int mb_len, int str_len,
-                   regex_t* reg, int ignore_case)
+add_compile_string(UChar* s, int mb_len, int str_len, regex_t* reg)
 {
   int op;
   int r;
@@ -782,7 +774,7 @@ add_compile_string(UChar* s, int mb_len, int str_len,
   UChar* p;
   UChar* end;
 
-  op = select_str_opcode(mb_len, str_len, ignore_case);
+  op = select_str_opcode(mb_len, str_len);
   r = add_op(reg, op);
   if (r != 0) return r;
 
@@ -819,7 +811,7 @@ add_compile_string(UChar* s, int mb_len, int str_len,
 static int
 compile_length_string_node(Node* node, regex_t* reg)
 {
-  int rlen, r, len, prev_len, slen, ambig;
+  int rlen, r, len, prev_len, slen;
   UChar *p, *prev;
   StrNode* sn;
   OnigEncoding enc = reg->enc;
@@ -828,10 +820,7 @@ compile_length_string_node(Node* node, regex_t* reg)
   if (sn->end <= sn->s)
     return 0;
 
-  ambig = NODE_STRING_IS_CASE_FOLD_MATCH(node);
-  if (ambig != 0) {
-    return 1;
-  }
+  if (NODE_STRING_IS_CASE_FOLD_MATCH(node) != 0) return 1;
 
   p = prev = sn->s;
   prev_len = enclen(enc, p);
@@ -845,7 +834,7 @@ compile_length_string_node(Node* node, regex_t* reg)
       slen++;
     }
     else {
-      r = add_compile_string_length(prev, prev_len, slen, reg, ambig);
+      r = add_compile_string_length(prev, prev_len, slen, reg);
       rlen += r;
       prev = p;
       slen = 1;
@@ -854,7 +843,7 @@ compile_length_string_node(Node* node, regex_t* reg)
     p += len;
   }
 
-  r = add_compile_string_length(prev, prev_len, slen, reg, ambig);
+  r = add_compile_string_length(prev, prev_len, slen, reg);
   rlen += r;
   return rlen;
 }
@@ -866,7 +855,7 @@ compile_length_string_crude_node(StrNode* sn, regex_t* reg)
     return 0;
 
   return add_compile_string_length(sn->s, 1 /* sb */, (int )(sn->end - sn->s),
-                                   reg, 0);
+                                   reg);
 }
 
 static int
@@ -906,7 +895,7 @@ compile_ambig_string_node(Node* node, regex_t* reg)
 static int
 compile_string_node(Node* node, regex_t* reg)
 {
-  int r, len, prev_len, slen, ambig;
+  int r, len, prev_len, slen;
   UChar *p, *prev, *end;
   StrNode* sn;
   OnigEncoding enc = reg->enc;
@@ -916,8 +905,7 @@ compile_string_node(Node* node, regex_t* reg)
     return 0;
 
   end = sn->end;
-  ambig = NODE_STRING_IS_CASE_FOLD_MATCH(node);
-  if (ambig != 0) {
+  if (NODE_STRING_IS_CASE_FOLD_MATCH(node) != 0) {
     return compile_ambig_string_node(node, reg);
   }
 
@@ -932,7 +920,7 @@ compile_string_node(Node* node, regex_t* reg)
       slen++;
     }
     else {
-      r = add_compile_string(prev, prev_len, slen, reg, ambig);
+      r = add_compile_string(prev, prev_len, slen, reg);
       if (r != 0) return r;
 
       prev  = p;
@@ -943,7 +931,7 @@ compile_string_node(Node* node, regex_t* reg)
     p += len;
   }
 
-  return add_compile_string(prev, prev_len, slen, reg, ambig);
+  return add_compile_string(prev, prev_len, slen, reg);
 }
 
 static int
@@ -952,7 +940,7 @@ compile_string_crude_node(StrNode* sn, regex_t* reg)
   if (sn->end <= sn->s)
     return 0;
 
-  return add_compile_string(sn->s, 1 /* sb */, (int )(sn->end - sn->s), reg, 0);
+  return add_compile_string(sn->s, 1 /* sb */, (int )(sn->end - sn->s), reg);
 }
 
 static void*
