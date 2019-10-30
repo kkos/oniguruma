@@ -1,15 +1,17 @@
-# makefile
+# makefile for harness
 SRC = ../src
 CFLAGS   = -I$(SRC) -Wall -g -fsanitize=fuzzer,address -fno-omit-frame-pointer
 CFLAGS_M = -I$(SRC) -Wall -g -fsanitize=fuzzer-no-link,address -fno-omit-frame-pointer -DWITH_READ_MAIN
 ONIG_LIB = $(SRC)/.libs/libonig.a
 LIBS     = $(ONIG_LIB)
 
-TARGETS = encode-libfuzzer syntax-libfuzzer deluxe-encode-libfuzzer \
+TARGETS = encode-libfuzzer syntax-libfuzzer \
           utf16-be-libfuzzer utf16-le-libfuzzer main-encode main-syntax \
-          main-deluxe-encode main-utf16-be main-utf16-le \
-          main-regset regset-libfuzzer
-OTHER_TARGETS = libfuzzer-onig libfuzzer-onig-full
+          main-utf16-be main-utf16-le main-regset regset-libfuzzer
+
+OTHER_TARGETS = libfuzzer-onig libfuzzer-onig-full \
+          deluxe-encode-libfuzzer main-deluxe-encode
+
 
 default: $(TARGETS)
 
