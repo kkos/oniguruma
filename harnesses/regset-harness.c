@@ -130,26 +130,29 @@ static long REGEX_SUCCESS_COUNT;
 static long VALID_STRING_COUNT;
 
 static int
-exec(OnigEncoding enc, OnigOptionType options,
-     int reg_num, int init_reg_num, UChar* pat[], UChar* pat_end[],
+exec(OnigEncoding enc, int reg_num, int init_reg_num,
+     UChar* pat[], UChar* pat_end[],
      OnigRegSetLead lead, UChar* str, UChar* end)
 {
   int r;
   int i, j;
   OnigRegSet* set;
   regex_t* reg;
+  OnigOptionType options;
   OnigErrorInfo einfo;
   regex_t* regs[MAX_REG_NUM];
 
   EXEC_COUNT++;
   EXEC_COUNT_INTERVAL++;
 
+  options = (EXEC_COUNT % 4 == 0) ? ONIG_OPTION_IGNORECASE : ONIG_OPTION_NONE;
+
   onig_initialize(&enc, 1);
   onig_set_retry_limit_in_match(RETRY_LIMIT);
 
   for (i = 0; i < init_reg_num; i++) {
-    r = onig_new(&regs[i], pat[i], pat_end[i],
-                 ONIG_OPTION_DEFAULT, ENC, ONIG_SYNTAX_DEFAULT, &einfo);
+    r = onig_new(&regs[i], pat[i], pat_end[i], options, ENC,
+                 ONIG_SYNTAX_DEFAULT, &einfo);
     if (r != 0) {
 #ifdef WITH_READ_MAIN
       char s[ONIG_MAX_ERROR_MESSAGE_LEN];
@@ -183,8 +186,8 @@ exec(OnigEncoding enc, OnigOptionType options,
   }
 
   for (i = init_reg_num; i < reg_num; i++) {
-    r = onig_new(&reg, pat[i], pat_end[i],
-                 ONIG_OPTION_DEFAULT, ENC, ONIG_SYNTAX_DEFAULT, &einfo);
+    r = onig_new(&reg, pat[i], pat_end[i], options, ENC,
+                 ONIG_SYNTAX_DEFAULT, &einfo);
     if (r != 0) {
 #ifdef WITH_READ_MAIN
       char s[ONIG_MAX_ERROR_MESSAGE_LEN];
@@ -327,10 +330,8 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 #endif
 
   ENC = ONIG_ENCODING_UTF8;
-  //ENC = ONIG_ENCODING_ISO_8859_1;
 
-  r = exec(ENC, ONIG_OPTION_NONE, reg_num, init_reg_num, pat, pat_end, lead,
-           str, str_null_end);
+  r = exec(ENC, reg_num, init_reg_num, pat, pat_end, lead, str, str_null_end);
 
   for (i = 0; i < reg_num; i++) {
     free(pat[i]);
