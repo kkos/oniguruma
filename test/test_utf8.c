@@ -1257,6 +1257,12 @@ extern int main(int argc, char* argv[])
   x2("(?i).*\xc3\x9f", "abcdefghijklmnopqrstuvwxyzss", 0, 28); // U+00DF
   x2("(?i).*ss.*", "abcdefghijklmnopqrstuvwxyzSSxyz", 0, 31);
 
+  x2("(?i)ssv", "\xc3\x9fv", 0, 3); // U+00DF
+  x2("(?i)(?<=ss)v", "SSv", 2, 3);
+  x2("(?i)(?<=\xc3\x9f)v", "\xc3\x9fv", 2, 3);
+  //x2("(?i)(?<=\xc3\x9f)v", "ssv", 2, 3);
+  //x2("(?i)(?<=ss)v", "\xc3\x9fv", 2, 3);
+
   /* #156 U+01F0 (UTF-8: C7 B0) */
   x2("(?i).+Isssǰ", ".+Isssǰ", 0, 8);
   x2(".+Isssǰ", ".+Isssǰ", 0, 8);
