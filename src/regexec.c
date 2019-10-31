@@ -219,9 +219,13 @@ static OpInfoType OpInfo[] = {
   { OP_MEM_START_PUSH,        "mem-start-push"        },
   { OP_MEM_START,             "mem-start"             },
   { OP_MEM_END_PUSH,          "mem-end-push"          },
+#ifdef USE_CALL
   { OP_MEM_END_PUSH_REC,      "mem-end-push-rec"      },
+#endif
   { OP_MEM_END,               "mem-end"               },
+#ifdef USE_CALL
   { OP_MEM_END_REC,           "mem-end-rec"           },
+#endif
   { OP_FAIL,                  "fail"                  },
   { OP_JUMP,                  "jump"                  },
   { OP_PUSH,                  "push"                  },
@@ -238,7 +242,9 @@ static OpInfoType OpInfo[] = {
   { OP_EMPTY_CHECK_START,     "empty-check-start"     },
   { OP_EMPTY_CHECK_END,       "empty-check-end"       },
   { OP_EMPTY_CHECK_END_MEMST, "empty-check-end-memst" },
+#ifdef USE_CALL
   { OP_EMPTY_CHECK_END_MEMST_PUSH,"empty-check-end-memst-push" },
+#endif
   { OP_PREC_READ_START,       "push-pos"              },
   { OP_PREC_READ_END,         "pop-pos"               },
   { OP_PREC_READ_NOT_START,   "prec-read-not-start"   },
@@ -248,10 +254,12 @@ static OpInfoType OpInfo[] = {
   { OP_LOOK_BEHIND,           "look-behind"           },
   { OP_LOOK_BEHIND_NOT_START, "look-behind-not-start" },
   { OP_LOOK_BEHIND_NOT_END,   "look-behind-not-end"   },
-  { OP_CALL,                  "call"                  },
-  { OP_RETURN,                "return"                },
   { OP_PUSH_SAVE_VAL,         "push-save-val"         },
   { OP_UPDATE_VAR,            "update-var"            },
+#ifdef USE_CALL
+  { OP_CALL,                  "call"                  },
+  { OP_RETURN,                "return"                },
+#endif
 #ifdef USE_CALLOUT
   { OP_CALLOUT_CONTENTS,      "callout-contents"      },
   { OP_CALLOUT_NAME,          "callout-name"          },
@@ -464,10 +472,13 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
     mem = p->memory_start.num;
     fprintf(f, ":%d", mem);
     break;
-  case OP_MEM_END_PUSH:
-  case OP_MEM_END_PUSH_REC:
+
   case OP_MEM_END:
+  case OP_MEM_END_PUSH:
+#ifdef USE_CALL
   case OP_MEM_END_REC:
+  case OP_MEM_END_PUSH_REC:
+#endif
     mem = p->memory_end.num;
     fprintf(f, ":%d", mem);
     break;
@@ -521,7 +532,9 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
     break;
   case OP_EMPTY_CHECK_END:
   case OP_EMPTY_CHECK_END_MEMST:
+#ifdef USE_CALL
   case OP_EMPTY_CHECK_END_MEMST_PUSH:
+#endif
     mem = p->empty_check_end.mem;
     fprintf(f, ":%d", mem);
     break;
@@ -544,10 +557,12 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
     p_rel_addr(f, addr, p, start);
     break;
 
+#ifdef USE_CALL
   case OP_CALL:
     addr = p->call.addr;
     fprintf(f, ":{/%d}", addr);
     break;
+#endif
 
   case OP_PUSH_SAVE_VAL:
     {
@@ -617,7 +632,9 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
   case OP_ATOMIC_START:
   case OP_ATOMIC_END:
   case OP_LOOK_BEHIND_NOT_END:
+#ifdef USE_CALL
   case OP_RETURN:
+#endif
     break;
 
   default:
@@ -2628,9 +2645,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_MEM_START,
   &&L_MEM_START_PUSH,
   &&L_MEM_END_PUSH,
+#ifdef USE_CALL
   &&L_MEM_END_PUSH_REC,
+#endif
   &&L_MEM_END,
+#ifdef USE_CALL
   &&L_MEM_END_REC,
+#endif
   &&L_FAIL,
   &&L_JUMP,
   &&L_PUSH,
@@ -2647,7 +2668,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_EMPTY_CHECK_START,
   &&L_EMPTY_CHECK_END,
   &&L_EMPTY_CHECK_END_MEMST,
+#ifdef USE_CALL
   &&L_EMPTY_CHECK_END_MEMST_PUSH,
+#endif
   &&L_PREC_READ_START,
   &&L_PREC_READ_END,
   &&L_PREC_READ_NOT_START,
@@ -2657,10 +2680,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_LOOK_BEHIND,
   &&L_LOOK_BEHIND_NOT_START,
   &&L_LOOK_BEHIND_NOT_END,
-  &&L_CALL,
-  &&L_RETURN,
   &&L_PUSH_SAVE_VAL,
   &&L_UPDATE_VAR,
+#ifdef USE_CALL
+  &&L_CALL,
+  &&L_RETURN,
+#endif
 #ifdef USE_CALLOUT
   &&L_CALLOUT_CONTENTS,
   &&L_CALLOUT_NAME,
@@ -2678,7 +2703,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   char *alloc_base;
   StackType *stk_base, *stk, *stk_end;
   StackType *stkp; /* used as any purpose. */
-  StackIndex si;
 #ifdef USE_REPEAT_AND_EMPTY_CHECK_LOCAL_VAR
   StackIndex *repeat_stk;
   StackIndex *empty_check_stk;
@@ -3492,13 +3516,17 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
 #ifdef USE_CALL
     CASE_OP(MEM_END_PUSH_REC)
-      mem = p->memory_end.num;
-      STACK_GET_MEM_START(mem, stkp); /* should be before push mem-end. */
-      si = GET_STACK_INDEX(stkp);
-      STACK_PUSH_MEM_END(mem, s);
-      mem_start_stk[mem] = si;
-      INC_OP;
-      JUMP_OUT;
+      {
+        StackIndex si;
+
+        mem = p->memory_end.num;
+        STACK_GET_MEM_START(mem, stkp); /* should be before push mem-end. */
+        si = GET_STACK_INDEX(stkp);
+        STACK_PUSH_MEM_END(mem, s);
+        mem_start_stk[mem] = si;
+        INC_OP;
+        JUMP_OUT;
+      }
 
     CASE_OP(MEM_END_REC)
       mem = p->memory_end.num;

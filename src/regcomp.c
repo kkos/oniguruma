@@ -719,8 +719,10 @@ compile_quant_body_with_empty_check(QuantNode* qn, regex_t* reg, ScanEnv* env)
       else
         r = add_op(reg, OP_EMPTY_CHECK_END);
     }
+#ifdef USE_CALL
     else if (emptiness == BODY_IS_EMPTY_POSSIBILITY_REC)
       r = add_op(reg, OP_EMPTY_CHECK_END_MEMST_PUSH);
+#endif
 
     if (r != 0) return r;
     COP(reg)->empty_check_end.mem = saved_num_empty_check; /* NULL CHECK ID */
@@ -1470,10 +1472,11 @@ static int
 compile_bag_memory_node(BagNode* node, regex_t* reg, ScanEnv* env)
 {
   int r;
-  int len;
 
 #ifdef USE_CALL
   if (NODE_IS_CALLED(node)) {
+    int len;
+
     r = add_op(reg, OP_CALL);
     if (r != 0) return r;
 
@@ -4082,7 +4085,6 @@ get_min_max_byte_len_case_fold_items(int n, OnigCaseFoldCodeItem items[], int* r
     OnigCaseFoldCodeItem* item = items + i;
 
     len = item->byte_len;
-    /* fprintf(stdout, "%d: %d, %d, 0x%x\n", i, len, item->code_len, item->code[0]); */
     if (len < minlen) minlen = len;
     if (len > maxlen) maxlen = len;
   }
@@ -7105,12 +7107,14 @@ onig_is_code_in_cc(OnigEncoding enc, OnigCodePoint code, CClassNode* cc)
 
 #ifdef ONIG_DEBUG_PARSE
 
+#ifdef USE_CALL
 static void
 p_string(FILE* f, int len, UChar* s)
 {
   fputs(":", f);
   while (len-- > 0) { fputc(*s++, f); }
 }
+#endif
 
 static void
 Indent(FILE* f, int indent)
@@ -7130,7 +7134,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
   Indent(f, indent);
   if (IS_NULL(node)) {
     fprintf(f, "ERROR: null node!!!\n");
-    exit (0);
+    exit(0);
   }
 
   type = NODE_TYPE(node);

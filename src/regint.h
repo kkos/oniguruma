@@ -516,9 +516,13 @@ enum OpCode {
   OP_MEM_START,
   OP_MEM_START_PUSH,     /* push back-tracker to stack */
   OP_MEM_END_PUSH,       /* push back-tracker to stack */
+#ifdef USE_CALL
   OP_MEM_END_PUSH_REC,   /* push back-tracker to stack */
+#endif
   OP_MEM_END,
+#ifdef USE_CALL
   OP_MEM_END_REC,        /* push marker to stack */
+#endif
   OP_FAIL,               /* pop stack and move */
   OP_JUMP,
   OP_PUSH,
@@ -535,7 +539,9 @@ enum OpCode {
   OP_EMPTY_CHECK_START,     /* null loop checker start */
   OP_EMPTY_CHECK_END,       /* null loop checker end   */
   OP_EMPTY_CHECK_END_MEMST, /* null loop checker end (with capture status) */
+#ifdef USE_CALL
   OP_EMPTY_CHECK_END_MEMST_PUSH, /* with capture status and push check-end */
+#endif
   OP_PREC_READ_START,       /* (?=...)  start */
   OP_PREC_READ_END,         /* (?=...)  end   */
   OP_PREC_READ_NOT_START,   /* (?!...)  start */
@@ -545,10 +551,12 @@ enum OpCode {
   OP_LOOK_BEHIND,           /* (?<=...) start (no needs end opcode) */
   OP_LOOK_BEHIND_NOT_START, /* (?<!...) start */
   OP_LOOK_BEHIND_NOT_END,   /* (?<!...) end   */
-  OP_CALL,                  /* \g<name> */
-  OP_RETURN,
   OP_PUSH_SAVE_VAL,
   OP_UPDATE_VAR,
+#ifdef USE_CALL
+  OP_CALL,                  /* \g<name> */
+  OP_RETURN,
+#endif
 #ifdef USE_CALLOUT
   OP_CALLOUT_CONTENTS,      /* (?{...}) (?{{...}}) */
   OP_CALLOUT_NAME,          /* (*name) (*name[tag](args...)) */
