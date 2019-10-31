@@ -872,7 +872,7 @@ compile_ambig_string_node(Node* node, regex_t* reg)
 
   sn = STR_(node);
   len = enclen(enc, sn->s);
-  byte_len = sn->end - sn->s;
+  byte_len = (int )(sn->end - sn->s);
   if (len == byte_len) {
     r = add_op(reg, OP_EXACT1_IC);
     if (r != 0) return r;
