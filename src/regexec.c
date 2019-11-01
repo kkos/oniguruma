@@ -970,7 +970,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
       result = ONIGERR_INVALID_ARGUMENT;\
     }\
     best_len = result;\
-    goto finish;\
+    goto match_at_end;\
     break;\
   }\
 } while(0)
@@ -2574,7 +2574,7 @@ typedef struct {
 #define MATCH_DEBUG_OUT(offset)
 #endif
 
-#define MATCH_AT_ERROR_RETURN(err_code)  r = err_code; goto err_end
+#define MATCH_AT_ERROR_RETURN(err_code)  best_len = err_code; goto match_at_end
 
 
 /* match data(str - end) from position (sstart). */
@@ -2697,7 +2697,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   };
 #endif
 
-  int r;
   int i, n, num_mem, best_len, pop_level;
   LengthType tlen, tlen2;
   MemNumType mem;
@@ -2872,7 +2871,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       }
 
       /* default behavior: return first-matching result. */
-      goto finish;
+      goto match_at_end;
 
     CASE_OP(EXACT1)
       DATA_ENSURE(1);
@@ -4113,7 +4112,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
               call_result = ONIGERR_INVALID_ARGUMENT;
             }
             best_len = call_result;
-            goto finish;
+            goto match_at_end;
             break;
           }
         }
@@ -4139,7 +4138,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
 
     CASE_OP(FINISH)
-      goto finish;
+      goto match_at_end;
 
 #ifdef ONIG_DEBUG_STATISTICS
     fail:
@@ -4164,13 +4163,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
   } BYTECODE_INTERPRETER_END;
 
- finish:
+ match_at_end:
   STACK_SAVE;
   return best_len;
-
- err_end:
-  STACK_SAVE;
-  return r;
 }
 
 typedef struct {
