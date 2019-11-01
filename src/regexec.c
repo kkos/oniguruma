@@ -1230,7 +1230,9 @@ onig_set_match_stack_limit_size(unsigned int size)
 static unsigned long RetryLimitInMatch = DEFAULT_RETRY_LIMIT_IN_MATCH;
 
 #define CHECK_RETRY_LIMIT_IN_MATCH  do {\
-  if (retry_in_match_counter++ > retry_limit_in_match) goto retry_limit_in_match_over;\
+  if (retry_in_match_counter++ > retry_limit_in_match) {\
+    MATCH_AT_ERROR_RETURN(ONIGERR_RETRY_LIMIT_IN_MATCH_OVER);\
+  }\
 } while (0)
 
 #else
@@ -1848,7 +1850,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_BASE_CHECK(p, at) \
   if ((p) < stk_base) {\
     fprintf(stderr, "at %s\n", at);\
-    goto stack_error;\
+    MATCH_AT_ERROR_RETURN(ONIGERR_STACK_BUG);\
   }
 #else
 #define STACK_BASE_CHECK(p, at)
@@ -2572,6 +2574,8 @@ typedef struct {
 #define MATCH_DEBUG_OUT(offset)
 #endif
 
+#define MATCH_AT_ERROR_RETURN(err_code)  r = err_code; goto err_end
+
 
 /* match data(str - end) from position (sstart). */
 /* if sstart == str then set sprev to NULL. */
@@ -2693,6 +2697,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   };
 #endif
 
+  int r;
   int i, n, num_mem, best_len, pop_level;
   LengthType tlen, tlen2;
   MemNumType mem;
@@ -2703,17 +2708,17 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   char *alloc_base;
   StackType *stk_base, *stk, *stk_end;
   StackType *stkp; /* used as any purpose. */
+  StackIndex *mem_start_stk, *mem_end_stk;
+  UChar* keep;
+
 #ifdef USE_REPEAT_AND_EMPTY_CHECK_LOCAL_VAR
   StackIndex *repeat_stk;
   StackIndex *empty_check_stk;
 #endif
-  StackIndex *mem_start_stk, *mem_end_stk;
-  UChar* keep;
 #ifdef USE_RETRY_LIMIT_IN_MATCH
   unsigned long retry_limit_in_match;
   unsigned long retry_in_match_counter;
 #endif
-
 #ifdef USE_CALLOUT
   int of;
 #endif
@@ -2842,10 +2847,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
               stkp = stk_base;
               r = make_capture_history_tree(region->history_root, &stkp,
                                             stk, (UChar* )str, reg);
-              if (r < 0) {
-                best_len = r; /* error code */
-                goto finish;
-              }
+              if (r < 0) MATCH_AT_ERROR_RETURN(r);
             }
 #endif /* USE_CAPTURE_HISTORY */
 #ifdef USE_POSIX_API_REGION_OPTION
@@ -3390,7 +3392,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           break;
 #endif
         default:
-          goto bytecode_error;
+          MATCH_AT_ERROR_RETURN(ONIGERR_UNDEFINED_BYTECODE);
           break;
         }
 
@@ -3759,7 +3761,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
             INC_OP;
             break;
           default:
-            goto unexpected_bytecode_error;
+            MATCH_AT_ERROR_RETURN(ONIGERR_UNEXPECTED_BYTECODE);
             break;
           }
 #else
@@ -4158,7 +4160,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       JUMP_OUT;
 
     DEFAULT_OP
-      goto bytecode_error;
+      MATCH_AT_ERROR_RETURN(ONIGERR_UNDEFINED_BYTECODE);
 
   } BYTECODE_INTERPRETER_END;
 
@@ -4166,27 +4168,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   STACK_SAVE;
   return best_len;
 
-#ifdef ONIG_DEBUG
- stack_error:
+ err_end:
   STACK_SAVE;
-  return ONIGERR_STACK_BUG;
-#endif
-
- bytecode_error:
-  STACK_SAVE;
-  return ONIGERR_UNDEFINED_BYTECODE;
-
-#if defined(ONIG_DEBUG) && !defined(USE_DIRECT_THREADED_CODE)
- unexpected_bytecode_error:
-  STACK_SAVE;
-  return ONIGERR_UNEXPECTED_BYTECODE;
-#endif
-
-#ifdef USE_RETRY_LIMIT_IN_MATCH
- retry_limit_in_match_over:
-  STACK_SAVE;
-  return ONIGERR_RETRY_LIMIT_IN_MATCH_OVER;
-#endif
+  return r;
 }
 
 typedef struct {
