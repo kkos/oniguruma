@@ -427,7 +427,7 @@ onig_positive_int_multiply(int x, int y)
 
 
 static void
-swap_node(Node* a, Node* b)
+node_swap(Node* a, Node* b)
 {
   Node c;
 
@@ -3972,7 +3972,7 @@ divide_look_behind_alternatives(Node* node)
 
   head = NODE_ANCHOR_BODY(an);
   np = NODE_CAR(head);
-  swap_node(node, head);
+  node_swap(node, head);
   NODE_CAR(node) = head;
   NODE_BODY(head) = np;
 
@@ -3994,7 +3994,7 @@ divide_look_behind_alternatives(Node* node)
 }
 
 static int
-setup_look_behind(Node* node, regex_t* reg, ScanEnv* env)
+tune_look_behind(Node* node, regex_t* reg, ScanEnv* env)
 {
   int r, len;
   AnchorNode* an = ANCHOR_(node);
@@ -4015,7 +4015,7 @@ setup_look_behind(Node* node, regex_t* reg, ScanEnv* env)
 }
 
 static int
-next_setup(Node* node, Node* next_node, regex_t* reg)
+tune_next(Node* node, Node* next_node, regex_t* reg)
 {
   NodeType type;
 
@@ -4042,7 +4042,7 @@ next_setup(Node* node, Node* next_node, regex_t* reg)
               Node* en = onig_node_new_bag(BAG_STOP_BACKTRACK);
               CHECK_NULL_RETURN_MEMERR(en);
               NODE_STATUS_ADD(en, STRICT_REAL_REPEAT);
-              swap_node(node, en);
+              node_swap(node, en);
               NODE_BODY(node) = en;
             }
           }
@@ -4401,15 +4401,15 @@ unravel_case_fold_string(Node* node, regex_t* reg, int state)
 
   if (IS_NOT_NULL(list)) {
     if (node_list_len(list) == 1) {
-      swap_node(node, NODE_CAR(list));
+      node_swap(node, NODE_CAR(list));
     }
     else {
-      swap_node(node, list);
+      node_swap(node, list);
     }
     onig_node_free(list);
   }
   else {
-    swap_node(node, sn);
+    node_swap(node, sn);
     onig_node_free(sn);
   }
   return 0;
@@ -4514,7 +4514,7 @@ quantifiers_memory_node_info(Node* node)
 __inline
 #endif
 static int
-setup_call_node_call(CallNode* cn, ScanEnv* env, int state)
+tune_call_node_call(CallNode* cn, ScanEnv* env, int state)
 {
   MemEnv* mem_env = SCANENV_MEMENV(env);
 
@@ -4565,23 +4565,23 @@ setup_call_node_call(CallNode* cn, ScanEnv* env, int state)
 }
 
 static void
-setup_call2_call(Node* node)
+tune_call2_call(Node* node)
 {
   switch (NODE_TYPE(node)) {
   case NODE_LIST:
   case NODE_ALT:
     do {
-      setup_call2_call(NODE_CAR(node));
+      tune_call2_call(NODE_CAR(node));
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NODE_QUANT:
-    setup_call2_call(NODE_BODY(node));
+    tune_call2_call(NODE_BODY(node));
     break;
 
   case NODE_ANCHOR:
     if (ANCHOR_HAS_BODY(ANCHOR_(node)))
-      setup_call2_call(NODE_BODY(node));
+      tune_call2_call(NODE_BODY(node));
     break;
 
   case NODE_BAG:
@@ -4591,19 +4591,19 @@ setup_call2_call(Node* node)
       if (en->type == BAG_MEMORY) {
         if (! NODE_IS_MARK1(node)) {
           NODE_STATUS_ADD(node, MARK1);
-          setup_call2_call(NODE_BODY(node));
+          tune_call2_call(NODE_BODY(node));
           NODE_STATUS_REMOVE(node, MARK1);
         }
       }
       else if (en->type == BAG_IF_ELSE) {
-        setup_call2_call(NODE_BODY(node));
+        tune_call2_call(NODE_BODY(node));
         if (IS_NOT_NULL(en->te.Then))
-          setup_call2_call(en->te.Then);
+          tune_call2_call(en->te.Then);
         if (IS_NOT_NULL(en->te.Else))
-          setup_call2_call(en->te.Else);
+          tune_call2_call(en->te.Else);
       }
       else {
-        setup_call2_call(NODE_BODY(node));
+        tune_call2_call(NODE_BODY(node));
       }
     }
     break;
@@ -4619,7 +4619,7 @@ setup_call2_call(Node* node)
 
         NODE_STATUS_ADD(called, CALLED);
         BAG_(called)->m.entry_count++;
-        setup_call2_call(called);
+        tune_call2_call(called);
       }
       NODE_STATUS_REMOVE(node, MARK1);
     }
@@ -4631,7 +4631,7 @@ setup_call2_call(Node* node)
 }
 
 static int
-setup_call(Node* node, ScanEnv* env, int state)
+tune_call(Node* node, ScanEnv* env, int state)
 {
   int r;
 
@@ -4639,7 +4639,7 @@ setup_call(Node* node, ScanEnv* env, int state)
   case NODE_LIST:
   case NODE_ALT:
     do {
-      r = setup_call(NODE_CAR(node), env, state);
+      r = tune_call(NODE_CAR(node), env, state);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
@@ -4647,12 +4647,12 @@ setup_call(Node* node, ScanEnv* env, int state)
     if (QUANT_(node)->upper == 0)
       state |= IN_ZERO_REPEAT;
 
-    r = setup_call(NODE_BODY(node), env, state);
+    r = tune_call(NODE_BODY(node), env, state);
     break;
 
   case NODE_ANCHOR:
     if (ANCHOR_HAS_BODY(ANCHOR_(node)))
-      r = setup_call(NODE_BODY(node), env, state);
+      r = tune_call(NODE_BODY(node), env, state);
     else
       r = 0;
     break;
@@ -4666,20 +4666,20 @@ setup_call(Node* node, ScanEnv* env, int state)
           NODE_STATUS_ADD(node, IN_ZERO_REPEAT);
           BAG_(node)->m.entry_count--;
         }
-        r = setup_call(NODE_BODY(node), env, state);
+        r = tune_call(NODE_BODY(node), env, state);
       }
       else if (en->type == BAG_IF_ELSE) {
-        r = setup_call(NODE_BODY(node), env, state);
+        r = tune_call(NODE_BODY(node), env, state);
         if (r != 0) return r;
         if (IS_NOT_NULL(en->te.Then)) {
-          r = setup_call(en->te.Then, env, state);
+          r = tune_call(en->te.Then, env, state);
           if (r != 0) return r;
         }
         if (IS_NOT_NULL(en->te.Else))
-          r = setup_call(en->te.Else, env, state);
+          r = tune_call(en->te.Else, env, state);
       }
       else
-        r = setup_call(NODE_BODY(node), env, state);
+        r = tune_call(NODE_BODY(node), env, state);
     }
     break;
 
@@ -4689,7 +4689,7 @@ setup_call(Node* node, ScanEnv* env, int state)
       CALL_(node)->entry_count--;
     }
 
-    r = setup_call_node_call(CALL_(node), env, state);
+    r = tune_call_node_call(CALL_(node), env, state);
     break;
 
   default:
@@ -4701,7 +4701,7 @@ setup_call(Node* node, ScanEnv* env, int state)
 }
 
 static int
-setup_call2(Node* node)
+tune_call2(Node* node)
 {
   int r = 0;
 
@@ -4709,23 +4709,23 @@ setup_call2(Node* node)
   case NODE_LIST:
   case NODE_ALT:
     do {
-      r = setup_call2(NODE_CAR(node));
+      r = tune_call2(NODE_CAR(node));
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NODE_QUANT:
     if (QUANT_(node)->upper != 0)
-      r = setup_call2(NODE_BODY(node));
+      r = tune_call2(NODE_BODY(node));
     break;
 
   case NODE_ANCHOR:
     if (ANCHOR_HAS_BODY(ANCHOR_(node)))
-      r = setup_call2(NODE_BODY(node));
+      r = tune_call2(NODE_BODY(node));
     break;
 
   case NODE_BAG:
     if (! NODE_IS_IN_ZERO_REPEAT(node))
-      r = setup_call2(NODE_BODY(node));
+      r = tune_call2(NODE_BODY(node));
 
     {
       BagNode* en = BAG_(node);
@@ -4733,18 +4733,18 @@ setup_call2(Node* node)
       if (r != 0) return r;
       if (en->type == BAG_IF_ELSE) {
         if (IS_NOT_NULL(en->te.Then)) {
-          r = setup_call2(en->te.Then);
+          r = tune_call2(en->te.Then);
           if (r != 0) return r;
         }
         if (IS_NOT_NULL(en->te.Else))
-          r = setup_call2(en->te.Else);
+          r = tune_call2(en->te.Else);
       }
     }
     break;
 
   case NODE_CALL:
     if (! NODE_IS_IN_ZERO_REPEAT(node)) {
-      setup_call2_call(node);
+      tune_call2_call(node);
     }
     break;
 
@@ -4757,7 +4757,7 @@ setup_call2(Node* node)
 
 
 static void
-setup_called_state_call(Node* node, int state)
+tune_called_state_call(Node* node, int state)
 {
   switch (NODE_TYPE(node)) {
   case NODE_ALT:
@@ -4765,7 +4765,7 @@ setup_called_state_call(Node* node, int state)
     /* fall */
   case NODE_LIST:
     do {
-      setup_called_state_call(NODE_CAR(node), state);
+      tune_called_state_call(NODE_CAR(node), state);
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
@@ -4778,7 +4778,7 @@ setup_called_state_call(Node* node, int state)
       if (qn->lower != qn->upper)
         state |= IN_VAR_REPEAT;
 
-      setup_called_state_call(NODE_QUANT_BODY(qn), state);
+      tune_called_state_call(NODE_QUANT_BODY(qn), state);
     }
     break;
 
@@ -4793,7 +4793,7 @@ setup_called_state_call(Node* node, int state)
         /* fall */
       case ANCR_PREC_READ:
       case ANCR_LOOK_BEHIND:
-        setup_called_state_call(NODE_ANCHOR_BODY(an), state);
+        tune_called_state_call(NODE_ANCHOR_BODY(an), state);
         break;
       default:
         break;
@@ -4809,33 +4809,33 @@ setup_called_state_call(Node* node, int state)
         if (NODE_IS_MARK1(node)) {
           if ((~en->m.called_state & state) != 0) {
             en->m.called_state |= state;
-            setup_called_state_call(NODE_BODY(node), state);
+            tune_called_state_call(NODE_BODY(node), state);
           }
         }
         else {
           NODE_STATUS_ADD(node, MARK1);
           en->m.called_state |= state;
-          setup_called_state_call(NODE_BODY(node), state);
+          tune_called_state_call(NODE_BODY(node), state);
           NODE_STATUS_REMOVE(node, MARK1);
         }
       }
       else if (en->type == BAG_IF_ELSE) {
         state |= IN_ALT;
-        setup_called_state_call(NODE_BODY(node), state);
+        tune_called_state_call(NODE_BODY(node), state);
         if (IS_NOT_NULL(en->te.Then)) {
-          setup_called_state_call(en->te.Then, state);
+          tune_called_state_call(en->te.Then, state);
         }
         if (IS_NOT_NULL(en->te.Else))
-          setup_called_state_call(en->te.Else, state);
+          tune_called_state_call(en->te.Else, state);
       }
       else {
-        setup_called_state_call(NODE_BODY(node), state);
+        tune_called_state_call(NODE_BODY(node), state);
       }
     }
     break;
 
   case NODE_CALL:
-    setup_called_state_call(NODE_BODY(node), state);
+    tune_called_state_call(NODE_BODY(node), state);
     break;
 
   default:
@@ -4844,7 +4844,7 @@ setup_called_state_call(Node* node, int state)
 }
 
 static void
-setup_called_state(Node* node, int state)
+tune_called_state(Node* node, int state)
 {
   switch (NODE_TYPE(node)) {
   case NODE_ALT:
@@ -4852,13 +4852,13 @@ setup_called_state(Node* node, int state)
     /* fall */
   case NODE_LIST:
     do {
-      setup_called_state(NODE_CAR(node), state);
+      tune_called_state(NODE_CAR(node), state);
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
 #ifdef USE_CALL
   case NODE_CALL:
-    setup_called_state_call(node, state);
+    tune_called_state_call(node, state);
     break;
 #endif
 
@@ -4875,15 +4875,15 @@ setup_called_state(Node* node, int state)
         /* fall */
       case BAG_OPTION:
       case BAG_STOP_BACKTRACK:
-        setup_called_state(NODE_BODY(node), state);
+        tune_called_state(NODE_BODY(node), state);
         break;
       case BAG_IF_ELSE:
         state |= IN_ALT;
-        setup_called_state(NODE_BODY(node), state);
+        tune_called_state(NODE_BODY(node), state);
         if (IS_NOT_NULL(en->te.Then))
-          setup_called_state(en->te.Then, state);
+          tune_called_state(en->te.Then, state);
         if (IS_NOT_NULL(en->te.Else))
-          setup_called_state(en->te.Else, state);
+          tune_called_state(en->te.Else, state);
         break;
       }
     }
@@ -4898,7 +4898,7 @@ setup_called_state(Node* node, int state)
       if (qn->lower != qn->upper)
         state |= IN_VAR_REPEAT;
 
-      setup_called_state(NODE_QUANT_BODY(qn), state);
+      tune_called_state(NODE_QUANT_BODY(qn), state);
     }
     break;
 
@@ -4913,7 +4913,7 @@ setup_called_state(Node* node, int state)
         /* fall */
       case ANCR_PREC_READ:
       case ANCR_LOOK_BEHIND:
-        setup_called_state(NODE_ANCHOR_BODY(an), state);
+        tune_called_state(NODE_ANCHOR_BODY(an), state);
         break;
       default:
         break;
@@ -4934,13 +4934,13 @@ setup_called_state(Node* node, int state)
 #endif  /* USE_CALL */
 
 
-static int setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env);
+static int tune_tree(Node* node, regex_t* reg, int state, ScanEnv* env);
 
 #ifdef __GNUC__
 __inline
 #endif
 static int
-setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
+tune_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
 {
 /* allowed node types in look-behind */
 #define ALLOWED_TYPE_IN_LB \
@@ -4968,10 +4968,10 @@ setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
 
   switch (an->type) {
   case ANCR_PREC_READ:
-    r = setup_tree(NODE_ANCHOR_BODY(an), reg, state, env);
+    r = tune_tree(NODE_ANCHOR_BODY(an), reg, state, env);
     break;
   case ANCR_PREC_READ_NOT:
-    r = setup_tree(NODE_ANCHOR_BODY(an), reg, (state | IN_NOT), env);
+    r = tune_tree(NODE_ANCHOR_BODY(an), reg, (state | IN_NOT), env);
     break;
 
   case ANCR_LOOK_BEHIND:
@@ -4980,9 +4980,9 @@ setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
                           ALLOWED_BAG_IN_LB, ALLOWED_ANCHOR_IN_LB);
       if (r < 0) return r;
       if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
-      r = setup_tree(NODE_ANCHOR_BODY(an), reg, (state|IN_LOOK_BEHIND), env);
+      r = tune_tree(NODE_ANCHOR_BODY(an), reg, (state|IN_LOOK_BEHIND), env);
       if (r != 0) return r;
-      r = setup_look_behind(node, reg, env);
+      r = tune_look_behind(node, reg, env);
     }
     break;
 
@@ -4992,10 +4992,10 @@ setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
                           ALLOWED_BAG_IN_LB_NOT, ALLOWED_ANCHOR_IN_LB_NOT);
       if (r < 0) return r;
       if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
-      r = setup_tree(NODE_ANCHOR_BODY(an), reg, (state|IN_NOT|IN_LOOK_BEHIND),
-                     env);
+      r = tune_tree(NODE_ANCHOR_BODY(an), reg, (state|IN_NOT|IN_LOOK_BEHIND),
+                    env);
       if (r != 0) return r;
-      r = setup_look_behind(node, reg, env);
+      r = tune_look_behind(node, reg, env);
     }
     break;
 
@@ -5011,7 +5011,7 @@ setup_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
 __inline
 #endif
 static int
-setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
+tune_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
 {
   int r;
   OnigLen d;
@@ -5041,7 +5041,7 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
   if (qn->lower != qn->upper)
     state |= IN_VAR_REPEAT;
 
-  r = setup_tree(body, reg, state, env);
+  r = tune_tree(body, reg, state, env);
   if (r != 0) return r;
 
   /* expand string */
@@ -5080,7 +5080,7 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
   return r;
 }
 
-/* setup_tree does the following work.
+/* tune_tree does the following work.
  1. check empty loop. (set qn->emptiness)
  2. expand ignore-case in char class.
  3. set memory status bit flags. (reg->mem_stats)
@@ -5089,7 +5089,7 @@ setup_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
  6. expand repeated string.
  */
 static int
-setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
+tune_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 {
   int r = 0;
 
@@ -5098,9 +5098,9 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     {
       Node* prev = NULL_NODE;
       do {
-        r = setup_tree(NODE_CAR(node), reg, state, env);
+        r = tune_tree(NODE_CAR(node), reg, state, env);
         if (IS_NOT_NULL(prev) && r == 0) {
-          r = next_setup(prev, NODE_CAR(node), reg);
+          r = tune_next(prev, NODE_CAR(node), reg);
         }
         prev = NODE_CAR(node);
       } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
@@ -5109,7 +5109,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
   case NODE_ALT:
     do {
-      r = setup_tree(NODE_CAR(node), reg, (state | IN_ALT), env);
+      r = tune_tree(NODE_CAR(node), reg, (state | IN_ALT), env);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
@@ -5146,7 +5146,7 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         {
           OnigOptionType options = reg->options;
           reg->options = BAG_(node)->o.options;
-          r = setup_tree(NODE_BODY(node), reg, state, env);
+          r = tune_tree(NODE_BODY(node), reg, state, env);
           reg->options = options;
         }
         break;
@@ -5160,13 +5160,13 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
             || NODE_IS_RECURSION(node)) {
           MEM_STATUS_ON(env->backtrack_mem, en->m.regnum);
         }
-        r = setup_tree(NODE_BODY(node), reg, state, env);
+        r = tune_tree(NODE_BODY(node), reg, state, env);
         break;
 
       case BAG_STOP_BACKTRACK:
         {
           Node* target = NODE_BODY(node);
-          r = setup_tree(target, reg, state, env);
+          r = tune_tree(target, reg, state, env);
           if (NODE_TYPE(target) == NODE_QUANT) {
             QuantNode* tqn = QUANT_(target);
             if (IS_INFINITE_REPEAT(tqn->upper) && tqn->lower <= 1 &&
@@ -5179,25 +5179,25 @@ setup_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         break;
 
       case BAG_IF_ELSE:
-        r = setup_tree(NODE_BODY(node), reg, (state | IN_ALT), env);
+        r = tune_tree(NODE_BODY(node), reg, (state | IN_ALT), env);
         if (r != 0) return r;
         if (IS_NOT_NULL(en->te.Then)) {
-          r = setup_tree(en->te.Then, reg, (state | IN_ALT), env);
+          r = tune_tree(en->te.Then, reg, (state | IN_ALT), env);
           if (r != 0) return r;
         }
         if (IS_NOT_NULL(en->te.Else))
-          r = setup_tree(en->te.Else, reg, (state | IN_ALT), env);
+          r = tune_tree(en->te.Else, reg, (state | IN_ALT), env);
         break;
       }
     }
     break;
 
   case NODE_QUANT:
-    r = setup_quant(node, reg, state, env);
+    r = tune_quant(node, reg, state, env);
     break;
 
   case NODE_ANCHOR:
-    r = setup_anchor(node, reg, state, env);
+    r = tune_anchor(node, reg, state, env);
     break;
 
 #ifdef USE_CALL
@@ -5979,7 +5979,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
       int z;
       CClassNode* cc = CCLASS_(node);
 
-      /* no need to check ignore case. (set in setup_tree()) */
+      /* no need to check ignore case. (set in tune_tree()) */
 
       if (IS_NOT_NULL(cc->mbuf) || IS_NCCLASS_NOT(cc)) {
         OnigLen min = ONIGENC_MBC_MINLEN(enc);
@@ -6717,16 +6717,16 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
     r = unset_addr_list_init(&uslist, scan_env.num_call);
     if (r != 0) goto err;
     scan_env.unset_addr_list = &uslist;
-    r = setup_call(root, &scan_env, 0);
+    r = tune_call(root, &scan_env, 0);
     if (r != 0) goto err_unset;
-    r = setup_call2(root);
+    r = tune_call2(root);
     if (r != 0) goto err_unset;
     r = recursive_call_check_trav(root, &scan_env, 0);
     if (r  < 0) goto err_unset;
     r = infinite_recursive_call_check_trav(root, &scan_env);
     if (r != 0) goto err_unset;
 
-    setup_called_state(root, 0);
+    tune_called_state(root, 0);
   }
 
   reg->num_call = scan_env.num_call;
@@ -6739,7 +6739,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   fprintf(stderr, "\n");
 #endif
 
-  r = setup_tree(root, reg, 0, &scan_env);
+  r = tune_tree(root, reg, 0, &scan_env);
   if (r != 0) goto err_unset;
 
   if (scan_env.backref_num != 0) {
@@ -6750,7 +6750,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   }
 
 #ifdef ONIG_DEBUG_PARSE
-  fprintf(stderr, "TREE (after setup)\n");
+  fprintf(stderr, "TREE (after tune)\n");
   print_tree(stderr, root);
   fprintf(stderr, "\n");
 #endif
