@@ -2,6 +2,7 @@ History
 
 2019/MM/DD: Version 6.9.4
 
+2019/11/05: Reelase Candidate 1 for Version 6.9.4
 2019/10/31: Update Unicode Emoji version to 12.1 (Nothing data changed)
 2019/10/29: implement USE_REPEAT_AND_EMPTY_CHECK_LOCAL_VAR configuration
 2019/10/18: re-implement case fold conversion
