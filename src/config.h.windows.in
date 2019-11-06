@@ -1,7 +1,10 @@
-#define HAVE_SYS_TYPES_H 1
 #if defined(__MINGW32__) || _MSC_VER >= 1600
 #define HAVE_STDINT_H 1
 #endif
+#if defined(__MINGW32__) || _MSC_VER >= 1800
+#define HAVE_INTTYPES_H 1
+#endif
+#define HAVE_SYS_TYPES_H 1
 #define HAVE_SYS_STAT_H 1
 #define HAVE_MEMORY_H 1
 #define HAVE_OFF_T 1
