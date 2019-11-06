@@ -11,17 +11,20 @@
 #define DEFAULT_LIMIT 120
 typedef unsigned char uint8_t;
 
-extern int exec(OnigSyntaxType* syntax, char* apattern, char* astr)
+extern int exec(OnigSyntaxType* syntax, char* apattern, char* apattern_end,
+                char* astr, char* aend)
 {
   int r;
-  unsigned char *start, *range, *end;
+  unsigned char *start, *range;
   regex_t* reg;
   OnigErrorInfo einfo;
   OnigRegion *region;
-  UChar* pattern = (UChar* )apattern;
-  UChar* str     = (UChar* )astr;
+  UChar* pattern     = (UChar* )apattern;
+  UChar* pattern_end = (UChar* )apattern_end;
+  UChar* str         = (UChar* )astr;
+  UChar* end         = (UChar* )aend;
 
-  r = onig_new(&reg, pattern, pattern + strlen((char* )pattern),
+  r = onig_new(&reg, pattern, pattern_end,
                ONIG_OPTION_DEFAULT, ONIG_ENCODING_ASCII, syntax, &einfo);
   if (r != ONIG_NORMAL) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
@@ -32,7 +35,6 @@ extern int exec(OnigSyntaxType* syntax, char* apattern, char* astr)
 
   region = onig_region_new();
 
-  end   = str + strlen((char* )str);
   start = str;
   range = end;
   r = onig_search(reg, str, end, start, range, region, ONIG_OPTION_NONE);
@@ -79,14 +81,18 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   remaining_size--;
 
   // copy first PATTERN_SIZE bytes off to be the pattern
+  unsigned char *pattern_end;
   unsigned char *pattern = (unsigned char *)malloc(PATTERN_SIZE);
   memcpy(pattern, data, PATTERN_SIZE);
+  pattern_end = pattern + PATTERN_SIZE;
   data += PATTERN_SIZE;
   remaining_size -= PATTERN_SIZE;
 
+  unsigned char *end;
   unsigned char *str = (unsigned char*)malloc(remaining_size);
   memcpy(str, data, remaining_size);
-  
+  end = str + remaining_size;
+
   OnigEncoding use_encs[] = { ONIG_ENCODING_ASCII };
   onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
 
@@ -106,8 +112,8 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   OnigSyntaxType *syntax = syntaxes[syntax_choice % 8];
   
   int r;
-  r = exec(syntax, (char *)pattern, (char *)str);
-  // r = exec(ONIG_SYNTAX_JAVA, "\\p{XDigit}\\P{XDigit}[a-c&&b-g]", "bgc");
+  r = exec(syntax, (char *)pattern, (char* )pattern_end,
+           (char* )str, (char* )end);
 
   onig_end();
 
