@@ -5885,6 +5885,7 @@ add_ctype_to_cc(CClassNode* cc, int ctype, int not, ScanEnv* env)
 
   int c, r;
   int ascii_mode;
+  int is_single;
   const OnigCodePoint *ranges;
   OnigCodePoint limit;
   OnigCodePoint sb_out;
@@ -5906,6 +5907,7 @@ add_ctype_to_cc(CClassNode* cc, int ctype, int not, ScanEnv* env)
   }
 
   r = 0;
+  is_single = ONIGENC_IS_SINGLEBYTE(enc);
   limit = ascii_mode ? ASCII_LIMIT : SINGLE_BYTE_SIZE;
 
   switch (ctype) {
@@ -5922,19 +5924,25 @@ add_ctype_to_cc(CClassNode* cc, int ctype, int not, ScanEnv* env)
   case ONIGENC_CTYPE_ALNUM:
     if (not != 0) {
       for (c = 0; c < (int )limit; c++) {
-        if (! ONIGENC_IS_CODE_CTYPE(enc, (OnigCodePoint )c, ctype))
-          BITSET_SET_BIT(cc->bs, c);
+        if (is_single != 0 || ONIGENC_CODE_TO_MBCLEN(enc, c) == 1) {
+          if (! ONIGENC_IS_CODE_CTYPE(enc, (OnigCodePoint )c, ctype))
+            BITSET_SET_BIT(cc->bs, c);
+        }
       }
       for (c = limit; c < SINGLE_BYTE_SIZE; c++) {
-        BITSET_SET_BIT(cc->bs, c);
+        if (is_single != 0 || ONIGENC_CODE_TO_MBCLEN(enc, c) == 1)
+          BITSET_SET_BIT(cc->bs, c);
       }
 
-      ADD_ALL_MULTI_BYTE_RANGE(enc, cc->mbuf);
+      if (is_single == 0)
+        ADD_ALL_MULTI_BYTE_RANGE(enc, cc->mbuf);
     }
     else {
       for (c = 0; c < (int )limit; c++) {
-        if (ONIGENC_IS_CODE_CTYPE(enc, (OnigCodePoint )c, ctype))
-          BITSET_SET_BIT(cc->bs, c);
+        if (is_single != 0 || ONIGENC_CODE_TO_MBCLEN(enc, c) == 1) {
+          if (ONIGENC_IS_CODE_CTYPE(enc, (OnigCodePoint )c, ctype))
+            BITSET_SET_BIT(cc->bs, c);
+        }
       }
     }
     break;
@@ -5944,21 +5952,25 @@ add_ctype_to_cc(CClassNode* cc, int ctype, int not, ScanEnv* env)
   case ONIGENC_CTYPE_WORD:
     if (not != 0) {
       for (c = 0; c < (int )limit; c++) {
-        if (ONIGENC_CODE_TO_MBCLEN(enc, c) > 0 /* check invalid code point */
+        /* check invalid code point */
+        if ((is_single != 0 || ONIGENC_CODE_TO_MBCLEN(enc, c) == 1)
             && ! ONIGENC_IS_CODE_CTYPE(enc, (OnigCodePoint )c, ctype))
           BITSET_SET_BIT(cc->bs, c);
       }
       for (c = limit; c < SINGLE_BYTE_SIZE; c++) {
-        if (ONIGENC_CODE_TO_MBCLEN(enc, c) > 0)
+        if (is_single != 0 || ONIGENC_CODE_TO_MBCLEN(enc, c) == 1)
           BITSET_SET_BIT(cc->bs, c);
       }
+      if (ascii_mode != 0 && is_single == 0)
+        ADD_ALL_MULTI_BYTE_RANGE(enc, cc->mbuf);
     }
     else {
       for (c = 0; c < (int )limit; c++) {
-        if (ONIGENC_IS_CODE_CTYPE(enc, (OnigCodePoint )c, ctype))
+        if ((is_single != 0 || ONIGENC_CODE_TO_MBCLEN(enc, c) == 1)
+            && ONIGENC_IS_CODE_CTYPE(enc, (OnigCodePoint )c, ctype))
           BITSET_SET_BIT(cc->bs, c);
       }
-      if (ascii_mode == 0)
+      if (ascii_mode == 0 && is_single == 0)
         ADD_ALL_MULTI_BYTE_RANGE(enc, cc->mbuf);
     }
     break;
