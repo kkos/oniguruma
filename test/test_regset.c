@@ -440,8 +440,10 @@ main(int argc, char* argv[])
     time_compare(ASIZE(p5), p5, s, end);
     time_compare(ASIZE(p6), p6, s, end);
     fprintf(stdout, "\n");
+    free(s);
   }
 
   onig_end();
+
   return ((nfail == 0 && nerror == 0) ? 0 : -1);
 }
