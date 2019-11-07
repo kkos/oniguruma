@@ -55,6 +55,16 @@ euckr_mbc_enc_len(const UChar* p)
 }
 
 static int
+euckr_code_to_mbclen(OnigCodePoint code)
+{
+  if ((code & (~0xffff)) != 0) return ONIGERR_INVALID_CODE_POINT_VALUE;
+  if ((code &    0xff00) != 0) return 2;
+  if (EncLen_EUCKR[(int )(code & 0xff)] == 1) return 1;
+
+  return ONIGERR_INVALID_CODE_POINT_VALUE;
+}
+
+static int
 is_valid_mbc_string(const UChar* p, const UChar* end)
 {
   while (p < end) {
@@ -140,7 +150,7 @@ OnigEncodingType OnigEncodingEUC_KR = {
   1,          /* min enc length */
   onigenc_is_mbc_newline_0x0a,
   euckr_mbc_to_code,
-  onigenc_mb2_code_to_mbclen,
+  euckr_code_to_mbclen,
   euckr_code_to_mbc,
   euckr_mbc_case_fold,
   onigenc_ascii_apply_all_case_fold,
@@ -165,7 +175,7 @@ OnigEncodingType OnigEncodingEUC_CN = {
   1,          /* min enc length */
   onigenc_is_mbc_newline_0x0a,
   euckr_mbc_to_code,
-  onigenc_mb2_code_to_mbclen,
+  euckr_code_to_mbclen,
   euckr_code_to_mbc,
   euckr_mbc_case_fold,
   onigenc_ascii_apply_all_case_fold,
