@@ -71,7 +71,7 @@ static long REGEX_SUCCESS_COUNT;
 static long VALID_STRING_COUNT;
 
 static int
-exec(OnigEncoding enc, OnigOptionType options,
+exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
      char* apattern, char* apattern_end, char* astr, UChar* end)
 {
   int r;
@@ -89,7 +89,7 @@ exec(OnigEncoding enc, OnigOptionType options,
   //onig_set_parse_depth_limit(PARSE_DEPTH_LIMIT);
 
   r = onig_new(&reg, pattern, pattern_end,
-               options, enc, ONIG_SYNTAX_DEFAULT, &einfo);
+               options, enc, syntax, &einfo);
   if (r != ONIG_NORMAL) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
     onig_error_code_to_str((UChar* )s, r, &einfo);
@@ -231,7 +231,8 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   fprintf(stdout, "enc: %s, options: %u\n", ONIGENC_NAME(enc), options);
 #endif
 
-  r = exec(enc, options, (char *)pattern, (char *)pattern_end,
+  r = exec(enc, options, ONIG_SYNTAX_DEFAULT,
+           (char *)pattern, (char *)pattern_end,
            (char *)str, str_null_end);
 
   free(pattern);
