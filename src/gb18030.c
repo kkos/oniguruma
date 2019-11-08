@@ -33,6 +33,7 @@
 #if 1
 #define DEBUG_GB18030(arg)
 #else
+#include <stdio.h>
 #define DEBUG_GB18030(arg) printf arg
 #endif
 
