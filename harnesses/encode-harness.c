@@ -148,21 +148,8 @@ output_data(char* path, const uint8_t * data, size_t size)
 
 int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 {
-  INPUT_COUNT++;
-
-  if (Size < NUM_CONTROL_BYTES) return 0;
-
-  int pattern_size;
-  unsigned char *pattern_end;
-  unsigned char *str_null_end;
-  size_t remaining_size;
-  unsigned char *data;
-  unsigned char options_choice;
-  OnigOptionType options;
-
-  // pull off one byte to switch off
 #if !defined(UTF16_BE) && !defined(UTF16_LE)
-  OnigEncodingType *encodings[] = {
+  static OnigEncoding encodings[] = {
     ONIG_ENCODING_SJIS,
     ONIG_ENCODING_EUC_JP,
     //ONIG_ENCODING_CP1251,
@@ -176,6 +163,20 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 
   unsigned char encoding_choice;
 #endif
+
+  int r;
+  int pattern_size;
+  unsigned char *pattern_end;
+  unsigned char *str_null_end;
+  size_t remaining_size;
+  unsigned char *data;
+  unsigned char options_choice;
+  OnigOptionType options;
+  OnigEncodingType *enc;
+
+  INPUT_COUNT++;
+  if (Size < NUM_CONTROL_BYTES) return 0;
+
 
   remaining_size = Size;
   data = (unsigned char* )(Data);
@@ -214,9 +215,6 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   unsigned char *str = (unsigned char*)malloc(remaining_size != 0 ? remaining_size : 1);
   memcpy(str, data, remaining_size);
   str_null_end = str + remaining_size;
-
-  int r;
-  OnigEncodingType *enc;
 
 #ifdef UTF16_BE
   enc = ONIG_ENCODING_UTF16_BE;
