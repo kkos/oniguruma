@@ -18,8 +18,8 @@ default: $(TARGETS)
 encode-libfuzzer: encode-harness.c $(ONIG_LIB)
 	clang $(CFLAGS) $< $(LIBS) -o $@
 
-syntax-libfuzzer: syntax-harness.c $(ONIG_LIB)
-	clang $(CFLAGS) $< $(LIBS) -o $@
+syntax-libfuzzer: encode-harness.c $(ONIG_LIB)
+	clang -DSYNTAX_TEST $(CFLAGS) $< $(LIBS) -o $@
 
 deluxe-encode-libfuzzer: deluxe-encode-harness.c $(ONIG_LIB)
 	clang $(CFLAGS) $< $(LIBS) -o $@
@@ -36,8 +36,8 @@ regset-libfuzzer: regset-harness.c $(ONIG_LIB)
 main-encode: encode-harness.c $(ONIG_LIB)
 	clang $(CFLAGS_M) $< $(LIBS) -o $@
 
-main-syntax: syntax-harness.c $(ONIG_LIB)
-	clang $(CFLAGS_M) $< $(LIBS) -o $@
+main-syntax: encode-harness.c $(ONIG_LIB)
+	clang -DSYNTAX_TEST $(CFLAGS_M) $< $(LIBS) -o $@
 
 main-deluxe-encode: deluxe-encode-harness.c $(ONIG_LIB)
 	clang $(CFLAGS_M) $< $(LIBS) -o $@

@@ -141,10 +141,14 @@ output_data(char* path, const uint8_t * data, size_t size)
 #endif
 
 
-#define MAX_PATTERN_SIZE     100
-#define NUM_CONTROL_BYTES      2
-
 #define EXEC_PRINT_INTERVAL  20000000
+#define MAX_PATTERN_SIZE     100
+
+#ifdef SYNTAX_TEST
+#define NUM_CONTROL_BYTES      3
+#else
+#define NUM_CONTROL_BYTES      2
+#endif
 
 int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 {
@@ -160,8 +164,20 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
     ONIG_ENCODING_GB18030,
     ONIG_ENCODING_EUC_TW
   };
-
   unsigned char encoding_choice;
+#endif
+
+#ifdef SYNTAX_TEST
+  static OnigSyntaxType* syntaxes[] = {
+    ONIG_SYNTAX_POSIX_EXTENDED,
+    ONIG_SYNTAX_EMACS,
+    ONIG_SYNTAX_GREP,
+    ONIG_SYNTAX_GNU_REGEX,
+    ONIG_SYNTAX_JAVA,
+    ONIG_SYNTAX_PERL_NG,
+    ONIG_SYNTAX_ONIGURUMA
+  };
+  unsigned char syntax_choice;
 #endif
 
   int r;
@@ -171,22 +187,41 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   size_t remaining_size;
   unsigned char *data;
   unsigned char options_choice;
-  OnigOptionType options;
-  OnigEncodingType *enc;
+  OnigOptionType  options;
+  OnigEncoding    enc;
+  OnigSyntaxType* syntax;
 
   INPUT_COUNT++;
   if (Size < NUM_CONTROL_BYTES) return 0;
 
-
   remaining_size = Size;
   data = (unsigned char* )(Data);
 
-#if !defined(UTF16_BE) && !defined(UTF16_LE)
+#ifdef UTF16_BE
+  enc = ONIG_ENCODING_UTF16_BE;
+#else
+#ifdef UTF16_LE
+  enc = ONIG_ENCODING_UTF16_LE;
+#else
   encoding_choice = data[0];
-#endif
-
   data++;
   remaining_size--;
+
+  int num_encodings = sizeof(encodings)/sizeof(encodings[0]);
+  enc = encodings[encoding_choice % num_encodings];
+#endif
+#endif
+
+#ifdef SYNTAX_TEST
+  syntax_choice = data[0];
+  data++;
+  remaining_size--;
+
+  int num_syntaxes = sizeof(syntaxes)/sizeof(syntaxes[0]);
+  syntax = syntaxes[syntax_choice % num_syntaxes];
+#else
+  syntax = ONIG_SYNTAX_DEFAULT;
+#endif
 
   options_choice = data[0];
   options = (options_choice % 2 == 0) ? ONIG_OPTION_NONE : ONIG_OPTION_IGNORECASE;
@@ -216,22 +251,16 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   memcpy(str, data, remaining_size);
   str_null_end = str + remaining_size;
 
-#ifdef UTF16_BE
-  enc = ONIG_ENCODING_UTF16_BE;
-#else
-#ifdef UTF16_LE
-  enc = ONIG_ENCODING_UTF16_LE;
-#else
-  int num_encodings = sizeof(encodings)/sizeof(encodings[0]);
-  enc = encodings[encoding_choice % num_encodings];
-#endif
-#endif
-
 #ifdef WITH_READ_MAIN
+#ifdef SYNTAX_TEST
+  fprintf(stdout, "enc: %s, syntax: %d, options: %u\n",
+          ONIGENC_NAME(enc), (int )(syntax_choice % num_syntaxes), options);
+#else
   fprintf(stdout, "enc: %s, options: %u\n", ONIGENC_NAME(enc), options);
 #endif
+#endif
 
-  r = exec(enc, options, ONIG_SYNTAX_DEFAULT,
+  r = exec(enc, options, syntax,
            (char *)pattern, (char *)pattern_end,
            (char *)str, str_null_end);
 
