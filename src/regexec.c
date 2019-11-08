@@ -3102,7 +3102,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         UChar *ss;
         int mb_len;
 
-        DATA_ENSURE(1);
         mb_len = enclen(encode, s);
         DATA_ENSURE(mb_len);
         ss = s;
