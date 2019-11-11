@@ -5286,13 +5286,16 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
         goto mismatch_no_msa;
 
       if (range > start) {
-        if ((OnigLen )(min_semi_end - start) > reg->anc_dist_max) {
+        if (min_semi_end - start > reg->anc_dist_max) {
           start = min_semi_end - reg->anc_dist_max;
           if (start < end)
             start = onigenc_get_right_adjust_char_head(reg->enc, str, start);
         }
-        if ((OnigLen )(max_semi_end - (range - 1)) < reg->anc_dist_min) {
-          range = max_semi_end - reg->anc_dist_min + 1;
+        if (max_semi_end - (range - 1) < reg->anc_dist_min) {
+          if (max_semi_end - str + 1 < reg->anc_dist_min)
+            goto mismatch_no_msa;
+          else
+            range = max_semi_end - reg->anc_dist_min + 1;
         }
 
         if (start > range) goto mismatch_no_msa;
@@ -5300,12 +5303,16 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
            Backward search is used. */
       }
       else {
-        if ((OnigLen )(min_semi_end - range) > reg->anc_dist_max) {
+        if (min_semi_end - range > reg->anc_dist_max) {
           range = min_semi_end - reg->anc_dist_max;
         }
-        if ((OnigLen )(max_semi_end - start) < reg->anc_dist_min) {
-          start = max_semi_end - reg->anc_dist_min;
-          start = ONIGENC_LEFT_ADJUST_CHAR_HEAD(reg->enc, str, start);
+        if (max_semi_end - start < reg->anc_dist_min) {
+          if (max_semi_end - str < reg->anc_dist_min)
+            goto mismatch_no_msa;
+          else {
+            start = max_semi_end - reg->anc_dist_min;
+            start = ONIGENC_LEFT_ADJUST_CHAR_HEAD(reg->enc, str, start);
+          }
         }
         if (range > start) goto mismatch_no_msa;
       }
