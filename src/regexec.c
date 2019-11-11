@@ -4240,8 +4240,10 @@ regset_search_body_position_lead(OnigRegSet* set,
     sr[i].state = SRS_DEAD;
     if (reg->optimize != OPTIMIZE_NONE) {
       if (reg->dist_max != INFINITE_LEN) {
-        sch_range = (UChar* )range + reg->dist_max;
-        if (sch_range > end) sch_range = (UChar* )end;
+        if ((ptrdiff_t )(end - range) > (ptrdiff_t )reg->dist_max)
+          sch_range = (UChar* )range + reg->dist_max;
+        else
+          sch_range = (UChar* )end;
 
         if (forward_search(reg, str, end, s, sch_range, &low, &high, &low_prev)) {
           sr[i].state = SRS_LOW_HIGH;
