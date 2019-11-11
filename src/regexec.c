@@ -5282,17 +5282,17 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
       min_semi_end = max_semi_end = (UChar* )end;
 
     end_buf:
-      if ((OnigLen )(max_semi_end - str) < reg->anchor_dmin)
+      if ((OnigLen )(max_semi_end - str) < reg->anc_dist_min)
         goto mismatch_no_msa;
 
       if (range > start) {
-        if ((OnigLen )(min_semi_end - start) > reg->anchor_dmax) {
-          start = min_semi_end - reg->anchor_dmax;
+        if ((OnigLen )(min_semi_end - start) > reg->anc_dist_max) {
+          start = min_semi_end - reg->anc_dist_max;
           if (start < end)
             start = onigenc_get_right_adjust_char_head(reg->enc, str, start);
         }
-        if ((OnigLen )(max_semi_end - (range - 1)) < reg->anchor_dmin) {
-          range = max_semi_end - reg->anchor_dmin + 1;
+        if ((OnigLen )(max_semi_end - (range - 1)) < reg->anc_dist_min) {
+          range = max_semi_end - reg->anc_dist_min + 1;
         }
 
         if (start > range) goto mismatch_no_msa;
@@ -5300,11 +5300,11 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
            Backward search is used. */
       }
       else {
-        if ((OnigLen )(min_semi_end - range) > reg->anchor_dmax) {
-          range = min_semi_end - reg->anchor_dmax;
+        if ((OnigLen )(min_semi_end - range) > reg->anc_dist_max) {
+          range = min_semi_end - reg->anc_dist_max;
         }
-        if ((OnigLen )(max_semi_end - start) < reg->anchor_dmin) {
-          start = max_semi_end - reg->anchor_dmin;
+        if ((OnigLen )(max_semi_end - start) < reg->anc_dist_min) {
+          start = max_semi_end - reg->anc_dist_min;
           start = ONIGENC_LEFT_ADJUST_CHAR_HEAD(reg->enc, str, start);
         }
         if (range > start) goto mismatch_no_msa;
@@ -5713,8 +5713,8 @@ update_regset_by_reg(OnigRegSet* set, regex_t* reg)
   if (set->n == 1) {
     set->enc          = reg->enc;
     set->anchor       = reg->anchor;
-    set->anc_dmin     = reg->anchor_dmin;
-    set->anc_dmax     = reg->anchor_dmax;
+    set->anc_dmin     = reg->anc_dist_min;
+    set->anc_dmax     = reg->anc_dist_max;
     set->all_low_high =
       (reg->optimize == OPTIMIZE_NONE || reg->dist_max == INFINITE_LEN) ? 0 : 1;
     set->anychar_inf  = (reg->anchor & ANCR_ANYCHAR_INF) != 0 ? 1 : 0;
@@ -5729,8 +5729,8 @@ update_regset_by_reg(OnigRegSet* set, regex_t* reg)
 
       anc_dmin = set->anc_dmin;
       anc_dmax = set->anc_dmax;
-      if (anc_dmin > reg->anchor_dmin) anc_dmin = reg->anchor_dmin;
-      if (anc_dmax < reg->anchor_dmax) anc_dmax = reg->anchor_dmax;
+      if (anc_dmin > reg->anc_dist_min) anc_dmin = reg->anc_dist_min;
+      if (anc_dmax < reg->anc_dist_max) anc_dmax = reg->anc_dist_max;
       set->anc_dmin = anc_dmin;
       set->anc_dmax = anc_dmax;
     }

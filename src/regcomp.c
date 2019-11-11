@@ -6353,8 +6353,8 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
                                   ANCR_PREC_READ_NOT);
 
   if (reg->anchor & (ANCR_END_BUF | ANCR_SEMI_END_BUF)) {
-    reg->anchor_dmin = opt.len.min;
-    reg->anchor_dmax = opt.len.max;
+    reg->anc_dist_min = opt.len.min;
+    reg->anc_dist_max = opt.len.max;
   }
 
   if (opt.sb.len > 0 || opt.sm.len > 0) {
@@ -6389,8 +6389,8 @@ clear_optimize_info(regex_t* reg)
 {
   reg->optimize      = OPTIMIZE_NONE;
   reg->anchor        = 0;
-  reg->anchor_dmin   = 0;
-  reg->anchor_dmax   = 0;
+  reg->anc_dist_min  = 0;
+  reg->anc_dist_max  = 0;
   reg->sub_anchor    = 0;
   reg->exact_end     = (UChar* )NULL;
   reg->map_offset    = 0;
@@ -6514,7 +6514,7 @@ print_optimize_info(FILE* f, regex_t* reg)
   fprintf(f, "optimize: %s\n", on[reg->optimize]);
   fprintf(f, "  anchor: "); print_anchor(f, reg->anchor);
   if ((reg->anchor & ANCR_END_BUF_MASK) != 0)
-    print_distance_range(f, reg->anchor_dmin, reg->anchor_dmax);
+    print_distance_range(f, reg->anc_dist_min, reg->anc_dist_max);
   fprintf(f, "\n");
 
   if (reg->optimize) {

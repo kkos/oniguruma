@@ -880,8 +880,8 @@ struct re_pattern_buffer {
   int            optimize;          /* optimize flag */
   int            threshold_len;     /* search str-length for apply optimize */
   int            anchor;            /* BEGIN_BUF, BEGIN_POS, (SEMI_)END_BUF */
-  OnigLen        anchor_dmin;       /* (SEMI_)END_BUF anchor distance */
-  OnigLen        anchor_dmax;       /* (SEMI_)END_BUF anchor distance */
+  OnigLen        anc_dist_min;      /* (SEMI_)END_BUF anchor distance */
+  OnigLen        anc_dist_max;      /* (SEMI_)END_BUF anchor distance */
   int            sub_anchor;        /* start-anchor for exact or map */
   unsigned char *exact;
   unsigned char *exact_end;
