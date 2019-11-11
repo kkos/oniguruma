@@ -4240,7 +4240,7 @@ regset_search_body_position_lead(OnigRegSet* set,
     sr[i].state = SRS_DEAD;
     if (reg->optimize != OPTIMIZE_NONE) {
       if (reg->dist_max != INFINITE_LEN) {
-        if ((ptrdiff_t )(end - range) > (ptrdiff_t )reg->dist_max)
+        if (end - range > reg->dist_max)
           sch_range = (UChar* )range + reg->dist_max;
         else
           sch_range = (UChar* )end;
@@ -4932,7 +4932,7 @@ forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
 
   p = start;
   if (reg->dist_min != 0) {
-    if ((ptrdiff_t )(end - p) <= (ptrdiff_t )reg->dist_min)
+    if (end - p <= reg->dist_min)
       return 0; /* fail */
 
     if (ONIGENC_IS_SINGLEBYTE(reg->enc)) {
@@ -4969,7 +4969,7 @@ forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
   }
 
   if (p && p < range) {
-    if ((ptrdiff_t )(p - start) < (ptrdiff_t )reg->dist_min) {
+    if (p - start < reg->dist_min) {
     retry_gate:
       pprev = p;
       p += enclen(reg->enc, p);
@@ -5021,7 +5021,7 @@ forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
     }
     else {
       if (reg->dist_max != INFINITE_LEN) {
-        if ((ptrdiff_t )(p - str) < (ptrdiff_t )reg->dist_max) {
+        if (p - str < reg->dist_max) {
           *low = (UChar* )str;
           if (low_prev)
             *low_prev = onigenc_get_prev_char_head(reg->enc, str, *low);
@@ -5040,7 +5040,7 @@ forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
         }
       }
       /* no needs to adjust *high, *high is used as range check only */
-      if ((ptrdiff_t )(p - str) < (ptrdiff_t )reg->dist_min)
+      if (p - str < reg->dist_min)
         *high = (UChar* )str;
       else
         *high = p - reg->dist_min;
@@ -5131,13 +5131,13 @@ backward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
     }
 
     if (reg->dist_max != INFINITE_LEN) {
-      if ((ptrdiff_t )(p - str) < (ptrdiff_t )reg->dist_max)
+      if (p - str < reg->dist_max)
         *low = (UChar* )str;
       else
         *low = p - reg->dist_max;
 
       if (reg->dist_min != 0) {
-        if ((ptrdiff_t )(p - str) < (ptrdiff_t )reg->dist_min)
+        if (p - str < reg->dist_min)
           *high = (UChar* )str;
         else
           *high = p - reg->dist_min;
@@ -5373,15 +5373,19 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
     if (reg->optimize != OPTIMIZE_NONE) {
       UChar *sch_range, *low, *high, *low_prev;
 
-      sch_range = (UChar* )range;
       if (reg->dist_max != 0) {
         if (reg->dist_max == INFINITE_LEN)
           sch_range = (UChar* )end;
         else {
-          sch_range += reg->dist_max;
-          if (sch_range > end) sch_range = (UChar* )end;
+          if ((end - range) < reg->dist_max)
+            sch_range = (UChar* )end;
+          else {
+            sch_range = (UChar* )range + reg->dist_max;
+          }
         }
       }
+      else
+        sch_range = (UChar* )range;
 
       if ((end - start) < reg->threshold_len)
         goto mismatch;
@@ -5451,16 +5455,18 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
       else
         adjrange = (UChar* )end;
 
-      if ((ptrdiff_t )(end - range) > (ptrdiff_t )reg->dist_min)
+      if (end - range > reg->dist_min)
         min_range = range + reg->dist_min;
       else
         min_range = end;
 
       if (reg->dist_max != INFINITE_LEN) {
         do {
-          sch_start = s + reg->dist_max;
-          if (sch_start >= end)
+          if (end - s > reg->dist_max)
+            sch_start = s + reg->dist_max;
+          else {
             sch_start = onigenc_get_prev_char_head(reg->enc, str, end);
+          }
 
           if (backward_search(reg, str, end, sch_start, min_range, adjrange,
                               &low, &high) <= 0)
@@ -5478,20 +5484,8 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
         goto mismatch;
       }
       else { /* check only. */
-        sch_start = s;
-        if (reg->dist_max != 0) {
-          if (reg->dist_max == INFINITE_LEN)
-            sch_start = (UChar* )end;
-          else {
-            sch_start += reg->dist_max;
-            if (sch_start >= end) sch_start = (UChar* )end;
-            else
-              sch_start = ONIGENC_LEFT_ADJUST_CHAR_HEAD(reg->enc,
-                                                        start, sch_start);
-          }
-          if (sch_start >= end)
-            sch_start = onigenc_get_prev_char_head(reg->enc, str, end);
-        }
+        sch_start = onigenc_get_prev_char_head(reg->enc, str, end);
+
         if (backward_search(reg, str, end, sch_start, min_range, adjrange,
                             &low, &high) <= 0) goto mismatch;
       }
