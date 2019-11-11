@@ -5048,7 +5048,7 @@ forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
 
 #ifdef ONIG_DEBUG_SEARCH
     fprintf(stderr,
-            "forward_search success: low: %d, high: %d, dmin: %d, dmax: %d\n",
+            "forward_search success: low: %d, high: %d, dmin: %u, dmax: %u\n",
             (int )(*low - str), (int )(*high - str),
             reg->dist_min, reg->dist_max);
 #endif
