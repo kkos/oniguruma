@@ -887,8 +887,8 @@ struct re_pattern_buffer {
   unsigned char *exact_end;
   unsigned char  map[CHAR_MAP_SIZE]; /* used as BMH skip or char-map */
   int            map_offset;
-  OnigLen        dmin;                      /* min-distance of exact or map */
-  OnigLen        dmax;                      /* max-distance of exact or map */
+  OnigLen        dist_min;           /* min-distance of exact or map */
+  OnigLen        dist_max;           /* max-distance of exact or map */
   RegexExt*      extp;
 };
 

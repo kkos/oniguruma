@@ -6282,17 +6282,17 @@ set_optimize_exact(regex_t* reg, OptStr* e)
     }
   }
 
-  reg->dmin = e->mmd.min;
-  reg->dmax = e->mmd.max;
+  reg->dist_min = e->mmd.min;
+  reg->dist_max = e->mmd.max;
 
-  if (reg->dmin != INFINITE_LEN) {
+  if (reg->dist_min != INFINITE_LEN) {
     int n;
     if (e->case_fold != 0)
       n = 1;
     else
       n = (int )(reg->exact_end - reg->exact);
 
-    reg->threshold_len = reg->dmin + n;
+    reg->threshold_len = reg->dist_min + n;
   }
 
   return 0;
@@ -6307,11 +6307,11 @@ set_optimize_map(regex_t* reg, OptMap* m)
     reg->map[i] = m->map[i];
 
   reg->optimize   = OPTIMIZE_MAP;
-  reg->dmin       = m->mmd.min;
-  reg->dmax       = m->mmd.max;
+  reg->dist_min   = m->mmd.min;
+  reg->dist_max   = m->mmd.max;
 
-  if (reg->dmin != INFINITE_LEN) {
-    reg->threshold_len = reg->dmin + 1;
+  if (reg->dist_min != INFINITE_LEN) {
+    reg->threshold_len = reg->dist_min + 1;
   }
 }
 
