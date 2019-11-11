@@ -5426,13 +5426,14 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
     if (reg->optimize != OPTIMIZE_NONE) {
       UChar *low, *high, *adjrange, *sch_start;
 
+      if ((end - range) < reg->threshold_len) goto mismatch;
+
       if (range < end)
         adjrange = ONIGENC_LEFT_ADJUST_CHAR_HEAD(reg->enc, str, range);
       else
         adjrange = (UChar* )end;
 
-      if (reg->dmax != INFINITE_LEN &&
-          (end - range) >= reg->threshold_len) {
+      if (reg->dmax != INFINITE_LEN) {
         do {
           sch_start = s + reg->dmax;
           if (sch_start >= end)
@@ -5454,8 +5455,6 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
         goto mismatch;
       }
       else { /* check only. */
-        if ((end - range) < reg->threshold_len) goto mismatch;
-
         sch_start = s;
         if (reg->dmax != 0) {
           if (reg->dmax == INFINITE_LEN)
