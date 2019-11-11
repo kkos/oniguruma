@@ -5286,7 +5286,8 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
         goto mismatch_no_msa;
 
       if (range > start) {
-        if (min_semi_end - start > reg->anc_dist_max) {
+        if (reg->anc_dist_max != INFINITE_LEN &&
+            min_semi_end - start > reg->anc_dist_max) {
           start = min_semi_end - reg->anc_dist_max;
           if (start < end)
             start = onigenc_get_right_adjust_char_head(reg->enc, str, start);
@@ -5303,7 +5304,8 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
            Backward search is used. */
       }
       else {
-        if (min_semi_end - range > reg->anc_dist_max) {
+        if (reg->anc_dist_max != INFINITE_LEN &&
+            min_semi_end - range > reg->anc_dist_max) {
           range = min_semi_end - reg->anc_dist_max;
         }
         if (max_semi_end - start < reg->anc_dist_min) {
