@@ -3921,10 +3921,13 @@ static enum ReduceType ReduceTypeTable[6][6] = {
 };
 
 extern int
-onig_reduce_nested_quantifier(Node* pnode, Node* cnode)
+onig_reduce_nested_quantifier(Node* pnode)
 {
   int pnum, cnum;
   QuantNode *p, *c;
+  Node* cnode;
+
+  cnode = NODE_BODY(pnode);
 
   p = QUANT_(pnode);
   c = QUANT_(cnode);
@@ -7726,7 +7729,7 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
       }
       else {
         NODE_BODY(qnode) = target;
-        onig_reduce_nested_quantifier(qnode, target);
+        onig_reduce_nested_quantifier(qnode);
         goto q_exit;
       }
     }
