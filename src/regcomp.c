@@ -2210,6 +2210,7 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
       Node** ptarget = &(NODE_BODY(node));
       Node*  old = *ptarget;
       r = noname_disable_map(ptarget, map, counter);
+      if (r != 0) return r;
       if (*ptarget != old && NODE_TYPE(*ptarget) == NODE_QUANT) {
         r = onig_reduce_nested_quantifier(node);
       }
