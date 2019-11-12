@@ -132,8 +132,9 @@ static void e(char* pattern, char* str, int error_no)
 
 extern int main(int argc, char* argv[])
 {
-  static OnigEncoding use_encs[] = { ONIG_ENCODING_UTF8 };
+  OnigEncoding use_encs[1];
 
+  use_encs[0] = ONIG_ENCODING_UTF8;
   onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
 
   err_file = stdout;

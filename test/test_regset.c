@@ -388,11 +388,12 @@ main(int argc, char* argv[])
   int r;
   int file_exist;
   char *s, *end;
+  OnigEncoding use_encs[1];
 
-  static OnigEncoding use_encs[] = { ONIG_ENCODING_UTF8 };
+  use_encs[0] = ONIG_ENCODING_UTF8;
+  onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
 
   srand(12345);
-  onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
 
   XX_LEAD = ONIG_REGSET_POSITION_LEAD;
 

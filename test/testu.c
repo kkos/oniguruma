@@ -190,8 +190,9 @@ static void n(char* pattern, char* str)
 
 extern int main(int argc, char* argv[])
 {
-  static OnigEncoding use_encs[] = { ONIG_ENCODING_UTF16_BE };
+  OnigEncoding use_encs[1];
 
+  use_encs[0] = ONIG_ENCODING_UTF16_BE;
   onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
 
   err_file = stdout;
