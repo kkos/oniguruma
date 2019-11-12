@@ -3920,7 +3920,7 @@ static enum ReduceType ReduceTypeTable[6][6] = {
   {RQ_ASIS, RQ_PQ_Q, RQ_DEL, RQ_AQ,   RQ_AQ,   RQ_DEL}   /* '+?' */
 };
 
-extern void
+extern int
 onig_reduce_nested_quantifier(Node* pnode, Node* cnode)
 {
   int pnum, cnum;
@@ -3942,7 +3942,7 @@ onig_reduce_nested_quantifier(Node* pnode, Node* cnode)
       }
     }
 
-    return ;
+    return 0;
   }
 
   switch(ReduceTypeTable[cnum][pnum]) {
@@ -3965,23 +3965,24 @@ onig_reduce_nested_quantifier(Node* pnode, Node* cnode)
     NODE_BODY(pnode) = cnode;
     p->lower  = 0;  p->upper = 1;  p->greedy = 0;
     c->lower  = 1;  c->upper = INFINITE_REPEAT;  c->greedy = 1;
-    return ;
+    return 0;
     break;
   case RQ_PQ_Q:
     NODE_BODY(pnode) = cnode;
     p->lower  = 0;  p->upper = 1;  p->greedy = 1;
     c->lower  = 1;  c->upper = INFINITE_REPEAT;  c->greedy = 0;
-    return ;
+    return 0;
     break;
   case RQ_ASIS:
     NODE_BODY(pnode) = cnode;
-    return ;
+    return 0;
     break;
   }
 
  remove_cnode:
   NODE_BODY(cnode) = NULL_NODE;
   onig_node_free(cnode);
+  return 0;
 }
 
 static int
