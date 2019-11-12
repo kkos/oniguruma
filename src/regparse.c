@@ -3934,17 +3934,13 @@ onig_reduce_nested_quantifier(Node* pnode)
   pnum = quantifier_type_num(p);
   cnum = quantifier_type_num(c);
   if (pnum < 0 || cnum < 0) {
-    if ((p->lower == p->upper) && ! IS_INFINITE_REPEAT(p->upper)) {
-      if ((c->lower == c->upper) && ! IS_INFINITE_REPEAT(c->upper)) {
-        int n = onig_positive_int_multiply(p->lower, c->lower);
-        if (n >= 0) {
-          p->lower = p->upper = n;
-          NODE_BODY(pnode) = NODE_BODY(cnode);
-          goto remove_cnode;
-        }
-        else
-          return ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE;
-      }
+    if (p->lower == p->upper && c->lower == c->upper) {
+      int n = onig_positive_int_multiply(p->lower, c->lower);
+      if (n < 0) return ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE;
+
+      p->lower = p->upper = n;
+      NODE_BODY(pnode) = NODE_BODY(cnode);
+      goto remove_cnode;
     }
 
     return 0;
