@@ -262,7 +262,8 @@ bbuf_clone(BBuf** rto, BBuf* from)
   return 0;
 }
 
-static int backref_rel_to_abs(int rel_no, ScanEnv* env)
+static int
+backref_rel_to_abs(int rel_no, ScanEnv* env)
 {
   if (rel_no > 0) {
     return env->num_mem + rel_no;
@@ -4113,7 +4114,7 @@ typedef struct {
 
 
 static int
-fetch_interval_quantifier(UChar** src, UChar* end, PToken* tok, ScanEnv* env)
+fetch_interval(UChar** src, UChar* end, PToken* tok, ScanEnv* env)
 {
   int low, up, syn_allow, non_low = 0;
   int r = 0;
@@ -5008,7 +5009,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
     case '{':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_BRACE_INTERVAL)) break;
-      r = fetch_interval_quantifier(&p, end, tok, env);
+      r = fetch_interval(&p, end, tok, env);
       if (r < 0) return r;  /* error */
       if (r == 0) goto greedy_check2;
       else if (r == 2) { /* {n} */
@@ -5539,7 +5540,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
     case '{':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_BRACE_INTERVAL)) break;
-      r = fetch_interval_quantifier(&p, end, tok, env);
+      r = fetch_interval(&p, end, tok, env);
       if (r < 0) return r;  /* error */
       if (r == 0) goto greedy_check2;
       else if (r == 2) { /* {n} */
@@ -7654,7 +7655,7 @@ static const char* ReduceQStr[] = {
 };
 
 static int
-set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
+assign_quantifier_body(Node* qnode, Node* target, int group, ScanEnv* env)
 {
   QuantNode* qn;
 
@@ -8258,7 +8259,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
       else {
         target = *tp;
       }
-      r = set_quantifier(qn, target, group, env);
+      r = assign_quantifier_body(qn, target, group, env);
       if (r < 0) {
         onig_node_free(qn);
         *tp = NULL_NODE;
