@@ -285,7 +285,7 @@ n(int line_no, int n, char* ps[], char* s)
 #define X2(ps,s,from,to)      x2(__LINE__,ASIZE(ps),ps,s,from,to)
 #define X3(ps,s,from,to,mem)  x3(__LINE__,ASIZE(ps),ps,s,from,to,mem)
 #define N(ps,s)                n(__LINE__,ASIZE(ps),ps,s)
-
+#define NZERO(s)               n(__LINE__,0,(char** )0,s)
 
 static int
 get_all_content_of_file(char* path, char** rs, char** rend)
@@ -318,9 +318,6 @@ get_all_content_of_file(char* path, char** rs, char** rend)
    $ nkf -Lu -w8 kofu.txt > kofu-utf8.txt
      (convert encoding to utf-8 with BOM and line terminator to be Unix-form)
 */
-
-static char* p0[] = {
-};
 
 static char* p1[] = {
   "abc",
@@ -404,7 +401,7 @@ main(int argc, char* argv[])
 
   XX_LEAD = ONIG_REGSET_POSITION_LEAD;
 
-  N(p0, " abab bccab ca");
+  NZERO(" abab bccab ca");
   X2(p1, " abab bccab ca", 8, 11);
   X3(p1, " abab bccab ca", 8, 11, 1);
   N(p2, " XXXX AAA 1223 012345678bbb");
@@ -413,7 +410,7 @@ main(int argc, char* argv[])
 
   XX_LEAD = ONIG_REGSET_REGEX_LEAD;
 
-  N(p0, " abab bccab ca");
+  NZERO(" abab bccab ca");
   X2(p1, " abab bccab ca", 8, 11);
   X3(p1, " abab bccab ca", 8, 11, 1);
   N(p2, " XXXX AAA 1223 012345678bbb");
