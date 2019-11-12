@@ -3942,6 +3942,8 @@ onig_reduce_nested_quantifier(Node* pnode)
           NODE_BODY(pnode) = NODE_BODY(cnode);
           goto remove_cnode;
         }
+        else
+          return ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE;
       }
     }
 
@@ -7728,9 +7730,11 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
         }
       }
       else {
+        int r;
+
         NODE_BODY(qnode) = target;
-        onig_reduce_nested_quantifier(qnode);
-        goto q_exit;
+        r = onig_reduce_nested_quantifier(qnode);
+        return r;
       }
     }
     break;
@@ -7740,7 +7744,6 @@ set_quantifier(Node* qnode, Node* target, int group, ScanEnv* env)
   }
 
   NODE_BODY(qnode) = target;
- q_exit:
   return 0;
 }
 
@@ -8262,6 +8265,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
       r = set_quantifier(qn, target, group, env);
       if (r < 0) {
         onig_node_free(qn);
+        *tp = NULL_NODE;
         return r;
       }
 
