@@ -3951,36 +3951,36 @@ onig_reduce_nested_quantifier(Node* pnode)
   switch(ReduceTypeTable[cnum][pnum]) {
   case RQ_DEL:
     *pnode = *cnode;
+    goto remove_cnode;
     break;
   case RQ_A:
     NODE_BODY(pnode) = NODE_BODY(cnode);
     p->lower  = 0;  p->upper = INFINITE_REPEAT;  p->greedy = 1;
+    goto remove_cnode;
     break;
   case RQ_AQ:
     NODE_BODY(pnode) = NODE_BODY(cnode);
     p->lower  = 0;  p->upper = INFINITE_REPEAT;  p->greedy = 0;
+    goto remove_cnode;
     break;
   case RQ_QQ:
     NODE_BODY(pnode) = NODE_BODY(cnode);
     p->lower  = 0;  p->upper = 1;  p->greedy = 0;
+    goto remove_cnode;
     break;
   case RQ_P_QQ:
-    NODE_BODY(pnode) = cnode;
     p->lower  = 0;  p->upper = 1;  p->greedy = 0;
     c->lower  = 1;  c->upper = INFINITE_REPEAT;  c->greedy = 1;
-    return 0;
     break;
   case RQ_PQ_Q:
-    NODE_BODY(pnode) = cnode;
     p->lower  = 0;  p->upper = 1;  p->greedy = 1;
     c->lower  = 1;  c->upper = INFINITE_REPEAT;  c->greedy = 0;
-    return 0;
     break;
   case RQ_ASIS:
-    NODE_BODY(pnode) = cnode;
-    return 0;
     break;
   }
+
+  return 0;
 
  remove_cnode:
   NODE_BODY(cnode) = NULL_NODE;
