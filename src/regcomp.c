@@ -3893,7 +3893,7 @@ reduce_string_list(Node* node)
             prev_node = node;
           }
           else {
-	    r = node_str_node_cat(prev, curr);
+            r = node_str_node_cat(prev, curr);
             if (r != 0) return r;
             remove_from_list(prev_node, node);
             onig_node_free(node);
@@ -5056,7 +5056,7 @@ tune_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
         int i, n = qn->lower;
         node_conv_to_str_node(node, STR_(body)->flag);
         for (i = 0; i < n; i++) {
-	  r = node_str_node_cat(node, body);
+          r = node_str_node_cat(node, body);
           if (r != 0) return r;
         }
         onig_node_free(body);
