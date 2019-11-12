@@ -57,6 +57,12 @@ search(regex_t* reg, unsigned char* str, unsigned char* end)
     fprintf(stdout, "  (%s)\n", ONIGENC_NAME(onig_get_encoding(reg)));
 #endif
     onig_region_free(region, 1 /* 1:free self, 0:free contents only */);
+
+    if (r == ONIGERR_STACK_BUG ||
+        r == ONIGERR_UNDEFINED_BYTECODE ||
+        r == ONIGERR_UNEXPECTED_BYTECODE)
+      return -2;
+
     return -1;
   }
 
@@ -109,11 +115,13 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   }
   REGEX_SUCCESS_COUNT++;
 
-  search(reg, pattern, pattern_end);
+  r = search(reg, pattern, pattern_end);
+  if (r == -2) return -2;
 
   if (onigenc_is_valid_mbc_string(enc, str, end) != 0) {
     VALID_STRING_COUNT++;
     r = search(reg, str, end);
+    if (r == -2) return -2;
   }
 
   onig_free(reg);
