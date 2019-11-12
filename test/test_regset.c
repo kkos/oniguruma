@@ -14,16 +14,6 @@ static int nfail  = 0;
 static int nerror = 0;
 
 
-static double
-get_sec(struct timespec* ts, struct timespec* te)
-{
-  double t;
-
-  t = (te->tv_sec - ts->tv_sec) +
-      (double )(te->tv_nsec - ts->tv_nsec) / 1000000000.0;
-  return t;
-}
-
 static int
 make_regset(int line_no, int n, char* pat[], OnigRegSet** rset, int error_no)
 {
@@ -76,6 +66,20 @@ make_regset(int line_no, int n, char* pat[], OnigRegSet** rset, int error_no)
   return 0;
 }
 
+#ifndef _WIN32
+
+static double
+get_sec(struct timespec* ts, struct timespec* te)
+{
+  double t;
+
+  t = (te->tv_sec - ts->tv_sec) +
+      (double )(te->tv_nsec - ts->tv_nsec) / 1000000000.0;
+  return t;
+}
+
+/* clock_gettime() doesn't exist in Windows */
+
 static int
 time_test(int repeat, int n, char* ps[], char* s, char* end, double* rt_set, double* rt_reg)
 {
@@ -124,6 +128,7 @@ time_test(int repeat, int n, char* ps[], char* s, char* end, double* rt_set, dou
   *rt_reg = t_reg;
   return 0;
 }
+#endif
 
 static void
 fisher_yates_shuffle(int n, char* ps[], char* cps[])
@@ -142,6 +147,7 @@ fisher_yates_shuffle(int n, char* ps[], char* cps[])
   }
 }
 
+#ifndef _WIN32
 static void
 time_compare(int n, char* ps[], char* s, char* end)
 {
@@ -170,6 +176,7 @@ time_compare(int n, char* ps[], char* s, char* end)
   fprintf(stdout, "POS lead: %6.2lfmsec.  REG lead: %6.2lfmsec.\n",
           total_set * 1000.0, total_reg * 1000.0);
 }
+#endif
 
 
 static OnigRegSetLead XX_LEAD = ONIG_REGSET_POSITION_LEAD;
@@ -434,6 +441,7 @@ main(int argc, char* argv[])
           nsucc, nfail, nerror, onig_version());
 
   if (file_exist != 0) {
+#ifndef _WIN32
     fprintf(stdout, "\n");
     time_compare(ASIZE(p2), p2, s, end);
     time_compare(ASIZE(p3), p3, s, end);
@@ -441,6 +449,7 @@ main(int argc, char* argv[])
     time_compare(ASIZE(p5), p5, s, end);
     time_compare(ASIZE(p6), p6, s, end);
     fprintf(stdout, "\n");
+#endif
     free(s);
   }
 
