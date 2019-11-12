@@ -151,7 +151,7 @@ output_data(char* path, const uint8_t * data, size_t size)
 #endif
 
 
-#define EXEC_PRINT_INTERVAL  20000000
+#define EXEC_PRINT_INTERVAL  10000000
 #define MAX_PATTERN_SIZE     100
 
 #ifdef SYNTAX_TEST
