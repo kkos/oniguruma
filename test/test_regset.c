@@ -287,6 +287,10 @@ n(int line_no, int n, char* ps[], char* s)
 #define N(ps,s)                n(__LINE__,ASIZE(ps),ps,s)
 #define NZERO(s)               n(__LINE__,0,(char** )0,s)
 
+#ifndef _WIN32
+
+/* getdelim() doesn't exist in Windows */
+
 static int
 get_all_content_of_file(char* path, char** rs, char** rend)
 {
@@ -308,6 +312,7 @@ get_all_content_of_file(char* path, char** rs, char** rend)
   *rend = line + len;
   return 0;
 }
+#endif
 
 
 #define TEXT_PATH    "kofu-utf8.txt"
@@ -417,6 +422,7 @@ main(int argc, char* argv[])
   X2(p2, "0123456789", 9, 10);
   X2(p7, "abcde 555 qwert", 6, 9);
 
+#ifndef _WIN32
   r = get_all_content_of_file(TEXT_PATH, &s, &end);
   if (r == 0) {
     fprintf(stdout, "FILE: %s, size: %d\n", TEXT_PATH, (int )(end - s));
@@ -426,6 +432,9 @@ main(int argc, char* argv[])
     fprintf(stdout, "Ignore %s\n", TEXT_PATH);
     file_exist = 0;
   }
+#else
+    file_exist = 0;
+#endif
 
   if (file_exist != 0) {
     X2(p2, s, 10, 22);
