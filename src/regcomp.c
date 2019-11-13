@@ -224,17 +224,17 @@ ops_free(regex_t* reg)
 #endif
 
     switch (opcode) {
-    case OP_EXACTMBN:
+    case OP_STR_MBN:
       if (! is_in_string_pool(reg, op->exact_len_n.s))
         xfree(op->exact_len_n.s);
       break;
-    case OP_EXACTN: case OP_EXACTMB2N: case OP_EXACTMB3N: case OP_EXACTN_IC:
+    case OP_STR_N: case OP_STR_MB2N: case OP_STR_MB3N: case OP_STR_N_IC:
       if (! is_in_string_pool(reg, op->exact_n.s))
         xfree(op->exact_n.s);
       break;
-    case OP_EXACT1: case OP_EXACT2: case OP_EXACT3: case OP_EXACT4:
-    case OP_EXACT5: case OP_EXACTMB2N1: case OP_EXACTMB2N2:
-    case OP_EXACTMB2N3: case OP_EXACT1_IC:
+    case OP_STR_1: case OP_STR_2: case OP_STR_3: case OP_STR_4:
+    case OP_STR_5: case OP_STR_MB2N1: case OP_STR_MB2N2:
+    case OP_STR_MB2N3: case OP_STR_1_IC:
       break;
 
     case OP_CCLASS_NOT: case OP_CCLASS:
@@ -298,17 +298,17 @@ ops_calc_size_of_string_pool(regex_t* reg)
 #endif
 
     switch (opcode) {
-    case OP_EXACTMBN:
+    case OP_STR_MBN:
       total += op->exact_len_n.len * op->exact_len_n.n;
       break;
-    case OP_EXACTN:
-    case OP_EXACTN_IC:
+    case OP_STR_N:
+    case OP_STR_N_IC:
       total += op->exact_n.n;
       break;
-    case OP_EXACTMB2N:
+    case OP_STR_MB2N:
       total += op->exact_n.n * 2;
       break;
-    case OP_EXACTMB3N:
+    case OP_STR_MB3N:
       total += op->exact_n.n * 3;
       break;
 
@@ -349,15 +349,15 @@ ops_make_string_pool(regex_t* reg)
 #endif
 
     switch (opcode) {
-    case OP_EXACTMBN:
+    case OP_STR_MBN:
       len = op->exact_len_n.len * op->exact_len_n.n;
       xmemcpy(curr, op->exact_len_n.s, len);
       xfree(op->exact_len_n.s);
       op->exact_len_n.s = curr;
       curr += len;
       break;
-    case OP_EXACTN:
-    case OP_EXACTN_IC:
+    case OP_STR_N:
+    case OP_STR_N_IC:
       len = op->exact_n.n;
     copy:
       xmemcpy(curr, op->exact_n.s, len);
@@ -365,11 +365,11 @@ ops_make_string_pool(regex_t* reg)
       op->exact_n.s = curr;
       curr += len;
       break;
-    case OP_EXACTMB2N:
+    case OP_STR_MB2N:
       len = op->exact_n.n * 2;
       goto copy;
       break;
-    case OP_EXACTMB3N:
+    case OP_STR_MB3N:
       len = op->exact_n.n * 3;
       goto copy;
       break;
@@ -624,9 +624,9 @@ static int compile_length_tree(Node* node, regex_t* reg);
 static int compile_tree(Node* node, regex_t* reg, ScanEnv* env);
 
 
-#define IS_NEED_STR_LEN_OP_EXACT(op) \
-   ((op) == OP_EXACTN    || (op) == OP_EXACTMB2N ||\
-    (op) == OP_EXACTMB3N || (op) == OP_EXACTMBN  || (op) == OP_EXACTN_IC)
+#define IS_NEED_STR_LEN_OP(op) \
+   ((op) == OP_STR_N    || (op) == OP_STR_MB2N ||\
+    (op) == OP_STR_MB3N || (op) == OP_STR_MBN  || (op) == OP_STR_N_IC)
 
 static int
 select_str_opcode(int mb_len, int str_len)
@@ -636,30 +636,30 @@ select_str_opcode(int mb_len, int str_len)
   switch (mb_len) {
   case 1:
     switch (str_len) {
-    case 1:  op = OP_EXACT1; break;
-    case 2:  op = OP_EXACT2; break;
-    case 3:  op = OP_EXACT3; break;
-    case 4:  op = OP_EXACT4; break;
-    case 5:  op = OP_EXACT5; break;
-    default: op = OP_EXACTN; break;
+    case 1:  op = OP_STR_1; break;
+    case 2:  op = OP_STR_2; break;
+    case 3:  op = OP_STR_3; break;
+    case 4:  op = OP_STR_4; break;
+    case 5:  op = OP_STR_5; break;
+    default: op = OP_STR_N; break;
     }
     break;
 
   case 2:
     switch (str_len) {
-    case 1:  op = OP_EXACTMB2N1; break;
-    case 2:  op = OP_EXACTMB2N2; break;
-    case 3:  op = OP_EXACTMB2N3; break;
-    default: op = OP_EXACTMB2N;  break;
+    case 1:  op = OP_STR_MB2N1; break;
+    case 2:  op = OP_STR_MB2N2; break;
+    case 3:  op = OP_STR_MB2N3; break;
+    default: op = OP_STR_MB2N;  break;
     }
     break;
 
   case 3:
-    op = OP_EXACTMB3N;
+    op = OP_STR_MB3N;
     break;
 
   default:
-    op = OP_EXACTMBN;
+    op = OP_STR_MBN;
     break;
   }
 
@@ -783,7 +783,7 @@ add_compile_string(UChar* s, int mb_len, int str_len, regex_t* reg)
   byte_len = mb_len * str_len;
   end = s + byte_len;
 
-  if (op == OP_EXACTMBN) {
+  if (op == OP_STR_MBN) {
     p = onigenc_strdup(reg->enc, s, end);
     CHECK_NULL_RETURN_MEMERR(p);
 
@@ -791,11 +791,11 @@ add_compile_string(UChar* s, int mb_len, int str_len, regex_t* reg)
     COP(reg)->exact_len_n.n   = str_len;
     COP(reg)->exact_len_n.s   = p;
   }
-  else if (IS_NEED_STR_LEN_OP_EXACT(op)) {
+  else if (IS_NEED_STR_LEN_OP(op)) {
     p = onigenc_strdup(reg->enc, s, end);
     CHECK_NULL_RETURN_MEMERR(p);
 
-    if (op == OP_EXACTN_IC)
+    if (op == OP_STR_N_IC)
       COP(reg)->exact_n.n = byte_len;
     else
       COP(reg)->exact_n.n = str_len;
@@ -874,14 +874,14 @@ compile_ambig_string_node(Node* node, regex_t* reg)
   len = enclen(enc, sn->s);
   byte_len = (int )(sn->end - sn->s);
   if (len == byte_len) {
-    r = add_op(reg, OP_EXACT1_IC);
+    r = add_op(reg, OP_STR_1_IC);
     if (r != 0) return r;
 
     xmemset(COP(reg)->exact.s, 0, sizeof(COP(reg)->exact.s));
     xmemcpy(COP(reg)->exact.s, sn->s, (size_t )byte_len);
   }
   else {
-    r = add_op(reg, OP_EXACTN_IC);
+    r = add_op(reg, OP_STR_N_IC);
     if (r != 0) return r;
 
     p = onigenc_strdup(enc, sn->s, sn->end);
@@ -5297,7 +5297,7 @@ typedef struct {
 } MinMax;
 
 typedef struct {
-  MinMax           mmd;
+  MinMax           mm;
   OnigEncoding     enc;
   OnigOptionType   options;
   OnigCaseFoldType case_fold_flag;
@@ -5310,7 +5310,7 @@ typedef struct {
 } OptAnc;
 
 typedef struct {
-  MinMax     mmd;   /* position */
+  MinMax     mm;   /* position */
   OptAnc     anc;
   int        reach_end;
   int        case_fold;
@@ -5319,7 +5319,7 @@ typedef struct {
 } OptStr;
 
 typedef struct {
-  MinMax    mmd;    /* position */
+  MinMax    mm;     /* position */
   OptAnc    anc;
   int       value;  /* weighted value */
   UChar     map[CHAR_MAP_SIZE];
@@ -5536,7 +5536,7 @@ is_full_opt_exact(OptStr* e)
 static void
 clear_opt_exact(OptStr* e)
 {
-  clear_mml(&e->mmd);
+  clear_mml(&e->mm);
   clear_opt_anc_info(&e->anc);
   e->reach_end      = 0;
   e->case_fold      = 0;
@@ -5617,7 +5617,7 @@ alt_merge_opt_exact(OptStr* to, OptStr* add, OptEnv* env)
     return ;
   }
 
-  if (! is_equal_mml(&to->mmd, &add->mmd)) {
+  if (! is_equal_mml(&to->mm, &add->mm)) {
     clear_opt_exact(to);
     return ;
   }
@@ -5671,7 +5671,7 @@ select_opt_exact(OnigEncoding enc, OptStr* now, OptStr* alt)
   if (now->case_fold == 0) vn *= 2;
   if (alt->case_fold == 0) va *= 2;
 
-  if (comp_distance_value(&now->mmd, &alt->mmd, vn, va) > 0)
+  if (comp_distance_value(&now->mm, &alt->mm, vn, va) > 0)
     copy_opt_exact(now, alt);
 }
 
@@ -5755,7 +5755,7 @@ select_opt_map(OptMap* now, OptMap* alt)
 
   vn = z / now->value;
   va = z / alt->value;
-  if (comp_distance_value(&now->mmd, &alt->mmd, vn, va) > 0)
+  if (comp_distance_value(&now->mm, &alt->mm, vn, va) > 0)
     copy_opt_map(now, alt);
 }
 
@@ -5776,7 +5776,7 @@ comp_opt_exact_or_map(OptStr* e, OptMap* m)
 
   ae = COMP_EM_BASE * e->len * case_value;
   am = COMP_EM_BASE * 5 * 2 / m->value;
-  return comp_distance_value(&e->mmd, &m->mmd, ae, am);
+  return comp_distance_value(&e->mm, &m->mm, ae, am);
 }
 
 static void
@@ -5784,14 +5784,14 @@ alt_merge_opt_map(OnigEncoding enc, OptMap* to, OptMap* add)
 {
   int i, val;
 
-  /* if (! is_equal_mml(&to->mmd, &add->mmd)) return ; */
+  /* if (! is_equal_mml(&to->mm, &add->mm)) return ; */
   if (to->value == 0) return ;
-  if (add->value == 0 || to->mmd.max < add->mmd.min) {
+  if (add->value == 0 || to->mm.max < add->mm.min) {
     clear_opt_map(to);
     return ;
   }
 
-  alt_merge_mml(&to->mmd, &add->mmd);
+  alt_merge_mml(&to->mm, &add->mm);
 
   val = 0;
   for (i = 0; i < CHAR_MAP_SIZE; i++) {
@@ -5809,9 +5809,9 @@ alt_merge_opt_map(OnigEncoding enc, OptMap* to, OptMap* add)
 static void
 set_bound_node_opt_info(OptNode* opt, MinMax* plen)
 {
-  copy_mml(&(opt->sb.mmd),  plen);
-  copy_mml(&(opt->spr.mmd), plen);
-  copy_mml(&(opt->map.mmd), plen);
+  copy_mml(&(opt->sb.mm),  plen);
+  copy_mml(&(opt->spr.mm), plen);
+  copy_mml(&(opt->map.mm), plen);
 }
 
 static void
@@ -5846,7 +5846,7 @@ concat_left_node_opt_info(OnigEncoding enc, OptNode* to, OptNode* add)
   }
 
   if (add->map.value > 0 && to->len.max == 0) {
-    if (add->map.mmd.max == 0)
+    if (add->map.mm.max == 0)
       add->map.anc.left |= to->anc.left;
   }
 
@@ -5871,7 +5871,7 @@ concat_left_node_opt_info(OnigEncoding enc, OptNode* to, OptNode* add)
 
   if (to->spr.len > 0) {
     if (add->len.max > 0) {
-      if (to->spr.mmd.max == 0)
+      if (to->spr.mm.max == 0)
         select_opt_exact(enc, &to->sb, &to->spr);
       else
         select_opt_exact(enc, &to->sm, &to->spr);
@@ -5911,7 +5911,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
   r = 0;
   enc = env->enc;
   clear_node_opt_info(opt);
-  set_bound_node_opt_info(opt, &env->mmd);
+  set_bound_node_opt_info(opt, &env->mm);
 
   switch (NODE_TYPE(node)) {
   case NODE_LIST:
@@ -5923,7 +5923,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
       do {
         r = optimize_nodes(NODE_CAR(nd), &xo, &nenv);
         if (r == 0) {
-          add_mml(&nenv.mmd, &xo.len);
+          add_mml(&nenv.mm, &xo.len);
           concat_left_node_opt_info(enc, opt, &xo);
         }
       } while (r == 0 && IS_NOT_NULL(nd = NODE_CDR(nd)));
@@ -6144,7 +6144,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
       }
 
       if (IS_INFINITE_REPEAT(qn->upper)) {
-        if (env->mmd.max == 0 &&
+        if (env->mm.max == 0 &&
             NODE_IS_ANYCHAR(NODE_BODY(node)) && qn->greedy != 0) {
           if (IS_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), env)))
             add_opt_anc_info(&opt->anc, ANCR_ANYCHAR_INF_ML);
@@ -6212,7 +6212,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
           copy_opt_env(&nenv, env);
           r = optimize_nodes(NODE_BAG_BODY(en), &xo, &nenv);
           if (r == 0) {
-            add_mml(&nenv.mmd, &xo.len);
+            add_mml(&nenv.mm, &xo.len);
             concat_left_node_opt_info(enc, opt, &xo);
             if (IS_NOT_NULL(en->te.Then)) {
               r = optimize_nodes(en->te.Then, &xo, &nenv);
@@ -6283,8 +6283,8 @@ set_optimize_exact(regex_t* reg, OptStr* e)
     }
   }
 
-  reg->dist_min = e->mmd.min;
-  reg->dist_max = e->mmd.max;
+  reg->dist_min = e->mm.min;
+  reg->dist_max = e->mm.max;
 
   if (reg->dist_min != INFINITE_LEN) {
     int n;
@@ -6308,8 +6308,8 @@ set_optimize_map(regex_t* reg, OptMap* m)
     reg->map[i] = m->map[i];
 
   reg->optimize   = OPTIMIZE_MAP;
-  reg->dist_min   = m->mmd.min;
-  reg->dist_max   = m->mmd.max;
+  reg->dist_min   = m->mm.min;
+  reg->dist_max   = m->mm.max;
 
   if (reg->dist_min != INFINITE_LEN) {
     reg->threshold_len = reg->dist_min + 1;
@@ -6338,7 +6338,7 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
   env.options        = reg->options;
   env.case_fold_flag = reg->case_fold_flag;
   env.scan_env       = scan_env;
-  clear_mml(&env.mmd);
+  clear_mml(&env.mm);
 
   r = optimize_nodes(node, &opt, &env);
   if (r != 0) return r;
