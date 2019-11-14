@@ -152,7 +152,7 @@ output_data(char* path, const uint8_t * data, size_t size)
 
 
 #define EXEC_PRINT_INTERVAL  10000000
-#define MAX_PATTERN_SIZE     100
+#define MAX_PATTERN_SIZE     150
 
 #ifdef SYNTAX_TEST
 #define NUM_CONTROL_BYTES      3
@@ -238,9 +238,14 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   data++;
   remaining_size--;
 
-  pattern_size = remaining_size / 2;
-  if (pattern_size > MAX_PATTERN_SIZE)
-    pattern_size = MAX_PATTERN_SIZE;
+  //pattern_size = remaining_size / 2;
+  if (remaining_size == 0)
+    pattern_size = 0;
+  else {
+    pattern_size = INPUT_COUNT % remaining_size;
+    if (pattern_size > MAX_PATTERN_SIZE)
+      pattern_size = MAX_PATTERN_SIZE;
+  }
 
 #if defined(UTF16_BE) || defined(UTF16_LE)
   if (pattern_size % 2 == 1) pattern_size--;
