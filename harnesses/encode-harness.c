@@ -164,12 +164,11 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 {
 #if !defined(UTF16_BE) && !defined(UTF16_LE)
   static OnigEncoding encodings[] = {
-    ONIG_ENCODING_SJIS,
-    ONIG_ENCODING_EUC_JP,
-    //ONIG_ENCODING_CP1251,
-    ONIG_ENCODING_ISO_8859_1,
     ONIG_ENCODING_UTF8,
-    //ONIG_ENCODING_KOI8_R,
+    ONIG_ENCODING_UTF8,
+    ONIG_ENCODING_SJIS,
+    //ONIG_ENCODING_EUC_JP,
+    ONIG_ENCODING_ISO_8859_1,
     ONIG_ENCODING_BIG5,
     ONIG_ENCODING_GB18030,
     ONIG_ENCODING_EUC_TW
