@@ -277,18 +277,17 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 #endif
 #endif
 
-  //pattern_size = remaining_size / 2;
   if (remaining_size == 0)
     pattern_size = 0;
   else {
     pattern_size = INPUT_COUNT % remaining_size;
     if (pattern_size > MAX_PATTERN_SIZE)
       pattern_size = MAX_PATTERN_SIZE;
-  }
 
 #if defined(UTF16_BE) || defined(UTF16_LE)
-  if (pattern_size % 2 == 1) pattern_size--;
+    if (pattern_size % 2 == 1) pattern_size--;
 #endif
+  }
 
   r = alloc_exec(enc, options, syntax, pattern_size, remaining_size, data);
   if (r == -2) {
