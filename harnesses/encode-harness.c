@@ -277,6 +277,38 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 #endif
 #endif
 
+#ifdef WITH_READ_MAIN
+  int max_pattern_size;
+
+  if (remaining_size == 0)
+    max_pattern_size = 0;
+  else {
+    max_pattern_size = remaining_size - 1;
+    if (max_pattern_size > MAX_PATTERN_SIZE)
+      max_pattern_size = MAX_PATTERN_SIZE;
+
+#if defined(UTF16_BE) || defined(UTF16_LE)
+    if (max_pattern_size % 2 == 1) max_pattern_size--;
+#endif
+  }
+
+  for (pattern_size = 0; pattern_size < max_pattern_size; ) {
+    fprintf(stdout, "pattern_size: %d\n", pattern_size);
+    r = alloc_exec(enc, options, syntax, pattern_size, remaining_size, data);
+    if (r == -2) {
+      //output_data("parser-bug", Data, Size);
+      exit(-2);
+    }
+
+#if defined(UTF16_BE) || defined(UTF16_LE)
+    pattern_size += 2;
+#else
+    pattern_size++;
+#endif
+  }
+
+#else /* WITH_READ_MAIN */
+
   if (remaining_size == 0)
     pattern_size = 0;
   else {
@@ -294,6 +326,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
     //output_data("parser-bug", Data, Size);
     exit(-2);
   }
+#endif /* else WITH_READ_MAIN */
 
   if (EXEC_COUNT_INTERVAL == EXEC_PRINT_INTERVAL) {
     char d[64];
