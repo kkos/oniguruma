@@ -151,6 +151,39 @@ output_data(char* path, const uint8_t * data, size_t size)
 #endif
 
 
+static int
+alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
+           int pattern_size, size_t remaining_size, unsigned char *data)
+{
+  int r;
+  unsigned char *pattern_end;
+  unsigned char *str_null_end;
+
+  // copy first PATTERN_SIZE bytes off to be the pattern
+  unsigned char *pattern = (unsigned char *)malloc(pattern_size != 0 ? pattern_size : 1);
+  memcpy(pattern, data, pattern_size);
+  pattern_end = pattern + pattern_size;
+  data += pattern_size;
+  remaining_size -= pattern_size;
+
+#if defined(UTF16_BE) || defined(UTF16_LE)
+  if (remaining_size % 2 == 1) remaining_size--;
+#endif
+
+  unsigned char *str = (unsigned char*)malloc(remaining_size != 0 ? remaining_size : 1);
+  memcpy(str, data, remaining_size);
+  str_null_end = str + remaining_size;
+
+  r = exec(enc, options, syntax,
+           (char *)pattern, (char *)pattern_end,
+           (char *)str, str_null_end);
+
+  free(pattern);
+  free(str);
+  return r;
+}
+
+
 #define EXEC_PRINT_INTERVAL  10000000
 #define MAX_PATTERN_SIZE     150
 
@@ -191,8 +224,6 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 
   int r;
   int pattern_size;
-  unsigned char *pattern_end;
-  unsigned char *str_null_end;
   size_t remaining_size;
   unsigned char *data;
   unsigned char options_choice;
@@ -237,6 +268,15 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   data++;
   remaining_size--;
 
+#ifdef WITH_READ_MAIN
+#ifdef SYNTAX_TEST
+  fprintf(stdout, "enc: %s, syntax: %d, options: %u\n",
+          ONIGENC_NAME(enc), (int )(syntax_choice % num_syntaxes), options);
+#else
+  fprintf(stdout, "enc: %s, options: %u\n", ONIGENC_NAME(enc), options);
+#endif
+#endif
+
   //pattern_size = remaining_size / 2;
   if (remaining_size == 0)
     pattern_size = 0;
@@ -250,37 +290,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   if (pattern_size % 2 == 1) pattern_size--;
 #endif
 
-  // copy first PATTERN_SIZE bytes off to be the pattern
-  unsigned char *pattern = (unsigned char *)malloc(pattern_size != 0 ? pattern_size : 1);
-  memcpy(pattern, data, pattern_size);
-  pattern_end = pattern + pattern_size;
-  data += pattern_size;
-  remaining_size -= pattern_size;
-
-#if defined(UTF16_BE) || defined(UTF16_LE)
-  if (remaining_size % 2 == 1) remaining_size--;
-#endif
-
-  unsigned char *str = (unsigned char*)malloc(remaining_size != 0 ? remaining_size : 1);
-  memcpy(str, data, remaining_size);
-  str_null_end = str + remaining_size;
-
-#ifdef WITH_READ_MAIN
-#ifdef SYNTAX_TEST
-  fprintf(stdout, "enc: %s, syntax: %d, options: %u\n",
-          ONIGENC_NAME(enc), (int )(syntax_choice % num_syntaxes), options);
-#else
-  fprintf(stdout, "enc: %s, options: %u\n", ONIGENC_NAME(enc), options);
-#endif
-#endif
-
-  r = exec(enc, options, syntax,
-           (char *)pattern, (char *)pattern_end,
-           (char *)str, str_null_end);
-
-  free(pattern);
-  free(str);
-
+  r = alloc_exec(enc, options, syntax, pattern_size, remaining_size, data);
   if (r == -2) {
     //output_data("parser-bug", Data, Size);
     exit(-2);
