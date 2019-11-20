@@ -292,7 +292,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 #endif
   }
 
-  for (pattern_size = 0; pattern_size < max_pattern_size; ) {
+  for (pattern_size = 0; pattern_size <= max_pattern_size; ) {
     fprintf(stdout, "pattern_size: %d\n", pattern_size);
     r = alloc_exec(enc, options, syntax, pattern_size, remaining_size, data);
     if (r == -2) {
