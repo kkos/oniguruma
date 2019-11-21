@@ -31,7 +31,9 @@ Version 6.9.4
 -------------
 
 * NEW API: RegSet (set of regexes)
-* Fixed CVE-2019-19012 (Issue #164)
+* Fixed CVE-2019-19012
+* Fixed CVE-2019-19203
+* Fixed CVE-2019-19204
 * Fixed some problems (found by libFuzzer test)
 
 
