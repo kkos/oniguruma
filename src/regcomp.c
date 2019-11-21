@@ -5136,8 +5136,9 @@ tune_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
         }
 #endif
 #else
-        /* More precisely, it checks whether alt/repeat exists before
-           the subject capture node.*/
+        /* More precisely, it should be checked whether alt/repeat exists before
+           the subject capture node, and then this backreference position
+           exists before (or in) the capture node. */
         MEM_STATUS_ON(env->backtrack_mem, p[i]);
 #endif
       }
