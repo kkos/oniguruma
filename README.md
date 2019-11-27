@@ -34,6 +34,7 @@ Version 6.9.4
 * Fixed CVE-2019-19012
 * Fixed CVE-2019-19203 (Does not affect UTF-8, UTF-16 and UTF-32 encodings)
 * Fixed CVE-2019-19204 (Affects only PosixBasic, Emacs and Grep syntaxes)
+* Fixed CVE-2019-19246
 * Fixed some problems (found by libFuzzer test)
 
 
