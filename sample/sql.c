@@ -14,11 +14,12 @@ extern int main(int argc, char* argv[])
   regex_t* reg;
   OnigErrorInfo einfo;
   OnigRegion *region;
+  OnigEncoding use_encs[1];
 
   static UChar* pattern = (UChar* )"\\_%\\\\__zz";
   static UChar* str = (UChar* )"a_abcabcabc\\ppzz";
 
-  OnigEncoding use_encs[] = { ONIG_ENCODING_ASCII };
+  use_encs[0] = ONIG_ENCODING_ASCII;
   onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
 
   onig_set_syntax_op      (&SQLSyntax, ONIG_SYN_OP_VARIABLE_META_CHARACTERS);

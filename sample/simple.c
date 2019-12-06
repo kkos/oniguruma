@@ -12,11 +12,12 @@ extern int main(int argc, char* argv[])
   regex_t* reg;
   OnigErrorInfo einfo;
   OnigRegion *region;
+  OnigEncoding use_encs[1];
 
   static UChar* pattern = (UChar* )"a(.*)b|[e-f]+";
   static UChar* str     = (UChar* )"zzzzaffffffffb";
 
-  OnigEncoding use_encs[] = { ONIG_ENCODING_ASCII };
+  use_encs[0] = ONIG_ENCODING_ASCII;
   onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
 
   r = onig_new(&reg, pattern, pattern + strlen((char* )pattern),

@@ -58,8 +58,9 @@ extern int exec(OnigSyntaxType* syntax, char* apattern, char* astr)
 extern int main(int argc, char* argv[])
 {
   int r;
+  OnigEncoding use_encs[1];
 
-  OnigEncoding use_encs[] = { ONIG_ENCODING_ASCII };
+  use_encs[0] = ONIG_ENCODING_ASCII;
   onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
 
   r = exec(ONIG_SYNTAX_PERL,

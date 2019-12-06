@@ -84,6 +84,7 @@ extern int main(int argc, char* argv[])
 {
   int r;
   OnigSyntaxType syn;
+  OnigEncoding use_encs[1];
 
   static UChar* str1 = (UChar* )"((())())";
   static UChar* pattern1
@@ -99,7 +100,7 @@ extern int main(int argc, char* argv[])
   static UChar* pattern4
     = (UChar* )"\\g<p>(?@<p>\\(\\g<s>\\)){0}(?@<s>(?:\\g<p>)*|a){0}";
 
-  OnigEncoding use_encs[] = { ONIG_ENCODING_ASCII };
+  use_encs[0] = ONIG_ENCODING_ASCII;
   onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
 
  /* enable capture hostory */

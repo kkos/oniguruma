@@ -16,6 +16,7 @@ extern int main(int argc, char* argv[])
   regex_t* reg;
   OnigErrorInfo einfo;
   char ebuf[ONIG_MAX_ERROR_MESSAGE_LEN];
+  OnigEncoding use_encs[1];
 
   static UChar* str = (UChar* )"aaaaaaaaaaaaaaaaaaaaaaca";
 
@@ -25,7 +26,7 @@ extern int main(int argc, char* argv[])
     "a(.....)c"
   };
 
-  OnigEncoding use_encs[] = { ONIG_ENCODING_UTF8 };
+  use_encs[0] = ONIG_ENCODING_UTF8;
   onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
 
   r = onig_regset_new(&set, 0, NULL);

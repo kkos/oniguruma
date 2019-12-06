@@ -13,6 +13,7 @@ main(int argc, char* argv[])
   regex_t* reg;
   OnigErrorInfo einfo;
   OnigRegion *region;
+  OnigEncoding use_encs[1];
 
   static OnigCodePoint handakuon_hiragana[] = {
     5, /* number of ranges */
@@ -29,7 +30,7 @@ main(int argc, char* argv[])
   /* "PA PI PU PE PO a" */
   static UChar* str = (UChar* )"\343\201\261\343\201\264\343\201\267\343\201\272\343\201\275a";
 
-  OnigEncoding use_encs[] = { ONIG_ENCODING_UTF8 };
+  use_encs[0] = ONIG_ENCODING_UTF8;
   onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
 
   r = onig_unicode_define_user_property("HandakuonHiragana", handakuon_hiragana);
