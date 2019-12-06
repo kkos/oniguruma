@@ -21,7 +21,7 @@ encode-libfuzzer: base.c $(ONIG_LIB)
 syntax-libfuzzer: base.c $(ONIG_LIB)
 	clang -DSYNTAX_TEST $(CFLAGS) $< $(LIBS) -o $@
 
-deluxe-encode-libfuzzer: deluxe-base.c $(ONIG_LIB)
+deluxe-encode-libfuzzer: deluxe.c $(ONIG_LIB)
 	clang $(CFLAGS) $< $(LIBS) -o $@
 
 utf16-be-libfuzzer: base.c $(ONIG_LIB)
@@ -39,7 +39,7 @@ main-encode: base.c $(ONIG_LIB)
 main-syntax: base.c $(ONIG_LIB)
 	clang -DSYNTAX_TEST $(CFLAGS_M) $< $(LIBS) -o $@
 
-main-deluxe-encode: deluxe-base.c $(ONIG_LIB)
+main-deluxe-encode: deluxe.c $(ONIG_LIB)
 	clang $(CFLAGS_M) $< $(LIBS) -o $@
 
 main-utf16-be: base.c $(ONIG_LIB)

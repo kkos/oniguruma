@@ -1,5 +1,5 @@
 /*
- * deluxe-encode-harness.c
+ * deluxe.c
  * contributed by Mark Griffin
  */
 #include <stdio.h>
