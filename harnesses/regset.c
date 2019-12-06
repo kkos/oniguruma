@@ -1,5 +1,5 @@
 /*
- * regset-harness.c
+ * regset.c
  * Copyright (c) 2019  K.Kosako
  */
 #include <stdio.h>

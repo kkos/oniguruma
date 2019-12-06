@@ -30,7 +30,7 @@ utf16-be-libfuzzer: base.c $(ONIG_LIB)
 utf16-le-libfuzzer: base.c $(ONIG_LIB)
 	clang -DUTF16_LE $(CFLAGS) $< $(LIBS) -o $@
 
-regset-libfuzzer: regset-harness.c $(ONIG_LIB)
+regset-libfuzzer: regset.c $(ONIG_LIB)
 	clang $(CFLAGS) $< $(LIBS) -o $@
 
 main-encode: base.c $(ONIG_LIB)
@@ -48,7 +48,7 @@ main-utf16-be: base.c $(ONIG_LIB)
 main-utf16-le: base.c $(ONIG_LIB)
 	clang -DUTF16_LE $(CFLAGS_M) $< $(LIBS) -o $@
 
-main-regset: regset-harness.c $(ONIG_LIB)
+main-regset: regset.c $(ONIG_LIB)
 	clang $(CFLAGS_M) $< $(LIBS) -o $@
 
 libfuzzer-onig: libfuzzer-onig.cpp $(ONIG_LIB)
