@@ -1481,7 +1481,7 @@ compile_bag_memory_node(BagNode* node, regex_t* reg, ScanEnv* env)
     if (r != 0) return r;
 
     node->m.called_addr = COP_CURR_OFFSET(reg) + 1 + OPSIZE_JUMP;
-    NODE_STATUS_ADD(node, ADDR_FIXED);
+    NODE_STATUS_ADD(node, FIXED_ADDR);
     COP(reg)->call.addr = (int )node->m.called_addr;
 
     if (node->m.regnum == 0) {
@@ -2448,7 +2448,7 @@ fix_unset_addr_list(UnsetAddrList* uslist, regex_t* reg)
   AbsAddrType* paddr;
 
   for (i = 0; i < uslist->num; i++) {
-    if (! NODE_IS_ADDR_FIXED(uslist->us[i].target))
+    if (! NODE_IS_FIXED_ADDR(uslist->us[i].target))
       return ONIGERR_PARSER_BUG;
 
     en = BAG_(uslist->us[i].target);

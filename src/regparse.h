@@ -322,7 +322,7 @@ typedef struct _Node {
 #define NODE_ST_STRICT_REAL_REPEAT    (1<<5)
 #define NODE_ST_RECURSION             (1<<6)
 #define NODE_ST_CALLED                (1<<7)
-#define NODE_ST_ADDR_FIXED            (1<<8)
+#define NODE_ST_FIXED_ADDR            (1<<8)
 #define NODE_ST_NAMED_GROUP           (1<<9)
 #define NODE_ST_IN_REAL_REPEAT        (1<<10) /* STK_REPEAT is nested in stack. */
 #define NODE_ST_IN_ZERO_REPEAT        (1<<11) /* (....){0} */
@@ -349,7 +349,7 @@ typedef struct _Node {
 #define NODE_IS_RECURSION(node)       ((NODE_STATUS(node) & NODE_ST_RECURSION)      != 0)
 #define NODE_IS_IN_ZERO_REPEAT(node)  ((NODE_STATUS(node) & NODE_ST_IN_ZERO_REPEAT) != 0)
 #define NODE_IS_NAMED_GROUP(node)     ((NODE_STATUS(node) & NODE_ST_NAMED_GROUP)  != 0)
-#define NODE_IS_ADDR_FIXED(node)      ((NODE_STATUS(node) & NODE_ST_ADDR_FIXED)   != 0)
+#define NODE_IS_FIXED_ADDR(node)      ((NODE_STATUS(node) & NODE_ST_FIXED_ADDR)   != 0)
 #define NODE_IS_CLEN_FIXED(node)      ((NODE_STATUS(node) & NODE_ST_CLEN_FIXED)   != 0)
 #define NODE_IS_MIN_FIXED(node)       ((NODE_STATUS(node) & NODE_ST_MIN_FIXED)    != 0)
 #define NODE_IS_MAX_FIXED(node)       ((NODE_STATUS(node) & NODE_ST_MAX_FIXED)    != 0)
