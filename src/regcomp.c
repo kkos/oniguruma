@@ -3199,7 +3199,7 @@ tree_max_len(Node* node, ScanEnv* env)
       BagNode* en = BAG_(node);
       switch (en->type) {
       case BAG_MEMORY:
-        if (NODE_IS_MAX_FIXED(node))
+        if (NODE_IS_FIXED_MAX(node))
           len = en->max_len;
         else {
           if (NODE_IS_MARK1(node))
@@ -3210,7 +3210,7 @@ tree_max_len(Node* node, ScanEnv* env)
             NODE_STATUS_REMOVE(node, MARK1);
 
             en->max_len = len;
-            NODE_STATUS_ADD(node, MAX_FIXED);
+            NODE_STATUS_ADD(node, FIXED_MAX);
           }
         }
         break;
@@ -6194,7 +6194,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
           min = 0;
           max = INFINITE_LEN;
           if (NODE_IS_FIXED_MIN(node)) min = en->min_len;
-          if (NODE_IS_MAX_FIXED(node)) max = en->max_len;
+          if (NODE_IS_FIXED_MAX(node)) max = en->max_len;
           set_mml(&opt->len, min, max);
         }
         else

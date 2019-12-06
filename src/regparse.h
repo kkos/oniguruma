@@ -315,7 +315,7 @@ typedef struct _Node {
 
 /* node status bits */
 #define NODE_ST_FIXED_MIN             (1<<0)
-#define NODE_ST_MAX_FIXED             (1<<1)
+#define NODE_ST_FIXED_MAX             (1<<1)
 #define NODE_ST_FIXED_CLEN            (1<<2)
 #define NODE_ST_MARK1                 (1<<3)
 #define NODE_ST_MARK2                 (1<<4)
@@ -352,7 +352,7 @@ typedef struct _Node {
 #define NODE_IS_FIXED_ADDR(node)      ((NODE_STATUS(node) & NODE_ST_FIXED_ADDR)   != 0)
 #define NODE_IS_FIXED_CLEN(node)      ((NODE_STATUS(node) & NODE_ST_FIXED_CLEN)   != 0)
 #define NODE_IS_FIXED_MIN(node)       ((NODE_STATUS(node) & NODE_ST_FIXED_MIN)    != 0)
-#define NODE_IS_MAX_FIXED(node)       ((NODE_STATUS(node) & NODE_ST_MAX_FIXED)    != 0)
+#define NODE_IS_FIXED_MAX(node)       ((NODE_STATUS(node) & NODE_ST_FIXED_MAX)    != 0)
 #define NODE_IS_MARK1(node)           ((NODE_STATUS(node) & NODE_ST_MARK1)        != 0)
 #define NODE_IS_MARK2(node)           ((NODE_STATUS(node) & NODE_ST_MARK2)        != 0)
 #define NODE_IS_NEST_LEVEL(node)      ((NODE_STATUS(node) & NODE_ST_NEST_LEVEL)   != 0)
