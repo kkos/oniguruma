@@ -1,5 +1,5 @@
 /*
- * encode-harness.c
+ * base.c
  * contributed by Mark Griffin
  */
 #include <stdio.h>

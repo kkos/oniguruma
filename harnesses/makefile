@@ -15,37 +15,37 @@ OTHER_TARGETS = libfuzzer-onig libfuzzer-onig-full \
 
 default: $(TARGETS)
 
-encode-libfuzzer: encode-harness.c $(ONIG_LIB)
+encode-libfuzzer: base.c $(ONIG_LIB)
 	clang $(CFLAGS) $< $(LIBS) -o $@
 
-syntax-libfuzzer: encode-harness.c $(ONIG_LIB)
+syntax-libfuzzer: base.c $(ONIG_LIB)
 	clang -DSYNTAX_TEST $(CFLAGS) $< $(LIBS) -o $@
 
-deluxe-encode-libfuzzer: deluxe-encode-harness.c $(ONIG_LIB)
+deluxe-encode-libfuzzer: deluxe-base.c $(ONIG_LIB)
 	clang $(CFLAGS) $< $(LIBS) -o $@
 
-utf16-be-libfuzzer: encode-harness.c $(ONIG_LIB)
+utf16-be-libfuzzer: base.c $(ONIG_LIB)
 	clang -DUTF16_BE $(CFLAGS) $< $(LIBS) -o $@
 
-utf16-le-libfuzzer: encode-harness.c $(ONIG_LIB)
+utf16-le-libfuzzer: base.c $(ONIG_LIB)
 	clang -DUTF16_LE $(CFLAGS) $< $(LIBS) -o $@
 
 regset-libfuzzer: regset-harness.c $(ONIG_LIB)
 	clang $(CFLAGS) $< $(LIBS) -o $@
 
-main-encode: encode-harness.c $(ONIG_LIB)
+main-encode: base.c $(ONIG_LIB)
 	clang $(CFLAGS_M) $< $(LIBS) -o $@
 
-main-syntax: encode-harness.c $(ONIG_LIB)
+main-syntax: base.c $(ONIG_LIB)
 	clang -DSYNTAX_TEST $(CFLAGS_M) $< $(LIBS) -o $@
 
-main-deluxe-encode: deluxe-encode-harness.c $(ONIG_LIB)
+main-deluxe-encode: deluxe-base.c $(ONIG_LIB)
 	clang $(CFLAGS_M) $< $(LIBS) -o $@
 
-main-utf16-be: encode-harness.c $(ONIG_LIB)
+main-utf16-be: base.c $(ONIG_LIB)
 	clang -DUTF16_BE $(CFLAGS_M) $< $(LIBS) -o $@
 
-main-utf16-le: encode-harness.c $(ONIG_LIB)
+main-utf16-le: base.c $(ONIG_LIB)
 	clang -DUTF16_LE $(CFLAGS_M) $< $(LIBS) -o $@
 
 main-regset: regset-harness.c $(ONIG_LIB)
