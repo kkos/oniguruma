@@ -9,8 +9,7 @@ TARGETS = encode-libfuzzer syntax-libfuzzer \
           utf16-be-libfuzzer utf16-le-libfuzzer main-encode main-syntax \
           main-utf16-be main-utf16-le main-regset regset-libfuzzer
 
-OTHER_TARGETS = libfuzzer-onig libfuzzer-onig-full \
-          deluxe-encode-libfuzzer main-deluxe-encode
+OTHER_TARGETS = libfuzzer-onig libfuzzer-onig-full deluxe-libfuzzer main-deluxe
 
 
 default: $(TARGETS)
@@ -21,7 +20,7 @@ encode-libfuzzer: base.c $(ONIG_LIB)
 syntax-libfuzzer: base.c $(ONIG_LIB)
 	clang -DSYNTAX_TEST $(CFLAGS) $< $(LIBS) -o $@
 
-deluxe-encode-libfuzzer: deluxe.c $(ONIG_LIB)
+deluxe-libfuzzer: deluxe.c $(ONIG_LIB)
 	clang $(CFLAGS) $< $(LIBS) -o $@
 
 utf16-be-libfuzzer: base.c $(ONIG_LIB)
@@ -39,7 +38,7 @@ main-encode: base.c $(ONIG_LIB)
 main-syntax: base.c $(ONIG_LIB)
 	clang -DSYNTAX_TEST $(CFLAGS_M) $< $(LIBS) -o $@
 
-main-deluxe-encode: deluxe.c $(ONIG_LIB)
+main-deluxe: deluxe.c $(ONIG_LIB)
 	clang $(CFLAGS_M) $< $(LIBS) -o $@
 
 main-utf16-be: base.c $(ONIG_LIB)
