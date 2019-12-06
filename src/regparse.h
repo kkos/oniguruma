@@ -430,9 +430,9 @@ typedef struct {
 
 typedef struct {
   int new_val;
-} GroupNumRemap;
+} GroupNumMap;
 
-extern int    onig_renumber_name_table P_((regex_t* reg, GroupNumRemap* map));
+extern int    onig_renumber_name_table P_((regex_t* reg, GroupNumMap* map));
 
 extern int    onig_strncmp P_((const UChar* s1, const UChar* s2, int n));
 extern void   onig_strcpy P_((UChar* dest, const UChar* src, const UChar* end));

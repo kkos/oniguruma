@@ -2192,7 +2192,7 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
 }
 
 static int
-noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
+make_named_capture_number_map(Node** plink, GroupNumMap* map, int* counter)
 {
   int r = 0;
   Node* node = *plink;
@@ -2201,7 +2201,7 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
   case NODE_LIST:
   case NODE_ALT:
     do {
-      r = noname_disable_map(&(NODE_CAR(node)), map, counter);
+      r = make_named_capture_number_map(&(NODE_CAR(node)), map, counter);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
@@ -2209,7 +2209,7 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
     {
       Node** ptarget = &(NODE_BODY(node));
       Node*  old = *ptarget;
-      r = noname_disable_map(ptarget, map, counter);
+      r = make_named_capture_number_map(ptarget, map, counter);
       if (r != 0) return r;
       if (*ptarget != old && NODE_TYPE(*ptarget) == NODE_QUANT) {
         r = onig_reduce_nested_quantifier(node);
@@ -2225,35 +2225,35 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
           (*counter)++;
           map[en->m.regnum].new_val = *counter;
           en->m.regnum = *counter;
-          r = noname_disable_map(&(NODE_BODY(node)), map, counter);
+          r = make_named_capture_number_map(&(NODE_BODY(node)), map, counter);
         }
         else {
           *plink = NODE_BODY(node);
           NODE_BODY(node) = NULL_NODE;
           onig_node_free(node);
-          r = noname_disable_map(plink, map, counter);
+          r = make_named_capture_number_map(plink, map, counter);
         }
       }
       else if (en->type == BAG_IF_ELSE) {
-        r = noname_disable_map(&(NODE_BAG_BODY(en)), map, counter);
+        r = make_named_capture_number_map(&(NODE_BAG_BODY(en)), map, counter);
         if (r != 0) return r;
         if (IS_NOT_NULL(en->te.Then)) {
-          r = noname_disable_map(&(en->te.Then), map, counter);
+          r = make_named_capture_number_map(&(en->te.Then), map, counter);
           if (r != 0) return r;
         }
         if (IS_NOT_NULL(en->te.Else)) {
-          r = noname_disable_map(&(en->te.Else), map, counter);
+          r = make_named_capture_number_map(&(en->te.Else), map, counter);
           if (r != 0) return r;
         }
       }
       else
-        r = noname_disable_map(&(NODE_BODY(node)), map, counter);
+        r = make_named_capture_number_map(&(NODE_BODY(node)), map, counter);
     }
     break;
 
   case NODE_ANCHOR:
     if (IS_NOT_NULL(NODE_BODY(node)))
-      r = noname_disable_map(&(NODE_BODY(node)), map, counter);
+      r = make_named_capture_number_map(&(NODE_BODY(node)), map, counter);
     break;
 
   default:
@@ -2264,7 +2264,7 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
 }
 
 static int
-renumber_node_backref(Node* node, GroupNumRemap* map)
+renumber_backref_node(Node* node, GroupNumMap* map)
 {
   int i, pos, n, old_num;
   int *backs;
@@ -2292,7 +2292,7 @@ renumber_node_backref(Node* node, GroupNumRemap* map)
 }
 
 static int
-renumber_by_map(Node* node, GroupNumRemap* map)
+renumber_backref_traverse(Node* node, GroupNumMap* map)
 {
   int r = 0;
 
@@ -2300,28 +2300,28 @@ renumber_by_map(Node* node, GroupNumRemap* map)
   case NODE_LIST:
   case NODE_ALT:
     do {
-      r = renumber_by_map(NODE_CAR(node), map);
+      r = renumber_backref_traverse(NODE_CAR(node), map);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NODE_QUANT:
-    r = renumber_by_map(NODE_BODY(node), map);
+    r = renumber_backref_traverse(NODE_BODY(node), map);
     break;
 
   case NODE_BAG:
     {
       BagNode* en = BAG_(node);
 
-      r = renumber_by_map(NODE_BODY(node), map);
+      r = renumber_backref_traverse(NODE_BODY(node), map);
       if (r != 0) return r;
 
       if (en->type == BAG_IF_ELSE) {
         if (IS_NOT_NULL(en->te.Then)) {
-          r = renumber_by_map(en->te.Then, map);
+          r = renumber_backref_traverse(en->te.Then, map);
           if (r != 0) return r;
         }
         if (IS_NOT_NULL(en->te.Else)) {
-          r = renumber_by_map(en->te.Else, map);
+          r = renumber_backref_traverse(en->te.Else, map);
           if (r != 0) return r;
         }
       }
@@ -2329,12 +2329,12 @@ renumber_by_map(Node* node, GroupNumRemap* map)
     break;
 
   case NODE_BACKREF:
-    r = renumber_node_backref(node, map);
+    r = renumber_backref_node(node, map);
     break;
 
   case NODE_ANCHOR:
     if (IS_NOT_NULL(NODE_BODY(node)))
-      r = renumber_by_map(NODE_BODY(node), map);
+      r = renumber_backref_traverse(NODE_BODY(node), map);
     break;
 
   default:
@@ -2403,18 +2403,18 @@ disable_noname_group_capture(Node** root, regex_t* reg, ScanEnv* env)
 {
   int r, i, pos, counter;
   MemStatusType loc;
-  GroupNumRemap* map;
+  GroupNumMap* map;
 
-  map = (GroupNumRemap* )xalloca(sizeof(GroupNumRemap) * (env->num_mem + 1));
+  map = (GroupNumMap* )xalloca(sizeof(GroupNumMap) * (env->num_mem + 1));
   CHECK_NULL_RETURN_MEMERR(map);
   for (i = 1; i <= env->num_mem; i++) {
     map[i].new_val = 0;
   }
   counter = 0;
-  r = noname_disable_map(root, map, &counter);
+  r = make_named_capture_number_map(root, map, &counter);
   if (r != 0) return r;
 
-  r = renumber_by_map(*root, map);
+  r = renumber_backref_traverse(*root, map);
   if (r != 0) return r;
 
   for (i = 1, pos = 1; i <= env->num_mem; i++) {

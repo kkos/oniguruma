@@ -775,7 +775,7 @@ onig_foreach_name(regex_t* reg,
 }
 
 static int
-i_renumber_name(UChar* key ARG_UNUSED, NameEntry* e, GroupNumRemap* map)
+i_renumber_name(UChar* key ARG_UNUSED, NameEntry* e, GroupNumMap* map)
 {
   int i;
 
@@ -792,7 +792,7 @@ i_renumber_name(UChar* key ARG_UNUSED, NameEntry* e, GroupNumRemap* map)
 }
 
 extern int
-onig_renumber_name_table(regex_t* reg, GroupNumRemap* map)
+onig_renumber_name_table(regex_t* reg, GroupNumMap* map)
 {
   NameTable* t = (NameTable* )reg->name_table;
 
