@@ -3005,7 +3005,7 @@ tree_min_len(Node* node, ScanEnv* env)
     {
       Node* t = NODE_BODY(node);
       if (NODE_IS_RECURSION(node)) {
-        if (NODE_IS_MIN_FIXED(t))
+        if (NODE_IS_FIXED_MIN(t))
           len = BAG_(t)->min_len;
       }
       else
@@ -3062,7 +3062,7 @@ tree_min_len(Node* node, ScanEnv* env)
       BagNode* en = BAG_(node);
       switch (en->type) {
       case BAG_MEMORY:
-        if (NODE_IS_MIN_FIXED(node))
+        if (NODE_IS_FIXED_MIN(node))
           len = en->min_len;
         else {
           if (NODE_IS_MARK1(node))
@@ -3073,7 +3073,7 @@ tree_min_len(Node* node, ScanEnv* env)
             NODE_STATUS_REMOVE(node, MARK1);
 
             en->min_len = len;
-            NODE_STATUS_ADD(node, MIN_FIXED);
+            NODE_STATUS_ADD(node, FIXED_MIN);
           }
         }
         break;
@@ -6193,7 +6193,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
 
           min = 0;
           max = INFINITE_LEN;
-          if (NODE_IS_MIN_FIXED(node)) min = en->min_len;
+          if (NODE_IS_FIXED_MIN(node)) min = en->min_len;
           if (NODE_IS_MAX_FIXED(node)) max = en->max_len;
           set_mml(&opt->len, min, max);
         }
