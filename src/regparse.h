@@ -316,7 +316,7 @@ typedef struct _Node {
 /* node status bits */
 #define NODE_ST_MIN_FIXED             (1<<0)
 #define NODE_ST_MAX_FIXED             (1<<1)
-#define NODE_ST_CLEN_FIXED            (1<<2)
+#define NODE_ST_FIXED_CLEN            (1<<2)
 #define NODE_ST_MARK1                 (1<<3)
 #define NODE_ST_MARK2                 (1<<4)
 #define NODE_ST_STRICT_REAL_REPEAT    (1<<5)
@@ -350,7 +350,7 @@ typedef struct _Node {
 #define NODE_IS_IN_ZERO_REPEAT(node)  ((NODE_STATUS(node) & NODE_ST_IN_ZERO_REPEAT) != 0)
 #define NODE_IS_NAMED_GROUP(node)     ((NODE_STATUS(node) & NODE_ST_NAMED_GROUP)  != 0)
 #define NODE_IS_FIXED_ADDR(node)      ((NODE_STATUS(node) & NODE_ST_FIXED_ADDR)   != 0)
-#define NODE_IS_CLEN_FIXED(node)      ((NODE_STATUS(node) & NODE_ST_CLEN_FIXED)   != 0)
+#define NODE_IS_FIXED_CLEN(node)      ((NODE_STATUS(node) & NODE_ST_FIXED_CLEN)   != 0)
 #define NODE_IS_MIN_FIXED(node)       ((NODE_STATUS(node) & NODE_ST_MIN_FIXED)    != 0)
 #define NODE_IS_MAX_FIXED(node)       ((NODE_STATUS(node) & NODE_ST_MAX_FIXED)    != 0)
 #define NODE_IS_MARK1(node)           ((NODE_STATUS(node) & NODE_ST_MARK1)        != 0)

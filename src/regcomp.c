@@ -2562,13 +2562,13 @@ get_char_len_node1(Node* node, regex_t* reg, int* len, int level)
       switch (en->type) {
       case BAG_MEMORY:
 #ifdef USE_CALL
-        if (NODE_IS_CLEN_FIXED(node))
+        if (NODE_IS_FIXED_CLEN(node))
           *len = en->char_len;
         else {
           r = get_char_len_node1(NODE_BODY(node), reg, len, level);
           if (r == 0) {
             en->char_len = *len;
-            NODE_STATUS_ADD(node, CLEN_FIXED);
+            NODE_STATUS_ADD(node, FIXED_CLEN);
           }
         }
         break;
