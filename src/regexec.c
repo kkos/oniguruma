@@ -2574,7 +2574,9 @@ typedef struct {
 #define MATCH_DEBUG_OUT(offset)
 #endif
 
-#define MATCH_AT_ERROR_RETURN(err_code)  best_len = err_code; goto match_at_end
+#define MATCH_AT_ERROR_RETURN(err_code) do {\
+  best_len = err_code; goto match_at_end;\
+} while(0)
 
 
 /* match data(str - end) from position (sstart). */
