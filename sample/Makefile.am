@@ -3,6 +3,7 @@
 lib_onig = ../src/libonig.la
 LDADD  = $(lib_onig)
 
+AM_CFLAGS   = -Wall
 AM_LDFLAGS  = -L$(prefix)/lib
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
