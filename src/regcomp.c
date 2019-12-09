@@ -1180,8 +1180,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
     r = compile_tree_n_times(NODE_QUANT_BODY(qn), qn->lower, reg, env);
     if (r != 0) return r;
     if (IS_NOT_NULL(qn->next_head_exact)) {
-      r = add_op(reg,
-                 OPTON_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), reg)) ?
+      r = add_op(reg, NODE_IS_MULTILINE(NODE_QUANT_BODY(qn)) ?
                  OP_ANYCHAR_ML_STAR_PEEK_NEXT : OP_ANYCHAR_STAR_PEEK_NEXT);
       if (r != 0) return r;
 
@@ -1189,8 +1188,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
       return 0;
     }
     else {
-      r = add_op(reg,
-                 OPTON_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), reg)) ?
+      r = add_op(reg, NODE_IS_MULTILINE(NODE_QUANT_BODY(qn)) ?
                  OP_ANYCHAR_ML_STAR : OP_ANYCHAR_STAR);
       return r;
     }
@@ -2055,8 +2053,7 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
 
       switch (CTYPE_(node)->ctype) {
       case CTYPE_ANYCHAR:
-        r = add_op(reg, OPTON_MULTILINE(CTYPE_OPTION(node, reg)) ?
-                   OP_ANYCHAR_ML : OP_ANYCHAR);
+        r = add_op(reg, NODE_IS_MULTILINE(node) ? OP_ANYCHAR_ML : OP_ANYCHAR);
         break;
 
       case ONIGENC_CTYPE_WORD:
@@ -6153,7 +6150,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
       if (IS_INFINITE_REPEAT(qn->upper)) {
         if (env->mm.max == 0 &&
             NODE_IS_ANYCHAR(NODE_BODY(node)) && qn->greedy != 0) {
-          if (OPTON_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), env)))
+          if (NODE_IS_MULTILINE(NODE_QUANT_BODY(qn)))
             add_opt_anc_info(&opt->anc, ANCR_ANYCHAR_INF_ML);
           else
             add_opt_anc_info(&opt->anc, ANCR_ANYCHAR_INF);

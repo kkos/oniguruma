@@ -2166,30 +2166,20 @@ node_new_ctype(int type, int not, OnigOptionType options)
   NODE_SET_TYPE(node, NODE_CTYPE);
   CTYPE_(node)->ctype   = type;
   CTYPE_(node)->not     = not;
-  CTYPE_(node)->options = options;
   CTYPE_(node)->ascii_mode = OPTON_IS_ASCII_MODE_CTYPE(type, options);
   return node;
 }
 
 static Node*
-node_new_anychar(void)
+node_new_anychar(OnigOptionType options)
 {
-  Node* node = node_new_ctype(CTYPE_ANYCHAR, FALSE, ONIG_OPTION_NONE);
-  return node;
-}
-
-static Node*
-node_new_anychar_with_fixed_option(OnigOptionType option)
-{
-  CtypeNode* ct;
   Node* node;
 
-  node = node_new_anychar();
+  node = node_new_ctype(CTYPE_ANYCHAR, FALSE, options);
   CHECK_NULL_RETURN(node);
 
-  ct = CTYPE_(node);
-  ct->options = option;
-  NODE_STATUS_ADD(node, FIXED_OPTION);
+  if (OPTON_MULTILINE(options))
+    NODE_STATUS_ADD(node, MULTILINE);
   return node;
 }
 
@@ -2198,7 +2188,7 @@ node_new_no_newline(Node** node, ScanEnv* env)
 {
   Node* n;
 
-  n = node_new_anychar_with_fixed_option(ONIG_OPTION_NONE);
+  n = node_new_anychar(ONIG_OPTION_NONE);
   CHECK_NULL_RETURN_MEMERR(n);
   *node = n;
   return 0;
@@ -2209,7 +2199,7 @@ node_new_true_anychar(Node** node, ScanEnv* env)
 {
   Node* n;
 
-  n = node_new_anychar_with_fixed_option(ONIG_OPTION_MULTILINE);
+  n = node_new_anychar(ONIG_OPTION_MULTILINE);
   CHECK_NULL_RETURN_MEMERR(n);
   *node = n;
   return 0;
@@ -8138,12 +8128,12 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
     break;
 
   case TK_ANYCHAR:
-    *np = node_new_anychar();
+    *np = node_new_anychar(env->options);
     CHECK_NULL_RETURN_MEMERR(*np);
     break;
 
   case TK_ANYCHAR_ANYTIME:
-    *np = node_new_anychar();
+    *np = node_new_anychar(env->options);
     CHECK_NULL_RETURN_MEMERR(*np);
     qn = node_new_quantifier(0, INFINITE_REPEAT, FALSE);
     CHECK_NULL_RETURN_MEMERR(qn);
