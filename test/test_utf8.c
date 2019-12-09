@@ -1217,6 +1217,13 @@ extern int main(int argc, char* argv[])
   x2("((?(a)\\g<1>))", "aab", 0, 2);
   x2("(b(?(a)|\\g<1>))", "bba", 0, 3);
   e("(()(?(2)\\g<1>))", "", ONIGERR_NEVER_ENDING_RECURSION);
+  x2("(?(a)(?:b|c))", "ac", 0, 2);
+  n("^(?(a)b|c)", "ac");
+  x2("(?i)a|b", "B", 0, 1);
+  n("((?i)a|b.)|c", "C");
+  n("c(?i)a.|b.", "Caz");
+  x2("c(?i)a|b", "cB", 0, 2); /* == c(?i:a|b) */
+  x2("c(?i)a.|b.", "cBb", 0, 3);
 
   x2("(?i)st", "st", 0, 2);
   x2("(?i)st", "St", 0, 2);
@@ -1301,6 +1308,13 @@ extern int main(int argc, char* argv[])
   e("(?<abc>\\g<abc>)", "zzzz", ONIGERR_NEVER_ENDING_RECURSION);
   e("(?<=(?>abc))", "abc", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
   e("(*FOO)", "abcdefg", ONIGERR_UNDEFINED_CALLOUT_NAME);
+  e("*", "abc", ONIGERR_TARGET_OF_REPEAT_OPERATOR_NOT_SPECIFIED);
+  e("|*", "abc", ONIGERR_TARGET_OF_REPEAT_OPERATOR_NOT_SPECIFIED);
+  e("(?i)*", "abc", ONIGERR_TARGET_OF_REPEAT_OPERATOR_NOT_SPECIFIED);
+  e("(?:*)", "abc", ONIGERR_TARGET_OF_REPEAT_OPERATOR_NOT_SPECIFIED);
+  e("(?m:*)", "abc", ONIGERR_TARGET_OF_REPEAT_OPERATOR_NOT_SPECIFIED);
+  e("(?:)*", "abc", ONIGERR_TARGET_OF_REPEAT_OPERATOR_NOT_SPECIFIED);
+  e("^*", "abc", ONIGERR_TARGET_OF_REPEAT_OPERATOR_INVALID);
 
   fprintf(stdout,
        "\nRESULT   SUCC: %4d,  FAIL: %d,  ERROR: %d      (by Oniguruma %s)\n",
