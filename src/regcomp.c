@@ -2098,7 +2098,7 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
       else {
 #ifdef USE_BACKREF_WITH_LEVEL
         if (NODE_IS_NEST_LEVEL(node)) {
-          if ((reg->options & ONIG_OPTION_IGNORECASE) != 0)
+          if (OPTON_IGNORECASE(reg->options))
             r = add_op(reg, OP_BACKREF_WITH_LEVEL_IC);
           else
             r = add_op(reg, OP_BACKREF_WITH_LEVEL);
