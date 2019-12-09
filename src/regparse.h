@@ -286,9 +286,6 @@ typedef struct _Node {
 #define NODE_IS_ANYCHAR(node) \
   (NODE_TYPE(node) == NODE_CTYPE && CTYPE_(node)->ctype == CTYPE_ANYCHAR)
 
-#define CTYPE_OPTION(node, reg) \
-  (NODE_IS_FIXED_OPTION(node) ? CTYPE_(node)->options : reg->options)
-
 
 #define ANCR_ANYCHAR_INF_MASK  (ANCR_ANYCHAR_INF | ANCR_ANYCHAR_INF_ML)
 #define ANCR_END_BUF_MASK      (ANCR_END_BUF | ANCR_SEMI_END_BUF)
@@ -331,13 +328,12 @@ typedef struct _Node {
 #define NODE_ST_BY_NAME               (1<<15) /* backref by name */
 #define NODE_ST_BACKREF               (1<<16)
 #define NODE_ST_CHECKER               (1<<17)
-#define NODE_ST_FIXED_OPTION          (1<<18)
-#define NODE_ST_PROHIBIT_RECURSION    (1<<19)
-#define NODE_ST_SUPER                 (1<<20)
-#define NODE_ST_EMPTY_STATUS_CHECK    (1<<21)
-#define NODE_ST_IGNORECASE            (1<<22)
-#define NODE_ST_MULTILINE             (1<<23)
-#define NODE_ST_TEXT_SEGMENT_WORD     (1<<24)
+#define NODE_ST_PROHIBIT_RECURSION    (1<<18)
+#define NODE_ST_SUPER                 (1<<19)
+#define NODE_ST_EMPTY_STATUS_CHECK    (1<<20)
+#define NODE_ST_IGNORECASE            (1<<21)
+#define NODE_ST_MULTILINE             (1<<22)
+#define NODE_ST_TEXT_SEGMENT_WORD     (1<<23)
 
 
 #define NODE_STATUS(node)           (((Node* )node)->u.base.status)
@@ -361,7 +357,6 @@ typedef struct _Node {
 #define NODE_IS_BY_NAME(node)         ((NODE_STATUS(node) & NODE_ST_BY_NAME)      != 0)
 #define NODE_IS_BACKREF(node)         ((NODE_STATUS(node) & NODE_ST_BACKREF)      != 0)
 #define NODE_IS_CHECKER(node)         ((NODE_STATUS(node) & NODE_ST_CHECKER)      != 0)
-#define NODE_IS_FIXED_OPTION(node)    ((NODE_STATUS(node) & NODE_ST_FIXED_OPTION) != 0)
 #define NODE_IS_SUPER(node)           ((NODE_STATUS(node) & NODE_ST_SUPER)        != 0)
 #define NODE_IS_PROHIBIT_RECURSION(node) \
     ((NODE_STATUS(node) & NODE_ST_PROHIBIT_RECURSION) != 0)
