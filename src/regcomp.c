@@ -1181,7 +1181,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
     if (r != 0) return r;
     if (IS_NOT_NULL(qn->next_head_exact)) {
       r = add_op(reg,
-                 IS_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), reg)) ?
+                 OPTON_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), reg)) ?
                  OP_ANYCHAR_ML_STAR_PEEK_NEXT : OP_ANYCHAR_STAR_PEEK_NEXT);
       if (r != 0) return r;
 
@@ -1190,7 +1190,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ScanEnv* env)
     }
     else {
       r = add_op(reg,
-                 IS_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), reg)) ?
+                 OPTON_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), reg)) ?
                  OP_ANYCHAR_ML_STAR : OP_ANYCHAR_STAR);
       return r;
     }
@@ -2055,7 +2055,7 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
 
       switch (CTYPE_(node)->ctype) {
       case CTYPE_ANYCHAR:
-        r = add_op(reg, IS_MULTILINE(CTYPE_OPTION(node, reg)) ?
+        r = add_op(reg, OPTON_MULTILINE(CTYPE_OPTION(node, reg)) ?
                    OP_ANYCHAR_ML : OP_ANYCHAR);
         break;
 
@@ -2111,7 +2111,7 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
 #endif
         if (br->back_num == 1) {
           n = br->back_static[0];
-          if (IS_IGNORECASE(reg->options)) {
+          if (OPTON_IGNORECASE(reg->options)) {
             r = add_op(reg, OP_BACKREF_N_IC);
             if (r != 0) return r;
             COP(reg)->backref_n.n1 = n;
@@ -2132,7 +2132,7 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
           int num;
           int* p;
 
-          r = add_op(reg, IS_IGNORECASE(reg->options) ?
+          r = add_op(reg, OPTON_IGNORECASE(reg->options) ?
                      OP_BACKREF_MULTI_IC : OP_BACKREF_MULTI);
           if (r != 0) return r;
 
@@ -2864,7 +2864,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
         break;
 
       if (exact == 0 ||
-          ! IS_IGNORECASE(reg->options) || NODE_STRING_IS_CRUDE(node)) {
+          ! OPTON_IGNORECASE(reg->options) || NODE_STRING_IS_CRUDE(node)) {
         n = node;
       }
     }
@@ -5115,7 +5115,7 @@ tune_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     break;
 
   case NODE_STRING:
-    if (IS_IGNORECASE(reg->options) && !NODE_STRING_IS_CRUDE(node)) {
+    if (OPTON_IGNORECASE(reg->options) && !NODE_STRING_IS_CRUDE(node)) {
       r = unravel_case_fold_string(node, reg, state);
     }
     break;
@@ -6153,7 +6153,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
       if (IS_INFINITE_REPEAT(qn->upper)) {
         if (env->mm.max == 0 &&
             NODE_IS_ANYCHAR(NODE_BODY(node)) && qn->greedy != 0) {
-          if (IS_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), env)))
+          if (OPTON_MULTILINE(CTYPE_OPTION(NODE_QUANT_BODY(qn), env)))
             add_opt_anc_info(&opt->anc, ANCR_ANYCHAR_INF_ML);
           else
             add_opt_anc_info(&opt->anc, ANCR_ANYCHAR_INF);

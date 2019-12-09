@@ -2167,7 +2167,7 @@ node_new_ctype(int type, int not, OnigOptionType options)
   CTYPE_(node)->ctype   = type;
   CTYPE_(node)->not     = not;
   CTYPE_(node)->options = options;
-  CTYPE_(node)->ascii_mode = IS_ASCII_MODE_CTYPE_OPTION(type, options);
+  CTYPE_(node)->ascii_mode = OPTON_IS_ASCII_MODE_CTYPE(type, options);
   return node;
 }
 
@@ -5664,14 +5664,14 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case '^':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_LINE_ANCHOR)) break;
       tok->type = TK_ANCHOR;
-      tok->u.subtype = (IS_SINGLELINE(env->options)
+      tok->u.subtype = (OPTON_SINGLELINE(env->options)
                         ? ANCR_BEGIN_BUF : ANCR_BEGIN_LINE);
       break;
 
     case '$':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_LINE_ANCHOR)) break;
       tok->type = TK_ANCHOR;
-      tok->u.subtype = (IS_SINGLELINE(env->options)
+      tok->u.subtype = (OPTON_SINGLELINE(env->options)
                         ? ANCR_SEMI_END_BUF : ANCR_END_LINE);
       break;
 
@@ -5686,7 +5686,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       break;
 
     case '#':
-      if (IS_EXTEND(env->options)) {
+      if (OPTON_EXTEND(env->options)) {
         while (!PEND) {
           PFETCH(c);
           if (ONIGENC_IS_CODE_NEWLINE(enc, c))
@@ -5698,7 +5698,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       break;
 
     case ' ': case '\t': case '\n': case '\r': case '\f':
-      if (IS_EXTEND(env->options))
+      if (OPTON_EXTEND(env->options))
         goto start;
       break;
 
@@ -5894,7 +5894,7 @@ add_ctype_to_cc(CClassNode* cc, int ctype, int not, ScanEnv* env)
   OnigCodePoint sb_out;
   OnigEncoding enc = env->enc;
 
-  ascii_mode = IS_ASCII_MODE_CTYPE_OPTION(ctype, env->options);
+  ascii_mode = OPTON_IS_ASCII_MODE_CTYPE(ctype, env->options);
 
   r = ONIGENC_GET_CTYPE_CODE_RANGE(enc, ctype, &sb_out, &ranges);
   if (r == 0) {
@@ -8111,7 +8111,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
       if (r != 0) return r;
 
       cc = CCLASS_(*np);
-      if (IS_IGNORECASE(env->options)) {
+      if (OPTON_IGNORECASE(env->options)) {
         IApplyCaseFoldArg iarg;
 
         iarg.env      = env;
@@ -8182,8 +8182,8 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
 
   case TK_ANCHOR:
     {
-      int ascii_mode =
-        IS_WORD_ASCII(env->options) && IS_WORD_ANCHOR_TYPE(tok->u.anchor) ? 1 : 0;
+      int ascii_mode = OPTON_WORD_ASCII(env->options) &&
+                       IS_WORD_ANCHOR_TYPE(tok->u.anchor) ? 1 : 0;
       *np = onig_node_new_anchor(tok->u.anchor, ascii_mode);
       CHECK_NULL_RETURN_MEMERR(*np);
     }

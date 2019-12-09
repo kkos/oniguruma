@@ -2783,7 +2783,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       if (n > best_len) {
         OnigRegion* region;
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
-        if (IS_FIND_LONGEST(option)) {
+        if (OPTON_FIND_LONGEST(option)) {
           if (n > msa->best_len) {
             msa->best_len = n;
             msa->best_s   = (UChar* )sstart;
@@ -2798,7 +2798,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           if (keep > s) keep = s;
 
 #ifdef USE_POSIX_API_REGION_OPTION
-          if (IS_POSIX_REGION(msa->options)) {
+          if (OPTON_POSIX_REGION(msa->options)) {
             posix_regmatch_t* rmt = (posix_regmatch_t* )region;
 
             rmt[0].rm_so = (regoff_t )(keep - str);
@@ -2852,7 +2852,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
             }
 #endif /* USE_CAPTURE_HISTORY */
 #ifdef USE_POSIX_API_REGION_OPTION
-          } /* else IS_POSIX_REGION() */
+          } /* else OPTON_POSIX_REGION() */
 #endif
         } /* if (region) */
       } /* n > best_len */
@@ -2862,12 +2862,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
       SOP_OUT;
 
-      if (IS_FIND_CONDITION(option)) {
-        if (IS_FIND_NOT_EMPTY(option) && s == sstart) {
+      if (OPTON_FIND_CONDITION(option)) {
+        if (OPTON_FIND_NOT_EMPTY(option) && s == sstart) {
           best_len = ONIG_MISMATCH;
           goto fail; /* for retry */
         }
-        if (IS_FIND_LONGEST(option) && DATA_ENSURE_CHECK1) {
+        if (OPTON_FIND_LONGEST(option) && DATA_ENSURE_CHECK1) {
           goto fail; /* for retry */
         }
       }
@@ -3422,7 +3422,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     CASE_OP(BEGIN_LINE)
       if (ON_STR_BEGIN(s)) {
-        if (IS_NOTBOL(msa->options)) goto fail;
+        if (OPTON_NOTBOL(msa->options)) goto fail;
         INC_OP;
         JUMP_OUT;
       }
@@ -3437,7 +3437,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #ifndef USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE
         if (IS_EMPTY_STR || !ONIGENC_IS_MBC_NEWLINE(encode, sprev, end)) {
 #endif
-          if (IS_NOTEOL(msa->options)) goto fail;
+          if (OPTON_NOTEOL(msa->options)) goto fail;
           INC_OP;
           JUMP_OUT;
 #ifndef USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE
@@ -3461,7 +3461,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #ifndef USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE
         if (IS_EMPTY_STR || !ONIGENC_IS_MBC_NEWLINE(encode, sprev, end)) {
 #endif
-          if (IS_NOTEOL(msa->options)) goto fail;
+          if (OPTON_NOTEOL(msa->options)) goto fail;
           INC_OP;
           JUMP_OUT;
 #ifndef USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE
@@ -4435,7 +4435,7 @@ onig_regset_search_with_param(OnigRegSet* set,
   if (set->n == 0)
     return ONIG_MISMATCH;
 
-  if (IS_POSIX_REGION(option))
+  if (OPTON_POSIX_REGION(option))
     return ONIGERR_INVALID_ARGUMENT;
 
   r = 0;
@@ -4569,7 +4569,7 @@ onig_regset_search_with_param(OnigRegSet* set,
   for (i = 0; i < set->n; i++) {
     if (IS_NOT_NULL(msas))
       MATCH_ARG_FREE(msas[i]);
-    if (IS_FIND_NOT_EMPTY(set->rs[i].reg->options) &&
+    if (OPTON_FIND_NOT_EMPTY(set->rs[i].reg->options) &&
         IS_NOT_NULL(set->rs[i].region)) {
       onig_region_clear(set->rs[i].region);
     }
@@ -4588,7 +4588,7 @@ onig_regset_search_with_param(OnigRegSet* set,
   for (i = 0; i < set->n; i++) {
     if (IS_NOT_NULL(msas))
       MATCH_ARG_FREE(msas[i]);
-    if (IS_FIND_NOT_EMPTY(set->rs[i].reg->options) &&
+    if (OPTON_FIND_NOT_EMPTY(set->rs[i].reg->options) &&
         IS_NOT_NULL(set->rs[i].region)) {
       onig_region_clear(set->rs[i].region);
     }
@@ -4896,7 +4896,7 @@ onig_match_with_param(regex_t* reg, const UChar* str, const UChar* end,
   MATCH_ARG_INIT(msa, reg, option, region, at, mp);
   if (region
 #ifdef USE_POSIX_API_REGION_OPTION
-      && !IS_POSIX_REGION(option)
+      && !OPTON_POSIX_REGION(option)
 #endif
       ) {
     r = onig_region_resize_clear(region, reg->num_mem + 1);
@@ -5213,7 +5213,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
 
   if (region
 #ifdef USE_POSIX_API_REGION_OPTION
-      && !IS_POSIX_REGION(option)
+      && ! OPTON_POSIX_REGION(option)
 #endif
       ) {
     r = onig_region_resize_clear(region, reg->num_mem + 1);
@@ -5235,7 +5235,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
   r = match_at(reg, str, end, (upper_range), s, prev, &msa); \
   if (r != ONIG_MISMATCH) {\
     if (r >= 0) {\
-      if (! IS_FIND_LONGEST(reg->options)) {\
+      if (! OPTON_FIND_LONGEST(reg->options)) {\
         goto match;\
       }\
     }\
@@ -5511,7 +5511,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
 
  mismatch:
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
-  if (IS_FIND_LONGEST(reg->options)) {
+  if (OPTON_FIND_LONGEST(reg->options)) {
     if (msa.best_len >= 0) {
       s = msa.best_s;
       goto match;
@@ -5525,9 +5525,9 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
 
   /* If result is mismatch and no FIND_NOT_EMPTY option,
      then the region is not set in match_at(). */
-  if (IS_FIND_NOT_EMPTY(reg->options) && region
+  if (OPTON_FIND_NOT_EMPTY(reg->options) && region
 #ifdef USE_POSIX_API_REGION_OPTION
-      && !IS_POSIX_REGION(option)
+      && !OPTON_POSIX_REGION(option)
 #endif
       ) {
     onig_region_clear(region);
@@ -5761,7 +5761,7 @@ onig_regset_add(OnigRegSet* set, regex_t* reg)
 {
   OnigRegion* region;
 
-  if (IS_FIND_LONGEST(reg->options))
+  if (OPTON_FIND_LONGEST(reg->options))
     return ONIGERR_INVALID_ARGUMENT;
 
   if (set->n != 0 && reg->enc != set->enc)
@@ -5807,7 +5807,7 @@ onig_regset_replace(OnigRegSet* set, int at, regex_t* reg)
     set->n--;
   }
   else {
-    if (IS_FIND_LONGEST(reg->options))
+    if (OPTON_FIND_LONGEST(reg->options))
       return ONIGERR_INVALID_ARGUMENT;
 
     if (set->n > 1 && reg->enc != set->enc)
