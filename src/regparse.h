@@ -336,6 +336,9 @@ typedef struct _Node {
 #define NODE_ST_PROHIBIT_RECURSION    (1<<19)
 #define NODE_ST_SUPER                 (1<<20)
 #define NODE_ST_EMPTY_STATUS_CHECK    (1<<21)
+#define NODE_ST_IGNORECASE            (1<<22)
+#define NODE_ST_MULTILINE             (1<<23)
+#define NODE_ST_TEXT_SEGMENT_WORD     (1<<24)
 
 
 #define NODE_STATUS(node)           (((Node* )node)->u.base.status)
@@ -367,6 +370,9 @@ typedef struct _Node {
     ((NODE_STATUS(node) & NODE_ST_STRICT_REAL_REPEAT) != 0)
 #define NODE_IS_EMPTY_STATUS_CHECK(node) \
     ((NODE_STATUS(node) & NODE_ST_EMPTY_STATUS_CHECK) != 0)
+#define NODE_IS_IGNORECASE(node)      ((NODE_STATUS(node) & NODE_ST_IGNORECASE) != 0)
+#define NODE_IS_MULTILINE(node)       ((NODE_STATUS(node) & NODE_ST_MULTILINE) != 0)
+#define NODE_IS_TEXT_SEGMENT_WORD(node)  ((NODE_STATUS(node) & NODE_ST_TEXT_SEGMENT_WORD) != 0)
 
 #define NODE_PARENT(node)         ((node)->u.base.parent)
 #define NODE_BODY(node)           ((node)->u.base.body)
