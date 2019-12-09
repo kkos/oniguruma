@@ -308,6 +308,7 @@ typedef unsigned int  MemStatusType;
 #define OPTON_SPACE_ASCII(option) \
   ((option) & (ONIG_OPTION_SPACE_IS_ASCII | ONIG_OPTION_POSIX_IS_ASCII))
 #define OPTON_POSIX_ASCII(option)    ((option) & ONIG_OPTION_POSIX_IS_ASCII)
+#define OPTON_TEXT_SEGMENT_WORD(option)  ((option) & ONIG_OPTION_TEXT_SEGMENT_WORD)
 
 #define OPTON_IS_ASCII_MODE_CTYPE(ctype, options) \
   ((ctype) >= 0 && \

@@ -1744,7 +1744,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
 
       type = EXTENDED_GRAPHEME_CLUSTER_BOUNDARY;
 #ifdef USE_UNICODE_WORD_BREAK
-      if (ONIG_IS_OPTION_ON(reg->options, ONIG_OPTION_TEXT_SEGMENT_WORD))
+      if (OPTON_TEXT_SEGMENT_WORD(reg->options))
         type = WORD_BOUNDARY;
 #endif
 
