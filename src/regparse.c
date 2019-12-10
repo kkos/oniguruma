@@ -7915,7 +7915,7 @@ i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[], int to_len, void* arg)
         else {
           len = ONIGENC_CODE_TO_MBC(env->enc, to[i], buf);
           if (n == 0 || NODE_TYPE(ns[n-1]) != NODE_STRING) {
-            csnode = onig_node_new_str(buf, buf + len);
+            csnode = node_new_str(buf, buf + len);
             if (IS_NULL(csnode)) goto err_free_ns;
 
             NODE_STRING_SET_CASE_EXPANDED(csnode);
