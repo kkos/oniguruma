@@ -3885,7 +3885,9 @@ reduce_string_list(Node* node)
         next_node = NODE_CDR(node);
         curr = NODE_CAR(node);
         if (NODE_TYPE(curr) == NODE_STRING) {
-          if (IS_NULL(prev) || STR_(curr)->flag != STR_(prev)->flag) {
+          if (IS_NULL(prev)
+              || STR_(curr)->flag  != STR_(prev)->flag
+              || NODE_STATUS(curr) != NODE_STATUS(prev)) {
             prev = curr;
             prev_node = node;
           }
