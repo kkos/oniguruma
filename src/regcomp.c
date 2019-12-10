@@ -1742,7 +1742,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
 
       type = EXTENDED_GRAPHEME_CLUSTER_BOUNDARY;
 #ifdef USE_UNICODE_WORD_BREAK
-      if (OPTON_TEXT_SEGMENT_WORD(reg->options))
+      if (NODE_IS_TEXT_SEGMENT_WORD(node))
         type = WORD_BOUNDARY;
 #endif
 
@@ -3976,7 +3976,7 @@ divide_look_behind_alternatives(Node* node)
 
   np = node;
   while (IS_NOT_NULL(np = NODE_CDR(np))) {
-    insert_node = onig_node_new_anchor(anc_type, an->ascii_mode);
+    insert_node = onig_node_copy(head);
     CHECK_NULL_RETURN_MEMERR(insert_node);
     NODE_BODY(insert_node) = NODE_CAR(np);
     NODE_CAR(np) = insert_node;

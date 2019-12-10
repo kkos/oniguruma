@@ -2137,6 +2137,18 @@ node_new(void)
   return node;
 }
 
+extern Node*
+onig_node_copy(Node* from)
+{
+  Node* copy;
+
+  copy = node_new();
+  CHECK_NULL_RETURN(copy);
+  xmemcpy(copy, from, sizeof(*copy));
+
+  return copy;
+}
+
 
 static void
 initialize_cclass(CClassNode* cc)
@@ -2281,16 +2293,39 @@ make_alt(int n, Node* ns[])
   return make_list_or_alt(NODE_ALT, n, ns);
 }
 
-extern Node*
-onig_node_new_anchor(int type, int ascii_mode)
+static Node*
+node_new_anchor(int type)
 {
-  Node* node = node_new();
+  Node* node;
+
+  node = node_new();
   CHECK_NULL_RETURN(node);
 
   NODE_SET_TYPE(node, NODE_ANCHOR);
   ANCHOR_(node)->type       = type;
   ANCHOR_(node)->char_len   = -1;
+  ANCHOR_(node)->ascii_mode = 0;
+  return node;
+}
+
+static Node*
+node_new_anchor_with_options(int type, OnigOptionType options)
+{
+  int ascii_mode;
+  Node* node;
+
+  node = node_new_anchor(type);
+  CHECK_NULL_RETURN(node);
+
+  ascii_mode = OPTON_WORD_ASCII(options) && IS_WORD_ANCHOR_TYPE(type) ? 1 : 0;
   ANCHOR_(node)->ascii_mode = ascii_mode;
+
+  if (type == ANCR_TEXT_SEGMENT_BOUNDARY ||
+      type == ANCR_NO_TEXT_SEGMENT_BOUNDARY) {
+    if (OPTON_TEXT_SEGMENT_WORD(options))
+      NODE_STATUS_ADD(node, TEXT_SEGMENT_WORD);
+  }
+
   return node;
 }
 
@@ -2682,7 +2717,7 @@ make_text_segment(Node** node, ScanEnv* env)
   ns[1] = NULL_NODE;
 
   r = ONIGERR_MEMORY;
-  ns[0] = onig_node_new_anchor(ANCR_NO_TEXT_SEGMENT_BOUNDARY, FALSE);
+  ns[0] = node_new_anchor_with_options(ANCR_NO_TEXT_SEGMENT_BOUNDARY, env->options);
   if (IS_NULL(ns[0])) goto err;
 
   r = node_new_true_anychar(&ns[1], env);
@@ -7085,10 +7120,10 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
       break;
 
     case '=':
-      *np = onig_node_new_anchor(ANCR_PREC_READ, FALSE);
+      *np = node_new_anchor(ANCR_PREC_READ);
       break;
     case '!':  /*         preceding read */
-      *np = onig_node_new_anchor(ANCR_PREC_READ_NOT, FALSE);
+      *np = node_new_anchor(ANCR_PREC_READ_NOT);
       break;
     case '>':            /* (?>...) stop backtrack */
       *np = node_new_bag(BAG_STOP_BACKTRACK);
@@ -7106,9 +7141,9 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
       if (PEND) return ONIGERR_END_PATTERN_WITH_UNMATCHED_PARENTHESIS;
       PFETCH(c);
       if (c == '=')
-        *np = onig_node_new_anchor(ANCR_LOOK_BEHIND, FALSE);
+        *np = node_new_anchor(ANCR_LOOK_BEHIND);
       else if (c == '!')
-        *np = onig_node_new_anchor(ANCR_LOOK_BEHIND_NOT, FALSE);
+        *np = node_new_anchor(ANCR_LOOK_BEHIND_NOT);
       else {
         if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_LT_NAMED_GROUP)) {
           UChar *name;
@@ -8171,12 +8206,8 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
 #endif
 
   case TK_ANCHOR:
-    {
-      int ascii_mode = OPTON_WORD_ASCII(env->options) &&
-                       IS_WORD_ANCHOR_TYPE(tok->u.anchor) ? 1 : 0;
-      *np = onig_node_new_anchor(tok->u.anchor, ascii_mode);
-      CHECK_NULL_RETURN_MEMERR(*np);
-    }
+    *np = node_new_anchor_with_options(tok->u.anchor, env->options);
+    CHECK_NULL_RETURN_MEMERR(*np);
     break;
 
   case TK_REPEAT:
