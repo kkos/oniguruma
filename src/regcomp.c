@@ -517,10 +517,12 @@ node_str_cat_case_fold(Node* node, const UChar* s, const UChar* end, int case_mi
 }
 
 static void
-node_conv_to_str_node(Node* node, int flag)
+node_conv_to_str_node(Node* node, Node* ref_node)
 {
   NODE_SET_TYPE(node, NODE_STRING);
-  STR_(node)->flag     = flag;
+  NODE_STATUS(node) = NODE_STATUS(ref_node);
+
+  STR_(node)->flag     = STR_(ref_node)->flag;
   STR_(node)->s        = STR_(node)->buf;
   STR_(node)->end      = STR_(node)->buf;
   STR_(node)->capacity = 0;
@@ -5053,7 +5055,7 @@ tune_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
 
       if (len * qn->lower <= EXPAND_STRING_MAX_LENGTH) {
         int i, n = qn->lower;
-        node_conv_to_str_node(node, STR_(body)->flag);
+        node_conv_to_str_node(node, body);
         for (i = 0; i < n; i++) {
           r = node_str_node_cat(node, body);
           if (r != 0) return r;
