@@ -3298,11 +3298,13 @@ str_node_split_last_char(Node* node, OnigEncoding enc)
     if (p && p > sn->s) { /* can be split. */
       rn = node_new_str(p, sn->end);
       CHECK_NULL_RETURN(rn);
-      STR_(rn)->flag = sn->flag;
 
       sn->end = (UChar* )p;
+      STR_(rn)->flag = sn->flag;
+      NODE_STATUS(rn) = NODE_STATUS(node);
     }
   }
+
   return rn;
 }
 
