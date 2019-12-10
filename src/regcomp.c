@@ -2863,7 +2863,8 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
         break;
 
       if (exact == 0 ||
-          ! OPTON_IGNORECASE(reg->options) || NODE_STRING_IS_CRUDE(node)) {
+          ! (NODE_IS_IGNORECASE(node) || NODE_STRING_IS_CASE_FOLD_MATCH(node))
+          || NODE_STRING_IS_CRUDE(node)) {
         n = node;
       }
     }
@@ -5116,7 +5117,7 @@ tune_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     break;
 
   case NODE_STRING:
-    if (OPTON_IGNORECASE(reg->options) && !NODE_STRING_IS_CRUDE(node)) {
+    if (NODE_IS_IGNORECASE(node) && ! NODE_STRING_IS_CRUDE(node)) {
       r = unravel_case_fold_string(node, reg, state);
     }
     break;
