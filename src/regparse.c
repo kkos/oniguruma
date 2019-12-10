@@ -3253,9 +3253,22 @@ onig_node_new_str(const UChar* s, const UChar* end)
 }
 
 static Node*
-node_new_str_crude(UChar* s, UChar* end)
+node_new_str_with_options(const UChar* s, const UChar* end,
+                          OnigOptionType options)
 {
-  Node* node = node_new_str(s, end);
+  Node* node;
+  node = node_new_str(s, end);
+
+  if (OPTON_IGNORECASE(options))
+    NODE_STATUS_ADD(node, IGNORECASE);
+
+  return node;
+}
+
+static Node*
+node_new_str_crude(UChar* s, UChar* end, OnigOptionType options)
+{
+  Node* node = node_new_str_with_options(s, end, options);
   CHECK_NULL_RETURN(node);
   NODE_STRING_SET_CRUDE(node);
   return node;
@@ -3268,14 +3281,14 @@ node_new_empty(void)
 }
 
 static Node*
-node_new_str_crude_char(UChar c)
+node_new_str_crude_char(UChar c, OnigOptionType options)
 {
   int i;
   UChar p[1];
   Node* node;
 
   p[0] = c;
-  node = node_new_str_crude(p, p + 1);
+  node = node_new_str_crude(p, p + 1, options);
 
   /* clear buf tail */
   for (i = 1; i < NODE_STRING_BUF_SIZE; i++)
@@ -4033,7 +4046,7 @@ node_new_general_newline(Node** node, ScanEnv* env)
   alen = ONIGENC_CODE_TO_MBC(env->enc, 0x0a, buf + dlen);
   if (alen < 0) return alen;
 
-  crnl = node_new_str_crude(buf, buf + dlen + alen);
+  crnl = node_new_str_crude(buf, buf + dlen + alen, ONIG_OPTION_NONE);
   CHECK_NULL_RETURN_MEMERR(crnl);
 
   ncc = node_new_cclass();
@@ -8015,7 +8028,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
   case TK_STRING:
   tk_byte:
     {
-      *np = node_new_str(tok->backp, *src);
+      *np = node_new_str_with_options(tok->backp, *src, env->options);
       CHECK_NULL_RETURN_MEMERR(*np);
 
       while (1) {
@@ -8036,7 +8049,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
   case TK_CRUDE_BYTE:
   tk_crude_byte:
     {
-      *np = node_new_str_crude_char(tok->u.byte);
+      *np = node_new_str_crude_char(tok->u.byte, env->options);
       CHECK_NULL_RETURN_MEMERR(*np);
       len = 1;
       while (1) {
@@ -8073,9 +8086,9 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
       len = ONIGENC_CODE_TO_MBC(env->enc, tok->u.code, buf);
       if (len < 0) return len;
 #ifdef NUMBERED_CHAR_IS_NOT_CASE_AMBIG
-      *np = node_new_str_crude(buf, buf + len);
+      *np = node_new_str_crude(buf, buf + len, env->options);
 #else
-      *np = node_new_str(buf, buf + len);
+      *np = node_new_str_with_options(buf, buf + len, env->options);
 #endif
       CHECK_NULL_RETURN_MEMERR(*np);
     }
@@ -8093,7 +8106,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
       if (IS_NULL(qend)) {
         nextp = qend = end;
       }
-      *np = node_new_str(qstart, qend);
+      *np = node_new_str_with_options(qstart, qend, env->options);
       CHECK_NULL_RETURN_MEMERR(*np);
       *src = nextp;
     }
