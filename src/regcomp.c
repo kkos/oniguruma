@@ -2095,7 +2095,7 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
       else {
 #ifdef USE_BACKREF_WITH_LEVEL
         if (NODE_IS_NEST_LEVEL(node)) {
-          if (OPTON_IGNORECASE(reg->options))
+          if (NODE_IS_IGNORECASE(node))
             r = add_op(reg, OP_BACKREF_WITH_LEVEL_IC);
           else
             r = add_op(reg, OP_BACKREF_WITH_LEVEL);
@@ -2108,7 +2108,7 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
 #endif
         if (br->back_num == 1) {
           n = br->back_static[0];
-          if (OPTON_IGNORECASE(reg->options)) {
+          if (NODE_IS_IGNORECASE(node)) {
             r = add_op(reg, OP_BACKREF_N_IC);
             if (r != 0) return r;
             COP(reg)->backref_n.n1 = n;
@@ -2129,7 +2129,7 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
           int num;
           int* p;
 
-          r = add_op(reg, OPTON_IGNORECASE(reg->options) ?
+          r = add_op(reg, NODE_IS_IGNORECASE(node) ?
                      OP_BACKREF_MULTI_IC : OP_BACKREF_MULTI);
           if (r != 0) return r;
 

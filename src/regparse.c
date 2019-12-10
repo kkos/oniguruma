@@ -2337,8 +2337,9 @@ node_new_backref(int back_num, int* backrefs, int by_name,
                  ScanEnv* env)
 {
   int i;
-  Node* node = node_new();
+  Node* node;
 
+  node = node_new();
   CHECK_NULL_RETURN(node);
 
   NODE_SET_TYPE(node, NODE_BACKREF);
@@ -2346,6 +2347,9 @@ node_new_backref(int back_num, int* backrefs, int by_name,
   BACKREF_(node)->back_dynamic = (int* )NULL;
   if (by_name != 0)
     NODE_STATUS_ADD(node, BY_NAME);
+
+  if (OPTON_IGNORECASE(env->options))
+    NODE_STATUS_ADD(node, IGNORECASE);
 
 #ifdef USE_BACKREF_WITH_LEVEL
   if (exist_level != 0) {
