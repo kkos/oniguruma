@@ -534,6 +534,7 @@ node_str_cat_case_fold(Node* node, const UChar* s, const UChar* end, int case_mi
 static void
 node_conv_to_str_node(Node* node, Node* ref_node)
 {
+  xmemset(node, 0, sizeof(*node));
   NODE_SET_TYPE(node, NODE_STRING);
   NODE_STATUS(node) = NODE_STATUS(ref_node);
 
