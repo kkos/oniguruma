@@ -2207,7 +2207,7 @@ node_new_no_newline(Node** node, ScanEnv* env)
 }
 
 static int
-node_new_true_anychar(Node** node, ScanEnv* env)
+node_new_true_anychar(Node** node)
 {
   Node* n;
 
@@ -2724,7 +2724,7 @@ make_text_segment(Node** node, ScanEnv* env)
   ns[0] = node_new_anchor_with_options(ANCR_NO_TEXT_SEGMENT_BOUNDARY, env->options);
   if (IS_NULL(ns[0])) goto err;
 
-  r = node_new_true_anychar(&ns[1], env);
+  r = node_new_true_anychar(&ns[1]);
   if (r != 0) goto err1;
 
   x = make_list(2, ns);
@@ -2739,7 +2739,7 @@ make_text_segment(Node** node, ScanEnv* env)
   ns[0] = NULL_NODE;
   ns[1] = x;
 
-  r = node_new_true_anychar(&ns[0], env);
+  r = node_new_true_anychar(&ns[0]);
   if (r != 0) goto err1;
 
   x = make_list(2, ns);
@@ -3088,7 +3088,7 @@ make_absent_tree(Node** node, Node* absent, Node* expr, int is_range_cutter,
       quant = node_new_quantifier(0, INFINITE_REPEAT, FALSE);
       if (IS_NULL(quant)) goto err0;
 
-      r = node_new_true_anychar(&body, env);
+      r = node_new_true_anychar(&body);
       if (r != 0) {
         onig_node_free(quant);
         goto err;
@@ -3123,7 +3123,7 @@ make_absent_tree(Node** node, Node* absent, Node* expr, int is_range_cutter,
 
   id2 = GIMMICK_(ns[1])->id;
 
-  r = node_new_true_anychar(&ns[3], env);
+  r = node_new_true_anychar(&ns[3]);
   if (r != 0) goto err;
 
   possessive = 1;
@@ -8255,7 +8255,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
     break;
 
   case TK_TRUE_ANYCHAR:
-    r = node_new_true_anychar(np, env);
+    r = node_new_true_anychar(np);
     if (r < 0) return r;
     break;
 
