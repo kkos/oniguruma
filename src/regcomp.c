@@ -2524,6 +2524,10 @@ get_char_len_node1(Node* node, regex_t* reg, int* len, int level)
       StrNode* sn = STR_(node);
       UChar *s = sn->s;
 
+      /* Ignore IGNORECASE option flag.
+         Because get_char_len_node() is used for
+         look-behind/look-behind-not only.
+       */
       while (s < sn->end) {
         s += enclen(reg->enc, s);
         (*len)++;
