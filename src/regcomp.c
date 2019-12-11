@@ -4526,7 +4526,7 @@ tune_call_node_call(CallNode* cn, ScanEnv* env, int state)
 
     if (env->num_named > 0 &&
         IS_SYNTAX_BV(env->syntax, ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP) &&
-        ! ONIG_IS_OPTION_ON(env->options, ONIG_OPTION_CAPTURE_GROUP)) {
+        ! OPTON_CAPTURE_GROUP(env->options)) {
       return ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED;
     }
 
@@ -6710,7 +6710,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   /* mixed use named group and no-named group */
   if (scan_env.num_named > 0 &&
       IS_SYNTAX_BV(scan_env.syntax, ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP) &&
-      ! ONIG_IS_OPTION_ON(reg->options, ONIG_OPTION_CAPTURE_GROUP)) {
+      ! OPTON_CAPTURE_GROUP(reg->options)) {
     if (scan_env.num_named != scan_env.num_mem)
       r = disable_noname_group_capture(&root, reg, &scan_env);
     else

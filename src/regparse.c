@@ -1142,12 +1142,12 @@ onig_name_to_backref_number(regex_t* reg, const UChar* name,
 extern int
 onig_noname_group_capture_is_active(regex_t* reg)
 {
-  if (ONIG_IS_OPTION_ON(reg->options, ONIG_OPTION_DONT_CAPTURE_GROUP))
+  if (OPTON_DONT_CAPTURE_GROUP(reg->options))
     return 0;
 
   if (onig_number_of_names(reg) > 0 &&
       IS_SYNTAX_BV(reg->syntax, ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP) &&
-      !ONIG_IS_OPTION_ON(reg->options, ONIG_OPTION_CAPTURE_GROUP)) {
+      ! OPTON_CAPTURE_GROUP(reg->options)) {
     return 0;
   }
 
@@ -7657,7 +7657,7 @@ parse_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
   }
 #endif
   else {
-    if (ONIG_IS_OPTION_ON(env->options, ONIG_OPTION_DONT_CAPTURE_GROUP))
+    if (OPTON_DONT_CAPTURE_GROUP(env->options))
       goto group;
 
     *np = node_new_memory(0);

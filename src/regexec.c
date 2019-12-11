@@ -4459,7 +4459,7 @@ onig_regset_search_with_param(OnigRegSet* set,
       return ONIGERR_INVALID_ARGUMENT;
   }
 
-  if (ONIG_IS_OPTION_ON(option, ONIG_OPTION_CHECK_VALIDITY_OF_STRING)) {
+  if (OPTON_CHECK_VALIDITY_OF_STRING(option)) {
     if (! ONIGENC_IS_VALID_MBC_STRING(enc, str, end)) {
       r = ONIGERR_INVALID_WIDE_CHAR_VALUE;
       goto finish_no_msa;
@@ -4905,7 +4905,7 @@ onig_match_with_param(regex_t* reg, const UChar* str, const UChar* end,
     r = 0;
 
   if (r == 0) {
-    if (ONIG_IS_OPTION_ON(option, ONIG_OPTION_CHECK_VALIDITY_OF_STRING)) {
+    if (OPTON_CHECK_VALIDITY_OF_STRING(option)) {
       if (! ONIGENC_IS_VALID_MBC_STRING(reg->enc, str, end)) {
         r = ONIGERR_INVALID_WIDE_CHAR_VALUE;
         goto end;
@@ -5222,7 +5222,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
 
   if (start > end || start < str) goto mismatch_no_msa;
 
-  if (ONIG_IS_OPTION_ON(option, ONIG_OPTION_CHECK_VALIDITY_OF_STRING)) {
+  if (OPTON_CHECK_VALIDITY_OF_STRING(option)) {
     if (! ONIGENC_IS_VALID_MBC_STRING(reg->enc, str, end)) {
       r = ONIGERR_INVALID_WIDE_CHAR_VALUE;
       goto finish_no_msa;
@@ -5580,7 +5580,7 @@ onig_scan(regex_t* reg, const UChar* str, const UChar* end,
   int rs;
   const UChar* start;
 
-  if (ONIG_IS_OPTION_ON(option, ONIG_OPTION_CHECK_VALIDITY_OF_STRING)) {
+  if (OPTON_CHECK_VALIDITY_OF_STRING(option)) {
     if (! ONIGENC_IS_VALID_MBC_STRING(reg->enc, str, end))
       return ONIGERR_INVALID_WIDE_CHAR_VALUE;
 

@@ -297,10 +297,16 @@ typedef unsigned int  MemStatusType;
 #define OPTON_FIND_NOT_EMPTY(option) ((option) & ONIG_OPTION_FIND_NOT_EMPTY)
 #define OPTON_FIND_CONDITION(option) ((option) & \
           (ONIG_OPTION_FIND_LONGEST | ONIG_OPTION_FIND_NOT_EMPTY))
+#define OPTON_NEGATE_SINGLELINE(option) ((option) & \
+                                          ONIG_OPTION_NEGATE_SINGLELINE)
+#define OPTON_DONT_CAPTURE_GROUP(option) ((option) & \
+                                          ONIG_OPTION_DONT_CAPTURE_GROUP)
+#define OPTON_CAPTURE_GROUP(option)  ((option) & ONIG_OPTION_CAPTURE_GROUP)
 #define OPTON_NOTBOL(option)         ((option) & ONIG_OPTION_NOTBOL)
 #define OPTON_NOTEOL(option)         ((option) & ONIG_OPTION_NOTEOL)
 #define OPTON_POSIX_REGION(option)   ((option) & ONIG_OPTION_POSIX_REGION)
-
+#define OPTON_CHECK_VALIDITY_OF_STRING(option)  ((option) & \
+                                      ONIG_OPTION_CHECK_VALIDITY_OF_STRING)
 #define OPTON_WORD_ASCII(option) \
   ((option) & (ONIG_OPTION_WORD_IS_ASCII | ONIG_OPTION_POSIX_IS_ASCII))
 #define OPTON_DIGIT_ASCII(option) \
