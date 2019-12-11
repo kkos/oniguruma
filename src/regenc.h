@@ -75,6 +75,7 @@ typedef struct {
 
 #define MAX_CODE_POINT         (~((OnigCodePoint )0))
 #define ASCII_LIMIT            127
+#define NEWLINE_CODE           0x0a
 
 #define enclen(enc,p)          ONIGENC_MBC_ENC_LEN(enc,p)
 

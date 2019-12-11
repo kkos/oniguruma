@@ -930,7 +930,7 @@ onigenc_egcb_is_break_position(OnigEncoding enc, UChar* p, UChar* prev,
 
 #ifdef USE_UNICODE_EXTENDED_GRAPHEME_CLUSTER
   if (! ONIGENC_IS_UNICODE_ENCODING(enc)) {
-    return from != 0x000d || to != 0x000a;
+    return from != 0x000d || to != NEWLINE_CODE;
   }
 
   btype = unicode_egcb_is_break_2code(from, to);
@@ -973,7 +973,7 @@ onigenc_egcb_is_break_position(OnigEncoding enc, UChar* p, UChar* prev,
   return 1;
 
 #else
-  return from != 0x000d || to != 0x000a;
+  return from != 0x000d || to != NEWLINE_CODE;
 #endif /* USE_UNICODE_EXTENDED_GRAPHEME_CLUSTER */
 }
 

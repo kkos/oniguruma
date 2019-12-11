@@ -128,7 +128,7 @@ static int
 utf16be_is_mbc_newline(const UChar* p, const UChar* end)
 {
   if (p + 1 < end) {
-    if (*(p+1) == 0x0a && *p == 0x00)
+    if (*(p+1) == NEWLINE_CODE && *p == 0x00)
       return 1;
 #ifdef USE_UNICODE_ALL_LINE_TERMINATORS
     if ((

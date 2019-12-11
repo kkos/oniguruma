@@ -4043,7 +4043,7 @@ node_new_general_newline(Node** node, ScanEnv* env)
 
   dlen = ONIGENC_CODE_TO_MBC(env->enc, 0x0d, buf);
   if (dlen < 0) return dlen;
-  alen = ONIGENC_CODE_TO_MBC(env->enc, 0x0a, buf + dlen);
+  alen = ONIGENC_CODE_TO_MBC(env->enc, NEWLINE_CODE, buf + dlen);
   if (alen < 0) return alen;
 
   crnl = node_new_str_crude(buf, buf + dlen + alen, ONIG_OPTION_NONE);
@@ -4054,10 +4054,10 @@ node_new_general_newline(Node** node, ScanEnv* env)
 
   cc = CCLASS_(ncc);
   if (dlen == 1) {
-    bitset_set_range(cc->bs, 0x0a, 0x0d);
+    bitset_set_range(cc->bs, NEWLINE_CODE, 0x0d);
   }
   else {
-    r = add_code_range(&(cc->mbuf), env, 0x0a, 0x0d);
+    r = add_code_range(&(cc->mbuf), env, NEWLINE_CODE, 0x0d);
     if (r != 0) {
     err1:
       onig_node_free(ncc);
@@ -6619,8 +6619,6 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       BITSET_IS_EMPTY(cc->bs, is_empty);
 
     if (is_empty == 0) {
-#define NEWLINE_CODE    0x0a
-
       if (ONIGENC_IS_CODE_NEWLINE(env->enc, NEWLINE_CODE)) {
         if (ONIGENC_CODE_TO_MBCLEN(env->enc, NEWLINE_CODE) == 1)
           BITSET_SET_BIT(cc->bs, NEWLINE_CODE);

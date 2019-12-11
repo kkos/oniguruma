@@ -676,7 +676,7 @@ extern int
 onigenc_is_mbc_newline_0x0a(const UChar* p, const UChar* end)
 {
   if (p < end) {
-    if (*p == 0x0a) return 1;
+    if (*p == NEWLINE_CODE) return 1;
   }
   return 0;
 }
