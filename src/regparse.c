@@ -5527,7 +5527,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       if (c == MC_ANYCHAR(syn))
         goto any_char;
       else if (c == MC_ANYTIME(syn))
-        goto anytime;
+        goto any_time;
       else if (c == MC_ZERO_OR_ONE_TIME(syn))
         goto zero_or_one_time;
       else if (c == MC_ONE_OR_MORE_TIME(syn))
@@ -5551,7 +5551,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case '*':
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ASTERISK_ZERO_INF)) break;
 #ifdef USE_VARIABLE_META_CHARS
-    anytime:
+    any_time:
 #endif
       tok->type = TK_REPEAT;
       tok->u.repeat.lower = 0;
@@ -5927,8 +5927,6 @@ add_ctype_to_cc_by_range_limit(CClassNode* cc, int ctype ARG_UNUSED, int not,
 static int
 add_ctype_to_cc(CClassNode* cc, int ctype, int not, ScanEnv* env)
 {
-#define ASCII_LIMIT    127
-
   int c, r;
   int ascii_mode;
   int is_single;
