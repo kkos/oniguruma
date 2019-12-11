@@ -501,6 +501,9 @@ node_str_node_cat(Node* node, Node* add)
 {
   int r;
 
+  if (NODE_STATUS(node) != NODE_STATUS(add))
+    return ONIGERR_TYPE_BUG;
+
   if (STR_(node)->flag != STR_(add)->flag)
     return ONIGERR_TYPE_BUG;
 
