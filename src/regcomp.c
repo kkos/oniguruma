@@ -6102,24 +6102,10 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
 
   case NODE_BACKREF:
     if (! NODE_IS_CHECKER(node)) {
-      int* backs;
-      OnigLen min, max, tmin, tmax;
-      MemEnv* mem_env = SCANENV_MEMENV(env->scan_env);
-      BackRefNode* br = BACKREF_(node);
+      OnigLen min, max;
 
-      if (NODE_IS_RECURSION(node)) {
-        set_mml(&opt->len, 0, INFINITE_LEN);
-        break;
-      }
-      backs = BACKREFS_P(br);
-      min = tree_min_len(mem_env[backs[0]].mem_node, env->scan_env);
-      max = tree_max_len(mem_env[backs[0]].mem_node, env->scan_env);
-      for (i = 1; i < br->back_num; i++) {
-        tmin = tree_min_len(mem_env[backs[i]].mem_node, env->scan_env);
-        tmax = tree_max_len(mem_env[backs[i]].mem_node, env->scan_env);
-        if (min > tmin) min = tmin;
-        if (max < tmax) max = tmax;
-      }
+      min = tree_min_len(node, env->scan_env);
+      max = tree_max_len(node, env->scan_env);
       set_mml(&opt->len, min, max);
     }
     break;
