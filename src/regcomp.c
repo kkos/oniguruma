@@ -5321,7 +5321,6 @@ typedef struct {
 typedef struct {
   MinMax           mm;
   OnigEncoding     enc;
-  OnigOptionType   options;
   OnigCaseFoldType case_fold_flag;
   ScanEnv*         scan_env;
 } OptEnv;
@@ -6115,10 +6114,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
     if (NODE_IS_RECURSION(node))
       set_mml(&opt->len, 0, INFINITE_LEN);
     else {
-      OnigOptionType save = env->options;
-      env->options = BAG_(NODE_BODY(node))->o.options;
       r = optimize_nodes(NODE_BODY(node), opt, env);
-      env->options = save;
     }
     break;
 #endif
@@ -6176,14 +6172,9 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
       BagNode* en = BAG_(node);
 
       switch (en->type) {
+      case BAG_STOP_BACKTRACK:
       case BAG_OPTION:
-        {
-          OnigOptionType save = env->options;
-
-          env->options = en->o.options;
-          r = optimize_nodes(NODE_BODY(node), opt, env);
-          env->options = save;
-        }
+        r = optimize_nodes(NODE_BODY(node), opt, env);
         break;
 
       case BAG_MEMORY:
@@ -6207,10 +6198,6 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
                 remove_opt_anc_info(&opt->anc, ANCR_ANYCHAR_INF_MASK);
             }
           }
-        break;
-
-      case BAG_STOP_BACKTRACK:
-        r = optimize_nodes(NODE_BODY(node), opt, env);
         break;
 
       case BAG_IF_ELSE:
@@ -6343,7 +6330,6 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
   OptEnv env;
 
   env.enc            = reg->enc;
-  env.options        = reg->options;
   env.case_fold_flag = reg->case_fold_flag;
   env.scan_env       = scan_env;
   clear_mml(&env.mm);
