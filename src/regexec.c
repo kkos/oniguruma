@@ -638,7 +638,7 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
     break;
 
   default:
-    fprintf(stderr, "print_compiled_byte_code: undefined code %d\n", opcode);
+    fprintf(DBGFP, "print_compiled_byte_code: undefined code %d\n", opcode);
     break;
   }
 }
@@ -1849,7 +1849,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #ifdef ONIG_DEBUG
 #define STACK_BASE_CHECK(p, at) \
   if ((p) < stk_base) {\
-    fprintf(stderr, "at %s\n", at);\
+    fprintf(DBGFP, "at %s\n", at);\
     MATCH_AT_ERROR_RETURN(ONIGERR_STACK_BUG);\
   }
 #else
@@ -2544,7 +2544,7 @@ typedef struct {
       int len, spos;\
       spos = IS_NOT_NULL(s) ? (int )(s - str) : -1;\
       xp = p - (offset);\
-      fprintf(stderr, "%7u: %7ld: %4d> \"",\
+      fprintf(DBGFP, "%7u: %7ld: %4d> \"",\
               counter, GET_STACK_INDEX(stk), spos);\
       counter++;\
       bp = buf;\
@@ -2560,15 +2560,15 @@ typedef struct {
         xmemcpy(bp, "\"", 1); bp += 1;\
       }\
       *bp = 0;\
-      fputs((char* )buf, stderr);\
-      for (i = 0; i < 20 - (bp - buf); i++) fputc(' ', stderr);\
+      fputs((char* )buf, DBGFP);\
+      for (i = 0; i < 20 - (bp - buf); i++) fputc(' ', DBGFP);\
       if (xp == FinishCode)\
-        fprintf(stderr, "----: finish");\
+        fprintf(DBGFP, "----: finish");\
       else {\
-        fprintf(stderr, "%4d: ", (int )(xp - reg->ops));\
-        print_compiled_byte_code(stderr, reg, (int )(xp - reg->ops), reg->ops, encode);\
+        fprintf(DBGFP, "%4d: ", (int )(xp - reg->ops));\
+        print_compiled_byte_code(DBGFP, reg, (int )(xp - reg->ops), reg->ops, encode); \
       }\
-      fprintf(stderr, "\n");\
+      fprintf(DBGFP, "\n");\
   } while(0);
 #else
 #define MATCH_DEBUG_OUT(offset)
@@ -2762,9 +2762,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   }
 
 #ifdef ONIG_DEBUG_MATCH
-  fprintf(stderr, "match_at: str: %p, end: %p, start: %p, sprev: %p\n",
+  fprintf(DBGFP, "match_at: str: %p, end: %p, start: %p, sprev: %p\n",
           str, end, sstart, sprev);
-  fprintf(stderr, "size: %d, start offset: %d\n",
+  fprintf(DBGFP, "size: %d, start offset: %d\n",
           (int )(end - str), (int )(sstart - str));
 #endif
 
@@ -3748,7 +3748,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         INC_OP;
         if (is_empty) {
 #ifdef ONIG_DEBUG_MATCH
-          fprintf(stderr, "EMPTY_CHECK_END: skip  id:%d, s:%p\n", (int )mem, s);
+          fprintf(DBGFP, "EMPTY_CHECK_END: skip  id:%d, s:%p\n", (int )mem, s);
 #endif
         empty_check_found:
           /* empty loop founded, skip next instruction */
@@ -3781,7 +3781,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         INC_OP;
         if (is_empty) {
 #ifdef ONIG_DEBUG_MATCH
-          fprintf(stderr, "EMPTY_CHECK_END_MEM: skip  id:%d, s:%p\n", (int)mem, s);
+          fprintf(DBGFP, "EMPTY_CHECK_END_MEM: skip  id:%d, s:%p\n", (int)mem, s);
 #endif
           if (is_empty == -1) goto fail;
           goto empty_check_found;
@@ -3804,7 +3804,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         INC_OP;
         if (is_empty) {
 #ifdef ONIG_DEBUG_MATCH
-          fprintf(stderr, "EMPTY_CHECK_END_MEM_PUSH: skip  id:%d, s:%p\n",
+          fprintf(DBGFP, "EMPTY_CHECK_END_MEM_PUSH: skip  id:%d, s:%p\n",
                   (int )mem, s);
 #endif
           if (is_empty == -1) goto fail;
@@ -4772,8 +4772,9 @@ sunday_quick_search_step_forward(regex_t* reg,
   OnigEncoding enc;
 
 #ifdef ONIG_DEBUG_SEARCH
-  fprintf(stderr,
-          "sunday_quick_search_step_forward: text: %p, text_end: %p, text_range: %p\n", text, text_end, text_range);
+  fprintf(DBGFP,
+  "sunday_quick_search_step_forward: text: %p, text_end: %p, text_range: %p\n",
+          text, text_end, text_range);
 #endif
 
   enc = reg->enc;
@@ -4928,7 +4929,7 @@ forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
   UChar *p, *pprev = (UChar* )NULL;
 
 #ifdef ONIG_DEBUG_SEARCH
-  fprintf(stderr, "forward_search: str: %p, end: %p, start: %p, range: %p\n",
+  fprintf(DBGFP, "forward_search: str: %p, end: %p, start: %p, range: %p\n",
           str, end, start, range);
 #endif
 
@@ -5049,7 +5050,7 @@ forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
     }
 
 #ifdef ONIG_DEBUG_SEARCH
-    fprintf(stderr,
+    fprintf(DBGFP,
             "forward_search success: low: %d, high: %d, dmin: %u, dmax: %u\n",
             (int )(*low - str), (int )(*high - str),
             reg->dist_min, reg->dist_max);
@@ -5152,7 +5153,7 @@ backward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
     }
 
 #ifdef ONIG_DEBUG_SEARCH
-    fprintf(stderr, "backward_search: low: %d, high: %d\n",
+    fprintf(DBGFP, "backward_search: low: %d, high: %d\n",
             (int )(*low - str), (int )(*high - str));
 #endif
     return 1; /* success */
@@ -5160,7 +5161,7 @@ backward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
 
  fail:
 #ifdef ONIG_DEBUG_SEARCH
-  fprintf(stderr, "backward_search: fail.\n");
+  fprintf(DBGFP, "backward_search: fail.\n");
 #endif
   return 0; /* fail */
 }
@@ -5204,7 +5205,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
   const UChar *orig_start = start;
 
 #ifdef ONIG_DEBUG_SEARCH
-  fprintf(stderr,
+  fprintf(DBGFP,
      "onig_search (entry point): str: %p, end: %d, start: %d, range: %d\n",
      str, (int )(end - str), (int )(start - str), (int )(range - str));
 #endif
@@ -5352,7 +5353,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
     static const UChar* address_for_empty_string = (UChar* )"";
 
 #ifdef ONIG_DEBUG_SEARCH
-    fprintf(stderr, "onig_search: empty string.\n");
+    fprintf(DBGFP, "onig_search: empty string.\n");
 #endif
 
     if (reg->threshold_len == 0) {
@@ -5368,7 +5369,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
   }
 
 #ifdef ONIG_DEBUG_SEARCH
-  fprintf(stderr, "onig_search(apply anchor): end: %d, start: %d, range: %d\n",
+  fprintf(DBGFP, "onig_search(apply anchor): end: %d, start: %d, range: %d\n",
           (int )(end - str), (int )(start - str), (int )(range - str));
 #endif
 
@@ -5535,7 +5536,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
 
 #ifdef ONIG_DEBUG
   if (r != ONIG_MISMATCH)
-    fprintf(stderr, "onig_search: error %d\n", r);
+    fprintf(DBGFP, "onig_search: error %d\n", r);
 #endif
   return r;
 
@@ -5544,7 +5545,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
  finish_no_msa:
 #ifdef ONIG_DEBUG
   if (r != ONIG_MISMATCH)
-    fprintf(stderr, "onig_search: error %d\n", r);
+    fprintf(DBGFP, "onig_search: error %d\n", r);
 #endif
   return r;
 

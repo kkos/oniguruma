@@ -44,6 +44,7 @@
     defined(ONIG_DEBUG_STATISTICS)
 #ifndef ONIG_DEBUG
 #define ONIG_DEBUG
+#define DBGFP   stderr
 #endif
 #endif
 

@@ -111,7 +111,7 @@ int_stack_pop(int_stack* s)
 
 #ifdef ONIG_DEBUG
   if (s->n <= 0) {
-    fprintf(stderr, "int_stack_pop: fail empty. %p\n", s);
+    fprintf(DBGFP, "int_stack_pop: fail empty. %p\n", s);
     return 0;
   }
 #endif
@@ -2192,7 +2192,7 @@ compile_tree(Node* node, regex_t* reg, ScanEnv* env)
 
   default:
 #ifdef ONIG_DEBUG
-    fprintf(stderr, "compile_tree: undefined node type %d\n", NODE_TYPE(node));
+    fprintf(DBGFP, "compile_tree: undefined node type %d\n", NODE_TYPE(node));
 #endif
     break;
   }
@@ -6233,7 +6233,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
 
   default:
 #ifdef ONIG_DEBUG
-    fprintf(stderr, "optimize_nodes: undefined node type %d\n", NODE_TYPE(node));
+    fprintf(DBGFP, "optimize_nodes: undefined node type %d\n", NODE_TYPE(node));
 #endif
     r = ONIGERR_TYPE_BUG;
     break;
@@ -6374,7 +6374,7 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
   }
 
 #if defined(ONIG_DEBUG_COMPILE) || defined(ONIG_DEBUG_MATCH)
-  print_optimize_info(stderr, reg);
+  print_optimize_info(DBGFP, reg);
 #endif
   return r;
 }
@@ -6665,8 +6665,8 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   }
 
 #ifdef ONIG_DEBUG
-  fprintf(stderr, "\nPATTERN: /");
-  print_enc_string(stderr, reg->enc, pattern, pattern_end);
+  fprintf(DBGFP, "\nPATTERN: /");
+  print_enc_string(DBGFP, reg->enc, pattern, pattern_end);
 #endif
 
   if (reg->ops_alloc == 0) {
@@ -6727,10 +6727,10 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 #endif
 
 #ifdef ONIG_DEBUG_PARSE
-  fprintf(stderr, "MAX PARSE DEPTH: %d\n", scan_env.max_parse_depth);
-  fprintf(stderr, "TREE (parsed)\n");
-  print_tree(stderr, root);
-  fprintf(stderr, "\n");
+  fprintf(DBGFP, "MAX PARSE DEPTH: %d\n", scan_env.max_parse_depth);
+  fprintf(DBGFP, "TREE (parsed)\n");
+  print_tree(DBGFP, root);
+  fprintf(DBGFP, "\n");
 #endif
 
   r = tune_tree(root, reg, 0, &scan_env);
@@ -6744,9 +6744,9 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   }
 
 #ifdef ONIG_DEBUG_PARSE
-  fprintf(stderr, "TREE (after tune)\n");
-  print_tree(stderr, root);
-  fprintf(stderr, "\n");
+  fprintf(DBGFP, "TREE (after tune)\n");
+  print_tree(DBGFP, root);
+  fprintf(DBGFP, "\n");
 #endif
 
   reg->capture_history = scan_env.cap_history;
@@ -6833,8 +6833,8 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   onig_node_free(root);
 
 #ifdef ONIG_DEBUG_COMPILE
-  onig_print_names(stderr, reg);
-  onig_print_compiled_byte_code_list(stderr, reg);
+  onig_print_names(DBGFP, reg);
+  onig_print_compiled_byte_code_list(DBGFP, reg);
 #endif
 
 #ifdef USE_DIRECT_THREADED_CODE
