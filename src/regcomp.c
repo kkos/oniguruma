@@ -6401,8 +6401,6 @@ clear_optimize_info(regex_t* reg)
 static void print_enc_string(FILE* fp, OnigEncoding enc,
                              const UChar *s, const UChar *end)
 {
-  fprintf(fp, "\nPATTERN: /");
-
   if (ONIGENC_MBC_MINLEN(enc) > 1) {
     const UChar *p;
     OnigCodePoint code;
@@ -6667,6 +6665,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   }
 
 #ifdef ONIG_DEBUG
+  fprintf(stderr, "\nPATTERN: /");
   print_enc_string(stderr, reg->enc, pattern, pattern_end);
 #endif
 
@@ -6750,8 +6749,8 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   fprintf(stderr, "\n");
 #endif
 
-  reg->capture_history  = scan_env.cap_history;
-  reg->push_mem_start   = scan_env.backtrack_mem | scan_env.cap_history;
+  reg->capture_history = scan_env.cap_history;
+  reg->push_mem_start  = scan_env.backtrack_mem | scan_env.cap_history;
 
 #ifdef USE_CALLOUT
   if (IS_NOT_NULL(reg->extp) && reg->extp->callout_num != 0) {
@@ -6907,20 +6906,18 @@ onig_reg_init(regex_t* reg, OnigOptionType option, OnigCaseFoldType case_fold_fl
   else
     option |= syntax->options;
 
-  (reg)->enc              = enc;
-  (reg)->options          = option;
-  (reg)->syntax           = syntax;
-  (reg)->optimize         = 0;
-  (reg)->exact            = (UChar* )NULL;
-  (reg)->extp             = (RegexExt* )NULL;
-
-  (reg)->ops              = (Operation* )NULL;
-  (reg)->ops_curr         = (Operation* )NULL;
-  (reg)->ops_used         = 0;
-  (reg)->ops_alloc        = 0;
-  (reg)->name_table       = (void* )NULL;
-
-  (reg)->case_fold_flag   = case_fold_flag;
+  (reg)->enc            = enc;
+  (reg)->options        = option;
+  (reg)->syntax         = syntax;
+  (reg)->optimize       = 0;
+  (reg)->exact          = (UChar* )NULL;
+  (reg)->extp           = (RegexExt* )NULL;
+  (reg)->ops            = (Operation* )NULL;
+  (reg)->ops_curr       = (Operation* )NULL;
+  (reg)->ops_used       = 0;
+  (reg)->ops_alloc      = 0;
+  (reg)->name_table     = (void* )NULL;
+  (reg)->case_fold_flag = case_fold_flag;
   return 0;
 }
 
