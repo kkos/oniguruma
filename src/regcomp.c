@@ -5031,7 +5031,6 @@ static int
 tune_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
 {
   int r;
-  OnigLen d;
   QuantNode* qn = QUANT_(node);
   Node* body = NODE_BODY(node);
 
@@ -5043,7 +5042,7 @@ tune_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
   }
 
   if (IS_INFINITE_REPEAT(qn->upper) || qn->upper >= 1) {
-    d = tree_min_len(body, env);
+    OnigLen d = tree_min_len(body, env);
     if (d == 0) {
 #ifdef USE_STUBBORN_CHECK_CAPTURES_IN_EMPTY_REPEAT
       qn->emptiness = quantifiers_memory_node_info(body);
