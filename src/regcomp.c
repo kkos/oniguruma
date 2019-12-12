@@ -5580,7 +5580,7 @@ concat_opt_exact(OptStr* to, OptStr* add, OnigEncoding enc)
   OptAnc tanc;
 
   if (add->case_fold != 0) {
-    if (! to->case_fold) {
+    if (to->case_fold == 0) {
       if (to->len > 1 || to->len >= add->len) return 0;  /* avoid */
 
       to->case_fold = 1;
