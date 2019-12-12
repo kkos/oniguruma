@@ -7160,6 +7160,8 @@ print_indent_tree(FILE* f, Node* node, int indent)
         mode = "-crude";
       else if (NODE_STRING_IS_CASE_FOLD_MATCH(node))
         mode = "-case_fold_match";
+      else if (NODE_IS_IGNORECASE(node))
+        mode = "-ignorecase";
       else
         mode = "";
 
