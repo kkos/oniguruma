@@ -8401,9 +8401,11 @@ parse_alts(Node** top, PToken* tok, int term, UChar** src, UChar* end,
 {
   int r;
   Node *node, **headp;
+  OnigOptionType save_options;
 
   *top = NULL;
   INC_PARSE_DEPTH(env->parse_depth);
+  save_options = env->options;
 
   r = parse_branch(&node, tok, term, src, end, env, group_head);
   if (r < 0) {
@@ -8452,6 +8454,7 @@ parse_alts(Node** top, PToken* tok, int term, UChar** src, UChar* end,
       return ONIGERR_PARSER_BUG;
   }
 
+  env->options = save_options;
   DEC_PARSE_DEPTH(env->parse_depth);
   return r;
 }
