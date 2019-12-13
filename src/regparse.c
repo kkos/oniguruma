@@ -7999,9 +7999,9 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
     else if (r == 2) { /* option only */
       if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_ISOLATED_OPTION_CONTINUE_BRANCH)) {
         env->options = BAG_(*np)->o.options;
-        onig_node_free(*np);
         r = fetch_token(tok, src, end, env);
         if (r < 0) return r;
+        onig_node_free(*np);
         goto retry;
       }
       else {
