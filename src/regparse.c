@@ -7963,6 +7963,7 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
   Node** tp;
   unsigned int parse_depth;
 
+ retry:
   group = 0;
   *np = NULL;
   if (tok->type == (enum TokenSyms )term)
@@ -7996,19 +7997,28 @@ parse_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
       }
     }
     else if (r == 2) { /* option only */
-      Node* target;
-      OnigOptionType prev = env->options;
-
-      env->options = BAG_(*np)->o.options;
-      r = fetch_token(tok, src, end, env);
-      if (r < 0) return r;
-      r = parse_alts(&target, tok, term, src, end, env, FALSE);
-      env->options = prev;
-      if (r < 0) {
-        onig_node_free(target);
-        return r;
+      if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_ISOLATED_OPTION_CONTINUE_BRANCH)) {
+        env->options = BAG_(*np)->o.options;
+        onig_node_free(*np);
+        r = fetch_token(tok, src, end, env);
+        if (r < 0) return r;
+        goto retry;
       }
-      NODE_BODY(*np) = target;
+      else {
+        Node* target;
+        OnigOptionType prev = env->options;
+
+        env->options = BAG_(*np)->o.options;
+        r = fetch_token(tok, src, end, env);
+        if (r < 0) return r;
+        r = parse_alts(&target, tok, term, src, end, env, FALSE);
+        env->options = prev;
+        if (r < 0) {
+          onig_node_free(target);
+          return r;
+        }
+        NODE_BODY(*np) = target;
+      }
       return tok->type;
     }
     break;
