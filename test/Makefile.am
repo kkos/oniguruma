@@ -6,9 +6,9 @@ AM_CFLAGS = -Wall -Wno-invalid-source-encoding
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
 if ENABLE_POSIX_API
-TESTS = test_utf8 testc testp testcu test_regset
+TESTS = test_utf8 test_syntax testc testp testcu test_regset
 else
-TESTS = test_utf8 testc testcu test_regset
+TESTS = test_utf8 test_syntax testc testcu test_regset
 endif
 
 check_PROGRAMS = $(TESTS)
@@ -16,6 +16,8 @@ check_PROGRAMS = $(TESTS)
 test: test_uchar $(TESTS)
 	@echo "[Oniguruma API, UTF-8 check]"
 	@./test_utf8  | grep RESULT
+	@echo "[Oniguruma API, SYNTAX check]"
+	@./test_syntax  | grep RESULT
 	@echo "[Oniguruma API, ASCII/EUC-JP check]"
 	@./testc  | grep RESULT
 if ENABLE_POSIX_API
@@ -36,6 +38,9 @@ test_uchar:
 test_utf8_SOURCES = test_utf8.c
 test_utf8_LDADD = $(lib_onig)
 
+test_syntax_SOURCES = test_syntax.c
+test_syntax_LDADD = $(lib_onig)
+
 testc_SOURCES = testc.c
 testc_LDADD = $(lib_onig)
 
@@ -53,6 +58,7 @@ test_regset_LDADD = $(lib_onig)
 
 gcov:
 	make CFLAGS="--coverage" test_utf8
+	make CFLAGS="--coverage" test_syntax
 	make CFLAGS="--coverage" testc
 	make CFLAGS="--coverage" testp
 	make CFLAGS="--coverage" testcu
