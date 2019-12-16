@@ -45,6 +45,26 @@
 #define IS_ALLOWED_CODE_IN_CALLOUT_TAG_NAME(c) \
   ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_')
 
+#define OPTON_SINGLELINE(option)     ((option) & ONIG_OPTION_SINGLELINE)
+#define OPTON_MULTILINE(option)      ((option) & ONIG_OPTION_MULTILINE)
+#define OPTON_IGNORECASE(option)     ((option) & ONIG_OPTION_IGNORECASE)
+#define OPTON_EXTEND(option)         ((option) & ONIG_OPTION_EXTEND)
+#define OPTON_WORD_ASCII(option) \
+  ((option) & (ONIG_OPTION_WORD_IS_ASCII | ONIG_OPTION_POSIX_IS_ASCII))
+#define OPTON_DIGIT_ASCII(option) \
+  ((option) & (ONIG_OPTION_DIGIT_IS_ASCII | ONIG_OPTION_POSIX_IS_ASCII))
+#define OPTON_SPACE_ASCII(option) \
+  ((option) & (ONIG_OPTION_SPACE_IS_ASCII | ONIG_OPTION_POSIX_IS_ASCII))
+#define OPTON_POSIX_ASCII(option)    ((option) & ONIG_OPTION_POSIX_IS_ASCII)
+#define OPTON_TEXT_SEGMENT_WORD(option)  ((option) & ONIG_OPTION_TEXT_SEGMENT_WORD)
+
+#define OPTON_IS_ASCII_MODE_CTYPE(ctype, options) \
+  ((ctype) >= 0 && \
+  (((ctype) < ONIGENC_CTYPE_ASCII  && OPTON_POSIX_ASCII(options)) ||\
+   ((ctype) == ONIGENC_CTYPE_WORD  && OPTON_WORD_ASCII(options))  ||\
+   ((ctype) == ONIGENC_CTYPE_DIGIT && OPTON_DIGIT_ASCII(options)) ||\
+   ((ctype) == ONIGENC_CTYPE_SPACE && OPTON_SPACE_ASCII(options))))
+
 
 OnigSyntaxType OnigSyntaxOniguruma = {
   (( SYN_GNU_REGEX_OP | ONIG_SYN_OP_QMARK_NON_GREEDY |

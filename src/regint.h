@@ -290,10 +290,6 @@ typedef unsigned int  MemStatusType;
   (IS_CODE_DIGIT_ASCII(enc,code) ? DIGITVAL(code) \
    : (ONIGENC_IS_CODE_UPPER(enc,code) ? (code) - 'A' + 10 : (code) - 'a' + 10))
 
-#define OPTON_SINGLELINE(option)     ((option) & ONIG_OPTION_SINGLELINE)
-#define OPTON_MULTILINE(option)      ((option) & ONIG_OPTION_MULTILINE)
-#define OPTON_IGNORECASE(option)     ((option) & ONIG_OPTION_IGNORECASE)
-#define OPTON_EXTEND(option)         ((option) & ONIG_OPTION_EXTEND)
 #define OPTON_FIND_LONGEST(option)   ((option) & ONIG_OPTION_FIND_LONGEST)
 #define OPTON_FIND_NOT_EMPTY(option) ((option) & ONIG_OPTION_FIND_NOT_EMPTY)
 #define OPTON_FIND_CONDITION(option) ((option) & \
@@ -308,21 +304,6 @@ typedef unsigned int  MemStatusType;
 #define OPTON_POSIX_REGION(option)   ((option) & ONIG_OPTION_POSIX_REGION)
 #define OPTON_CHECK_VALIDITY_OF_STRING(option)  ((option) & \
                                       ONIG_OPTION_CHECK_VALIDITY_OF_STRING)
-#define OPTON_WORD_ASCII(option) \
-  ((option) & (ONIG_OPTION_WORD_IS_ASCII | ONIG_OPTION_POSIX_IS_ASCII))
-#define OPTON_DIGIT_ASCII(option) \
-  ((option) & (ONIG_OPTION_DIGIT_IS_ASCII | ONIG_OPTION_POSIX_IS_ASCII))
-#define OPTON_SPACE_ASCII(option) \
-  ((option) & (ONIG_OPTION_SPACE_IS_ASCII | ONIG_OPTION_POSIX_IS_ASCII))
-#define OPTON_POSIX_ASCII(option)    ((option) & ONIG_OPTION_POSIX_IS_ASCII)
-#define OPTON_TEXT_SEGMENT_WORD(option)  ((option) & ONIG_OPTION_TEXT_SEGMENT_WORD)
-
-#define OPTON_IS_ASCII_MODE_CTYPE(ctype, options) \
-  ((ctype) >= 0 && \
-  (((ctype) < ONIGENC_CTYPE_ASCII  && OPTON_POSIX_ASCII(options)) ||\
-   ((ctype) == ONIGENC_CTYPE_WORD  && OPTON_WORD_ASCII(options))  ||\
-   ((ctype) == ONIGENC_CTYPE_DIGIT && OPTON_DIGIT_ASCII(options)) ||\
-   ((ctype) == ONIGENC_CTYPE_SPACE && OPTON_SPACE_ASCII(options))))
 
 #define DISABLE_CASE_FOLD_MULTI_CHAR(case_fold_flag) \
   ((case_fold_flag) & ~INTERNAL_ONIGENC_CASE_FOLD_MULTI_CHAR)

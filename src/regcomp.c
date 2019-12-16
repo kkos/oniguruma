@@ -29,18 +29,6 @@
 
 #include "regparse.h"
 
-#undef OPTON_SINGLELINE
-#undef OPTON_MULTILINE
-#undef OPTON_IGNORECASE
-#undef OPTON_EXTEND
-#undef OPTON_NOTBOL
-#undef OPTON_NOTEOL
-#undef OPTON_WORD_ASCII
-#undef OPTON_DIGIT_ASCII
-#undef OPTON_SPACE_ASCII
-#undef OPTON_POSIX_ASCII
-#undef OPTON_TEXT_SEGMENT_WORD
-
 #define OPS_INIT_SIZE  8
 
 OnigCaseFoldType OnigDefaultCaseFoldFlag = ONIGENC_CASE_FOLD_MIN;
