@@ -131,19 +131,8 @@ static void e(char* pattern, char* str, int error_no)
   xx(pattern, str, 0, 0, 0, 0, error_no);
 }
 
-extern int main(int argc, char* argv[])
+static int test_isolated_option()
 {
-  OnigEncoding use_encs[1];
-
-  use_encs[0] = ONIG_ENCODING_UTF8;
-  onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
-
-  err_file = stdout;
-
-  region = onig_region_new();
-
-  Syntax = ONIG_SYNTAX_PERL;
-
   x2("", "", 0, 0);
   x2("^", "", 0, 0);
   n("^a", "\na");
@@ -170,13 +159,32 @@ extern int main(int argc, char* argv[])
   x2("b(?s)a|(?:)(.)", "\n", 0, 1);
   n("b((?s)a)|(?:)(.)", "\n");
 
+  return 0;
+}
+
+extern int main(int argc, char* argv[])
+{
+  OnigEncoding use_encs[1];
+
+  use_encs[0] = ONIG_ENCODING_UTF8;
+  onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
+
+  err_file = stdout;
+
+  region = onig_region_new();
+
+  Syntax = ONIG_SYNTAX_PERL;
+
+  test_isolated_option();
+
   x3("()", "abc", 0, 0, 1);
-
   e("(", "", ONIGERR_END_PATTERN_WITH_UNMATCHED_PARENTHESIS);
-
   // different spec.
   // e("\\x{7fffffff}", "", ONIGERR_TOO_BIG_WIDE_CHAR_VALUE);
 
+  Syntax = ONIG_SYNTAX_JAVA;
+
+  test_isolated_option();
 
 
   fprintf(stdout,
