@@ -55,6 +55,11 @@ def form3bytes(x):
     x2 = (x>>16) & 0xff
     return "\\x%02x\\x%02x\\x%02x" % (x2, x1, x0)
 
+def enc_len(code, encode):
+    u = unichr(code)
+    s = u.encode(encode)
+    return len(s)
+
 def check_version_info(s):
   m = VERSION_REG.match(s)
   if m is not None:
@@ -324,6 +329,16 @@ def output_gperf_source():
        with open(GPERF_FOLD_KEY_FILES[i-1], 'w') as f:
            output_gperf_fold_key(f, i)
 
+def unfolds_byte_length_check(encode):
+    l = UNFOLDS.items()
+    sl = sorted(l, key=lambda (k,e):(e.fold_len, e.index))
+    for unfold, e in sl:
+        key_len = enc_len(unfold, encode)
+        fold_len = sum(map(lambda c: enc_len(c, encode), e.fold))
+        if key_len > fold_len:
+            s = "%s byte length: %d > %d: 0x%06x => %s" % (encode, key_len, fold_len, unfold, e.fold)
+            print >> sys.stderr, s
+
 
 ## main ##
 with open(SOURCE_FILE, 'r') as f:
@@ -335,3 +350,6 @@ out_comment = True
 output_fold_source(sys.stdout, out_comment)
 
 output_gperf_source()
+
+unfolds_byte_length_check('utf-8')
+unfolds_byte_length_check('utf-16')
