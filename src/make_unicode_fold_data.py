@@ -339,6 +339,17 @@ def unfolds_byte_length_check(encode):
             s = "%s byte length: %d > %d: 0x%06x => %s" % (encode, key_len, fold_len, unfold, e.fold)
             print >> sys.stderr, s
 
+def double_fold_check():
+    l = UNFOLDS.items()
+    sl = sorted(l, key=lambda (k,e):(e.fold_len, e.index))
+    for unfold, e in sl:
+        for f in e.fold:
+            #print >> sys.stderr, ("check 0x%06x" % f)
+            e2 = UNFOLDS.get(f)
+            if e2 is not None:
+                s = "double folds: 0x%06x => %s, 0x%06x => %s" % (unfold, e.fold, f, e2.fold)
+                print >> sys.stderr, s
+
 
 ## main ##
 with open(SOURCE_FILE, 'r') as f:
@@ -351,5 +362,6 @@ output_fold_source(sys.stdout, out_comment)
 
 output_gperf_source()
 
-unfolds_byte_length_check('utf-8')
-unfolds_byte_length_check('utf-16')
+#unfolds_byte_length_check('utf-8')
+#unfolds_byte_length_check('utf-16')
+double_fold_check()
