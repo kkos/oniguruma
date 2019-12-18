@@ -365,7 +365,101 @@ def unfold_is_multi_code_folds_head_check():
                 s = "unfold 0x%06x is multi-code fold head in %s" % (unfold, e.fold)
                 print >> sys.stderr, s
 
+def make_one_folds(l):
+    h = {}
+    for unfold, e in l:
+        if e.fold_len != 1:
+            continue
+        fold = e.fold[0]
+        unfolds = h.get(fold)
+        if unfolds is None:
+            unfolds = [unfold]
+            h[fold] = unfolds
+        else:
+            unfolds.append(unfold)
 
+    return h
+
+def make_foldn_heads(l, fold_len, one_folds):
+    h = {}
+    for unfold, e in l:
+        if e.fold_len != fold_len:
+            continue
+        unfolds = one_folds.get(e.fold[0])
+        h[e.fold[0]] = (e, unfolds)
+
+    return h
+
+def fold2_expansion_num(e, one_folds):
+    n = len(e.unfolds)
+    n0 = 1
+    u0 = one_folds.get(e.fold[0])
+    if u0 is not None:
+        n0 += len(u0)
+    n1 = 1
+    u1 = one_folds.get(e.fold[1])
+    if u1 is not None:
+        n1 += len(u1)
+    n += (n0 * n1)
+    return n
+
+def fold3_expansion_num(e, one_folds):
+    n = len(e.unfolds)
+    n0 = 1
+    u0 = one_folds.get(e.fold[0])
+    if u0 is not None:
+        n0 += len(u0)
+    n1 = 1
+    u1 = one_folds.get(e.fold[1])
+    if u1 is not None:
+        n1 += len(u1)
+    n2 = 1
+    u2 = one_folds.get(e.fold[2])
+    if u2 is not None:
+        n2 += len(u2)
+    n += (n0 * n1 * n2)
+    return n
+
+def get_all_folds_expansion_num(x, one_folds, fold2_heads, fold3_heads):
+    e = UNFOLDS[x]
+    n = 0
+    if e.fold_len == 1:
+        n1 = len(e.unfolds) + 1 # +1: fold
+        fx = e.fold[0]
+        r = fold2_heads.get(fx)
+        n2 = n3 = 0
+        if r is not None:
+            e2, _ = r
+            n2 = fold2_expansion_num(e2, one_folds)
+        r = fold3_heads.get(fx)
+        if r is not None:
+            e3, _ = r
+            n3 = fold3_expansion_num(e3, one_folds)
+        n = max(n1, n2, n3)
+    elif e.fold_len == 2:
+        n = fold2_expansion_num(e, one_folds)
+    elif e.fold_len == 3:
+        n = fold3_expansion_num(e, one_folds)
+    else:
+        raise RuntimeError("Invalid fold_len %d" % (e.fold_len))
+
+    return n
+
+def get_all_folds_expansion_max_num():
+    l = UNFOLDS.items()
+    one_folds = make_one_folds(l)
+    fold2_heads = make_foldn_heads(l, 2, one_folds)
+    fold3_heads = make_foldn_heads(l, 3, one_folds)
+    sl = sorted(l, key=lambda (k,e):(e.fold_len, e.index))
+    nmax = 0
+    max_unfold = None
+    for unfold, e in sl:
+        n = get_all_folds_expansion_num(unfold, one_folds, fold2_heads, fold3_heads)
+        if nmax < n:
+            nmax = n
+            max_unfold = unfold
+
+    return (nmax, max_unfold)
 
 ## main ##
 with open(SOURCE_FILE, 'r') as f:
@@ -382,3 +476,7 @@ output_gperf_source()
 #unfolds_byte_length_check('utf-16')
 double_fold_check()
 unfold_is_multi_code_folds_head_check()
+
+#max_num, max_code = get_all_folds_expansion_max_num()
+#max_num -= 1  # remove self
+#print >> sys.stderr, "max expansion: 0x%06x: %d" % (max_code, max_num)
