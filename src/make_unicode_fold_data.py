@@ -336,7 +336,8 @@ def unfolds_byte_length_check(encode):
         key_len = enc_len(unfold, encode)
         fold_len = sum(map(lambda c: enc_len(c, encode), e.fold))
         if key_len > fold_len:
-            s = "%s byte length: %d > %d: 0x%06x => %s" % (encode, key_len, fold_len, unfold, e.fold)
+            sfolds = ' '.join(map(lambda c: "0x%06x" % c, e.fold))
+            s = "%s byte length: %d > %d: 0x%06x => %s" % (encode, key_len, fold_len, unfold, sfolds)
             print >> sys.stderr, s
 
 def double_fold_check():
@@ -472,7 +473,7 @@ output_fold_source(sys.stdout, out_comment)
 
 output_gperf_source()
 
-#unfolds_byte_length_check('utf-8')
+unfolds_byte_length_check('utf-8')
 #unfolds_byte_length_check('utf-16')
 double_fold_check()
 unfold_is_multi_code_folds_head_check()
