@@ -473,7 +473,7 @@ output_fold_source(sys.stdout, out_comment)
 
 output_gperf_source()
 
-unfolds_byte_length_check('utf-8')
+#unfolds_byte_length_check('utf-8')
 #unfolds_byte_length_check('utf-16')
 double_fold_check()
 unfold_is_multi_code_folds_head_check()
