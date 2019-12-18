@@ -6510,7 +6510,8 @@ print_optimize_info(FILE* f, regex_t* reg)
     for (p = reg->exact; p < reg->exact_end; p++) {
       fputc(*p, f);
     }
-    fprintf(f, "]: length: %ld\n", (reg->exact_end - reg->exact));
+    fprintf(f, "]: length: %ld, dmin: %u, dmax: %u\n",
+            (reg->exact_end - reg->exact), reg->dist_min, reg->dist_max);
   }
   else if (reg->optimize & OPTIMIZE_MAP) {
     int c, i, n = 0;
@@ -6518,7 +6519,8 @@ print_optimize_info(FILE* f, regex_t* reg)
     for (i = 0; i < CHAR_MAP_SIZE; i++)
       if (reg->map[i]) n++;
 
-    fprintf(f, "map: n=%d\n", n);
+    fprintf(f, "map: n=%d, dmin: %u, dmax: %u\n",
+            n, reg->dist_min, reg->dist_max);
     if (n > 0) {
       c = 0;
       fputc('[', f);
