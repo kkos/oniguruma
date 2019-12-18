@@ -1286,6 +1286,13 @@ extern int main(int argc, char* argv[])
   x2("(?i)[ǰ]", "ǰ", 0, 2);
   x2("(?i)[ǰ]", "j\xcc\x8c", 0, 3);
   //x2("(?i)[j]\xcc\x8c", "ǰ", 0, 2);
+  x2("(?i)\ufb00a", "ffa", 0, 3);
+  x2("(?i)ffz", "\xef\xac\x80z", 0, 4);
+  x2("(?i)\u2126", "\xcf\x89", 0, 2);
+  x2("a(?i)\u2126", "a\xcf\x89", 0, 3);
+  x2("(?i)A\u2126", "a\xcf\x89", 0, 3);
+  x2("(?i)A\u2126=", "a\xcf\x89=", 0, 4);
+  x2("(?i:ss)=1234567890", "\xc5\xbf\xc5\xbf=1234567890", 0, 15);
 
   n("   \xfd", ""); /* https://bugs.php.net/bug.php?id=77370 */
   /* can't use \xfc00.. because compiler error: hex escape sequence out of range */
