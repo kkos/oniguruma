@@ -356,7 +356,7 @@ def unfold_is_multi_code_folds_head_check():
     l2 = filter(lambda (k,e):e.fold_len == 2, l)
     l3 = filter(lambda (k,e):e.fold_len == 3, l)
     sl = sorted(l, key=lambda (k,e):(e.fold_len, e.index))
-    for unfold, e in sl:
+    for unfold, _ in sl:
         for k, e in l2:
             if e.fold[0] == unfold:
                 s = "unfold 0x%06x is multi-code fold head in %s" % (unfold, e.fold)
