@@ -29,6 +29,9 @@
 
 #include "regenc.h"
 
+#define LARGE_S   0x53
+#define SMALL_S   0x73
+
 #define ENC_IS_ISO_8859_1_CTYPE(code,ctype) \
   ((EncISO_8859_1_CtypeTable[code] & CTYPE_TO_BIT(ctype)) != 0)
 
@@ -119,8 +122,8 @@ get_case_fold_codes_by_str(OnigCaseFoldType flag ARG_UNUSED,
     items[0].byte_len = 1;
     items[0].code_len = 1;
     items[0].code[0] = (OnigCodePoint )(*p + 0x20);
-    if (*p == 0x53 && end > p + 1
-        && (*(p+1) == 0x53 || *(p+1) == 0x73)) { /* SS */
+    if (*p == LARGE_S && end > p + 1
+        && (*(p+1) == LARGE_S || *(p+1) == SMALL_S)) { /* SS */
       items[1].byte_len = 2;
       items[1].code_len = 1;
       items[1].code[0] = (OnigCodePoint )0xdf;
@@ -133,8 +136,8 @@ get_case_fold_codes_by_str(OnigCaseFoldType flag ARG_UNUSED,
     items[0].byte_len = 1;
     items[0].code_len = 1;
     items[0].code[0] = (OnigCodePoint )(*p - 0x20);
-    if (*p == 0x73 && end > p + 1
-        && (*(p+1) == 0x73 || *(p+1) == 0x53)) { /* ss */
+    if (*p == SMALL_S && end > p + 1
+        && (*(p+1) == SMALL_S || *(p+1) == LARGE_S)) { /* ss */
       items[1].byte_len = 2;
       items[1].code_len = 1;
       items[1].code[0] = (OnigCodePoint )0xdf;
