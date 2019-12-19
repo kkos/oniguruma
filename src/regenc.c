@@ -29,6 +29,9 @@
 
 #include "regint.h"
 
+#define LARGE_S   0x53
+#define SMALL_S   0x73
+
 OnigEncoding OnigEncDefaultCharEncoding = ONIG_ENCODING_INIT_DEFAULT;
 
 #define INITED_LIST_SIZE  20
@@ -549,7 +552,7 @@ static int
 ss_apply_all_case_fold(OnigCaseFoldType flag ARG_UNUSED,
                        OnigApplyAllCaseFoldFunc f, void* arg)
 {
-  static OnigCodePoint ss[] = { 0x73, 0x73 };
+  static OnigCodePoint ss[] = { SMALL_S, SMALL_S };
 
   return (*f)((OnigCodePoint )0xdf, ss, 2, arg);
 }
@@ -588,13 +591,13 @@ onigenc_get_case_fold_codes_by_str_with_map(int map_size,
     int ess_tsett_flag, OnigCaseFoldType flag ARG_UNUSED,
     const OnigUChar* p, const OnigUChar* end, OnigCaseFoldCodeItem items[])
 {
-  if (0x41 <= *p && *p <= 0x5a) {
+  if (0x41 <= *p && *p <= 0x5a) { /* A - Z */
     items[0].byte_len = 1;
     items[0].code_len = 1;
     items[0].code[0] = (OnigCodePoint )(*p + 0x20);
-    if (*p == 0x53 && ess_tsett_flag != 0 && end > p + 1
-        && (*(p+1) == 0x53 || *(p+1) == 0x73)) {
-      /* SS */
+
+    if (*p == LARGE_S && ess_tsett_flag != 0 && end > p + 1
+        && (*(p+1) == LARGE_S || *(p+1) == SMALL_S)) { /* SS */
       items[1].byte_len = 2;
       items[1].code_len = 1;
       items[1].code[0] = (OnigCodePoint )0xdf;
@@ -603,12 +606,12 @@ onigenc_get_case_fold_codes_by_str_with_map(int map_size,
     else
       return 1;
   }
-  else if (0x61 <= *p && *p <= 0x7a) {
+  else if (0x61 <= *p && *p <= 0x7a) { /* a - z */
     items[0].byte_len = 1;
     items[0].code_len = 1;
     items[0].code[0] = (OnigCodePoint )(*p - 0x20);
-    if (*p == 0x73 && ess_tsett_flag != 0 && end > p + 1
-        && (*(p+1) == 0x73 || *(p+1) == 0x53)) {
+    if (*p == SMALL_S && ess_tsett_flag != 0 && end > p + 1
+        && (*(p+1) == SMALL_S || *(p+1) == LARGE_S)) {
       /* ss */
       items[1].byte_len = 2;
       items[1].code_len = 1;
