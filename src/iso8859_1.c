@@ -118,33 +118,48 @@ get_case_fold_codes_by_str(OnigCaseFoldType flag ARG_UNUSED,
                            const OnigUChar* p, const OnigUChar* end,
                            OnigCaseFoldCodeItem items[])
 {
+  static OnigUChar sa[] = { LARGE_S, SMALL_S };
+  int i, j, n;
+
   if (0x41 <= *p && *p <= 0x5a) {
+    if (*p == LARGE_S && end > p + 1
+        && (*(p+1) == LARGE_S || *(p+1) == SMALL_S)) { /* SS */
+    ss_combination:
+      items[0].byte_len = 2;
+      items[0].code_len = 1;
+      items[0].code[0] = (OnigCodePoint )0xdf;
+
+      n = 1;
+      for (i = 0; i < 2; i++) {
+        for (j = 0; j < 2; j++) {
+          if (sa[i] == *p && sa[j] == *(p+1))
+            continue;
+
+          items[n].byte_len = 2;
+          items[n].code_len = 2;
+          items[n].code[0] = (OnigCodePoint )sa[i];
+          items[n].code[1] = (OnigCodePoint )sa[j];
+          n++;
+        }
+      }
+      return 4;
+    }
+
     items[0].byte_len = 1;
     items[0].code_len = 1;
     items[0].code[0] = (OnigCodePoint )(*p + 0x20);
-    if (*p == LARGE_S && end > p + 1
-        && (*(p+1) == LARGE_S || *(p+1) == SMALL_S)) { /* SS */
-      items[1].byte_len = 2;
-      items[1].code_len = 1;
-      items[1].code[0] = (OnigCodePoint )0xdf;
-      return 2;
-    }
-    else
-      return 1;
+    return 1;
   }
   else if (0x61 <= *p && *p <= 0x7a) {
+    if (*p == SMALL_S && end > p + 1
+        && (*(p+1) == SMALL_S || *(p+1) == LARGE_S)) { /* ss */
+      goto ss_combination;
+    }
+
     items[0].byte_len = 1;
     items[0].code_len = 1;
     items[0].code[0] = (OnigCodePoint )(*p - 0x20);
-    if (*p == SMALL_S && end > p + 1
-        && (*(p+1) == SMALL_S || *(p+1) == LARGE_S)) { /* ss */
-      items[1].byte_len = 2;
-      items[1].code_len = 1;
-      items[1].code[0] = (OnigCodePoint )0xdf;
-      return 2;
-    }
-    else
-      return 1;
+    return 1;
   }
   else if (0xc0 <= *p && *p <= 0xcf) {
     items[0].byte_len = 1;
