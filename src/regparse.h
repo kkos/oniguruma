@@ -292,19 +292,15 @@ typedef struct _Node {
 
 #define NODE_STRING_CRUDE              (1<<0)
 #define NODE_STRING_CASE_EXPANDED      (1<<1)
-#define NODE_STRING_CASE_FOLD_MATCH    (1<<2)
 
 #define NODE_STRING_LEN(node)            (int )((node)->u.str.end - (node)->u.str.s)
 #define NODE_STRING_SET_CRUDE(node)         (node)->u.str.flag |= NODE_STRING_CRUDE
 #define NODE_STRING_CLEAR_CRUDE(node)       (node)->u.str.flag &= ~NODE_STRING_CRUDE
 #define NODE_STRING_SET_CASE_EXPANDED(node) (node)->u.str.flag |= NODE_STRING_CASE_EXPANDED
-#define NODE_STRING_SET_CASE_FOLD_MATCH(node) (node)->u.str.flag |= NODE_STRING_CASE_FOLD_MATCH
 #define NODE_STRING_IS_CRUDE(node) \
   (((node)->u.str.flag & NODE_STRING_CRUDE) != 0)
 #define NODE_STRING_IS_CASE_EXPANDED(node) \
   (((node)->u.str.flag & NODE_STRING_CASE_EXPANDED) != 0)
-#define NODE_STRING_IS_CASE_FOLD_MATCH(node) \
-  (((node)->u.str.flag & NODE_STRING_CASE_FOLD_MATCH) != 0)
 
 #define BACKREFS_P(br) \
   (IS_NOT_NULL((br)->back_dynamic) ? (br)->back_dynamic : (br)->back_static)
