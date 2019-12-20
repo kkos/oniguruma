@@ -177,8 +177,6 @@ static OpInfoType OpInfo[] = {
   { OP_STR_MB2N,       "str_mb2-n"},
   { OP_STR_MB3N,       "str_mb3n"},
   { OP_STR_MBN,        "str_mbn"},
-  { OP_STR_1_IC,       "str_1-ic"},
-  { OP_STR_N_IC,       "str_n-ic"},
   { OP_CCLASS,         "cclass"},
   { OP_CCLASS_MB,      "cclass-mb"},
   { OP_CCLASS_MIX,     "cclass-mix"},
@@ -376,14 +374,6 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
       n = len * mb_len;
       while (n-- > 0) { fputc(*q++, f); }
     }
-    break;
-  case OP_STR_1_IC:
-    len = enclen(enc, p->exact.s);
-    p_string(f, len, p->exact.s);
-    break;
-  case OP_STR_N_IC:
-    len = p->exact_n.n;
-    p_len_string(f, len, 1, p->exact_n.s);
     break;
 
   case OP_CCLASS:
@@ -2609,8 +2599,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_STR_MB2N,
   &&L_STR_MB3N,
   &&L_STR_MBN,
-  &&L_STR_1_IC,
-  &&L_STR_N_IC,
   &&L_CCLASS,
   &&L_CCLASS_MB,
   &&L_CCLASS_MIX,
@@ -2883,27 +2871,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       INC_OP;
       NEXT_OUT;
 
-    CASE_OP(STR_1_IC)
-      {
-        int len;
-        UChar *q, lowbuf[ONIGENC_MBC_CASE_FOLD_MAXLEN];
-
-        DATA_ENSURE(1);
-        len = ONIGENC_MBC_CASE_FOLD(encode,
-                 /* DISABLE_CASE_FOLD_MULTI_CHAR(case_fold_flag), */
-                                    case_fold_flag,
-                                    &s, end, lowbuf);
-        DATA_ENSURE(0);
-        q = lowbuf;
-        ps = p->exact.s;
-        while (len-- > 0) {
-          if (*ps != *q) goto fail;
-          ps++; q++;
-        }
-      }
-      INC_OP;
-      NEXT_OUT;
-
     CASE_OP(STR_2)
       DATA_ENSURE(2);
       ps = p->exact.s;
@@ -2968,34 +2935,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         if (*ps++ != *s++) goto fail;
       }
       sprev = s - 1;
-      INC_OP;
-      JUMP_OUT;
-
-    CASE_OP(STR_N_IC)
-      {
-        int len;
-        UChar *q, *endp, lowbuf[ONIGENC_MBC_CASE_FOLD_MAXLEN];
-
-        tlen = p->exact_n.n;
-        ps   = p->exact_n.s;
-        endp = ps + tlen;
-        while (ps < endp) {
-          sprev = s;
-          DATA_ENSURE(1);
-          len = ONIGENC_MBC_CASE_FOLD(encode,
-                        /* DISABLE_CASE_FOLD_MULTI_CHAR(case_fold_flag), */
-                                      case_fold_flag,
-                                      &s, end, lowbuf);
-          DATA_ENSURE(0);
-          q = lowbuf;
-          while (len-- > 0) {
-            if (ps >= endp) goto fail;
-            if (*ps != *q) goto fail;
-            ps++; q++;
-          }
-        }
-      }
-
       INC_OP;
       JUMP_OUT;
 

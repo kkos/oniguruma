@@ -463,8 +463,6 @@ enum OpCode {
   OP_STR_MB2N,         /* mb-length = 2 */
   OP_STR_MB3N,         /* mb-length = 3 */
   OP_STR_MBN,          /* other length */
-  OP_STR_1_IC,         /* single byte, N = 1, ignore case */
-  OP_STR_N_IC,         /* single byte,        ignore case */
   OP_CCLASS,
   OP_CCLASS_MB,
   OP_CCLASS_MIX,

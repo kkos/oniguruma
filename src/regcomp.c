@@ -228,13 +228,13 @@ ops_free(regex_t* reg)
       if (! is_in_string_pool(reg, op->exact_len_n.s))
         xfree(op->exact_len_n.s);
       break;
-    case OP_STR_N: case OP_STR_MB2N: case OP_STR_MB3N: case OP_STR_N_IC:
+    case OP_STR_N: case OP_STR_MB2N: case OP_STR_MB3N:
       if (! is_in_string_pool(reg, op->exact_n.s))
         xfree(op->exact_n.s);
       break;
     case OP_STR_1: case OP_STR_2: case OP_STR_3: case OP_STR_4:
     case OP_STR_5: case OP_STR_MB2N1: case OP_STR_MB2N2:
-    case OP_STR_MB2N3: case OP_STR_1_IC:
+    case OP_STR_MB2N3:
       break;
 
     case OP_CCLASS_NOT: case OP_CCLASS:
@@ -302,9 +302,6 @@ ops_calc_size_of_string_pool(regex_t* reg)
       total += op->exact_len_n.len * op->exact_len_n.n;
       break;
     case OP_STR_N:
-    case OP_STR_N_IC:
-      total += op->exact_n.n;
-      break;
     case OP_STR_MB2N:
       total += op->exact_n.n * 2;
       break;
@@ -357,7 +354,6 @@ ops_make_string_pool(regex_t* reg)
       curr += len;
       break;
     case OP_STR_N:
-    case OP_STR_N_IC:
       len = op->exact_n.n;
     copy:
       xmemcpy(curr, op->exact_n.s, len);
@@ -614,7 +610,7 @@ static int compile_tree(Node* node, regex_t* reg, ScanEnv* env);
 
 #define IS_NEED_STR_LEN_OP(op) \
    ((op) == OP_STR_N    || (op) == OP_STR_MB2N ||\
-    (op) == OP_STR_MB3N || (op) == OP_STR_MBN  || (op) == OP_STR_N_IC)
+    (op) == OP_STR_MB3N || (op) == OP_STR_MBN)
 
 static int
 select_str_opcode(int mb_len, int str_len)
@@ -782,12 +778,7 @@ add_compile_string(UChar* s, int mb_len, int str_len, regex_t* reg)
   else if (IS_NEED_STR_LEN_OP(op)) {
     p = onigenc_strdup(reg->enc, s, end);
     CHECK_NULL_RETURN_MEMERR(p);
-
-    if (op == OP_STR_N_IC)
-      COP(reg)->exact_n.n = byte_len;
-    else
-      COP(reg)->exact_n.n = str_len;
-
+    COP(reg)->exact_n.n = str_len;
     COP(reg)->exact_n.s = p;
   }
   else {
