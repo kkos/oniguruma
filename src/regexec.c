@@ -4597,48 +4597,6 @@ slow_search(OnigEncoding enc, UChar* target, UChar* target_end,
   return (UChar* )NULL;
 }
 
-static int
-str_lower_case_match(OnigEncoding enc, int case_fold_flag,
-                     const UChar* t, const UChar* tend,
-                     const UChar* p, const UChar* end)
-{
-  int lowlen;
-  UChar *q, lowbuf[ONIGENC_MBC_CASE_FOLD_MAXLEN];
-
-  while (t < tend) {
-    if (p >= end) return 0;
-    lowlen = ONIGENC_MBC_CASE_FOLD(enc, case_fold_flag, &p, end, lowbuf);
-    q = lowbuf;
-    while (lowlen > 0) {
-      if (t >= tend)    return 0;
-      if (*t++ != *q++) return 0;
-      lowlen--;
-    }
-  }
-
-  return 1;
-}
-
-static UChar*
-slow_search_ic(OnigEncoding enc, int case_fold_flag,
-               UChar* target, UChar* target_end,
-               const UChar* text, const UChar* text_end, UChar* text_range)
-{
-  UChar *s;
-
-  s = (UChar* )text;
-
-  while (s < text_range) {
-    if (str_lower_case_match(enc, case_fold_flag, target, target_end,
-                             s, text_end))
-      return s;
-
-    s += enclen(enc, s);
-  }
-
-  return (UChar* )NULL;
-}
-
 static UChar*
 slow_search_backward(OnigEncoding enc, UChar* target, UChar* target_end,
                      const UChar* text, const UChar* adjust_text,
@@ -4670,33 +4628,6 @@ slow_search_backward(OnigEncoding enc, UChar* target, UChar* target_end,
 
   return (UChar* )NULL;
 }
-
-static UChar*
-slow_search_backward_ic(OnigEncoding enc, int case_fold_flag,
-                        UChar* target, UChar* target_end,
-                        const UChar* text, const UChar* adjust_text,
-                        const UChar* text_end, const UChar* text_start)
-{
-  UChar *s;
-
-  s = (UChar* )text_end;
-  s -= (target_end - target);
-  if (s > text_start)
-    s = (UChar* )text_start;
-  else
-    s = ONIGENC_LEFT_ADJUST_CHAR_HEAD(enc, adjust_text, s);
-
-  while (s >= text) {
-    if (str_lower_case_match(enc, case_fold_flag,
-                             target, target_end, s, text_end))
-      return s;
-
-    s = (UChar* )onigenc_get_prev_char_head(enc, adjust_text, s);
-  }
-
-  return (UChar* )NULL;
-}
-
 
 static UChar*
 sunday_quick_search_step_forward(regex_t* reg,
@@ -4891,10 +4822,6 @@ forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
   case OPTIMIZE_STR:
     p = slow_search(reg->enc, reg->exact, reg->exact_end, p, end, range);
     break;
-  case OPTIMIZE_STR_CASE_FOLD:
-    p = slow_search_ic(reg->enc, reg->case_fold_flag,
-                       reg->exact, reg->exact_end, p, end, range);
-    break;
 
   case OPTIMIZE_STR_FAST:
     p = sunday_quick_search(reg, reg->exact, reg->exact_end, p, end, range);
@@ -5015,12 +4942,6 @@ backward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
   exact_method:
     p = slow_search_backward(reg->enc, reg->exact, reg->exact_end,
                              range, adjrange, end, p);
-    break;
-
-  case OPTIMIZE_STR_CASE_FOLD:
-    p = slow_search_backward_ic(reg->enc, reg->case_fold_flag,
-                                reg->exact, reg->exact_end,
-                                range, adjrange, end, p);
     break;
 
   case OPTIMIZE_STR_FAST:
