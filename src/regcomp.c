@@ -508,7 +508,6 @@ node_conv_to_str_node(Node* node, Node* ref_node)
   STR_(node)->s        = STR_(node)->buf;
   STR_(node)->end      = STR_(node)->buf;
   STR_(node)->capacity = 0;
-  STR_(node)->case_min_len = 0;
 }
 
 static OnigLen
@@ -4079,7 +4078,7 @@ unravel_cf_node_add(Node** rlist, Node* add)
 
 static int
 unravel_cf_string_add(Node** rlist, Node** rsn, UChar* s, UChar* end,
-                      unsigned int flag, int case_min_len)
+                      unsigned int flag)
 {
   int r;
   Node *sn, *list;
@@ -4095,7 +4094,6 @@ unravel_cf_string_add(Node** rlist, Node** rsn, UChar* s, UChar* end,
     CHECK_NULL_RETURN_MEMERR(sn);
 
     STR_(sn)->flag = flag;
-    STR_(sn)->case_min_len = case_min_len;
     r = unravel_cf_node_add(&list, sn);
   }
 
@@ -4180,7 +4178,7 @@ unravel_cf_look_behind_add(Node** rlist, Node** rsn,
   }
 
   if (found == 0) {
-    r = unravel_cf_string_add(rlist, rsn, s, s + one_len, 0 /* flag */, 0);
+    r = unravel_cf_string_add(rlist, rsn, s, s + one_len, 0 /* flag */);
   }
   else {
     Node* node;
@@ -4242,7 +4240,7 @@ unravel_case_fold_string(Node* node, regex_t* reg, int state)
     one_len = enclen(enc, p);
     if (n == 0) {
       q = p + one_len;
-      r = unravel_cf_string_add(&list, &sn, p, q, 0 /* flag */, 0);
+      r = unravel_cf_string_add(&list, &sn, p, q, 0 /* flag */);
       if (r != 0) goto err;
     }
     else {
