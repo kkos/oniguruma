@@ -5191,7 +5191,6 @@ typedef struct {
   MinMax     mm;   /* position */
   OptAnc     anc;
   int        reach_end;
-  int        case_fold;
   int        len;
   UChar      s[OPT_EXACT_MAXLEN];
 } OptStr;
@@ -5416,10 +5415,9 @@ clear_opt_exact(OptStr* e)
 {
   clear_mml(&e->mm);
   clear_opt_anc_info(&e->anc);
-  e->reach_end      = 0;
-  e->case_fold      = 0;
-  e->len            = 0;
-  e->s[0]           = '\0';
+  e->reach_end = 0;
+  e->len       = 0;
+  e->s[0]      = '\0';
 }
 
 static void
@@ -5434,14 +5432,6 @@ concat_opt_exact(OptStr* to, OptStr* add, OnigEncoding enc)
   int i, j, len, r;
   UChar *p, *end;
   OptAnc tanc;
-
-  if (add->case_fold != 0) {
-    if (to->case_fold == 0) {
-      if (to->len > 1 || to->len >= add->len) return 0;  /* avoid */
-
-      to->case_fold = 1;
-    }
-  }
 
   r = 0;
   p = add->s;
@@ -5515,8 +5505,6 @@ alt_merge_opt_exact(OptStr* to, OptStr* add, OptEnv* env)
     to->reach_end = 0;
   }
   to->len = i;
-  if (add->case_fold != 0)
-    to->case_fold = 1;
 
   alt_merge_opt_anc_info(&to->anc, &add->anc);
   if (! to->reach_end) to->anc.right = 0;
@@ -5546,8 +5534,8 @@ select_opt_exact(OnigEncoding enc, OptStr* now, OptStr* alt)
     if (alt->len > 1) va += 5;
   }
 
-  if (now->case_fold == 0) vn *= 2;
-  if (alt->case_fold == 0) va *= 2;
+  vn *= 2;
+  va *= 2;
 
   if (comp_distance_value(&now->mm, &alt->mm, vn, va) > 0)
     copy_opt_exact(now, alt);
@@ -5624,12 +5612,7 @@ comp_opt_exact_or_map(OptStr* e, OptMap* m)
 
   if (m->value <= 0) return -1;
 
-  if (e->case_fold != 0) {
-    case_value = 1;
-  }
-  else
-    case_value = 3;
-
+  case_value = 3;
   ae = COMP_EM_BASE * e->len * case_value;
   am = COMP_EM_BASE * 5 * 2 / m->value;
   return comp_distance_value(&e->mm, &m->mm, ae, am);
@@ -6063,6 +6046,7 @@ static int
 set_optimize_exact(regex_t* reg, OptStr* e)
 {
   int r;
+  int allow_reverse;
 
   if (e->len == 0) return 0;
 
@@ -6071,40 +6055,28 @@ set_optimize_exact(regex_t* reg, OptStr* e)
   xmemcpy(reg->exact, e->s, e->len);
   reg->exact_end = reg->exact + e->len;
 
-  if (e->case_fold) {
-    reg->optimize = OPTIMIZE_STR_CASE_FOLD;
+  allow_reverse =
+    ONIGENC_IS_ALLOWED_REVERSE_MATCH(reg->enc, reg->exact, reg->exact_end);
+
+  if (e->len >= 2 || (e->len >= 1 && allow_reverse)) {
+    r = set_sunday_quick_search_or_bmh_skip_table(reg, 0,
+                                                  reg->exact, reg->exact_end,
+                                                  reg->map, &(reg->map_offset));
+    if (r != 0) return r;
+
+    reg->optimize = (allow_reverse != 0
+                     ? OPTIMIZE_STR_FAST
+                     : OPTIMIZE_STR_FAST_STEP_FORWARD);
   }
   else {
-    int allow_reverse;
-
-    allow_reverse =
-      ONIGENC_IS_ALLOWED_REVERSE_MATCH(reg->enc, reg->exact, reg->exact_end);
-
-    if (e->len >= 2 || (e->len >= 1 && allow_reverse)) {
-      r = set_sunday_quick_search_or_bmh_skip_table(reg, 0,
-                                         reg->exact, reg->exact_end,
-                                         reg->map, &(reg->map_offset));
-      if (r != 0) return r;
-
-      reg->optimize = (allow_reverse != 0
-                       ? OPTIMIZE_STR_FAST
-                       : OPTIMIZE_STR_FAST_STEP_FORWARD);
-    }
-    else {
-      reg->optimize = OPTIMIZE_STR;
-    }
+    reg->optimize = OPTIMIZE_STR;
   }
 
   reg->dist_min = e->mm.min;
   reg->dist_max = e->mm.max;
 
   if (reg->dist_min != INFINITE_LEN) {
-    int n;
-    if (e->case_fold != 0)
-      n = 1;
-    else
-      n = (int )(reg->exact_end - reg->exact);
-
+    int n = (int )(reg->exact_end - reg->exact);
     reg->threshold_len = reg->dist_min + n;
   }
 
