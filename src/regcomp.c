@@ -694,16 +694,16 @@ compile_quant_body_with_empty_check(QuantNode* qn, regex_t* reg, ScanEnv* env)
   if (r != 0) return r;
 
   if (emptiness != BODY_IS_NOT_EMPTY) {
-    if (emptiness == BODY_IS_EMPTY_POSSIBILITY)
+    if (emptiness == BODY_MAY_BE_EMPTY)
       r = add_op(reg, OP_EMPTY_CHECK_END);
-    else if (emptiness == BODY_IS_EMPTY_POSSIBILITY_MEM) {
+    else if (emptiness == BODY_MAY_BE_EMPTY_MEM) {
       if (NODE_IS_EMPTY_STATUS_CHECK(qn) != 0)
         r = add_op(reg, OP_EMPTY_CHECK_END_MEMST);
       else
         r = add_op(reg, OP_EMPTY_CHECK_END);
     }
 #ifdef USE_CALL
-    else if (emptiness == BODY_IS_EMPTY_POSSIBILITY_REC)
+    else if (emptiness == BODY_MAY_BE_EMPTY_REC)
       r = add_op(reg, OP_EMPTY_CHECK_END_MEMST_PUSH);
 #endif
 
@@ -4301,7 +4301,7 @@ unravel_case_fold_string(Node* node, regex_t* reg, int state)
 static enum BodyEmptyType
 quantifiers_memory_node_info(Node* node)
 {
-  int r = BODY_IS_EMPTY_POSSIBILITY;
+  int r = BODY_MAY_BE_EMPTY;
 
   switch (NODE_TYPE(node)) {
   case NODE_LIST:
@@ -4318,7 +4318,7 @@ quantifiers_memory_node_info(Node* node)
 #ifdef USE_CALL
   case NODE_CALL:
     if (NODE_IS_RECURSION(node)) {
-      return BODY_IS_EMPTY_POSSIBILITY_REC; /* tiny version */
+      return BODY_MAY_BE_EMPTY_REC; /* tiny version */
     }
     else
       r = quantifiers_memory_node_info(NODE_BODY(node));
@@ -4340,9 +4340,9 @@ quantifiers_memory_node_info(Node* node)
       switch (en->type) {
       case BAG_MEMORY:
         if (NODE_IS_RECURSION(node)) {
-          return BODY_IS_EMPTY_POSSIBILITY_REC;
+          return BODY_MAY_BE_EMPTY_REC;
         }
-        return BODY_IS_EMPTY_POSSIBILITY_MEM;
+        return BODY_MAY_BE_EMPTY_MEM;
         break;
 
       case BAG_OPTION:
@@ -4904,7 +4904,7 @@ tune_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
 #ifdef USE_STUBBORN_CHECK_CAPTURES_IN_EMPTY_REPEAT
       qn->emptiness = quantifiers_memory_node_info(body);
 #else
-      qn->emptiness = BODY_IS_EMPTY_POSSIBILITY;
+      qn->emptiness = BODY_MAY_BE_EMPTY;
 #endif
     }
   }
