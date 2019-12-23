@@ -1713,6 +1713,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
       if (node->char_len < 0) {
         r = get_char_len_node(NODE_ANCHOR_BODY(node), reg, &n);
         if (r != 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
+        node->char_len = n;
       }
       else
         n = node->char_len;
@@ -1734,6 +1735,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
       if (node->char_len < 0) {
         r = get_char_len_node(NODE_ANCHOR_BODY(node), reg, &n);
         if (r != 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
+        node->char_len = n;
       }
       else
         n = node->char_len;
