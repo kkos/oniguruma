@@ -27,6 +27,12 @@ Supported character encodings:
 * doc/SYNTAX.md: contributed by seanofw
 
 
+Master branch
+-------------
+
+* Fixed behavior of isolated options in Perl and Java syntaxes.  /...(?i).../
+
+
 Version 6.9.4
 -------------
 
