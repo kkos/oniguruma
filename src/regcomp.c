@@ -4221,8 +4221,8 @@ unravel_case_fold_string(Node* node, regex_t* reg, int state)
 
   if (NODE_STRING_IS_CASE_EXPANDED(node)) return 0;
 
+  NODE_STATUS_REMOVE(node, IGNORECASE);
   snode = STR_(node);
-
   start = snode->s;
   end   = snode->end;
   if (start >= end) return 0;
