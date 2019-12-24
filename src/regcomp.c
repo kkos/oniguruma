@@ -638,10 +638,11 @@ node_char_len1(Node* node, regex_t* reg, int* len, int level)
       StrNode* sn = STR_(node);
       UChar *s = sn->s;
 
-      /* Ignore IGNORECASE option flag.
-         Because node_char_len() is used for
-         look-behind/look-behind-not only.
-       */
+      if (NODE_IS_IGNORECASE(node) && ! NODE_STRING_IS_CRUDE(node)) {
+        r = ONIGERR_PARSER_BUG;
+        break;
+      }
+
       while (s < sn->end) {
         s += enclen(reg->enc, s);
         (*len)++;
