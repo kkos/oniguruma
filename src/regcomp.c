@@ -1397,7 +1397,7 @@ compile_length_bag_node(BagNode* node, regex_t* reg)
   return len;
 }
 
-static int get_char_len_node(Node* node, regex_t* reg, int* len);
+static int node_char_len(Node* node, regex_t* reg, int* len);
 
 static int
 compile_bag_memory_node(BagNode* node, regex_t* reg, ScanEnv* env)
@@ -1711,7 +1711,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
       r = add_op(reg, OP_LOOK_BEHIND);
       if (r != 0) return r;
       if (node->char_len < 0) {
-        r = get_char_len_node(NODE_ANCHOR_BODY(node), reg, &n);
+        r = node_char_len(NODE_ANCHOR_BODY(node), reg, &n);
         if (r != 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
         node->char_len = n;
       }
@@ -1733,7 +1733,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
       COP(reg)->look_behind_not_start.addr = SIZE_INC + len + OPSIZE_LOOK_BEHIND_NOT_END;
 
       if (node->char_len < 0) {
-        r = get_char_len_node(NODE_ANCHOR_BODY(node), reg, &n);
+        r = node_char_len(NODE_ANCHOR_BODY(node), reg, &n);
         if (r != 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
         node->char_len = n;
       }
@@ -2400,7 +2400,7 @@ fix_unset_addr_list(UnsetAddrList* uslist, regex_t* reg)
 
 /* fixed size pattern node only */
 static int
-get_char_len_node1(Node* node, regex_t* reg, int* len, int level)
+node_char_len1(Node* node, regex_t* reg, int* len, int level)
 {
   int tlen;
   int r = 0;
@@ -2410,7 +2410,7 @@ get_char_len_node1(Node* node, regex_t* reg, int* len, int level)
   switch (NODE_TYPE(node)) {
   case NODE_LIST:
     do {
-      r = get_char_len_node1(NODE_CAR(node), reg, &tlen, level);
+      r = node_char_len1(NODE_CAR(node), reg, &tlen, level);
       if (r == 0)
         *len = distance_add(*len, tlen);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
@@ -2421,9 +2421,9 @@ get_char_len_node1(Node* node, regex_t* reg, int* len, int level)
       int tlen2;
       int varlen = 0;
 
-      r = get_char_len_node1(NODE_CAR(node), reg, &tlen, level);
+      r = node_char_len1(NODE_CAR(node), reg, &tlen, level);
       while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node))) {
-        r = get_char_len_node1(NODE_CAR(node), reg, &tlen2, level);
+        r = node_char_len1(NODE_CAR(node), reg, &tlen2, level);
         if (r == 0) {
           if (tlen != tlen2)
             varlen = 1;
@@ -2448,7 +2448,7 @@ get_char_len_node1(Node* node, regex_t* reg, int* len, int level)
       UChar *s = sn->s;
 
       /* Ignore IGNORECASE option flag.
-         Because get_char_len_node() is used for
+         Because node_char_len() is used for
          look-behind/look-behind-not only.
        */
       while (s < sn->end) {
@@ -2467,7 +2467,7 @@ get_char_len_node1(Node* node, regex_t* reg, int* len, int level)
           *len = 0;
         }
         else {
-          r = get_char_len_node1(NODE_BODY(node), reg, &tlen, level);
+          r = node_char_len1(NODE_BODY(node), reg, &tlen, level);
           if (r == 0)
             *len = distance_multiply(tlen, qn->lower);
         }
@@ -2480,7 +2480,7 @@ get_char_len_node1(Node* node, regex_t* reg, int* len, int level)
 #ifdef USE_CALL
   case NODE_CALL:
     if (! NODE_IS_RECURSION(node))
-      r = get_char_len_node1(NODE_BODY(node), reg, len, level);
+      r = node_char_len1(NODE_BODY(node), reg, len, level);
     else
       r = GET_CHAR_LEN_VARLEN;
     break;
@@ -2501,7 +2501,7 @@ get_char_len_node1(Node* node, regex_t* reg, int* len, int level)
         if (NODE_IS_FIXED_CLEN(node))
           *len = en->char_len;
         else {
-          r = get_char_len_node1(NODE_BODY(node), reg, len, level);
+          r = node_char_len1(NODE_BODY(node), reg, len, level);
           if (r == 0) {
             en->char_len = *len;
             NODE_STATUS_ADD(node, FIXED_CLEN);
@@ -2511,21 +2511,21 @@ get_char_len_node1(Node* node, regex_t* reg, int* len, int level)
 #endif
       case BAG_OPTION:
       case BAG_STOP_BACKTRACK:
-        r = get_char_len_node1(NODE_BODY(node), reg, len, level);
+        r = node_char_len1(NODE_BODY(node), reg, len, level);
         break;
       case BAG_IF_ELSE:
         {
           int clen, elen;
 
-          r = get_char_len_node1(NODE_BODY(node), reg, &clen, level);
+          r = node_char_len1(NODE_BODY(node), reg, &clen, level);
           if (r == 0) {
             if (IS_NOT_NULL(en->te.Then)) {
-              r = get_char_len_node1(en->te.Then, reg, &tlen, level);
+              r = node_char_len1(en->te.Then, reg, &tlen, level);
               if (r != 0) break;
             }
             else tlen = 0;
             if (IS_NOT_NULL(en->te.Else)) {
-              r = get_char_len_node1(en->te.Else, reg, &elen, level);
+              r = node_char_len1(en->te.Else, reg, &elen, level);
               if (r != 0) break;
             }
             else elen = 0;
@@ -2560,9 +2560,9 @@ get_char_len_node1(Node* node, regex_t* reg, int* len, int level)
 }
 
 static int
-get_char_len_node(Node* node, regex_t* reg, int* len)
+node_char_len(Node* node, regex_t* reg, int* len)
 {
-  return get_char_len_node1(node, reg, len, 0);
+  return node_char_len1(node, reg, len, 0);
 }
 
 /* x is not included y ==>  1 : 0 */
@@ -3933,7 +3933,7 @@ tune_look_behind(Node* node, regex_t* reg, ScanEnv* env)
   int r, len;
   AnchorNode* an = ANCHOR_(node);
 
-  r = get_char_len_node(NODE_ANCHOR_BODY(an), reg, &len);
+  r = node_char_len(NODE_ANCHOR_BODY(an), reg, &len);
   if (r == 0)
     an->char_len = len;
   else if (r == GET_CHAR_LEN_VARLEN)
