@@ -586,8 +586,8 @@ unset_addr_list_add(UnsetAddrList* list, int offset, struct _Node* node)
 #endif /* USE_CALL */
 
 
-#define GET_CHAR_LEN_VARLEN           -1
-#define GET_CHAR_LEN_TOP_ALT_VARLEN   -2
+#define CHAR_LEN_VARLEN           -1
+#define CHAR_LEN_TOP_ALT_VARLEN   -2
 
 /* fixed size pattern node only */
 static int
@@ -623,9 +623,9 @@ node_char_len1(Node* node, regex_t* reg, int* len, int level)
       if (r == 0) {
         if (varlen != 0) {
           if (level == 1)
-            r = GET_CHAR_LEN_TOP_ALT_VARLEN;
+            r = CHAR_LEN_TOP_ALT_VARLEN;
           else
-            r = GET_CHAR_LEN_VARLEN;
+            r = CHAR_LEN_VARLEN;
         }
         else
           *len = tlen;
@@ -665,7 +665,7 @@ node_char_len1(Node* node, regex_t* reg, int* len, int level)
         }
       }
       else
-        r = GET_CHAR_LEN_VARLEN;
+        r = CHAR_LEN_VARLEN;
     }
     break;
 
@@ -674,7 +674,7 @@ node_char_len1(Node* node, regex_t* reg, int* len, int level)
     if (! NODE_IS_RECURSION(node))
       r = node_char_len1(NODE_BODY(node), reg, len, level);
     else
-      r = GET_CHAR_LEN_VARLEN;
+      r = CHAR_LEN_VARLEN;
     break;
 #endif
 
@@ -723,7 +723,7 @@ node_char_len1(Node* node, regex_t* reg, int* len, int level)
             else elen = 0;
 
             if (clen + tlen != elen) {
-              r = GET_CHAR_LEN_VARLEN;
+              r = CHAR_LEN_VARLEN;
             }
             else {
               *len = elen;
@@ -744,7 +744,7 @@ node_char_len1(Node* node, regex_t* reg, int* len, int level)
       break;
     /* fall */
   default:
-    r = GET_CHAR_LEN_VARLEN;
+    r = CHAR_LEN_VARLEN;
     break;
   }
 
@@ -3933,10 +3933,10 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
   if (r == 0) {
     an->char_len = len;
   }
-  else if (r == GET_CHAR_LEN_VARLEN) {
+  else if (r == CHAR_LEN_VARLEN) {
     r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
   }
-  else if (r == GET_CHAR_LEN_TOP_ALT_VARLEN) {
+  else if (r == CHAR_LEN_TOP_ALT_VARLEN) {
     if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_DIFFERENT_LEN_ALT_LOOK_BEHIND)) {
       r = divide_look_behind_alternatives(node);
       if (r == 0)
