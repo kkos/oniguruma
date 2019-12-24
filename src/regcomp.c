@@ -593,7 +593,7 @@ enum CharLenType {
 
 typedef struct {
   enum CharLenType type;
-  int len;
+  OnigLen len;
 } CharLenInfo;
 
 /* fixed size pattern node only */
@@ -658,7 +658,7 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, int level)
       ci->type = CHAR_LEN_FIXED;
       while (s < sn->end) {
         s += enclen(reg->enc, s);
-        (ci->len)++;
+        ci->len = distance_add(ci->len, 1);
       }
     }
     break;
@@ -752,11 +752,9 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, int level)
             }
 
             if (tci.type == CHAR_LEN_FIXED && eci.type == CHAR_LEN_FIXED) {
-              if (ci->len + tci.len != eci.len) {
+              ci->len = distance_add(ci->len, tci.len);
+              if (ci->len != eci.len || ci->len == INFINITE_LEN) {
                 ci->type = CHAR_LEN_VARLEN;
-              }
-              else {
-                ci->len = eci.len;
               }
             }
             else
@@ -3972,10 +3970,12 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
   r = tune_tree(NODE_ANCHOR_BODY(an), reg, state1, env);
   if (r != 0) return r;
 
-  r = (int )node_char_len(NODE_ANCHOR_BODY(an), reg, &ci);
+  r = node_char_len(NODE_ANCHOR_BODY(an), reg, &ci);
   if (r == 0) {
     if (ci.type == CHAR_LEN_FIXED) {
       an->char_len = ci.len;
+      if (ci.len == INFINITE_LEN)
+        r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
     }
     else if (ci.type == CHAR_LEN_VARLEN) {
       r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;

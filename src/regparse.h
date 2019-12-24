@@ -138,7 +138,7 @@ typedef struct {
   /* for multiple call reference */
   OnigLen min_len;   /* min length (byte) */
   OnigLen max_len;   /* max length (byte) */
-  int char_len;      /* character length  */
+  OnigLen char_len;  /* character length  */
   int opt_count;     /* referenced count in optimize_nodes() */
 } BagNode;
 
@@ -188,7 +188,7 @@ typedef struct {
   struct _Node* body;
 
   int type;
-  int char_len;
+  OnigLen char_len;
   int ascii_mode;
 } AnchorNode;
 
