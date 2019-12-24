@@ -1875,46 +1875,29 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     break;
 
   case ANCR_LOOK_BEHIND:
-    {
-      int n;
-      r = add_op(reg, OP_LOOK_BEHIND);
-      if (r != 0) return r;
-      if (node->char_len < 0) {
-        r = node_char_len(NODE_ANCHOR_BODY(node), reg, &n);
-        if (r != 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
-        node->char_len = n;
-      }
-      else
-        n = node->char_len;
+    if (node->char_len < 0)
+      return ONIGERR_PARSER_BUG;
 
-      COP(reg)->look_behind.len = n;
-      r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
-    }
+    r = add_op(reg, OP_LOOK_BEHIND);
+    if (r != 0) return r;
+    COP(reg)->look_behind.len = node->char_len;
+    r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
     break;
 
   case ANCR_LOOK_BEHIND_NOT:
-    {
-      int n;
+    if (node->char_len < 0)
+      return ONIGERR_PARSER_BUG;
 
-      len = compile_length_tree(NODE_ANCHOR_BODY(node), reg);
-      r = add_op(reg, OP_LOOK_BEHIND_NOT_START);
-      if (r != 0) return r;
-      COP(reg)->look_behind_not_start.addr = SIZE_INC + len + OPSIZE_LOOK_BEHIND_NOT_END;
+    len = compile_length_tree(NODE_ANCHOR_BODY(node), reg);
+    r = add_op(reg, OP_LOOK_BEHIND_NOT_START);
+    if (r != 0) return r;
 
-      if (node->char_len < 0) {
-        r = node_char_len(NODE_ANCHOR_BODY(node), reg, &n);
-        if (r != 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
-        node->char_len = n;
-      }
-      else
-        n = node->char_len;
+    COP(reg)->look_behind_not_start.addr = SIZE_INC + len + OPSIZE_LOOK_BEHIND_NOT_END;
+    COP(reg)->look_behind_not_start.len = node->char_len;
 
-      COP(reg)->look_behind_not_start.len = n;
-
-      r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
-      if (r != 0) return r;
-      r = add_op(reg, OP_LOOK_BEHIND_NOT_END);
-    }
+    r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
+    if (r != 0) return r;
+    r = add_op(reg, OP_LOOK_BEHIND_NOT_END);
     break;
 
   default:
@@ -3925,20 +3908,39 @@ divide_look_behind_alternatives(Node* node)
   return 0;
 }
 
+static int tune_tree(Node* node, regex_t* reg, int state, ScanEnv* env);
+
 static int
-tune_look_behind(Node* node, regex_t* reg, ScanEnv* env)
+tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
 {
   int r, len;
+  int state1;
   AnchorNode* an = ANCHOR_(node);
 
+  if (an->type == ANCR_LOOK_BEHIND_NOT)
+    state1 = state | IN_NOT | IN_LOOK_BEHIND;
+  else
+    state1 = state | IN_LOOK_BEHIND;
+
+  /* Execute tune_tree(body) before call node_char_len().
+     Because case-fold expansion must be done before node_char_len().
+   */
+  r = tune_tree(NODE_ANCHOR_BODY(an), reg, state1, env);
+  if (r != 0) return r;
+
   r = node_char_len(NODE_ANCHOR_BODY(an), reg, &len);
-  if (r == 0)
+  if (r == 0) {
     an->char_len = len;
-  else if (r == GET_CHAR_LEN_VARLEN)
+  }
+  else if (r == GET_CHAR_LEN_VARLEN) {
     r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
+  }
   else if (r == GET_CHAR_LEN_TOP_ALT_VARLEN) {
-    if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_DIFFERENT_LEN_ALT_LOOK_BEHIND))
+    if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_DIFFERENT_LEN_ALT_LOOK_BEHIND)) {
       r = divide_look_behind_alternatives(node);
+      if (r == 0)
+        r = tune_tree(node, reg, state, env);
+    }
     else
       r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
   }
@@ -4808,8 +4810,6 @@ tune_called_state(Node* node, int state)
 #endif  /* USE_CALL */
 
 
-static int tune_tree(Node* node, regex_t* reg, int state, ScanEnv* env);
-
 #ifdef __GNUC__
 __inline
 #endif
@@ -4854,9 +4854,7 @@ tune_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
                           ALLOWED_BAG_IN_LB, ALLOWED_ANCHOR_IN_LB);
       if (r < 0) return r;
       if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
-      r = tune_tree(NODE_ANCHOR_BODY(an), reg, (state|IN_LOOK_BEHIND), env);
-      if (r != 0) return r;
-      r = tune_look_behind(node, reg, env);
+      r = tune_look_behind(node, reg, state, env);
     }
     break;
 
@@ -4866,10 +4864,7 @@ tune_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
                           ALLOWED_BAG_IN_LB_NOT, ALLOWED_ANCHOR_IN_LB_NOT);
       if (r < 0) return r;
       if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
-      r = tune_tree(NODE_ANCHOR_BODY(an), reg, (state|IN_NOT|IN_LOOK_BEHIND),
-                    env);
-      if (r != 0) return r;
-      r = tune_look_behind(node, reg, env);
+      r = tune_look_behind(node, reg, state, env);
     }
     break;
 
