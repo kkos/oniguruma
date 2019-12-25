@@ -585,16 +585,66 @@ unset_addr_list_add(UnsetAddrList* list, int offset, struct _Node* node)
 }
 #endif /* USE_CALL */
 
-enum CharLenType {
-  CHAR_LEN_FIXED = 0,
-  CHAR_LEN_TOP_ALT_FIXED = 1,
-  CHAR_LEN_VARLEN = 2
+enum CharLenReturnType {
+  CHAR_LEN_NORMAL = 0,
+  CHAR_LEN_TOP_ALT_FIXED = 1
 };
 
 typedef struct {
-  enum CharLenType type;
-  OnigLen len;
+  OnigLen max_len;
+  OnigLen min_len;
 } CharLenInfo;
+
+static int
+char_len_fixed(CharLenInfo* c)
+{
+  return (c->min_len == c->max_len && c->min_len != INFINITE_LEN);
+}
+
+static void
+char_len_set(CharLenInfo* c, OnigLen len)
+{
+  c->min_len = len;
+  c->max_len = len;
+}
+
+static void
+char_len_set_min_max(CharLenInfo* c, OnigLen min_len, OnigLen max_len)
+{
+  c->min_len = min_len;
+  c->max_len = max_len;
+}
+
+static void
+char_len_add(CharLenInfo* to, CharLenInfo* add)
+{
+  to->min_len = distance_add(to->min_len, add->min_len);
+  to->max_len = distance_add(to->max_len, add->max_len);
+}
+
+static void
+char_len_multiply(CharLenInfo* to, int m)
+{
+  to->min_len = distance_multiply(to->min_len, m);
+  to->max_len = distance_multiply(to->max_len, m);
+}
+
+static void
+char_len_range_multiply(CharLenInfo* to, int mlow, int mhigh)
+{
+  to->min_len = distance_multiply(to->min_len, mlow);
+  to->max_len = distance_multiply(to->max_len, mhigh);
+}
+
+static void
+char_len_alt(CharLenInfo* to, CharLenInfo* alt)
+{
+  if (to->min_len > alt->min_len)
+    to->min_len = alt->min_len;
+
+  if (to->max_len < alt->max_len)
+    to->max_len = alt->max_len;
+}
 
 /* fixed size pattern node only */
 static int
@@ -602,52 +652,56 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, ScanEnv* env,
                int level)
 {
   CharLenInfo tci;
-  int r = 0;
+  int r = CHAR_LEN_NORMAL;
 
   level++;
-  ci->len = 0;
+
   switch (NODE_TYPE(node)) {
   case NODE_LIST:
-    do {
-      r = node_char_len1(NODE_CAR(node), reg, &tci, env, level);
-      if (r != 0 || tci.type != CHAR_LEN_FIXED) break;
-      ci->len = distance_add(ci->len, tci.len);
-    } while (IS_NOT_NULL(node = NODE_CDR(node)));
-    ci->type = tci.type;
+    {
+      int first = TRUE;
+      do {
+        r = node_char_len1(NODE_CAR(node), reg, &tci, env, level);
+        if (r < 0) break;
+        if (first == TRUE) {
+          *ci = tci;
+          first = FALSE;
+        }
+        else
+          char_len_add(ci, &tci);
+      } while (IS_NOT_NULL(node = NODE_CDR(node)));
+    }
     break;
 
   case NODE_ALT:
     {
-      int varlen = 0;
+      int fixed;
 
       r = node_char_len1(NODE_CAR(node), reg, ci, env, level);
-      if (r != 0 || ci->type != CHAR_LEN_FIXED) break;
+      if (r < 0) break;
 
-      tci.type = CHAR_LEN_FIXED;
+      fixed = TRUE;
       while (IS_NOT_NULL(node = NODE_CDR(node))) {
         r = node_char_len1(NODE_CAR(node), reg, &tci, env, level);
-        if (r != 0 || tci.type != CHAR_LEN_FIXED) break;
-
-        if (ci->len != tci.len)
-          varlen = 1;
+        if (r < 0) break;
+        if (! char_len_fixed(&tci))
+          fixed = FALSE;
+        char_len_alt(ci, &tci);
       }
+      if (r < 0) break;
 
-      if (r != 0) break;
-      if (tci.type != CHAR_LEN_FIXED) {
-        ci->type = tci.type;
-        break;
-      }
+      r = CHAR_LEN_NORMAL;
+      if (char_len_fixed(ci)) break;
 
-      if (varlen != 0) {
-        ci->type = (level == 1) ? CHAR_LEN_TOP_ALT_FIXED : CHAR_LEN_VARLEN;
+      if (fixed == TRUE && level == 1) {
+        r = CHAR_LEN_TOP_ALT_FIXED;
       }
-      else
-        ci->len = tci.len;
     }
     break;
 
   case NODE_STRING:
     {
+      OnigLen clen;
       StrNode* sn = STR_(node);
       UChar *s = sn->s;
 
@@ -656,11 +710,12 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, ScanEnv* env,
         break;
       }
 
-      ci->type = CHAR_LEN_FIXED;
+      clen = 0;
       while (s < sn->end) {
         s += enclen(reg->enc, s);
-        ci->len = distance_add(ci->len, 1);
+        clen = distance_add(clen, 1);
       }
+      char_len_set(ci, clen);
     }
     break;
 
@@ -670,20 +725,21 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, ScanEnv* env,
 
       if (qn->lower == qn->upper) {
         if (qn->upper == 0) {
-          ci->type = CHAR_LEN_FIXED;
-          ci->len  = 0;
+          char_len_set(ci, 0);
         }
         else {
-          r = node_char_len1(NODE_BODY(node), reg, &tci, env, level);
-          if (r != 0) break;
-          if (tci.type == CHAR_LEN_FIXED) {
-            ci->type = CHAR_LEN_FIXED;
-            ci->len  = distance_multiply(tci.len, qn->lower);
-          }
+          r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
+          if (r < 0) break;
+          char_len_multiply(ci, qn->lower);
         }
       }
       else {
-        ci->type = CHAR_LEN_VARLEN;
+        if (IS_INFINITE_REPEAT(qn->upper)) {
+          char_len_set(ci, INFINITE_LEN);
+        }
+        else {
+          char_len_range_multiply(ci, qn->lower, qn->upper);
+        }
       }
     }
     break;
@@ -691,17 +747,15 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, ScanEnv* env,
 #ifdef USE_CALL
   case NODE_CALL:
     if (NODE_IS_RECURSION(node))
-      ci->type = CHAR_LEN_VARLEN;
-    else {
+      char_len_set(ci, INFINITE_LEN);
+    else
       r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
-    }
     break;
 #endif
 
   case NODE_CTYPE:
   case NODE_CCLASS:
-    ci->type = CHAR_LEN_FIXED;
-    ci->len  = 1;
+    char_len_set(ci, 1);
     break;
 
   case NODE_BAG:
@@ -712,15 +766,15 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, ScanEnv* env,
       case BAG_MEMORY:
 #ifdef USE_CALL
         if (NODE_IS_FIXED_CLEN(node)) {
-          ci->type = CHAR_LEN_FIXED;
-          ci->len  = en->char_len;
+          char_len_set_min_max(ci, en->min_char_len, en->max_char_len);
         }
         else {
           r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
-          if (r == 0 && ci->type == CHAR_LEN_FIXED) {
-            en->char_len = ci->len;
-            NODE_STATUS_ADD(node, FIXED_CLEN);
-          }
+          if (r < 0) break;
+
+          en->min_char_len = ci->min_len;
+          en->max_char_len = ci->max_len;
+          NODE_STATUS_ADD(node, FIXED_CLEN);
         }
         break;
 #endif
@@ -733,34 +787,23 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, ScanEnv* env,
           CharLenInfo eci;
 
           r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
-          if (r == 0 && ci->type == CHAR_LEN_FIXED) {
-            if (IS_NOT_NULL(en->te.Then)) {
-              r = node_char_len1(en->te.Then, reg, &tci, env, level);
-              if (r != 0) break;
-            }
-            else {
-              tci.type = CHAR_LEN_FIXED;
-              tci.len  = 0;
-            }
+          if (r < 0) break;
 
-            if (IS_NOT_NULL(en->te.Else)) {
-              r = node_char_len1(en->te.Else, reg, &eci, env, level);
-              if (r != 0) break;
-            }
-            else {
-              eci.type = CHAR_LEN_FIXED;
-              eci.len  = 0;
-            }
-
-            if (tci.type == CHAR_LEN_FIXED && eci.type == CHAR_LEN_FIXED) {
-              ci->len = distance_add(ci->len, tci.len);
-              if (ci->len != eci.len || ci->len == INFINITE_LEN) {
-                ci->type = CHAR_LEN_VARLEN;
-              }
-            }
-            else
-              ci->type = CHAR_LEN_VARLEN;
+          if (IS_NOT_NULL(en->te.Then)) {
+            r = node_char_len1(en->te.Then, reg, &tci, env, level);
+            if (r < 0) break;
+            char_len_add(ci, &tci);
           }
+
+          if (IS_NOT_NULL(en->te.Else)) {
+            r = node_char_len1(en->te.Else, reg, &eci, env, level);
+            if (r < 0) break;
+          }
+          else {
+            char_len_set(&eci, 0);
+          }
+
+          char_len_alt(ci, &eci);
         }
         break;
       default: /* never come here */
@@ -772,36 +815,28 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, ScanEnv* env,
 
   case NODE_ANCHOR:
   case NODE_GIMMICK:
-    ci->type = CHAR_LEN_FIXED;
+  zero:
+    char_len_set(ci, 0);
     break;
 
   case NODE_BACKREF:
-    if (NODE_IS_CHECKER(node)) {
-      ci->type = CHAR_LEN_FIXED;
-      break;
-    }
-    else {
+    if (NODE_IS_CHECKER(node))
+      goto zero;
+
+    {
       int i;
       int* backs;
       MemEnv* mem_env = SCANENV_MEMENV(env);
       BackRefNode* br = BACKREF_(node);
 
-      if (NODE_IS_RECURSION(node)) {
-        ci->type = CHAR_LEN_VARLEN;
-        break;
-      }
-
       backs = BACKREFS_P(br);
       r = node_char_len1(mem_env[backs[0]].mem_node, reg, ci, env, level);
-      if (r != 0 || ci->type != CHAR_LEN_FIXED) break;
+      if (r < 0) break;
 
       for (i = 1; i < br->back_num; i++) {
         r = node_char_len1(mem_env[backs[i]].mem_node, reg, &tci, env, level);
-        if (r != 0) break;
-        if (tci.type != CHAR_LEN_FIXED || ci->len != tci.len) {
-          ci->type = CHAR_LEN_VARLEN;
-          break;
-        }
+        if (r < 0) break;
+        char_len_alt(ci, &tci);
       }
     }
     break;
@@ -3994,16 +4029,8 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
   if (r != 0) return r;
 
   r = node_char_len(NODE_ANCHOR_BODY(an), reg, &ci, env);
-  if (r == 0) {
-    if (ci.type == CHAR_LEN_FIXED) {
-      an->char_len = ci.len;
-      if (ci.len == INFINITE_LEN)
-        r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
-    }
-    else if (ci.type == CHAR_LEN_VARLEN) {
-      r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
-    }
-    else if (ci.type == CHAR_LEN_TOP_ALT_FIXED) {
+  if (r >= 0) {
+    if (r == CHAR_LEN_TOP_ALT_FIXED) {
       if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_DIFFERENT_LEN_ALT_LOOK_BEHIND)) {
         r = divide_look_behind_alternatives(node);
         if (r == 0)
@@ -4011,6 +4038,14 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
       }
       else
         r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
+    }
+    else { /* CHAR_LEN_NORMAL */
+      if (char_len_fixed(&ci)) {
+        an->char_len = ci.min_len;
+      }
+      else {
+        r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
+      }
     }
   }
 
