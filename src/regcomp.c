@@ -595,6 +595,47 @@ enum CharLenReturnType {
   CHAR_LEN_TOP_ALT_FIXED = 1
 };
 
+
+static int
+mml_is_equal(MinMaxLen* a, MinMaxLen* b)
+{
+  return a->min == b->min && a->max == b->max;
+}
+
+static void
+mml_set_min_max(MinMaxLen* l, OnigLen min, OnigLen max)
+{
+  l->min = min;
+  l->max = max;
+}
+
+static void
+mml_clear(MinMaxLen* l)
+{
+  l->min = l->max = 0;
+}
+
+static void
+mml_copy(MinMaxLen* to, MinMaxLen* from)
+{
+  to->min = from->min;
+  to->max = from->max;
+}
+
+static void
+mml_add(MinMaxLen* to, MinMaxLen* from)
+{
+  to->min = distance_add(to->min, from->min);
+  to->max = distance_add(to->max, from->max);
+}
+
+static void
+mml_alt_merge(MinMaxLen* to, MinMaxLen* from)
+{
+  if (to->min > from->min) to->min = from->min;
+  if (to->max < from->max) to->max = from->max;
+}
+
 static int
 char_len_fixed(MinMaxLen* c)
 {
@@ -5379,46 +5420,6 @@ comp_distance_value(MinMaxLen* d1, MinMaxLen* d2, int v1, int v2)
   return 0;
 }
 
-static int
-is_equal_mml(MinMaxLen* a, MinMaxLen* b)
-{
-  return a->min == b->min && a->max == b->max;
-}
-
-static void
-set_mml(MinMaxLen* l, OnigLen min, OnigLen max)
-{
-  l->min = min;
-  l->max = max;
-}
-
-static void
-clear_mml(MinMaxLen* l)
-{
-  l->min = l->max = 0;
-}
-
-static void
-copy_mml(MinMaxLen* to, MinMaxLen* from)
-{
-  to->min = from->min;
-  to->max = from->max;
-}
-
-static void
-add_mml(MinMaxLen* to, MinMaxLen* from)
-{
-  to->min = distance_add(to->min, from->min);
-  to->max = distance_add(to->max, from->max);
-}
-
-static void
-alt_merge_mml(MinMaxLen* to, MinMaxLen* from)
-{
-  if (to->min > from->min) to->min = from->min;
-  if (to->max < from->max) to->max = from->max;
-}
-
 static void
 copy_opt_env(OptEnv* to, OptEnv* from)
 {
@@ -5510,7 +5511,7 @@ is_full_opt_exact(OptStr* e)
 static void
 clear_opt_exact(OptStr* e)
 {
-  clear_mml(&e->mm);
+  mml_clear(&e->mm);
   clear_opt_anc_info(&e->anc);
   e->reach_end = 0;
   e->len       = 0;
@@ -5582,7 +5583,7 @@ alt_merge_opt_exact(OptStr* to, OptStr* add, OptEnv* env)
     return ;
   }
 
-  if (! is_equal_mml(&to->mm, &add->mm)) {
+  if (! mml_is_equal(&to->mm, &add->mm)) {
     clear_opt_exact(to);
     return ;
   }
@@ -5720,14 +5721,14 @@ alt_merge_opt_map(OnigEncoding enc, OptMap* to, OptMap* add)
 {
   int i, val;
 
-  /* if (! is_equal_mml(&to->mm, &add->mm)) return ; */
+  /* if (! mml_is_equal(&to->mm, &add->mm)) return ; */
   if (to->value == 0) return ;
   if (add->value == 0 || to->mm.max < add->mm.min) {
     clear_opt_map(to);
     return ;
   }
 
-  alt_merge_mml(&to->mm, &add->mm);
+  mml_alt_merge(&to->mm, &add->mm);
 
   val = 0;
   for (i = 0; i < CHAR_MAP_SIZE; i++) {
@@ -5745,15 +5746,15 @@ alt_merge_opt_map(OnigEncoding enc, OptMap* to, OptMap* add)
 static void
 set_bound_node_opt_info(OptNode* opt, MinMaxLen* plen)
 {
-  copy_mml(&(opt->sb.mm),  plen);
-  copy_mml(&(opt->spr.mm), plen);
-  copy_mml(&(opt->map.mm), plen);
+  mml_copy(&(opt->sb.mm),  plen);
+  mml_copy(&(opt->spr.mm), plen);
+  mml_copy(&(opt->map.mm), plen);
 }
 
 static void
 clear_node_opt_info(OptNode* opt)
 {
-  clear_mml(&opt->len);
+  mml_clear(&opt->len);
   clear_opt_anc_info(&opt->anc);
   clear_opt_exact(&opt->sb);
   clear_opt_exact(&opt->sm);
@@ -5818,7 +5819,7 @@ concat_left_node_opt_info(OnigEncoding enc, OptNode* to, OptNode* add)
   }
 
   select_opt_map(&to->map, &add->map);
-  add_mml(&to->len, &add->len);
+  mml_add(&to->len, &add->len);
 }
 
 static void
@@ -5830,7 +5831,7 @@ alt_merge_node_opt_info(OptNode* to, OptNode* add, OptEnv* env)
   alt_merge_opt_exact(&to->spr, &add->spr, env);
   alt_merge_opt_map(env->enc, &to->map, &add->map);
 
-  alt_merge_mml(&to->len, &add->len);
+  mml_alt_merge(&to->len, &add->len);
 }
 
 
@@ -5859,7 +5860,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
       do {
         r = optimize_nodes(NODE_CAR(nd), &xo, &nenv);
         if (r == 0) {
-          add_mml(&nenv.mm, &xo.len);
+          mml_add(&nenv.mm, &xo.len);
           concat_left_node_opt_info(enc, opt, &xo);
         }
       } while (r == 0 && IS_NOT_NULL(nd = NODE_CDR(nd)));
@@ -5889,7 +5890,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
       if (slen > 0) {
         add_char_opt_map(&opt->map, *(sn->s), enc);
       }
-      set_mml(&opt->len, slen, slen);
+      mml_set_min_max(&opt->len, slen, slen);
     }
     break;
 
@@ -5904,7 +5905,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
         OnigLen min = ONIGENC_MBC_MINLEN(enc);
         OnigLen max = ONIGENC_MBC_MAXLEN_DIST(enc);
 
-        set_mml(&opt->len, min, max);
+        mml_set_min_max(&opt->len, min, max);
       }
       else {
         for (i = 0; i < SINGLE_BYTE_SIZE; i++) {
@@ -5913,7 +5914,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
             add_char_opt_map(&opt->map, (UChar )i, enc);
           }
         }
-        set_mml(&opt->len, 1, 1);
+        mml_set_min_max(&opt->len, 1, 1);
       }
     }
     break;
@@ -5957,7 +5958,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
       else {
         min = ONIGENC_MBC_MINLEN(enc);
       }
-      set_mml(&opt->len, min, max);
+      mml_set_min_max(&opt->len, min, max);
     }
     break;
 
@@ -6002,14 +6003,14 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
 
       min = tree_min_len(node, env->scan_env);
       max = tree_max_len(node, env->scan_env);
-      set_mml(&opt->len, min, max);
+      mml_set_min_max(&opt->len, min, max);
     }
     break;
 
 #ifdef USE_CALL
   case NODE_CALL:
     if (NODE_IS_RECURSION(node))
-      set_mml(&opt->len, 0, INFINITE_LEN);
+      mml_set_min_max(&opt->len, 0, INFINITE_LEN);
     else {
       r = optimize_nodes(NODE_BODY(node), opt, env);
     }
@@ -6060,7 +6061,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
       }
 
       min = distance_multiply(xo.len.min, qn->lower);
-      set_mml(&opt->len, min, max);
+      mml_set_min_max(&opt->len, min, max);
     }
     break;
 
@@ -6084,7 +6085,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
           max = INFINITE_LEN;
           if (NODE_IS_FIXED_MIN(node)) min = en->min_len;
           if (NODE_IS_FIXED_MAX(node)) max = en->max_len;
-          set_mml(&opt->len, min, max);
+          mml_set_min_max(&opt->len, min, max);
         }
         else
 #endif
@@ -6104,7 +6105,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
           copy_opt_env(&nenv, env);
           r = optimize_nodes(NODE_BAG_BODY(en), &xo, &nenv);
           if (r == 0) {
-            add_mml(&nenv.mm, &xo.len);
+            mml_add(&nenv.mm, &xo.len);
             concat_left_node_opt_info(enc, opt, &xo);
             if (IS_NOT_NULL(en->te.Then)) {
               r = optimize_nodes(en->te.Then, &xo, &nenv);
@@ -6218,7 +6219,7 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ScanEnv* scan_env)
   env.enc            = reg->enc;
   env.case_fold_flag = reg->case_fold_flag;
   env.scan_env       = scan_env;
-  clear_mml(&env.mm);
+  mml_clear(&env.mm);
 
   r = optimize_nodes(node, &opt, &env);
   if (r != 0) return r;
