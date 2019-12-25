@@ -138,7 +138,8 @@ typedef struct {
   /* for multiple call reference */
   OnigLen min_len;   /* min length (byte) */
   OnigLen max_len;   /* max length (byte) */
-  OnigLen char_len;  /* character length  */
+  OnigLen min_char_len;
+  OnigLen max_char_len;
   int opt_count;     /* referenced count in optimize_nodes() */
 } BagNode;
 
