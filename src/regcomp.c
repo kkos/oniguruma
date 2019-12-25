@@ -602,6 +602,19 @@ mml_is_equal(MinMaxLen* a, MinMaxLen* b)
   return a->min == b->min && a->max == b->max;
 }
 
+static int
+mml_fixed(MinMaxLen* c)
+{
+  return (c->min == c->max && c->min != INFINITE_LEN);
+}
+
+static void
+mml_set(MinMaxLen* l, OnigLen len)
+{
+  l->min = len;
+  l->max = len;
+}
+
 static void
 mml_set_min_max(MinMaxLen* l, OnigLen min, OnigLen max)
 {
@@ -623,68 +636,31 @@ mml_copy(MinMaxLen* to, MinMaxLen* from)
 }
 
 static void
-mml_add(MinMaxLen* to, MinMaxLen* from)
-{
-  to->min = distance_add(to->min, from->min);
-  to->max = distance_add(to->max, from->max);
-}
-
-static void
-mml_alt_merge(MinMaxLen* to, MinMaxLen* from)
-{
-  if (to->min > from->min) to->min = from->min;
-  if (to->max < from->max) to->max = from->max;
-}
-
-static int
-char_len_fixed(MinMaxLen* c)
-{
-  return (c->min == c->max && c->min != INFINITE_LEN);
-}
-
-static void
-char_len_set(MinMaxLen* c, OnigLen len)
-{
-  c->min = len;
-  c->max = len;
-}
-
-static void
-char_len_set_min_max(MinMaxLen* c, OnigLen min_len, OnigLen max_len)
-{
-  c->min = min_len;
-  c->max = max_len;
-}
-
-static void
-char_len_add(MinMaxLen* to, MinMaxLen* add)
+mml_add(MinMaxLen* to, MinMaxLen* add)
 {
   to->min = distance_add(to->min, add->min);
   to->max = distance_add(to->max, add->max);
 }
 
 static void
-char_len_multiply(MinMaxLen* to, int m)
+mml_multiply(MinMaxLen* to, int m)
 {
   to->min = distance_multiply(to->min, m);
   to->max = distance_multiply(to->max, m);
 }
 
 static void
-char_len_range_multiply(MinMaxLen* to, int mlow, int mhigh)
+mml_range_multiply(MinMaxLen* to, int mlow, int mhigh)
 {
   to->min = distance_multiply(to->min, mlow);
   to->max = distance_multiply(to->max, mhigh);
 }
 
 static void
-char_len_alt(MinMaxLen* to, MinMaxLen* alt)
+mml_alt_merge(MinMaxLen* to, MinMaxLen* alt)
 {
-  if (to->min > alt->min)
-    to->min = alt->min;
-
-  if (to->max < alt->max)
-    to->max = alt->max;
+  if (to->min > alt->min) to->min = alt->min;
+  if (to->max < alt->max) to->max = alt->max;
 }
 
 /* fixed size pattern node only */
@@ -709,7 +685,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
           first = FALSE;
         }
         else
-          char_len_add(ci, &tci);
+          mml_add(ci, &tci);
       } while (IS_NOT_NULL(node = NODE_CDR(node)));
     }
     break;
@@ -725,14 +701,14 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
       while (IS_NOT_NULL(node = NODE_CDR(node))) {
         r = node_char_len1(NODE_CAR(node), reg, &tci, env, level);
         if (r < 0) break;
-        if (! char_len_fixed(&tci))
+        if (! mml_fixed(&tci))
           fixed = FALSE;
-        char_len_alt(ci, &tci);
+        mml_alt_merge(ci, &tci);
       }
       if (r < 0) break;
 
       r = CHAR_LEN_NORMAL;
-      if (char_len_fixed(ci)) break;
+      if (mml_fixed(ci)) break;
 
       if (fixed == TRUE && level == 1) {
         r = CHAR_LEN_TOP_ALT_FIXED;
@@ -756,7 +732,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
         s += enclen(reg->enc, s);
         clen = distance_add(clen, 1);
       }
-      char_len_set(ci, clen);
+      mml_set(ci, clen);
     }
     break;
 
@@ -766,20 +742,20 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
 
       if (qn->lower == qn->upper) {
         if (qn->upper == 0) {
-          char_len_set(ci, 0);
+          mml_set(ci, 0);
         }
         else {
           r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
           if (r < 0) break;
-          char_len_multiply(ci, qn->lower);
+          mml_multiply(ci, qn->lower);
         }
       }
       else {
         if (IS_INFINITE_REPEAT(qn->upper)) {
-          char_len_set(ci, INFINITE_LEN);
+          mml_set(ci, INFINITE_LEN);
         }
         else {
-          char_len_range_multiply(ci, qn->lower, qn->upper);
+          mml_range_multiply(ci, qn->lower, qn->upper);
         }
       }
     }
@@ -788,7 +764,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
 #ifdef USE_CALL
   case NODE_CALL:
     if (NODE_IS_RECURSION(node))
-      char_len_set(ci, INFINITE_LEN);
+      mml_set(ci, INFINITE_LEN);
     else
       r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
     break;
@@ -796,7 +772,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
 
   case NODE_CTYPE:
   case NODE_CCLASS:
-    char_len_set(ci, 1);
+    mml_set(ci, 1);
     break;
 
   case NODE_BAG:
@@ -806,7 +782,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
       switch (en->type) {
       case BAG_MEMORY:
         if (NODE_IS_FIXED_CLEN(node)) {
-          char_len_set_min_max(ci, en->min_char_len, en->max_char_len);
+          mml_set_min_max(ci, en->min_char_len, en->max_char_len);
         }
         else {
           r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
@@ -831,7 +807,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
           if (IS_NOT_NULL(en->te.Then)) {
             r = node_char_len1(en->te.Then, reg, &tci, env, level);
             if (r < 0) break;
-            char_len_add(ci, &tci);
+            mml_add(ci, &tci);
           }
 
           if (IS_NOT_NULL(en->te.Else)) {
@@ -839,10 +815,10 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
             if (r < 0) break;
           }
           else {
-            char_len_set(&eci, 0);
+            mml_set(&eci, 0);
           }
 
-          char_len_alt(ci, &eci);
+          mml_alt_merge(ci, &eci);
         }
         break;
       default: /* never come here */
@@ -855,7 +831,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
   case NODE_ANCHOR:
   case NODE_GIMMICK:
   zero:
-    char_len_set(ci, 0);
+    mml_set(ci, 0);
     break;
 
   case NODE_BACKREF:
@@ -863,7 +839,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
       goto zero;
 
     if (NODE_IS_RECURSION(node)) {
-      char_len_set_min_max(ci, 0, INFINITE_LEN);
+      mml_set_min_max(ci, 0, INFINITE_LEN);
       break;
     }
 
@@ -880,7 +856,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
       for (i = 1; i < br->back_num; i++) {
         r = node_char_len1(mem_env[backs[i]].mem_node, reg, &tci, env, level);
         if (r < 0) break;
-        char_len_alt(ci, &tci);
+        mml_alt_merge(ci, &tci);
       }
     }
     break;
@@ -4084,7 +4060,7 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
         r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
     }
     else { /* CHAR_LEN_NORMAL */
-      if (char_len_fixed(&ci)) {
+      if (mml_fixed(&ci)) {
         an->char_len = ci.min;
       }
       else {
