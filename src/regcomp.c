@@ -764,7 +764,6 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, ScanEnv* env,
 
       switch (en->type) {
       case BAG_MEMORY:
-#ifdef USE_CALL
         if (NODE_IS_FIXED_CLEN(node)) {
           char_len_set_min_max(ci, en->min_char_len, en->max_char_len);
         }
@@ -777,7 +776,6 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, ScanEnv* env,
           NODE_STATUS_ADD(node, FIXED_CLEN);
         }
         break;
-#endif
       case BAG_OPTION:
       case BAG_STOP_BACKTRACK:
         r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
