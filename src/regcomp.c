@@ -598,7 +598,8 @@ typedef struct {
 
 /* fixed size pattern node only */
 static int
-node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, int level)
+node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, ScanEnv* env,
+               int level)
 {
   CharLenInfo tci;
   int r = 0;
@@ -608,7 +609,7 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, int level)
   switch (NODE_TYPE(node)) {
   case NODE_LIST:
     do {
-      r = node_char_len1(NODE_CAR(node), reg, &tci, level);
+      r = node_char_len1(NODE_CAR(node), reg, &tci, env, level);
       if (r != 0 || tci.type != CHAR_LEN_FIXED) break;
       ci->len = distance_add(ci->len, tci.len);
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
@@ -619,12 +620,12 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, int level)
     {
       int varlen = 0;
 
-      r = node_char_len1(NODE_CAR(node), reg, ci, level);
+      r = node_char_len1(NODE_CAR(node), reg, ci, env, level);
       if (r != 0 || ci->type != CHAR_LEN_FIXED) break;
 
       tci.type = CHAR_LEN_FIXED;
       while (IS_NOT_NULL(node = NODE_CDR(node))) {
-        r = node_char_len1(NODE_CAR(node), reg, &tci, level);
+        r = node_char_len1(NODE_CAR(node), reg, &tci, env, level);
         if (r != 0 || tci.type != CHAR_LEN_FIXED) break;
 
         if (ci->len != tci.len)
@@ -673,7 +674,7 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, int level)
           ci->len  = 0;
         }
         else {
-          r = node_char_len1(NODE_BODY(node), reg, &tci, level);
+          r = node_char_len1(NODE_BODY(node), reg, &tci, env, level);
           if (r != 0) break;
           if (tci.type == CHAR_LEN_FIXED) {
             ci->type = CHAR_LEN_FIXED;
@@ -692,7 +693,7 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, int level)
     if (NODE_IS_RECURSION(node))
       ci->type = CHAR_LEN_VARLEN;
     else {
-      r = node_char_len1(NODE_BODY(node), reg, ci, level);
+      r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
     }
     break;
 #endif
@@ -715,7 +716,7 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, int level)
           ci->len  = en->char_len;
         }
         else {
-          r = node_char_len1(NODE_BODY(node), reg, ci, level);
+          r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
           if (r == 0 && ci->type == CHAR_LEN_FIXED) {
             en->char_len = ci->len;
             NODE_STATUS_ADD(node, FIXED_CLEN);
@@ -725,16 +726,16 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, int level)
 #endif
       case BAG_OPTION:
       case BAG_STOP_BACKTRACK:
-        r = node_char_len1(NODE_BODY(node), reg, ci, level);
+        r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
         break;
       case BAG_IF_ELSE:
         {
           CharLenInfo eci;
 
-          r = node_char_len1(NODE_BODY(node), reg, ci, level);
+          r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
           if (r == 0 && ci->type == CHAR_LEN_FIXED) {
             if (IS_NOT_NULL(en->te.Then)) {
-              r = node_char_len1(en->te.Then, reg, &tci, level);
+              r = node_char_len1(en->te.Then, reg, &tci, env, level);
               if (r != 0) break;
             }
             else {
@@ -743,7 +744,7 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, int level)
             }
 
             if (IS_NOT_NULL(en->te.Else)) {
-              r = node_char_len1(en->te.Else, reg, &eci, level);
+              r = node_char_len1(en->te.Else, reg, &eci, env, level);
               if (r != 0) break;
             }
             else {
@@ -779,8 +780,30 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, int level)
       ci->type = CHAR_LEN_FIXED;
       break;
     }
+    else {
+      int i;
+      int* backs;
+      MemEnv* mem_env = SCANENV_MEMENV(env);
+      BackRefNode* br = BACKREF_(node);
 
-    ci->type = CHAR_LEN_VARLEN;
+      if (NODE_IS_RECURSION(node)) {
+        ci->type = CHAR_LEN_VARLEN;
+        break;
+      }
+
+      backs = BACKREFS_P(br);
+      r = node_char_len1(mem_env[backs[0]].mem_node, reg, ci, env, level);
+      if (r != 0 || ci->type != CHAR_LEN_FIXED) break;
+
+      for (i = 1; i < br->back_num; i++) {
+        r = node_char_len1(mem_env[backs[i]].mem_node, reg, &tci, env, level);
+        if (r != 0) break;
+        if (tci.type != CHAR_LEN_FIXED || ci->len != tci.len) {
+          ci->type = CHAR_LEN_VARLEN;
+          break;
+        }
+      }
+    }
     break;
 
   default: /* never come here */
@@ -792,9 +815,9 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, int level)
 }
 
 static int
-node_char_len(Node* node, regex_t* reg, CharLenInfo* ci)
+node_char_len(Node* node, regex_t* reg, CharLenInfo* ci, ScanEnv* env)
 {
-  return node_char_len1(node, reg, ci, 0);
+  return node_char_len1(node, reg, ci, env, 0);
 }
 
 
@@ -3970,7 +3993,7 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
   r = tune_tree(NODE_ANCHOR_BODY(an), reg, state1, env);
   if (r != 0) return r;
 
-  r = node_char_len(NODE_ANCHOR_BODY(an), reg, &ci);
+  r = node_char_len(NODE_ANCHOR_BODY(an), reg, &ci, env);
   if (r == 0) {
     if (ci.type == CHAR_LEN_FIXED) {
       an->char_len = ci.len;
