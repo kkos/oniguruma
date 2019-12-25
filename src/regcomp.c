@@ -821,6 +821,11 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, ScanEnv* env,
     if (NODE_IS_CHECKER(node))
       goto zero;
 
+    if (NODE_IS_RECURSION(node)) {
+      char_len_set_min_max(ci, 0, INFINITE_LEN);
+      break;
+    }
+
     {
       int i;
       int* backs;
