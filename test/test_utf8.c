@@ -1212,6 +1212,11 @@ extern int main(int argc, char* argv[])
   x2("[a[xyz]-c]", "a", 0, 1);
   x2("[a[xyz]-c]", "-", 0, 1);
   x2("[a[xyz]-c]", "c", 0, 1);
+  x2("(a.c|def)(.{4})(?<=\\1)", "abcdabc", 0, 7);
+  x2("(a.c)(.{3,}?)(?<!\\1)", "abcabcd", 0, 7);
+  e("(a.c|de)(.{4})(?<=\\1)", "abcdabc", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
+  e("(a*)(.{3,}?)(?<!\\1)", "abcabcd", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
+  x2("(a.c|def)(.{5})(?<=d\\1e)", "abcdabce", 0, 8);
 
   x2("((?(a)\\g<1>|b))", "aab", 0, 3);
   x2("((?(a)\\g<1>))", "aab", 0, 2);
