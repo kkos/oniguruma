@@ -5,49 +5,49 @@ CFLAGS_M = -I$(SRC) -Wall -g -fsanitize=fuzzer-no-link,address -fno-omit-frame-p
 ONIG_LIB = $(SRC)/.libs/libonig.a
 LIBS     = $(ONIG_LIB)
 
-TARGETS = encode-libfuzzer syntax-libfuzzer \
-          utf16-be-libfuzzer utf16-le-libfuzzer main-encode main-syntax \
-          main-utf16-be main-utf16-le main-regset regset-libfuzzer
+TARGETS = fuzzer-encode fuzzer-syntax fuzzer-utf16-be fuzzer-utf16-le \
+          fuzzer-regset \
+          read-encode read-syntax read-utf16-be read-utf16-le read-regset
 
-OTHER_TARGETS = libfuzzer-onig libfuzzer-onig-full deluxe-libfuzzer main-deluxe
+OTHER_TARGETS = libfuzzer-onig libfuzzer-onig-full fuzzer-deluxe read-deluxe
 
 
 default: $(TARGETS)
 
-encode-libfuzzer: base.c $(ONIG_LIB)
+fuzzer-encode: base.c $(ONIG_LIB)
 	clang $(CFLAGS) $< $(LIBS) -o $@
 
-syntax-libfuzzer: base.c $(ONIG_LIB)
+fuzzer-syntax: base.c $(ONIG_LIB)
 	clang -DSYNTAX_TEST $(CFLAGS) $< $(LIBS) -o $@
 
-deluxe-libfuzzer: deluxe.c $(ONIG_LIB)
+fuzzer-deluxe: deluxe.c $(ONIG_LIB)
 	clang $(CFLAGS) $< $(LIBS) -o $@
 
-utf16-be-libfuzzer: base.c $(ONIG_LIB)
+fuzzer-utf16-be: base.c $(ONIG_LIB)
 	clang -DUTF16_BE $(CFLAGS) $< $(LIBS) -o $@
 
-utf16-le-libfuzzer: base.c $(ONIG_LIB)
+fuzzer-utf16-le: base.c $(ONIG_LIB)
 	clang -DUTF16_LE $(CFLAGS) $< $(LIBS) -o $@
 
-regset-libfuzzer: regset.c $(ONIG_LIB)
+fuzzer-regset: regset.c $(ONIG_LIB)
 	clang $(CFLAGS) $< $(LIBS) -o $@
 
-main-encode: base.c $(ONIG_LIB)
+read-encode: base.c $(ONIG_LIB)
 	clang $(CFLAGS_M) $< $(LIBS) -o $@
 
-main-syntax: base.c $(ONIG_LIB)
+read-syntax: base.c $(ONIG_LIB)
 	clang -DSYNTAX_TEST $(CFLAGS_M) $< $(LIBS) -o $@
 
-main-deluxe: deluxe.c $(ONIG_LIB)
+read-deluxe: deluxe.c $(ONIG_LIB)
 	clang $(CFLAGS_M) $< $(LIBS) -o $@
 
-main-utf16-be: base.c $(ONIG_LIB)
+read-utf16-be: base.c $(ONIG_LIB)
 	clang -DUTF16_BE $(CFLAGS_M) $< $(LIBS) -o $@
 
-main-utf16-le: base.c $(ONIG_LIB)
+read-utf16-le: base.c $(ONIG_LIB)
 	clang -DUTF16_LE $(CFLAGS_M) $< $(LIBS) -o $@
 
-main-regset: regset.c $(ONIG_LIB)
+read-regset: regset.c $(ONIG_LIB)
 	clang $(CFLAGS_M) $< $(LIBS) -o $@
 
 libfuzzer-onig: libfuzzer-onig.cpp $(ONIG_LIB)
