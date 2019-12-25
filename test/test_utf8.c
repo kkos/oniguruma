@@ -1219,6 +1219,7 @@ extern int main(int argc, char* argv[])
   x2("(a.c|def)(.{5})(?<=d\\1e)", "abcdabce", 0, 8);
   x2("(?:(a.*b)|c.*d)(?<!(?(1))azzzb)", "azzzzb", 0, 6);
   n("(?:(a.*b)|c.*d)(?<!(?(1))azzzb)", "azzzb");
+  e("(a.c|d(?<=\\1))", "abcdabc", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
 
   x2("((?(a)\\g<1>|b))", "aab", 0, 3);
   x2("((?(a)\\g<1>))", "aab", 0, 2);
