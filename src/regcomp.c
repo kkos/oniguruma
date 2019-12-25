@@ -31,6 +31,11 @@
 
 #define OPS_INIT_SIZE  8
 
+typedef struct {
+  OnigLen min;
+  OnigLen max;
+} MinMaxLen;
+
 OnigCaseFoldType OnigDefaultCaseFoldFlag = ONIGENC_CASE_FOLD_MIN;
 
 #if 0
@@ -590,68 +595,63 @@ enum CharLenReturnType {
   CHAR_LEN_TOP_ALT_FIXED = 1
 };
 
-typedef struct {
-  OnigLen max_len;
-  OnigLen min_len;
-} CharLenInfo;
-
 static int
-char_len_fixed(CharLenInfo* c)
+char_len_fixed(MinMaxLen* c)
 {
-  return (c->min_len == c->max_len && c->min_len != INFINITE_LEN);
+  return (c->min == c->max && c->min != INFINITE_LEN);
 }
 
 static void
-char_len_set(CharLenInfo* c, OnigLen len)
+char_len_set(MinMaxLen* c, OnigLen len)
 {
-  c->min_len = len;
-  c->max_len = len;
+  c->min = len;
+  c->max = len;
 }
 
 static void
-char_len_set_min_max(CharLenInfo* c, OnigLen min_len, OnigLen max_len)
+char_len_set_min_max(MinMaxLen* c, OnigLen min_len, OnigLen max_len)
 {
-  c->min_len = min_len;
-  c->max_len = max_len;
+  c->min = min_len;
+  c->max = max_len;
 }
 
 static void
-char_len_add(CharLenInfo* to, CharLenInfo* add)
+char_len_add(MinMaxLen* to, MinMaxLen* add)
 {
-  to->min_len = distance_add(to->min_len, add->min_len);
-  to->max_len = distance_add(to->max_len, add->max_len);
+  to->min = distance_add(to->min, add->min);
+  to->max = distance_add(to->max, add->max);
 }
 
 static void
-char_len_multiply(CharLenInfo* to, int m)
+char_len_multiply(MinMaxLen* to, int m)
 {
-  to->min_len = distance_multiply(to->min_len, m);
-  to->max_len = distance_multiply(to->max_len, m);
+  to->min = distance_multiply(to->min, m);
+  to->max = distance_multiply(to->max, m);
 }
 
 static void
-char_len_range_multiply(CharLenInfo* to, int mlow, int mhigh)
+char_len_range_multiply(MinMaxLen* to, int mlow, int mhigh)
 {
-  to->min_len = distance_multiply(to->min_len, mlow);
-  to->max_len = distance_multiply(to->max_len, mhigh);
+  to->min = distance_multiply(to->min, mlow);
+  to->max = distance_multiply(to->max, mhigh);
 }
 
 static void
-char_len_alt(CharLenInfo* to, CharLenInfo* alt)
+char_len_alt(MinMaxLen* to, MinMaxLen* alt)
 {
-  if (to->min_len > alt->min_len)
-    to->min_len = alt->min_len;
+  if (to->min > alt->min)
+    to->min = alt->min;
 
-  if (to->max_len < alt->max_len)
-    to->max_len = alt->max_len;
+  if (to->max < alt->max)
+    to->max = alt->max;
 }
 
 /* fixed size pattern node only */
 static int
-node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, ScanEnv* env,
+node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
                int level)
 {
-  CharLenInfo tci;
+  MinMaxLen tci;
   int r = CHAR_LEN_NORMAL;
 
   level++;
@@ -771,8 +771,8 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, ScanEnv* env,
           r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
           if (r < 0) break;
 
-          en->min_char_len = ci->min_len;
-          en->max_char_len = ci->max_len;
+          en->min_char_len = ci->min;
+          en->max_char_len = ci->max;
           NODE_STATUS_ADD(node, FIXED_CLEN);
         }
         break;
@@ -782,7 +782,7 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, ScanEnv* env,
         break;
       case BAG_IF_ELSE:
         {
-          CharLenInfo eci;
+          MinMaxLen eci;
 
           r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
           if (r < 0) break;
@@ -853,7 +853,7 @@ node_char_len1(Node* node, regex_t* reg, CharLenInfo* ci, ScanEnv* env,
 }
 
 static int
-node_char_len(Node* node, regex_t* reg, CharLenInfo* ci, ScanEnv* env)
+node_char_len(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env)
 {
   return node_char_len1(node, reg, ci, env, 0);
 }
@@ -4017,7 +4017,7 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
 {
   int r;
   int state1;
-  CharLenInfo ci;
+  MinMaxLen ci;
   AnchorNode* an = ANCHOR_(node);
 
   if (an->type == ANCR_LOOK_BEHIND_NOT)
@@ -4044,7 +4044,7 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
     }
     else { /* CHAR_LEN_NORMAL */
       if (char_len_fixed(&ci)) {
-        an->char_len = ci.min_len;
+        an->char_len = ci.min;
       }
       else {
         r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
@@ -5271,11 +5271,6 @@ set_sunday_quick_search_or_bmh_skip_table(regex_t* reg, int case_expand,
 #if OPT_EXACT_MAXLEN >= UCHAR_MAX
 #error Too big OPT_EXACT_MAXLEN
 #endif
-
-typedef struct {
-  OnigLen min;
-  OnigLen max;
-} MinMaxLen;
 
 typedef struct {
   MinMaxLen        mm;
