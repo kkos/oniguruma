@@ -1994,9 +1994,6 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     break;
 
   case ANCR_LOOK_BEHIND:
-    if (node->char_len < 0)
-      return ONIGERR_PARSER_BUG;
-
     r = add_op(reg, OP_LOOK_BEHIND);
     if (r != 0) return r;
     COP(reg)->look_behind.len = node->char_len;
@@ -2004,9 +2001,6 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     break;
 
   case ANCR_LOOK_BEHIND_NOT:
-    if (node->char_len < 0)
-      return ONIGERR_PARSER_BUG;
-
     len = compile_length_tree(NODE_ANCHOR_BODY(node), reg);
     r = add_op(reg, OP_LOOK_BEHIND_NOT_START);
     if (r != 0) return r;
