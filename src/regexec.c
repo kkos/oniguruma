@@ -252,7 +252,7 @@ static OpInfoType OpInfo[] = {
   { OP_LOOK_BEHIND,           "look-behind"},
   { OP_LOOK_BEHIND_NOT_START, "look-behind-not-start"},
   { OP_LOOK_BEHIND_NOT_END,   "look-behind-not-end"},
-  { OP_PUSH_SAVE_VAL,         "push-save-val"},
+  { OP_SAVE_VAL,              "save-val"},
   { OP_UPDATE_VAR,            "update-var"},
 #ifdef USE_CALL
   { OP_CALL,                  "call"},
@@ -554,12 +554,12 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
     break;
 #endif
 
-  case OP_PUSH_SAVE_VAL:
+  case OP_SAVE_VAL:
     {
       SaveType type;
 
-      type = p->push_save_val.type;
-      mem  = p->push_save_val.id;
+      type = p->save_val.type;
+      mem  = p->save_val.id;
       fprintf(f, ":%d:%d", type, mem);
     }
     break;
@@ -2674,7 +2674,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_LOOK_BEHIND,
   &&L_LOOK_BEHIND_NOT_START,
   &&L_LOOK_BEHIND_NOT_END,
-  &&L_PUSH_SAVE_VAL,
+  &&L_SAVE_VAL,
   &&L_UPDATE_VAR,
 #ifdef USE_CALL
   &&L_CALL,
@@ -3951,12 +3951,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       JUMP_OUT;
 #endif
 
-    CASE_OP(PUSH_SAVE_VAL)
+    CASE_OP(SAVE_VAL)
       {
         SaveType type;
 
-        type = p->push_save_val.type;
-        mem  = p->push_save_val.id; /* mem: save id */
+        type = p->save_val.type;
+        mem  = p->save_val.id; /* mem: save id */
         switch ((enum SaveType )type) {
         case SAVE_KEEP:
           STACK_PUSH_SAVE_VAL(mem, type, s);

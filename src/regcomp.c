@@ -2032,10 +2032,10 @@ compile_gimmick_node(GimmickNode* node, regex_t* reg)
     break;
 
   case GIMMICK_SAVE:
-    r = add_op(reg, OP_PUSH_SAVE_VAL);
+    r = add_op(reg, OP_SAVE_VAL);
     if (r != 0) return r;
-    COP(reg)->push_save_val.type = node->detail_type;
-    COP(reg)->push_save_val.id   = node->id;
+    COP(reg)->save_val.type = node->detail_type;
+    COP(reg)->save_val.id   = node->id;
     break;
 
   case GIMMICK_UPDATE_VAR:
@@ -2086,7 +2086,7 @@ compile_length_gimmick_node(GimmickNode* node, regex_t* reg)
     break;
 
   case GIMMICK_SAVE:
-    len = OPSIZE_PUSH_SAVE_VAL;
+    len = OPSIZE_SAVE_VAL;
     break;
 
   case GIMMICK_UPDATE_VAR:

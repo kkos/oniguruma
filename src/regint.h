@@ -538,7 +538,7 @@ enum OpCode {
   OP_LOOK_BEHIND,           /* (?<=...) start (no needs end opcode) */
   OP_LOOK_BEHIND_NOT_START, /* (?<!...) start */
   OP_LOOK_BEHIND_NOT_END,   /* (?<!...) end   */
-  OP_PUSH_SAVE_VAL,
+  OP_SAVE_VAL,
   OP_UPDATE_VAR,
 #ifdef USE_CALL
   OP_CALL,                  /* \g<name> */
@@ -636,7 +636,7 @@ typedef int ModeType;
 #define OPSIZE_LOOK_BEHIND_NOT_END     1
 #define OPSIZE_CALL                    1
 #define OPSIZE_RETURN                  1
-#define OPSIZE_PUSH_SAVE_VAL           1
+#define OPSIZE_SAVE_VAL                1
 #define OPSIZE_UPDATE_VAR              1
 
 #ifdef USE_CALLOUT
@@ -796,7 +796,7 @@ typedef struct {
     struct {
       SaveType   type;
       MemNumType id;
-    } push_save_val;
+    } save_val;
     struct {
       UpdateVarType type;
       MemNumType id;
