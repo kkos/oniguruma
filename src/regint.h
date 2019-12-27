@@ -56,6 +56,7 @@
 
 /* config */
 /* spec. config */
+#define USE_REGSET
 #define USE_CALL
 #define USE_CALLOUT
 #define USE_BACKREF_WITH_LEVEL        /* \k<name+n>, \k<name-n> */

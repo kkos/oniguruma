@@ -4108,6 +4108,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   return best_len;
 }
 
+
+#ifdef USE_REGSET
+
 typedef struct {
   regex_t*    reg;
   OnigRegion* region;
@@ -4565,6 +4568,9 @@ onig_regset_search(OnigRegSet* set, const UChar* str, const UChar* end,
 
   return r;
 }
+
+#endif /* USE_REGSET */
+
 
 static UChar*
 slow_search(OnigEncoding enc, UChar* target, UChar* target_end,
@@ -5532,6 +5538,8 @@ onig_copy_encoding(OnigEncoding to, OnigEncoding from)
   *to = *from;
 }
 
+#ifdef USE_REGSET
+
 extern int
 onig_regset_new(OnigRegSet** rset, int n, regex_t* regs[])
 {
@@ -5726,6 +5734,8 @@ onig_regset_get_region(OnigRegSet* set, int at)
 
   return set->rs[at].region;
 }
+
+#endif /* USE_REGSET */
 
 
 #ifdef USE_DIRECT_THREADED_CODE
