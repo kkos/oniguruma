@@ -1623,6 +1623,7 @@ onig_set_callout_of_name(OnigEncoding enc, OnigCalloutType callout_type,
     fe->arg_types[i] = arg_types[i];
   }
   for (i = arg_num - opt_arg_num, j = 0; i < arg_num; i++, j++) {
+    if(IS_NULL(opt_defaults))return ONIGERR_INVALID_ARGUMENT;
     if (fe->arg_types[i] == ONIG_TYPE_STRING) {
       OnigValue* val;
       UChar* ds;
@@ -1966,6 +1967,7 @@ callout_tag_entry(ScanEnv* env, regex_t* reg, UChar* name, UChar* name_end,
 
   ext = onig_get_regex_ext(reg);
   CHECK_NULL_RETURN_MEMERR(ext);
+  CHECK_NULL_RETURN_MEMERR(ext->tag_table);
   r = callout_tag_entry_raw(env, ext->tag_table, name, name_end, entry_val);
 
   e = onig_reg_callout_list_at(reg, (int )entry_val);

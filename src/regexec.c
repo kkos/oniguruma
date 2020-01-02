@@ -4586,6 +4586,7 @@ slow_search(OnigEncoding enc, UChar* target, UChar* target_end,
   s = (UChar* )text;
 
   while (s < end) {
+    if(IS_NULL(s))break;
     if (*s == *target) {
       p = s + 1;
       t = target + 1;
@@ -4613,6 +4614,7 @@ slow_search_backward(OnigEncoding enc, UChar* target, UChar* target_end,
   s = (UChar* )text_end;
   s -= (target_end - target);
   if (s > text_start)
+    if(IS_NULL(s))break;
     s = (UChar* )text_start;
   else
     s = ONIGENC_LEFT_ADJUST_CHAR_HEAD(enc, adjust_text, s);
@@ -5192,7 +5194,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
       UChar* pre_end = ONIGENC_STEP_BACK(reg->enc, str, end, 1);
 
       max_semi_end = (UChar* )end;
-      if (ONIGENC_IS_MBC_NEWLINE(reg->enc, pre_end, end)) {
+      if (IS_NOT_NULL(pre_end) && ONIGENC_IS_MBC_NEWLINE(reg->enc, pre_end, end)) {
         min_semi_end = pre_end;
 
 #ifdef USE_CRNL_AS_LINE_TERMINATOR
@@ -5358,6 +5360,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
             MATCH_AND_RETURN_CHECK(orig_start);
             s = prev;
           }
+          if(IS_NULL(s))break
         } while (s >= range);
         goto mismatch;
       }
