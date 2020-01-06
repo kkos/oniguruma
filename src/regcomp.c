@@ -5640,7 +5640,7 @@ clear_opt_map(OptMap* map)
 static void
 copy_opt_map(OptMap* to, OptMap* from)
 {
-  *to = *from;
+  xmemcpy(to,from,sizeof(OptMap));
 }
 
 static void
@@ -5735,7 +5735,7 @@ clear_node_opt_info(OptNode* opt)
 static void
 copy_node_opt_info(OptNode* to, OptNode* from)
 {
-  *to = *from;
+  xmemcpy(to,from,sizeof(OptNode));
 }
 
 static void
