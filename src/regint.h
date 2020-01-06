@@ -4,7 +4,7 @@
   regint.h -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2019  K.Kosako
+ * Copyright (c) 2002-2020  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -315,17 +315,17 @@ typedef unsigned int  MemStatusType;
 #define BITS_PER_BYTE      8
 #define SINGLE_BYTE_SIZE   (1 << BITS_PER_BYTE)
 #define BITS_IN_ROOM       32   /* 4 * BITS_PER_BYTE */
-#define BITSET_SIZE        (SINGLE_BYTE_SIZE / BITS_IN_ROOM)
+#define BITSET_REAL_SIZE   (SINGLE_BYTE_SIZE / BITS_IN_ROOM)
 
 typedef uint32_t  Bits;
-typedef Bits      BitSet[BITSET_SIZE];
+typedef Bits      BitSet[BITSET_REAL_SIZE];
 typedef Bits*     BitSetRef;
 
 #define SIZE_BITSET        sizeof(BitSet)
 
 #define BITSET_CLEAR(bs) do {\
   int i;\
-  for (i = 0; i < (int )BITSET_SIZE; i++) { (bs)[i] = 0; } \
+  for (i = 0; i < (int )BITSET_REAL_SIZE; i++) { (bs)[i] = 0; } \
 } while (0)
 
 #define BS_ROOM(bs,pos)            (bs)[(unsigned int )(pos) >> 5]

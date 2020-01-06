@@ -315,7 +315,7 @@ backref_rel_to_abs(int rel_no, ScanEnv* env)
 #define BITSET_IS_EMPTY(bs,empty) do {\
   int i;\
   empty = 1;\
-  for (i = 0; i < (int )BITSET_SIZE; i++) {\
+  for (i = 0; i < (int )BITSET_REAL_SIZE; i++) {\
     if ((bs)[i] != 0) {\
       empty = 0; break;\
     }\
@@ -335,35 +335,35 @@ static void
 bitset_invert(BitSetRef bs)
 {
   int i;
-  for (i = 0; i < (int )BITSET_SIZE; i++) { bs[i] = ~(bs[i]); }
+  for (i = 0; i < (int )BITSET_REAL_SIZE; i++) { bs[i] = ~(bs[i]); }
 }
 
 static void
 bitset_invert_to(BitSetRef from, BitSetRef to)
 {
   int i;
-  for (i = 0; i < (int )BITSET_SIZE; i++) { to[i] = ~(from[i]); }
+  for (i = 0; i < (int )BITSET_REAL_SIZE; i++) { to[i] = ~(from[i]); }
 }
 
 static void
 bitset_and(BitSetRef dest, BitSetRef bs)
 {
   int i;
-  for (i = 0; i < (int )BITSET_SIZE; i++) { dest[i] &= bs[i]; }
+  for (i = 0; i < (int )BITSET_REAL_SIZE; i++) { dest[i] &= bs[i]; }
 }
 
 static void
 bitset_or(BitSetRef dest, BitSetRef bs)
 {
   int i;
-  for (i = 0; i < (int )BITSET_SIZE; i++) { dest[i] |= bs[i]; }
+  for (i = 0; i < (int )BITSET_REAL_SIZE; i++) { dest[i] |= bs[i]; }
 }
 
 static void
 bitset_copy(BitSetRef dest, BitSetRef bs)
 {
   int i;
-  for (i = 0; i < (int )BITSET_SIZE; i++) { dest[i] = bs[i]; }
+  for (i = 0; i < (int )BITSET_REAL_SIZE; i++) { dest[i] = bs[i]; }
 }
 
 extern int
