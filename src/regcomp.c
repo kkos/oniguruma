@@ -755,6 +755,8 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
           mml_set(ci, INFINITE_LEN);
         }
         else {
+          r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
+          if (r < 0) break;
           mml_range_multiply(ci, qn->lower, qn->upper);
         }
       }
