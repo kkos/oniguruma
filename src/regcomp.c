@@ -650,10 +650,13 @@ mml_multiply(MinMaxLen* to, int m)
 }
 
 static void
-mml_range_multiply(MinMaxLen* to, int mlow, int mhigh)
+mml_repeat_range_multiply(MinMaxLen* to, int mlow, int mhigh)
 {
   to->min = distance_multiply(to->min, mlow);
-  to->max = distance_multiply(to->max, mhigh);
+  if (IS_INFINITE_REPEAT(mhigh))
+    to->max = INFINITE_LEN;
+  else
+    to->max = distance_multiply(to->max, mhigh);
 }
 
 static void
@@ -751,14 +754,9 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
         }
       }
       else {
-        if (IS_INFINITE_REPEAT(qn->upper)) {
-          mml_set(ci, INFINITE_LEN);
-        }
-        else {
-          r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
-          if (r < 0) break;
-          mml_range_multiply(ci, qn->lower, qn->upper);
-        }
+        r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
+        if (r < 0) break;
+        mml_repeat_range_multiply(ci, qn->lower, qn->upper);
       }
     }
     break;
