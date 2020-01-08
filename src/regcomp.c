@@ -839,7 +839,14 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
       goto zero;
 
     if (NODE_IS_RECURSION(node)) {
-      mml_set_min_max(ci, 0, INFINITE_LEN);
+#ifdef USE_BACKREF_WITH_LEVEL
+      if (NODE_IS_NEST_LEVEL(node)) {
+        mml_set_min_max(ci, 0, INFINITE_LEN);
+        break;
+      }
+#endif
+
+      mml_set_min_max(ci, 0, 0);
       break;
     }
 
