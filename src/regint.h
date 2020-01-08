@@ -120,6 +120,9 @@
 /* */
 #define onig_st_is_member              st_is_member
 
+
+#ifndef ONIGURUMA_SYS_UEFI
+
 #define xmemset     memset
 #define xmemcpy     memcpy
 #define xmemmove    memmove
@@ -186,6 +189,8 @@ typedef ULONG_PTR hash_data_type;
 #else
 typedef unsigned long hash_data_type;
 #endif
+
+#endif /* ONIGURUMA_SYS_UEFI */
 
 
 #ifdef MIN

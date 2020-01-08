@@ -2,7 +2,7 @@
   regposerr.c - Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2019  K.Kosako
+ * Copyright (c) 2002-2020  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,8 @@
 #  define ARG_UNUSED
 #endif
 
+#ifndef ONIGURUMA_SYS_UEFI
+
 #if defined(_WIN32) && !defined(__GNUC__)
 #define xsnprintf   sprintf_s
 #define xstrncpy(dest,src,size)   strncpy_s(dest,size,src,_TRUNCATE)
@@ -52,6 +54,8 @@
 #define xsnprintf   snprintf
 #define xstrncpy    strncpy
 #endif
+
+#endif /* ONIGURUMA_SYS_UEFI */
 
 static char* ESTRING[] = {
   NULL,
