@@ -177,6 +177,17 @@ typedef unsigned int  uintptr_t;
 #endif
 #endif
 
+/* strend hash */
+typedef void hash_table_type;
+
+#ifdef _WIN32
+# include <windows.h>
+typedef ULONG_PTR hash_data_type;
+#else
+typedef unsigned long hash_data_type;
+#endif
+
+
 #ifdef MIN
 #undef MIN
 #endif
@@ -984,16 +995,6 @@ extern OnigCalloutFunc onig_get_callout_start_func(regex_t* reg, int callout_num
 
 #endif /* USE_CALLOUT */
 
-
-/* strend hash */
-typedef void hash_table_type;
-
-#ifdef _WIN32
-# include <windows.h>
-typedef ULONG_PTR hash_data_type;
-#else
-typedef unsigned long hash_data_type;
-#endif
 
 extern hash_table_type* onig_st_init_strend_table_with_size P_((int size));
 extern int onig_st_lookup_strend P_((hash_table_type* table, const UChar* str_key, const UChar* end_key, hash_data_type *value));
