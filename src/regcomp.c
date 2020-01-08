@@ -3183,7 +3183,11 @@ node_max_clen(Node* node, ScanEnv* env)
       MemEnv* mem_env = SCANENV_MEMENV(env);
       BackRefNode* br = BACKREF_(node);
       if (NODE_IS_RECURSION(node)) {
-        len = INFINITE_LEN;
+#ifdef USE_BACKREF_WITH_LEVEL
+        if (NODE_IS_NEST_LEVEL(node)) {
+          len = INFINITE_LEN;
+        }
+#endif
         break;
       }
       backs = BACKREFS_P(br);
