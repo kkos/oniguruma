@@ -591,7 +591,7 @@ unset_addr_list_add(UnsetAddrList* list, int offset, struct _Node* node)
 #endif /* USE_CALL */
 
 enum CharLenReturnType {
-  CHAR_LEN_NORMAL = 0,
+  CHAR_LEN_NORMAL = 0,       /* fixed or variable */
   CHAR_LEN_TOP_ALT_FIXED = 1
 };
 
@@ -764,7 +764,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
 #ifdef USE_CALL
   case NODE_CALL:
     if (NODE_IS_RECURSION(node))
-      mml_set(ci, INFINITE_LEN);
+      mml_set_min_max(ci, 0, INFINITE_LEN);
     else
       r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
     break;
