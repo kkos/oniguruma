@@ -6238,6 +6238,8 @@ onig_builtin_cmp(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 }
 
 
+#ifndef ONIGURUMA_UNSUPPORTED_PRINT
+
 #include <stdio.h>
 
 static FILE* OutFp;
@@ -6335,5 +6337,7 @@ onig_setup_builtin_monitors_by_ascii_encoded_name(void* fp /* FILE* */)
 
   return ONIG_NORMAL;
 }
+
+#endif /* ONIGURUMA_UNSUPPORTED_PRINT */
 
 #endif /* USE_CALLOUT */
