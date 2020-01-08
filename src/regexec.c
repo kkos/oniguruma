@@ -1798,26 +1798,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while (0)
 
-#define STACK_GET_SAVE_VAL_TYPE_LAST_ID_FROM(stype, sid, sval, stk_from) do { \
-  int level = 0;\
-  StackType *k = (stk_from);\
-  while (k > stk_base) {\
-    STACK_BASE_CHECK(k, "STACK_GET_SAVE_VAL_TYPE_LAST_ID_FROM"); \
-    if (k->type == STK_SAVE_VAL && k->u.val.type == (stype)\
-        && k->u.val.id == (sid)) {\
-      if (level == 0) {\
-        (sval) = k->u.val.v;\
-        break;\
-      }\
-    }\
-    else if (k->type == STK_CALL_FRAME)\
-      level--;\
-    else if (k->type == STK_RETURN)\
-      level++;\
-    k--;\
-  }\
-} while (0)
-
 #define STACK_PUSH_CALLOUT_CONTENTS(anum, func) do {\
   STACK_ENSURE(1);\
   stk->type = STK_CALLOUT;\
