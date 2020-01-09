@@ -414,7 +414,7 @@ typedef struct {
 #endif
   int backref_num;
   int keep_num;
-  int save_num;
+  int id_num;
   int save_alloc_num;
   SaveItem* saves;
 } ScanEnv;

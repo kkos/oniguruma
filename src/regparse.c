@@ -391,9 +391,9 @@ onig_strcpy(UChar* dest, const UChar* src, const UChar* end)
 static int
 save_entry(ScanEnv* env, enum SaveType type, int* id)
 {
-  int nid = env->save_num;
+  int nid = env->id_num;
 
-  env->save_num++;
+  env->id_num++;
   *id = nid;
   return 0;
 }
@@ -2002,15 +2002,15 @@ scan_env_clear(ScanEnv* env)
 
   xmemset(env->mem_env_static, 0, sizeof(env->mem_env_static));
 
-  env->parse_depth         = 0;
+  env->parse_depth      = 0;
 #ifdef ONIG_DEBUG_PARSE
-  env->max_parse_depth     = 0;
+  env->max_parse_depth  = 0;
 #endif
-  env->backref_num         = 0;
-  env->keep_num            = 0;
-  env->save_num            = 0;
-  env->save_alloc_num      = 0;
-  env->saves               = 0;
+  env->backref_num      = 0;
+  env->keep_num         = 0;
+  env->id_num           = 0;
+  env->save_alloc_num   = 0;
+  env->saves            = 0;
 }
 
 static int
