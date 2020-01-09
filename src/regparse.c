@@ -388,16 +388,6 @@ onig_strcpy(UChar* dest, const UChar* src, const UChar* end)
   }
 }
 
-static int
-save_entry(ScanEnv* env, enum SaveType type, int* id)
-{
-  int nid = env->id_num;
-
-  env->id_num++;
-  *id = nid;
-  return 0;
-}
-
 /* scan pattern methods */
 #define PEND_VALUE   0
 
@@ -2574,10 +2564,8 @@ static int
 node_new_save_gimmick(Node** node, enum SaveType save_type, ScanEnv* env)
 {
   int id;
-  int r;
 
-  r = save_entry(env, save_type, &id);
-  if (r != ONIG_NORMAL) return r;
+  ID_ENTRY(env, id);
 
   *node = node_new();
   CHECK_NULL_RETURN_MEMERR(*node);

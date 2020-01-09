@@ -424,6 +424,10 @@ typedef struct {
 #define IS_SYNTAX_OP2(syn, opm)   (((syn)->op2 & (opm)) != 0)
 #define IS_SYNTAX_BV(syn, bvm)    (((syn)->behavior & (bvm)) != 0)
 
+#define ID_ENTRY(env, id) do {\
+  id = (env)->id_num++;\
+} while(0)
+
 typedef struct {
   int new_val;
 } GroupNumMap;
