@@ -1941,11 +1941,14 @@ stack_double(int is_alloca, char** arg_alloc_base,
     k--;\
     STACK_BASE_CHECK(k, "STACK_TO_VOID_TO_MARK");\
     if (IS_TO_VOID_TARGET(k)) {\
-      if (k->type == STK_MARK && k->zid == (sid)) {\
-        k->type = STK_VOID;\
-        break;\
+      if (k->type == STK_MARK) {\
+        if (k->zid == (sid)) {\
+          k->type = STK_VOID;\
+          break;\
+        } /* don't void different id mark */ \
       }\
-      k->type = STK_VOID;\
+      else\
+        k->type = STK_VOID;\
     }\
   }\
 } while(0)
