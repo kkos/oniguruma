@@ -252,6 +252,8 @@ static OpInfoType OpInfo[] = {
   { OP_LOOK_BEHIND,           "look-behind"},
   { OP_LOOK_BEHIND_NOT_START, "look-behind-not-start"},
   { OP_LOOK_BEHIND_NOT_END,   "look-behind-not-end"},
+  { OP_CUT,                   "cut"},
+  { OP_MARK,                  "mark"},
   { OP_SAVE_VAL,              "save-val"},
   { OP_UPDATE_VAR,            "update-var"},
 #ifdef USE_CALL
@@ -1005,6 +1007,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_CALL_FRAME             0x0400
 #define STK_RETURN                 0x0500
 #define STK_SAVE_VAL               0x0600
+#define STK_MARK                   0x1700
 #define STK_PREC_READ_START        0x0700
 #define STK_PREC_READ_END          0x0800
 
@@ -1726,6 +1729,22 @@ stack_double(int is_alloca, char** arg_alloc_base,
   STACK_INC;\
 } while(0)
 
+#define STACK_PUSH_MARK(sid) do {\
+  STACK_ENSURE(1);\
+  stk->type = STK_MARK;\
+  stk->zid  = (sid);\
+  STACK_INC;\
+} while(0)
+
+#define STACK_PUSH_MARK_WITH_POS(sid, s, sprev) do {\
+  STACK_ENSURE(1);\
+  stk->type = STK_MARK;\
+  stk->zid  = (sid);\
+  stk->u.val.v  = (UChar* )(s);\
+  stk->u.val.v2 = (sprev);\
+  STACK_INC;\
+} while(0)
+
 #define STACK_PUSH_SAVE_VAL(sid, stype, sval) do {\
   STACK_ENSURE(1);\
   stk->type = STK_SAVE_VAL;\
@@ -1915,6 +1934,21 @@ stack_double(int is_alloca, char** arg_alloc_base,
   POP_TIL_BODY("STACK_POP_TIL_ALT_LOOK_BEHIND_NOT", STK_ALT_LOOK_BEHIND_NOT);\
 } while(0)
 
+
+#define STACK_TO_VOID_TO_MARK(k,sid) do {\
+  k = stk;\
+  while (1) {\
+    k--;\
+    STACK_BASE_CHECK(k, "STACK_TO_VOID_TO_MARK");\
+    if (IS_TO_VOID_TARGET(k)) {\
+      if (k->type == STK_MARK && k->zid == (sid)) {\
+        k->type = STK_VOID;\
+        break;\
+      }\
+      k->type = STK_VOID;\
+    }\
+  }\
+} while(0)
 
 #define STACK_EXEC_TO_VOID(k) do {\
   k = stk;\
@@ -2654,6 +2688,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_LOOK_BEHIND,
   &&L_LOOK_BEHIND_NOT_START,
   &&L_LOOK_BEHIND_NOT_END,
+  &&L_CUT,
+  &&L_MARK,
   &&L_SAVE_VAL,
   &&L_UPDATE_VAR,
 #ifdef USE_CALL
@@ -3930,6 +3966,26 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       STACK_PUSH_RETURN;
       JUMP_OUT;
 #endif
+
+    CASE_OP(CUT)
+      mem  = p->mark.id; /* mem: mark id */
+      STACK_TO_VOID_TO_MARK(stkp, mem);
+      if (p->cut.restore_pos != 0) {
+        s     = stkp->u.val.v;
+        sprev = stkp->u.val.v2;
+      }
+      INC_OP;
+      JUMP_OUT;
+
+    CASE_OP(MARK)
+      mem  = p->mark.id; /* mem: mark id */
+      if (p->mark.save_pos != 0)
+        STACK_PUSH_MARK_WITH_POS(mem, s, sprev);
+      else
+        STACK_PUSH_MARK(mem);
+
+      INC_OP;
+      JUMP_OUT;
 
     CASE_OP(SAVE_VAL)
       {
