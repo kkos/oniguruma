@@ -162,6 +162,24 @@ static int test_isolated_option()
   return 0;
 }
 
+static int test_prec_read()
+{
+  x2("(?=a).b", "ab", 0, 2);
+  x2("(?=ab|(.))\\1", "ab", 1, 2); // doesn't backtrack if success once in prec-read
+  n("(?!(.)z)a\\1", "aa");  // ! Perl 5.26.1 match with "aa"
+
+  return 0;
+}
+
+static int test_look_behind()
+{
+  x2("(?<=a)b", "ab", 1, 2);
+  x2("(?<=a|b)c", "abc", 2, 3);
+  x2("(?<=a|(.))\\1", "abcc", 3, 4);
+
+  return 0;
+}
+
 extern int main(int argc, char* argv[])
 {
   OnigEncoding use_encs[1];
@@ -176,6 +194,8 @@ extern int main(int argc, char* argv[])
   Syntax = ONIG_SYNTAX_PERL;
 
   test_isolated_option();
+  test_prec_read();
+  test_look_behind();
 
   x3("()", "abc", 0, 0, 1);
   e("(", "", ONIGERR_END_PATTERN_WITH_UNMATCHED_PARENTHESIS);
