@@ -228,7 +228,7 @@ static OpInfoType OpInfo[] = {
   { OP_JUMP,                  "jump"},
   { OP_PUSH,                  "push"},
   { OP_PUSH_SUPER,            "push-super"},
-  { OP_POP_OUT,               "pop-out"},
+  { OP_POP,                   "pop"},
 #ifdef USE_OP_PUSH_OR_JUMP_EXACT
   { OP_PUSH_OR_JUMP_EXACT1,   "push-or-jump-e1"},
 #endif
@@ -613,7 +613,7 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
   case OP_BACKREF1:
   case OP_BACKREF2:
   case OP_FAIL:
-  case OP_POP_OUT:
+  case OP_POP:
   case OP_PREC_READ_NOT_END:
   case OP_LOOK_BEHIND_NOT_END:
 #ifdef USE_CALL
@@ -2615,7 +2615,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_JUMP,
   &&L_PUSH,
   &&L_PUSH_SUPER,
-  &&L_POP_OUT,
+  &&L_POP,
 #ifdef USE_OP_PUSH_OR_JUMP_EXACT
   &&L_PUSH_OR_JUMP_EXACT1,
 #endif
@@ -3736,7 +3736,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       INC_OP;
       JUMP_OUT;
 
-    CASE_OP(POP_OUT)
+    CASE_OP(POP)
       STACK_POP_ONE;
       /* for stop backtrack */
       /* CHECK_RETRY_LIMIT_IN_MATCH; */

@@ -530,7 +530,7 @@ enum OpCode {
   OP_JUMP,
   OP_PUSH,
   OP_PUSH_SUPER,
-  OP_POP_OUT,
+  OP_POP,
 #ifdef USE_OP_PUSH_OR_JUMP_EXACT
   OP_PUSH_OR_JUMP_EXACT1,   /* if match exact then push, else jump. */
 #endif
@@ -620,7 +620,7 @@ typedef int ModeType;
 #define OPSIZE_JUMP                    1
 #define OPSIZE_PUSH                    1
 #define OPSIZE_PUSH_SUPER              1
-#define OPSIZE_POP_OUT                 1
+#define OPSIZE_POP                     1
 #ifdef USE_OP_PUSH_OR_JUMP_EXACT
 #define OPSIZE_PUSH_OR_JUMP_EXACT1     1
 #endif

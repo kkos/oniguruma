@@ -1651,7 +1651,7 @@ compile_length_bag_node(BagNode* node, regex_t* reg)
 
       v = onig_positive_int_multiply(qn->lower, tlen);
       if (v < 0) return ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE;
-      len = v + OPSIZE_PUSH + tlen + OPSIZE_POP_OUT + OPSIZE_JUMP;
+      len = v + OPSIZE_PUSH + tlen + OPSIZE_POP + OPSIZE_JUMP;
     }
     else {
       len = OPSIZE_MARK + tlen + OPSIZE_CUT;
@@ -1799,16 +1799,16 @@ compile_bag_node(BagNode* node, regex_t* reg, ScanEnv* env)
 
       r = add_op(reg, OP_PUSH);
       if (r != 0) return r;
-      COP(reg)->push.addr = SIZE_INC + len + OPSIZE_POP_OUT + OPSIZE_JUMP;
+      COP(reg)->push.addr = SIZE_INC + len + OPSIZE_POP + OPSIZE_JUMP;
 
       r = compile_tree(NODE_QUANT_BODY(qn), reg, env);
       if (r != 0) return r;
-      r = add_op(reg, OP_POP_OUT);
+      r = add_op(reg, OP_POP);
       if (r != 0) return r;
 
       r = add_op(reg, OP_JUMP);
       if (r != 0) return r;
-      COP(reg)->jump.addr = -((int )OPSIZE_PUSH + len + (int )OPSIZE_POP_OUT);
+      COP(reg)->jump.addr = -((int )OPSIZE_PUSH + len + (int )OPSIZE_POP);
     }
     else {
       MemNumType mid;
