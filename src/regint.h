@@ -531,6 +531,7 @@ enum OpCode {
   OP_PUSH,
   OP_PUSH_SUPER,
   OP_POP,
+  OP_POP_TO_MARK,
 #ifdef USE_OP_PUSH_OR_JUMP_EXACT
   OP_PUSH_OR_JUMP_EXACT1,   /* if match exact then push, else jump. */
 #endif
@@ -621,6 +622,7 @@ typedef int ModeType;
 #define OPSIZE_PUSH                    1
 #define OPSIZE_PUSH_SUPER              1
 #define OPSIZE_POP                     1
+#define OPSIZE_POP_TO_MARK             1
 #ifdef USE_OP_PUSH_OR_JUMP_EXACT
 #define OPSIZE_PUSH_OR_JUMP_EXACT1     1
 #endif
@@ -779,6 +781,9 @@ typedef struct {
       RelAddrType addr;
       UChar c;
     } push_if_peek_next;
+    struct {
+      MemNumType id;
+    } pop_to_mark;
     struct {
       MemNumType  id;
       RelAddrType addr;

@@ -229,6 +229,7 @@ static OpInfoType OpInfo[] = {
   { OP_PUSH,                  "push"},
   { OP_PUSH_SUPER,            "push-super"},
   { OP_POP,                   "pop"},
+  { OP_POP_TO_MARK,           "pop-to-mark"},
 #ifdef USE_OP_PUSH_OR_JUMP_EXACT
   { OP_PUSH_OR_JUMP_EXACT1,   "push-or-jump-e1"},
 #endif
@@ -614,6 +615,7 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
   case OP_BACKREF2:
   case OP_FAIL:
   case OP_POP:
+  case OP_POP_TO_MARK:
   case OP_PREC_READ_NOT_END:
   case OP_LOOK_BEHIND_NOT_END:
 #ifdef USE_CALL
@@ -997,7 +999,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_CALL_FRAME             0x0400
 #define STK_RETURN                 0x0500
 #define STK_SAVE_VAL               0x0600
-#define STK_MARK                   0x1700
+#define STK_MARK                   0x0704
 
 /* stack type check mask */
 #define STK_MASK_POP_USED          STK_ALT_FLAG
@@ -1888,6 +1890,32 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
+#define STACK_POP_TO_MARK(sid) do {\
+  while (1) {\
+    stk--;\
+    STACK_BASE_CHECK(stk, "STACK_POP_TO_MARK");\
+    if ((stk->type & STK_MASK_POP_HANDLED_TIL) != 0) {\
+      if (stk->type == STK_MARK) {\
+        if (stk->zid == (sid)) break;\
+      }\
+      else {\
+        if (stk->type == STK_MEM_START) {\
+          mem_start_stk[stk->zid] = stk->u.mem.prev_start;\
+          mem_end_stk[stk->zid]   = stk->u.mem.prev_end;\
+        }\
+        else if (stk->type == STK_MEM_END) {\
+          mem_start_stk[stk->zid] = stk->u.mem.prev_start;\
+          mem_end_stk[stk->zid]   = stk->u.mem.prev_end;\
+        }\
+        POP_REPEAT_INC \
+        POP_EMPTY_CHECK_START \
+        /* Don't call callout here because negation of total success by (?!..) (?<!..) */\
+      }\
+    }\
+  }\
+} while(0)
+
+
 #define POP_TIL_BODY(aname, til_type) do {\
   while (1) {\
     stk--;\
@@ -2616,6 +2644,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_PUSH,
   &&L_PUSH_SUPER,
   &&L_POP,
+  &&L_POP_TO_MARK,
 #ifdef USE_OP_PUSH_OR_JUMP_EXACT
   &&L_PUSH_OR_JUMP_EXACT1,
 #endif
@@ -3740,6 +3769,11 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       STACK_POP_ONE;
       /* for stop backtrack */
       /* CHECK_RETRY_LIMIT_IN_MATCH; */
+      INC_OP;
+      JUMP_OUT;
+
+    CASE_OP(POP_TO_MARK)
+      STACK_POP_TO_MARK(p->pop_to_mark.id);
       INC_OP;
       JUMP_OUT;
 
