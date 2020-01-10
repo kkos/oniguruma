@@ -247,8 +247,6 @@ static OpInfoType OpInfo[] = {
   { OP_PREC_READ_END,         "pop-pos"},
   { OP_PREC_READ_NOT_START,   "prec-read-not-start"},
   { OP_PREC_READ_NOT_END,     "prec-read-not-end"},
-  { OP_ATOMIC_START,          "atomic-start"},
-  { OP_ATOMIC_END,            "atomic-end"},
   { OP_LOOK_BEHIND,           "look-behind"},
   { OP_LOOK_BEHIND_NOT_START, "look-behind-not-start"},
   { OP_LOOK_BEHIND_NOT_END,   "look-behind-not-end"},
@@ -621,8 +619,6 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
   case OP_PREC_READ_START:
   case OP_PREC_READ_END:
   case OP_PREC_READ_NOT_END:
-  case OP_ATOMIC_START:
-  case OP_ATOMIC_END:
   case OP_LOOK_BEHIND_NOT_END:
 #ifdef USE_CALL
   case OP_RETURN:
@@ -1002,8 +998,6 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #endif
 #define STK_EMPTY_CHECK_END        0x5000  /* for recursive call */
 #define STK_MEM_END_MARK           0x8100
-#define STK_TO_VOID_START          0x1200  /* mark for "(?>...)" */
-/* #define STK_REPEAT                 0x0300 */
 #define STK_CALL_FRAME             0x0400
 #define STK_RETURN                 0x0500
 #define STK_SAVE_VAL               0x0600
@@ -1611,7 +1605,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
   STACK_PUSH(STK_PREC_READ_START,(Operation* )0,s,sprev)
 #define STACK_PUSH_ALT_PREC_READ_NOT(pat,s,sprev) \
   STACK_PUSH(STK_ALT_PREC_READ_NOT,pat,s,sprev)
-#define STACK_PUSH_TO_VOID_START        STACK_PUSH_TYPE(STK_TO_VOID_START)
 #define STACK_PUSH_ALT_LOOK_BEHIND_NOT(pat,s,sprev) \
   STACK_PUSH(STK_ALT_LOOK_BEHIND_NOT,pat,s,sprev)
 
@@ -1949,21 +1942,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
       }\
       else\
         k->type = STK_VOID;\
-    }\
-  }\
-} while(0)
-
-#define STACK_EXEC_TO_VOID(k) do {\
-  k = stk;\
-  while (1) {\
-    k--;\
-    STACK_BASE_CHECK(k, "STACK_EXEC_TO_VOID"); \
-    if (IS_TO_VOID_TARGET(k)) {\
-      if (k->type == STK_TO_VOID_START) {\
-        k->type = STK_VOID;\
-        break;\
-      }\
-      k->type = STK_VOID;\
     }\
   }\
 } while(0)
@@ -2686,8 +2664,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_PREC_READ_END,
   &&L_PREC_READ_NOT_START,
   &&L_PREC_READ_NOT_END,
-  &&L_ATOMIC_START,
-  &&L_ATOMIC_END,
   &&L_LOOK_BEHIND,
   &&L_LOOK_BEHIND_NOT_START,
   &&L_LOOK_BEHIND_NOT_END,
@@ -3915,16 +3891,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     CASE_OP(PREC_READ_NOT_END)
       STACK_POP_TIL_ALT_PREC_READ_NOT;
       goto fail;
-
-    CASE_OP(ATOMIC_START)
-      STACK_PUSH_TO_VOID_START;
-      INC_OP;
-      JUMP_OUT;
-
-    CASE_OP(ATOMIC_END)
-      STACK_EXEC_TO_VOID(stkp);
-      INC_OP;
-      JUMP_OUT;
 
     CASE_OP(LOOK_BEHIND)
       tlen = p->look_behind.len;

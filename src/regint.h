@@ -549,8 +549,6 @@ enum OpCode {
   OP_PREC_READ_END,         /* (?=...)  end   */
   OP_PREC_READ_NOT_START,   /* (?!...)  start */
   OP_PREC_READ_NOT_END,     /* (?!...)  end   */
-  OP_ATOMIC_START,          /* (?>...)  start */
-  OP_ATOMIC_END,            /* (?>...)  end   */
   OP_LOOK_BEHIND,           /* (?<=...) start (no needs end opcode) */
   OP_LOOK_BEHIND_NOT_START, /* (?<!...) start */
   OP_LOOK_BEHIND_NOT_END,   /* (?<!...) end   */
@@ -645,8 +643,6 @@ typedef int ModeType;
 #define OPSIZE_MEM_END_PUSH_REC        1
 #define OPSIZE_MEM_END                 1
 #define OPSIZE_MEM_END_REC             1
-#define OPSIZE_ATOMIC_START            1
-#define OPSIZE_ATOMIC_END              1
 #define OPSIZE_EMPTY_CHECK_START       1
 #define OPSIZE_EMPTY_CHECK_END         1
 #define OPSIZE_LOOK_BEHIND             1
