@@ -1909,7 +1909,7 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
 
   switch (node->type) {
   case ANCR_PREC_READ:
-    len = OPSIZE_PREC_READ_START + tlen + OPSIZE_PREC_READ_END;
+    len = OPSIZE_MARK + tlen + OPSIZE_CUT;
     break;
   case ANCR_PREC_READ_NOT:
     len = OPSIZE_PREC_READ_NOT_START + tlen + OPSIZE_PREC_READ_NOT_END;
