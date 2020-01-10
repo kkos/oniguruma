@@ -1998,11 +1998,23 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     break;
 
   case ANCR_PREC_READ:
-    r = add_op(reg, OP_PREC_READ_START);
-    if (r != 0) return r;
-    r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
-    if (r != 0) return r;
-    r = add_op(reg, OP_PREC_READ_END);
+    {
+      MemNumType mid;
+
+      ID_ENTRY(env, mid);
+      r = add_op(reg, OP_MARK);
+      if (r != 0) return r;
+      COP(reg)->mark.id = mid;
+      COP(reg)->mark.save_pos = TRUE;
+
+      r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
+      if (r != 0) return r;
+
+      r = add_op(reg, OP_CUT);
+      if (r != 0) return r;
+      COP(reg)->cut.id = mid;
+      COP(reg)->cut.restore_pos = TRUE;
+    }
     break;
 
   case ANCR_PREC_READ_NOT:
