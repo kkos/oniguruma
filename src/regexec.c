@@ -244,8 +244,6 @@ static OpInfoType OpInfo[] = {
 #ifdef USE_CALL
   { OP_EMPTY_CHECK_END_MEMST_PUSH,"empty-check-end-memst-push"},
 #endif
-  { OP_PREC_READ_NOT_START,   "prec-read-not-start"},
-  { OP_PREC_READ_NOT_END,     "prec-read-not-end"},
   { OP_LOOK_BEHIND,           "look-behind"},
   { OP_LOOK_BEHIND_NOT_START, "look-behind-not-start"},
   { OP_LOOK_BEHIND_NOT_END,   "look-behind-not-end"},
@@ -528,12 +526,6 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
     fprintf(f, ":%d", mem);
     break;
 
-  case OP_PREC_READ_NOT_START:
-    addr = p->prec_read_not_start.addr;
-    fputc(':', f);
-    p_rel_addr(f, addr, p, start);
-    break;
-
   case OP_LOOK_BEHIND:
     len = p->look_behind.len;
     fprintf(f, ":%d", len);
@@ -616,7 +608,6 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
   case OP_FAIL:
   case OP_POP:
   case OP_POP_TO_MARK:
-  case OP_PREC_READ_NOT_END:
   case OP_LOOK_BEHIND_NOT_END:
 #ifdef USE_CALL
   case OP_RETURN:
@@ -972,7 +963,6 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 /* used by normal-POP */
 #define STK_SUPER_ALT             STK_ALT_FLAG
 #define STK_ALT                   (0x0002 | STK_ALT_FLAG)
-#define STK_ALT_PREC_READ_NOT     (0x0004 | STK_ALT_FLAG)
 #define STK_ALT_LOOK_BEHIND_NOT   (0x0006 | STK_ALT_FLAG)
 
 /* handled by normal-POP */
@@ -1597,8 +1587,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
 
 #define STACK_PUSH_ALT(pat,s,sprev)       STACK_PUSH(STK_ALT,pat,s,sprev)
 #define STACK_PUSH_SUPER_ALT(pat,s,sprev) STACK_PUSH(STK_SUPER_ALT,pat,s,sprev)
-#define STACK_PUSH_ALT_PREC_READ_NOT(pat,s,sprev) \
-  STACK_PUSH(STK_ALT_PREC_READ_NOT,pat,s,sprev)
 #define STACK_PUSH_ALT_LOOK_BEHIND_NOT(pat,s,sprev) \
   STACK_PUSH(STK_ALT_LOOK_BEHIND_NOT,pat,s,sprev)
 
@@ -1937,10 +1925,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
       }\
     }\
   }\
-} while(0)
-
-#define STACK_POP_TIL_ALT_PREC_READ_NOT  do {\
-  POP_TIL_BODY("STACK_POP_TIL_ALT_PREC_READ_NOT", STK_ALT_PREC_READ_NOT);\
 } while(0)
 
 #define STACK_POP_TIL_ALT_LOOK_BEHIND_NOT  do {\
@@ -2659,8 +2643,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #ifdef USE_CALL
   &&L_EMPTY_CHECK_END_MEMST_PUSH,
 #endif
-  &&L_PREC_READ_NOT_START,
-  &&L_PREC_READ_NOT_END,
   &&L_LOOK_BEHIND,
   &&L_LOOK_BEHIND_NOT_START,
   &&L_LOOK_BEHIND_NOT_END,
@@ -3870,16 +3852,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         }
       }
       CHECK_INTERRUPT_JUMP_OUT;
-
-    CASE_OP(PREC_READ_NOT_START)
-      addr = p->prec_read_not_start.addr;
-      STACK_PUSH_ALT_PREC_READ_NOT(p + addr, s, sprev);
-      INC_OP;
-      JUMP_OUT;
-
-    CASE_OP(PREC_READ_NOT_END)
-      STACK_POP_TIL_ALT_PREC_READ_NOT;
-      goto fail;
 
     CASE_OP(LOOK_BEHIND)
       tlen = p->look_behind.len;
