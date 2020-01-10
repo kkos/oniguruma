@@ -1654,7 +1654,7 @@ compile_length_bag_node(BagNode* node, regex_t* reg)
       len = v + OPSIZE_PUSH + tlen + OPSIZE_POP + OPSIZE_JUMP;
     }
     else {
-      len = OPSIZE_MARK + tlen + OPSIZE_CUT;
+      len = OPSIZE_MARK + tlen + OPSIZE_CUT_TO_MARK;
     }
     break;
 
@@ -1666,7 +1666,7 @@ compile_length_bag_node(BagNode* node, regex_t* reg)
 
       len = compile_length_tree(cond, reg);
       if (len < 0) return len;
-      len += OPSIZE_PUSH + OPSIZE_MARK + OPSIZE_CUT;
+      len += OPSIZE_PUSH + OPSIZE_MARK + OPSIZE_CUT_TO_MARK;
 
       if (IS_NOT_NULL(Then)) {
         tlen = compile_length_tree(Then, reg);
@@ -1674,7 +1674,7 @@ compile_length_bag_node(BagNode* node, regex_t* reg)
         len += tlen;
       }
 
-      len += OPSIZE_JUMP + OPSIZE_CUT;
+      len += OPSIZE_JUMP + OPSIZE_CUT_TO_MARK;
 
       if (IS_NOT_NULL(Else)) {
         tlen = compile_length_tree(Else, reg);
@@ -1821,10 +1821,10 @@ compile_bag_node(BagNode* node, regex_t* reg, ScanEnv* env)
 
       r = compile_tree(NODE_BAG_BODY(node), reg, env);
       if (r != 0) return r;
-      r = add_op(reg, OP_CUT);
+      r = add_op(reg, OP_CUT_TO_MARK);
       if (r != 0) return r;
-      COP(reg)->cut.id = mid;
-      COP(reg)->cut.restore_pos = 0;
+      COP(reg)->cut_to_mark.id = mid;
+      COP(reg)->cut_to_mark.restore_pos = 0;
     }
     break;
 
@@ -1852,7 +1852,7 @@ compile_bag_node(BagNode* node, regex_t* reg, ScanEnv* env)
       else
         then_len = 0;
 
-      jump_len = cond_len + then_len + OPSIZE_CUT + OPSIZE_JUMP;
+      jump_len = cond_len + then_len + OPSIZE_CUT_TO_MARK + OPSIZE_JUMP;
 
       r = add_op(reg, OP_PUSH);
       if (r != 0) return r;
@@ -1860,10 +1860,10 @@ compile_bag_node(BagNode* node, regex_t* reg, ScanEnv* env)
 
       r = compile_tree(cond, reg, env);
       if (r != 0) return r;
-      r = add_op(reg, OP_CUT);
+      r = add_op(reg, OP_CUT_TO_MARK);
       if (r != 0) return r;
-      COP(reg)->cut.id = mid;
-      COP(reg)->cut.restore_pos = 0;
+      COP(reg)->cut_to_mark.id = mid;
+      COP(reg)->cut_to_mark.restore_pos = 0;
 
       if (IS_NOT_NULL(Then)) {
         r = compile_tree(Then, reg, env);
@@ -1879,12 +1879,12 @@ compile_bag_node(BagNode* node, regex_t* reg, ScanEnv* env)
 
       r = add_op(reg, OP_JUMP);
       if (r != 0) return r;
-      COP(reg)->jump.addr = OPSIZE_CUT + else_len + SIZE_INC;
+      COP(reg)->jump.addr = OPSIZE_CUT_TO_MARK + else_len + SIZE_INC;
 
-      r = add_op(reg, OP_CUT);
+      r = add_op(reg, OP_CUT_TO_MARK);
       if (r != 0) return r;
-      COP(reg)->cut.id = mid;
-      COP(reg)->cut.restore_pos = 0;
+      COP(reg)->cut_to_mark.id = mid;
+      COP(reg)->cut_to_mark.restore_pos = 0;
 
       if (IS_NOT_NULL(Else)) {
         r = compile_tree(Else, reg, env);
@@ -1909,7 +1909,7 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
 
   switch (node->type) {
   case ANCR_PREC_READ:
-    len = OPSIZE_MARK + tlen + OPSIZE_CUT;
+    len = OPSIZE_MARK + tlen + OPSIZE_CUT_TO_MARK;
     break;
   case ANCR_PREC_READ_NOT:
     len = OPSIZE_PUSH + OPSIZE_MARK + tlen + OPSIZE_POP_TO_MARK + OPSIZE_POP + OPSIZE_FAIL;
@@ -2010,10 +2010,10 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
       r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
       if (r != 0) return r;
 
-      r = add_op(reg, OP_CUT);
+      r = add_op(reg, OP_CUT_TO_MARK);
       if (r != 0) return r;
-      COP(reg)->cut.id = mid;
-      COP(reg)->cut.restore_pos = TRUE;
+      COP(reg)->cut_to_mark.id = mid;
+      COP(reg)->cut_to_mark.restore_pos = TRUE;
     }
     break;
 

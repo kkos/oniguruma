@@ -247,7 +247,7 @@ static OpInfoType OpInfo[] = {
   { OP_LOOK_BEHIND,           "look-behind"},
   { OP_LOOK_BEHIND_NOT_START, "look-behind-not-start"},
   { OP_LOOK_BEHIND_NOT_END,   "look-behind-not-end"},
-  { OP_CUT,                   "cut"},
+  { OP_CUT_TO_MARK,           "cut-to-mark"},
   { OP_MARK,                  "mark"},
   { OP_SAVE_VAL,              "save-val"},
   { OP_UPDATE_VAR,            "update-var"},
@@ -2646,7 +2646,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_LOOK_BEHIND,
   &&L_LOOK_BEHIND_NOT_START,
   &&L_LOOK_BEHIND_NOT_END,
-  &&L_CUT,
+  &&L_CUT_TO_MARK,
   &&L_MARK,
   &&L_SAVE_VAL,
   &&L_UPDATE_VAR,
@@ -3897,10 +3897,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       JUMP_OUT;
 #endif
 
-    CASE_OP(CUT)
-      mem  = p->mark.id; /* mem: mark id */
+    CASE_OP(CUT_TO_MARK)
+      mem  = p->cut_to_mark.id; /* mem: mark id */
       STACK_TO_VOID_TO_MARK(stkp, mem);
-      if (p->cut.restore_pos != 0) {
+      if (p->cut_to_mark.restore_pos != 0) {
         s     = stkp->u.val.v;
         sprev = stkp->u.val.v2;
       }
