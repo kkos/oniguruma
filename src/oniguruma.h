@@ -70,6 +70,10 @@ extern "C" {
 #define ONIG_EXTERN   extern
 #endif
 
+#ifndef ONIG_VARIADIC_FUNC_ATTR
+#define ONIG_VARIADIC_FUNC_ATTR
+#endif
+
 /* PART: character encoding */
 
 #ifndef ONIG_ESCAPE_UCHAR_COLLISION
@@ -778,7 +782,7 @@ int onig_initialize P_((OnigEncoding encodings[], int number_of_encodings));
 ONIG_EXTERN
 int onig_init P_((void));
 ONIG_EXTERN
-int onig_error_code_to_str PV_((OnigUChar* s, int err_code, ...));
+int ONIG_VARIADIC_FUNC_ATTR onig_error_code_to_str PV_((OnigUChar* s, int err_code, ...));
 ONIG_EXTERN
 int onig_is_error_code_needs_param PV_((int code));
 ONIG_EXTERN

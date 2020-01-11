@@ -277,7 +277,8 @@ onig_is_error_code_needs_param(int code)
 /* for ONIG_MAX_ERROR_MESSAGE_LEN */
 #define MAX_ERROR_PAR_LEN   30
 
-extern int onig_error_code_to_str(UChar* s, int code, ...)
+extern int ONIG_VARIADIC_FUNC_ATTR
+onig_error_code_to_str(UChar* s, int code, ...)
 {
   UChar *p, *q;
   OnigErrorInfo* einfo;
@@ -337,8 +338,9 @@ extern int onig_error_code_to_str(UChar* s, int code, ...)
 }
 
 
-void onig_snprintf_with_pattern(UChar buf[], int bufsize, OnigEncoding enc,
-                                UChar* pat, UChar* pat_end, const UChar *fmt, ...)
+void ONIG_VARIADIC_FUNC_ATTR
+onig_snprintf_with_pattern(UChar buf[], int bufsize, OnigEncoding enc,
+                           UChar* pat, UChar* pat_end, const UChar *fmt, ...)
 {
   int n, need, len;
   UChar *p, *s, *bp;
