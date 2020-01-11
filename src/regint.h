@@ -121,24 +121,56 @@
 #define onig_st_is_member              st_is_member
 
 
-#ifndef ONIGURUMA_SYS_UEFI
-
+#ifndef xmemset
 #define xmemset     memset
+#endif
+
+#ifndef xmemcpy
 #define xmemcpy     memcpy
+#endif
+
+#ifndef xmemmove
 #define xmemmove    memmove
+#endif
 
 #if defined(_WIN32) && !defined(__GNUC__)
+
+#ifndef xalloca
 #define xalloca     _alloca
+#endif
+#ifndef xvsnprintf
 #define xvsnprintf(buf,size,fmt,args)  _vsnprintf_s(buf,size,_TRUNCATE,fmt,args)
+#endif
+#ifndef xsnprintf
 #define xsnprintf   sprintf_s
+#endif
+#ifndef xstrcat
 #define xstrcat(dest,src,size)   strcat_s(dest,size,src)
+#endif
+
 #else
+
+#ifndef xalloca
 #define xalloca     alloca
+#endif
+#ifndef xvsnprintf
 #define xvsnprintf  vsnprintf
+#endif
+#ifndef xsnprintf
 #define xsnprintf   snprintf
+#endif
+#ifndef xstrcat
 #define xstrcat(dest,src,size)   strcat(dest,src)
 #endif
 
+#endif /* defined(_WIN32) && !defined(__GNUC__) */
+
+#ifdef ONIG_DEBUG
+# include <stdio.h>
+#endif
+
+
+#ifndef ONIGURUMA_SYS_UEFI
 
 #include <stddef.h>
 #include <limits.h>
@@ -167,10 +199,6 @@
 
 #ifdef __BORLANDC__
 #include <malloc.h>
-#endif
-
-#ifdef ONIG_DEBUG
-# include <stdio.h>
 #endif
 
 #ifdef _WIN32

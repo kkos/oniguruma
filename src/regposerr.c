@@ -45,17 +45,26 @@
 #  define ARG_UNUSED
 #endif
 
-#ifndef ONIGURUMA_SYS_UEFI
-
 #if defined(_WIN32) && !defined(__GNUC__)
+
+#ifndef xsnprintf
 #define xsnprintf   sprintf_s
+#endif
+#ifndef xstrncpy
 #define xstrncpy(dest,src,size)   strncpy_s(dest,size,src,_TRUNCATE)
+#endif
+
 #else
+
+#ifndef xsnprintf
 #define xsnprintf   snprintf
+#endif
+#ifndef xstrncpy
 #define xstrncpy    strncpy
 #endif
 
-#endif /* ONIGURUMA_SYS_UEFI */
+#endif
+
 
 static char* ESTRING[] = {
   NULL,
