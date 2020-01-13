@@ -545,6 +545,31 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
     break;
 #endif
 
+  case OP_POP_TO_MARK:
+    mem = p->pop_to_mark.id;
+    fprintf(f, ":%d", mem);
+    break;
+
+  case OP_CUT_TO_MARK:
+    {
+      int restore;
+
+      mem     = p->cut_to_mark.id;
+      restore = p->cut_to_mark.restore_pos;
+      fprintf(f, ":%d:%d", mem, restore);
+    }
+    break;
+
+  case OP_MARK:
+    {
+      int save;
+
+      mem  = p->mark.id;
+      save = p->mark.save_pos;
+      fprintf(f, ":%d:%d", mem, save);
+    }
+    break;
+
   case OP_SAVE_VAL:
     {
       SaveType type;
@@ -607,7 +632,6 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
   case OP_BACKREF2:
   case OP_FAIL:
   case OP_POP:
-  case OP_POP_TO_MARK:
   case OP_LOOK_BEHIND_NOT_END:
 #ifdef USE_CALL
   case OP_RETURN:
