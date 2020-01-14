@@ -145,6 +145,21 @@
 #endif /* USE_TIMEOFDAY */
 #endif /* ONIG_DEBUG_STATISTICS */
 
+/* I don't think these x....'s need to be included in ONIGURUMA_SYS_UEFI,
+   but they are required by Issue #170 and do so since there is no problem.
+ */
+#ifndef xmemset
+#define xmemset     memset
+#endif
+
+#ifndef xmemcpy
+#define xmemcpy     memcpy
+#endif
+
+#ifndef xmemmove
+#define xmemmove    memmove
+#endif
+
 #endif /* ONIGURUMA_SYS_UEFI */
 
 
@@ -197,18 +212,6 @@
 /* */
 #define onig_st_is_member              st_is_member
 
-
-#ifndef xmemset
-#define xmemset     memset
-#endif
-
-#ifndef xmemcpy
-#define xmemcpy     memcpy
-#endif
-
-#ifndef xmemmove
-#define xmemmove    memmove
-#endif
 
 #if defined(_WIN32) && !defined(__GNUC__)
 
