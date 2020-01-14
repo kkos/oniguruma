@@ -211,14 +211,13 @@ typedef unsigned int  uintptr_t;
 /* strend hash */
 typedef void hash_table_type;
 
-#ifdef _WIN32
-# include <windows.h>
-typedef ULONG_PTR hash_data_type;
-#else
-typedef unsigned long hash_data_type;
-#endif
-
 #endif /* ONIGURUMA_SYS_UEFI */
+
+#if SIZEOF_VOIDP == SIZEOF_LONG
+typedef unsigned long hash_data_type;
+#elif SIZEOF_VOIDP == SIZEOF_LONG_LONG
+typedef unsigned long long hash_data_type;
+#endif
 
 
 #ifdef MIN
