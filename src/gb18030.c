@@ -2,7 +2,7 @@
   gb18030.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2005-2019  KUBO Takehiro <kubo AT jiubao DOT org>
+ * Copyright (c) 2005-2020  KUBO Takehiro <kubo AT jiubao DOT org>
  *                          K.Kosako
  * All rights reserved.
  *
@@ -31,10 +31,20 @@
 #include "regenc.h"
 
 #if 1
+
 #define DEBUG_GB18030(arg)
+
 #else
-#include <stdio.h>
+
+#ifndef NEED_TO_INCLUDE_STDIO
+#define NEED_TO_INCLUDE_STDIO
+#endif
+
+/* for printf() */
+#include "regint.h"
+
 #define DEBUG_GB18030(arg) printf arg
+
 #endif
 
 enum {
