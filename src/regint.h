@@ -73,6 +73,7 @@
 #define USE_OP_PUSH_OR_JUMP_EXACT
 #define USE_QUANT_PEEK_NEXT
 #define USE_ST_LIBRARY
+#define USE_TIMEOFDAY
 
 #define USE_WORD_BEGIN_END        /* "\<", "\>" */
 #define USE_CAPTURE_HISTORY
@@ -123,6 +124,26 @@
 #if defined(ONIG_DEBUG) || defined(NEED_TO_INCLUDE_STDIO)
 # include <stdio.h>
 #endif
+
+#ifdef ONIG_DEBUG_STATISTICS
+
+#ifdef USE_TIMEOFDAY
+
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+#else
+
+#ifdef HAVE_SYS_TIMES_H
+#include <sys/times.h>
+#endif
+
+#endif /* USE_TIMEOFDAY */
+#endif /* ONIG_DEBUG_STATISTICS */
 
 #endif /* ONIGURUMA_SYS_UEFI */
 
