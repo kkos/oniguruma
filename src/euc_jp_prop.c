@@ -31,8 +31,7 @@
 
 #line 1 "euc_jp_prop.gperf"
 
-#include <string.h>
-#include "regenc.h"
+#include "regint.h"
 
 #define TOTAL_KEYWORDS 16
 #define MIN_WORD_LENGTH 4
@@ -89,50 +88,50 @@ onigenc_euc_jp_lookup_property_name (register const char *str, register size_t l
   static struct PropertyNameCtype wordlist[] =
     {
       {""}, {""}, {""}, {""},
-#line 23 "euc_jp_prop.gperf"
+#line 22 "euc_jp_prop.gperf"
       {"Word",     12},
-#line 12 "euc_jp_prop.gperf"
+#line 11 "euc_jp_prop.gperf"
       {"Alpha",     1},
       {""}, {""},
-#line 26 "euc_jp_prop.gperf"
+#line 25 "euc_jp_prop.gperf"
       {"Hiragana", 15},
       {""},
-#line 24 "euc_jp_prop.gperf"
+#line 23 "euc_jp_prop.gperf"
       {"Alnum",    13},
       {""}, {""},
-#line 27 "euc_jp_prop.gperf"
+#line 26 "euc_jp_prop.gperf"
       {"Katakana", 16},
       {""},
-#line 25 "euc_jp_prop.gperf"
+#line 24 "euc_jp_prop.gperf"
       {"ASCII",    14},
-#line 22 "euc_jp_prop.gperf"
+#line 21 "euc_jp_prop.gperf"
       {"XDigit",   11},
       {""}, {""}, {""},
-#line 14 "euc_jp_prop.gperf"
+#line 13 "euc_jp_prop.gperf"
       {"Cntrl",     3},
       {""}, {""},
-#line 13 "euc_jp_prop.gperf"
+#line 12 "euc_jp_prop.gperf"
       {"Blank",     2},
       {""},
-#line 19 "euc_jp_prop.gperf"
+#line 18 "euc_jp_prop.gperf"
       {"Punct",     8},
       {""}, {""}, {""}, {""},
-#line 18 "euc_jp_prop.gperf"
+#line 17 "euc_jp_prop.gperf"
       {"Print",     7},
       {""}, {""}, {""}, {""},
-#line 21 "euc_jp_prop.gperf"
+#line 20 "euc_jp_prop.gperf"
       {"Upper",    10},
       {""}, {""}, {""}, {""},
-#line 20 "euc_jp_prop.gperf"
+#line 19 "euc_jp_prop.gperf"
       {"Space",     9},
       {""}, {""}, {""}, {""},
-#line 17 "euc_jp_prop.gperf"
+#line 16 "euc_jp_prop.gperf"
       {"Lower",     6},
       {""}, {""}, {""}, {""},
-#line 16 "euc_jp_prop.gperf"
+#line 15 "euc_jp_prop.gperf"
       {"Graph",     5},
       {""}, {""}, {""}, {""},
-#line 15 "euc_jp_prop.gperf"
+#line 14 "euc_jp_prop.gperf"
       {"Digit",     4}
     };
 

@@ -31,8 +31,7 @@
 
 #line 1 "sjis_prop.gperf"
 
-#include <string.h>
-#include "regenc.h"
+#include "regint.h"
 
 #define TOTAL_KEYWORDS 16
 #define MIN_WORD_LENGTH 4
@@ -89,50 +88,50 @@ onigenc_sjis_lookup_property_name (register const char *str, register size_t len
   static struct PropertyNameCtype wordlist[] =
     {
       {""}, {""}, {""}, {""},
-#line 23 "sjis_prop.gperf"
+#line 22 "sjis_prop.gperf"
       {"Word",     12},
-#line 12 "sjis_prop.gperf"
+#line 11 "sjis_prop.gperf"
       {"Alpha",     1},
       {""}, {""},
-#line 26 "sjis_prop.gperf"
+#line 25 "sjis_prop.gperf"
       {"Hiragana", 15},
       {""},
-#line 24 "sjis_prop.gperf"
+#line 23 "sjis_prop.gperf"
       {"Alnum",    13},
       {""}, {""},
-#line 27 "sjis_prop.gperf"
+#line 26 "sjis_prop.gperf"
       {"Katakana", 16},
       {""},
-#line 25 "sjis_prop.gperf"
+#line 24 "sjis_prop.gperf"
       {"ASCII",    14},
-#line 22 "sjis_prop.gperf"
+#line 21 "sjis_prop.gperf"
       {"XDigit",   11},
       {""}, {""}, {""},
-#line 14 "sjis_prop.gperf"
+#line 13 "sjis_prop.gperf"
       {"Cntrl",     3},
       {""}, {""},
-#line 13 "sjis_prop.gperf"
+#line 12 "sjis_prop.gperf"
       {"Blank",     2},
       {""},
-#line 19 "sjis_prop.gperf"
+#line 18 "sjis_prop.gperf"
       {"Punct",     8},
       {""}, {""}, {""}, {""},
-#line 18 "sjis_prop.gperf"
+#line 17 "sjis_prop.gperf"
       {"Print",     7},
       {""}, {""}, {""}, {""},
-#line 21 "sjis_prop.gperf"
+#line 20 "sjis_prop.gperf"
       {"Upper",    10},
       {""}, {""}, {""}, {""},
-#line 20 "sjis_prop.gperf"
+#line 19 "sjis_prop.gperf"
       {"Space",     9},
       {""}, {""}, {""}, {""},
-#line 17 "sjis_prop.gperf"
+#line 16 "sjis_prop.gperf"
       {"Lower",     6},
       {""}, {""}, {""}, {""},
-#line 16 "sjis_prop.gperf"
+#line 15 "sjis_prop.gperf"
       {"Graph",     5},
       {""}, {""}, {""}, {""},
-#line 15 "sjis_prop.gperf"
+#line 14 "sjis_prop.gperf"
       {"Digit",     4}
     };
 
