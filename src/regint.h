@@ -201,9 +201,6 @@
 #include <malloc.h>
 #endif
 
-/* strend hash */
-typedef void hash_table_type;
-
 #endif /* ONIGURUMA_SYS_UEFI */
 
 
@@ -219,6 +216,9 @@ typedef unsigned long hash_data_type;
 #elif SIZEOF_VOIDP == SIZEOF_LONG_LONG
 typedef unsigned long long hash_data_type;
 #endif
+
+/* strend hash */
+typedef void* hash_table_type;
 
 
 #ifdef MIN
@@ -1034,9 +1034,9 @@ extern OnigCalloutFunc onig_get_callout_start_func(regex_t* reg, int callout_num
 #endif /* USE_CALLOUT */
 
 
-extern hash_table_type* onig_st_init_strend_table_with_size P_((int size));
-extern int onig_st_lookup_strend P_((hash_table_type* table, const UChar* str_key, const UChar* end_key, hash_data_type *value));
-extern int onig_st_insert_strend P_((hash_table_type* table, const UChar* str_key, const UChar* end_key, hash_data_type value));
+extern hash_table_type onig_st_init_strend_table_with_size P_((int size));
+extern int onig_st_lookup_strend P_((hash_table_type table, const UChar* str_key, const UChar* end_key, hash_data_type *value));
+extern int onig_st_insert_strend P_((hash_table_type table, const UChar* str_key, const UChar* end_key, hash_data_type value));
 
 typedef int (*ONIGENC_INIT_PROPERTY_LIST_FUNC_TYPE)(void);
 

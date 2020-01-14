@@ -488,7 +488,7 @@ str_end_hash(st_str_end_key* x)
   return (int) (val + (val >> 5));
 }
 
-extern hash_table_type*
+extern hash_table_type
 onig_st_init_strend_table_with_size(int size)
 {
   static struct st_hash_type hashType = {
@@ -496,12 +496,11 @@ onig_st_init_strend_table_with_size(int size)
     str_end_hash,
   };
 
-  return (hash_table_type* )
-           onig_st_init_table_with_size(&hashType, size);
+  return (hash_table_type )onig_st_init_table_with_size(&hashType, size);
 }
 
 extern int
-onig_st_lookup_strend(hash_table_type* table, const UChar* str_key,
+onig_st_lookup_strend(hash_table_type table, const UChar* str_key,
                       const UChar* end_key, hash_data_type *value)
 {
   st_str_end_key key;
@@ -513,7 +512,7 @@ onig_st_lookup_strend(hash_table_type* table, const UChar* str_key,
 }
 
 extern int
-onig_st_insert_strend(hash_table_type* table, const UChar* str_key,
+onig_st_insert_strend(hash_table_type table, const UChar* str_key,
                       const UChar* end_key, hash_data_type value)
 {
   st_str_end_key* key;
@@ -579,7 +578,7 @@ callout_name_table_hash(st_callout_name_key* x)
   return (int )(val + (val >> 5) + ((intptr_t )x->enc & 0xffff) + x->type);
 }
 
-extern hash_table_type*
+extern hash_table_type
 onig_st_init_callout_name_table_with_size(int size)
 {
   static struct st_hash_type hashType = {
@@ -587,12 +586,11 @@ onig_st_init_callout_name_table_with_size(int size)
     callout_name_table_hash,
   };
 
-  return (hash_table_type* )
-           onig_st_init_table_with_size(&hashType, size);
+  return (hash_table_type )onig_st_init_table_with_size(&hashType, size);
 }
 
 extern int
-onig_st_lookup_callout_name_table(hash_table_type* table,
+onig_st_lookup_callout_name_table(hash_table_type table,
                                   OnigEncoding enc,
                                   int type,
                                   const UChar* str_key,
@@ -610,7 +608,7 @@ onig_st_lookup_callout_name_table(hash_table_type* table,
 }
 
 static int
-st_insert_callout_name_table(hash_table_type* table,
+st_insert_callout_name_table(hash_table_type table,
                              OnigEncoding enc, int type,
                              UChar* str_key, UChar* end_key,
                              hash_data_type value)
