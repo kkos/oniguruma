@@ -1,6 +1,5 @@
 %{
-#include <string.h>
-#include "regenc.h"
+#include "regint.h"
 %}
 
 struct PropertyNameCtype {
