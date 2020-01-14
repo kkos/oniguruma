@@ -37,7 +37,10 @@
 #include "config.h"
 #include "onigposix.h"
 
+#ifndef ONIGURUMA_SYS_UEFI
 #include <string.h>
+#include <stdio.h>
+#endif
 
 #if defined(__GNUC__)
 #  define ARG_UNUSED  __attribute__ ((unused))
@@ -88,7 +91,6 @@ static char* ESTRING[] = {
   "invalid argument"                         /* REG_EONIG_BADARG   */
 };
 
-#include <stdio.h>
 
 
 extern size_t
