@@ -92,6 +92,7 @@
 #ifndef ONIGURUMA_SYS_UEFI
 
 #include <stddef.h>
+#include <stdarg.h>
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>

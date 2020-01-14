@@ -34,8 +34,6 @@
 
 #include "regint.h"
 
-#include <stdarg.h>
-
 extern UChar*
 onig_error_code_to_format(int code)
 {
