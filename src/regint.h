@@ -201,17 +201,18 @@
 #include <malloc.h>
 #endif
 
-#ifdef _WIN32
-#if defined(_MSC_VER) && (_MSC_VER < 1300)
-typedef int  intptr_t;
-typedef unsigned int  uintptr_t;
-#endif
-#endif
-
 /* strend hash */
 typedef void hash_table_type;
 
 #endif /* ONIGURUMA_SYS_UEFI */
+
+
+#ifdef _WIN32
+#if defined(_MSC_VER) && (_MSC_VER < 1300)
+typedef int           intptr_t;
+typedef unsigned int  uintptr_t;
+#endif
+#endif
 
 #if SIZEOF_VOIDP == SIZEOF_LONG
 typedef unsigned long hash_data_type;
