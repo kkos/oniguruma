@@ -27,7 +27,7 @@
  * SUCH DAMAGE.
  */
 
-#ifndef ONIG_UNSUPPORT_PRINT
+#ifndef ONIG_NO_PRINT
 #ifndef NEED_TO_INCLUDE_STDIO
 #define NEED_TO_INCLUDE_STDIO
 #endif
@@ -6247,7 +6247,7 @@ onig_builtin_cmp(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 }
 
 
-#ifndef ONIG_UNSUPPORT_PRINT
+#ifndef ONIG_NO_PRINT
 
 static FILE* OutFp;
 
@@ -6345,6 +6345,6 @@ onig_setup_builtin_monitors_by_ascii_encoded_name(void* fp /* FILE* */)
   return ONIG_NORMAL;
 }
 
-#endif /* ONIG_UNSUPPORT_PRINT */
+#endif /* ONIG_NO_PRINT */
 
 #endif /* USE_CALLOUT */
