@@ -57,6 +57,8 @@ AC_CHECK_HEADERS(sys/time.h unistd.h sys/times.h)
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_SIZEOF([int])
 AC_CHECK_SIZEOF([long])
+AC_CHECK_SIZEOF([long long])
+AC_CHECK_SIZEOF([void*])
 
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
