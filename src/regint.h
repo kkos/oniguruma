@@ -90,7 +90,7 @@
 
 #include "regenc.h"
 
-#ifndef ONIGURUMA_SYS_UEFI
+#ifndef ONIG_NO_STANDARD_C_HEADERS
 
 #include <stddef.h>
 #include <stdarg.h>
@@ -145,8 +145,9 @@
 #endif /* USE_TIMEOFDAY */
 #endif /* ONIG_DEBUG_STATISTICS */
 
-/* I don't think these x....'s need to be included in ONIGURUMA_SYS_UEFI,
-   but they are required by Issue #170 and do so since there is no problem.
+/* I don't think these x....'s need to be included in
+   ONIG_NO_STANDARD_C_HEADERS, but they are required by Issue #170
+   and do so since there is no problem.
  */
 #ifndef xmemset
 #define xmemset     memset
@@ -160,7 +161,7 @@
 #define xmemmove    memmove
 #endif
 
-#endif /* ONIGURUMA_SYS_UEFI */
+#endif /* ONIG_NO_STANDARD_C_HEADERS */
 
 
 #ifdef MIN

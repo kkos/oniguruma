@@ -35,7 +35,7 @@
 
 #include "config.h"
 
-#ifndef ONIGURUMA_SYS_UEFI
+#ifndef ONIG_NO_STANDARD_C_HEADERS
 #include <stddef.h>
 #endif
 

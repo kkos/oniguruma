@@ -37,7 +37,7 @@
 #include "config.h"
 #include "onigposix.h"
 
-#ifndef ONIGURUMA_SYS_UEFI
+#ifndef ONIG_NO_STANDARD_C_HEADERS
 #include <string.h>
 #include <stdio.h>
 #endif
