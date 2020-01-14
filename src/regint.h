@@ -81,15 +81,69 @@
 #define USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
 /* #define USE_REPEAT_AND_EMPTY_CHECK_LOCAL_VAR */
 
-
-#include "regenc.h"
-
 #define INIT_MATCH_STACK_SIZE                     160
 #define DEFAULT_MATCH_STACK_LIMIT_SIZE              0 /* unlimited */
 #define DEFAULT_RETRY_LIMIT_IN_MATCH         10000000
 #define DEFAULT_PARSE_DEPTH_LIMIT                4096
 
-/* */
+
+#include "regenc.h"
+
+#ifndef ONIGURUMA_SYS_UEFI
+
+#include <stddef.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+
+#if defined(HAVE_ALLOCA_H) && !defined(__GNUC__)
+#include <alloca.h>
+#endif
+
+#ifdef HAVE_SYS_TYPES_H
+#ifndef __BORLANDC__
+#include <sys/types.h>
+#endif
+#endif
+
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
+
+#ifdef __BORLANDC__
+#include <malloc.h>
+#endif
+
+#endif /* ONIGURUMA_SYS_UEFI */
+
+#ifdef ONIG_DEBUG
+# include <stdio.h>
+#endif
+
+#ifdef MIN
+#undef MIN
+#endif
+#ifdef MAX
+#undef MAX
+#endif
+
+#define MIN(a,b) (((a)>(b))?(b):(a))
+#define MAX(a,b) (((a)<(b))?(b):(a))
+
+#define IS_NULL(p)                    (((void*)(p)) == (void*)0)
+#define IS_NOT_NULL(p)                (((void*)(p)) != (void*)0)
+#define CHECK_NULL_RETURN(p)          if (IS_NULL(p)) return NULL
+#define CHECK_NULL_RETURN_MEMERR(p)   if (IS_NULL(p)) return ONIGERR_MEMORY
+#define NULL_UCHARP                   ((UChar* )0)
+
+#define CHAR_MAP_SIZE       256
+#define INFINITE_LEN        ONIG_INFINITE_DISTANCE
+
 /* escape other system UChar definition */
 #ifdef ONIG_ESCAPE_UCHAR_COLLISION
 #undef ONIG_ESCAPE_UCHAR_COLLISION
@@ -165,44 +219,6 @@
 
 #endif /* defined(_WIN32) && !defined(__GNUC__) */
 
-#ifdef ONIG_DEBUG
-# include <stdio.h>
-#endif
-
-
-#ifndef ONIGURUMA_SYS_UEFI
-
-#include <stddef.h>
-#include <limits.h>
-#include <stdlib.h>
-
-#ifdef HAVE_STDINT_H
-#include <stdint.h>
-#endif
-
-#if defined(HAVE_ALLOCA_H) && !defined(__GNUC__)
-#include <alloca.h>
-#endif
-
-#include <string.h>
-
-#include <ctype.h>
-#ifdef HAVE_SYS_TYPES_H
-#ifndef __BORLANDC__
-#include <sys/types.h>
-#endif
-#endif
-
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
-
-#ifdef __BORLANDC__
-#include <malloc.h>
-#endif
-
-#endif /* ONIGURUMA_SYS_UEFI */
-
 
 #ifdef _WIN32
 #if defined(_MSC_VER) && (_MSC_VER < 1300)
@@ -219,26 +235,6 @@ typedef unsigned long long hash_data_type;
 
 /* strend hash */
 typedef void* hash_table_type;
-
-
-#ifdef MIN
-#undef MIN
-#endif
-#ifdef MAX
-#undef MAX
-#endif
-
-#define MIN(a,b) (((a)>(b))?(b):(a))
-#define MAX(a,b) (((a)<(b))?(b):(a))
-
-#define IS_NULL(p)                    (((void*)(p)) == (void*)0)
-#define IS_NOT_NULL(p)                (((void*)(p)) != (void*)0)
-#define CHECK_NULL_RETURN(p)          if (IS_NULL(p)) return NULL
-#define CHECK_NULL_RETURN_MEMERR(p)   if (IS_NULL(p)) return ONIGERR_MEMORY
-#define NULL_UCHARP                   ((UChar* )0)
-
-#define CHAR_MAP_SIZE       256
-#define INFINITE_LEN        ONIG_INFINITE_DISTANCE
 
 
 #ifdef USE_CALLOUT
