@@ -2,7 +2,7 @@
   regerror.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2019  K.Kosako
+ * Copyright (c) 2002-2020  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,12 @@
  * SUCH DAMAGE.
  */
 
+#ifndef NEED_TO_INCLUDE_STDIO
+/* for vsnprintf() */
+#define NEED_TO_INCLUDE_STDIO
+#endif
+
 #include "regint.h"
-#include <stdio.h> /* for vsnprintf() */
 
 #include <stdarg.h>
 

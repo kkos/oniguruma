@@ -26,6 +26,13 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+
+#ifndef ONIGURUMA_UNSUPPORTED_PRINT
+#ifndef NEED_TO_INCLUDE_STDIO
+#define NEED_TO_INCLUDE_STDIO
+#endif
+#endif
+
 #include "regint.h"
 
 #define IS_MBC_WORD_ASCII_MODE(enc,s,end,mode) \
@@ -6249,8 +6256,6 @@ onig_builtin_cmp(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 
 
 #ifndef ONIGURUMA_UNSUPPORTED_PRINT
-
-#include <stdio.h>
 
 static FILE* OutFp;
 

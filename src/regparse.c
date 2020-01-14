@@ -27,12 +27,14 @@
  * SUCH DAMAGE.
  */
 
+#ifdef DEBUG_NODE_FREE
+#ifndef NEED_TO_INCLUDE_STDIO
+#define NEED_TO_INCLUDE_STDIO
+#endif
+#endif
+
 #include "regparse.h"
 #include "st.h"
-
-#ifdef DEBUG_NODE_FREE
-#include <stdio.h>
-#endif
 
 #define INIT_TAG_NAMES_ALLOC_NUM   5
 

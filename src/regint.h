@@ -119,11 +119,12 @@
 #include <malloc.h>
 #endif
 
-#endif /* ONIGURUMA_SYS_UEFI */
-
-#ifdef ONIG_DEBUG
+#if defined(ONIG_DEBUG) || defined(NEED_TO_INCLUDE_STDIO)
 # include <stdio.h>
 #endif
+
+#endif /* ONIGURUMA_SYS_UEFI */
+
 
 #ifdef MIN
 #undef MIN
