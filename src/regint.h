@@ -115,7 +115,7 @@
 #include <inttypes.h>
 #endif
 
-#ifdef __BORLANDC__
+#if defined(_WIN32) || defined(__BORLANDC__)
 #include <malloc.h>
 #endif
 

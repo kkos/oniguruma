@@ -9,10 +9,6 @@
 #include "regint.h"
 #include "st.h"
 
-#ifdef _WIN32
-#include <malloc.h>
-#endif
-
 
 typedef struct st_table_entry st_table_entry;
 
