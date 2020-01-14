@@ -155,6 +155,7 @@ $(BUILD_DIR)/unicode_fold1_key.obj: $(ONIG_DIR)/unicode_fold1_key.c $(ONIG_DIR)/
 $(BUILD_DIR)/unicode_fold2_key.obj: $(ONIG_DIR)/unicode_fold2_key.c $(ONIG_DIR)/regenc.h $(BUILD_DIR)/config.h
 $(BUILD_DIR)/unicode_fold3_key.obj: $(ONIG_DIR)/unicode_fold3_key.c $(ONIG_DIR)/regenc.h $(BUILD_DIR)/config.h
 
+all-test: test_syntax test_regset test_utf8 testc testp testu
 
 test_syntax: $(TEST_DIR)/test_syntax.c $(libname)
 	$(CC) -nologo /Fe:$@ /I. /I$(ONIG_DIR) /DONIG_EXTERN=extern /utf-8 $(TEST_DIR)/test_syntax.c $(libname)
