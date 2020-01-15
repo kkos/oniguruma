@@ -1,6 +1,6 @@
 /*
  * test_syntax.c
- * Copyright (c) 2019  K.Kosako
+ * Copyright (c) 2019-2020  K.Kosako
  */
 #include "config.h"
 #ifdef ONIG_ESCAPE_UCHAR_COLLISION
