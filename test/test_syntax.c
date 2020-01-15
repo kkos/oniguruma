@@ -177,6 +177,11 @@ static int test_look_behind()
   x2("(?<=a|b)c", "abc", 2, 3);
   x2("(?<=a|(.))\\1", "abcc", 3, 4);
 
+  // following is not match in Perl and Java
+  //x2("(?<=a|(.))\\1", "aa", 1, 2);
+
+  n("(?<!c|c)a", "ca");
+
   return 0;
 }
 
@@ -196,6 +201,7 @@ extern int main(int argc, char* argv[])
   test_isolated_option();
   test_prec_read();
   test_look_behind();
+  e("(?<=ab|(.))\\1", "abb", ONIGERR_INVALID_LOOK_BEHIND_PATTERN); // Variable length lookbehind not implemented in Perl 5.26.1
 
   x3("()", "abc", 0, 0, 1);
   e("(", "", ONIGERR_END_PATTERN_WITH_UNMATCHED_PARENTHESIS);
@@ -205,7 +211,9 @@ extern int main(int argc, char* argv[])
   Syntax = ONIG_SYNTAX_JAVA;
 
   test_isolated_option();
-
+  test_prec_read();
+  test_look_behind();
+  x2("(?<=ab|(.))\\1", "abb", 2, 3);
 
   fprintf(stdout,
        "\nRESULT   SUCC: %4d,  FAIL: %d,  ERROR: %d      (by Oniguruma %s)\n",
