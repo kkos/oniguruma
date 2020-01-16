@@ -189,7 +189,8 @@ typedef struct {
   struct _Node* body;
 
   int type;
-  OnigLen char_len;
+  OnigLen char_min_len;
+  OnigLen char_max_len;
   int ascii_mode;
 } AnchorNode;
 
