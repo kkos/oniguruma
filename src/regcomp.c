@@ -1915,7 +1915,7 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
     len = OPSIZE_PUSH + OPSIZE_MARK + tlen + OPSIZE_POP_TO_MARK + OPSIZE_POP + OPSIZE_FAIL;
     break;
   case ANCR_LOOK_BEHIND:
-    len = OPSIZE_LOOK_BEHIND + tlen;
+    len = OPSIZE_MARK + OPSIZE_STEP_BACK_START + tlen + OPSIZE_CUT_TO_MARK;
     break;
   case ANCR_LOOK_BEHIND_NOT:
     len = OPSIZE_LOOK_BEHIND_NOT_START + tlen + OPSIZE_LOOK_BEHIND_NOT_END;
@@ -1948,6 +1948,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
 {
   int r, len;
   enum OpCode op;
+  MemNumType mid;
 
   switch (node->type) {
   case ANCR_BEGIN_BUF:      r = add_op(reg, OP_BEGIN_BUF);      break;
@@ -2003,8 +2004,6 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
 
   case ANCR_PREC_READ:
     {
-      MemNumType mid;
-
       ID_ENTRY(env, mid);
       r = add_op(reg, OP_MARK);
       if (r != 0) return r;
@@ -2023,8 +2022,6 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
 
   case ANCR_PREC_READ_NOT:
     {
-      MemNumType mid;
-
       len = compile_length_tree(NODE_ANCHOR_BODY(node), reg);
       if (len < 0) return len;
 
@@ -2053,10 +2050,25 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     break;
 
   case ANCR_LOOK_BEHIND:
-    r = add_op(reg, OP_LOOK_BEHIND);
+    ID_ENTRY(env, mid);
+    r = add_op(reg, OP_MARK);
     if (r != 0) return r;
-    COP(reg)->look_behind.len = node->char_len;
+    COP(reg)->mark.id = mid;
+    COP(reg)->mark.save_pos = FALSE;
+
+    r = add_op(reg, OP_STEP_BACK_START);
+    if (r != 0) return r;
+    COP(reg)->step_back_start.initial   = node->char_len;
+    COP(reg)->step_back_start.remaining = 0;
+    COP(reg)->step_back_start.addr      = 1;
+
     r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
+    if (r != 0) return r;
+
+    r = add_op(reg, OP_CUT_TO_MARK);
+    if (r != 0) return r;
+    COP(reg)->cut_to_mark.id = mid;
+    COP(reg)->cut_to_mark.restore_pos = FALSE;
     break;
 
   case ANCR_LOOK_BEHIND_NOT:
