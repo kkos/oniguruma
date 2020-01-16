@@ -547,7 +547,7 @@ enum OpCode {
   OP_BEGIN_LINE,
   OP_END_LINE,
   OP_SEMI_END_BUF,
-  OP_BEGIN_POSITION,
+  OP_CHECK_POSITION,
   OP_BACKREF1,
   OP_BACKREF2,
   OP_BACKREF_N,
@@ -619,6 +619,11 @@ enum UpdateVarType {
   UPDATE_VAR_RIGHT_RANGE_FROM_STACK   = 2,
   UPDATE_VAR_RIGHT_RANGE_FROM_S_STACK = 3,
   UPDATE_VAR_RIGHT_RANGE_INIT         = 4,
+};
+
+enum CheckPositionType {
+  CHECK_POSITION_SEARCH_START = 0,
+  CHECK_POSITION_CURRENT_RIGHT_RANGE = 1,
 };
 
 enum TextSegmentBoundaryType {
@@ -792,6 +797,9 @@ typedef struct {
       enum TextSegmentBoundaryType type;
       int not;
     } text_segment_boundary;
+    struct {
+      enum CheckPositionType type;
+    } check_position;
     struct {
       union {
         MemNumType  n1; /* num == 1 */

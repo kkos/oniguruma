@@ -1955,7 +1955,11 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
   case ANCR_BEGIN_LINE:     r = add_op(reg, OP_BEGIN_LINE);     break;
   case ANCR_END_LINE:       r = add_op(reg, OP_END_LINE);       break;
   case ANCR_SEMI_END_BUF:   r = add_op(reg, OP_SEMI_END_BUF);   break;
-  case ANCR_BEGIN_POSITION: r = add_op(reg, OP_BEGIN_POSITION); break;
+  case ANCR_BEGIN_POSITION:
+    r = add_op(reg, OP_CHECK_POSITION);
+    if (r != 0) return r;
+    COP(reg)->check_position.type = CHECK_POSITION_SEARCH_START;
+    break;
 
   case ANCR_WORD_BOUNDARY:
     op = OP_WORD_BOUNDARY;
