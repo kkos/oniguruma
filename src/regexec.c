@@ -4055,6 +4055,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         get_save_val_type_last_id:
           STACK_GET_SAVE_VAL_TYPE_LAST_ID(save_type, mem, right_range);
           break;
+        case UPDATE_VAR_RIGHT_RANGE_TO_S:
+          right_range = s;
+          break;
         case UPDATE_VAR_RIGHT_RANGE_INIT:
           INIT_RIGHT_RANGE;
           break;
