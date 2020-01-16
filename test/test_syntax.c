@@ -214,6 +214,8 @@ extern int main(int argc, char* argv[])
   test_prec_read();
   test_look_behind();
   x2("(?<=ab|(.))\\1", "abb", 2, 3);
+  n("(?<!ab|b)c", "bbc");
+  n("(?<!b|ab)c", "bbc");
 
   fprintf(stdout,
        "\nRESULT   SUCC: %4d,  FAIL: %d,  ERROR: %d      (by Oniguruma %s)\n",
