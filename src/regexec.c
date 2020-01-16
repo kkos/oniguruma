@@ -4037,13 +4037,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         enum SaveType save_type;
 
         type = p->update_var.type;
-        mem  = p->update_var.id; /* mem: save id */
 
         switch ((enum UpdateVarType )type) {
         case UPDATE_VAR_KEEP_FROM_STACK_LAST:
           STACK_GET_SAVE_VAL_TYPE_LAST(SAVE_KEEP, keep);
           break;
         case UPDATE_VAR_S_FROM_STACK:
+          mem = p->update_var.id; /* mem: save id */
           STACK_GET_SAVE_VAL_TYPE_LAST_ID_WITH_SPREV(SAVE_S, mem, s);
           break;
         case UPDATE_VAR_RIGHT_RANGE_FROM_S_STACK:
@@ -4053,6 +4053,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         case UPDATE_VAR_RIGHT_RANGE_FROM_STACK:
           save_type = SAVE_RIGHT_RANGE;
         get_save_val_type_last_id:
+          mem = p->update_var.id; /* mem: save id */
           STACK_GET_SAVE_VAL_TYPE_LAST_ID(save_type, mem, right_range);
           break;
         case UPDATE_VAR_RIGHT_RANGE_TO_S:
