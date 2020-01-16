@@ -1918,7 +1918,7 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
     len = OPSIZE_MARK + OPSIZE_STEP_BACK_START + tlen + OPSIZE_CUT_TO_MARK;
     break;
   case ANCR_LOOK_BEHIND_NOT:
-    len = OPSIZE_LOOK_BEHIND_NOT_START + tlen + OPSIZE_LOOK_BEHIND_NOT_END;
+    len = OPSIZE_MARK + OPSIZE_PUSH + OPSIZE_STEP_BACK_START + tlen + OPSIZE_POP_TO_MARK + OPSIZE_FAIL + OPSIZE_POP;
     break;
 
   case ANCR_WORD_BOUNDARY:
@@ -2073,15 +2073,31 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
 
   case ANCR_LOOK_BEHIND_NOT:
     len = compile_length_tree(NODE_ANCHOR_BODY(node), reg);
-    r = add_op(reg, OP_LOOK_BEHIND_NOT_START);
+    ID_ENTRY(env, mid);
+    r = add_op(reg, OP_MARK);
     if (r != 0) return r;
+    COP(reg)->mark.id = mid;
+    COP(reg)->mark.save_pos = FALSE;
 
-    COP(reg)->look_behind_not_start.addr = SIZE_INC + len + OPSIZE_LOOK_BEHIND_NOT_END;
-    COP(reg)->look_behind_not_start.len = node->char_len;
+    r = add_op(reg, OP_PUSH);
+    if (r != 0) return r;
+    COP(reg)->push.addr = SIZE_INC + OPSIZE_STEP_BACK_START + len + OPSIZE_POP_TO_MARK + OPSIZE_FAIL;
+
+    r = add_op(reg, OP_STEP_BACK_START);
+    if (r != 0) return r;
+    COP(reg)->step_back_start.initial   = node->char_len;
+    COP(reg)->step_back_start.remaining = 0;
+    COP(reg)->step_back_start.addr      = 1;
 
     r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
     if (r != 0) return r;
-    r = add_op(reg, OP_LOOK_BEHIND_NOT_END);
+
+    r = add_op(reg, OP_POP_TO_MARK);
+    if (r != 0) return r;
+    COP(reg)->pop_to_mark.id = mid;
+    r = add_op(reg, OP_FAIL);
+    if (r != 0) return r;
+    r = add_op(reg, OP_POP);
     break;
 
   default:
