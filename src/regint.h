@@ -591,6 +591,7 @@ enum OpCode {
   OP_LOOK_BEHIND,           /* (?<=...) start (no needs end opcode) */
   OP_LOOK_BEHIND_NOT_START, /* (?<!...) start */
   OP_LOOK_BEHIND_NOT_END,   /* (?<!...) end   */
+  OP_STEP_BACK_START,
   OP_CUT_TO_MARK,
   OP_MARK,
   OP_SAVE_VAL,
@@ -686,6 +687,7 @@ typedef int ModeType;
 #define OPSIZE_LOOK_BEHIND_NOT_END     1
 #define OPSIZE_CALL                    1
 #define OPSIZE_RETURN                  1
+#define OPSIZE_STEP_BACK_START         1
 #define OPSIZE_CUT_TO_MARK             1
 #define OPSIZE_MARK                    1
 #define OPSIZE_SAVE_VAL                1
@@ -846,8 +848,10 @@ typedef struct {
       RelAddrType addr;
     } look_behind_not_start;
     struct {
-      AbsAddrType addr;
-    } call;
+      RepeatNumType initial;
+      RepeatNumType remaining;
+      RelAddrType addr;
+    } step_back_start;
     struct {
       MemNumType id;
       int restore_pos;  /* flag: restore current string position */
@@ -864,6 +868,9 @@ typedef struct {
       UpdateVarType type;
       MemNumType id;
     } update_var;
+    struct {
+      AbsAddrType addr;
+    } call;
 #ifdef USE_CALLOUT
     struct {
       MemNumType num;
