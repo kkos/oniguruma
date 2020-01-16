@@ -75,17 +75,17 @@
 #define USE_ST_LIBRARY
 #define USE_TIMEOFDAY
 
-#define USE_WORD_BEGIN_END        /* "\<", "\>" */
+#define USE_WORD_BEGIN_END   /* "\<", "\>" */
 #define USE_CAPTURE_HISTORY
 #define USE_VARIABLE_META_CHARS
 #define USE_POSIX_API_REGION_OPTION
 #define USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
 /* #define USE_REPEAT_AND_EMPTY_CHECK_LOCAL_VAR */
 
-#define INIT_MATCH_STACK_SIZE                     160
-#define DEFAULT_MATCH_STACK_LIMIT_SIZE              0 /* unlimited */
-#define DEFAULT_RETRY_LIMIT_IN_MATCH         10000000
-#define DEFAULT_PARSE_DEPTH_LIMIT                4096
+#define INIT_MATCH_STACK_SIZE                160
+#define DEFAULT_MATCH_STACK_LIMIT_SIZE         0 /* unlimited */
+#define DEFAULT_RETRY_LIMIT_IN_MATCH    10000000
+#define DEFAULT_PARSE_DEPTH_LIMIT           4096
 
 
 #include "regenc.h"
@@ -126,7 +126,6 @@
 #endif
 
 #ifdef ONIG_DEBUG_STATISTICS
-
 #ifdef USE_TIMEOFDAY
 
 #ifdef HAVE_SYS_TIME_H
@@ -136,7 +135,7 @@
 #include <unistd.h>
 #endif
 
-#else
+#else /* USE_TIMEOFDAY */
 
 #ifdef HAVE_SYS_TIMES_H
 #include <sys/times.h>
@@ -188,60 +187,60 @@
 #undef ONIG_ESCAPE_UCHAR_COLLISION
 #endif
 
-#define xmalloc     malloc
-#define xrealloc    realloc
-#define xcalloc     calloc
-#define xfree       free
+#define xmalloc    malloc
+#define xrealloc   realloc
+#define xcalloc    calloc
+#define xfree      free
 
-#define st_init_table                  onig_st_init_table
-#define st_init_table_with_size        onig_st_init_table_with_size
-#define st_init_numtable               onig_st_init_numtable
-#define st_init_numtable_with_size     onig_st_init_numtable_with_size
-#define st_init_strtable               onig_st_init_strtable
-#define st_init_strtable_with_size     onig_st_init_strtable_with_size
-#define st_delete                      onig_st_delete
-#define st_delete_safe                 onig_st_delete_safe
-#define st_insert                      onig_st_insert
-#define st_lookup                      onig_st_lookup
-#define st_foreach                     onig_st_foreach
-#define st_add_direct                  onig_st_add_direct
-#define st_free_table                  onig_st_free_table
-#define st_cleanup_safe                onig_st_cleanup_safe
-#define st_copy                        onig_st_copy
-#define st_nothing_key_clone           onig_st_nothing_key_clone
-#define st_nothing_key_free            onig_st_nothing_key_free
+#define st_init_table               onig_st_init_table
+#define st_init_table_with_size     onig_st_init_table_with_size
+#define st_init_numtable            onig_st_init_numtable
+#define st_init_numtable_with_size  onig_st_init_numtable_with_size
+#define st_init_strtable            onig_st_init_strtable
+#define st_init_strtable_with_size  onig_st_init_strtable_with_size
+#define st_delete                   onig_st_delete
+#define st_delete_safe              onig_st_delete_safe
+#define st_insert                   onig_st_insert
+#define st_lookup                   onig_st_lookup
+#define st_foreach                  onig_st_foreach
+#define st_add_direct               onig_st_add_direct
+#define st_free_table               onig_st_free_table
+#define st_cleanup_safe             onig_st_cleanup_safe
+#define st_copy                     onig_st_copy
+#define st_nothing_key_clone        onig_st_nothing_key_clone
+#define st_nothing_key_free         onig_st_nothing_key_free
 /* */
-#define onig_st_is_member              st_is_member
+#define onig_st_is_member           st_is_member
 
 
 #if defined(_WIN32) && !defined(__GNUC__)
 
 #ifndef xalloca
-#define xalloca     _alloca
+#define xalloca  _alloca
 #endif
 #ifndef xvsnprintf
 #define xvsnprintf(buf,size,fmt,args)  _vsnprintf_s(buf,size,_TRUNCATE,fmt,args)
 #endif
 #ifndef xsnprintf
-#define xsnprintf   sprintf_s
+#define xsnprintf  sprintf_s
 #endif
 #ifndef xstrcat
-#define xstrcat(dest,src,size)   strcat_s(dest,size,src)
+#define xstrcat(dest,src,size)  strcat_s(dest,size,src)
 #endif
 
 #else
 
 #ifndef xalloca
-#define xalloca     alloca
+#define xalloca  alloca
 #endif
 #ifndef xvsnprintf
 #define xvsnprintf  vsnprintf
 #endif
 #ifndef xsnprintf
-#define xsnprintf   snprintf
+#define xsnprintf  snprintf
 #endif
 #ifndef xstrcat
-#define xstrcat(dest,src,size)   strcat(dest,src)
+#define xstrcat(dest,src,size)  strcat(dest,src)
 #endif
 
 #endif /* defined(_WIN32) && !defined(__GNUC__) */
@@ -388,7 +387,7 @@ typedef uint32_t  Bits;
 typedef Bits      BitSet[BITSET_REAL_SIZE];
 typedef Bits*     BitSetRef;
 
-#define SIZE_BITSET        sizeof(BitSet)
+#define SIZE_BITSET  sizeof(BitSet)
 
 #define BITSET_CLEAR(bs) do {\
   int i;\
@@ -411,14 +410,6 @@ typedef struct _BBuf {
 } BBuf;
 
 #define BB_INIT(buf,size)    bbuf_init((BBuf* )(buf), (size))
-
-/*
-#define BB_SIZE_INC(buf,inc) do{\
-  (buf)->alloc += (inc);\
-  (buf)->p = (UChar* )xrealloc((buf)->p, (buf)->alloc);\
-  if (IS_NULL((buf)->p)) return(ONIGERR_MEMORY);\
-} while (0)
-*/
 
 #define BB_EXPAND(buf,low) do{\
   do { (buf)->alloc *= 2; } while ((buf)->alloc < (unsigned int )low);\
@@ -516,20 +507,20 @@ typedef struct _BBuf {
 
 /* operation code */
 enum OpCode {
-  OP_FINISH = 0,       /* matching process terminator (no more alternative) */
-  OP_END    = 1,       /* pattern code terminator (success end) */
-  OP_STR_1 = 2,        /* single byte, N = 1 */
-  OP_STR_2,            /* single byte, N = 2 */
-  OP_STR_3,            /* single byte, N = 3 */
-  OP_STR_4,            /* single byte, N = 4 */
-  OP_STR_5,            /* single byte, N = 5 */
-  OP_STR_N,            /* single byte */
-  OP_STR_MB2N1,        /* mb-length = 2 N = 1 */
-  OP_STR_MB2N2,        /* mb-length = 2 N = 2 */
-  OP_STR_MB2N3,        /* mb-length = 2 N = 3 */
-  OP_STR_MB2N,         /* mb-length = 2 */
-  OP_STR_MB3N,         /* mb-length = 3 */
-  OP_STR_MBN,          /* other length */
+  OP_FINISH = 0,  /* matching process terminator (no more alternative) */
+  OP_END    = 1,  /* pattern code terminator (success end) */
+  OP_STR_1 = 2,   /* single byte, N = 1 */
+  OP_STR_2,       /* single byte, N = 2 */
+  OP_STR_3,       /* single byte, N = 3 */
+  OP_STR_4,       /* single byte, N = 4 */
+  OP_STR_5,       /* single byte, N = 5 */
+  OP_STR_N,       /* single byte */
+  OP_STR_MB2N1,   /* mb-length = 2 N = 1 */
+  OP_STR_MB2N2,   /* mb-length = 2 N = 2 */
+  OP_STR_MB2N3,   /* mb-length = 2 N = 3 */
+  OP_STR_MB2N,    /* mb-length = 2 */
+  OP_STR_MB3N,    /* mb-length = 3 */
+  OP_STR_MBN,     /* other length */
   OP_CCLASS,
   OP_CCLASS_MB,
   OP_CCLASS_MIX,
@@ -958,6 +949,17 @@ struct re_pattern_buffer {
 
 
 extern void onig_add_end_call(void (*func)(void));
+extern void onig_warning(const char* s);
+extern UChar* onig_error_code_to_format P_((int code));
+extern void ONIG_VARIADIC_FUNC_ATTR onig_snprintf_with_pattern PV_((UChar buf[], int bufsize, OnigEncoding enc, UChar* pat, UChar* pat_end, const UChar *fmt, ...));
+extern int onig_compile P_((regex_t* reg, const UChar* pattern, const UChar* pattern_end, OnigErrorInfo* einfo));
+extern int onig_is_code_in_cc_len P_((int enclen, OnigCodePoint code, void* /* CClassNode* */ cc));
+extern RegexExt* onig_get_regex_ext(regex_t* reg);
+extern int onig_ext_set_pattern(regex_t* reg, const UChar* pattern, const UChar* pattern_end);
+extern int onig_positive_int_multiply(int x, int y);
+extern hash_table_type onig_st_init_strend_table_with_size P_((int size));
+extern int onig_st_lookup_strend P_((hash_table_type table, const UChar* str_key, const UChar* end_key, hash_data_type *value));
+extern int onig_st_insert_strend P_((hash_table_type table, const UChar* str_key, const UChar* end_key, hash_data_type value));
 
 #ifdef ONIG_DEBUG
 
@@ -969,16 +971,8 @@ extern void onig_print_compiled_byte_code_list(FILE* f, regex_t* reg);
 extern void onig_statistics_init P_((void));
 extern int  onig_print_statistics P_((FILE* f));
 #endif
-#endif
 
-extern void   onig_warning(const char* s);
-extern UChar* onig_error_code_to_format P_((int code));
-extern void ONIG_VARIADIC_FUNC_ATTR onig_snprintf_with_pattern PV_((UChar buf[], int bufsize, OnigEncoding enc, UChar* pat, UChar* pat_end, const UChar *fmt, ...));
-extern int    onig_compile P_((regex_t* reg, const UChar* pattern, const UChar* pattern_end, OnigErrorInfo* einfo));
-extern int    onig_is_code_in_cc_len P_((int enclen, OnigCodePoint code, void* /* CClassNode* */ cc));
-extern RegexExt* onig_get_regex_ext(regex_t* reg);
-extern int    onig_ext_set_pattern(regex_t* reg, const UChar* pattern, const UChar* pattern_end);
-extern int    onig_positive_int_multiply(int x, int y);
+#endif /* ONIG_DEBUG */
 
 #ifdef USE_CALLOUT
 
@@ -1056,10 +1050,6 @@ extern OnigCalloutFunc onig_get_callout_start_func(regex_t* reg, int callout_num
 
 #endif /* USE_CALLOUT */
 
-
-extern hash_table_type onig_st_init_strend_table_with_size P_((int size));
-extern int onig_st_lookup_strend P_((hash_table_type table, const UChar* str_key, const UChar* end_key, hash_data_type *value));
-extern int onig_st_insert_strend P_((hash_table_type table, const UChar* str_key, const UChar* end_key, hash_data_type value));
 
 typedef int (*ONIGENC_INIT_PROPERTY_LIST_FUNC_TYPE)(void);
 
