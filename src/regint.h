@@ -592,6 +592,7 @@ enum OpCode {
   OP_LOOK_BEHIND_NOT_START, /* (?<!...) start */
   OP_LOOK_BEHIND_NOT_END,   /* (?<!...) end   */
   OP_STEP_BACK_START,
+  OP_STEP_BACK_NEXT,
   OP_CUT_TO_MARK,
   OP_MARK,
   OP_SAVE_VAL,
@@ -688,6 +689,7 @@ typedef int ModeType;
 #define OPSIZE_CALL                    1
 #define OPSIZE_RETURN                  1
 #define OPSIZE_STEP_BACK_START         1
+#define OPSIZE_STEP_BACK_NEXT          1
 #define OPSIZE_CUT_TO_MARK             1
 #define OPSIZE_MARK                    1
 #define OPSIZE_SAVE_VAL                1
