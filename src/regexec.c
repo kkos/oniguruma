@@ -255,6 +255,7 @@ static OpInfoType OpInfo[] = {
   { OP_LOOK_BEHIND_NOT_START, "look-behind-not-start"},
   { OP_LOOK_BEHIND_NOT_END,   "look-behind-not-end"},
   { OP_STEP_BACK_START,       "step-back-start"},
+  { OP_STEP_BACK_NEXT,        "step-back-next"},
   { OP_CUT_TO_MARK,           "cut-to-mark"},
   { OP_MARK,                  "mark"},
   { OP_SAVE_VAL,              "save-val"},
@@ -649,6 +650,7 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
   case OP_FAIL:
   case OP_POP:
   case OP_LOOK_BEHIND_NOT_END:
+  case OP_STEP_BACK_NEXT:
 #ifdef USE_CALL
   case OP_RETURN:
 #endif
@@ -2690,6 +2692,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_LOOK_BEHIND_NOT_START,
   &&L_LOOK_BEHIND_NOT_END,
   &&L_STEP_BACK_START,
+  &&L_STEP_BACK_NEXT,
   &&L_CUT_TO_MARK,
   &&L_MARK,
   &&L_SAVE_VAL,
@@ -3954,6 +3957,18 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       }
       else
         INC_OP;
+      JUMP_OUT;
+
+    CASE_OP(STEP_BACK_NEXT)
+      tlen = stk->zid; /* remaining count */
+      if (! IS_INFINITE_REPEAT(tlen)) tlen--;
+      s = (UChar* )ONIGENC_STEP_BACK(encode, str, s, 1);
+      if (IS_NULL(s)) goto fail;
+      sprev = (UChar* )onigenc_get_prev_char_head(encode, str, s);
+      if (tlen != 0) {
+        STACK_PUSH_ALT_WITH_ZID(p, s, sprev, tlen);
+      }
+      INC_OP;
       JUMP_OUT;
 
     CASE_OP(CUT_TO_MARK)
