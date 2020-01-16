@@ -254,6 +254,7 @@ static OpInfoType OpInfo[] = {
   { OP_LOOK_BEHIND,           "look-behind"},
   { OP_LOOK_BEHIND_NOT_START, "look-behind-not-start"},
   { OP_LOOK_BEHIND_NOT_END,   "look-behind-not-end"},
+  { OP_STEP_BACK_START,       "step-back-start"},
   { OP_CUT_TO_MARK,           "cut-to-mark"},
   { OP_MARK,                  "mark"},
   { OP_SAVE_VAL,              "save-val"},
@@ -551,6 +552,14 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
     fprintf(f, ":{/%d}", addr);
     break;
 #endif
+
+  case OP_STEP_BACK_START:
+    addr = p->step_back_start.addr;
+    fprintf(f, ":%d:%d:",
+            p->step_back_start.initial,
+            p->step_back_start.remaining);
+    p_rel_addr(f, addr, p, start);
+    break;
 
   case OP_POP_TO_MARK:
     mem = p->pop_to_mark.id;
@@ -1594,6 +1603,15 @@ stack_double(int is_alloca, char** arg_alloc_base,
   STACK_INC;\
 } while(0)
 
+#define STACK_PUSH_WITH_ZID(stack_type,pat,s,sprev,id) do {\
+  STACK_ENSURE(1);\
+  stk->type = (stack_type);\
+  stk->u.state.pcode     = (pat);\
+  stk->u.state.pstr      = (s);\
+  stk->u.state.pstr_prev = (sprev);\
+  STACK_INC;\
+} while(0)
+
 #define STACK_PUSH_ENSURED(stack_type,pat) do {\
   stk->type = (stack_type);\
   stk->u.state.pcode = (pat);\
@@ -1620,6 +1638,8 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_SUPER_ALT(pat,s,sprev) STACK_PUSH(STK_SUPER_ALT,pat,s,sprev)
 #define STACK_PUSH_ALT_LOOK_BEHIND_NOT(pat,s,sprev) \
   STACK_PUSH(STK_ALT_LOOK_BEHIND_NOT,pat,s,sprev)
+#define STACK_PUSH_ALT_WITH_ZID(pat,s,sprev,id) \
+  STACK_PUSH_WITH_ZID(STK_ALT,pat,s,sprev,id)
 
 #if 0
 #define STACK_PUSH_REPEAT(sid, pat) do {\
@@ -2669,6 +2689,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_LOOK_BEHIND,
   &&L_LOOK_BEHIND_NOT_START,
   &&L_LOOK_BEHIND_NOT_END,
+  &&L_STEP_BACK_START,
   &&L_CUT_TO_MARK,
   &&L_MARK,
   &&L_SAVE_VAL,
@@ -3919,6 +3940,21 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       STACK_PUSH_RETURN;
       JUMP_OUT;
 #endif
+
+    CASE_OP(STEP_BACK_START)
+      tlen = p->step_back_start.initial;
+      if (tlen != 0) {
+        s = (UChar* )ONIGENC_STEP_BACK(encode, str, s, (int )tlen);
+        if (IS_NULL(s)) goto fail;
+        sprev = (UChar* )onigenc_get_prev_char_head(encode, str, s);
+      }
+      if (p->step_back_start.remaining != 0) {
+        STACK_PUSH_ALT_WITH_ZID(p + 1, s, sprev, p->step_back_start.remaining);
+        p += p->step_back_start.addr;
+      }
+      else
+        INC_OP;
+      JUMP_OUT;
 
     CASE_OP(CUT_TO_MARK)
       mem  = p->cut_to_mark.id; /* mem: mark id */
