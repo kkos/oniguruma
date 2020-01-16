@@ -2058,7 +2058,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
 
     r = add_op(reg, OP_STEP_BACK_START);
     if (r != 0) return r;
-    COP(reg)->step_back_start.initial   = node->char_len;
+    COP(reg)->step_back_start.initial   = node->char_min_len;
     COP(reg)->step_back_start.remaining = 0;
     COP(reg)->step_back_start.addr      = 1;
 
@@ -2085,7 +2085,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
 
     r = add_op(reg, OP_STEP_BACK_START);
     if (r != 0) return r;
-    COP(reg)->step_back_start.initial   = node->char_len;
+    COP(reg)->step_back_start.initial   = node->char_min_len;
     COP(reg)->step_back_start.remaining = 0;
     COP(reg)->step_back_start.addr      = 1;
 
@@ -4145,11 +4145,12 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
         r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
     }
     else { /* CHAR_LEN_NORMAL */
-      if (mml_fixed(&ci)) {
-        an->char_len = ci.min;
+      if (ci.min == INFINITE_LEN) {
+        r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
       }
       else {
-        r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
+        an->char_min_len = ci.min;
+        an->char_max_len = ci.max;
       }
     }
   }

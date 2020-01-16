@@ -2312,7 +2312,8 @@ node_new_anchor(int type)
 
   NODE_SET_TYPE(node, NODE_ANCHOR);
   ANCHOR_(node)->type       = type;
-  ANCHOR_(node)->char_len   = INFINITE_LEN;
+  ANCHOR_(node)->char_min_len = 0;
+  ANCHOR_(node)->char_max_len = INFINITE_LEN;
   ANCHOR_(node)->ascii_mode = 0;
   return node;
 }
