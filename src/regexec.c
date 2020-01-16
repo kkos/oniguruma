@@ -210,7 +210,7 @@ static OpInfoType OpInfo[] = {
   { OP_BEGIN_LINE,            "begin-line"},
   { OP_END_LINE,              "end-line"},
   { OP_SEMI_END_BUF,          "semi-end-buf"},
-  { OP_BEGIN_POSITION,        "begin-position"},
+  { OP_CHECK_POSITION,        "check-position"},
   { OP_BACKREF1,              "backref1"},
   { OP_BACKREF2,              "backref2"},
   { OP_BACKREF_N,             "backref-n"},
@@ -629,6 +629,17 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
       fprintf(f, ":not");
     break;
 
+  case OP_CHECK_POSITION:
+    switch (p->check_position.type) {
+    case CHECK_POSITION_SEARCH_START:
+      fprintf(f, ":search-start"); break;
+    case CHECK_POSITION_CURRENT_RIGHT_RANGE:
+      fprintf(f, ":current-right-range"); break;
+    default:
+      break;
+    };
+    break;
+
   case OP_FINISH:
   case OP_END:
   case OP_ANYCHAR:
@@ -644,7 +655,6 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
   case OP_BEGIN_LINE:
   case OP_END_LINE:
   case OP_SEMI_END_BUF:
-  case OP_BEGIN_POSITION:
   case OP_BACKREF1:
   case OP_BACKREF2:
   case OP_FAIL:
@@ -2647,7 +2657,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_BEGIN_LINE,
   &&L_END_LINE,
   &&L_SEMI_END_BUF,
-  &&L_BEGIN_POSITION,
+  &&L_CHECK_POSITION,
   &&L_BACKREF1,
   &&L_BACKREF2,
   &&L_BACKREF_N,
@@ -3445,10 +3455,17 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
       goto fail;
 
-    CASE_OP(BEGIN_POSITION)
-      if (s != msa->start)
-        goto fail;
-
+    CASE_OP(CHECK_POSITION)
+      switch (p->check_position.type) {
+      case CHECK_POSITION_SEARCH_START:
+        if (s != msa->start) goto fail;
+        break;
+      case CHECK_POSITION_CURRENT_RIGHT_RANGE:
+        if (s != right_range) goto fail;
+        break;
+      default:
+        break;
+      }
       INC_OP;
       JUMP_OUT;
 
