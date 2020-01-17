@@ -4324,8 +4324,14 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
         r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
       }
       else {
-        an->char_min_len = ci.min;
-        an->char_max_len = ci.max;
+        if (ci.min != ci.max &&
+            ! IS_SYNTAX_BV(env->syntax, ONIG_SYN_VARIABLE_LEN_LOOK_BEHIND)) {
+          r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
+        }
+        else {
+          an->char_min_len = ci.min;
+          an->char_max_len = ci.max;
+        }
       }
     }
   }
