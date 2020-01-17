@@ -2,7 +2,7 @@
   regsyntax.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2019  K.Kosako
+ * Copyright (c) 2002-2020  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -153,7 +153,8 @@ OnigSyntaxType OnigSyntaxJava = {
       ONIG_SYN_OP2_ESC_V_VTAB | ONIG_SYN_OP2_ESC_U_HEX4 |
       ONIG_SYN_OP2_ESC_P_BRACE_CHAR_PROPERTY )
   , ( SYN_GNU_REGEX_BV | ONIG_SYN_ISOLATED_OPTION_CONTINUE_BRANCH |
-      ONIG_SYN_DIFFERENT_LEN_ALT_LOOK_BEHIND )
+      ONIG_SYN_DIFFERENT_LEN_ALT_LOOK_BEHIND |
+      ONIG_SYN_VARIABLE_LEN_LOOK_BEHIND )
   , ONIG_OPTION_SINGLELINE
   ,
   {
