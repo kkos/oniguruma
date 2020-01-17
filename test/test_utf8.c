@@ -1233,6 +1233,12 @@ extern int main(int argc, char* argv[])
   x2("(.{1,4})(.{1,4})(?<=\\2\\1)", "ababab", 0, 6);
   n("(.{1,4})(.{1,4})(?<=\\2\\1)", "abcdabce");
   x2("(.{1,4})(.{1,4})(?<=\\2\\1)", "abcdabceabce", 4, 12);
+  x2("(?<=(?<=abc))def", "abcdef", 3, 6);
+  x2("(?<=ab(?<=.+b)c)def", "abcdef", 3, 6);
+  n("(?<=ab(?<=a+)c)def", "abcdef");
+  n("(?<=abc)(?<!abc)def", "abcdef");
+  n("(?<!ab.)(?<=.bc)def", "abcdef");
+  x2("(?<!ab.)(?<=.bc)def", "abcdefcbcdef", 9, 12);
   n("(?<!abc)def", "abcdef");
   n("(?<!xxx|abc)def", "abcdef");
   n("(?<!xxxxx|abc)def", "abcdef");
