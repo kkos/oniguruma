@@ -2048,6 +2048,50 @@ compile_anchor_look_behind_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
 }
 
 static int
+compile_anchor_look_behind_not_node(AnchorNode* node, regex_t* reg,
+                                    ScanEnv* env)
+{
+  int r;
+  int len;
+
+  if (node->char_min_len == node->char_max_len) {
+    MemNumType mid;
+
+    len = compile_length_tree(NODE_ANCHOR_BODY(node), reg);
+    ID_ENTRY(env, mid);
+    r = add_op(reg, OP_MARK);
+    if (r != 0) return r;
+    COP(reg)->mark.id = mid;
+    COP(reg)->mark.save_pos = FALSE;
+
+    r = add_op(reg, OP_PUSH);
+    if (r != 0) return r;
+    COP(reg)->push.addr = SIZE_INC + OPSIZE_STEP_BACK_START + len + OPSIZE_POP_TO_MARK + OPSIZE_FAIL;
+
+    r = add_op(reg, OP_STEP_BACK_START);
+    if (r != 0) return r;
+    COP(reg)->step_back_start.initial   = node->char_min_len;
+    COP(reg)->step_back_start.remaining = 0;
+    COP(reg)->step_back_start.addr      = 1;
+
+    r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
+    if (r != 0) return r;
+
+    r = add_op(reg, OP_POP_TO_MARK);
+    if (r != 0) return r;
+    COP(reg)->pop_to_mark.id = mid;
+    r = add_op(reg, OP_FAIL);
+    if (r != 0) return r;
+    r = add_op(reg, OP_POP);
+  }
+  else {
+
+  }
+
+  return r;
+}
+
+static int
 compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
 {
   int r, len;
@@ -2158,32 +2202,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     break;
 
   case ANCR_LOOK_BEHIND_NOT:
-    len = compile_length_tree(NODE_ANCHOR_BODY(node), reg);
-    ID_ENTRY(env, mid);
-    r = add_op(reg, OP_MARK);
-    if (r != 0) return r;
-    COP(reg)->mark.id = mid;
-    COP(reg)->mark.save_pos = FALSE;
-
-    r = add_op(reg, OP_PUSH);
-    if (r != 0) return r;
-    COP(reg)->push.addr = SIZE_INC + OPSIZE_STEP_BACK_START + len + OPSIZE_POP_TO_MARK + OPSIZE_FAIL;
-
-    r = add_op(reg, OP_STEP_BACK_START);
-    if (r != 0) return r;
-    COP(reg)->step_back_start.initial   = node->char_min_len;
-    COP(reg)->step_back_start.remaining = 0;
-    COP(reg)->step_back_start.addr      = 1;
-
-    r = compile_tree(NODE_ANCHOR_BODY(node), reg, env);
-    if (r != 0) return r;
-
-    r = add_op(reg, OP_POP_TO_MARK);
-    if (r != 0) return r;
-    COP(reg)->pop_to_mark.id = mid;
-    r = add_op(reg, OP_FAIL);
-    if (r != 0) return r;
-    r = add_op(reg, OP_POP);
+    r = compile_anchor_look_behind_not_node(node, reg, env);
     break;
 
   default:
