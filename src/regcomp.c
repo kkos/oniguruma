@@ -4316,10 +4316,13 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
         if (r == 0)
           r = tune_tree(node, reg, state, env);
       }
+      else if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_VARIABLE_LEN_LOOK_BEHIND))
+        goto normal;
       else
         r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
     }
     else { /* CHAR_LEN_NORMAL */
+    normal:
       if (ci.min == INFINITE_LEN) {
         r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
       }
