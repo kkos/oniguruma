@@ -692,6 +692,7 @@ typedef int ModeType;
 #define OPSIZE_LOOK_BEHIND             1
 #define OPSIZE_LOOK_BEHIND_NOT_START   1
 #define OPSIZE_LOOK_BEHIND_NOT_END     1
+#define OPSIZE_CHECK_POSITION          1
 #define OPSIZE_CALL                    1
 #define OPSIZE_RETURN                  1
 #define OPSIZE_STEP_BACK_START         1
