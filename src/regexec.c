@@ -3977,13 +3977,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       JUMP_OUT;
 
     CASE_OP(STEP_BACK_NEXT)
-      tlen = stk->zid; /* remaining count */
-      if (! IS_INFINITE_REPEAT(tlen)) tlen--;
+      tlen = (LengthType )stk->zid; /* remaining count */
+      if (tlen != INFINITE_LEN) tlen--;
       s = (UChar* )ONIGENC_STEP_BACK(encode, str, s, 1);
       if (IS_NULL(s)) goto fail;
       sprev = (UChar* )onigenc_get_prev_char_head(encode, str, s);
       if (tlen != 0) {
-        STACK_PUSH_ALT_WITH_ZID(p, s, sprev, tlen);
+        STACK_PUSH_ALT_WITH_ZID(p, s, sprev, (int )tlen);
       }
       INC_OP;
       JUMP_OUT;
