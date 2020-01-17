@@ -1618,6 +1618,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_PUSH_WITH_ZID(stack_type,pat,s,sprev,id) do {\
   STACK_ENSURE(1);\
   stk->type = (stack_type);\
+  stk->zid  = (int )(id);\
   stk->u.state.pcode     = (pat);\
   stk->u.state.pstr      = (s);\
   stk->u.state.pstr_prev = (sprev);\
