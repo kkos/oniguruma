@@ -2079,7 +2079,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
 static int
 compile_gimmick_node(GimmickNode* node, regex_t* reg)
 {
-  int r;
+  int r = 0;
 
   switch (node->type) {
   case GIMMICK_FAIL:
