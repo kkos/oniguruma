@@ -4287,6 +4287,49 @@ divide_look_behind_alternatives(Node* node)
   return 0;
 }
 
+static int
+quant_reduce_in_look_behind(Node* node)
+{
+  NodeType type;
+  Node* body;
+
+  if (NODE_TYPE(node) != NODE_QUANT) return 0;
+
+  body = NODE_BODY(node);
+  type = NODE_TYPE(body);
+  if (type == NODE_STRING || type == NODE_CTYPE ||
+      type == NODE_CCLASS || type == NODE_BACKREF) {
+    QuantNode* qn = QUANT_(node);
+    qn->upper = qn->lower;
+  }
+
+  return 0;
+}
+
+static int
+tree_reduce_in_look_behind(Node* node, regex_t* reg, ScanEnv* env)
+{
+  int r;
+
+  switch (NODE_TYPE(node)) {
+  case NODE_QUANT:
+    r = quant_reduce_in_look_behind(node);
+    break;
+
+  case NODE_ALT:
+    do {
+      r = quant_reduce_in_look_behind(NODE_CAR(node));
+    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
+    break;
+
+  default:
+    r = 0;
+    break;
+  }
+
+  return r;
+}
+
 static int tune_tree(Node* node, regex_t* reg, int state, ScanEnv* env);
 
 static int
@@ -4306,6 +4349,9 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
      Because case-fold expansion must be done before node_char_len().
    */
   r = tune_tree(NODE_ANCHOR_BODY(an), reg, state1, env);
+  if (r != 0) return r;
+
+  r = tree_reduce_in_look_behind(NODE_ANCHOR_BODY(an), reg, env);
   if (r != 0) return r;
 
   r = node_char_len(NODE_ANCHOR_BODY(an), reg, &ci, env);
