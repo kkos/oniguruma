@@ -336,6 +336,7 @@ typedef struct {
 #define NODE_ST_IGNORECASE          (1<<21)
 #define NODE_ST_MULTILINE           (1<<22)
 #define NODE_ST_TEXT_SEGMENT_WORD   (1<<23)
+#define NODE_ST_ABSENT_WITH_SIDE_EFFECTS (1<<24)  /* stopper or clear */
 
 
 #define NODE_STATUS(node)           (((Node* )node)->u.base.status)
@@ -369,6 +370,7 @@ typedef struct {
 #define NODE_IS_IGNORECASE(node)      ((NODE_STATUS(node) & NODE_ST_IGNORECASE) != 0)
 #define NODE_IS_MULTILINE(node)       ((NODE_STATUS(node) & NODE_ST_MULTILINE) != 0)
 #define NODE_IS_TEXT_SEGMENT_WORD(node)  ((NODE_STATUS(node) & NODE_ST_TEXT_SEGMENT_WORD) != 0)
+#define NODE_IS_ABSENT_WITH_SIDE_EFFECTS(node)  ((NODE_STATUS(node) & NODE_ST_ABSENT_WITH_SIDE_EFFECTS) != 0)
 
 #define NODE_PARENT(node)         ((node)->u.base.parent)
 #define NODE_BODY(node)           ((node)->u.base.body)
