@@ -629,10 +629,7 @@ mmcl_add(MinMaxCharLen* to, MinMaxCharLen* add)
   to->min = distance_add(to->min, add->min);
   to->max = distance_add(to->max, add->max);
 
-  if (add->min_is_sure != 0 && to->min_is_sure != 0)
-    to->min_is_sure = TRUE;
-  else
-    to->min_is_sure = FALSE;
+  to->min_is_sure = add->min_is_sure != 0 && to->min_is_sure != 0;
 }
 
 static void
@@ -646,6 +643,7 @@ static void
 mmcl_repeat_range_multiply(MinMaxCharLen* to, int mlow, int mhigh)
 {
   to->min = distance_multiply(to->min, mlow);
+
   if (IS_INFINITE_REPEAT(mhigh))
     to->max = INFINITE_LEN;
   else
@@ -660,11 +658,9 @@ mmcl_alt_merge(MinMaxCharLen* to, MinMaxCharLen* alt)
     if (alt->min_is_sure != 0)
       to->min_is_sure = TRUE;
   }
+
   if (to->max < alt->max) to->max = alt->max;
 }
-
-
-
 
 static int
 mml_is_equal(MinMaxLen* a, MinMaxLen* b)
