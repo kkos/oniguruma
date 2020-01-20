@@ -1233,6 +1233,12 @@ extern int main(int argc, char* argv[])
   x2("(.{1,4})(.{1,4})(?<=\\2\\1)", "ababab", 0, 6);
   n("(.{1,4})(.{1,4})(?<=\\2\\1)", "abcdabce");
   x2("(.{1,4})(.{1,4})(?<=\\2\\1)", "abcdabceabce", 4, 12);
+  x2("(?<=a)", "a", 1, 1);
+  x2("(?<=(?>abc))", "abc", 3, 3);
+  x2("(?<=a\\Xz)", "abz", 3, 3);
+  e("(?<=(?~|zoo)a.*z)", "abcdefz", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
+  e("(?<=(?~|)a.*z)", "abcdefz", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
+  e("(a(?~|boo)z){0}(?<=\\g<1>)", "abcdefz", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
   x2("(?<=(?<=abc))def", "abcdef", 3, 6);
   x2("(?<=ab(?<=.+b)c)def", "abcdef", 3, 6);
   n("(?<=ab(?<=a+)c)def", "abcdef");
@@ -1362,7 +1368,6 @@ extern int main(int argc, char* argv[])
   e("[\\x{7fffffff}]", "", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("\\u040", "@", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("(?<abc>\\g<abc>)", "zzzz", ONIGERR_NEVER_ENDING_RECURSION);
-  e("(?<=(?>abc))", "abc", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
   e("(*FOO)", "abcdefg", ONIGERR_UNDEFINED_CALLOUT_NAME);
   e("*", "abc", ONIGERR_TARGET_OF_REPEAT_OPERATOR_NOT_SPECIFIED);
   e("|*", "abc", ONIGERR_TARGET_OF_REPEAT_OPERATOR_NOT_SPECIFIED);
