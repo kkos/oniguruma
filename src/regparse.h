@@ -450,6 +450,7 @@ extern int    onig_node_str_cat P_((Node* node, const UChar* s, const UChar* end
 extern int    onig_node_str_set P_((Node* node, const UChar* s, const UChar* end));
 extern void   onig_node_free P_((Node* node));
 extern int    onig_node_reset_empty P_((Node* node));
+extern int    onig_node_reset_fail P_((Node* node));
 extern Node*  onig_node_new_bag P_((enum BagType type));
 extern Node*  onig_node_new_str P_((const UChar* s, const UChar* end));
 extern Node*  onig_node_new_list P_((Node* left, Node* right));

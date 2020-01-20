@@ -2558,14 +2558,27 @@ node_drop_group(Node* group)
 }
 
 static int
+node_set_fail(Node* node)
+{
+  NODE_SET_TYPE(node, NODE_GIMMICK);
+  GIMMICK_(node)->type = GIMMICK_FAIL;
+  return ONIG_NORMAL;
+}
+
+static int
 node_new_fail(Node** node, ScanEnv* env)
 {
   *node = node_new();
   CHECK_NULL_RETURN_MEMERR(*node);
 
-  NODE_SET_TYPE(*node, NODE_GIMMICK);
-  GIMMICK_(*node)->type = GIMMICK_FAIL;
-  return ONIG_NORMAL;
+  return node_set_fail(*node);
+}
+
+extern int
+onig_node_reset_fail(Node* node)
+{
+  node_free_body(node);
+  return node_set_fail(node);
 }
 
 static int
