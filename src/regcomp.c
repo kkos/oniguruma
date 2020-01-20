@@ -3205,27 +3205,48 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
   return n;
 }
 
+/* allowed node types in look-behind */
+#define ALLOWED_TYPE_IN_LB \
+  ( NODE_BIT_LIST | NODE_BIT_ALT | NODE_BIT_STRING | NODE_BIT_CCLASS \
+  | NODE_BIT_CTYPE | NODE_BIT_ANCHOR | NODE_BIT_BAG | NODE_BIT_QUANT \
+  | NODE_BIT_CALL | NODE_BIT_BACKREF | NODE_BIT_GIMMICK)
+
+#define ALLOWED_BAG_IN_LB       ( 1<<BAG_MEMORY | 1<<BAG_OPTION | 1<<BAG_STOP_BACKTRACK | 1<<BAG_IF_ELSE )
+#define ALLOWED_BAG_IN_LB_NOT   ( 1<<BAG_OPTION | 1<<BAG_STOP_BACKTRACK | 1<<BAG_IF_ELSE )
+
+#define ALLOWED_ANCHOR_IN_LB \
+  ( ANCR_LOOK_BEHIND | ANCR_BEGIN_LINE | ANCR_END_LINE | ANCR_BEGIN_BUF \
+  | ANCR_BEGIN_POSITION | ANCR_WORD_BOUNDARY | ANCR_NO_WORD_BOUNDARY \
+  | ANCR_WORD_BEGIN | ANCR_WORD_END \
+  | ANCR_TEXT_SEGMENT_BOUNDARY | ANCR_NO_TEXT_SEGMENT_BOUNDARY )
+
+#define ALLOWED_ANCHOR_IN_LB_NOT \
+  ( ANCR_LOOK_BEHIND | ANCR_LOOK_BEHIND_NOT | ANCR_BEGIN_LINE \
+  | ANCR_END_LINE | ANCR_BEGIN_BUF | ANCR_BEGIN_POSITION | ANCR_WORD_BOUNDARY \
+  | ANCR_NO_WORD_BOUNDARY | ANCR_WORD_BEGIN | ANCR_WORD_END \
+  | ANCR_TEXT_SEGMENT_BOUNDARY | ANCR_NO_TEXT_SEGMENT_BOUNDARY )
+
+
 static int
-check_node_in_look_behind(Node* node, int type_mask, int bag_mask,
-                          int anchor_mask)
+check_node_in_look_behind(Node* node, int bag_mask, int anchor_mask)
 {
   NodeType type;
   int r = 0;
 
   type = NODE_TYPE(node);
-  if ((NODE_TYPE2BIT(type) & type_mask) == 0)
+  if ((NODE_TYPE2BIT(type) & ALLOWED_TYPE_IN_LB) == 0)
     return 1;
 
   switch (type) {
   case NODE_LIST:
   case NODE_ALT:
     do {
-      r = check_node_in_look_behind(NODE_CAR(node), type_mask, bag_mask, anchor_mask);
+      r = check_node_in_look_behind(NODE_CAR(node), bag_mask, anchor_mask);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NODE_QUANT:
-    r = check_node_in_look_behind(NODE_BODY(node), type_mask, bag_mask, anchor_mask);
+    r = check_node_in_look_behind(NODE_BODY(node), bag_mask, anchor_mask);
     break;
 
   case NODE_BAG:
@@ -3234,14 +3255,14 @@ check_node_in_look_behind(Node* node, int type_mask, int bag_mask,
       if (((1<<en->type) & bag_mask) == 0)
         return 1;
 
-      r = check_node_in_look_behind(NODE_BODY(node), type_mask, bag_mask, anchor_mask);
+      r = check_node_in_look_behind(NODE_BODY(node), bag_mask, anchor_mask);
       if (r == 0 && en->type == BAG_IF_ELSE) {
         if (IS_NOT_NULL(en->te.Then)) {
-          r = check_node_in_look_behind(en->te.Then, type_mask, bag_mask, anchor_mask);
+          r = check_node_in_look_behind(en->te.Then, bag_mask, anchor_mask);
           if (r != 0) break;
         }
         if (IS_NOT_NULL(en->te.Else)) {
-          r = check_node_in_look_behind(en->te.Else, type_mask, bag_mask, anchor_mask);
+          r = check_node_in_look_behind(en->te.Else, bag_mask, anchor_mask);
         }
       }
     }
@@ -3253,7 +3274,7 @@ check_node_in_look_behind(Node* node, int type_mask, int bag_mask,
       return 1;
 
     if (IS_NOT_NULL(NODE_BODY(node)))
-      r = check_node_in_look_behind(NODE_BODY(node), type_mask, bag_mask, anchor_mask);
+      r = check_node_in_look_behind(NODE_BODY(node), bag_mask, anchor_mask);
     break;
 
   case NODE_GIMMICK:
@@ -5257,27 +5278,6 @@ __inline
 static int
 tune_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
 {
-/* allowed node types in look-behind */
-#define ALLOWED_TYPE_IN_LB \
-  ( NODE_BIT_LIST | NODE_BIT_ALT | NODE_BIT_STRING | NODE_BIT_CCLASS \
-  | NODE_BIT_CTYPE | NODE_BIT_ANCHOR | NODE_BIT_BAG | NODE_BIT_QUANT \
-  | NODE_BIT_CALL | NODE_BIT_BACKREF | NODE_BIT_GIMMICK)
-
-#define ALLOWED_BAG_IN_LB       ( 1<<BAG_MEMORY | 1<<BAG_OPTION | 1<<BAG_STOP_BACKTRACK | 1<<BAG_IF_ELSE )
-#define ALLOWED_BAG_IN_LB_NOT   ( 1<<BAG_OPTION | 1<<BAG_STOP_BACKTRACK | 1<<BAG_IF_ELSE )
-
-#define ALLOWED_ANCHOR_IN_LB \
-  ( ANCR_LOOK_BEHIND | ANCR_BEGIN_LINE | ANCR_END_LINE | ANCR_BEGIN_BUF \
-  | ANCR_BEGIN_POSITION | ANCR_WORD_BOUNDARY | ANCR_NO_WORD_BOUNDARY \
-  | ANCR_WORD_BEGIN | ANCR_WORD_END \
-  | ANCR_TEXT_SEGMENT_BOUNDARY | ANCR_NO_TEXT_SEGMENT_BOUNDARY )
-
-#define ALLOWED_ANCHOR_IN_LB_NOT \
-  ( ANCR_LOOK_BEHIND | ANCR_LOOK_BEHIND_NOT | ANCR_BEGIN_LINE \
-  | ANCR_END_LINE | ANCR_BEGIN_BUF | ANCR_BEGIN_POSITION | ANCR_WORD_BOUNDARY \
-  | ANCR_NO_WORD_BOUNDARY | ANCR_WORD_BEGIN | ANCR_WORD_END \
-  | ANCR_TEXT_SEGMENT_BOUNDARY | ANCR_NO_TEXT_SEGMENT_BOUNDARY )
-
   int r;
   AnchorNode* an = ANCHOR_(node);
 
@@ -5291,7 +5291,7 @@ tune_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
 
   case ANCR_LOOK_BEHIND:
     {
-      r = check_node_in_look_behind(NODE_ANCHOR_BODY(an), ALLOWED_TYPE_IN_LB,
+      r = check_node_in_look_behind(NODE_ANCHOR_BODY(an),
                           ALLOWED_BAG_IN_LB, ALLOWED_ANCHOR_IN_LB);
       if (r < 0) return r;
       if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
@@ -5301,7 +5301,7 @@ tune_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
 
   case ANCR_LOOK_BEHIND_NOT:
     {
-      r = check_node_in_look_behind(NODE_ANCHOR_BODY(an), ALLOWED_TYPE_IN_LB,
+      r = check_node_in_look_behind(NODE_ANCHOR_BODY(an),
                           ALLOWED_BAG_IN_LB_NOT, ALLOWED_ANCHOR_IN_LB_NOT);
       if (r < 0) return r;
       if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
