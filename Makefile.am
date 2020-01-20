@@ -42,6 +42,11 @@ all-test:
 archive:
 	git archive --format=tar --prefix=oniguruma/ HEAD | gzip > ../oniguruma-archive.tar.gz
 
+debug:
+	make clean
+	./configure CFLAGS="-O0 -g -DONIG_DEBUG_PARSE -DONIG_DEBUG_COMPILE"
+	make
+
 sanitize:
 	make clean
 	./configure CFLAGS="-O -g -fsanitize=address" LDFLAGS="-fsanitize=address"
