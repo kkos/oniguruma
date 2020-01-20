@@ -4481,6 +4481,7 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
   int r;
   int state1;
   MinMaxCharLen ci;
+  Node* body;
   AnchorNode* an = ANCHOR_(node);
 
   if (an->type == ANCR_LOOK_BEHIND_NOT)
@@ -4488,17 +4489,27 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
   else
     state1 = state | IN_LOOK_BEHIND;
 
+  body = NODE_ANCHOR_BODY(an);
   /* Execute tune_tree(body) before call node_char_len().
      Because case-fold expansion must be done before node_char_len().
    */
-  r = tune_tree(NODE_ANCHOR_BODY(an), reg, state1, env);
+  r = tune_tree(body, reg, state1, env);
   if (r != 0) return r;
 
-  r = tree_reduce_in_look_behind(NODE_ANCHOR_BODY(an), reg, env);
+  r = tree_reduce_in_look_behind(body, reg, env);
   if (r != 0) return r;
 
-  r = node_char_len(NODE_ANCHOR_BODY(an), reg, &ci, env);
+  r = node_char_len(body, reg, &ci, env);
   if (r >= 0) {
+    if (ci.min == 0 && ci.min_is_sure != 0) {
+      if (an->type == ANCR_LOOK_BEHIND_NOT)
+        r = onig_node_reset_fail(node);
+      else
+        r = onig_node_reset_empty(node);
+
+      return r;
+    }
+
     if (r == CHAR_LEN_TOP_ALT_FIXED) {
       if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_DIFFERENT_LEN_ALT_LOOK_BEHIND)) {
         r = divide_look_behind_alternatives(node);
