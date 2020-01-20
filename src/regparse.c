@@ -3244,11 +3244,10 @@ onig_node_str_clear(Node* node)
   STR_(node)->capacity = 0;
 }
 
-static Node*
-node_new_str(const UChar* s, const UChar* end)
+static int
+node_set_str(Node* node, const UChar* s, const UChar* end)
 {
-  Node* node = node_new();
-  CHECK_NULL_RETURN(node);
+  int r;
 
   NODE_SET_TYPE(node, NODE_STRING);
   STR_(node)->flag     = 0;
@@ -3256,11 +3255,37 @@ node_new_str(const UChar* s, const UChar* end)
   STR_(node)->end      = STR_(node)->buf;
   STR_(node)->capacity = 0;
 
-  if (onig_node_str_cat(node, s, end)) {
+  r = onig_node_str_cat(node, s, end);
+  return r;
+}
+
+static Node*
+node_new_str(const UChar* s, const UChar* end)
+{
+  int r;
+  Node* node = node_new();
+  CHECK_NULL_RETURN(node);
+
+  r = node_set_str(node, s, end);
+  if (r != 0) {
     onig_node_free(node);
     return NULL;
   }
+
   return node;
+}
+
+static int
+node_reset_str(Node* node, const UChar* s, const UChar* end)
+{
+  node_free_body(node);
+  return node_set_str(node, s, end);
+}
+
+extern int
+onig_node_reset_empty(Node* node)
+{
+  return node_reset_str(node, NULL, NULL);
 }
 
 extern Node*
