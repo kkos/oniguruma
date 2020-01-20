@@ -2795,6 +2795,9 @@ make_absent_engine(Node** node, int pre_save_right_id, Node* absent,
                                   id, env);
   if (r != 0) goto err;
 
+  if (is_range_cutter != 0)
+    NODE_STATUS_ADD(ns[2], ABSENT_WITH_SIDE_EFFECTS);
+
   r = node_new_fail(&ns[3], env);
   if (r != 0) goto err;
 
@@ -2934,6 +2937,7 @@ make_range_clear(Node** node, ScanEnv* env)
   r = node_new_update_var_gimmick(&ns[0], UPDATE_VAR_RIGHT_RANGE_INIT,
                                   ID_NOT_USED_DONT_CARE_ME, env);
   if (r != 0) goto err;
+  NODE_STATUS_ADD(ns[0], ABSENT_WITH_SIDE_EFFECTS);
 
   x = make_alt(2, ns);
   if (IS_NULL(x)) goto err0;
