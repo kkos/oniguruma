@@ -897,11 +897,13 @@ node_char_len1(Node* node, regex_t* reg, MinMaxCharLen* ci, ScanEnv* env,
 
       backs = BACKREFS_P(br);
       r = node_char_len1(mem_env[backs[0]].mem_node, reg, ci, env, level);
+      ci->min_is_sure = FALSE;
       if (r < 0) break;
 
       for (i = 1; i < br->back_num; i++) {
         r = node_char_len1(mem_env[backs[i]].mem_node, reg, &tci, env, level);
         if (r < 0) break;
+        tci.min_is_sure = FALSE;
         mmcl_alt_merge(ci, &tci);
       }
     }
