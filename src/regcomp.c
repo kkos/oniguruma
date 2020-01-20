@@ -3206,7 +3206,8 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
 }
 
 static int
-check_type_tree(Node* node, int type_mask, int bag_mask, int anchor_mask)
+check_node_in_look_behind(Node* node, int type_mask, int bag_mask,
+                          int anchor_mask)
 {
   NodeType type;
   int r = 0;
@@ -3219,12 +3220,12 @@ check_type_tree(Node* node, int type_mask, int bag_mask, int anchor_mask)
   case NODE_LIST:
   case NODE_ALT:
     do {
-      r = check_type_tree(NODE_CAR(node), type_mask, bag_mask, anchor_mask);
+      r = check_node_in_look_behind(NODE_CAR(node), type_mask, bag_mask, anchor_mask);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NODE_QUANT:
-    r = check_type_tree(NODE_BODY(node), type_mask, bag_mask, anchor_mask);
+    r = check_node_in_look_behind(NODE_BODY(node), type_mask, bag_mask, anchor_mask);
     break;
 
   case NODE_BAG:
@@ -3233,14 +3234,14 @@ check_type_tree(Node* node, int type_mask, int bag_mask, int anchor_mask)
       if (((1<<en->type) & bag_mask) == 0)
         return 1;
 
-      r = check_type_tree(NODE_BODY(node), type_mask, bag_mask, anchor_mask);
+      r = check_node_in_look_behind(NODE_BODY(node), type_mask, bag_mask, anchor_mask);
       if (r == 0 && en->type == BAG_IF_ELSE) {
         if (IS_NOT_NULL(en->te.Then)) {
-          r = check_type_tree(en->te.Then, type_mask, bag_mask, anchor_mask);
+          r = check_node_in_look_behind(en->te.Then, type_mask, bag_mask, anchor_mask);
           if (r != 0) break;
         }
         if (IS_NOT_NULL(en->te.Else)) {
-          r = check_type_tree(en->te.Else, type_mask, bag_mask, anchor_mask);
+          r = check_node_in_look_behind(en->te.Else, type_mask, bag_mask, anchor_mask);
         }
       }
     }
@@ -3252,7 +3253,7 @@ check_type_tree(Node* node, int type_mask, int bag_mask, int anchor_mask)
       return 1;
 
     if (IS_NOT_NULL(NODE_BODY(node)))
-      r = check_type_tree(NODE_BODY(node), type_mask, bag_mask, anchor_mask);
+      r = check_node_in_look_behind(NODE_BODY(node), type_mask, bag_mask, anchor_mask);
     break;
 
   case NODE_GIMMICK:
@@ -5290,7 +5291,7 @@ tune_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
 
   case ANCR_LOOK_BEHIND:
     {
-      r = check_type_tree(NODE_ANCHOR_BODY(an), ALLOWED_TYPE_IN_LB,
+      r = check_node_in_look_behind(NODE_ANCHOR_BODY(an), ALLOWED_TYPE_IN_LB,
                           ALLOWED_BAG_IN_LB, ALLOWED_ANCHOR_IN_LB);
       if (r < 0) return r;
       if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
@@ -5300,7 +5301,7 @@ tune_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
 
   case ANCR_LOOK_BEHIND_NOT:
     {
-      r = check_type_tree(NODE_ANCHOR_BODY(an), ALLOWED_TYPE_IN_LB,
+      r = check_node_in_look_behind(NODE_ANCHOR_BODY(an), ALLOWED_TYPE_IN_LB,
                           ALLOWED_BAG_IN_LB_NOT, ALLOWED_ANCHOR_IN_LB_NOT);
       if (r < 0) return r;
       if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
