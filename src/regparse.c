@@ -2052,15 +2052,10 @@ scan_env_set_mem_node(ScanEnv* env, int num, Node* node)
   return 0;
 }
 
-extern void
-onig_node_free(Node* node)
+static void
+node_free_body(Node* node)
 {
- start:
   if (IS_NULL(node)) return ;
-
-#ifdef DEBUG_NODE_FREE
-  fprintf(stderr, "onig_node_free: %p\n", node);
-#endif
 
   switch (NODE_TYPE(node)) {
   case NODE_STRING:
@@ -2073,12 +2068,12 @@ onig_node_free(Node* node)
   case NODE_LIST:
   case NODE_ALT:
     onig_node_free(NODE_CAR(node));
-    {
-      Node* next_node = NODE_CDR(node);
-
+    node = NODE_CDR(node);
+    while (IS_NOT_NULL(node)) {
+      Node* next = NODE_CDR(node);
+      onig_node_free(NODE_CAR(node));
       xfree(node);
-      node = next_node;
-      goto start;
+      node = next;
     }
     break;
 
@@ -2120,7 +2115,18 @@ onig_node_free(Node* node)
   case NODE_GIMMICK:
     break;
   }
+}
 
+extern void
+onig_node_free(Node* node)
+{
+  if (IS_NULL(node)) return ;
+
+#ifdef DEBUG_NODE_FREE
+  fprintf(stderr, "onig_node_free: %p\n", node);
+#endif
+
+  node_free_body(node);
   xfree(node);
 }
 
