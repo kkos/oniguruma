@@ -36,6 +36,12 @@ typedef struct {
   OnigLen max;
 } MinMaxLen;
 
+typedef struct {
+  OnigLen min;
+  OnigLen max;
+  int min_is_sure;
+} MinMaxCharLen;
+
 OnigCaseFoldType OnigDefaultCaseFoldFlag = ONIGENC_CASE_FOLD_MIN;
 
 #if 0
@@ -595,24 +601,75 @@ enum CharLenReturnType {
   CHAR_LEN_TOP_ALT_FIXED = 1
 };
 
-
 static int
-mml_is_equal(MinMaxLen* a, MinMaxLen* b)
-{
-  return a->min == b->min && a->max == b->max;
-}
-
-static int
-mml_fixed(MinMaxLen* c)
+mmcl_fixed(MinMaxCharLen* c)
 {
   return (c->min == c->max && c->min != INFINITE_LEN);
 }
 
 static void
-mml_set(MinMaxLen* l, OnigLen len)
+mmcl_set(MinMaxCharLen* l, OnigLen len)
 {
   l->min = len;
   l->max = len;
+  l->min_is_sure = TRUE;
+}
+
+static void
+mmcl_set_min_max(MinMaxCharLen* l, OnigLen min, OnigLen max, int min_is_sure)
+{
+  l->min = min;
+  l->max = max;
+  l->min_is_sure = min_is_sure;
+}
+
+static void
+mmcl_add(MinMaxCharLen* to, MinMaxCharLen* add)
+{
+  to->min = distance_add(to->min, add->min);
+  to->max = distance_add(to->max, add->max);
+
+  if (add->min_is_sure != 0 && to->min_is_sure != 0)
+    to->min_is_sure = TRUE;
+  else
+    to->min_is_sure = FALSE;
+}
+
+static void
+mmcl_multiply(MinMaxCharLen* to, int m)
+{
+  to->min = distance_multiply(to->min, m);
+  to->max = distance_multiply(to->max, m);
+}
+
+static void
+mmcl_repeat_range_multiply(MinMaxCharLen* to, int mlow, int mhigh)
+{
+  to->min = distance_multiply(to->min, mlow);
+  if (IS_INFINITE_REPEAT(mhigh))
+    to->max = INFINITE_LEN;
+  else
+    to->max = distance_multiply(to->max, mhigh);
+}
+
+static void
+mmcl_alt_merge(MinMaxCharLen* to, MinMaxCharLen* alt)
+{
+  if (to->min > alt->min) {
+    to->min = alt->min;
+    if (alt->min_is_sure != 0)
+      to->min_is_sure = TRUE;
+  }
+  if (to->max < alt->max) to->max = alt->max;
+}
+
+
+
+
+static int
+mml_is_equal(MinMaxLen* a, MinMaxLen* b)
+{
+  return a->min == b->min && a->max == b->max;
 }
 
 static void
@@ -643,23 +700,6 @@ mml_add(MinMaxLen* to, MinMaxLen* add)
 }
 
 static void
-mml_multiply(MinMaxLen* to, int m)
-{
-  to->min = distance_multiply(to->min, m);
-  to->max = distance_multiply(to->max, m);
-}
-
-static void
-mml_repeat_range_multiply(MinMaxLen* to, int mlow, int mhigh)
-{
-  to->min = distance_multiply(to->min, mlow);
-  if (IS_INFINITE_REPEAT(mhigh))
-    to->max = INFINITE_LEN;
-  else
-    to->max = distance_multiply(to->max, mhigh);
-}
-
-static void
 mml_alt_merge(MinMaxLen* to, MinMaxLen* alt)
 {
   if (to->min > alt->min) to->min = alt->min;
@@ -668,10 +708,10 @@ mml_alt_merge(MinMaxLen* to, MinMaxLen* alt)
 
 /* fixed size pattern node only */
 static int
-node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
+node_char_len1(Node* node, regex_t* reg, MinMaxCharLen* ci, ScanEnv* env,
                int level)
 {
-  MinMaxLen tci;
+  MinMaxCharLen tci;
   int r = CHAR_LEN_NORMAL;
 
   level++;
@@ -688,7 +728,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
           first = FALSE;
         }
         else
-          mml_add(ci, &tci);
+          mmcl_add(ci, &tci);
       } while (IS_NOT_NULL(node = NODE_CDR(node)));
     }
     break;
@@ -704,14 +744,14 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
       while (IS_NOT_NULL(node = NODE_CDR(node))) {
         r = node_char_len1(NODE_CAR(node), reg, &tci, env, level);
         if (r < 0) break;
-        if (! mml_fixed(&tci))
+        if (! mmcl_fixed(&tci))
           fixed = FALSE;
-        mml_alt_merge(ci, &tci);
+        mmcl_alt_merge(ci, &tci);
       }
       if (r < 0) break;
 
       r = CHAR_LEN_NORMAL;
-      if (mml_fixed(ci)) break;
+      if (mmcl_fixed(ci)) break;
 
       if (fixed == TRUE && level == 1) {
         r = CHAR_LEN_TOP_ALT_FIXED;
@@ -735,7 +775,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
         s += enclen(reg->enc, s);
         clen = distance_add(clen, 1);
       }
-      mml_set(ci, clen);
+      mmcl_set(ci, clen);
     }
     break;
 
@@ -745,18 +785,18 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
 
       if (qn->lower == qn->upper) {
         if (qn->upper == 0) {
-          mml_set(ci, 0);
+          mmcl_set(ci, 0);
         }
         else {
           r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
           if (r < 0) break;
-          mml_multiply(ci, qn->lower);
+          mmcl_multiply(ci, qn->lower);
         }
       }
       else {
         r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
         if (r < 0) break;
-        mml_repeat_range_multiply(ci, qn->lower, qn->upper);
+        mmcl_repeat_range_multiply(ci, qn->lower, qn->upper);
       }
     }
     break;
@@ -764,7 +804,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
 #ifdef USE_CALL
   case NODE_CALL:
     if (NODE_IS_RECURSION(node))
-      mml_set_min_max(ci, 0, INFINITE_LEN);
+      mmcl_set_min_max(ci, 0, INFINITE_LEN, FALSE);
     else
       r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
     break;
@@ -772,7 +812,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
 
   case NODE_CTYPE:
   case NODE_CCLASS:
-    mml_set(ci, 1);
+    mmcl_set(ci, 1);
     break;
 
   case NODE_BAG:
@@ -782,7 +822,8 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
       switch (en->type) {
       case BAG_MEMORY:
         if (NODE_IS_FIXED_CLEN(node)) {
-          mml_set_min_max(ci, en->min_char_len, en->max_char_len);
+          mmcl_set_min_max(ci, en->min_char_len, en->max_char_len,
+                           NODE_IS_FIXED_CLEN_MIN_SURE(node));
         }
         else {
           r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
@@ -791,6 +832,8 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
           en->min_char_len = ci->min;
           en->max_char_len = ci->max;
           NODE_STATUS_ADD(node, FIXED_CLEN);
+          if (ci->min_is_sure != 0)
+            NODE_STATUS_ADD(node, FIXED_CLEN_MIN_SURE);
         }
         break;
       case BAG_OPTION:
@@ -799,7 +842,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
         break;
       case BAG_IF_ELSE:
         {
-          MinMaxLen eci;
+          MinMaxCharLen eci;
 
           r = node_char_len1(NODE_BODY(node), reg, ci, env, level);
           if (r < 0) break;
@@ -807,7 +850,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
           if (IS_NOT_NULL(en->te.Then)) {
             r = node_char_len1(en->te.Then, reg, &tci, env, level);
             if (r < 0) break;
-            mml_add(ci, &tci);
+            mmcl_add(ci, &tci);
           }
 
           if (IS_NOT_NULL(en->te.Else)) {
@@ -815,10 +858,10 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
             if (r < 0) break;
           }
           else {
-            mml_set(&eci, 0);
+            mmcl_set(&eci, 0);
           }
 
-          mml_alt_merge(ci, &eci);
+          mmcl_alt_merge(ci, &eci);
         }
         break;
       default: /* never come here */
@@ -831,7 +874,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
   case NODE_ANCHOR:
   case NODE_GIMMICK:
   zero:
-    mml_set(ci, 0);
+    mmcl_set(ci, 0);
     break;
 
   case NODE_BACKREF:
@@ -841,12 +884,12 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
     if (NODE_IS_RECURSION(node)) {
 #ifdef USE_BACKREF_WITH_LEVEL
       if (NODE_IS_NEST_LEVEL(node)) {
-        mml_set_min_max(ci, 0, INFINITE_LEN);
+        mmcl_set_min_max(ci, 0, INFINITE_LEN, FALSE);
         break;
       }
 #endif
 
-      mml_set_min_max(ci, 0, 0);
+      mmcl_set_min_max(ci, 0, 0, FALSE);
       break;
     }
 
@@ -863,7 +906,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
       for (i = 1; i < br->back_num; i++) {
         r = node_char_len1(mem_env[backs[i]].mem_node, reg, &tci, env, level);
         if (r < 0) break;
-        mml_alt_merge(ci, &tci);
+        mmcl_alt_merge(ci, &tci);
       }
     }
     break;
@@ -877,7 +920,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env,
 }
 
 static int
-node_char_len(Node* node, regex_t* reg, MinMaxLen* ci, ScanEnv* env)
+node_char_len(Node* node, regex_t* reg, MinMaxCharLen* ci, ScanEnv* env)
 {
   return node_char_len1(node, reg, ci, env, 0);
 }
@@ -4437,7 +4480,7 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
 {
   int r;
   int state1;
-  MinMaxLen ci;
+  MinMaxCharLen ci;
   AnchorNode* an = ANCHOR_(node);
 
   if (an->type == ANCR_LOOK_BEHIND_NOT)
