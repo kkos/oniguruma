@@ -4633,8 +4633,15 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
           r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
         }
         else {
+          Node* tail;
           an->char_min_len = ci.min;
           an->char_max_len = ci.max;
+          r = get_tree_tail_literal(node, &tail, reg);
+          if (r == GET_VALUE_FOUND) {
+            an->lead_node = onig_node_copy(tail);
+            CHECK_NULL_RETURN_MEMERR(an->lead_node);
+          }
+          r = ONIG_NORMAL;
         }
       }
     }
