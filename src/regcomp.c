@@ -3165,7 +3165,7 @@ is_exclusive(Node* x, Node* y, regex_t* reg)
 }
 
 static Node*
-get_head_value_node(Node* node, int exact, regex_t* reg)
+get_node_head_literal(Node* node, int exact, regex_t* reg)
 {
   Node* n = NULL_NODE;
 
@@ -3188,7 +3188,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
     break;
 
   case NODE_LIST:
-    n = get_head_value_node(NODE_CAR(node), exact, reg);
+    n = get_node_head_literal(NODE_CAR(node), exact, reg);
     break;
 
   case NODE_STRING:
@@ -3212,7 +3212,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
         if (IS_NOT_NULL(qn->head_exact))
           n = qn->head_exact;
         else
-          n = get_head_value_node(NODE_BODY(node), exact, reg);
+          n = get_node_head_literal(NODE_BODY(node), exact, reg);
       }
     }
     break;
@@ -3225,7 +3225,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
       case BAG_MEMORY:
       case BAG_STOP_BACKTRACK:
       case BAG_IF_ELSE:
-        n = get_head_value_node(NODE_BODY(node), exact, reg);
+        n = get_node_head_literal(NODE_BODY(node), exact, reg);
         break;
       }
     }
@@ -3233,7 +3233,7 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
 
   case NODE_ANCHOR:
     if (ANCHOR_(node)->type == ANCR_PREC_READ)
-      n = get_head_value_node(NODE_BODY(node), exact, reg);
+      n = get_node_head_literal(NODE_BODY(node), exact, reg);
     break;
 
   case NODE_GIMMICK:
@@ -4549,7 +4549,7 @@ tune_next(Node* node, Node* next_node, regex_t* reg)
     QuantNode* qn = QUANT_(node);
     if (qn->greedy && IS_INFINITE_REPEAT(qn->upper)) {
 #ifdef USE_QUANT_PEEK_NEXT
-      Node* n = get_head_value_node(next_node, 1, reg);
+      Node* n = get_node_head_literal(next_node, 1, reg);
       /* '\0': for UTF-16BE etc... */
       if (IS_NOT_NULL(n) && STR_(n)->s[0] != '\0') {
         qn->next_head_exact = n;
@@ -4559,9 +4559,9 @@ tune_next(Node* node, Node* next_node, regex_t* reg)
       if (qn->lower <= 1) {
         if (is_strict_real_node(NODE_BODY(node))) {
           Node *x, *y;
-          x = get_head_value_node(NODE_BODY(node), 0, reg);
+          x = get_node_head_literal(NODE_BODY(node), 0, reg);
           if (IS_NOT_NULL(x)) {
-            y = get_head_value_node(next_node,  0, reg);
+            y = get_node_head_literal(next_node,  0, reg);
             if (IS_NOT_NULL(y) && is_exclusive(x, y, reg)) {
               Node* en = onig_node_new_bag(BAG_STOP_BACKTRACK);
               CHECK_NULL_RETURN_MEMERR(en);
@@ -5499,7 +5499,7 @@ tune_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
       }
     }
     else {
-      qn->head_exact = get_head_value_node(NODE_BODY(node), 1, reg);
+      qn->head_exact = get_node_head_literal(NODE_BODY(node), 1, reg);
     }
   }
 
