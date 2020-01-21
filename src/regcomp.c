@@ -831,6 +831,8 @@ node_char_len1(Node* node, regex_t* reg, MinMaxCharLen* ci, ScanEnv* env,
           if (ci->min_is_sure != 0)
             NODE_STATUS_ADD(node, FIXED_CLEN_MIN_SURE);
         }
+        /* can't optimize look-behind if capture exists. */
+        ci->min_is_sure = FALSE;
         break;
       case BAG_OPTION:
       case BAG_STOP_BACKTRACK:
@@ -868,6 +870,11 @@ node_char_len1(Node* node, regex_t* reg, MinMaxCharLen* ci, ScanEnv* env,
     break;
 
   case NODE_ANCHOR:
+    mmcl_set(ci, 0);
+    /* can't optimize look-behind if anchor exists. */
+    ci->min_is_sure = FALSE;
+    break;
+
   case NODE_GIMMICK:
   zero:
     mmcl_set(ci, 0);
