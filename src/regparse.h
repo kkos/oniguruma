@@ -192,6 +192,7 @@ typedef struct {
   OnigLen char_min_len;
   OnigLen char_max_len;
   int ascii_mode;
+  struct _Node* lead_node;
 } AnchorNode;
 
 typedef struct {

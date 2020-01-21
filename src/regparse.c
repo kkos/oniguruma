@@ -2105,9 +2105,15 @@ node_free_body(Node* node)
     break;
 
   case NODE_QUANT:
+    if (NODE_BODY(node))
+      onig_node_free(NODE_BODY(node));
+    break;
+
   case NODE_ANCHOR:
     if (NODE_BODY(node))
       onig_node_free(NODE_BODY(node));
+    if (IS_NOT_NULL(ANCHOR_(node)->lead_node))
+      onig_node_free(ANCHOR_(node)->lead_node);
     break;
 
   case NODE_CTYPE:
@@ -2322,6 +2328,7 @@ node_new_anchor(int type)
   ANCHOR_(node)->char_min_len = 0;
   ANCHOR_(node)->char_max_len = INFINITE_LEN;
   ANCHOR_(node)->ascii_mode = 0;
+  ANCHOR_(node)->lead_node  = NULL_NODE;
   return node;
 }
 
