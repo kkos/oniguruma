@@ -1236,6 +1236,10 @@ extern int main(int argc, char* argv[])
   x2("(?<=a)", "a", 1, 1);
   x2("(?<=(?>abc))", "abc", 3, 3);
   x2("(?<=a\\Xz)", "abz", 3, 3);
+  n("(?<=^a*)bc", "zabc");
+  n("(?<=a*\\b)b", "abc");
+  n("^..(?<=(a{,2}))\\1z", "aaaaz"); // !!! look-behind is shortest priority
+  x2("^..(?<=(a{,2}))\\1z", "aaz", 0, 3); // shortest priority
   e("(?<=(?~|zoo)a.*z)", "abcdefz", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
   e("(?<=(?~|)a.*z)", "abcdefz", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
   e("(a(?~|boo)z){0}(?<=\\g<1>)", "abcdefz", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
