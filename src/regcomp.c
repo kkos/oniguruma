@@ -3222,15 +3222,6 @@ get_head_value_node(Node* node, int exact, regex_t* reg)
       BagNode* en = BAG_(node);
       switch (en->type) {
       case BAG_OPTION:
-        {
-          OnigOptionType options = reg->options;
-
-          reg->options = BAG_(node)->o.options;
-          n = get_head_value_node(NODE_BODY(node), exact, reg);
-          reg->options = options;
-        }
-        break;
-
       case BAG_MEMORY:
       case BAG_STOP_BACKTRACK:
       case BAG_IF_ELSE:
