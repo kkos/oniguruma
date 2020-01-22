@@ -588,9 +588,6 @@ enum OpCode {
 #ifdef USE_CALL
   OP_EMPTY_CHECK_END_MEMST_PUSH, /* with capture status and push check-end */
 #endif
-  OP_LOOK_BEHIND,           /* (?<=...) start (no needs end opcode) */
-  OP_LOOK_BEHIND_NOT_START, /* (?<!...) start */
-  OP_LOOK_BEHIND_NOT_END,   /* (?<!...) end   */
   OP_STEP_BACK,
   OP_STEP_BACK_START,
   OP_STEP_BACK_NEXT,
@@ -690,9 +687,6 @@ typedef int ModeType;
 #define OPSIZE_MEM_END_REC             1
 #define OPSIZE_EMPTY_CHECK_START       1
 #define OPSIZE_EMPTY_CHECK_END         1
-#define OPSIZE_LOOK_BEHIND             1
-#define OPSIZE_LOOK_BEHIND_NOT_START   1
-#define OPSIZE_LOOK_BEHIND_NOT_END     1
 #define OPSIZE_CHECK_POSITION          1
 #define OPSIZE_CALL                    1
 #define OPSIZE_RETURN                  1

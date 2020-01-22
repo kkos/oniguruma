@@ -251,9 +251,6 @@ static OpInfoType OpInfo[] = {
 #ifdef USE_CALL
   { OP_EMPTY_CHECK_END_MEMST_PUSH,"empty-check-end-memst-push"},
 #endif
-  { OP_LOOK_BEHIND,           "look-behind"},
-  { OP_LOOK_BEHIND_NOT_START, "look-behind-not-start"},
-  { OP_LOOK_BEHIND_NOT_END,   "look-behind-not-end"},
   { OP_STEP_BACK,             "step-back"},
   { OP_STEP_BACK_START,       "step-back-start"},
   { OP_STEP_BACK_NEXT,        "step-back-next"},
@@ -536,18 +533,6 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
     fprintf(f, ":%d", mem);
     break;
 
-  case OP_LOOK_BEHIND:
-    len = p->look_behind.len;
-    fprintf(f, ":%d", len);
-    break;
-
-  case OP_LOOK_BEHIND_NOT_START:
-    addr = p->look_behind_not_start.addr;
-    len  = p->look_behind_not_start.len;
-    fprintf(f, ":%d:", len);
-    p_rel_addr(f, addr, p, start);
-    break;
-
 #ifdef USE_CALL
   case OP_CALL:
     addr = p->call.addr;
@@ -664,7 +649,6 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
   case OP_BACKREF2:
   case OP_FAIL:
   case OP_POP:
-  case OP_LOOK_BEHIND_NOT_END:
   case OP_STEP_BACK_NEXT:
 #ifdef USE_CALL
   case OP_RETURN:
@@ -1020,7 +1004,6 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 /* used by normal-POP */
 #define STK_SUPER_ALT             STK_ALT_FLAG
 #define STK_ALT                   (0x0002 | STK_ALT_FLAG)
-#define STK_ALT_LOOK_BEHIND_NOT   (0x0006 | STK_ALT_FLAG)
 
 /* handled by normal-POP */
 #define STK_MEM_START              0x0010
@@ -1654,8 +1637,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
 
 #define STACK_PUSH_ALT(pat,s,sprev)       STACK_PUSH(STK_ALT,pat,s,sprev)
 #define STACK_PUSH_SUPER_ALT(pat,s,sprev) STACK_PUSH(STK_SUPER_ALT,pat,s,sprev)
-#define STACK_PUSH_ALT_LOOK_BEHIND_NOT(pat,s,sprev) \
-  STACK_PUSH(STK_ALT_LOOK_BEHIND_NOT,pat,s,sprev)
 #define STACK_PUSH_ALT_WITH_ZID(pat,s,sprev,id) \
   STACK_PUSH_WITH_ZID(STK_ALT,pat,s,sprev,id)
 
@@ -1994,10 +1975,6 @@ stack_double(int is_alloca, char** arg_alloc_base,
       }\
     }\
   }\
-} while(0)
-
-#define STACK_POP_TIL_ALT_LOOK_BEHIND_NOT  do {\
-  POP_TIL_BODY("STACK_POP_TIL_ALT_LOOK_BEHIND_NOT", STK_ALT_LOOK_BEHIND_NOT);\
 } while(0)
 
 
@@ -2704,9 +2681,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #ifdef USE_CALL
   &&L_EMPTY_CHECK_END_MEMST_PUSH,
 #endif
-  &&L_LOOK_BEHIND,
-  &&L_LOOK_BEHIND_NOT_START,
-  &&L_LOOK_BEHIND_NOT_END,
   &&L_STEP_BACK,
   &&L_STEP_BACK_START,
   &&L_STEP_BACK_NEXT,
@@ -2729,7 +2703,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   LengthType tlen, tlen2;
   MemNumType mem;
   RelAddrType addr;
-  UChar *s, *q, *ps, *sbegin;
+  UChar *s, *ps, *sbegin;
   UChar *right_range;
   int is_alloca;
   char *alloc_base;
@@ -3923,37 +3897,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         }
       }
       CHECK_INTERRUPT_JUMP_OUT;
-
-    CASE_OP(LOOK_BEHIND)
-      tlen = p->look_behind.len;
-      s = (UChar* )ONIGENC_STEP_BACK(encode, str, s, (int )tlen);
-      if (IS_NULL(s)) goto fail;
-      sprev = (UChar* )onigenc_get_prev_char_head(encode, str, s);
-      INC_OP;
-      JUMP_OUT;
-
-    CASE_OP(LOOK_BEHIND_NOT_START)
-      addr = p->look_behind_not_start.addr;
-      tlen = p->look_behind_not_start.len;
-      q = (UChar* )ONIGENC_STEP_BACK(encode, str, s, (int )tlen);
-      if (IS_NULL(q)) {
-        /* too short case -> success. ex. /(?<!XXX)a/.match("a")
-           If you want to change to fail, replace following line. */
-        p += addr;
-        /* goto fail; */
-      }
-      else {
-        STACK_PUSH_ALT_LOOK_BEHIND_NOT(p + addr, s, sprev);
-        s = q;
-        sprev = (UChar* )onigenc_get_prev_char_head(encode, str, s);
-        INC_OP;
-      }
-      JUMP_OUT;
-
-    CASE_OP(LOOK_BEHIND_NOT_END)
-      STACK_POP_TIL_ALT_LOOK_BEHIND_NOT;
-      INC_OP;
-      goto fail;
 
 #ifdef USE_CALL
     CASE_OP(CALL)
