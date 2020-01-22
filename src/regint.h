@@ -862,11 +862,11 @@ typedef struct {
       RelAddrType addr;
     } look_behind_not_start;
     struct {
-      RepeatNumType n;
+      LengthType n;
     } step_back;
     struct {
-      RepeatNumType initial;
-      RepeatNumType remaining;
+      LengthType initial;
+      LengthType remaining;
       RelAddrType addr;
     } step_back_start;
     struct {
