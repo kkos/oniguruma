@@ -2162,11 +2162,56 @@ node_new(void)
 extern Node*
 onig_node_copy(Node* from)
 {
+  int r;
   Node* copy;
+
+  switch (NODE_TYPE(from)) {
+  case NODE_LIST:
+  case NODE_ALT:
+  case NODE_ANCHOR:
+    /* These node's link to other nodes are processed by caller. */
+    break;
+  case NODE_STRING:
+  case NODE_CCLASS:
+  case NODE_CTYPE:
+    /* Fixed contents after copy. */
+    break;
+  default:
+    /* Not supported yet. */
+    return NULL_NODE;
+    break;
+  }
 
   copy = node_new();
   CHECK_NULL_RETURN(copy);
   xmemcpy(copy, from, sizeof(*copy));
+
+  switch (NODE_TYPE(copy)) {
+  case NODE_STRING:
+    r = onig_node_str_set(copy, STR_(from)->s, STR_(from)->end);
+    if (r != 0) {
+    err:
+      onig_node_free(copy);
+      return NULL_NODE;
+    }
+    break;
+
+  case NODE_CCLASS:
+    {
+      CClassNode *fcc, *tcc;
+
+      fcc = CCLASS_(from);
+      tcc = CCLASS_(copy);
+      if (IS_NOT_NULL(fcc->mbuf)) {
+        r = bbuf_clone(&(tcc->mbuf), fcc->mbuf);
+        if (r != 0) goto err;
+      }
+    }
+    break;
+
+  default:
+    break;
+  }
 
   return copy;
 }
