@@ -44,6 +44,11 @@ archive:
 
 debug:
 	make clean
+	./configure CFLAGS="-O0 -g"
+	make
+
+debug_out:
+	make clean
 	./configure CFLAGS="-O0 -g -DONIG_DEBUG_PARSE -DONIG_DEBUG_COMPILE"
 	make
 
