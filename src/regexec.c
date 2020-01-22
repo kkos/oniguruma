@@ -3969,9 +3969,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
 
     CASE_OP(STEP_BACK)
-      tlen = p->step_back.n;
-      s = (UChar* )ONIGENC_STEP_BACK(encode, str, s, (int )tlen);
-      if (IS_NULL(s)) goto fail;
+      tlen = p->step_back.n; // byte length
+      s -= tlen;
+      if (s < str) goto fail;
       sprev = (UChar* )onigenc_get_prev_char_head(encode, str, s);
       INC_OP;
       JUMP_OUT;
