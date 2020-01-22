@@ -862,11 +862,11 @@ typedef struct {
       RelAddrType addr;
     } look_behind_not_start;
     struct {
-      LengthType n;
+      LengthType n; /* byte length */
     } step_back;
     struct {
-      LengthType initial;
-      LengthType remaining;
+      LengthType initial;   /* char length */
+      LengthType remaining; /* char length */
       RelAddrType addr;
     } step_back_start;
     struct {
