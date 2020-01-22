@@ -2191,16 +2191,19 @@ compile_anchor_look_behind_not_node(AnchorNode* node, regex_t* reg,
     COP(reg)->push.addr = SIZE_INC + OPSIZE_STEP_BACK_START + OPSIZE_STEP_BACK_NEXT + len + OPSIZE_CHECK_POSITION + OPSIZE_POP_TO_MARK + OPSIZE_UPDATE_VAR + OPSIZE_POP + OPSIZE_FAIL;
 
     if (IS_NOT_NULL(node->lead_node)) {
-      OnigLen len;
+      int clen;
+      OnigLen llen;
 
-      len = node_min_byte_len(node->lead_node, env);
-      if (len < 0) return len;
+      clen = compile_length_tree(node->lead_node, reg);
+      COP(reg)->push.addr += OPSIZE_STEP_BACK + clen;
 
-      COP(reg)->push.addr += OPSIZE_STEP_BACK + len;
+      llen = node_min_byte_len(node->lead_node, env);
+      if (llen < 0) return llen;
 
       r = add_op(reg, OP_STEP_BACK);
       if (r != 0) return r;
-      COP(reg)->step_back.n = (LengthType )len;
+      COP(reg)->step_back.n = (LengthType )llen;
+
       r = compile_tree(node->lead_node, reg, env);
       if (r != 0) return r;
     }
