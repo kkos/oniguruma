@@ -44,6 +44,8 @@ typedef struct {
 
 OnigCaseFoldType OnigDefaultCaseFoldFlag = ONIGENC_CASE_FOLD_MIN;
 
+static OnigLen node_min_byte_len(Node* node, ScanEnv* env);
+
 #if 0
 typedef struct {
   int  n;
@@ -1965,8 +1967,16 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
   case ANCR_LOOK_BEHIND:
     if (node->char_min_len == node->char_max_len)
       len = OPSIZE_MARK + OPSIZE_STEP_BACK_START + tlen + OPSIZE_CUT_TO_MARK;
-    else
+    else {
       len = OPSIZE_SAVE_VAL + OPSIZE_UPDATE_VAR + OPSIZE_MARK + OPSIZE_PUSH + OPSIZE_UPDATE_VAR + OPSIZE_FAIL + OPSIZE_JUMP + OPSIZE_STEP_BACK_START + OPSIZE_STEP_BACK_NEXT + tlen + OPSIZE_CHECK_POSITION + OPSIZE_CUT_TO_MARK + OPSIZE_UPDATE_VAR + OPSIZE_POP;
+
+      if (IS_NOT_NULL(node->lead_node)) {
+        int llen = compile_length_tree(node->lead_node, reg);
+        if (llen < 0) return llen;
+
+        len += OPSIZE_STEP_BACK + llen;
+      }
+    }
     break;
   case ANCR_LOOK_BEHIND_NOT:
     if (node->char_min_len == node->char_max_len)
@@ -2028,6 +2038,18 @@ compile_anchor_look_behind_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
   else {
     MemNumType mid1, mid2;
     OnigLen diff;
+
+    if (IS_NOT_NULL(node->lead_node)) {
+      OnigLen len;
+
+      len = node_min_byte_len(node->lead_node, env);
+      if (len < 0) return len;
+      r = add_op(reg, OP_STEP_BACK);
+      if (r != 0) return r;
+      COP(reg)->step_back.n = (LengthType )len;
+      r = compile_tree(node->lead_node, reg, env);
+      if (r != 0) return r;
+    }
 
     ID_ENTRY(env, mid1);
     r = add_op(reg, OP_SAVE_VAL);
