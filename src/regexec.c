@@ -254,6 +254,7 @@ static OpInfoType OpInfo[] = {
   { OP_LOOK_BEHIND,           "look-behind"},
   { OP_LOOK_BEHIND_NOT_START, "look-behind-not-start"},
   { OP_LOOK_BEHIND_NOT_END,   "look-behind-not-end"},
+  { OP_STEP_BACK,             "step-back"},
   { OP_STEP_BACK_START,       "step-back-start"},
   { OP_STEP_BACK_NEXT,        "step-back-next"},
   { OP_CUT_TO_MARK,           "cut-to-mark"},
@@ -553,6 +554,10 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
     fprintf(f, ":{/%d}", addr);
     break;
 #endif
+
+  case OP_STEP_BACK:
+    fprintf(f, ":%d", p->step_back.n);
+    break;
 
   case OP_STEP_BACK_START:
     addr = p->step_back_start.addr;
@@ -2702,6 +2707,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_LOOK_BEHIND,
   &&L_LOOK_BEHIND_NOT_START,
   &&L_LOOK_BEHIND_NOT_END,
+  &&L_STEP_BACK,
   &&L_STEP_BACK_START,
   &&L_STEP_BACK_NEXT,
   &&L_CUT_TO_MARK,
@@ -3961,6 +3967,14 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       STACK_PUSH_RETURN;
       JUMP_OUT;
 #endif
+
+    CASE_OP(STEP_BACK)
+      tlen = p->step_back.n;
+      s = (UChar* )ONIGENC_STEP_BACK(encode, str, s, (int )tlen);
+      if (IS_NULL(s)) goto fail;
+      sprev = (UChar* )onigenc_get_prev_char_head(encode, str, s);
+      INC_OP;
+      JUMP_OUT;
 
     CASE_OP(STEP_BACK_START)
       tlen = p->step_back_start.initial;

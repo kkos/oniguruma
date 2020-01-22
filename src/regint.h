@@ -591,6 +591,7 @@ enum OpCode {
   OP_LOOK_BEHIND,           /* (?<=...) start (no needs end opcode) */
   OP_LOOK_BEHIND_NOT_START, /* (?<!...) start */
   OP_LOOK_BEHIND_NOT_END,   /* (?<!...) end   */
+  OP_STEP_BACK,
   OP_STEP_BACK_START,
   OP_STEP_BACK_NEXT,
   OP_CUT_TO_MARK,
@@ -695,6 +696,7 @@ typedef int ModeType;
 #define OPSIZE_CHECK_POSITION          1
 #define OPSIZE_CALL                    1
 #define OPSIZE_RETURN                  1
+#define OPSIZE_STEP_BACK               1
 #define OPSIZE_STEP_BACK_START         1
 #define OPSIZE_STEP_BACK_NEXT          1
 #define OPSIZE_CUT_TO_MARK             1
@@ -859,6 +861,9 @@ typedef struct {
       LengthType  len;
       RelAddrType addr;
     } look_behind_not_start;
+    struct {
+      RepeatNumType n;
+    } step_back;
     struct {
       RepeatNumType initial;
       RepeatNumType remaining;
