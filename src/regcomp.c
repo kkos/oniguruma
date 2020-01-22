@@ -1981,8 +1981,16 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
   case ANCR_LOOK_BEHIND_NOT:
     if (node->char_min_len == node->char_max_len)
       len = OPSIZE_MARK + OPSIZE_PUSH + OPSIZE_STEP_BACK_START + tlen + OPSIZE_POP_TO_MARK + OPSIZE_FAIL + OPSIZE_POP;
-    else
+    else {
       len = OPSIZE_SAVE_VAL + OPSIZE_UPDATE_VAR + OPSIZE_MARK + OPSIZE_PUSH + OPSIZE_STEP_BACK_START + OPSIZE_STEP_BACK_NEXT + tlen + OPSIZE_CHECK_POSITION + OPSIZE_POP_TO_MARK + OPSIZE_UPDATE_VAR + OPSIZE_POP + OPSIZE_FAIL + OPSIZE_UPDATE_VAR + OPSIZE_POP + OPSIZE_POP;
+
+      if (IS_NOT_NULL(node->lead_node)) {
+        int llen = compile_length_tree(node->lead_node, reg);
+        if (llen < 0) return llen;
+
+        len += OPSIZE_STEP_BACK + llen;
+      }
+    }
     break;
 
   case ANCR_WORD_BOUNDARY:
@@ -2181,6 +2189,21 @@ compile_anchor_look_behind_not_node(AnchorNode* node, regex_t* reg,
     r = add_op(reg, OP_PUSH);
     if (r != 0) return r;
     COP(reg)->push.addr = SIZE_INC + OPSIZE_STEP_BACK_START + OPSIZE_STEP_BACK_NEXT + len + OPSIZE_CHECK_POSITION + OPSIZE_POP_TO_MARK + OPSIZE_UPDATE_VAR + OPSIZE_POP + OPSIZE_FAIL;
+
+    if (IS_NOT_NULL(node->lead_node)) {
+      OnigLen len;
+
+      len = node_min_byte_len(node->lead_node, env);
+      if (len < 0) return len;
+
+      COP(reg)->push.addr += OPSIZE_STEP_BACK + len;
+
+      r = add_op(reg, OP_STEP_BACK);
+      if (r != 0) return r;
+      COP(reg)->step_back.n = (LengthType )len;
+      r = compile_tree(node->lead_node, reg, env);
+      if (r != 0) return r;
+    }
 
     r = add_op(reg, OP_STEP_BACK_START);
     if (r != 0) return r;
