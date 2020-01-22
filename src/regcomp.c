@@ -3329,11 +3329,11 @@ get_tree_tail_literal(Node* node, Node** rnode, regex_t* reg)
   case NODE_QUANT:
     {
       QuantNode* qn = QUANT_(node);
-      if (qn->lower > 0) {
+      if (qn->lower != 0) {
         r = get_tree_tail_literal(NODE_BODY(node), rnode, reg);
       }
       else
-        r = GET_VALUE_IGNORE;
+        r = GET_VALUE_NONE;
     }
     break;
 
@@ -4658,7 +4658,7 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
           Node* tail;
           an->char_min_len = ci.min;
           an->char_max_len = ci.max;
-          r = get_tree_tail_literal(node, &tail, reg);
+          r = get_tree_tail_literal(body, &tail, reg);
           if (r == GET_VALUE_FOUND) {
             an->lead_node = onig_node_copy(tail);
             CHECK_NULL_RETURN_MEMERR(an->lead_node);
