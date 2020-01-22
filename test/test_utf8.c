@@ -1234,10 +1234,17 @@ extern int main(int argc, char* argv[])
   n("(.{1,4})(.{1,4})(?<=\\2\\1)", "abcdabce");
   x2("(.{1,4})(.{1,4})(?<=\\2\\1)", "abcdabceabce", 4, 12);
   x2("(?<=a)", "a", 1, 1);
+  x2("(?<=a.*\\w)z", "abbbz", 4, 5);
+  n("(?<=a.*\\w)z", "abb z");
+  x2("(?<=a.*\\W)z", "abb z", 4, 5);
+  x2("(?<=a.*\\b)z", "abb z", 4, 5);
   x2("(?<=(?>abc))", "abc", 3, 3);
   x2("(?<=a\\Xz)", "abz", 3, 3);
   n("(?<=^a*)bc", "zabc");
   n("(?<=a*\\b)b", "abc");
+  x2("(?<=a+.*[efg])z", "abcdfz", 5, 6);
+  x2("(?<=a+.*[efg])z", "abcdfgz", 6, 7);
+  n("(?<=a+.*[efg])z", "abcdz");
   n("^..(?<=(a{,2}))\\1z", "aaaaz"); // !!! look-behind is shortest priority
   x2("^..(?<=(a{,2}))\\1z", "aaz", 0, 3); // shortest priority
   e("(?<=(?~|zoo)a.*z)", "abcdefz", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
@@ -1271,6 +1278,17 @@ extern int main(int argc, char* argv[])
   x2("(a*)(.{3,}?)(?<!\\1)", "abcabcd", 0, 5);
   x2("(?:(a.*b)|c.*d)(?<!(?(1))azzzb)", "azzzzb", 0, 6);
   n("(?:(a.*b)|c.*d)(?<!(?(1))azzzb)", "azzzb");
+  x2("<(?<!NT{+}abcd)", "<(?<!NT{+}abcd)", 0, 1);
+  x2("(?<!a.*c)def", "abbbbdef", 5, 8);
+  n("(?<!a.*c)def", "abbbcdef");
+  x2("(?<!a.*X\\b)def", "abbbbbXdef", 7, 10);
+  n("(?<!a.*X\\B)def", "abbbbbXdef");
+  x2("(?<!a.*[uvw])def", "abbbbbXdef", 7, 10);
+  n("(?<!a.*[uvw])def", "abbbbbwdef");
+  x2("(?<!ab*\\S+)def", "abbbbb   def", 9, 12);
+  x2("(?<!a.*\\S)def", "abbbbb def", 7, 10);
+  n("(?<!ab*\\s+)def", "abbbbb   def");
+  x2("(?<!ab*\\s+\\B)def", "abbbbb   def", 9, 12);
 
   x2("((?(a)\\g<1>|b))", "aab", 0, 3);
   x2("((?(a)\\g<1>))", "aab", 0, 2);
