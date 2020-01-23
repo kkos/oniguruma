@@ -446,7 +446,7 @@ extern int    onig_strncmp P_((const UChar* s1, const UChar* s2, int n));
 extern void   onig_strcpy P_((UChar* dest, const UChar* src, const UChar* end));
 extern void   onig_scan_env_set_error_string P_((ScanEnv* env, int ecode, UChar* arg, UChar* arg_end));
 extern int    onig_reduce_nested_quantifier P_((Node* pnode));
-extern Node*  onig_node_copy(Node* from);
+extern int    onig_node_copy(Node** rcopy, Node* from);
 extern int    onig_node_str_cat P_((Node* node, const UChar* s, const UChar* end));
 extern int    onig_node_str_set P_((Node* node, const UChar* s, const UChar* end, int need_free));
 extern void   onig_node_str_clear P_((Node* node, int need_free));

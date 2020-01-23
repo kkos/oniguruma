@@ -2159,11 +2159,13 @@ node_new(void)
   return node;
 }
 
-extern Node*
-onig_node_copy(Node* from)
+extern int
+onig_node_copy(Node** rcopy, Node* from)
 {
   int r;
   Node* copy;
+
+  *rcopy = NULL_NODE;
 
   switch (NODE_TYPE(from)) {
   case NODE_LIST:
@@ -2178,12 +2180,12 @@ onig_node_copy(Node* from)
     break;
   default:
     /* Not supported yet. */
-    return NULL_NODE;
+    return ONIGERR_TYPE_BUG;
     break;
   }
 
   copy = node_new();
-  CHECK_NULL_RETURN(copy);
+  CHECK_NULL_RETURN_MEMERR(copy);
   xmemcpy(copy, from, sizeof(*copy));
 
   switch (NODE_TYPE(copy)) {
@@ -2192,7 +2194,7 @@ onig_node_copy(Node* from)
     if (r != 0) {
     err:
       onig_node_free(copy);
-      return NULL_NODE;
+      return r;
     }
     break;
 
@@ -2213,7 +2215,8 @@ onig_node_copy(Node* from)
     break;
   }
 
-  return copy;
+  *rcopy = copy;
+  return ONIG_NORMAL;
 }
 
 

@@ -4552,9 +4552,13 @@ reduce_string_list(Node* node)
 static int
 divide_look_behind_alternatives(Node* node)
 {
+  int r;
+  int anc_type;
   Node *head, *np, *insert_node;
-  AnchorNode* an = ANCHOR_(node);
-  int anc_type = an->type;
+  AnchorNode* an;
+
+  an = ANCHOR_(node);
+  anc_type = an->type;
 
   head = NODE_ANCHOR_BODY(an);
   np = NODE_CAR(head);
@@ -4564,7 +4568,8 @@ divide_look_behind_alternatives(Node* node)
 
   np = node;
   while (IS_NOT_NULL(np = NODE_CDR(np))) {
-    insert_node = onig_node_copy(head);
+    r = onig_node_copy(&insert_node, head);
+    if (r != 0) return r;
     CHECK_NULL_RETURN_MEMERR(insert_node);
     NODE_BODY(insert_node) = NODE_CAR(np);
     NODE_CAR(np) = insert_node;
@@ -4686,8 +4691,8 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
           an->char_max_len = ci.max;
           r = get_tree_tail_literal(body, &tail, reg);
           if (r == GET_VALUE_FOUND) {
-            an->lead_node = onig_node_copy(tail);
-            CHECK_NULL_RETURN_MEMERR(an->lead_node);
+            r = onig_node_copy(&(an->lead_node), tail);
+            if (r != 0) return r;
           }
           r = ONIG_NORMAL;
         }
