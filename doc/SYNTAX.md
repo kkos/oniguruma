@@ -1,7 +1,7 @@
 
 # Oniguruma syntax (operator) configuration
 
-_Documented for Oniguruma 6.9.5 (2019/12/16)_
+_Documented for Oniguruma 6.9.5 (2020/01/23)_
 
 
 ----------
@@ -916,6 +916,12 @@ _Set in: Perl, Java_
 
 If this flag is set, then an isolated option doesn't break the branch and affects until the end of the group (or end of the pattern).
 If this flag is not set, then an isolated option is interpreted as the starting point of a new branch. /a(?i)b|c/ ==> /a(?i:b|c)/
+
+### 11. ONIG_SYN_VARIABLE_LEN_LOOK_BEHIND (`(?<=...a+...)`)
+
+_Set in: Oniguruma, Java_
+
+If this flag is set, then a variable length expressions are allowed in look-behind.
 
 ### 20. ONIG_SYN_NOT_NEWLINE_IN_NEGATIVE_CC (add `\n` to `[^...]`)
 
