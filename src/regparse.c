@@ -2188,7 +2188,7 @@ onig_node_copy(Node* from)
 
   switch (NODE_TYPE(copy)) {
   case NODE_STRING:
-    r = onig_node_str_set(copy, STR_(from)->s, STR_(from)->end);
+    r = onig_node_str_set(copy, STR_(from)->s, STR_(from)->end, FALSE);
     if (r != 0) {
     err:
       onig_node_free(copy);
@@ -3280,9 +3280,9 @@ onig_node_str_cat(Node* node, const UChar* s, const UChar* end)
 }
 
 extern int
-onig_node_str_set(Node* node, const UChar* s, const UChar* end)
+onig_node_str_set(Node* node, const UChar* s, const UChar* end, int need_free)
 {
-  onig_node_str_clear(node);
+  onig_node_str_clear(node, need_free);
   return onig_node_str_cat(node, s, end);
 }
 
@@ -3296,9 +3296,10 @@ node_str_cat_char(Node* node, UChar c)
 }
 
 extern void
-onig_node_str_clear(Node* node)
+onig_node_str_clear(Node* node, int need_free)
 {
-  if (STR_(node)->capacity != 0 &&
+  if (need_free != 0 &&
+      STR_(node)->capacity != 0 &&
       IS_NOT_NULL(STR_(node)->s) && STR_(node)->s != STR_(node)->buf) {
     xfree(STR_(node)->s);
   }

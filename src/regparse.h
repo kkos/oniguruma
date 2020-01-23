@@ -448,7 +448,8 @@ extern void   onig_scan_env_set_error_string P_((ScanEnv* env, int ecode, UChar*
 extern int    onig_reduce_nested_quantifier P_((Node* pnode));
 extern Node*  onig_node_copy(Node* from);
 extern int    onig_node_str_cat P_((Node* node, const UChar* s, const UChar* end));
-extern int    onig_node_str_set P_((Node* node, const UChar* s, const UChar* end));
+extern int    onig_node_str_set P_((Node* node, const UChar* s, const UChar* end, int need_free));
+extern void   onig_node_str_clear P_((Node* node, int need_free));
 extern void   onig_node_free P_((Node* node));
 extern int    onig_node_reset_empty P_((Node* node));
 extern int    onig_node_reset_fail P_((Node* node));
@@ -456,7 +457,6 @@ extern Node*  onig_node_new_bag P_((enum BagType type));
 extern Node*  onig_node_new_str P_((const UChar* s, const UChar* end));
 extern Node*  onig_node_new_list P_((Node* left, Node* right));
 extern Node*  onig_node_new_alt P_((Node* left, Node* right));
-extern void   onig_node_str_clear P_((Node* node));
 extern int    onig_names_free P_((regex_t* reg));
 extern int    onig_parse_tree P_((Node** root, const UChar* pattern, const UChar* end, regex_t* reg, ScanEnv* env));
 extern int    onig_free_shared_cclass_table P_((void));
