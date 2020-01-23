@@ -1974,7 +1974,7 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
         int llen = compile_length_tree(node->lead_node, reg);
         if (llen < 0) return llen;
 
-        len += OPSIZE_STEP_BACK + llen;
+        len += OPSIZE_MOVE + llen;
       }
     }
     break;
@@ -1988,7 +1988,7 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
         int llen = compile_length_tree(node->lead_node, reg);
         if (llen < 0) return llen;
 
-        len += OPSIZE_STEP_BACK + llen;
+        len += OPSIZE_MOVE + llen;
       }
     }
     break;
@@ -2048,13 +2048,13 @@ compile_anchor_look_behind_node(AnchorNode* node, regex_t* reg, ScanEnv* env)
     OnigLen diff;
 
     if (IS_NOT_NULL(node->lead_node)) {
-      OnigLen len;
+      MinMaxCharLen ci;
 
-      len = node_min_byte_len(node->lead_node, env);
-      if (len < 0) return len;
-      r = add_op(reg, OP_STEP_BACK);
+      r = node_char_len(node->lead_node, reg, &ci, env);
+      if (r < 0) return r;
+      r = add_op(reg, OP_MOVE);
       if (r != 0) return r;
-      COP(reg)->step_back.n = (LengthType )len;
+      COP(reg)->move.n = (RelPositionType )(-ci.min);
       r = compile_tree(node->lead_node, reg, env);
       if (r != 0) return r;
     }
@@ -2192,17 +2192,16 @@ compile_anchor_look_behind_not_node(AnchorNode* node, regex_t* reg,
 
     if (IS_NOT_NULL(node->lead_node)) {
       int clen;
-      OnigLen llen;
+      MinMaxCharLen ci;
 
       clen = compile_length_tree(node->lead_node, reg);
-      COP(reg)->push.addr += OPSIZE_STEP_BACK + clen;
+      COP(reg)->push.addr += OPSIZE_MOVE + clen;
 
-      llen = node_min_byte_len(node->lead_node, env);
-      if (llen < 0) return llen;
-
-      r = add_op(reg, OP_STEP_BACK);
+      r = node_char_len(node->lead_node, reg, &ci, env);
+      if (r < 0) return r;
+      r = add_op(reg, OP_MOVE);
       if (r != 0) return r;
-      COP(reg)->step_back.n = (LengthType )llen;
+      COP(reg)->move.n = (RelPositionType )(-ci.min);
 
       r = compile_tree(node->lead_node, reg, env);
       if (r != 0) return r;
