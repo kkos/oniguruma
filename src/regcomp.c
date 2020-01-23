@@ -4584,7 +4584,7 @@ divide_look_behind_alternatives(Node* node)
 }
 
 static int
-quant_reduce_in_look_behind(Node* node)
+node_reduce_in_look_behind(Node* node)
 {
   NodeType type;
   Node* body;
@@ -4603,23 +4603,41 @@ quant_reduce_in_look_behind(Node* node)
 }
 
 static int
-tree_reduce_in_look_behind(Node* node, regex_t* reg, ScanEnv* env)
+list_reduce_in_look_behind(Node* node)
 {
   int r;
 
   switch (NODE_TYPE(node)) {
   case NODE_QUANT:
-    r = quant_reduce_in_look_behind(node);
+    r = node_reduce_in_look_behind(node);
     break;
 
-  case NODE_ALT:
-    do {
-      r = quant_reduce_in_look_behind(NODE_CAR(node));
-    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
+  case NODE_LIST:
+    r = node_reduce_in_look_behind(NODE_CAR(node));
     break;
 
   default:
     r = 0;
+    break;
+  }
+
+  return r;
+}
+
+static int
+alt_reduce_in_look_behind(Node* node, regex_t* reg, ScanEnv* env)
+{
+  int r;
+
+  switch (NODE_TYPE(node)) {
+  case NODE_ALT:
+    do {
+      r = list_reduce_in_look_behind(NODE_CAR(node));
+    } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
+    break;
+
+  default:
+    r = list_reduce_in_look_behind(node);
     break;
   }
 
@@ -4649,7 +4667,7 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
   r = tune_tree(body, reg, state1, env);
   if (r != 0) return r;
 
-  r = tree_reduce_in_look_behind(body, reg, env);
+  r = alt_reduce_in_look_behind(body, reg, env);
   if (r != 0) return r;
 
   r = node_char_len(body, reg, &ci, env);
