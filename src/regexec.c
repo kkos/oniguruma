@@ -541,7 +541,7 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
 #endif
 
   case OP_MOVE:
-    fprintf(f, ":%d:%d", p->move.is_byte, p->move.n);
+    fprintf(f, ":%d", p->move.n);
     break;
 
   case OP_STEP_BACK_START:
