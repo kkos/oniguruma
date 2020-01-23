@@ -588,7 +588,7 @@ enum OpCode {
 #ifdef USE_CALL
   OP_EMPTY_CHECK_END_MEMST_PUSH, /* with capture status and push check-end */
 #endif
-  OP_STEP_BACK,
+  OP_MOVE,
   OP_STEP_BACK_START,
   OP_STEP_BACK_NEXT,
   OP_CUT_TO_MARK,
@@ -633,6 +633,7 @@ enum TextSegmentBoundaryType {
 typedef int RelAddrType;
 typedef int AbsAddrType;
 typedef int LengthType;
+typedef int RelPositionType;
 typedef int RepeatNumType;
 typedef int MemNumType;
 typedef void* PointerType;
@@ -690,7 +691,7 @@ typedef int ModeType;
 #define OPSIZE_CHECK_POSITION          1
 #define OPSIZE_CALL                    1
 #define OPSIZE_RETURN                  1
-#define OPSIZE_STEP_BACK               1
+#define OPSIZE_MOVE                    1
 #define OPSIZE_STEP_BACK_START         1
 #define OPSIZE_STEP_BACK_NEXT          1
 #define OPSIZE_CUT_TO_MARK             1
@@ -856,8 +857,8 @@ typedef struct {
       RelAddrType addr;
     } look_behind_not_start;
     struct {
-      LengthType n; /* byte length */
-    } step_back;
+      RelPositionType n; /* char relative position */
+    } move;
     struct {
       LengthType initial;   /* char length */
       LengthType remaining; /* char length */

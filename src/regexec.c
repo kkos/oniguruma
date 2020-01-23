@@ -251,7 +251,7 @@ static OpInfoType OpInfo[] = {
 #ifdef USE_CALL
   { OP_EMPTY_CHECK_END_MEMST_PUSH,"empty-check-end-memst-push"},
 #endif
-  { OP_STEP_BACK,             "step-back"},
+  { OP_MOVE,                  "move"},
   { OP_STEP_BACK_START,       "step-back-start"},
   { OP_STEP_BACK_NEXT,        "step-back-next"},
   { OP_CUT_TO_MARK,           "cut-to-mark"},
@@ -540,8 +540,8 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
     break;
 #endif
 
-  case OP_STEP_BACK:
-    fprintf(f, ":%d", p->step_back.n);
+  case OP_MOVE:
+    fprintf(f, ":%d:%d", p->move.is_byte, p->move.n);
     break;
 
   case OP_STEP_BACK_START:
@@ -2681,7 +2681,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #ifdef USE_CALL
   &&L_EMPTY_CHECK_END_MEMST_PUSH,
 #endif
-  &&L_STEP_BACK,
+  &&L_MOVE,
   &&L_STEP_BACK_START,
   &&L_STEP_BACK_NEXT,
   &&L_CUT_TO_MARK,
@@ -3911,10 +3911,21 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       JUMP_OUT;
 #endif
 
-    CASE_OP(STEP_BACK)
-      tlen = p->step_back.n; // byte length
-      s -= tlen;
-      if (s < str) goto fail;
+    CASE_OP(MOVE)
+      if (p->move.n < 0) {
+        s = (UChar* )ONIGENC_STEP_BACK(encode, str, s, -p->move.n);
+        if (IS_NULL(s)) goto fail;
+      }
+      else {
+        int len;
+
+        for (tlen = 0; tlen < p->move.n; tlen++) {
+          len = enclen(encode, s);
+          if (s + len > end) goto fail;
+          sprev = s;
+          s += len;
+        }
+      }
       sprev = (UChar* )onigenc_get_prev_char_head(encode, str, s);
       INC_OP;
       JUMP_OUT;
