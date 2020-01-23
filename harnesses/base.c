@@ -19,6 +19,18 @@
 
 typedef unsigned char uint8_t;
 
+static void
+output_current_time(FILE* fp)
+{
+  char d[64];
+  time_t t;
+
+  t = time(NULL);
+  strftime(d, sizeof(d), "%m/%d %H:%M:%S", localtime(&t));
+
+  fprintf(fp, "%s", d);
+}
+
 static int
 search(regex_t* reg, unsigned char* str, unsigned char* end)
 {
@@ -330,22 +342,23 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 #endif /* else WITH_READ_MAIN */
 
   if (EXEC_COUNT_INTERVAL == EXEC_PRINT_INTERVAL) {
-    char d[64];
-    time_t t;
     float fexec, freg, fvalid;
-
-    t = time(NULL);
-    strftime(d, sizeof(d), "%m/%d %H:%M:%S", localtime(&t));
 
     fexec  = (float )EXEC_COUNT / INPUT_COUNT;
     freg   = (float )REGEX_SUCCESS_COUNT / INPUT_COUNT;
     fvalid = (float )VALID_STRING_COUNT / INPUT_COUNT;
 
-    fprintf(stdout, "%s: %ld: EXEC:%.2f, REG:%.2f, VALID:%.2f\n",
-            d, EXEC_COUNT, fexec, freg, fvalid);
+    output_current_time(stdout);
+    fprintf(stdout, ": %ld: EXEC:%.2f, REG:%.2f, VALID:%.2f\n",
+            EXEC_COUNT, fexec, freg, fvalid);
 
     EXEC_COUNT_INTERVAL = 0;
   }
+  else if (EXEC_COUNT == 1) {
+    output_current_time(stdout);
+    fprintf(stdout, ": ------------ START ------------\n");
+  }
+
   return r;
 }
 
