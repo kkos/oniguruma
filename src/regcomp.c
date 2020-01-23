@@ -4597,6 +4597,8 @@ node_reduce_in_look_behind(Node* node)
       type == NODE_CCLASS || type == NODE_BACKREF) {
     QuantNode* qn = QUANT_(node);
     qn->upper = qn->lower;
+    if (qn->upper == 0)
+      return 1; /* removed */
   }
 
   return 0;
@@ -4610,10 +4612,14 @@ list_reduce_in_look_behind(Node* node)
   switch (NODE_TYPE(node)) {
   case NODE_QUANT:
     r = node_reduce_in_look_behind(node);
+    if (r > 0) r = 0;
     break;
 
   case NODE_LIST:
-    r = node_reduce_in_look_behind(NODE_CAR(node));
+    do {
+      r = node_reduce_in_look_behind(NODE_CAR(node));
+      if (r <= 0) break;
+    } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   default:
