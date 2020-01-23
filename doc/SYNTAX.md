@@ -912,7 +912,7 @@ then `r{n}?` will mean the same as `r{n}`, and the useless `?` will be discarded
 
 ### 10. ONIG_SYN_ISOLATED_OPTION_CONTINUE_BRANCH (`..(?i)..`)
 
-_Set in: Perl, Java_
+_Set in: Perl, Perl_NG, Java_
 
 If this flag is set, then an isolated option doesn't break the branch and affects until the end of the group (or end of the pattern).
 If this flag is not set, then an isolated option is interpreted as the starting point of a new branch. /a(?i)b|c/ ==> /a(?i:b|c)/
@@ -1075,10 +1075,12 @@ These tables show which of the built-in syntaxes use which flags and options, fo
 | 3     | `ONIG_SYN_ALLOW_INVALID_INTERVAL`             | -     | -     | -     | -     | Yes   | Yes   | Yes   | Yes   | Yes   | Yes   |
 | 4     | `ONIG_SYN_ALLOW_INTERVAL_LOW_ABBREV`          | -     | -     | -     | -     | -     | -     | -     | -     | Yes   | Yes   |
 | 5     | `ONIG_SYN_STRICT_CHECK_BACKREF`               | -     | -     | -     | -     | -     | -     | -     | -     | -     | -     |
-| 6     | `ONIG_SYN_DIFFERENT_LEN_ALT_LOOK_BEHIND`      | -     | -     | -     | -     | -     | -     | -     | Yes   | Yes   | Yes   |
+| 6     | `ONIG_SYN_DIFFERENT_LEN_ALT_LOOK_BEHIND`      | -     | -     | -     | -     | -     | Yes   | -     | -     | Yes   | Yes   |
 | 7     | `ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP`           | -     | -     | -     | -     | -     | -     | -     | Yes   | Yes   | Yes   |
 | 8     | `ONIG_SYN_ALLOW_MULTIPLEX_DEFINITION_NAME`    | -     | -     | -     | -     | -     | -     | -     | Yes   | Yes   | Yes   |
 | 9     | `ONIG_SYN_FIXED_INTERVAL_IS_GREEDY_ONLY`      | -     | -     | -     | -     | -     | -     | -     | -     | Yes   | Yes   |
+| 10    | `ONIG_SYN_ISOLATED_OPTION_CONTINUE_BRANCH`    | -     | -     | -     | -     | -     | Yes   | Yes   | Yes   | -     | -     |
+| 11    | `ONIG_SYN_VARIABLE_LEN_LOOK_BEHIND`           | -     | -     | -     | -     | -     | Yes   | -     | -     | -     | Yes   |
 | 20    | `ONIG_SYN_NOT_NEWLINE_IN_NEGATIVE_CC`         | -     | -     | -     | Yes   | -     | -     | -     | -     | -     | -     |
 | 21    | `ONIG_SYN_BACKSLASH_ESCAPE_IN_CC`             | -     | -     | -     | -     | Yes   | Yes   | Yes   | Yes   | Yes   | Yes   |
 | 22    | `ONIG_SYN_ALLOW_EMPTY_RANGE_IN_CC`            | -     | -     | Yes   | Yes   | -     | -     | -     | -     | -     | -     |
