@@ -3919,11 +3919,15 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       else {
         int len;
 
-        for (tlen = 0; tlen < p->move.n; tlen++) {
+        for (tlen = p->move.n; tlen > 0; tlen--) {
           len = enclen(encode, s);
-          if (s + len > end) goto fail;
           sprev = s;
           s += len;
+          if (s > end) goto fail;
+          if (s == end) {
+            if (tlen != 1) goto fail;
+            else           break;
+          }
         }
       }
       sprev = (UChar* )onigenc_get_prev_char_head(encode, str, s);
