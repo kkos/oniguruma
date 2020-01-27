@@ -3483,7 +3483,7 @@ check_called_node_in_look_behind(Node* node, int not)
 
 
 static int
-check_node_in_look_behind(Node* node, int not, int* called)
+check_node_in_look_behind(Node* node, int not, int* used)
 {
   static unsigned int
     bag_mask[2] = { ALLOWED_BAG_IN_LB, ALLOWED_BAG_IN_LB_NOT };
@@ -3502,12 +3502,12 @@ check_node_in_look_behind(Node* node, int not, int* called)
   case NODE_LIST:
   case NODE_ALT:
     do {
-      r = check_node_in_look_behind(NODE_CAR(node), not, called);
+      r = check_node_in_look_behind(NODE_CAR(node), not, used);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NODE_QUANT:
-    r = check_node_in_look_behind(NODE_BODY(node), not, called);
+    r = check_node_in_look_behind(NODE_BODY(node), not, used);
     break;
 
   case NODE_BAG:
@@ -3516,19 +3516,19 @@ check_node_in_look_behind(Node* node, int not, int* called)
       if (((1<<en->type) & bag_mask[not]) == 0)
         return 1;
 
-      r = check_node_in_look_behind(NODE_BODY(node), not, called);
+      r = check_node_in_look_behind(NODE_BODY(node), not, used);
       if (r != 0) break;
 
       if (en->type == BAG_MEMORY) {
-        if (NODE_IS_CALLED(node)) *called = TRUE;
+        if (NODE_IS_BACKREF(node) || NODE_IS_CALLED(node)) *used = TRUE;
       }
       else if (en->type == BAG_IF_ELSE) {
         if (IS_NOT_NULL(en->te.Then)) {
-          r = check_node_in_look_behind(en->te.Then, not, called);
+          r = check_node_in_look_behind(en->te.Then, not, used);
           if (r != 0) break;
         }
         if (IS_NOT_NULL(en->te.Else)) {
-          r = check_node_in_look_behind(en->te.Else, not, called);
+          r = check_node_in_look_behind(en->te.Else, not, used);
         }
       }
     }
@@ -3540,7 +3540,7 @@ check_node_in_look_behind(Node* node, int not, int* called)
       return 1;
 
     if (IS_NOT_NULL(NODE_BODY(node)))
-      r = check_node_in_look_behind(NODE_BODY(node), not, called);
+      r = check_node_in_look_behind(NODE_BODY(node), not, used);
     break;
 
   case NODE_GIMMICK:
@@ -4662,15 +4662,15 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
 {
   int r;
   int state1;
-  int called;
+  int used;
   MinMaxCharLen ci;
   Node* body;
   AnchorNode* an = ANCHOR_(node);
 
-  called = FALSE;
+  used = FALSE;
   r = check_node_in_look_behind(NODE_ANCHOR_BODY(an),
                                 an->type == ANCR_LOOK_BEHIND_NOT ? 1 : 0,
-                                &called);
+                                &used);
   if (r < 0) return r;
   if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
 
@@ -4691,7 +4691,7 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
 
   r = node_char_len(body, reg, &ci, env);
   if (r >= 0) {
-    if (ci.min == 0 && ci.min_is_sure != 0 && called == FALSE) {
+    if (ci.min == 0 && ci.min_is_sure != 0 && used == FALSE) {
       if (an->type == ANCR_LOOK_BEHIND_NOT)
         r = onig_node_reset_fail(node);
       else
