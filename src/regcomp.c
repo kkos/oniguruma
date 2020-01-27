@@ -4710,12 +4710,17 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
         }
         else {
           Node* tail;
-          an->char_min_len = ci.min;
-          an->char_max_len = ci.max;
-          r = get_tree_tail_literal(body, &tail, reg);
-          if (r == GET_VALUE_FOUND) {
-            r = onig_node_copy(&(an->lead_node), tail);
-            if (r != 0) return r;
+
+          /* check lead_node is already set by double call after
+             divide_look_behind_alternatives() */
+          if (IS_NULL(an->lead_node)) {
+            an->char_min_len = ci.min;
+            an->char_max_len = ci.max;
+            r = get_tree_tail_literal(body, &tail, reg);
+            if (r == GET_VALUE_FOUND) {
+              r = onig_node_copy(&(an->lead_node), tail);
+              if (r != 0) return r;
+            }
           }
           r = ONIG_NORMAL;
         }
