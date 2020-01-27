@@ -2536,9 +2536,9 @@ typedef struct {
 #endif /* USE_THREADED_CODE */
 
 #define INC_OP       p++
-#define NEXT_OUT     SOP_OUT; NEXT_OP
-#define JUMP_OUT     SOP_OUT; JUMP_OP
-#define BREAK_OUT    SOP_OUT; BREAK_OP
+#define JUMP_OUT_WITH_SPREV_SET   SOP_OUT; NEXT_OP
+#define JUMP_OUT                  SOP_OUT; JUMP_OP
+#define BREAK_OUT                 SOP_OUT; BREAK_OP
 #define CHECK_INTERRUPT_JUMP_OUT  SOP_OUT; CHECK_INTERRUPT_IN_MATCH; JUMP_OP
 
 
@@ -2881,7 +2881,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       if (*ps != *s) goto fail;
       s++;
       INC_OP;
-      NEXT_OUT;
+      JUMP_OUT_WITH_SPREV_SET;
 
     CASE_OP(STR_2)
       DATA_ENSURE(2);
@@ -2958,7 +2958,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       if (*ps != *s) goto fail;
       s++;
       INC_OP;
-      NEXT_OUT;
+      JUMP_OUT_WITH_SPREV_SET;
 
     CASE_OP(STR_MB2N2)
       DATA_ENSURE(4);
@@ -3043,7 +3043,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       if (BITSET_AT(p->cclass.bsp, *s) == 0) goto fail;
       s++;
       INC_OP;
-      NEXT_OUT;
+      JUMP_OUT_WITH_SPREV_SET;
 
     CASE_OP(CCLASS_MB)
       DATA_ENSURE(1);
@@ -3063,7 +3063,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         if (! onig_is_in_code_range(p->cclass_mb.mb, code)) goto fail;
       }
       INC_OP;
-      NEXT_OUT;
+      JUMP_OUT_WITH_SPREV_SET;
 
     CASE_OP(CCLASS_MIX)
       DATA_ENSURE(1);
@@ -3077,14 +3077,14 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         s++;
       }
       INC_OP;
-      NEXT_OUT;
+      JUMP_OUT_WITH_SPREV_SET;
 
     CASE_OP(CCLASS_NOT)
       DATA_ENSURE(1);
       if (BITSET_AT(p->cclass.bsp, *s) != 0) goto fail;
       s += enclen(encode, s);
       INC_OP;
-      NEXT_OUT;
+      JUMP_OUT_WITH_SPREV_SET;
 
     CASE_OP(CCLASS_MB_NOT)
       DATA_ENSURE(1);
@@ -3113,7 +3113,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     cc_mb_not_success:
       INC_OP;
-      NEXT_OUT;
+      JUMP_OUT_WITH_SPREV_SET;
 
     CASE_OP(CCLASS_MIX_NOT)
       DATA_ENSURE(1);
@@ -3127,7 +3127,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         s++;
       }
       INC_OP;
-      NEXT_OUT;
+      JUMP_OUT_WITH_SPREV_SET;
 
     CASE_OP(ANYCHAR)
       DATA_ENSURE(1);
@@ -3136,7 +3136,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       if (ONIGENC_IS_MBC_NEWLINE(encode, s, end)) goto fail;
       s += n;
       INC_OP;
-      NEXT_OUT;
+      JUMP_OUT_WITH_SPREV_SET;
 
     CASE_OP(ANYCHAR_ML)
       DATA_ENSURE(1);
@@ -3144,7 +3144,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       DATA_ENSURE(n);
       s += n;
       INC_OP;
-      NEXT_OUT;
+      JUMP_OUT_WITH_SPREV_SET;
 
     CASE_OP(ANYCHAR_STAR)
       INC_OP;
@@ -3225,7 +3225,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
       s += enclen(encode, s);
       INC_OP;
-      NEXT_OUT;
+      JUMP_OUT_WITH_SPREV_SET;
 
     CASE_OP(WORD_ASCII)
       DATA_ENSURE(1);
@@ -3234,7 +3234,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
       s += enclen(encode, s);
       INC_OP;
-      NEXT_OUT;
+      JUMP_OUT_WITH_SPREV_SET;
 
     CASE_OP(NO_WORD)
       DATA_ENSURE(1);
@@ -3243,7 +3243,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
       s += enclen(encode, s);
       INC_OP;
-      NEXT_OUT;
+      JUMP_OUT_WITH_SPREV_SET;
 
     CASE_OP(NO_WORD_ASCII)
       DATA_ENSURE(1);
@@ -3252,7 +3252,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
       s += enclen(encode, s);
       INC_OP;
-      NEXT_OUT;
+      JUMP_OUT_WITH_SPREV_SET;
 
     CASE_OP(WORD_BOUNDARY)
       {
