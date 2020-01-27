@@ -4661,6 +4661,11 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
   Node* body;
   AnchorNode* an = ANCHOR_(node);
 
+  r = check_node_in_look_behind(NODE_ANCHOR_BODY(an),
+                                an->type == ANCR_LOOK_BEHIND_NOT ? 1 : 0);
+  if (r < 0) return r;
+  if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
+
   if (an->type == ANCR_LOOK_BEHIND_NOT)
     state1 = state | IN_NOT | IN_LOOK_BEHIND;
   else
@@ -5612,10 +5617,6 @@ tune_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
 
   case ANCR_LOOK_BEHIND:
   case ANCR_LOOK_BEHIND_NOT:
-    r = check_node_in_look_behind(NODE_ANCHOR_BODY(an),
-                                  an->type == ANCR_LOOK_BEHIND_NOT ? 1 : 0);
-    if (r < 0) return r;
-    if (r > 0) return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
     r = tune_look_behind(node, reg, state, env);
     break;
 
