@@ -3192,7 +3192,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           s += n;
         }
       }
-      NEXT_OUT;
+      JUMP_OUT;
 
     CASE_OP(ANYCHAR_ML_STAR_PEEK_NEXT)
       {
@@ -3216,7 +3216,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           }
         }
       }
-      NEXT_OUT;
+      JUMP_OUT;
 
     CASE_OP(WORD)
       DATA_ENSURE(1);
