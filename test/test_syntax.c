@@ -131,6 +131,22 @@ static void e(char* pattern, char* str, int error_no)
   xx(pattern, str, 0, 0, 0, 0, error_no);
 }
 
+static int test_fixed_interval()
+{
+  x2("a{1,3}?", "aaa", 0, 1);
+  x2("a{3}", "aaa", 0, 3);
+  x2("a{3}?", "aaa", 0, 3);
+  n("a{3}?", "aa");
+  x2("a{3,3}?", "aaa", 0, 3);
+  n("a{3,3}?", "aa");
+
+  x2("a{1,3}+", "aaaaaa", 0, 3);
+  x2("a{3}+", "aaaaaa", 0, 3);
+  x2("a{3,3}+", "aaaaaa", 0, 3);
+
+  return 0;
+}
+
 static int test_isolated_option()
 {
   x2("", "", 0, 0);
@@ -198,6 +214,7 @@ extern int main(int argc, char* argv[])
 
   Syntax = ONIG_SYNTAX_PERL;
 
+  test_fixed_interval();
   test_isolated_option();
   test_prec_read();
   test_look_behind();
@@ -210,6 +227,7 @@ extern int main(int argc, char* argv[])
 
   Syntax = ONIG_SYNTAX_JAVA;
 
+  test_fixed_interval();
   test_isolated_option();
   test_prec_read();
   test_look_behind();
