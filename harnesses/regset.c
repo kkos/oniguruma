@@ -25,6 +25,18 @@
 typedef unsigned char uint8_t;
 static OnigEncoding ENC;
 
+static void
+output_current_time(FILE* fp)
+{
+  char d[64];
+  time_t t;
+
+  t = time(NULL);
+  strftime(d, sizeof(d), "%m/%d %H:%M:%S", localtime(&t));
+
+  fprintf(fp, "%s", d);
+}
+
 #ifdef CHECK_EACH_REGEX_SEARCH_TIME
 static double
 get_sec(struct timespec* ts, struct timespec* te)
@@ -344,22 +356,23 @@ LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   }
 
   if (EXEC_COUNT_INTERVAL == EXEC_PRINT_INTERVAL) {
-    char d[64];
-    time_t t;
     float fexec, freg, fvalid;
-
-    t = time(NULL);
-    strftime(d, sizeof(d), "%m/%d %H:%M:%S", localtime(&t));
 
     fexec  = (float )EXEC_COUNT / INPUT_COUNT;
     freg   = (float )REGEX_SUCCESS_COUNT / INPUT_COUNT;
     fvalid = (float )VALID_STRING_COUNT / INPUT_COUNT;
 
-    fprintf(stdout, "%s: %ld: EXEC:%.2f, REG:%.2f, VALID:%.2f MAX REG:%d-%d\n",
-            d, EXEC_COUNT, fexec, freg, fvalid, MaxRegNum, MaxInitRegNum);
+    output_current_time(stdout);
+    fprintf(stdout, ": %ld: EXEC:%.2f, REG:%.2f, VALID:%.2f MAX REG:%d-%d\n",
+            EXEC_COUNT, fexec, freg, fvalid, MaxRegNum, MaxInitRegNum);
 
     EXEC_COUNT_INTERVAL = 0;
   }
+  else if (EXEC_COUNT == 1) {
+    output_current_time(stdout);
+    fprintf(stdout, ": ------------ START ------------\n");
+  }
+
   return r;
 }
 
