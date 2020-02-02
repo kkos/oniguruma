@@ -1269,6 +1269,8 @@ extern int main(int argc, char* argv[])
   x2("(?<=D|)(?<=@!nnnnnnnnnIIIIn;{1}D?()|<x@x*xxxD|)(?<=@xxx|xxxxx\\g<1>;{1}x)", "(?<=D|)(?<=@!nnnnnnnnnIIIIn;{1}D?()|<x@x*xxxD|)(?<=@xxx|xxxxx\\g<1>;{1}x)", 55, 55); // #173
   x2("(?<=;()|)\\g<1>", "", 0, 0); // reduced #173
   x2("(?<=;()|)\\k<1>", ";", 1, 1);
+  x2("(())\\g<3>{0}(?<=|())", "abc", 0, 0); // #175
+  x2("(?<=()|)\\1{0}", "abc", 0, 0);
   x2("(?<=(?<=abc))def", "abcdef", 3, 6);
   x2("(?<=ab(?<=.+b)c)def", "abcdef", 3, 6);
   n("(?<=ab(?<=a+)c)def", "abcdef");
