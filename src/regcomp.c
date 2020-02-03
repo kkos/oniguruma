@@ -6181,7 +6181,7 @@ concat_opt_exact_str(OptStr* to, UChar* s, UChar* end, OnigEncoding enc)
 
   to->len = i;
 
-  if (p >= end && to->len == (int )(end - s))
+  if (p >= end)
     to->reach_end = 1;
 }
 
