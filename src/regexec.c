@@ -5322,17 +5322,16 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
         if (! forward_search(reg, str, end, s, sch_range, &low, &high,
                              (UChar** )NULL)) goto mismatch;
 
-        if ((reg->anchor & ANCR_ANYCHAR_INF) != 0) {
+        if ((reg->anchor & ANCR_ANYCHAR_INF) != 0 &&
+            (reg->anchor & (ANCR_LOOK_BEHIND | ANCR_PREC_READ_NOT)) == 0) {
           do {
             MATCH_AND_RETURN_CHECK(data_range);
             prev = s;
             s += enclen(reg->enc, s);
 
-            if ((reg->anchor & (ANCR_LOOK_BEHIND | ANCR_PREC_READ_NOT)) == 0) {
-              while (!ONIGENC_IS_MBC_NEWLINE(reg->enc, prev, end) && s < range) {
-                prev = s;
-                s += enclen(reg->enc, s);
-              }
+            while (!ONIGENC_IS_MBC_NEWLINE(reg->enc, prev, end) && s < range) {
+              prev = s;
+              s += enclen(reg->enc, s);
             }
           } while (s < range);
           goto mismatch;
