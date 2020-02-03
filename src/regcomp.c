@@ -6820,7 +6820,7 @@ set_optimize_map(regex_t* reg, OptMap* m)
   reg->dist_max   = m->mm.max;
 
   if (reg->dist_min != INFINITE_LEN) {
-    reg->threshold_len = reg->dist_min + 1;
+    reg->threshold_len = reg->dist_min + ONIGENC_MBC_MINLEN(reg->enc);
   }
 }
 
