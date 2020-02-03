@@ -6635,17 +6635,17 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
       QuantNode* qn = QUANT_(node);
 
       /* Issue #175
-	 ex. /\g<1>{0}(?<=|())/
+         ex. /\g<1>{0}(?<=|())/
 
-	 Empty and unused nodes in look-behind is removed in
+         Empty and unused nodes in look-behind is removed in
          tune_look_behind().
-	 Called group nodes are assigned to be not called if the caller side is
+         Called group nodes are assigned to be not called if the caller side is
          inside of zero-repetition.
          As a result, the nodes are considered unused.
        */
       if (qn->upper == 0) {
-	mml_set_min_max(&opt->len, 0, 0);
-	break;
+        mml_set_min_max(&opt->len, 0, 0);
+        break;
       }
 
       r = optimize_nodes(NODE_BODY(node), &xo, env);
