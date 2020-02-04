@@ -1271,6 +1271,7 @@ extern int main(int argc, char* argv[])
   x2("(?<=;()|)\\k<1>", ";", 1, 1);
   x2("(())\\g<3>{0}(?<=|())", "abc", 0, 0); // #175
   x2("(?<=()|)\\1{0}", "abc", 0, 0);
+  e("(?<!xxxxxxxxxxxxxxxxxxxxxxx{32774}{65521}xxxxxxxx{65521}xxxxxxxxxxxxxx{32774}xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)", "", ONIGERR_INVALID_LOOK_BEHIND_PATTERN); // #177
   x2("(?<=(?<=abc))def", "abcdef", 3, 6);
   x2("(?<=ab(?<=.+b)c)def", "abcdef", 3, 6);
   n("(?<=ab(?<=a+)c)def", "abcdef");
