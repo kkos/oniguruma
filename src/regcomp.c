@@ -4691,6 +4691,12 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
 
   r = node_char_len(body, reg, &ci, env);
   if (r >= 0) {
+    /* #177: overflow in onigenc_step_back() */
+    if ((ci.max != INFINITE_LEN && ci.max > LOOK_BEHIND_MAX_CHAR_LEN)
+      || ci.min > LOOK_BEHIND_MAX_CHAR_LEN) {
+      return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
+    }
+
     if (ci.min == 0 && ci.min_is_sure != 0 && used == FALSE) {
       if (an->type == ANCR_LOOK_BEHIND_NOT)
         r = onig_node_reset_fail(node);
