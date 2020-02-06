@@ -764,7 +764,11 @@ node_char_len1(Node* node, regex_t* reg, MinMaxCharLen* ci, ScanEnv* env,
       UChar *s = sn->s;
 
       if (NODE_IS_IGNORECASE(node) && ! NODE_STRING_IS_CRUDE(node)) {
-        r = ONIGERR_PARSER_BUG;
+        /* Such a case is possible.
+           ex. /(?i)(?<=\1)(a)/
+           Backref node refer to capture group, but it doesn't tune yet.
+         */
+        r = ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
         break;
       }
 
