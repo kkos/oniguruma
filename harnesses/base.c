@@ -14,8 +14,9 @@
 #include "oniguruma.h"
 
 
-//#define PARSE_DEPTH_LIMIT     10
-#define RETRY_LIMIT        3500
+#define PARSE_DEPTH_LIMIT           8
+#define RETRY_LIMIT              3500
+#define EXEC_PRINT_INTERVAL   5000000
 
 typedef unsigned char uint8_t;
 
@@ -199,8 +200,6 @@ alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   return r;
 }
 
-
-#define EXEC_PRINT_INTERVAL  10000000
 
 #ifdef SYNTAX_TEST
 #define NUM_CONTROL_BYTES      4
