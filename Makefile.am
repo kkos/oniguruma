@@ -42,6 +42,9 @@ all-test:
 archive:
 	git archive --format=tar --prefix=oniguruma/ HEAD | gzip > ../oniguruma-archive.tar.gz
 
+tar:
+	cd ..; tar cvf oniguruma-`date +%Y%m%d`.tar oniguruma; gzip oniguruma-`date +%Y%m%d`.tar
+
 debug:
 	make clean
 	./configure CFLAGS="-O0 -g"
