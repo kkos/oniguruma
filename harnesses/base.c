@@ -14,7 +14,7 @@
 #include "oniguruma.h"
 
 
-//#define PARSE_DEPTH_LIMIT   120
+//#define PARSE_DEPTH_LIMIT     10
 #define RETRY_LIMIT        3500
 
 typedef unsigned char uint8_t;
@@ -106,7 +106,9 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
 
   onig_initialize(&enc, 1);
   onig_set_retry_limit_in_match(RETRY_LIMIT);
-  //onig_set_parse_depth_limit(PARSE_DEPTH_LIMIT);
+#ifdef PARSE_DEPTH_LIMIT
+  onig_set_parse_depth_limit(PARSE_DEPTH_LIMIT);
+#endif
 
   r = onig_new(&reg, pattern, pattern_end,
                options, enc, syntax, &einfo);
