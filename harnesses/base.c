@@ -319,13 +319,19 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   if (EXEC_COUNT_INTERVAL == EXEC_PRINT_INTERVAL) {
     float fexec, freg, fvalid;
 
-    fexec  = (float )EXEC_COUNT / INPUT_COUNT;
-    freg   = (float )REGEX_SUCCESS_COUNT / INPUT_COUNT;
-    fvalid = (float )VALID_STRING_COUNT / INPUT_COUNT;
-
     output_current_time(stdout);
-    fprintf(stdout, ": %ld: EXEC:%.2f, REG:%.2f, VALID:%.2f\n",
-            EXEC_COUNT, fexec, freg, fvalid);
+
+    if (INPUT_COUNT != 0) { // overflow check
+      fexec  = (float )EXEC_COUNT / INPUT_COUNT;
+      freg   = (float )REGEX_SUCCESS_COUNT / INPUT_COUNT;
+      fvalid = (float )VALID_STRING_COUNT / INPUT_COUNT;
+
+      fprintf(stdout, ": %ld: EXEC:%.2f, REG:%.2f, VALID:%.2f\n",
+              EXEC_COUNT, fexec, freg, fvalid);
+    }
+    else {
+      fprintf(stdout, ": ignore (input count overflow)\n");
+    }
 
     EXEC_COUNT_INTERVAL = 0;
   }
