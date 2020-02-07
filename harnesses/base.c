@@ -44,7 +44,7 @@ search(regex_t* reg, unsigned char* str, unsigned char* end)
   range = end;
   r = onig_search(reg, str, end, start, range, region, ONIG_OPTION_NONE);
   if (r >= 0) {
-#ifdef WITH_READ_MAIN
+#ifdef STANDALONE
     int i;
 
     fprintf(stdout, "match at %d  (%s)\n", r,
@@ -55,13 +55,13 @@ search(regex_t* reg, unsigned char* str, unsigned char* end)
 #endif
   }
   else if (r == ONIG_MISMATCH) {
-#ifdef WITH_READ_MAIN
+#ifdef STANDALONE
     fprintf(stdout, "search fail (%s)\n",
             ONIGENC_NAME(onig_get_encoding(reg)));
 #endif
   }
   else { /* error */
-#ifdef WITH_READ_MAIN
+#ifdef STANDALONE
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
 
     onig_error_code_to_str((UChar* )s, r);
@@ -111,7 +111,7 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   if (r != ONIG_NORMAL) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
     onig_error_code_to_str((UChar* )s, r, &einfo);
-#ifdef WITH_READ_MAIN
+#ifdef STANDALONE
     fprintf(stdout, "ERROR: %s\n", s);
 #endif
     onig_end();
@@ -281,7 +281,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   data++;
   remaining_size--;
 
-#ifdef WITH_READ_MAIN
+#ifdef STANDALONE
 #ifdef SYNTAX_TEST
   fprintf(stdout, "enc: %s, syntax: %d, options: %u\n",
           ONIGENC_NAME(enc), (int )(syntax_choice % num_syntaxes), options);
@@ -290,7 +290,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 #endif
 #endif
 
-#ifdef WITH_READ_MAIN
+#ifdef STANDALONE
   int max_pattern_size;
 
   if (remaining_size == 0)
@@ -320,7 +320,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 #endif
   }
 
-#else /* WITH_READ_MAIN */
+#else /* STANDALONE */
 
   if (remaining_size == 0)
     pattern_size = 0;
@@ -339,7 +339,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
     //output_data("parser-bug", Data, Size);
     exit(-2);
   }
-#endif /* else WITH_READ_MAIN */
+#endif /* else STANDALONE */
 
   if (EXEC_COUNT_INTERVAL == EXEC_PRINT_INTERVAL) {
     float fexec, freg, fvalid;
@@ -362,7 +362,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   return r;
 }
 
-#ifdef WITH_READ_MAIN
+#ifdef STANDALONE
 
 extern int main(int argc, char* argv[])
 {
@@ -375,4 +375,4 @@ extern int main(int argc, char* argv[])
 
   return 0;
 }
-#endif /* WITH_READ_MAIN */
+#endif /* STANDALONE */

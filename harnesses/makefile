@@ -1,7 +1,7 @@
 # makefile for harness
 SRC = ../src
 CFLAGS   = -I$(SRC) -Wall -g -fsanitize=fuzzer,address -fno-omit-frame-pointer
-CFLAGS_M = -I$(SRC) -Wall -g -fsanitize=fuzzer-no-link,address -fno-omit-frame-pointer -DWITH_READ_MAIN
+CFLAGS_M = -I$(SRC) -Wall -g -fsanitize=fuzzer-no-link,address -fno-omit-frame-pointer -DSTANDALONE
 ONIG_LIB = $(SRC)/.libs/libonig.a
 LIBS     = $(ONIG_LIB)
 

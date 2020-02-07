@@ -186,7 +186,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 }
 
 
-#ifdef WITH_READ_MAIN
+#ifdef STANDALONE
 
 #include <unistd.h>
 
@@ -201,4 +201,4 @@ extern int main(int argc, char* argv[])
 
   return 0;
 }
-#endif /* WITH_READ_MAIN */
+#endif /* STANDALONE */
