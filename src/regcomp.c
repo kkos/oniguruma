@@ -7023,9 +7023,8 @@ print_anchor(FILE* f, int anchor)
 static void
 print_optimize_info(FILE* f, regex_t* reg)
 {
-  static const char* on[] = { "NONE", "STR",
-                              "STR_FAST", "STR_FAST_STEP_FORWARD",
-                              "STR_CASE_FOLD", "MAP" };
+  static const char* on[] =
+    { "NONE", "STR", "STR_FAST", "STR_FAST_STEP_FORWARD", "MAP" };
 
   fprintf(f, "optimize: %s\n", on[reg->optimize]);
   fprintf(f, "  anchor: "); print_anchor(f, reg->anchor);
@@ -7717,7 +7716,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
     fprintf(f, "<ctype:%p> ", node);
     switch (CTYPE_(node)->ctype) {
     case CTYPE_ANYCHAR:
-      fprintf(f, "<anychar:%p>", node);
+      fprintf(f, "anychar");
       break;
 
     case ONIGENC_CTYPE_WORD:
