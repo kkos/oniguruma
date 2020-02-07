@@ -19,6 +19,7 @@
 
 typedef unsigned char uint8_t;
 
+#ifndef STANDALONE
 static void
 output_current_time(FILE* fp)
 {
@@ -30,6 +31,7 @@ output_current_time(FILE* fp)
 
   fprintf(fp, "%s", d);
 }
+#endif
 
 static int
 search(regex_t* reg, unsigned char* str, unsigned char* end)
@@ -197,12 +199,11 @@ alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
 
 
 #define EXEC_PRINT_INTERVAL  10000000
-#define MAX_PATTERN_SIZE     150
 
 #ifdef SYNTAX_TEST
-#define NUM_CONTROL_BYTES      3
+#define NUM_CONTROL_BYTES      4
 #else
-#define NUM_CONTROL_BYTES      2
+#define NUM_CONTROL_BYTES      3
 #endif
 
 int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
@@ -240,6 +241,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   size_t remaining_size;
   unsigned char *data;
   unsigned char options_choice;
+  unsigned char pattern_size_choice;
   OnigOptionType  options;
   OnigEncoding    enc;
   OnigSyntaxType* syntax;
@@ -281,66 +283,37 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   data++;
   remaining_size--;
 
-#ifdef STANDALONE
-#ifdef SYNTAX_TEST
-  fprintf(stdout, "enc: %s, syntax: %d, options: %u\n",
-          ONIGENC_NAME(enc), (int )(syntax_choice % num_syntaxes), options);
-#else
-  fprintf(stdout, "enc: %s, options: %u\n", ONIGENC_NAME(enc), options);
-#endif
-#endif
-
-#ifdef STANDALONE
-  int max_pattern_size;
-
-  if (remaining_size == 0)
-    max_pattern_size = 0;
-  else {
-    max_pattern_size = remaining_size - 1;
-    if (max_pattern_size > MAX_PATTERN_SIZE)
-      max_pattern_size = MAX_PATTERN_SIZE;
-
-#if defined(UTF16_BE) || defined(UTF16_LE)
-    if (max_pattern_size % 2 == 1) max_pattern_size--;
-#endif
-  }
-
-  for (pattern_size = 0; pattern_size <= max_pattern_size; ) {
-    fprintf(stdout, "pattern_size: %d\n", pattern_size);
-    r = alloc_exec(enc, options, syntax, pattern_size, remaining_size, data);
-    if (r == -2) {
-      //output_data("parser-bug", Data, Size);
-      exit(-2);
-    }
-
-#if defined(UTF16_BE) || defined(UTF16_LE)
-    pattern_size += 2;
-#else
-    pattern_size++;
-#endif
-  }
-
-#else /* STANDALONE */
+  pattern_size_choice = data[0];
+  data++;
+  remaining_size--;
 
   if (remaining_size == 0)
     pattern_size = 0;
   else {
-    pattern_size = INPUT_COUNT % remaining_size;
-    if (pattern_size > MAX_PATTERN_SIZE)
-      pattern_size = MAX_PATTERN_SIZE;
-
+    pattern_size = (int )pattern_size_choice % remaining_size;
 #if defined(UTF16_BE) || defined(UTF16_LE)
     if (pattern_size % 2 == 1) pattern_size--;
 #endif
   }
+
+#ifdef STANDALONE
+#ifdef SYNTAX_TEST
+  fprintf(stdout, "enc: %s, syntax: %d, options: %u, pattern_size: %d\n",
+          ONIGENC_NAME(enc), (int )(syntax_choice % num_syntaxes), options,
+          pattern_size);
+#else
+  fprintf(stdout, "enc: %s, options: %u, pattern_size: %d\n",
+          ONIGENC_NAME(enc), options, pattern_size);
+#endif
+#endif
 
   r = alloc_exec(enc, options, syntax, pattern_size, remaining_size, data);
   if (r == -2) {
     //output_data("parser-bug", Data, Size);
     exit(-2);
   }
-#endif /* else STANDALONE */
 
+#ifndef STANDALONE
   if (EXEC_COUNT_INTERVAL == EXEC_PRINT_INTERVAL) {
     float fexec, freg, fvalid;
 
@@ -358,6 +331,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
     output_current_time(stdout);
     fprintf(stdout, ": ------------ START ------------\n");
   }
+#endif
 
   return r;
 }
