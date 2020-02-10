@@ -174,10 +174,12 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   r = search(reg, pattern, pattern_end);
   if (r == -2) return -2;
 
-  if (onigenc_is_valid_mbc_string(enc, str, end) != 0) {
-    VALID_STRING_COUNT++;
-    r = search(reg, str, end);
-    if (r == -2) return -2;
+  if (r != ONIGERR_RETRY_LIMIT_IN_MATCH_OVER) {
+    if (onigenc_is_valid_mbc_string(enc, str, end) != 0) {
+      VALID_STRING_COUNT++;
+      r = search(reg, str, end);
+      if (r == -2) return -2;
+    }
   }
 
   onig_free(reg);
