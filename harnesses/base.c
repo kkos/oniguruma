@@ -15,7 +15,7 @@
 
 
 #define PARSE_DEPTH_LIMIT           8
-#define RETRY_LIMIT              3500
+#define RETRY_LIMIT              1000
 #define EXEC_PRINT_INTERVAL   5000000
 
 typedef unsigned char uint8_t;
