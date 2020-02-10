@@ -7848,6 +7848,8 @@ print_indent_tree(FILE* f, Node* node, int indent)
       fprintf(f, "memory:%d", BAG_(node)->m.regnum);
       if (NODE_IS_CALLED(node))
         fprintf(f, ", called");
+      if (NODE_IS_FIXED_ADDR(node))
+        fprintf(f, ", fixed-addr");
       break;
     case BAG_STOP_BACKTRACK:
       fprintf(f, "stop-bt");
