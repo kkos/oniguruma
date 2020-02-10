@@ -7803,9 +7803,10 @@ print_indent_tree(FILE* f, Node* node, int indent)
 #endif
 
   case NODE_QUANT:
-    fprintf(f, "<quantifier:%p>{%d,%d}%s\n", node,
+    fprintf(f, "<quantifier:%p>{%d,%d}%s%s\n", node,
             QUANT_(node)->lower, QUANT_(node)->upper,
-            (QUANT_(node)->greedy ? "" : "?"));
+            (QUANT_(node)->greedy ? "" : "?"),
+            QUANT_(node)->include_referred == 0 ? "" : " referred");
     print_indent_tree(f, NODE_BODY(node), indent + add);
     break;
 
