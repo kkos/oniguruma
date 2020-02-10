@@ -35,7 +35,10 @@ dump_data(FILE* fp, unsigned char* data, int len)
     unsigned char c = data[i];
 
     if (isprint((int )c)) {
-      fprintf(fp, " '%c'", c);
+      if (c == '\\')
+        fprintf(fp, " '\\\\'");
+      else
+        fprintf(fp, " '%c'", c);
     }
     else {
       fprintf(fp, "0x%02x", (int )c);
