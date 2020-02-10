@@ -20,7 +20,42 @@
 
 typedef unsigned char uint8_t;
 
-#ifndef STANDALONE
+
+#ifdef STANDALONE
+
+#include <ctype.h>
+
+static void
+dump_data(FILE* fp, unsigned char* data, int len)
+{
+  int i;
+
+  fprintf(fp, "{\n");
+  for (i = 0; i < len; i++) {
+    unsigned char c = data[i];
+
+    if (isprint((int )c)) {
+      fprintf(fp, " '%c'", c);
+    }
+    else {
+      fprintf(fp, "0x%02x", (int )c);
+    }
+
+    if (i == len - 1) {
+      fprintf(fp, "\n");
+    }
+    else {
+      if (i % 8 == 7)
+        fprintf(fp, ",\n");
+      else
+        fprintf(fp, ", ");
+    }
+  }
+  fprintf(fp, "};\n");
+}
+
+#else
+
 static void
 output_current_time(FILE* fp)
 {
@@ -32,6 +67,7 @@ output_current_time(FILE* fp)
 
   fprintf(fp, "%s", d);
 }
+
 #endif
 
 static int
@@ -145,28 +181,6 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   onig_end();
   return 0;
 }
-
-#if 0
-static void
-output_data(char* path, const uint8_t * data, size_t size)
-{
-  int fd;
-  ssize_t n;
-
-  fd = open(path, O_CREAT|O_RDWR, S_IRUSR|S_IRGRP|S_IROTH);
-  if (fd == -1) {
-    fprintf(stderr, "ERROR: output_data(): can't open(%s)\n", path);
-    return ;
-  }
-
-  n = write(fd, (const void* )data, size);
-  if (n != size) {
-    fprintf(stderr, "ERROR: output_data(): n: %ld, size: %ld\n", n, size);
-  }
-  close(fd);
-}
-#endif
-
 
 static int
 alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
@@ -298,6 +312,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   }
 
 #ifdef STANDALONE
+  dump_data(stdout, data, pattern_size);
 #ifdef SYNTAX_TEST
   fprintf(stdout, "enc: %s, syntax: %d, options: %u, pattern_size: %d\n",
           ONIGENC_NAME(enc), (int )(syntax_choice % num_syntaxes), options,
@@ -309,10 +324,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 #endif
 
   r = alloc_exec(enc, options, syntax, pattern_size, remaining_size, data);
-  if (r == -2) {
-    //output_data("parser-bug", Data, Size);
-    exit(-2);
-  }
+  if (r == -2) exit(-2);
 
 #ifndef STANDALONE
   if (EXEC_COUNT_INTERVAL == EXEC_PRINT_INTERVAL) {
