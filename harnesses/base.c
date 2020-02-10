@@ -248,6 +248,19 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
     ONIG_SYNTAX_PERL_NG,
     ONIG_SYNTAX_ONIGURUMA
   };
+
+#ifdef STANDALONE
+  static char* syntax_names[] = {
+    "Posix Extended",
+    "Emacs",
+    "Grep",
+    "GNU Regex",
+    "Java",
+    "Perl+NG",
+    "Oniguruma"
+  };
+#endif
+
   unsigned char syntax_choice;
 #endif
 
@@ -314,8 +327,10 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 #ifdef STANDALONE
   dump_data(stdout, data, pattern_size);
 #ifdef SYNTAX_TEST
-  fprintf(stdout, "enc: %s, syntax: %d, options: %u, pattern_size: %d\n",
-          ONIGENC_NAME(enc), (int )(syntax_choice % num_syntaxes), options,
+  fprintf(stdout, "enc: %s, syntax: %s, options: %u, pattern_size: %d\n",
+          ONIGENC_NAME(enc),
+          syntax_names[syntax_choice % num_syntaxes],
+          options,
           pattern_size);
 #else
   fprintf(stdout, "enc: %s, options: %u, pattern_size: %d\n",
