@@ -1552,8 +1552,10 @@ stack_double(int is_alloca, char** arg_alloc_base,
   }
   else {
     if (msa->match_stack_limit != 0 && n > msa->match_stack_limit) {
-      if ((unsigned int )(stk_end - stk_base) == msa->match_stack_limit)
+      if ((unsigned int )(stk_end - stk_base) == msa->match_stack_limit) {
+        STACK_SAVE;
         return ONIGERR_MATCH_STACK_LIMIT_OVER;
+      }
       else
         n = msa->match_stack_limit;
     }
@@ -1577,7 +1579,7 @@ stack_double(int is_alloca, char** arg_alloc_base,
 #define STACK_ENSURE(n) do {\
     if ((int )(stk_end - stk) < (n)) {\
     int r = stack_double(is_alloca, &alloc_base, &stk_base, &stk_end, &stk, msa);\
-    if (r != 0) { STACK_SAVE; return r; } \
+    if (r != 0) return r;\
     is_alloca = 0;\
     UPDATE_FOR_STACK_REALLOC;\
   }\
