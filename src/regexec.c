@@ -1238,7 +1238,7 @@ onig_set_match_stack_limit_size(unsigned int size)
   return 0;
 }
 
-#ifdef USE_RETRY_LIMIT_IN_MATCH
+#ifdef USE_RETRY_LIMIT
 
 static unsigned long RetryLimitInMatch = DEFAULT_RETRY_LIMIT_IN_MATCH;
 
@@ -1252,12 +1252,12 @@ static unsigned long RetryLimitInMatch = DEFAULT_RETRY_LIMIT_IN_MATCH;
 
 #define CHECK_RETRY_LIMIT_IN_MATCH
 
-#endif /* USE_RETRY_LIMIT_IN_MATCH */
+#endif /* USE_RETRY_LIMIT */
 
 extern unsigned long
 onig_get_retry_limit_in_match(void)
 {
-#ifdef USE_RETRY_LIMIT_IN_MATCH
+#ifdef USE_RETRY_LIMIT
   return RetryLimitInMatch;
 #else
   /* return ONIG_NO_SUPPORT_CONFIG; */
@@ -1268,7 +1268,7 @@ onig_get_retry_limit_in_match(void)
 extern int
 onig_set_retry_limit_in_match(unsigned long size)
 {
-#ifdef USE_RETRY_LIMIT_IN_MATCH
+#ifdef USE_RETRY_LIMIT
   RetryLimitInMatch = size;
   return 0;
 #else
@@ -1318,7 +1318,7 @@ extern int
 onig_initialize_match_param(OnigMatchParam* mp)
 {
   mp->match_stack_limit  = MatchStackLimit;
-#ifdef USE_RETRY_LIMIT_IN_MATCH
+#ifdef USE_RETRY_LIMIT
   mp->retry_limit_in_match = RetryLimitInMatch;
 #endif
 
@@ -2718,7 +2718,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   StackIndex *repeat_stk;
   StackIndex *empty_check_stk;
 #endif
-#ifdef USE_RETRY_LIMIT_IN_MATCH
+#ifdef USE_RETRY_LIMIT
   unsigned long retry_limit_in_match;
   unsigned long retry_in_match_counter;
 #endif
@@ -2751,7 +2751,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   msa->mp->match_at_call_counter++;
 #endif
 
-#ifdef USE_RETRY_LIMIT_IN_MATCH
+#ifdef USE_RETRY_LIMIT
   retry_limit_in_match = msa->retry_limit_in_match;
 #endif
 
@@ -2775,7 +2775,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   STACK_PUSH_BOTTOM(STK_ALT, FinishCode);  /* bottom stack */
   INIT_RIGHT_RANGE;
 
-#ifdef USE_RETRY_LIMIT_IN_MATCH
+#ifdef USE_RETRY_LIMIT
   retry_in_match_counter = 0;
 #endif
 
