@@ -1521,9 +1521,9 @@ onig_set_callout_data_by_callout_args_self(OnigCalloutArgs* args,
 
 
 static int
-stack_double(int is_alloca, char** arg_alloc_base,
-             StackType** arg_stk_base, StackType** arg_stk_end, StackType** arg_stk,
-             MatchArg* msa)
+stack_double(int* is_alloca, char** arg_alloc_base,
+             StackType** arg_stk_base, StackType** arg_stk_end,
+             StackType** arg_stk, MatchArg* msa)
 {
   unsigned int n;
   int used;
@@ -1542,13 +1542,14 @@ stack_double(int is_alloca, char** arg_alloc_base,
   size = sizeof(StackIndex) * msa->ptr_num + sizeof(StackType) * n;
   n *= 2;
   new_size = sizeof(StackIndex) * msa->ptr_num + sizeof(StackType) * n;
-  if (is_alloca != 0) {
+  if (*is_alloca != 0) {
     new_alloc_base = (char* )xmalloc(new_size);
     if (IS_NULL(new_alloc_base)) {
       STACK_SAVE;
       return ONIGERR_MEMORY;
     }
     xmemcpy(new_alloc_base, alloc_base, size);
+    *is_alloca = 0;
   }
   else {
     if (msa->match_stack_limit != 0 && n > msa->match_stack_limit) {
@@ -1578,9 +1579,8 @@ stack_double(int is_alloca, char** arg_alloc_base,
 
 #define STACK_ENSURE(n) do {\
     if ((int )(stk_end - stk) < (n)) {\
-    int r = stack_double(is_alloca, &alloc_base, &stk_base, &stk_end, &stk, msa);\
+    int r = stack_double(&is_alloca, &alloc_base, &stk_base, &stk_end, &stk, msa);\
     if (r != 0) return r;\
-    is_alloca = 0;\
     UPDATE_FOR_STACK_REALLOC;\
   }\
 } while(0)
