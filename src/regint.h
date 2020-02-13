@@ -182,7 +182,8 @@
 
 #define CHAR_MAP_SIZE              256
 #define INFINITE_LEN               ONIG_INFINITE_DISTANCE
-#define LOOK_BEHIND_MAX_CHAR_LEN   INT_MAX
+#define STEP_BACK_MAX_CHAR_LEN     65535 /* INT_MAX is too big */
+#define LOOK_BEHIND_MAX_CHAR_LEN   STEP_BACK_MAX_CHAR_LEN
 
 /* escape other system UChar definition */
 #ifdef ONIG_ESCAPE_UCHAR_COLLISION
