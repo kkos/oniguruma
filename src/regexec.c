@@ -4200,11 +4200,11 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
  match_at_end:
   if (msa->retry_limit_in_search != 0) {
     if (retry_in_match_counter > ULONG_MAX - msa->retry_limit_in_search_counter)
-      best_len = ONIGERR_RETRY_LIMIT_IN_MATCH_OVER;
+      best_len = ONIGERR_RETRY_LIMIT_IN_SEARCH_OVER;
     else {
       msa->retry_limit_in_search_counter += retry_in_match_counter;
       if (msa->retry_limit_in_search_counter > msa->retry_limit_in_search)
-        best_len = ONIGERR_RETRY_LIMIT_IN_MATCH_OVER;
+        best_len = ONIGERR_RETRY_LIMIT_IN_SEARCH_OVER;
     }
   }
   STACK_SAVE;
