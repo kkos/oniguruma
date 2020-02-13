@@ -4924,7 +4924,7 @@ unravel_cf_string_add(Node** rlist, Node** rsn, UChar* s, UChar* end,
 
 static int
 unravel_cf_string_alt_or_cc_add(Node** rlist, int n,
-            OnigCaseFoldCodeItem items[], int byte_len, OnigEncoding enc,
+            OnigCaseFoldCodeItem items[], OnigEncoding enc,
             OnigCaseFoldType case_fold_flag, UChar* s, UChar* end)
 {
   int r, i;
@@ -5081,7 +5081,7 @@ unravel_case_fold_string(Node* node, regex_t* reg, int state)
         }
 
         q = p + max_len;
-        r = unravel_cf_string_alt_or_cc_add(&list, n, items, max_len, enc,
+        r = unravel_cf_string_alt_or_cc_add(&list, n, items, enc,
                                             reg->case_fold_flag, p, q);
         if (r != 0) goto err;
         sn = NULL_NODE;
