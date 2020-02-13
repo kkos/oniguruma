@@ -85,6 +85,7 @@
 #define INIT_MATCH_STACK_SIZE                160
 #define DEFAULT_MATCH_STACK_LIMIT_SIZE         0 /* unlimited */
 #define DEFAULT_RETRY_LIMIT_IN_MATCH    10000000
+#define DEFAULT_RETRY_LIMIT_IN_SEARCH          0 /* unlimited */
 #define DEFAULT_PARSE_DEPTH_LIMIT           4096
 
 

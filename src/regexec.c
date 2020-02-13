@@ -72,7 +72,10 @@ typedef struct {
 
 struct OnigMatchParamStruct {
   unsigned int    match_stack_limit;
+#ifdef USE_RETRY_LIMIT
   unsigned long   retry_limit_in_match;
+  unsigned long   retry_limit_in_search;
+#endif
 #ifdef USE_CALLOUT
   OnigCalloutFunc progress_callout_of_contents;
   OnigCalloutFunc retraction_callout_of_contents;
@@ -95,8 +98,27 @@ extern int
 onig_set_retry_limit_in_match_of_match_param(OnigMatchParam* param,
                                              unsigned long limit)
 {
+#ifdef USE_RETRY_LIMIT
   param->retry_limit_in_match = limit;
   return ONIG_NORMAL;
+#else
+  return ONIG_NO_SUPPORT_CONFIG;
+#endif
+}
+
+extern int
+onig_set_retry_limit_in_search_of_match_param(OnigMatchParam* param,
+                                              unsigned long limit)
+{
+#ifdef USE_RETRY_LIMIT
+  param->retry_limit_in_search = limit;
+  if (limit != 0 && param->retry_limit_in_match > limit)
+    param->retry_limit_in_match = limit;
+
+  return ONIG_NORMAL;
+#else
+  return ONIG_NO_SUPPORT_CONFIG;
+#endif
 }
 
 extern int
@@ -141,7 +163,11 @@ typedef struct {
   int            ptr_num;
   const UChar*   start;   /* search start position (for \G: BEGIN_POSITION) */
   unsigned int   match_stack_limit;
+#ifdef USE_RETRY_LIMIT
   unsigned long  retry_limit_in_match;
+  unsigned long  retry_limit_in_search;
+  unsigned long  retry_limit_in_search_counter;
+#endif
   OnigMatchParam* mp;
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
   int    best_len;      /* for ONIG_OPTION_FIND_LONGEST */
@@ -1147,6 +1173,15 @@ struct OnigCalloutArgsStruct {
 
 #endif /* USE_REPEAT_AND_EMPTY_CHECK_LOCAL_VAR */
 
+#ifdef USE_RETRY_LIMIT
+#define RETRY_IN_MATCH_ARG_INIT(msa,mpv) \
+  (msa).retry_limit_in_match  = (mpv)->retry_limit_in_match;\
+  (msa).retry_limit_in_search = (mpv)->retry_limit_in_search;\
+  (msa).retry_limit_in_search_counter = 0;
+#else
+#define RETRY_IN_MATCH_ARG_INIT(msa,mpv)
+#endif
+
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
 #define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start, mpv) do { \
   (msa).stack_p  = (void* )0;\
@@ -1154,7 +1189,7 @@ struct OnigCalloutArgsStruct {
   (msa).region   = (arg_region);\
   (msa).start    = (arg_start);\
   (msa).match_stack_limit  = (mpv)->match_stack_limit;\
-  (msa).retry_limit_in_match = (mpv)->retry_limit_in_match;\
+  RETRY_IN_MATCH_ARG_INIT(msa,mpv)\
   (msa).mp = mpv;\
   (msa).best_len = ONIG_MISMATCH;\
   (msa).ptr_num  = PTR_NUM_SIZE(reg);\
@@ -1166,7 +1201,7 @@ struct OnigCalloutArgsStruct {
   (msa).region   = (arg_region);\
   (msa).start    = (arg_start);\
   (msa).match_stack_limit  = (mpv)->match_stack_limit;\
-  (msa).retry_limit_in_match = (mpv)->retry_limit_in_match;\
+  RETRY_IN_MATCH_ARG_INIT(msa,mpv)\
   (msa).mp = mpv;\
   (msa).ptr_num  = PTR_NUM_SIZE(reg);\
 } while(0)
@@ -1210,7 +1245,7 @@ struct OnigCalloutArgsStruct {
 
 
 #define STACK_SAVE do{\
-    msa->stack_n = (int )(stk_end - stk_base);\
+  msa->stack_n = (int )(stk_end - stk_base);\
   if (is_alloca != 0) {\
     size_t size = sizeof(StackIndex) * msa->ptr_num \
                 + sizeof(StackType) * msa->stack_n;\
@@ -1240,7 +1275,8 @@ onig_set_match_stack_limit_size(unsigned int size)
 
 #ifdef USE_RETRY_LIMIT
 
-static unsigned long RetryLimitInMatch = DEFAULT_RETRY_LIMIT_IN_MATCH;
+static unsigned long RetryLimitInMatch  = DEFAULT_RETRY_LIMIT_IN_MATCH;
+static unsigned long RetryLimitInSearch = DEFAULT_RETRY_LIMIT_IN_SEARCH;
 
 #define CHECK_RETRY_LIMIT_IN_MATCH  do {\
   if (retry_in_match_counter++ > retry_limit_in_match) {\
@@ -1260,16 +1296,39 @@ onig_get_retry_limit_in_match(void)
 #ifdef USE_RETRY_LIMIT
   return RetryLimitInMatch;
 #else
-  /* return ONIG_NO_SUPPORT_CONFIG; */
   return 0;
 #endif
 }
 
 extern int
-onig_set_retry_limit_in_match(unsigned long size)
+onig_set_retry_limit_in_match(unsigned long n)
 {
 #ifdef USE_RETRY_LIMIT
-  RetryLimitInMatch = size;
+  RetryLimitInMatch = n;
+  return 0;
+#else
+  return ONIG_NO_SUPPORT_CONFIG;
+#endif
+}
+
+extern unsigned long
+onig_get_retry_limit_in_search(void)
+{
+#ifdef USE_RETRY_LIMIT
+  return RetryLimitInSearch;
+#else
+  return 0;
+#endif
+}
+
+extern int
+onig_set_retry_limit_in_search(unsigned long n)
+{
+#ifdef USE_RETRY_LIMIT
+  RetryLimitInSearch = n;
+  if (n != 0 && RetryLimitInMatch > n)
+    RetryLimitInMatch = n;
+
   return 0;
 #else
   return ONIG_NO_SUPPORT_CONFIG;
@@ -1319,7 +1378,8 @@ onig_initialize_match_param(OnigMatchParam* mp)
 {
   mp->match_stack_limit  = MatchStackLimit;
 #ifdef USE_RETRY_LIMIT
-  mp->retry_limit_in_match = RetryLimitInMatch;
+  mp->retry_limit_in_match  = RetryLimitInMatch;
+  mp->retry_limit_in_search = RetryLimitInSearch;
 #endif
 
 #ifdef USE_CALLOUT
@@ -3796,8 +3856,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     CASE_OP(POP)
       STACK_POP_ONE;
-      /* for stop backtrack */
-      /* CHECK_RETRY_LIMIT_IN_MATCH; */
       INC_OP;
       JUMP_OUT;
 
@@ -4140,6 +4198,15 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   } BYTECODE_INTERPRETER_END;
 
  match_at_end:
+  if (msa->retry_limit_in_search != 0) {
+    if (retry_in_match_counter > ULONG_MAX - msa->retry_limit_in_search_counter)
+      best_len = ONIGERR_RETRY_LIMIT_IN_MATCH_OVER;
+    else {
+      msa->retry_limit_in_search_counter += retry_in_match_counter;
+      if (msa->retry_limit_in_search_counter > msa->retry_limit_in_search)
+        best_len = ONIGERR_RETRY_LIMIT_IN_MATCH_OVER;
+    }
+  }
   STACK_SAVE;
   return best_len;
 }

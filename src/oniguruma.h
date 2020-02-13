@@ -908,6 +908,10 @@ unsigned long onig_get_retry_limit_in_match P_((void));
 ONIG_EXTERN
 int onig_set_retry_limit_in_match P_((unsigned long n));
 ONIG_EXTERN
+unsigned long onig_get_retry_limit_in_search P_((void));
+ONIG_EXTERN
+int onig_set_retry_limit_in_search P_((unsigned long n));
+ONIG_EXTERN
 unsigned int onig_get_parse_depth_limit P_((void));
 ONIG_EXTERN
 int onig_set_capture_num_limit P_((int num));
@@ -935,6 +939,8 @@ ONIG_EXTERN
 int onig_set_match_stack_limit_size_of_match_param P_((OnigMatchParam* param, unsigned int limit));
 ONIG_EXTERN
 int onig_set_retry_limit_in_match_of_match_param P_((OnigMatchParam* param, unsigned long limit));
+ONIG_EXTERN
+int onig_set_retry_limit_in_search_of_match_param P_((OnigMatchParam* param, unsigned long limit));
 ONIG_EXTERN
 int onig_set_progress_callout_of_match_param P_((OnigMatchParam* param, OnigCalloutFunc f));
 ONIG_EXTERN
