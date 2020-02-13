@@ -4825,11 +4825,13 @@ is_all_code_len_1_items(int n, OnigCaseFoldCodeItem items[])
 }
 
 static int
-get_min_max_byte_len_case_fold_items(int n, OnigCaseFoldCodeItem items[], int* rmin, int* rmax)
+get_min_max_byte_len_case_fold_items(int n, OnigCaseFoldCodeItem items[],
+                                     OnigLen* rmin, OnigLen* rmax)
 {
-  int i, len, minlen, maxlen;
+  int i;
+  OnigLen len, minlen, maxlen;
 
-  minlen = INT_MAX;
+  minlen = INFINITE_LEN;
   maxlen = 0;
   for (i = 0; i < n; i++) {
     OnigCaseFoldCodeItem* item = items + i;
@@ -4981,7 +4983,7 @@ unravel_cf_string_alt_or_cc_add(Node** rlist, int n,
 static int
 unravel_cf_look_behind_add(Node** rlist, Node** rsn,
                 int n, OnigCaseFoldCodeItem items[], OnigEncoding enc,
-                UChar* s, int one_len)
+                UChar* s, OnigLen one_len)
 {
   int r, i, found;
 
@@ -5027,7 +5029,8 @@ unravel_cf_look_behind_add(Node** rlist, Node** rsn,
 static int
 unravel_case_fold_string(Node* node, regex_t* reg, int state)
 {
-  int r, n, one_len, min_len, max_len, in_look_behind;
+  int r, n, in_look_behind;
+  OnigLen min_len, max_len, one_len;
   UChar *start, *end, *p, *q;
   StrNode* snode;
   Node *sn, *list;
@@ -5055,7 +5058,7 @@ unravel_case_fold_string(Node* node, regex_t* reg, int state)
       goto err;
     }
 
-    one_len = enclen(enc, p);
+    one_len = (OnigLen )enclen(enc, p);
     if (n == 0) {
       q = p + one_len;
       r = unravel_cf_string_add(&list, &sn, p, q, 0 /* flag */);
