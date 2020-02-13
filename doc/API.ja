@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.9.4   2019/09/30
+鬼車インターフェース Version 6.9.5   2020/02/13
 
 #include <oniguruma.h>
 
@@ -263,7 +263,22 @@
 
 # int onig_set_retry_limit_in_match_of_match_param(OnigMatchParam* mp, unsigned long limit)
 
-  一回のマッチでのリトライ数の最大値をセットする。
+  一回のマッチでのリトライ数の制限値をセットする。
+
+  引数
+  1 mp: マッチパラメタオブジェクトアドレス
+  2 limit: 制限回数
+
+  正常終了戻り値: ONIG_NORMAL
+
+
+# int onig_set_retry_limit_in_search_of_match_param(OnigMatchParam* mp, unsigned long limit)
+
+  一回の検索でのリトライ数の制限値をセットする。
+  ０は無制限を意味する。
+
+  若しlimitが０ではなくて、mpの現在のretry limit in matchの値よりも小さければ、
+  retry limit in matchの値もlimitにセットされる。
 
   引数
   1 mp: マッチパラメタオブジェクトアドレス
@@ -331,7 +346,7 @@
 
   引数
   1-7:  onig_search()と同じ
-  8 mp: マッチパラメタ値 (match_stack_limit, retry_limit_in_match)
+  8 mp: マッチパラメタ値 (match_stack_limit, retry_limit_in_match, retry_limit_in_search)
 
 
 # int onig_match(regex_t* reg, const UChar* str, const UChar* end,
@@ -365,7 +380,7 @@
 
   引数
   1-6:  onig_match()と同じ
-  7 mp: マッチパラメタ値 (match_stack_limit, retry_limit_in_match)
+  7 mp: マッチパラメタ値 (match_stack_limit, retry_limit_in_match, retry_limit_in_search)
 
 
 # int onig_scan(regex_t* reg, const UChar* str, const UChar* end,
@@ -872,15 +887,36 @@
 
 # unsigned long onig_get_retry_limit_in_match(void)
 
-  マッチング関数内でのリトライ数の制限値を返す。
+  一回のマッチングでのリトライ数の制限値を返す。
   (デフォルト: 10000000)
 
   正常終了戻り値: 制限値
 
 
-# int onig_set_retry_limit_in_match(unsigned long n)
+# unsigned long onig_get_retry_limit_in_search(void)
 
-  マッチング関数内でのリトライ数の制限値を指定する。
+  一回の検索でのリトライ数の制限値を返す。
+  0は無制限を意味する。
+  (デフォルト: 0)
+
+  正常終了戻り値: 制限値
+
+
+# int onig_set_retry_limit_in_match(unsigned long limit)
+
+  一回のマッチング内でのリトライ数の制限値を指定する。
+
+  正常終了戻り値: ONIG_NORMAL
+
+
+# int onig_set_retry_limit_in_search(unsigned long limit)
+
+  一回の検索でのリトライ数の制限値をセットする。
+  0は無制限を意味する。
+  (デフォルト: 0)
+
+  若しlimitが０ではなくて、現在のretry limit in matchの値よりも小さければ、
+  retry limit in matchの値もlimitにセットされる。
 
   正常終了戻り値: ONIG_NORMAL
 
