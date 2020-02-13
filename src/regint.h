@@ -180,6 +180,10 @@
 #define CHECK_NULL_RETURN_MEMERR(p)   if (IS_NULL(p)) return ONIGERR_MEMORY
 #define NULL_UCHARP                   ((UChar* )0)
 
+#ifndef ONIG_INT_MAX
+#define ONIG_INT_MAX    INT_MAX
+#endif
+
 #define CHAR_MAP_SIZE              256
 #define INFINITE_LEN               ONIG_INFINITE_DISTANCE
 #define STEP_BACK_MAX_CHAR_LEN     65535 /* INT_MAX is too big */
