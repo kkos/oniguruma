@@ -14,7 +14,7 @@
 #include "oniguruma.h"
 
 
-#define RETRY_LIMIT    500
+#define RETRY_LIMIT   5000
 
 #ifdef STANDALONE
 //#define CHECK_EACH_REGEX_SEARCH_TIME
@@ -160,7 +160,7 @@ exec(OnigEncoding enc, int reg_num, int init_reg_num,
   options = (EXEC_COUNT % 4 == 0) ? ONIG_OPTION_IGNORECASE : ONIG_OPTION_NONE;
 
   onig_initialize(&enc, 1);
-  onig_set_retry_limit_in_match(RETRY_LIMIT);
+  onig_set_retry_limit_in_search(RETRY_LIMIT);
 
   for (i = 0; i < init_reg_num; i++) {
     r = onig_new(&regs[i], pat[i], pat_end[i], options, ENC,

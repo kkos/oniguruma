@@ -15,7 +15,7 @@
 
 
 #define PARSE_DEPTH_LIMIT           8
-#define RETRY_LIMIT              1000
+#define RETRY_LIMIT             10000
 #define EXEC_PRINT_INTERVAL   5000000
 
 typedef unsigned char uint8_t;
@@ -145,7 +145,7 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   EXEC_COUNT_INTERVAL++;
 
   onig_initialize(&enc, 1);
-  onig_set_retry_limit_in_match(RETRY_LIMIT);
+  onig_set_retry_limit_in_search(RETRY_LIMIT);
 #ifdef PARSE_DEPTH_LIMIT
   onig_set_parse_depth_limit(PARSE_DEPTH_LIMIT);
 #endif
@@ -174,12 +174,10 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   r = search(reg, pattern, pattern_end);
   if (r == -2) return -2;
 
-  if (r != ONIGERR_RETRY_LIMIT_IN_MATCH_OVER) {
-    if (onigenc_is_valid_mbc_string(enc, str, end) != 0) {
-      VALID_STRING_COUNT++;
-      r = search(reg, str, end);
-      if (r == -2) return -2;
-    }
+  if (onigenc_is_valid_mbc_string(enc, str, end) != 0) {
+    VALID_STRING_COUNT++;
+    r = search(reg, str, end);
+    if (r == -2) return -2;
   }
 
   onig_free(reg);
