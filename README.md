@@ -30,6 +30,7 @@ Supported character encodings:
 Master branch
 -------------
 
+* NEW API: retry limit in search functions
 * Fixed behavior of isolated options in Perl and Java syntaxes.  /...(?i).../
 
 
