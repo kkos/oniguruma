@@ -7352,6 +7352,9 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 #ifdef USE_CALLOUT
         || (IS_NOT_NULL(reg->extp) && reg->extp->callout_num != 0)
 #endif
+#ifdef USE_CALL
+        || scan_env.num_call > 0
+#endif
         )
       reg->stack_pop_level = STACK_POP_LEVEL_ALL;
     else {

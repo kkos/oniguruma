@@ -1052,8 +1052,8 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #endif
 #define STK_EMPTY_CHECK_END        0x5000  /* for recursive call */
 #define STK_MEM_END_MARK           0x8100
-#define STK_CALL_FRAME             0x0400
-#define STK_RETURN                 0x0500
+#define STK_CALL_FRAME             (0x0400 | STK_MASK_POP_HANDLED)
+#define STK_RETURN                 (0x0500 | STK_MASK_POP_HANDLED)
 #define STK_SAVE_VAL               0x0600
 #define STK_MARK                   0x0704
 
@@ -1180,6 +1180,12 @@ struct OnigCalloutArgsStruct {
   (msa).retry_limit_in_search_counter = 0;
 #else
 #define RETRY_IN_MATCH_ARG_INIT(msa,mpv)
+#endif
+
+#ifdef USE_CALL
+#define POP_CALL  else if (stk->type == STK_RETURN) {subexp_call_nest_counter++;} else if (stk->type == STK_CALL_FRAME) {subexp_call_nest_counter--;}
+#else
+#define POP_CALL
 #endif
 
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
@@ -1983,6 +1989,7 @@ stack_double(int* is_alloca, char** arg_alloc_base,
         }\
         POP_REPEAT_INC \
         POP_EMPTY_CHECK_START \
+        POP_CALL \
         POP_CALLOUT_CASE\
       }\
     }\
@@ -2009,6 +2016,7 @@ stack_double(int* is_alloca, char** arg_alloc_base,
         }\
         POP_REPEAT_INC \
         POP_EMPTY_CHECK_START \
+        POP_CALL \
         /* Don't call callout here because negation of total success by (?!..) (?<!..) */\
       }\
     }\
@@ -2033,6 +2041,7 @@ stack_double(int* is_alloca, char** arg_alloc_base,
         }\
         POP_REPEAT_INC \
         POP_EMPTY_CHECK_START \
+        POP_CALL \
         /* Don't call callout here because negation of total success by (?!..) (?<!..) */\
       }\
     }\
@@ -2790,6 +2799,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   OnigOptionType option = reg->options;
   OnigEncoding encode = reg->enc;
   OnigCaseFoldType case_fold_flag = reg->case_fold_flag;
+#ifdef USE_CALL
+  unsigned long subexp_call_nest_counter = 0;
+#endif
 
 #ifdef ONIG_DEBUG_MATCH
   static unsigned int counter = 1;
@@ -3960,14 +3972,19 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
 #ifdef USE_CALL
     CASE_OP(CALL)
+      if (subexp_call_nest_counter == SUBEXP_CALL_MAX_NEST_LEVEL)
+        goto fail;
+      subexp_call_nest_counter++;
       addr = p->call.addr;
       INC_OP; STACK_PUSH_CALL_FRAME(p);
       p = reg->ops + addr;
+
       JUMP_OUT;
 
     CASE_OP(RETURN)
       STACK_RETURN(p);
       STACK_PUSH_RETURN;
+      subexp_call_nest_counter--;
       JUMP_OUT;
 #endif
 
