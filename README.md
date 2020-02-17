@@ -31,6 +31,7 @@ Master branch
 -------------
 
 * NEW API: retry limit in search functions
+* Limit on maximum nesting level of subexp call (16)
 * Fixed behavior of isolated options in Perl and Java syntaxes.  /...(?i).../
 
 
