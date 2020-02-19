@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.9.5   2020/02/13
+鬼車インターフェース Version 6.9.5   2020/02/19
 
 #include <oniguruma.h>
 
@@ -276,9 +276,6 @@
 
   一回の検索でのリトライ数の制限値をセットする。
   ０は無制限を意味する。
-
-  若しlimitが０ではなくて、mpの現在のretry limit in matchの値よりも小さければ、
-  retry limit in matchの値もlimitにセットされる。
 
   引数
   1 mp: マッチパラメタオブジェクトアドレス
@@ -914,9 +911,6 @@
   一回の検索でのリトライ数の制限値をセットする。
   0は無制限を意味する。
   (デフォルト: 0)
-
-  若しlimitが０ではなくて、現在のretry limit in matchの値よりも小さければ、
-  retry limit in matchの値もlimitにセットされる。
 
   正常終了戻り値: ONIG_NORMAL
 
