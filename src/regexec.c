@@ -1250,17 +1250,17 @@ struct OnigCalloutArgsStruct {
 } while(0);
 
 
-#define STACK_SAVE do{\
-  msa->stack_n = (int )(stk_end - stk_base);\
-  if (is_alloca != 0) {\
-    size_t size = sizeof(StackIndex) * msa->ptr_num \
-                + sizeof(StackType) * msa->stack_n;\
-    msa->stack_p = xmalloc(size);\
-    CHECK_NULL_RETURN_MEMERR(msa->stack_p);\
-    xmemcpy(msa->stack_p, alloc_base, size);\
+#define STACK_SAVE(msa,is_alloca,alloc_base) do{\
+  (msa)->stack_n = (int )(stk_end - stk_base);\
+  if ((is_alloca) != 0) {\
+    size_t size = sizeof(StackIndex) * (msa)->ptr_num\
+                + sizeof(StackType) * (msa)->stack_n;\
+    (msa)->stack_p = xmalloc(size);\
+    CHECK_NULL_RETURN_MEMERR((msa)->stack_p);\
+    xmemcpy((msa)->stack_p, (alloc_base), size);\
   }\
   else {\
-    msa->stack_p = alloc_base;\
+    (msa)->stack_p = (alloc_base);\
   };\
 } while(0)
 
@@ -1611,7 +1611,7 @@ stack_double(int* is_alloca, char** arg_alloc_base,
   if (*is_alloca != 0) {
     new_alloc_base = (char* )xmalloc(new_size);
     if (IS_NULL(new_alloc_base)) {
-      STACK_SAVE;
+      STACK_SAVE(msa, *is_alloca, alloc_base);
       return ONIGERR_MEMORY;
     }
     xmemcpy(new_alloc_base, alloc_base, size);
@@ -1620,7 +1620,7 @@ stack_double(int* is_alloca, char** arg_alloc_base,
   else {
     if (msa->match_stack_limit != 0 && n > msa->match_stack_limit) {
       if ((unsigned int )(stk_end - stk_base) == msa->match_stack_limit) {
-        STACK_SAVE;
+        STACK_SAVE(msa, *is_alloca, alloc_base);
         return ONIGERR_MATCH_STACK_LIMIT_OVER;
       }
       else
@@ -1628,7 +1628,7 @@ stack_double(int* is_alloca, char** arg_alloc_base,
     }
     new_alloc_base = (char* )xrealloc(alloc_base, new_size);
     if (IS_NULL(new_alloc_base)) {
-      STACK_SAVE;
+      STACK_SAVE(msa, *is_alloca, alloc_base);
       return ONIGERR_MEMORY;
     }
   }
@@ -4224,7 +4224,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         best_len = ONIGERR_RETRY_LIMIT_IN_SEARCH_OVER;
     }
   }
-  STACK_SAVE;
+  STACK_SAVE(msa, is_alloca, alloc_base);
   return best_len;
 }
 
