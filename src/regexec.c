@@ -341,6 +341,13 @@ bitset_on_num(BitSetRef bs)
   return n;
 }
 
+
+#ifdef USE_DIRECT_THREADED_CODE
+#define GET_OPCODE(reg,index)  (reg)->ocs[index]
+#else
+#define GET_OPCODE(reg,index)  (reg)->ops[index].opcode
+#endif
+
 static void
 print_compiled_byte_code(FILE* f, regex_t* reg, int index,
                          Operation* start, OnigEncoding enc)
@@ -357,11 +364,7 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
 
   p = reg->ops + index;
 
-#ifdef USE_DIRECT_THREADED_CODE
-  opcode = reg->ocs[index];
-#else
-  opcode = p->opcode;
-#endif
+  opcode = GET_OPCODE(reg, index);
 
   fprintf(f, "%s", op2name(opcode));
   switch (opcode) {
@@ -2251,6 +2254,7 @@ stack_double(int* is_alloca, char** arg_alloc_base,
 #define STACK_GET_REPEAT_COUNT(sid, c) STACK_GET_REPEAT_COUNT_SEARCH(sid, c)
 #endif
 
+#ifdef USE_CALL
 #define STACK_RETURN(addr)  do {\
   int level = 0;\
   StackType* k = stk;\
@@ -2268,6 +2272,24 @@ stack_double(int* is_alloca, char** arg_alloc_base,
       level++;\
   }\
 } while(0)
+
+#define GET_STACK_RETURN_CALL(k) do {\
+  int level = 0;\
+  k = stk;\
+  while (1) {\
+    k--;\
+    STACK_BASE_CHECK(k, "GET_STACK_RETURN_CALL");\
+    if (k->type == STK_CALL_FRAME) {\
+      if (level == 0) {\
+        break;\
+      }\
+      else level--;\
+    }\
+    else if (k->type == STK_RETURN)\
+      level++;\
+  }\
+} while(0)
+#endif
 
 
 #define STRING_CMP(s1,s2,len) do {\
@@ -2635,8 +2657,16 @@ typedef struct {
       if (xp == FinishCode)\
         fprintf(DBGFP, "----: finish");\
       else {\
-        fprintf(DBGFP, "%4d: ", (int )(xp - reg->ops));\
-        print_compiled_byte_code(DBGFP, reg, (int )(xp - reg->ops), reg->ops, encode); \
+	int index;\
+        enum OpCode zopcode;\
+        index = (int )(xp - reg->ops);\
+        fprintf(DBGFP, "%4d: ", index);\
+        print_compiled_byte_code(DBGFP, reg, index, reg->ops, encode); \
+        zopcode = GET_OPCODE(reg, index);\
+        if (zopcode == OP_RETURN) {\
+          GET_STACK_RETURN_CALL(stkp);\
+          fprintf(DBGFP, " %ld", GET_STACK_INDEX(stkp));\
+        }\
       }\
       fprintf(DBGFP, "\n");\
   } while(0);
