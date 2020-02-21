@@ -4137,7 +4137,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           save_type = SAVE_RIGHT_RANGE;
         get_save_val_type_last_id:
           mem = p->update_var.id; /* mem: save id */
-          STACK_GET_SAVE_VAL_TYPE_LAST_ID(save_type, mem, right_range, p->update_var.type);
+          STACK_GET_SAVE_VAL_TYPE_LAST_ID(save_type, mem, right_range, p->update_var.clear);
           break;
         case UPDATE_VAR_RIGHT_RANGE_TO_S:
           right_range = s;
