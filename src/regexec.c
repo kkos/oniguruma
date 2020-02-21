@@ -616,10 +616,12 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
   case OP_UPDATE_VAR:
     {
       UpdateVarType type;
+      int clear;
 
       type = p->update_var.type;
       mem  = p->update_var.id;
-      fprintf(f, ":%d:%d", type, mem);
+      clear = p->update_var.clear;
+      fprintf(f, ":%d:%d:%d", type, mem, clear);
     }
     break;
 
@@ -1866,7 +1868,7 @@ stack_double(int* is_alloca, char** arg_alloc_base,
   }\
 } while (0)
 
-#define STACK_GET_SAVE_VAL_TYPE_LAST_ID(stype, sid, sval) do { \
+#define STACK_GET_SAVE_VAL_TYPE_LAST_ID(stype, sid, sval, clear) do {\
   int level = 0;\
   StackType *k = stk;\
   while (k > stk_base) {\
@@ -1876,6 +1878,7 @@ stack_double(int* is_alloca, char** arg_alloc_base,
         && k->zid == (sid)) {\
       if (level == 0) {\
         (sval) = k->u.val.v;\
+        if (clear != 0) k->type = STK_VOID;\
         break;\
       }\
     }\
@@ -4134,7 +4137,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           save_type = SAVE_RIGHT_RANGE;
         get_save_val_type_last_id:
           mem = p->update_var.id; /* mem: save id */
-          STACK_GET_SAVE_VAL_TYPE_LAST_ID(save_type, mem, right_range);
+          STACK_GET_SAVE_VAL_TYPE_LAST_ID(save_type, mem, right_range, p->update_var.type);
           break;
         case UPDATE_VAR_RIGHT_RANGE_TO_S:
           right_range = s;
