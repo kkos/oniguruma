@@ -1287,7 +1287,7 @@ static unsigned long RetryLimitInMatch  = DEFAULT_RETRY_LIMIT_IN_MATCH;
 static unsigned long RetryLimitInSearch = DEFAULT_RETRY_LIMIT_IN_SEARCH;
 
 #define CHECK_RETRY_LIMIT_IN_MATCH  do {\
-  if (retry_in_match_counter++ > retry_limit_in_match) {\
+  if (++retry_in_match_counter > retry_limit_in_match) {\
     MATCH_AT_ERROR_RETURN(retry_in_match_counter > msa->retry_limit_in_match ? ONIGERR_RETRY_LIMIT_IN_MATCH_OVER : ONIGERR_RETRY_LIMIT_IN_SEARCH_OVER); \
   }\
 } while (0)
