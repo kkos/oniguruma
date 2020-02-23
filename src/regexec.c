@@ -1187,7 +1187,7 @@ struct OnigCalloutArgsStruct {
 #define RETRY_IN_MATCH_ARG_INIT(msa,mpv)
 #endif
 
-#ifdef USE_CALL
+#if defined(USE_CALL) && defined(SUBEXP_CALL_MAX_NEST_LEVEL)
 #define POP_CALL  else if (stk->type == STK_RETURN) {subexp_call_nest_counter++;} else if (stk->type == STK_CALL_FRAME) {subexp_call_nest_counter--;}
 #else
 #define POP_CALL
@@ -2832,7 +2832,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   OnigOptionType option = reg->options;
   OnigEncoding encode = reg->enc;
   OnigCaseFoldType case_fold_flag = reg->case_fold_flag;
-#ifdef USE_CALL
+
+#if defined(USE_CALL) && defined(SUBEXP_CALL_MAX_NEST_LEVEL)
   unsigned long subexp_call_nest_counter = 0;
 #endif
 
@@ -4011,9 +4012,11 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
 #ifdef USE_CALL
     CASE_OP(CALL)
+#ifdef SUBEXP_CALL_MAX_NEST_LEVEL
       if (subexp_call_nest_counter == SUBEXP_CALL_MAX_NEST_LEVEL)
         goto fail;
       subexp_call_nest_counter++;
+#endif
       addr = p->call.addr;
       INC_OP; STACK_PUSH_CALL_FRAME(p);
       p = reg->ops + addr;
@@ -4023,7 +4026,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     CASE_OP(RETURN)
       STACK_RETURN(p);
       STACK_PUSH_RETURN;
+#ifdef SUBEXP_CALL_MAX_NEST_LEVEL
       subexp_call_nest_counter--;
+#endif
       JUMP_OUT;
 #endif
 
