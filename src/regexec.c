@@ -2276,7 +2276,7 @@ stack_double(int* is_alloca, char** arg_alloc_base,
   }\
 } while(0)
 
-#define GET_STACK_RETURN_CALL(k) do {\
+#define GET_STACK_RETURN_CALL(k,addr) do {\
   int level = 0;\
   k = stk;\
   while (1) {\
@@ -2284,6 +2284,7 @@ stack_double(int* is_alloca, char** arg_alloc_base,
     STACK_BASE_CHECK(k, "GET_STACK_RETURN_CALL");\
     if (k->type == STK_CALL_FRAME) {\
       if (level == 0) {\
+        (addr) = k->u.call_frame.ret_addr;\
         break;\
       }\
       else level--;\
@@ -2662,13 +2663,15 @@ typedef struct {
       else {\
 	int index;\
         enum OpCode zopcode;\
+        Operation* addr;\
         index = (int )(xp - reg->ops);\
         fprintf(DBGFP, "%4d: ", index);\
         print_compiled_byte_code(DBGFP, reg, index, reg->ops, encode); \
         zopcode = GET_OPCODE(reg, index);\
         if (zopcode == OP_RETURN) {\
-          GET_STACK_RETURN_CALL(stkp);\
-          fprintf(DBGFP, " %ld", GET_STACK_INDEX(stkp));\
+          GET_STACK_RETURN_CALL(stkp, addr);\
+          fprintf(DBGFP, " f:%ld -> %d", \
+            GET_STACK_INDEX(stkp), (int )(addr - reg->ops));\
         }\
       }\
       fprintf(DBGFP, "\n");\
