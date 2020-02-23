@@ -621,7 +621,10 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
       type = p->update_var.type;
       mem  = p->update_var.id;
       clear = p->update_var.clear;
-      fprintf(f, ":%d:%d:%d", type, mem, clear);
+      fprintf(f, ":%d:%d", type, mem);
+      if (type == UPDATE_VAR_RIGHT_RANGE_FROM_S_STACK ||
+          type ==  UPDATE_VAR_RIGHT_RANGE_FROM_STACK)
+        fprintf(f, ":%d", clear);
     }
     break;
 
@@ -2661,7 +2664,7 @@ typedef struct {
       if (xp == FinishCode)\
         fprintf(DBGFP, "----: finish");\
       else {\
-	int index;\
+        int index;\
         enum OpCode zopcode;\
         Operation* addr;\
         index = (int )(xp - reg->ops);\
