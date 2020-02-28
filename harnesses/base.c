@@ -231,11 +231,13 @@ alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   return r;
 }
 
+#define OPTIONS_MASK  (ONIG_OPTION_IGNORECASE | ONIG_OPTION_EXTEND | ONIG_OPTION_MULTILINE | ONIG_OPTION_SINGLELINE | ONIG_OPTION_FIND_LONGEST | ONIG_OPTION_FIND_NOT_EMPTY | ONIG_OPTION_NEGATE_SINGLELINE | ONIG_OPTION_DONT_CAPTURE_GROUP | ONIG_OPTION_CAPTURE_GROUP)
+
 
 #ifdef SYNTAX_TEST
-#define NUM_CONTROL_BYTES      4
+#define NUM_CONTROL_BYTES      5
 #else
-#define NUM_CONTROL_BYTES      3
+#define NUM_CONTROL_BYTES      4
 #endif
 
 int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
@@ -285,7 +287,6 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   int pattern_size;
   size_t remaining_size;
   unsigned char *data;
-  unsigned char options_choice;
   unsigned char pattern_size_choice;
   OnigOptionType  options;
   OnigEncoding    enc;
@@ -336,8 +337,13 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   syntax = ONIG_SYNTAX_DEFAULT;
 #endif
 
-  options_choice = data[0];
-  options = (options_choice % 2 == 0) ? ONIG_OPTION_NONE : ONIG_OPTION_IGNORECASE;
+  if ((data[1] & 0xc0) == 0)
+    options = (data[0] | (data[1] << 8)) & OPTIONS_MASK;
+  else
+    options = data[0] & ONIG_OPTION_IGNORECASE;
+
+  data++;
+  remaining_size--;
   data++;
   remaining_size--;
 
