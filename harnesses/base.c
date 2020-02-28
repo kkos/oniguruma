@@ -21,6 +21,18 @@
 typedef unsigned char uint8_t;
 
 
+#ifdef DUMP_FILE
+static void
+dump_file(char* path, unsigned char* data, size_t len)
+{
+  FILE* fp;
+
+  fp = fopen(path, "w");
+  fwrite(data, sizeof(unsigned char), len, fp);
+  fclose(fp);
+}
+#endif
+
 #ifdef STANDALONE
 
 #include <ctype.h>
@@ -278,6 +290,15 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   OnigSyntaxType* syntax;
 
   INPUT_COUNT++;
+
+#ifdef DUMP_FILE
+  if (INPUT_COUNT < 1100000 && INPUT_COUNT % 50000 == 0) {
+    char path[20];
+    sprintf(path, "dump-%ld", INPUT_COUNT);
+    dump_file(path, (unsigned char* )Data, Size);
+  }
+#endif
+
   if (Size < NUM_CONTROL_BYTES) return 0;
 
   remaining_size = Size;
