@@ -18,6 +18,8 @@
 #define RETRY_LIMIT              5000
 #define EXEC_PRINT_INTERVAL    500000
 
+#define STAT_PATH    "fuzzer.stat_log"
+
 typedef unsigned char uint8_t;
 
 
@@ -34,7 +36,6 @@ dump_file(char* path, unsigned char* data, size_t len)
 #endif
 
 #ifdef STANDALONE
-
 #include <ctype.h>
 
 static void
@@ -289,6 +290,10 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   OnigEncoding    enc;
   OnigSyntaxType* syntax;
 
+#ifndef STANDALONE
+  static FILE* STAT_FP;
+#endif
+
   INPUT_COUNT++;
 
 #ifdef DUMP_FILE
@@ -369,25 +374,31 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   if (EXEC_COUNT_INTERVAL == EXEC_PRINT_INTERVAL) {
     float fexec, freg, fvalid;
 
-    output_current_time(stdout);
+    if (STAT_FP == 0) {
+      //STAT_FP = fopen(STAT_PATH, "a");
+      STAT_FP = stdout;
+    }
+
+    output_current_time(STAT_FP);
 
     if (INPUT_COUNT != 0) { // overflow check
       fexec  = (float )EXEC_COUNT / INPUT_COUNT;
       freg   = (float )REGEX_SUCCESS_COUNT / INPUT_COUNT;
       fvalid = (float )VALID_STRING_COUNT / INPUT_COUNT;
 
-      fprintf(stdout, ": %ld: EXEC:%.2f, REG:%.2f, VALID:%.2f\n",
+      fprintf(STAT_FP, ": %ld: EXEC:%.2f, REG:%.2f, VALID:%.2f\n",
               EXEC_COUNT, fexec, freg, fvalid);
+      fflush(STAT_FP);
     }
     else {
-      fprintf(stdout, ": ignore (input count overflow)\n");
+      fprintf(STAT_FP, ": ignore (input count overflow)\n");
     }
 
     EXEC_COUNT_INTERVAL = 0;
   }
   else if (EXEC_COUNT == 1) {
-    output_current_time(stdout);
-    fprintf(stdout, ": ------------ START ------------\n");
+    output_current_time(STAT_FP);
+    fprintf(STAT_FP, ": ------------ START ------------\n");
   }
 #endif
 
