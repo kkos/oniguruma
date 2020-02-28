@@ -407,8 +407,8 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
     EXEC_COUNT_INTERVAL = 0;
   }
   else if (EXEC_COUNT == 1) {
-    output_current_time(STAT_FP);
-    fprintf(STAT_FP, ": ------------ START ------------\n");
+    output_current_time(stdout);
+    fprintf(stdout, ": ------------ START ------------\n");
   }
 #endif
 
