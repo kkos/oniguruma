@@ -19,7 +19,7 @@
 #define EXEC_PRINT_INTERVAL    500000
 //#define DUMP_DATA_INTERVAL     100000
 
-#define STAT_PATH    "fuzzer.stat_log"
+//#define STAT_PATH      "fuzzer.stat_log"
 
 typedef unsigned char uint8_t;
 
@@ -376,8 +376,11 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
     float fexec, freg, fvalid;
 
     if (STAT_FP == 0) {
-      //STAT_FP = fopen(STAT_PATH, "a");
+#ifdef STAT_PATH
+      STAT_FP = fopen(STAT_PATH, "a");
+#else
       STAT_FP = stdout;
+#endif
     }
 
     output_current_time(STAT_FP);
