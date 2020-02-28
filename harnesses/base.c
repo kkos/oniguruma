@@ -17,13 +17,14 @@
 #define PARSE_DEPTH_LIMIT           8
 #define RETRY_LIMIT              5000
 #define EXEC_PRINT_INTERVAL    500000
+//#define DUMP_DATA_INTERVAL     100000
 
 #define STAT_PATH    "fuzzer.stat_log"
 
 typedef unsigned char uint8_t;
 
 
-#ifdef DUMP_FILE
+#ifdef DUMP_DATA_INTERVAL
 static void
 dump_file(char* path, unsigned char* data, size_t len)
 {
@@ -296,8 +297,8 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 
   INPUT_COUNT++;
 
-#ifdef DUMP_FILE
-  if (INPUT_COUNT < 1100000 && INPUT_COUNT % 50000 == 0) {
+#ifdef DUMP_DATA_INTERVAL
+  if (INPUT_COUNT % DUMP_DATA_INTERVAL == 0) {
     char path[20];
     sprintf(path, "dump-%ld", INPUT_COUNT);
     dump_file(path, (unsigned char* )Data, Size);
