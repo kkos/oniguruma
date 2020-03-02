@@ -382,6 +382,8 @@ static char* p7[] = {
   "0+", "1+", "2+", "3+", "4+", "5+", "6+", "7+", "8+", "9+",
 };
 
+static char* p8[] = {".*", "a"};
+
 extern int
 main(int argc, char* argv[])
 {
@@ -405,6 +407,7 @@ main(int argc, char* argv[])
   N(p2, " XXXX AAA 1223 012345678bbb");
   X2(p2, "0123456789", 9, 10);
   X2(p7, "abcde 555 qwert", 6, 9);
+  X2(p8, "", 0, 0);
 
   XX_LEAD = ONIG_REGSET_REGEX_LEAD;
 
