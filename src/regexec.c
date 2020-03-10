@@ -352,6 +352,21 @@ static void
 print_compiled_byte_code(FILE* f, regex_t* reg, int index,
                          Operation* start, OnigEncoding enc)
 {
+  static char* SaveTypeNames[] = {
+    "KEEP",
+    "S",
+    "RIGHT_RANGE"
+  };
+
+  static char* UpdateVarTypeNames[] = {
+    "KEEP_FROM_STACK_LAST",
+    "S_FROM_STACK",
+    "RIGHT_RANGE_FROM_STACK",
+    "RIGHT_RANGE_FROM_S_STACK",
+    "RIGHT_RANGE_TO_S",
+    "RIGHT_RANGE_INIT"
+  };
+
   int i, n;
   RelAddrType addr;
   LengthType  len;
@@ -580,7 +595,7 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
 
   case OP_POP_TO_MARK:
     mem = p->pop_to_mark.id;
-    fprintf(f, ":%d", mem);
+    fprintf(f, ": id:%d", mem);
     break;
 
   case OP_CUT_TO_MARK:
@@ -589,7 +604,7 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
 
       mem     = p->cut_to_mark.id;
       restore = p->cut_to_mark.restore_pos;
-      fprintf(f, ":%d:%d", mem, restore);
+      fprintf(f, ": id:%d restore:%d", mem, restore);
     }
     break;
 
@@ -599,7 +614,7 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
 
       mem  = p->mark.id;
       save = p->mark.save_pos;
-      fprintf(f, ":%d:%d", mem, save);
+      fprintf(f, ": id:%d save:%d", mem, save);
     }
     break;
 
@@ -609,7 +624,7 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
 
       type = p->save_val.type;
       mem  = p->save_val.id;
-      fprintf(f, ":%d:%d", type, mem);
+      fprintf(f, ": %s id:%d", SaveTypeNames[type], mem);
     }
     break;
 
@@ -621,10 +636,10 @@ print_compiled_byte_code(FILE* f, regex_t* reg, int index,
       type = p->update_var.type;
       mem  = p->update_var.id;
       clear = p->update_var.clear;
-      fprintf(f, ":%d:%d", type, mem);
+      fprintf(f, ": %s id:%d", UpdateVarTypeNames[type], mem);
       if (type == UPDATE_VAR_RIGHT_RANGE_FROM_S_STACK ||
           type ==  UPDATE_VAR_RIGHT_RANGE_FROM_STACK)
-        fprintf(f, ":%d", clear);
+        fprintf(f, " clear:%d", clear);
     }
     break;
 
