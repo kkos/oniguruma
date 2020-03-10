@@ -96,8 +96,14 @@ search(regex_t* reg, unsigned char* str, unsigned char* end)
 
   region = onig_region_new();
 
+#ifdef BACKWARD_SEARCH
+  start = end;
+  range = str;
+#else
   start = str;
   range = end;
+#endif
+
   r = onig_search(reg, str, end, start, range, region, ONIG_OPTION_NONE);
   if (r >= 0) {
 #ifdef STANDALONE
