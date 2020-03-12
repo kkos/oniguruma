@@ -685,7 +685,7 @@ extern int main(int argc, char* argv[])
   x2("aaaaa(?~)", "aaaaaaaaaa", 0, 5);
   x2("(?~(?:|aaa))", "aaa", 0, 0);
   x2("(?~aaa|)", "aaa", 0, 0);
-  x2("a(?~(?~)).", "abcdefghijklmnopqrstuvwxyz", 0, 26); // !!!
+  x2("a(?~(?~)).", "abcdefghijklmnopqrstuvwxyz", 0, 26); // nested absent functions cause strange result
   x2("/\\*(?~\\*/)\\*/", "/* */ */", 0, 5);
   x2("(?~\\w+)zzzzz", "zzzzz", 0, 5);
   x2("(?~\\w*)zzzzz", "zzzzz", 0, 5);
