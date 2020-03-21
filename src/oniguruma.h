@@ -184,6 +184,8 @@ ONIG_EXTERN OnigEncodingType OnigEncodingKOI8_R;
 ONIG_EXTERN OnigEncodingType OnigEncodingCP1251;
 ONIG_EXTERN OnigEncodingType OnigEncodingBIG5;
 ONIG_EXTERN OnigEncodingType OnigEncodingGB18030;
+ONIG_EXTERN OnigEncodingType OnigEncodingUTF16_BE_WCHAR;
+ONIG_EXTERN OnigEncodingType OnigEncodingUTF16_LE_WCHAR;
 
 #define ONIG_ENCODING_ASCII        (&OnigEncodingASCII)
 #define ONIG_ENCODING_ISO_8859_1   (&OnigEncodingISO_8859_1)
@@ -216,6 +218,8 @@ ONIG_EXTERN OnigEncodingType OnigEncodingGB18030;
 #define ONIG_ENCODING_CP1251       (&OnigEncodingCP1251)
 #define ONIG_ENCODING_BIG5         (&OnigEncodingBIG5)
 #define ONIG_ENCODING_GB18030      (&OnigEncodingGB18030)
+#define ONIG_ENCODING_UTF16_BE_WCHAR (&OnigEncodingUTF16_BE_WCHAR)
+#define ONIG_ENCODING_UTF16_LE_WCHAR (&OnigEncodingUTF16_LE_WCHAR)
 
 #define ONIG_ENCODING_UNDEF    ((OnigEncoding )0)
 

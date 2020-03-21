@@ -2,7 +2,7 @@
   utf16_be.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2019  K.Kosako
+ * Copyright (c) 2002-2020  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -274,3 +274,298 @@ OnigEncodingType OnigEncodingUTF16_BE = {
   ENC_FLAG_UNICODE|ENC_FLAG_SKIP_OFFSET_2,
   0, 0
 };
+
+#ifdef SIZEOF_WCHAR_T
+#if SIZEOF_WCHAR_T == 2
+
+OnigEncodingType OnigEncodingUTF16_BE_WCHAR = {
+  utf16be_mbc_enc_len,
+  "UTF-16BE_WCHAR2",   /* name */
+  4,            /* max enc length */
+  2,            /* min enc length */
+  utf16be_is_mbc_newline,
+  utf16be_mbc_to_code,
+  utf16be_code_to_mbclen,
+  utf16be_code_to_mbc,
+  utf16be_mbc_case_fold,
+  onigenc_unicode_apply_all_case_fold,
+  utf16be_get_case_fold_codes_by_str,
+  onigenc_unicode_property_name_to_ctype,
+  onigenc_unicode_is_code_ctype,
+  onigenc_utf16_32_get_ctype_code_range,
+  utf16be_left_adjust_char_head,
+  onigenc_always_false_is_allowed_reverse_match,
+  init,
+  0, /* is_initialized */
+  is_valid_mbc_string,
+  ENC_FLAG_UNICODE|ENC_FLAG_SKIP_OFFSET_2,
+  0, 0
+};
+
+#elif SIZEOF_WCHAR_T == 4
+
+static const int EncLen_UTF16_WCHAR4[] = {
+  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+  4, 4, 4, 4, 4, 4, 4, 4, 8, 8, 8, 8, 4, 4, 4, 4,
+  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
+};
+
+static int
+wchar4_init(void)
+{
+#ifdef USE_CALLOUT
+
+    int id;
+    OnigEncoding enc;
+    char* name;
+    unsigned int args[4];
+    OnigValue opts[4];
+
+    enc = ONIG_ENCODING_UTF16_BE;
+
+    name = "\000\000\000F\000\000\000A\000\000\000I\000\000\000L\000\000\000\000"; BC0_P(name, fail);
+    name = "\000\000\000M\000\000\000I\000\000\000S\000\000\000M\000\000\000A\000\000\000T\000\000\000C\000\000\000H\000\000\000\000"; BC0_P(name, mismatch);
+
+    name = "\000\000\000M\000\000\000A\000\000\000X\000\000\000\000";
+    args[0] = ONIG_TYPE_TAG | ONIG_TYPE_LONG;
+    args[1] = ONIG_TYPE_CHAR;
+    opts[0].c = 'X';
+    BC_B_O(name, max, 2, args, 1, opts);
+
+    name = "\000\000\000E\000\000\000R\000\000\000R\000\000\000O\000\000\000R\000\000\000\000";
+    args[0] = ONIG_TYPE_LONG; opts[0].l = ONIG_ABORT;
+    BC_P_O(name, error, 1, args, 1, opts);
+
+    name = "\000\000\000C\000\000\000O\000\000\000U\000\000\000N\000\000\000T\000\000\000\000";
+    args[0] = ONIG_TYPE_CHAR; opts[0].c = '>';
+    BC_B_O(name, count, 1, args, 1, opts);
+
+    name = "\000\000\000T\000\000\000O\000\000\000T\000\000\000A\000\000\000L\000\000\000_\000\000\000C\000\000\000O\000\000\000U\000\000\000N\000\000\000T\000\000\000\000";
+    args[0] = ONIG_TYPE_CHAR; opts[0].c = '>';
+    BC_B_O(name, total_count, 1, args, 1, opts);
+
+    name = "\000\000\000C\000\000\000M\000\000\000P\000\000\000\000";
+    args[0] = ONIG_TYPE_TAG | ONIG_TYPE_LONG;
+    args[1] = ONIG_TYPE_STRING;
+    args[2] = ONIG_TYPE_TAG | ONIG_TYPE_LONG;
+    BC_P(name, cmp, 3, args);
+
+#endif /* USE_CALLOUT */
+
+  return ONIG_NORMAL;
+}
+
+static int
+wchar4_mbc_enc_len(const UChar* p)
+{
+  return EncLen_UTF16_WCHAR4[*(p+2)];
+}
+
+static int
+wchar4_is_valid_mbc_string(const UChar* s, const UChar* end)
+{
+  while (s + 3 < end) {
+    int len = utf16be_mbc_enc_len(s);
+    if (len == 8) {
+      if (s + 8 > end)
+        return FALSE;
+      if (! UTF16_IS_SURROGATE_SECOND(*(s+6)))
+        return FALSE;
+    }
+    else
+      if (UTF16_IS_SURROGATE_SECOND(*(s+2)))
+        return FALSE;
+
+    s += len;
+  }
+
+  if (s != end)
+    return FALSE;
+  else
+    return TRUE;
+}
+
+static int
+wchar4_is_mbc_newline(const UChar* p, const UChar* end)
+{
+  if (p + 3 < end) {
+    if (*(p+3) == NEWLINE_CODE && *(p+2) == 0x00)
+      return 1;
+
+#ifdef USE_UNICODE_ALL_LINE_TERMINATORS
+    if ((
+#ifndef USE_CRNL_AS_LINE_TERMINATOR
+	 *(p+3) == 0x0d ||
+#endif
+	 *(p+3) == 0x85) && *(p+2) == 0x00)
+      return 1;
+
+    if (*(p+2) == 0x20 && (*(p+3) == 0x29 || *(p+3) == 0x28))
+      return 1;
+#endif
+  }
+  return 0;
+}
+
+static OnigCodePoint
+wchar4_mbc_to_code(const UChar* p, const UChar* end ARG_UNUSED)
+{
+  OnigCodePoint code;
+
+  if (UTF16_IS_SURROGATE_FIRST(*(p+2))) {
+    code = ((((p[2] - 0xd8) << 2) + ((p[3] & 0xc0) >> 6) + 1) << 16)
+         + ((((p[3] & 0x3f) << 2) + (p[6] - 0xdc)) << 8)
+         + p[7];
+  }
+  else {
+    code = p[2] * 256 + p[3];
+  }
+  return code;
+}
+
+static int
+wchar4_code_to_mbclen(OnigCodePoint code)
+{
+  if (code > 0xffff) {
+    if (code > 0x10ffff)
+      return ONIGERR_INVALID_CODE_POINT_VALUE;
+    else
+      return 8;
+  }
+  else {
+    return 4;
+  }
+}
+
+static int
+wchar4_code_to_mbc(OnigCodePoint code, UChar *buf)
+{
+  UChar* p = buf;
+
+  if (code > 0xffff) {
+    unsigned int plane, high;
+
+    plane = (code >> 16) - 1;
+    high = (code & 0xff00) >> 8;
+
+    *p++ = 0x00;
+    *p++ = 0x00;
+    *p++ = (plane >> 2) + 0xd8;
+    *p++ = ((plane & 0x03) << 6) + (high >> 2);
+
+    *p++ = 0x00;
+    *p++ = 0x00;
+    *p++ = (high & 0x03) + 0xdc;
+    *p   = (UChar )(code & 0xff);
+    return 8;
+  }
+  else {
+    *p++ = 0x00;
+    *p++ = 0x00;
+    *p++ = (UChar )((code & 0xff00) >> 8);
+    *p++ = (UChar )(code & 0xff);
+    return 4;
+  }
+}
+
+static int
+wchar4_mbc_case_fold(OnigCaseFoldType flag,
+		     const UChar** pp, const UChar* end, UChar* fold)
+{
+  const UChar* p = *pp;
+
+  if (ONIGENC_IS_ASCII_CODE(*(p+3)) && *(p+2) == 0) {
+    p++;
+#ifdef USE_UNICODE_CASE_FOLD_TURKISH_AZERI
+    if ((flag & ONIGENC_CASE_FOLD_TURKISH_AZERI) != 0) {
+      if (*(p+3) == 0x49) {
+	*fold++ = 0x00;
+	*fold++ = 0x00;
+        *fold++ = 0x01;
+        *fold   = 0x31;
+        (*pp) += 4;
+        return 4;
+      }
+    }
+#endif
+
+    *fold++ = 0x00;
+    *fold++ = 0x00;
+    *fold++ = 0x00;
+    *fold   = ONIGENC_ASCII_CODE_TO_LOWER_CASE(*p);
+    *pp += 4;
+    return 4;
+  }
+  else
+    return onigenc_unicode_mbc_case_fold(ONIG_ENCODING_UTF16_BE_WCHAR, flag,
+                                         pp, end, fold);
+}
+
+static int
+wchar4_get_case_fold_codes_by_str(OnigCaseFoldType flag,
+    const OnigUChar* p, const OnigUChar* end, OnigCaseFoldCodeItem items[])
+{
+  return onigenc_unicode_get_case_fold_codes_by_str(ONIG_ENCODING_UTF16_BE_WCHAR, flag, p, end, items);
+}
+
+static UChar*
+wchar4_left_adjust_char_head(const UChar* start, const UChar* s)
+{
+  int n;
+
+  if (s <= start) return (UChar* )s;
+
+  n = (s - start) % 4;
+  if (n != 0) {
+    s -= n;
+  }
+
+  if (UTF16_IS_SURROGATE_SECOND(*(s+2)) && s > start + 3 &&
+      UTF16_IS_SURROGATE_FIRST(*(s-2)))
+    s -= 4;
+
+  return (UChar* )s;
+}
+
+
+OnigEncodingType OnigEncodingUTF16_BE_WCHAR = {
+  wchar4_mbc_enc_len,
+  "UTF-16BE_WCHAR4",   /* name */
+  8,            /* max enc length */
+  4,            /* min enc length */
+  wchar4_is_mbc_newline,
+  wchar4_mbc_to_code,
+  wchar4_code_to_mbclen,
+  wchar4_code_to_mbc,
+  wchar4_mbc_case_fold,
+  onigenc_unicode_apply_all_case_fold,
+  wchar4_get_case_fold_codes_by_str,
+  onigenc_unicode_property_name_to_ctype,
+  onigenc_unicode_is_code_ctype,
+  onigenc_utf16_32_get_ctype_code_range,
+  wchar4_left_adjust_char_head,
+  onigenc_always_false_is_allowed_reverse_match,
+  wchar4_init,
+  0, /* is_initialized */
+  wchar4_is_valid_mbc_string,
+  ENC_FLAG_UNICODE|ENC_FLAG_SKIP_OFFSET_3,
+  0, 0
+};
+
+#else
+  #error "Not supported SIZEOF_WCHAR_T"
+#endif
+#endif /* ifdef SIZEOF_WCHAR_T */
