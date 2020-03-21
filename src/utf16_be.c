@@ -193,7 +193,7 @@ utf16be_code_to_mbc(OnigCodePoint code, UChar *buf)
   }
   else {
     *p++ = (UChar )((code & 0xff00) >> 8);
-    *p++ = (UChar )(code & 0xff);
+    *p   = (UChar )(code & 0xff);
     return 2;
   }
 }
