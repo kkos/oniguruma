@@ -23,6 +23,7 @@
 #endif
 #define SIZEOF_FLOAT 4
 #define SIZEOF_DOUBLE 8
+#define SIZEOF_WCHAR_T 2
 #define TOKEN_PASTE(x,y) x##y
 #ifndef NORETURN
 #if _MSC_VER > 1100

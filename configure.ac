@@ -59,6 +59,7 @@ AC_CHECK_SIZEOF([int])
 AC_CHECK_SIZEOF([long])
 AC_CHECK_SIZEOF([long long])
 AC_CHECK_SIZEOF([void*])
+AC_CHECK_SIZEOF([wchar_t])
 
 dnl Checks for library functions.
 AC_FUNC_ALLOCA

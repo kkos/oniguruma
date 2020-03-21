@@ -32,6 +32,7 @@ check_include_files(unistd.h    HAVE_UNISTD_H)
 check_include_files(inttypes.h  HAVE_INTTYPES_H)
 check_type_size(int SIZEOF_INT)
 check_type_size(long SIZEOF_LONG)
+check_type_size(wchar_t SIZEOF_WCHAR_T)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/config.h.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
