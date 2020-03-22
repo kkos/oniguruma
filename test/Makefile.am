@@ -64,7 +64,9 @@ gcov:
 	make CFLAGS="--coverage" test_utf8
 	make CFLAGS="--coverage" test_syntax
 	make CFLAGS="--coverage" testc
+if ENABLE_POSIX_API
 	make CFLAGS="--coverage" testp
+endif
 	make CFLAGS="--coverage" testcu
 	make CFLAGS="--coverage" test_regset
 	make CFLAGS="--coverage" test_back
