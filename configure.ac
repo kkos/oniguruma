@@ -19,14 +19,14 @@ AC_SUBST(STATISTICS)
 dnl check for POSIX API
 AC_ARG_ENABLE([posix-api],
   [AS_HELP_STRING([--enable-posix-api],
-    [turn on to include POSIX API [default=yes]])],
+    [turn on to include POSIX API [default=no]])],
 [\
 case "${enableval}" in
  yes) enable_posix_api=yes ;;
  no)  enable_posix_api=no ;;
  *)   AC_MSG_ERROR(bad value for --enable-posix-api) ;;
 esac],
-enable_posix_api=yes)
+enable_posix_api=no)
 AM_CONDITIONAL(ENABLE_POSIX_API, test x"${enable_posix_api}" = xyes)
 
 
