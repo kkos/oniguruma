@@ -30,6 +30,7 @@ Supported character encodings:
 Master branch
 -------------
 
+* POSIX API disabled by default (* configure --enable-posix-api=yes)
 * Update Unicode version 13.0.0
 * NEW API: retry limit in search functions
 * Limit on maximum nesting level of subexp call (16)
