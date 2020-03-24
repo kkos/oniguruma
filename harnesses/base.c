@@ -16,6 +16,8 @@
 
 #define PARSE_DEPTH_LIMIT           8
 #define RETRY_LIMIT              5000
+#define CALL_MAX_NEST_LEVEL         8
+
 #define EXEC_PRINT_INTERVAL    500000
 //#define DUMP_DATA_INTERVAL     100000
 
@@ -169,6 +171,7 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
 #ifdef PARSE_DEPTH_LIMIT
   onig_set_parse_depth_limit(PARSE_DEPTH_LIMIT);
 #endif
+  onig_set_subexp_call_max_nest_level(CALL_MAX_NEST_LEVEL);
 
   r = onig_new(&reg, pattern, pattern_end,
                options, enc, syntax, &einfo);
