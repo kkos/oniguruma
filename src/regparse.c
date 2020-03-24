@@ -4229,7 +4229,7 @@ enum TokenSyms {
 typedef struct {
   enum TokenSyms type;
   int escaped;
-  int base;   /* is number: 8, 16 (used in [....]) */
+  int base_num;   /* is number: 8, 16 (used in [....]) */
   UChar* backp;
   union {
     UChar* s;
@@ -4853,9 +4853,9 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
   PFETCH(c);
   tok->type = TK_CHAR;
-  tok->base = 0;
-  tok->u.code = c;
-  tok->escaped = 0;
+  tok->base_num = 0;
+  tok->u.code   = c;
+  tok->escaped  = 0;
 
   if (c == ']') {
     tok->type = TK_CC_CLOSE;
@@ -4954,9 +4954,9 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
         if (p > prev + enclen(enc, prev) && !PEND && (PPEEK_IS('}'))) {
           PINC;
-          tok->type   = TK_CODE_POINT;
-          tok->base   = 8;
-          tok->u.code = code;
+          tok->type = TK_CODE_POINT;
+          tok->base_num = 8;
+          tok->u.code   = code;
         }
         else {
           /* can't read nothing or invalid format */
@@ -4981,9 +4981,9 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
         if (p > prev + enclen(enc, prev) && !PEND && (PPEEK_IS('}'))) {
           PINC;
-          tok->type   = TK_CODE_POINT;
-          tok->base   = 16;
-          tok->u.code = code;
+          tok->type = TK_CODE_POINT;
+          tok->base_num = 16;
+          tok->u.code   = code;
         }
         else {
           /* can't read nothing or invalid format */
@@ -4997,8 +4997,8 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
           code = 0; /* but, it's not error */
         }
         tok->type = TK_CRUDE_BYTE;
-        tok->base = 16;
-        tok->u.byte = (UChar )code;
+        tok->base_num = 16;
+        tok->u.byte   = (UChar )code;
       }
       break;
 
@@ -5012,9 +5012,9 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         if (p == prev) {  /* can't read nothing. */
           code = 0; /* but, it's not error */
         }
-        tok->type   = TK_CODE_POINT;
-        tok->base   = 16;
-        tok->u.code = code;
+        tok->type = TK_CODE_POINT;
+        tok->base_num = 16;
+        tok->u.code   = code;
       }
       break;
 
@@ -5030,8 +5030,8 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
           code = 0; /* but, it's not error */
         }
         tok->type = TK_CRUDE_BYTE;
-        tok->base = 8;
-        tok->u.byte = (UChar )code;
+        tok->base_num = 8;
+        tok->u.byte   = (UChar )code;
       }
       break;
 
@@ -5101,9 +5101,9 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     return tok->type;
   }
 
-  tok->type  = TK_STRING;
-  tok->base  = 0;
-  tok->backp = p;
+  tok->type = TK_STRING;
+  tok->base_num = 0;
+  tok->backp    = p;
 
   PFETCH(c);
   if (IS_MC_ESC_CODE(c, syn)) {
@@ -5400,8 +5400,8 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
           code = 0; /* but, it's not error */
         }
         tok->type = TK_CRUDE_BYTE;
-        tok->base = 16;
-        tok->u.byte = (UChar )code;
+        tok->base_num = 16;
+        tok->u.byte   = (UChar )code;
       }
       break;
 
@@ -5415,9 +5415,9 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         if (p == prev) {  /* can't read nothing. */
           code = 0; /* but, it's not error */
         }
-        tok->type   = TK_CODE_POINT;
-        tok->base   = 16;
-        tok->u.code = code;
+        tok->type = TK_CODE_POINT;
+        tok->base_num = 16;
+        tok->u.code   = code;
       }
       break;
 
@@ -5465,8 +5465,8 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
           code = 0; /* but, it's not error */
         }
         tok->type = TK_CRUDE_BYTE;
-        tok->base = 8;
-        tok->u.byte = (UChar )code;
+        tok->base_num = 8;
+        tok->u.byte   = (UChar )code;
       }
       else if (c != '0') {
         PINC;
@@ -6460,19 +6460,19 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       break;
 
     case TK_CRUDE_BYTE:
-      /* tok->base != 0 : octal or hexadec. */
-      if (! ONIGENC_IS_SINGLEBYTE(env->enc) && tok->base != 0) {
+      /* tok->base_num != 0 : octal or hexadec. */
+      if (! ONIGENC_IS_SINGLEBYTE(env->enc) && tok->base_num != 0) {
         int i, j;
         UChar buf[ONIGENC_CODE_TO_MBC_MAXLEN];
         UChar* bufe = buf + ONIGENC_CODE_TO_MBC_MAXLEN;
         UChar* psave = p;
-        int base = tok->base;
+        int base_num = tok->base_num;
 
         buf[0] = tok->u.byte;
         for (i = 1; i < ONIGENC_MBC_MAXLEN(env->enc); i++) {
           r = fetch_token_in_cc(tok, &p, end, env);
           if (r < 0) goto err;
-          if (r != TK_CRUDE_BYTE || tok->base != base) {
+          if (r != TK_CRUDE_BYTE || tok->base_num != base_num) {
             fetched = 1;
             break;
           }
