@@ -33,7 +33,7 @@ Master branch
 * POSIX API disabled by default (* configure --enable-posix-api=yes)
 * Update Unicode version 13.0.0
 * NEW API: retry limit in search functions
-* Limit on maximum nesting level of subexp call (16)
+* NEW API: maximum nesting level of subexp call
 * Fixed behavior of isolated options in Perl and Java syntaxes.  /...(?i).../
 
 
