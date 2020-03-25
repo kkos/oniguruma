@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.9.5   2020/02/19
+鬼車インターフェース Version 6.9.5   2020/03/25
 
 #include <oniguruma.h>
 
@@ -612,8 +612,8 @@
 
 
 # int onig_foreach_name(regex_t* reg,
-                        int (*func)(const UChar*, const UChar*, int,int*,regex_t*,void*),
-                        void* arg)
+          int (*func)(const UChar*, const UChar*, int,int*,regex_t*,void*),
+          void* arg)
 
   全ての名前に対してコールバック関数呼び出しを実行する。
 
@@ -911,6 +911,21 @@
   一回の検索でのリトライ数の制限値をセットする。
   0は無制限を意味する。
   (デフォルト: 0)
+
+  正常終了戻り値: ONIG_NORMAL
+
+
+# int onig_get_subexp_call_max_nest_level(void)
+
+  部分式呼出しのネストレベルの最大値を返す。
+  (デフォルト: 24)
+
+  正常終了戻り値: 制限値
+
+
+# int onig_set_subexp_call_max_nest_level(int max_level)
+
+  部分式呼出しのネストレベルの最大値を指定する。
 
   正常終了戻り値: ONIG_NORMAL
 
