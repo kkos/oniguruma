@@ -4228,6 +4228,7 @@ enum TokenSyms {
 
 typedef struct {
   enum TokenSyms type;
+  int code_point_continue;
   int escaped;
   int base_num;   /* is number: 8, 16 (used in [....]) */
   UChar* backp;
@@ -4266,6 +4267,11 @@ typedef struct {
   } u;
 } PToken;
 
+static void
+ptoken_init(PToken* tok)
+{
+  tok->code_point_continue = 0;
+}
 
 static int
 fetch_interval(UChar** src, UChar* end, PToken* tok, ScanEnv* env)
@@ -8586,6 +8592,7 @@ parse_regexp(Node** top, UChar** src, UChar* end, ScanEnv* env)
   int r;
   PToken tok;
 
+  ptoken_init(&tok);
   r = fetch_token(&tok, src, end, env);
   if (r < 0) return r;
   r = parse_alts(top, &tok, TK_EOT, src, end, env, FALSE);
