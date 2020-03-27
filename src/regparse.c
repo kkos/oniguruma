@@ -4925,6 +4925,20 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   UChar* p = *src;
   PFETCH_READY;
 
+  if (tok->code_point_continue != 0) {
+    if (PPEEK_IS('}')) {
+      PINC;
+      tok->code_point_continue = 0;
+    }
+    else {
+      r = get_next_code_point(&p, end, tok->base_num, enc, &code);
+      if (r != 0) return r;
+      tok->type   = TK_CODE_POINT;
+      tok->u.code = code;
+      goto end;
+    }
+  }
+
   if (PEND) {
     tok->type = TK_EOT;
     return tok->type;
@@ -5031,16 +5045,8 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
             return ONIGERR_TOO_LONG_WIDE_CHAR_VALUE;
         }
 
-        if (p > prev + enclen(enc, prev) && !PEND && (PPEEK_IS('}'))) {
-          PINC;
-          tok->type = TK_CODE_POINT;
-          tok->base_num = 8;
-          tok->u.code   = code;
-        }
-        else {
-          /* can't read nothing or invalid format */
-          p = prev;
-        }
+        tok->base_num = 8;
+        goto brace_code_point_entry;
       }
       break;
 
@@ -5058,11 +5064,21 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
             return ONIGERR_TOO_LONG_WIDE_CHAR_VALUE;
         }
 
-        if (p > prev + enclen(enc, prev) && !PEND && (PPEEK_IS('}'))) {
-          PINC;
-          tok->type = TK_CODE_POINT;
-          tok->base_num = 16;
-          tok->u.code   = code;
+        tok->base_num = 16;
+      brace_code_point_entry:
+        if ((p > prev + enclen(enc, prev))) {
+          if (PEND) return ONIGERR_INVALID_CODE_POINT_VALUE;
+          if (PPEEK_IS('}')) {
+            PINC;
+          }
+          else {
+            r = check_code_point_sequence(p, end, tok->base_num, enc);
+            if (r < 0) return r;
+            if (r == 0) return ONIGERR_INVALID_CODE_POINT_VALUE;
+            tok->code_point_continue = TRUE;
+          }
+          tok->type   = TK_CODE_POINT;
+          tok->u.code = code;
         }
         else {
           /* can't read nothing or invalid format */
