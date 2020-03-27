@@ -1398,6 +1398,37 @@ extern int main(int argc, char* argv[])
   x2("(?i)A\u2126=", "a\xcf\x89=", 0, 4);
   x2("(?i:ss)=1234567890", "\xc5\xbf\xc5\xbf=1234567890", 0, 15);
 
+  x2("\\x{000A}", "\x0a", 0, 1);
+  x2("\\x{000A 002f}", "\x0a\x2f", 0, 2);
+  x2("\\x{007C     001b}", "\x7c\x1b", 0, 2);
+  x2("\\x{1 2 3 4 5 6 7 8 9 a b c d e f}", "\x01\x02\x3\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f", 0, 15);
+  e("\\x{000A 00000002f}", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("\\x{000A 002f }", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("\\x{000A 002f/", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("\\x{000A 002f /", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("\\x{000A", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("\\x{000A ", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("\\x{000A 002f ", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  x2("\\o{102}", "B", 0, 1);
+  x2("\\o{102 103}", "BC", 0, 2);
+  x2("\\o{0160 0000161}", "pq", 0, 2);
+  x2("\\o{1 2 3 4 5 6 7 10 11 12 13 14 15 16 17}", "\x01\x02\x3\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f", 0, 15);
+  e("\\o{0000 0015 }", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("\\o{0000 0015/", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("\\o{0000 0015 /", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("\\o{0015", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("\\o{0015 ", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("\\o{0007 002f}", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  x2("[\\x{000A}]", "\x0a", 0, 1);
+  x2("[\\x{000A 002f}]+", "\x0a\x2f\x2e", 0, 2);
+  x2("[\\x{01 0F 1A 2c 4B}]+", "\x20\x01\x0f\x1a\x2c\x4b\x1b", 1, 6);
+  e("[\\x{000A]", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("[\\x{000A ]", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("[\\x{000A }]", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  x2("[\\o{102}]", "B", 0, 1);
+  x2("[\\o{102 103}]*", "BC", 0, 2);
+  e("[a\\o{002  003]bcde|zzz", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+
   n("a(b|)+d", "abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcd"); /* https://www.haijin-boys.com/discussions/5079 */
   n("   \xfd", ""); /* https://bugs.php.net/bug.php?id=77370 */
   /* can't use \xfc00.. because compiler error: hex escape sequence out of range */
