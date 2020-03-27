@@ -32,6 +32,7 @@ Master branch
 
 * POSIX API disabled by default (* configure --enable-posix-api=yes)
 * Update Unicode version 13.0.0
+* NEW: Code point sequence notation \x{HHHH HHHH ...}, \o{OOOO OOOO ...}
 * NEW API: retry limit in search functions
 * NEW API: maximum nesting level of subexp call
 * Fixed behavior of isolated options in Perl and Java syntaxes.  /...(?i).../
