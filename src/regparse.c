@@ -3559,7 +3559,7 @@ scan_number_of_base(UChar** src, UChar* end, int minlen,
   return r;
 }
 
-#define CP_DIVIDE_CHAR   ' '
+#define IS_CODE_POINT_DIVIDE(c)  ((c) == ' ' || (c) == '\n')
 
 static int
 check_code_point_sequence(UChar* p, UChar* end, int base, OnigEncoding enc)
@@ -3575,12 +3575,12 @@ check_code_point_sequence(UChar* p, UChar* end, int base, OnigEncoding enc)
     PFETCH(c);
     if (c == '}') return n;
 
-    if (c == CP_DIVIDE_CHAR) {
+    if (IS_CODE_POINT_DIVIDE(c)) {
       while (! PEND) {
         PFETCH(c);
-        if (c != CP_DIVIDE_CHAR) break;
+        if (! IS_CODE_POINT_DIVIDE(c)) break;
       }
-      if (c == CP_DIVIDE_CHAR)
+      if (IS_CODE_POINT_DIVIDE(c))
         return ONIGERR_INVALID_CODE_POINT_VALUE;
     }
     else if (n != 0)
@@ -3607,9 +3607,9 @@ get_next_code_point(UChar** src, UChar* end, int base, OnigEncoding enc, OnigCod
 
   while (! PEND) {
     PFETCH(c);
-    if (c != CP_DIVIDE_CHAR) break;
+    if (! IS_CODE_POINT_DIVIDE(c)) break;
   }
-  if (c == CP_DIVIDE_CHAR) {
+  if (IS_CODE_POINT_DIVIDE(c)) {
     return ONIGERR_INVALID_CODE_POINT_VALUE;
   }
   else if (c == '}') {
