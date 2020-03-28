@@ -3605,8 +3605,13 @@ get_next_code_point(UChar** src, UChar* end, int base, OnigEncoding enc, OnigCod
     PFETCH(c);
     if (c != CP_DIVIDE_CHAR) break;
   }
-  if (c == CP_DIVIDE_CHAR)
+  if (c == CP_DIVIDE_CHAR) {
     return ONIGERR_INVALID_CODE_POINT_VALUE;
+  }
+  else if (c == '}') {
+    *src = p;
+    return 1; /* end of sequence */
+  }
 
   PUNFETCH;
   r = scan_number_of_base(&p, end, 1, enc, rcode, base);
@@ -4926,17 +4931,17 @@ fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   PFETCH_READY;
 
   if (tok->code_point_continue != 0) {
-    if (PPEEK_IS('}')) {
-      PINC;
+    r = get_next_code_point(&p, end, tok->base_num, enc, &code);
+    if (r == 1) {
       tok->code_point_continue = 0;
     }
-    else {
-      r = get_next_code_point(&p, end, tok->base_num, enc, &code);
-      if (r != 0) return r;
+    else if (r == 0) {
       tok->type   = TK_CODE_POINT;
       tok->u.code = code;
       goto end;
     }
+    else
+      return r; /* error */
   }
 
   if (PEND) {
@@ -5191,17 +5196,17 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   PFETCH_READY;
 
   if (tok->code_point_continue != 0) {
-    if (PPEEK_IS('}')) {
-      PINC;
+    r = get_next_code_point(&p, end, tok->base_num, enc, &code);
+    if (r == 1) {
       tok->code_point_continue = 0;
     }
-    else {
-      r = get_next_code_point(&p, end, tok->base_num, enc, &code);
-      if (r != 0) return r;
+    else if (r == 0) {
       tok->type   = TK_CODE_POINT;
       tok->u.code = code;
       goto out;
     }
+    else
+      return r; /* error */
   }
 
  start:
