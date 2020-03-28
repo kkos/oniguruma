@@ -1404,7 +1404,8 @@ extern int main(int argc, char* argv[])
   x2("\\x{007C     001b}", "\x7c\x1b", 0, 2);
   x2("\\x{1 2 3 4 5 6 7 8 9 a b c d e f}", "\x01\x02\x3\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f", 0, 15);
   x2("a\\x{000A 002f}@", "a\x0a\x2f@", 0, 4);
-  e("\\x{000A 00000002f}", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("\\x{00000001 000000012}", "", ONIGERR_TOO_LONG_WIDE_CHAR_VALUE);
+  e("\\x{000A 00000002f}", "", ONIGERR_TOO_LONG_WIDE_CHAR_VALUE);
   e("\\x{000A 002f/", "", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("\\x{000A 002f /", "", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("\\x{000A", "", ONIGERR_INVALID_CODE_POINT_VALUE);
