@@ -3583,8 +3583,18 @@ check_code_point_sequence(UChar* p, UChar* end, int base, OnigEncoding enc)
       if (IS_CODE_POINT_DIVIDE(c))
         return ONIGERR_INVALID_CODE_POINT_VALUE;
     }
-    else if (n != 0)
+    else if (n != 0) {
+      if (base == 16) {
+        if (IS_CODE_XDIGIT_ASCII(enc, c))
+          return ONIGERR_TOO_LONG_WIDE_CHAR_VALUE;
+      }
+      else if (base == 8) {
+        if (IS_CODE_DIGIT_ASCII(enc, c) && c < '8')
+          return ONIGERR_TOO_LONG_WIDE_CHAR_VALUE;
+      }
+
       return ONIGERR_INVALID_CODE_POINT_VALUE;
+    }
 
     if (c == '}') return n;
 
