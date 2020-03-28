@@ -1400,11 +1400,11 @@ extern int main(int argc, char* argv[])
 
   x2("\\x{000A}", "\x0a", 0, 1);
   x2("\\x{000A 002f}", "\x0a\x2f", 0, 2);
+  x2("\\x{000A 002f }", "\x0a\x2f", 0, 2);
   x2("\\x{007C     001b}", "\x7c\x1b", 0, 2);
   x2("\\x{1 2 3 4 5 6 7 8 9 a b c d e f}", "\x01\x02\x3\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f", 0, 15);
   x2("a\\x{000A 002f}@", "a\x0a\x2f@", 0, 4);
   e("\\x{000A 00000002f}", "", ONIGERR_INVALID_CODE_POINT_VALUE);
-  e("\\x{000A 002f }", "", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("\\x{000A 002f/", "", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("\\x{000A 002f /", "", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("\\x{000A", "", ONIGERR_INVALID_CODE_POINT_VALUE);
@@ -1414,7 +1414,7 @@ extern int main(int argc, char* argv[])
   x2("\\o{102 103}", "BC", 0, 2);
   x2("\\o{0160 0000161}", "pq", 0, 2);
   x2("\\o{1 2 3 4 5 6 7 10 11 12 13 14 15 16 17}", "\x01\x02\x3\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f", 0, 15);
-  e("\\o{0000 0015 }", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  x2("\\o{0007 0010 }", "\x07\x08", 0, 2);
   e("\\o{0000 0015/", "", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("\\o{0000 0015 /", "", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("\\o{0015", "", ONIGERR_INVALID_CODE_POINT_VALUE);

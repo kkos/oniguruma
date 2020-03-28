@@ -3574,15 +3574,19 @@ check_code_point_sequence(UChar* p, UChar* end, int base, OnigEncoding enc)
   while (! PEND) {
     PFETCH(c);
     if (c == '}') return n;
-    if (c != CP_DIVIDE_CHAR)
+
+    if (c == CP_DIVIDE_CHAR) {
+      while (! PEND) {
+        PFETCH(c);
+        if (c != CP_DIVIDE_CHAR) break;
+      }
+      if (c == CP_DIVIDE_CHAR)
+        return ONIGERR_INVALID_CODE_POINT_VALUE;
+    }
+    else if (n != 0)
       return ONIGERR_INVALID_CODE_POINT_VALUE;
 
-    while (! PEND) {
-      PFETCH(c);
-      if (c != CP_DIVIDE_CHAR) break;
-    }
-    if (c == CP_DIVIDE_CHAR)
-      return ONIGERR_INVALID_CODE_POINT_VALUE;
+    if (c == '}') return n;
 
     PUNFETCH;
     r = scan_number_of_base(&p, end, 1, enc, &code, base);
