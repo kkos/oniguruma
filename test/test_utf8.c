@@ -1404,6 +1404,7 @@ extern int main(int argc, char* argv[])
   x2("\\x{007C     001b}", "\x7c\x1b", 0, 2);
   x2("\\x{1 2 3 4 5 6 7 8 9 a b c d e f}", "\x01\x02\x3\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f", 0, 15);
   x2("a\\x{000A 002f}@", "a\x0a\x2f@", 0, 4);
+  x2("a\\x{0060\n0063}@", "a\x60\x63@", 0, 4);
   e("\\x{00000001 000000012}", "", ONIGERR_TOO_LONG_WIDE_CHAR_VALUE);
   e("\\x{000A 00000002f}", "", ONIGERR_TOO_LONG_WIDE_CHAR_VALUE);
   e("\\x{000A 002f/", "", ONIGERR_INVALID_CODE_POINT_VALUE);
@@ -1424,6 +1425,8 @@ extern int main(int argc, char* argv[])
   x2("[\\x{000A}]", "\x0a", 0, 1);
   x2("[\\x{000A 002f}]+", "\x0a\x2f\x2e", 0, 2);
   x2("[\\x{01 0F 1A 2c 4B}]+", "\x20\x01\x0f\x1a\x2c\x4b\x1b", 1, 6);
+  x2("[\\x{0020 0024}-\\x{0026}]+", "\x25\x24\x26\x23", 0, 3);
+  x2("[\\x{0030}-\\x{0033 005a}]+", "\x30\x31\x32\x33\x5a\34", 0, 5);
   e("[\\x{000A]", "", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("[\\x{000A ]", "", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("[\\x{000A }]", "", ONIGERR_INVALID_CODE_POINT_VALUE);
