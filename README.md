@@ -30,7 +30,7 @@ Supported character encodings:
 Master branch
 -------------
 
-* POSIX API disabled by default (* configure --enable-posix-api=yes)
+* POSIX API disabled by default for Unix (* Enabled by: configure --enable-posix-api=yes)
 * Update Unicode version 13.0.0
 * NEW: Code point sequence notation \x{HHHH HHHH ...}, \o{OOOO OOOO ...}
 * NEW API: retry limit in search functions
