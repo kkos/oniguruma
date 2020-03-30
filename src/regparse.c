@@ -3561,6 +3561,12 @@ scan_number_of_base(UChar** src, UChar* end, int minlen,
 
 #define IS_CODE_POINT_DIVIDE(c)  ((c) == ' ' || (c) == '\n')
 
+enum CPS_STATE {
+  CPS_EMPTY = 0,
+  CPS_START = 1,
+  CPS_RANGE = 2
+};
+
 static int
 check_code_point_sequence(UChar* p, UChar* end, int base, OnigEncoding enc,
                           int in_cc)
@@ -3568,16 +3574,22 @@ check_code_point_sequence(UChar* p, UChar* end, int base, OnigEncoding enc,
   int r;
   int n;
   int end_digit;
+  int state;
   OnigCodePoint code;
   OnigCodePoint c;
   PFETCH_READY;
 
   end_digit = FALSE;
+  state = CPS_START;
   n = 0;
   while (! PEND) {
   start:
     PFETCH(c);
-    if (c == '}') return n;
+    if (c == '}') {
+    end_char:
+      if (state == CPS_RANGE) return ONIGERR_INVALID_CODE_POINT_VALUE;
+      return n;
+    }
 
     if (IS_CODE_POINT_DIVIDE(c)) {
       while (! PEND) {
@@ -3589,8 +3601,10 @@ check_code_point_sequence(UChar* p, UChar* end, int base, OnigEncoding enc,
     }
     else if (c == '-' && in_cc == TRUE) {
     range:
+      if (state != CPS_START) return ONIGERR_INVALID_CODE_POINT_VALUE;
       if (PEND) return ONIGERR_INVALID_CODE_POINT_VALUE;
       end_digit = FALSE;
+      state = CPS_RANGE;
       goto start;
     }
     else if (end_digit == TRUE) {
@@ -3606,7 +3620,7 @@ check_code_point_sequence(UChar* p, UChar* end, int base, OnigEncoding enc,
       return ONIGERR_INVALID_CODE_POINT_VALUE;
     }
 
-    if (c == '}') return n;
+    if (c == '}') goto end_char;
     if (c == '-' && in_cc == TRUE) goto range;
 
     PUNFETCH;
@@ -3614,6 +3628,7 @@ check_code_point_sequence(UChar* p, UChar* end, int base, OnigEncoding enc,
     if (r != 0) return r;
     n++;
     end_digit = TRUE;
+    state = (state == CPS_RANGE) ? CPS_EMPTY : CPS_START;
   }
 
   return ONIGERR_INVALID_CODE_POINT_VALUE;
