@@ -1433,6 +1433,16 @@ extern int main(int argc, char* argv[])
   x2("[\\o{102}]", "B", 0, 1);
   x2("[\\o{102 103}]*", "BC", 0, 2);
   e("[a\\o{002  003]bcde|zzz", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  x2("[\\x{0030-0039}]+", "abc0123456789def", 3, 13);
+  x2("[\\x{0030 - 0039 }]+", "abc0123456789def", 3, 13);
+  x2("[\\x{0030 - 0039 0063 0064}]+", "abc0123456789def", 2, 14);
+  x2("[\\x{0030 - 0039 0063-0065}]+", "acde019b", 1, 7);
+  e("[\\x{0030 - 0039-0063 0064}]+", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("[\\x{0030 - }]+", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("[\\x{0030 -- 0040}]+", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("[\\x{0030--0040}]+", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("[\\x{0030 - - 0040}]+", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("[\\x{0030 0044 - }]+", "", ONIGERR_INVALID_CODE_POINT_VALUE);
 
   n("a(b|)+d", "abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcd"); /* https://www.haijin-boys.com/discussions/5079 */
   n("   \xfd", ""); /* https://bugs.php.net/bug.php?id=77370 */
