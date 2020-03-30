@@ -4933,7 +4933,7 @@ str_exist_check_with_esc(OnigCodePoint s[], int n, UChar* from, UChar* to,
 }
 
 static int
-fetch_token_in_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
+fetch_token_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 {
   int r;
   OnigCodePoint code;
@@ -6545,10 +6545,10 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   INC_PARSE_DEPTH(env->parse_depth);
 
   prev_cc = (CClassNode* )NULL;
-  r = fetch_token_in_cc(tok, src, end, env);
+  r = fetch_token_cc(tok, src, end, env);
   if (r == TK_CHAR && tok->u.code == (OnigCodePoint )'^' && tok->escaped == 0) {
     neg = 1;
-    r = fetch_token_in_cc(tok, src, end, env);
+    r = fetch_token_cc(tok, src, end, env);
   }
   else {
     neg = 0;
@@ -6600,7 +6600,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
         buf[0] = tok->u.byte;
         for (i = 1; i < ONIGENC_MBC_MAXLEN(env->enc); i++) {
-          r = fetch_token_in_cc(tok, &p, end, env);
+          r = fetch_token_cc(tok, &p, end, env);
           if (r < 0) goto err;
           if (r != TK_CRUDE_BYTE || tok->base_num != base_num) {
             fetched = 1;
@@ -6625,7 +6625,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         else if (i > len) { /* fetch back */
           p = psave;
           for (i = 1; i < len; i++) {
-            r = fetch_token_in_cc(tok, &p, end, env);
+            r = fetch_token_cc(tok, &p, end, env);
           }
           fetched = 0;
         }
@@ -6706,7 +6706,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
     case TK_CC_RANGE:
       if (state == CS_VALUE) {
-        r = fetch_token_in_cc(tok, &p, end, env);
+        r = fetch_token_cc(tok, &p, end, env);
         if (r < 0) goto err;
 
         fetched = 1;
@@ -6733,7 +6733,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         in_code = tok->u.code;
         in_raw = 0;
 
-        r = fetch_token_in_cc(tok, &p, end, env);
+        r = fetch_token_cc(tok, &p, end, env);
         if (r < 0) goto err;
 
         fetched = 1;
@@ -6748,7 +6748,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         goto any_char_in;  /* [!--] is allowed */
       }
       else { /* CS_COMPLETE */
-        r = fetch_token_in_cc(tok, &p, end, env);
+        r = fetch_token_cc(tok, &p, end, env);
         if (r < 0) goto err;
 
         fetched = 1;
@@ -6831,7 +6831,7 @@ parse_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     if (fetched)
       r = tok->type;
     else {
-      r = fetch_token_in_cc(tok, &p, end, env);
+      r = fetch_token_cc(tok, &p, end, env);
       if (r < 0) goto err;
     }
   }
