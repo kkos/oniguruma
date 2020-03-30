@@ -3562,16 +3562,20 @@ scan_number_of_base(UChar** src, UChar* end, int minlen,
 #define IS_CODE_POINT_DIVIDE(c)  ((c) == ' ' || (c) == '\n')
 
 static int
-check_code_point_sequence(UChar* p, UChar* end, int base, OnigEncoding enc)
+check_code_point_sequence(UChar* p, UChar* end, int base, OnigEncoding enc,
+                          int in_cc)
 {
   int r;
   int n;
+  int end_digit;
   OnigCodePoint code;
   OnigCodePoint c;
   PFETCH_READY;
 
+  end_digit = FALSE;
   n = 0;
   while (! PEND) {
+  start:
     PFETCH(c);
     if (c == '}') return n;
 
@@ -3583,7 +3587,13 @@ check_code_point_sequence(UChar* p, UChar* end, int base, OnigEncoding enc)
       if (IS_CODE_POINT_DIVIDE(c))
         return ONIGERR_INVALID_CODE_POINT_VALUE;
     }
-    else if (n != 0) {
+    else if (c == '-' && in_cc == TRUE) {
+    range:
+      if (PEND) return ONIGERR_INVALID_CODE_POINT_VALUE;
+      end_digit = FALSE;
+      goto start;
+    }
+    else if (end_digit == TRUE) {
       if (base == 16) {
         if (IS_CODE_XDIGIT_ASCII(enc, c))
           return ONIGERR_TOO_LONG_WIDE_CHAR_VALUE;
@@ -3597,18 +3607,20 @@ check_code_point_sequence(UChar* p, UChar* end, int base, OnigEncoding enc)
     }
 
     if (c == '}') return n;
+    if (c == '-' && in_cc == TRUE) goto range;
 
     PUNFETCH;
     r = scan_number_of_base(&p, end, 1, enc, &code, base);
     if (r != 0) return r;
     n++;
+    end_digit = TRUE;
   }
 
   return ONIGERR_INVALID_CODE_POINT_VALUE;
 }
 
 static int
-get_next_code_point(UChar** src, UChar* end, int base, OnigEncoding enc, OnigCodePoint* rcode)
+get_next_code_point(UChar** src, UChar* end, int base, OnigEncoding enc, int in_cc, OnigCodePoint* rcode)
 {
   int r;
   OnigCodePoint c;
@@ -3619,12 +3631,16 @@ get_next_code_point(UChar** src, UChar* end, int base, OnigEncoding enc, OnigCod
     PFETCH(c);
     if (! IS_CODE_POINT_DIVIDE(c)) break;
   }
-  if (IS_CODE_POINT_DIVIDE(c)) {
+  if (IS_CODE_POINT_DIVIDE(c))
     return ONIGERR_INVALID_CODE_POINT_VALUE;
-  }
-  else if (c == '}') {
+
+  if (c == '}') {
     *src = p;
     return 1; /* end of sequence */
+  }
+  else if (c == '-' && in_cc == TRUE) {
+    *src = p;
+    return 2; /* range */
   }
 
   PUNFETCH;
@@ -4945,9 +4961,13 @@ fetch_token_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   PFETCH_READY;
 
   if (tok->code_point_continue != 0) {
-    r = get_next_code_point(&p, end, tok->base_num, enc, &code);
+    r = get_next_code_point(&p, end, tok->base_num, enc, TRUE, &code);
     if (r == 1) {
       tok->code_point_continue = 0;
+    }
+    else if (r == 2) {
+      tok->type = TK_CC_RANGE;
+      goto end;
     }
     else if (r == 0) {
       tok->type   = TK_CODE_POINT;
@@ -5091,7 +5111,7 @@ fetch_token_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
             PINC;
           }
           else {
-            r = check_code_point_sequence(p, end, tok->base_num, enc);
+            r = check_code_point_sequence(p, end, tok->base_num, enc, TRUE);
             if (r < 0) return r;
             if (r == 0) return ONIGERR_INVALID_CODE_POINT_VALUE;
             tok->code_point_continue = TRUE;
@@ -5210,7 +5230,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   PFETCH_READY;
 
   if (tok->code_point_continue != 0) {
-    r = get_next_code_point(&p, end, tok->base_num, enc, &code);
+    r = get_next_code_point(&p, end, tok->base_num, enc, FALSE, &code);
     if (r == 1) {
       tok->code_point_continue = 0;
     }
@@ -5512,7 +5532,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
             PINC;
           }
           else {
-            r = check_code_point_sequence(p, end, tok->base_num, enc);
+            r = check_code_point_sequence(p, end, tok->base_num, enc, FALSE);
             if (r < 0) return r;
             if (r == 0) return ONIGERR_INVALID_CODE_POINT_VALUE;
             tok->code_point_continue = TRUE;
