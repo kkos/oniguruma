@@ -161,6 +161,9 @@ extern int main(int argc, char* argv[])
   r = exec(ONIG_ENCODING_GB18030, ONIG_OPTION_IGNORECASE,
            "(Aa\\d)+", "BaA5Aa0234");
 
+  r = exec(ONIG_ENCODING_GB18030, ONIG_OPTION_NONE,
+           "[[^\\w]]+[^\xee\xef]\xee\xef", "[[^\\w]]+[^\xee\xef]\xee\xef");
+
   r = exec(ONIG_ENCODING_UTF16_BE, ONIG_OPTION_IGNORECASE,
            "\000[\000\337\000]\000\000", "\000S\000S\000\000");
 
