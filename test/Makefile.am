@@ -18,10 +18,10 @@ test: test_uchar $(TESTS)
 	@./test_utf8  | grep RESULT
 	@echo "[Oniguruma API, SYNTAX check]"
 	@./test_syntax  | grep RESULT
-	@echo "[Oniguruma API, ASCII/EUC-JP check]"
+	@echo "[Oniguruma API, EUC-JP check]"
 	@./testc  | grep RESULT
 if ENABLE_POSIX_API
-	@echo "[POSIX API, ASCII/EUC-JP check]"
+	@echo "[POSIX API, UTF-8 check]"
 	@./testp  | grep RESULT
 endif
 	@echo "[Oniguruma API, UTF-16 check]"
@@ -46,9 +46,8 @@ test_syntax_LDADD = $(lib_onig)
 testc_SOURCES = testc.c
 testc_LDADD = $(lib_onig)
 
-testp_SOURCES = testc.c
+testp_SOURCES = testp.c
 testp_LDADD = $(lib_onig)
-testp_CFLAGS = -DPOSIX_TEST -Wall -Wno-invalid-source-encoding
 
 testcu_SOURCES = testu.c
 testcu_LDADD = $(lib_onig)
