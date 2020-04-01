@@ -1443,6 +1443,13 @@ extern int main(int argc, char* argv[])
   e("[\\x{0030--0040}]+", "", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("[\\x{0030 - - 0040}]+", "", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("[\\x{0030 0044 - }]+", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("[a-\\x{0070 - 0039}]+", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  x2("[a-\\x{0063 0071}]+", "dabcqz", 1, 5);
+  x2("[-\\x{0063-0065}]+", "ace-df", 1, 5);
+  x2("[\\x61-\\x{0063 0065}]+", "abced", 0, 4);
+  e("[\\x61-\\x{0063-0065}]+", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  x2("[t\\x{0063 0071}]+", "tcqb", 0, 3);
+  x2("[\\W\\x{0063 0071}]+", "*cqa", 0, 3);
 
   n("a(b|)+d", "abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcd"); /* https://www.haijin-boys.com/discussions/5079 */
   n("   \xfd", ""); /* https://bugs.php.net/bug.php?id=77370 */
