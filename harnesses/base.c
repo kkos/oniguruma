@@ -25,6 +25,22 @@
 
 typedef unsigned char uint8_t;
 
+#ifdef DUMP_INPUT
+static void
+dump_input(unsigned char* data, size_t len)
+{
+  static FILE* DumpFp;
+  static char end[] = { 'E', 'N', 'D' };
+
+  if (DumpFp == 0)
+    DumpFp = fopen("dump-input", "w");
+
+  fseek(DumpFp, 0, SEEK_SET);
+  fwrite(data, sizeof(unsigned char), len, DumpFp);
+  fwrite(end,  sizeof(char), sizeof(end), DumpFp);
+  fflush(DumpFp);
+}
+#endif
 
 #ifdef DUMP_DATA_INTERVAL
 static void
@@ -413,6 +429,10 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   fprintf(stdout, "enc: %s, options: %u, pattern_size: %d\n",
           ONIGENC_NAME(enc), options, pattern_size);
 #endif
+#endif
+
+#ifdef DUMP_INPUT
+  dump_input((unsigned char* )Data, Size);
 #endif
 
   r = alloc_exec(enc, options, syntax, pattern_size, remaining_size, data);
