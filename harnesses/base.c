@@ -13,15 +13,12 @@
 
 #include "oniguruma.h"
 
-
 #define PARSE_DEPTH_LIMIT           8
 #define RETRY_LIMIT              5000
 #define CALL_MAX_NEST_LEVEL         8
-
-#define EXEC_PRINT_INTERVAL    500000
+//#define EXEC_PRINT_INTERVAL    500000
 //#define DUMP_DATA_INTERVAL     100000
-
-//#define STAT_PATH      "fuzzer.stat_log"
+//#define STAT_PATH              "fuzzer.stat_log"
 
 typedef unsigned char uint8_t;
 
@@ -439,6 +436,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   if (r == -2) exit(-2);
 
 #ifndef STANDALONE
+#ifdef EXEC_PRINT_INTERVAL
   if (EXEC_COUNT_INTERVAL == EXEC_PRINT_INTERVAL) {
     float fexec, freg, fvalid;
 
@@ -471,6 +469,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
     output_current_time(stdout);
     fprintf(stdout, ": ------------ START ------------\n");
   }
+#endif
 #endif
 
   return r;
