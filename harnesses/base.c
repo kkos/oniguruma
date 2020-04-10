@@ -103,7 +103,7 @@ output_current_time(FILE* fp)
 #endif
 
 static int
-search(regex_t* reg, unsigned char* str, unsigned char* end)
+search(regex_t* reg, unsigned char* str, unsigned char* end, int backward)
 {
   int r;
   unsigned char *start, *range;
@@ -111,13 +111,14 @@ search(regex_t* reg, unsigned char* str, unsigned char* end)
 
   region = onig_region_new();
 
-#ifdef BACKWARD_SEARCH
-  start = end;
-  range = str;
-#else
-  start = str;
-  range = end;
-#endif
+  if (backward != 0) {
+    start = end;
+    range = str;
+  }
+  else {
+    start = str;
+    range = end;
+  }
 
   r = onig_search(reg, str, end, start, range, region, ONIG_OPTION_NONE);
   if (r >= 0) {
@@ -167,7 +168,7 @@ static long VALID_STRING_COUNT;
 
 static int
 exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
-     char* apattern, char* apattern_end, char* astr, UChar* end)
+     char* apattern, char* apattern_end, char* astr, UChar* end, int backward)
 {
   int r;
   regex_t* reg;
@@ -207,12 +208,12 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   }
   REGEX_SUCCESS_COUNT++;
 
-  r = search(reg, pattern, pattern_end);
+  r = search(reg, pattern, pattern_end, backward);
   if (r == -2) return -2;
 
   if (onigenc_is_valid_mbc_string(enc, str, end) != 0) {
     VALID_STRING_COUNT++;
-    r = search(reg, str, end);
+    r = search(reg, str, end, backward);
     if (r == -2) return -2;
   }
 
@@ -223,7 +224,7 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
 
 static int
 alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
-           int pattern_size, size_t remaining_size, unsigned char *data)
+           int backward, int pattern_size, size_t remaining_size, unsigned char *data)
 {
   int r;
   unsigned char *pattern_end;
@@ -246,7 +247,7 @@ alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
 
   r = exec(enc, options, syntax,
            (char *)pattern, (char *)pattern_end,
-           (char *)str, str_null_end);
+           (char *)str, str_null_end, backward);
 
   free(pattern);
   free(str);
@@ -257,9 +258,9 @@ alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
 
 
 #ifdef SYNTAX_TEST
-#define NUM_CONTROL_BYTES      5
+#define NUM_CONTROL_BYTES      6
 #else
-#define NUM_CONTROL_BYTES      4
+#define NUM_CONTROL_BYTES      5
 #endif
 
 int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
@@ -338,6 +339,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 #endif
 
   int r;
+  int backward;
   int pattern_size;
   size_t remaining_size;
   unsigned char *data;
@@ -405,6 +407,10 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   data++;
   remaining_size--;
 
+  backward = (data[0] == 0xbb);
+  data++;
+  remaining_size--;
+
   if (remaining_size == 0)
     pattern_size = 0;
   else {
@@ -417,14 +423,15 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 #ifdef STANDALONE
   dump_data(stdout, data, pattern_size);
 #ifdef SYNTAX_TEST
-  fprintf(stdout, "enc: %s, syntax: %s, options: %u, pattern_size: %d\n",
+  fprintf(stdout,
+          "enc: %s, syntax: %s, options: %u, pattern_size: %d, back:%d\n",
           ONIGENC_NAME(enc),
           syntax_names[syntax_choice % num_syntaxes],
           options,
-          pattern_size);
+          pattern_size, backward);
 #else
-  fprintf(stdout, "enc: %s, options: %u, pattern_size: %d\n",
-          ONIGENC_NAME(enc), options, pattern_size);
+  fprintf(stdout, "enc: %s, options: %u, pattern_size: %d, back:%d\n",
+          ONIGENC_NAME(enc), options, pattern_size, backward);
 #endif
 #endif
 
@@ -432,7 +439,8 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   dump_input((unsigned char* )Data, Size);
 #endif
 
-  r = alloc_exec(enc, options, syntax, pattern_size, remaining_size, data);
+  r = alloc_exec(enc, options, syntax, backward, pattern_size,
+                 remaining_size, data);
   if (r == -2) exit(-2);
 
 #ifndef STANDALONE
