@@ -23,18 +23,12 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 	new_str[size] = '\0';
 
 	regex_t* reg;
-	UChar* pattern = (UChar* )new_str;
-	UChar* str     = (UChar* )&new_str[1];
-	OnigEncoding enc = ONIG_ENCODING_UTF8;
+	UChar* str = (UChar* )new_str;
+	UChar* end = str + strlen(new_str);
 	OnigOptionType options = ONIG_OPTION_NONE;
 	OnigErrorInfo einfo;
 
-	int oniginit = onig_initialize(&enc, 1);
-
-	if (oniginit != ONIG_NORMAL) {
-		return 0;
-	}
-	int new_onig = onig_new(&reg, (UChar*)new_str, (UChar*)new_str + strlen(new_str),
+	int new_onig = onig_new(&reg, str, end,
 			        ONIG_OPTION_DEFAULT, ONIG_ENCODING_ASCII,
 				ONIG_SYNTAX_DEFAULT, &einfo);
 
@@ -48,7 +42,9 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 	RegexExt* r3 = onig_get_regex_ext(reg);
 	reg->extp = r3;
 
-	int fuzzer = onig_scan(reg, (OnigUChar *)new_str, NULL, region, ONIG_OPTION_NONE, scan_callback, NULL);
+	int fuzzer = onig_scan(reg, str, NULL,
+			       region, ONIG_OPTION_NONE,
+			       scan_callback, NULL);
 
 	onig_region_free(region, 1);
 	onig_free(reg);
