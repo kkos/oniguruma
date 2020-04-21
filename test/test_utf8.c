@@ -682,6 +682,13 @@ extern int main(int argc, char* argv[])
 
   x2("(?~)", "", 0, 0);
   x2("(?~)", "A", 0, 0);
+  x2("(?~ab)", "abc", 0, 0);
+  x2("(?~abc)", "abc", 0, 0);
+  x2("(?~abc|ab)", "abc", 0, 0);
+  x2("(?~ab|abc)", "abc", 0, 0);
+  x2("(?~a.c)", "abc", 0, 0);
+  x2("(?~a.c|ab)", "abc", 0, 0);
+  x2("(?~ab|a.c)", "abc", 0, 0);
   x2("aaaaa(?~)", "aaaaaaaaaa", 0, 5);
   x2("(?~(?:|aaa))", "aaa", 0, 0);
   x2("(?~aaa|)", "aaa", 0, 0);
