@@ -545,6 +545,14 @@ extern int main(int argc, char* argv[])
   x2("(?<=a|bc||defghij|klmnopq|r)z", "rz", 1, 2);
   x3("(?<=(abc))d", "abcd", 0, 3, 1);
   x2("(?<=(?i:abc))d", "ABCd", 3, 4);
+  x2("(?<=^|b)c", " cbc", 3, 4);
+  x2("(?<=a|^|b)c", " cbc", 3, 4);
+  x2("(?<=a|(^)|b)c", " cbc", 3, 4);
+  x2("(?<=a|(^)|b)c", "cbc", 0, 1);
+  n("(?<!^|b)c", "cbc");
+  n("(?<!a|^|b)c", "cbc");
+  n("(?<!a|(?:^)|b)c", "cbc");
+  x2("(?<!a|(?:^)|b)c", " cbc", 1, 2);
   x2("(a)\\g<1>", "aa", 0, 2);
   x2("(?<!a)b", "cb", 1, 2);
   n("(?<!a)b", "ab");
@@ -1469,6 +1477,8 @@ extern int main(int argc, char* argv[])
   e("(?i)000000000000000000000\xf0", "", ONIGERR_INVALID_CODE_POINT_VALUE); /* https://bugs.php.net/bug.php?id=77382 */
   n("0000\\\xf5", "0"); /* https://bugs.php.net/bug.php?id=77385 */
   n("(?i)FFF00000000000000000\xfd", ""); /* https://bugs.php.net/bug.php?id=77394 */
+  n("(?x)\n  (?<!\\+\\+|--)(?<=[({\\[,?=>:*]|&&|\\|\\||\\?|\\*\\/|^await|[^\\._$[:alnum:]]await|^return|[^\\._$[:alnum:]]return|^default|[^\\._$[:alnum:]]default|^yield|[^\\._$[:alnum:]]yield|^)\\s*\n  (?!<\\s*[_$[:alpha:]][_$[:alnum:]]*((\\s+extends\\s+[^=>])|,)) # look ahead is not type parameter of arrow\n  (?=(<)\\s*(?:([_$[:alpha:]][-_$[:alnum:].]*)(?<!\\.|-)(:))?((?:[a-z][a-z0-9]*|([_$[:alpha:]][-_$[:alnum:].]*))(?<!\\.|-))(?=((<\\s*)|(\\s+))(?!\\?)|\\/?>))", "    while (i < len && f(array[i]))"); /* Issue #192 */
+
   e("x{55380}{77590}", "", ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE);
   e("(xyz){40000}{99999}(?<name>vv)", "", ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE);
   e("f{90000,90000}{80000,80000}", "", ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE);
