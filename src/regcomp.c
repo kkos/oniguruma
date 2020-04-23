@@ -3567,11 +3567,6 @@ check_node_in_look_behind(Node* node, int not, int* used)
 
     if (IS_NOT_NULL(NODE_BODY(node)))
       r = check_node_in_look_behind(NODE_BODY(node), not, used);
-
-    /* Issue 192
-       escape removing node in tune_look_behind()
-     */
-    *used = TRUE;
     break;
 
   case NODE_GIMMICK:
