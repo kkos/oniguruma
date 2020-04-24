@@ -549,6 +549,9 @@ extern int main(int argc, char* argv[])
   x2("(?<=a|^|b)c", " cbc", 3, 4);
   x2("(?<=a|(^)|b)c", " cbc", 3, 4);
   x2("(?<=a|(^)|b)c", "cbc", 0, 1);
+  n("(Q)|(?<=a|(?(1))|b)c", "czc");
+  x2("(Q)(?<=a|(?(1))|b)c", "cQc", 1, 3);
+  x2("(?<=a|(?~END)|b)c", "ENDc", 3, 4);
   n("(?<!^|b)c", "cbc");
   n("(?<!a|^|b)c", "cbc");
   n("(?<!a|(?:^)|b)c", "cbc");
