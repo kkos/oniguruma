@@ -885,15 +885,15 @@ node_char_len1(Node* node, regex_t* reg, MinMaxCharLen* ci, ScanEnv* env,
     }
     break;
 
+  case NODE_GIMMICK:
+    mmcl_set(ci, 0);
+    break;
+
   case NODE_ANCHOR:
+  zero:
     mmcl_set(ci, 0);
     /* can't optimize look-behind if anchor exists. */
     ci->min_is_sure = FALSE;
-    break;
-
-  case NODE_GIMMICK:
-  zero:
-    mmcl_set(ci, 0);
     break;
 
   case NODE_BACKREF:
