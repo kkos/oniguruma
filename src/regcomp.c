@@ -7737,14 +7737,18 @@ print_indent_tree(FILE* f, Node* node, int indent)
     break;
 
   case NODE_CCLASS:
+#define CCLASS_MBUF_MAX_OUTPUT_NUM   10
+
     fprintf(f, "<cclass:%p>", node);
     if (IS_NCCLASS_NOT(CCLASS_(node))) fputs(" not", f);
     if (CCLASS_(node)->mbuf) {
       BBuf* bbuf = CCLASS_(node)->mbuf;
-      for (i = 0; i < bbuf->used; i++) {
+      fprintf(f, " mbuf(%u) ", bbuf->used);
+      for (i = 0; i < bbuf->used && i < CCLASS_MBUF_MAX_OUTPUT_NUM; i++) {
         if (i > 0) fprintf(f, ",");
         fprintf(f, "%0x", bbuf->p[i]);
       }
+      if (i < bbuf->used) fprintf(f, "...");
     }
     break;
 
