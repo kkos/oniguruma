@@ -2,7 +2,7 @@
   sjis.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2019  K.Kosako
+ * Copyright (c) 2002-2020  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -113,13 +113,15 @@ static int
 code_to_mbclen(OnigCodePoint code)
 {
   if (code < 256) {
-    return EncLen_SJIS[(int )code] == 1;
+    if (EncLen_SJIS[(int )code] == 1)
+      return 1;
   }
-  else if (code <= 0xffff) {
-    return 2;
+  else if (code < 0x10000) {
+    if (EncLen_SJIS[(int )(code >>  8) & 0xff] == 2)
+      return 2;
   }
-  else
-    return ONIGERR_INVALID_CODE_POINT_VALUE;
+
+  return ONIGERR_INVALID_CODE_POINT_VALUE;
 }
 
 static OnigCodePoint

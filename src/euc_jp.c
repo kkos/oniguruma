@@ -2,7 +2,7 @@
   euc_jp.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2019  K.Kosako
+ * Copyright (c) 2002-2020  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -114,10 +114,20 @@ static int
 code_to_mbclen(OnigCodePoint code)
 {
   if (ONIGENC_IS_CODE_ASCII(code)) return 1;
-  else if ((code & 0xff0000) != 0) return 3;
-  else if ((code &   0xff00) != 0) return 2;
-  else
-    return ONIGERR_INVALID_CODE_POINT_VALUE;
+  else if ((code & 0xff0000) != 0) {
+    if (EncLen_EUCJP[(int )(code >> 16) & 0xff] == 3)
+      return 3;
+  }
+  else if ((code & 0xff00) != 0) {
+    if (EncLen_EUCJP[(int )(code >> 8) & 0xff] == 2)
+      return 2;
+  }
+  else if (code < 256) {
+    if (EncLen_EUCJP[(int )(code & 0xff)] == 1)
+      return 1;
+  }
+
+  return ONIGERR_INVALID_CODE_POINT_VALUE;
 }
 
 static int

@@ -2,7 +2,7 @@
   euc_tw.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2019  K.Kosako
+ * Copyright (c) 2002-2020  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,15 +57,22 @@ euctw_mbc_enc_len(const UChar* p)
 static int
 euctw_code_to_mbclen(OnigCodePoint code)
 {
-       if ((code & 0xff000000) != 0) return 4;
-  else if ((code &   0xff0000) != 0) return ONIGERR_INVALID_CODE_POINT_VALUE;
-  else if ((code &     0xff00) != 0) return 2;
+  if ((code & 0xff000000) != 0) {
+    if (EncLen_EUCTW[(int )(code >> 24) & 0xff] == 4)
+      return 4;
+  }
+  else if ((code & 0xff0000) != 0)
+    return ONIGERR_INVALID_CODE_POINT_VALUE;
+  else if ((code & 0xff00) != 0) {
+    if (EncLen_EUCTW[(int )(code >> 8) & 0xff] == 2)
+      return 2;
+  }
   else {
     if (EncLen_EUCTW[(int )(code & 0xff)] == 1)
       return 1;
-
-    return ONIGERR_INVALID_CODE_POINT_VALUE;
   }
+
+  return ONIGERR_INVALID_CODE_POINT_VALUE;
 }
 
 static int

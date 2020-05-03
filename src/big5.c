@@ -2,7 +2,7 @@
   big5.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2019  K.Kosako
+ * Copyright (c) 2002-2020  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,8 +58,15 @@ static int
 big5_code_to_mbclen(OnigCodePoint code)
 {
   if ((code & (~0xffff)) != 0) return ONIGERR_INVALID_CODE_POINT_VALUE;
-  if ((code &    0xff00) != 0) return 2;
-  if (EncLen_BIG5[(int )(code & 0xff)] == 1) return 1;
+
+  if ((code & 0xff00) != 0) {
+    if (EncLen_BIG5[(int )(code >> 8) & 0xff] == 2)
+      return 2;
+  }
+  else {
+    if (EncLen_BIG5[(int )(code & 0xff)] == 1)
+      return 1;
+  }
 
   return ONIGERR_INVALID_CODE_POINT_VALUE;
 }
