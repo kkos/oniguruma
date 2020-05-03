@@ -1490,7 +1490,7 @@ extern int main(int argc, char* argv[])
   x2("\\p{Common}", "\xe3\x8b\xbf", 0, 3);   /* U+32FF */
   x2("\\p{In_Enclosed_CJK_Letters_and_Months}", "\xe3\x8b\xbf", 0, 3); /* U+32FF */
 
-  e("\\x{7fffffff}", "", ONIGERR_TOO_BIG_WIDE_CHAR_VALUE);
+  e("\\x{7fffffff}", "", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("[\\x{7fffffff}]", "", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("\\u040", "@", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("(?<abc>\\g<abc>)", "zzzz", ONIGERR_NEVER_ENDING_RECURSION);
