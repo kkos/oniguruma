@@ -3549,7 +3549,9 @@ check_node_in_look_behind(Node* node, int not, int* used)
       if (r != 0) break;
 
       if (en->type == BAG_MEMORY) {
-        if (NODE_IS_BACKREF(node) || NODE_IS_CALLED(node)) *used = TRUE;
+        if (NODE_IS_BACKREF(node) || NODE_IS_CALLED(node)
+         || NODE_IS_REFERENCED(node))
+          *used = TRUE;
       }
       else if (en->type == BAG_IF_ELSE) {
         if (IS_NOT_NULL(en->te.Then)) {
