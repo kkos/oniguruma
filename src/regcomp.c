@@ -5250,6 +5250,8 @@ check_call_reference(CallNode* cn, ScanEnv* env, int state)
                                      cn->name, cn->name_end);
       return ONIGERR_UNDEFINED_NAME_REFERENCE;
     }
+
+    NODE_STATUS_ADD(NODE_CALL_BODY(cn), REFERENCED);
   }
   else {
     int *refs;
@@ -7888,6 +7890,8 @@ print_indent_tree(FILE* f, Node* node, int indent)
       fprintf(f, "memory:%d", BAG_(node)->m.regnum);
       if (NODE_IS_CALLED(node))
         fprintf(f, ", called");
+      else if (NODE_IS_REFERENCED(node))
+        fprintf(f, ", referenced");
       if (NODE_IS_FIXED_ADDR(node))
         fprintf(f, ", fixed-addr");
       break;
