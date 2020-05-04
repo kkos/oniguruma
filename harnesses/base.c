@@ -485,10 +485,12 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 
 #ifdef STANDALONE
 
+#define MAX_INPUT_DATA_SIZE  4194304
+
 extern int main(int argc, char* argv[])
 {
   size_t n;
-  uint8_t Data[10000];
+  uint8_t Data[MAX_INPUT_DATA_SIZE];
 
   n = read(0, Data, sizeof(Data));
   fprintf(stdout, "n: %ld\n", n);
