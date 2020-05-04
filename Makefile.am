@@ -61,6 +61,11 @@ sanitize:
 	make
 	make all-test
 
+debug_out_sanitize:
+	make clean
+	./configure CFLAGS="-O0 -g -fsanitize=address -DONIG_DEBUG_PARSE -DONIG_DEBUG_COMPILE" LDFLAGS="-fsanitize=address"
+	make
+
 cov:
 	make lcov-clear
 	cd test; make CFLAGS="--coverage" test
