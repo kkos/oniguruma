@@ -5224,7 +5224,7 @@ quantifiers_memory_node_info(Node* node)
 __inline
 #endif
 static int
-tune_call_node_call(CallNode* cn, ScanEnv* env, int state)
+check_call_reference(CallNode* cn, ScanEnv* env, int state)
 {
   MemEnv* mem_env = SCANENV_MEMENV(env);
 
@@ -5399,7 +5399,7 @@ tune_call(Node* node, ScanEnv* env, int state)
       CALL_(node)->entry_count--;
     }
 
-    r = tune_call_node_call(CALL_(node), env, state);
+    r = check_call_reference(CALL_(node), env, state);
     break;
 
   default:
