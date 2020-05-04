@@ -226,16 +226,17 @@ static int
 alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
            int backward, int pattern_size, size_t remaining_size, unsigned char *data)
 {
+#define MAX_REM_SIZE   8192
   int r;
   unsigned char *pattern_end;
   unsigned char *str_null_end;
 
-  // copy first PATTERN_SIZE bytes off to be the pattern
   unsigned char *pattern = (unsigned char *)malloc(pattern_size != 0 ? pattern_size : 1);
   memcpy(pattern, data, pattern_size);
   pattern_end = pattern + pattern_size;
   data += pattern_size;
   remaining_size -= pattern_size;
+  if (remaining_size > MAX_REM_SIZE) remaining_size = MAX_REM_SIZE;
 
 #if defined(UTF16_BE) || defined(UTF16_LE)
   if (remaining_size % 2 == 1) remaining_size--;
