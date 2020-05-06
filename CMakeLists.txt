@@ -67,6 +67,19 @@ target_include_directories(onig PUBLIC
 target_compile_definitions(onig PUBLIC
   $<$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:ONIG_STATIC>)
 
+if(BUILD_SHARED_LIBS)
+  # Parse SOVERSION information from LTVERSION in configure.ac
+  file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/configure.ac" LTVERSION REGEX "^LTVERSION *= *\"?[0-9]+:[0-9]+:[0-9]+\"?")
+  string(REGEX REPLACE "^LTVERSION *= *\"?([0-9]+:[0-9]+:[0-9]+)\"?.*$" "\\1" LTVERSION "${LTVERSION}")
+  string(REGEX REPLACE "^([0-9]+):([0-9]+):([0-9]+)" "\\1" LTCURRENT ${LTVERSION})
+  string(REGEX REPLACE "^([0-9]+):([0-9]+):([0-9]+)" "\\2" LTREVISION ${LTVERSION})
+  string(REGEX REPLACE "^([0-9]+):([0-9]+):([0-9]+)" "\\3" LTAGE ${LTVERSION})
+  math(EXPR ONIG_SOVERSION "${LTCURRENT} - ${LTAGE}")
+  set_target_properties(onig PROPERTIES
+      SOVERSION "${ONIG_SOVERSION}"
+      VERSION "${ONIG_SOVERSION}.${LTAGE}.${LTREVISION}")
+endif()
+
 if(MSVC)
   target_compile_options(onig PRIVATE
 	#/W4
