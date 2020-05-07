@@ -13,8 +13,10 @@
 #include "oniguruma.h"
 
 #define PARSE_DEPTH_LIMIT           8
-#define RETRY_LIMIT              5000
 #define CALL_MAX_NEST_LEVEL         8
+#define BASE_RETRY_LIMIT        10000
+#define BASE_LENGTH              2048
+#define MAX_REM_SIZE          1048576
 
 //#define EXEC_PRINT_INTERVAL    500000
 //#define DUMP_DATA_INTERVAL     100000
@@ -108,8 +110,18 @@ search(regex_t* reg, unsigned char* str, unsigned char* end, int backward)
   int r;
   unsigned char *start, *range;
   OnigRegion *region;
+  unsigned int retry_limit;
+  size_t len;
 
   region = onig_region_new();
+
+  len = (size_t )(end - str);
+  if (len < BASE_LENGTH)
+    retry_limit = (unsigned int )BASE_RETRY_LIMIT;
+  else
+    retry_limit = (unsigned int )(BASE_RETRY_LIMIT * BASE_LENGTH / len);
+
+  onig_set_retry_limit_in_search(retry_limit);
 
   if (backward != 0) {
     start = end;
@@ -181,7 +193,6 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   EXEC_COUNT_INTERVAL++;
 
   onig_initialize(&enc, 1);
-  onig_set_retry_limit_in_search(RETRY_LIMIT);
 #ifdef PARSE_DEPTH_LIMIT
   onig_set_parse_depth_limit(PARSE_DEPTH_LIMIT);
 #endif
@@ -226,7 +237,6 @@ static int
 alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
            int backward, int pattern_size, size_t rem_size, unsigned char *data)
 {
-#define MAX_REM_SIZE   8192
   int r;
   unsigned char *pattern_end;
   unsigned char *str_null_end;
