@@ -22,8 +22,10 @@
 //#define DUMP_DATA_INTERVAL     100000
 //#define STAT_PATH              "fuzzer.stat_log"
 
-#define ADJUST_LEN(enc, len) \
-  if (ONIGENC_MBC_MINLEN(enc) == 2 && len % 2 == 1) len--
+#define ADJUST_LEN(enc, len) do {\
+  int mlen = ONIGENC_MBC_MINLEN(enc);\
+  if (mlen != 1) { len -= len % mlen; }\
+} while (0)
 
 typedef unsigned char uint8_t;
 
@@ -301,10 +303,10 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
     ONIG_ENCODING_UTF16_LE,
     ONIG_ENCODING_UTF16_BE,
     ONIG_ENCODING_UTF16_LE,
-    ONIG_ENCODING_UTF16_BE,
-    ONIG_ENCODING_UTF16_LE,
-    ONIG_ENCODING_UTF16_BE,
-    ONIG_ENCODING_UTF16_LE,
+    ONIG_ENCODING_UTF32_BE,
+    ONIG_ENCODING_UTF32_LE,
+    ONIG_ENCODING_UTF32_BE,
+    ONIG_ENCODING_UTF32_LE,
     ONIG_ENCODING_ISO_8859_1,
     ONIG_ENCODING_ISO_8859_2,
     ONIG_ENCODING_ISO_8859_3,
