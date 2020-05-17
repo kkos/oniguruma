@@ -501,13 +501,21 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 
 extern int main(int argc, char* argv[])
 {
+  size_t max_size;
   size_t n;
   uint8_t Data[MAX_INPUT_DATA_SIZE];
 
-  n = read(0, Data, sizeof(Data));
-  fprintf(stdout, "n: %ld\n", n);
-  LLVMFuzzerTestOneInput(Data, n);
+  if (argc > 1) {
+    max_size = (size_t )atoi(argv[1]);
+  }
+  else {
+    max_size = sizeof(Data);
+  }
 
+  n = read(0, Data, max_size);
+  fprintf(stdout, "read size: %ld, max_size: %ld\n", n, max_size);
+
+  LLVMFuzzerTestOneInput(Data, n);
   return 0;
 }
 #endif /* STANDALONE */
