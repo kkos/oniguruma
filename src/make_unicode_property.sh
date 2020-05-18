@@ -1,7 +1,7 @@
 #!/bin/sh
 
 GPERF=gperf
-SED=gsed
+SED=sed
 
 NAME=unicode_property_data
 TMP1=gperf1.tmp

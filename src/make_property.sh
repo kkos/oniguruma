@@ -1,7 +1,7 @@
 #!/bin/sh
 
 GPERF=gperf
-SED=gsed
+SED=sed
 
 TMP1=gperf1.tmp
 TMP2=gperf2.tmp
