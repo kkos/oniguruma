@@ -631,7 +631,7 @@ mmcl_add(MinMaxCharLen* to, MinMaxCharLen* add)
   to->min = distance_add(to->min, add->min);
   to->max = distance_add(to->max, add->max);
 
-  to->min_is_sure = add->min_is_sure != 0 && to->min_is_sure != 0;
+  to->min_is_sure = add->min_is_sure != FALSE && to->min_is_sure != FALSE;
 }
 
 static void
@@ -843,7 +843,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxCharLen* ci, ScanEnv* env,
             en->min_char_len = ci->min;
             en->max_char_len = ci->max;
             NODE_STATUS_ADD(node, FIXED_CLEN);
-            if (ci->min_is_sure != 0)
+            if (ci->min_is_sure != FALSE)
               NODE_STATUS_ADD(node, FIXED_CLEN_MIN_SURE);
           }
         }
@@ -4728,7 +4728,7 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
       return ONIGERR_INVALID_LOOK_BEHIND_PATTERN;
     }
 
-    if (ci.min == 0 && ci.min_is_sure != 0 && used == FALSE) {
+    if (ci.min == 0 && ci.min_is_sure != FALSE && used == FALSE) {
       if (an->type == ANCR_LOOK_BEHIND_NOT)
         r = onig_node_reset_fail(node);
       else
