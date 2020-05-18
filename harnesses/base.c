@@ -17,6 +17,7 @@
 #define BASE_RETRY_LIMIT        10000
 #define BASE_LENGTH              2048
 #define MAX_REM_SIZE          1048576
+#define MAX_SLOW_REM_SIZE        8192
 
 //#define EXEC_PRINT_INTERVAL    500000
 //#define DUMP_DATA_INTERVAL     100000
@@ -242,16 +243,25 @@ static int
 alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
            int backward, int pattern_size, size_t rem_size, unsigned char *data)
 {
+  extern int onig_detect_can_be_very_slow_pattern(const UChar* pattern, const UChar* pattern_end, OnigOptionType option, OnigEncoding enc, OnigSyntaxType* syntax);
+
   int r;
   unsigned char *pattern_end;
   unsigned char *str_null_end;
 
   unsigned char *pattern = (unsigned char *)malloc(pattern_size != 0 ? pattern_size : 1);
+
   memcpy(pattern, data, pattern_size);
   pattern_end = pattern + pattern_size;
   data += pattern_size;
   rem_size -= pattern_size;
+
   if (rem_size > MAX_REM_SIZE) rem_size = MAX_REM_SIZE;
+
+  if (rem_size > MAX_SLOW_REM_SIZE) {
+    r = onig_detect_can_be_very_slow_pattern(pattern, pattern_end, options, enc, syntax);
+    if (r > 0) rem_size = MAX_SLOW_REM_SIZE;
+  }
 
   ADJUST_LEN(enc, rem_size);
 
