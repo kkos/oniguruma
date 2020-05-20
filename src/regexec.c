@@ -4976,6 +4976,10 @@ onig_match_with_param(regex_t* reg, const UChar* str, const UChar* end,
   UChar *prev;
   MatchArg msa;
 
+#ifndef USE_POSIX_API_REGION_OPTION
+  if (OPTON_POSIX_REGION(option)) return ONIGERR_INVALID_ARGUMENT;
+#endif
+
   ADJUST_MATCH_PARAM(reg, mp);
   MATCH_ARG_INIT(msa, reg, option, region, at, mp);
   if (region
@@ -5291,6 +5295,13 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
 #endif
 
   ADJUST_MATCH_PARAM(reg, mp);
+
+#ifndef USE_POSIX_API_REGION_OPTION
+  if (OPTON_POSIX_REGION(option)) {
+    r = ONIGERR_INVALID_ARGUMENT;
+    goto finish_no_msa;
+  }
+#endif
 
   if (region
 #ifdef USE_POSIX_API_REGION_OPTION
