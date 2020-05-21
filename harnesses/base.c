@@ -435,6 +435,10 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   data++;
   rem_size--;
 
+  if (backward != 0) {
+    options = options & ~ONIG_OPTION_FIND_LONGEST;
+  }
+
   if (rem_size == 0)
     pattern_size = 0;
   else {
