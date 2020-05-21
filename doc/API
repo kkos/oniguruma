@@ -1,4 +1,4 @@
-Oniguruma API  Version 6.9.6  2020/05/19
+Oniguruma API  Version 6.9.6  2020/05/20
 
 #include <oniguruma.h>
 
@@ -94,6 +94,10 @@ Oniguruma API  Version 6.9.6  2020/05/19
                                       word)
       ONIG_OPTION_TEXT_SEGMENT_EXTENDED_GRAPHEME_CLUSTER  Extended Grapheme Cluster mode
       ONIG_OPTION_TEXT_SEGMENT_WORD                       Word mode
+
+
+     * The ONIG_OPTION_FIND_LONGEST option doesn't work properly during backward search of onig_search().
+
 
   5 enc:        character encoding.
 

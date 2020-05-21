@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.9.6   2020/05/19
+鬼車インターフェース Version 6.9.6   2020/05/20
 
 #include <oniguruma.h>
 
@@ -93,6 +93,8 @@
                                       word)
       ONIG_OPTION_TEXT_SEGMENT_EXTENDED_GRAPHEME_CLUSTER  拡張書記素房モード
       ONIG_OPTION_TEXT_SEGMENT_WORD                       単語モード
+
+      * ONIG_OPTION_FIND_LONGEST はonig_search()の後方探索では正しく動作しない
 
   5 enc:        文字エンコーディング
 
