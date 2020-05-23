@@ -2,7 +2,7 @@
   utf32_le.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2019  K.Kosako
+ * Copyright (c) 2002-2020  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,7 +67,10 @@ utf32le_is_mbc_newline(const UChar* p, const UChar* end)
 static OnigCodePoint
 utf32le_mbc_to_code(const UChar* p, const UChar* end ARG_UNUSED)
 {
-  return (OnigCodePoint )(((p[3] * 256 + p[2]) * 256 + p[1]) * 256 + p[0]);
+  OnigCodePoint code;
+
+  code = (OnigCodePoint )((((p[3] & 0x7f) * 256 + p[2]) * 256 + p[1]) * 256 + p[0]);
+  return code;
 }
 
 static int
