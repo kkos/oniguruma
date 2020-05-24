@@ -5004,17 +5004,18 @@ unravel_cf_look_behind_add(Node** rlist, Node** rsn,
 {
   int r, i, found;
 
-  found = 0;
+  found = FALSE;
   for (i = 0; i < n; i++) {
     OnigCaseFoldCodeItem* item = items + i;
     if (item->byte_len == one_len) {
       if (item->code_len == 1) {
-        found = 1;
+        found = TRUE;
+        break;
       }
     }
   }
 
-  if (found == 0) {
+  if (found == FALSE) {
     r = unravel_cf_string_add(rlist, rsn, s, s + one_len, 0 /* flag */);
   }
   else {
