@@ -11,7 +11,7 @@ posix_headers = onigposix.h
 if ENABLE_POSIX_API
 posix_sources = regposix.c regposerr.c
 include_HEADERS += $(posix_headers)
-AM_CFLAGS += -DUSE_POSIX_API_REGION_OPTION
+AM_CFLAGS += -DUSE_POSIX_API
 else
 posix_sources =
 endif
