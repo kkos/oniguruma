@@ -7699,7 +7699,7 @@ node_detect_can_be_very_slow(Node* node)
 
 #ifdef USE_BACKREF_WITH_LEVEL
   case NODE_BACKREF:
-    if (NODE_IS_CHECKER(node) && NODE_IS_NEST_LEVEL(node))
+    if (NODE_IS_NEST_LEVEL(node))
       r = 1;
     else
       r = 0;
