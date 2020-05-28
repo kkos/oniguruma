@@ -246,11 +246,11 @@ alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   extern int onig_detect_can_be_very_slow_pattern(const UChar* pattern, const UChar* pattern_end, OnigOptionType option, OnigEncoding enc, OnigSyntaxType* syntax);
 
   int r;
+  unsigned char *pattern;
   unsigned char *pattern_end;
   unsigned char *str_null_end;
 
-  unsigned char *pattern = (unsigned char *)malloc(pattern_size != 0 ? pattern_size : 1);
-
+  pattern = (unsigned char *)malloc(pattern_size != 0 ? pattern_size : 1);
   memcpy(pattern, data, pattern_size);
   pattern_end = pattern + pattern_size;
   data += pattern_size;
