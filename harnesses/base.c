@@ -17,7 +17,7 @@
 #define BASE_RETRY_LIMIT        10000
 #define BASE_LENGTH              2048
 #define MAX_REM_SIZE          1048576
-#define MAX_SLOW_REM_SIZE        8192
+#define MAX_SLOW_REM_SIZE        2048
 
 //#define EXEC_PRINT_INTERVAL    500000
 //#define DUMP_DATA_INTERVAL     100000
