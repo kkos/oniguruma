@@ -264,6 +264,9 @@ alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   }
 
   ADJUST_LEN(enc, rem_size);
+#ifdef STANDALONE
+  fprintf(stdout, "rem_size: %ld\n", rem_size);
+#endif
 
   unsigned char *str = (unsigned char*)malloc(rem_size != 0 ? rem_size : 1);
   memcpy(str, data, rem_size);
