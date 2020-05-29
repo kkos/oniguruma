@@ -303,6 +303,8 @@ static int
 backref_rel_to_abs(int rel_no, ScanEnv* env)
 {
   if (rel_no > 0) {
+    if (rel_no > ONIG_INT_MAX - env->num_mem)
+      return ONIGERR_INVALID_BACKREF;
     return env->num_mem + rel_no;
   }
   else {
