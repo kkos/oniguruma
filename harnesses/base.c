@@ -16,6 +16,7 @@
 #define CALL_MAX_NEST_LEVEL         8
 #define BASE_RETRY_LIMIT        10000
 #define BASE_LENGTH              2048
+#define MATCH_STACK_LIMIT    10000000
 #define MAX_REM_SIZE          1048576
 #define MAX_SLOW_REM_SIZE        1024
 
@@ -128,6 +129,7 @@ search(regex_t* reg, unsigned char* str, unsigned char* end, int backward)
     retry_limit = (unsigned int )(BASE_RETRY_LIMIT * BASE_LENGTH / len);
 
   onig_set_retry_limit_in_search(retry_limit);
+  onig_set_match_stack_limit_size(MATCH_STACK_LIMIT);
 
   if (backward != 0) {
     start = end;
