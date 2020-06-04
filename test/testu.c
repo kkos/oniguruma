@@ -14,6 +14,10 @@ static int nsucc  = 0;
 static int nfail  = 0;
 static int nerror = 0;
 
+#ifdef __TRUSTINSOFT_ANALYZER__
+static int nall = 0;
+#endif
+
 static FILE* err_file;
 
 #ifndef POSIX_TEST
@@ -25,6 +29,10 @@ static OnigEncoding ENC;
 
 static void uconv(char* from, char* to, int len)
 {
+#ifdef __TRUSTINSOFT_ANALYZER__
+  if (nall++ % TIS_TEST_CHOOSE_MAX != TIS_TEST_CHOOSE_CURRENT) return;
+#endif
+
   int i;
   unsigned char c;
   char *q;
