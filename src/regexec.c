@@ -2786,10 +2786,14 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   &&L_BACKREF_N_IC,
   &&L_BACKREF_MULTI,
   &&L_BACKREF_MULTI_IC,
+#ifdef USE_BACKREF_WITH_LEVEL
   &&L_BACKREF_WITH_LEVEL,
   &&L_BACKREF_WITH_LEVEL_IC,
+#endif
   &&L_BACKREF_CHECK,
+#ifdef USE_BACKREF_WITH_LEVEL
   &&L_BACKREF_CHECK_WITH_LEVEL,
+#endif
   &&L_MEM_START,
   &&L_MEM_START_PUSH,
   &&L_MEM_END_PUSH,
