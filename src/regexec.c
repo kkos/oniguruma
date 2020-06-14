@@ -170,6 +170,9 @@ typedef struct {
   int    best_len;      /* for ONIG_OPTION_FIND_LONGEST */
   UChar* best_s;
 #endif
+#ifdef USE_CALL
+  unsigned long  subexp_call_limit_in_search_counter;
+#endif
 } MatchArg;
 
 
@@ -1218,8 +1221,12 @@ struct OnigCalloutArgsStruct {
 #endif
 
 #if defined(USE_CALL)
+#define SUBEXP_CALL_IN_MATCH_ARG_INIT(msa,mpv) \
+  (msa).subexp_call_limit_in_search_counter = 0;
+
 #define POP_CALL  else if (stk->type == STK_RETURN) {subexp_call_nest_counter++;} else if (stk->type == STK_CALL_FRAME) {subexp_call_nest_counter--;}
 #else
+#define SUBEXP_CALL_IN_MATCH_ARG_INIT(msa,mpv)
 #define POP_CALL
 #endif
 
@@ -1231,6 +1238,7 @@ struct OnigCalloutArgsStruct {
   (msa).start    = (arg_start);\
   (msa).match_stack_limit  = (mpv)->match_stack_limit;\
   RETRY_IN_MATCH_ARG_INIT(msa,mpv)\
+  SUBEXP_CALL_IN_MATCH_ARG_INIT(msa,mpv)\
   (msa).mp = mpv;\
   (msa).best_len = ONIG_MISMATCH;\
   (msa).ptr_num  = PTR_NUM_SIZE(reg);\
@@ -1243,6 +1251,7 @@ struct OnigCalloutArgsStruct {
   (msa).start    = (arg_start);\
   (msa).match_stack_limit  = (mpv)->match_stack_limit;\
   RETRY_IN_MATCH_ARG_INIT(msa,mpv)\
+  SUBEXP_CALL_IN_MATCH_ARG_INIT(msa,mpv)\
   (msa).mp = mpv;\
   (msa).ptr_num  = PTR_NUM_SIZE(reg);\
 } while(0)
@@ -1372,6 +1381,24 @@ onig_set_retry_limit_in_search(unsigned long n)
   return ONIG_NO_SUPPORT_CONFIG;
 #endif
 }
+
+#ifdef USE_CALL
+static unsigned long SubexpCallLimitInSearch = DEFAULT_SUBEXP_CALL_LIMIT_IN_SEARCH;
+
+extern unsigned long
+onig_get_subexp_call_limit_in_search(void)
+{
+  return SubexpCallLimitInSearch;
+}
+
+extern int
+onig_set_subexp_call_limit_in_search(unsigned long n)
+{
+  SubexpCallLimitInSearch = n;
+  return 0;
+}
+
+#endif
 
 #ifdef USE_CALLOUT
 static OnigCalloutFunc DefaultProgressCallout;
@@ -4061,6 +4088,15 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       if (subexp_call_nest_counter == SubexpCallMaxNestLevel)
         goto fail;
       subexp_call_nest_counter++;
+
+      if (SubexpCallLimitInSearch != 0) {
+        msa->subexp_call_limit_in_search_counter++;
+        if (msa->subexp_call_limit_in_search_counter >
+            SubexpCallLimitInSearch) {
+          MATCH_AT_ERROR_RETURN(ONIGERR_SUBEXP_CALL_LIMIT_IN_SEARCH_OVER);
+        }
+      }
+
       addr = p->call.addr;
       INC_OP; STACK_PUSH_CALL_FRAME(p);
       p = reg->ops + addr;

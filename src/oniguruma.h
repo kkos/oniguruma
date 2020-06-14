@@ -920,6 +920,10 @@ int onig_set_capture_num_limit P_((int num));
 ONIG_EXTERN
 int onig_set_parse_depth_limit P_((unsigned int depth));
 ONIG_EXTERN
+unsigned long onig_get_subexp_call_limit_in_search P_((void));
+ONIG_EXTERN
+int onig_set_subexp_call_limit_in_search P_((unsigned long n));
+ONIG_EXTERN
 int onig_get_subexp_call_max_nest_level P_((void));
 ONIG_EXTERN
 int onig_set_subexp_call_max_nest_level P_((int level));
