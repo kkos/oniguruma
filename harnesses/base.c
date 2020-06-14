@@ -14,6 +14,7 @@
 
 #define PARSE_DEPTH_LIMIT           8
 #define CALL_MAX_NEST_LEVEL         8
+#define SUBEXP_CALL_LIMIT      600000
 #define BASE_RETRY_LIMIT        10000
 #define BASE_LENGTH              2048
 #define MATCH_STACK_LIMIT    10000000
@@ -130,6 +131,7 @@ search(regex_t* reg, unsigned char* str, unsigned char* end, int backward)
 
   onig_set_retry_limit_in_search(retry_limit);
   onig_set_match_stack_limit_size(MATCH_STACK_LIMIT);
+  onig_set_subexp_call_limit_in_search(SUBEXP_CALL_LIMIT);
 
   if (backward != 0) {
     start = end;
