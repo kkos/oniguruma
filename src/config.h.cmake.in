@@ -43,6 +43,12 @@
 /* The size of `long', as computed by sizeof. */
 #cmakedefine SIZEOF_LONG  ${SIZEOF_LONG}
 
+/* The size of `long long', as computed by sizeof. */
+#cmakedefine SIZEOF_LONG_LONG  ${SIZEOF_LONG_LONG}
+
+/* The size of `void*', as computed by sizeof. */
+#cmakedefine SIZEOF_VOIDP  ${SIZEOF_VOIDP}
+
 /* Define if enable CR+NL as line terminator */
 #cmakedefine USE_CRNL_AS_LINE_TERMINATOR  ${USE_CRNL_AS_LINE_TERMINATOR}
 
