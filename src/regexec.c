@@ -2749,6 +2749,9 @@ typedef struct {
   best_len = err_code; goto match_at_end;\
 } while(0)
 
+#define MATCH_COUNTER_OUT(title) \
+  fprintf(DBGFP, "%s: retry limit: %8lu, subexp_call: %8lu\n", (title), retry_in_match_counter, msa->subexp_call_limit_in_search_counter)
+
 
 /* match data(str - end) from position (sstart). */
 /* if sstart == str then set sprev to NULL. */
@@ -4091,6 +4094,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
       if (SubexpCallLimitInSearch != 0) {
         msa->subexp_call_limit_in_search_counter++;
+#ifdef ONIG_DEBUG_MATCH_COUNTER
+        if (msa->subexp_call_limit_in_search_counter % 1000 == 0)
+          MATCH_COUNTER_OUT("CALL");
+#endif
         if (msa->subexp_call_limit_in_search_counter >
             SubexpCallLimitInSearch) {
           MATCH_AT_ERROR_RETURN(ONIGERR_SUBEXP_CALL_LIMIT_IN_SEARCH_OVER);
@@ -4340,6 +4347,11 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   if (msa->retry_limit_in_search != 0) {
     msa->retry_limit_in_search_counter += retry_in_match_counter;
   }
+
+#ifdef ONIG_DEBUG_MATCH_COUNTER
+  MATCH_COUNTER_OUT("END");
+#endif
+
   STACK_SAVE(msa, is_alloca, alloc_base);
   return best_len;
 }
