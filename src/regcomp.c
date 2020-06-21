@@ -4786,7 +4786,10 @@ tune_look_behind(Node* node, regex_t* reg, int state, ScanEnv* env)
 static int
 tune_next(Node* node, Node* next_node, regex_t* reg)
 {
+  int called;
   NodeType type;
+
+  called = FALSE;
 
  retry:
   type = NODE_TYPE(node);
@@ -4794,10 +4797,12 @@ tune_next(Node* node, Node* next_node, regex_t* reg)
     QuantNode* qn = QUANT_(node);
     if (qn->greedy && IS_INFINITE_REPEAT(qn->upper)) {
 #ifdef USE_QUANT_PEEK_NEXT
-      Node* n = get_tree_head_literal(next_node, 1, reg);
-      /* '\0': for UTF-16BE etc... */
-      if (IS_NOT_NULL(n) && STR_(n)->s[0] != '\0') {
-        qn->next_head_exact = n;
+      if (called == FALSE) {
+        Node* n = get_tree_head_literal(next_node, 1, reg);
+        /* '\0': for UTF-16BE etc... */
+        if (IS_NOT_NULL(n) && STR_(n)->s[0] != '\0') {
+          qn->next_head_exact = n;
+        }
       }
 #endif
       /* automatic posseivation a*b ==> (?>a*)b */
@@ -4822,6 +4827,8 @@ tune_next(Node* node, Node* next_node, regex_t* reg)
   else if (type == NODE_BAG) {
     BagNode* en = BAG_(node);
     if (en->type == BAG_MEMORY) {
+      if (NODE_IS_CALLED(node))
+        called = TRUE;
       node = NODE_BODY(node);
       goto retry;
     }
