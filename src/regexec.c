@@ -4017,8 +4017,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         c    = p->push_if_peek_next.c;
         if (DATA_ENSURE_CHECK1 && c == *s) {
           STACK_PUSH_ALT(p + addr, s, sprev);
-          INC_OP;
-          JUMP_OUT;
         }
       }
       INC_OP;
