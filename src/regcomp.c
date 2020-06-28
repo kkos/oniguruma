@@ -7942,6 +7942,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
     {
       CallNode* cn = CALL_(node);
       fprintf(f, "<call:%p>", node);
+      fprintf(f, " num: %d, name", cn->group_num);
       p_string(f, cn->name_end - cn->name, cn->name);
     }
     break;
