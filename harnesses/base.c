@@ -14,7 +14,7 @@
 
 #define PARSE_DEPTH_LIMIT           8
 #define CALL_MAX_NEST_LEVEL         8
-#define SUBEXP_CALL_LIMIT      600000
+#define SUBEXP_CALL_LIMIT      100000
 #define BASE_RETRY_LIMIT        10000
 #define BASE_LENGTH              2048
 #define MATCH_STACK_LIMIT    10000000
