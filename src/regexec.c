@@ -2749,8 +2749,10 @@ typedef struct {
   best_len = err_code; goto match_at_end;\
 } while(0)
 
-#define MATCH_COUNTER_OUT(title) \
-  fprintf(DBGFP, "%s: retry limit: %8lu, subexp_call: %8lu\n", (title), retry_in_match_counter, msa->subexp_call_limit_in_search_counter)
+#define MATCH_COUNTER_OUT(title) do {\
+  fprintf(DBGFP, "%s: retry limit: %8lu, subexp_call: %8lu\n", (title), retry_in_match_counter, msa->subexp_call_limit_in_search_counter);\
+  fflush(DBGFP);\
+} while (0)
 
 
 /* match data(str - end) from position (sstart). */
