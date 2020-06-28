@@ -3633,6 +3633,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       switch (p->check_position.type) {
       case CHECK_POSITION_SEARCH_START:
         if (s != msa->start) goto fail;
+        if (OPTON_NOT_BEGIN_POSITION(msa->options)) goto fail;
         break;
       case CHECK_POSITION_CURRENT_RIGHT_RANGE:
         if (s != right_range) goto fail;

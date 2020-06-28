@@ -397,8 +397,9 @@ typedef unsigned int        OnigOptionType;
 #define ONIG_OPTION_TEXT_SEGMENT_WORD    (ONIG_OPTION_TEXT_SEGMENT_EXTENDED_GRAPHEME_CLUSTER << 1)
 /* options (search time) */
 #define ONIG_OPTION_NOT_BEGIN_STRING     (ONIG_OPTION_TEXT_SEGMENT_WORD << 1)
+#define ONIG_OPTION_NOT_BEGIN_POSITION   (ONIG_OPTION_NOT_BEGIN_STRING << 1)
 
-#define ONIG_OPTION_MAXBIT               ONIG_OPTION_NOT_BEGIN_STRING
+#define ONIG_OPTION_MAXBIT               ONIG_OPTION_NOT_BEGIN_POSITION
 
 #define ONIG_OPTION_ON(options,regopt)      ((options) |= (regopt))
 #define ONIG_OPTION_OFF(options,regopt)     ((options) &= ~(regopt))
