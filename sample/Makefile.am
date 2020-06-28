@@ -8,9 +8,9 @@ AM_LDFLAGS  = -L$(prefix)/lib
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
 if ENABLE_POSIX_API
-TESTS = encode listcap names posix simple sql syntax user_property callout echo count bug_fix regset
+TESTS = encode listcap names posix simple sql syntax user_property callout echo count bug_fix regset scan
 else
-TESTS = encode listcap names simple sql syntax user_property callout echo count bug_fix regset
+TESTS = encode listcap names simple sql syntax user_property callout echo count bug_fix regset scan
 endif
 
 check_PROGRAMS = $(TESTS)
@@ -28,6 +28,7 @@ echo_SOURCES    = echo.c
 count_SOURCES   = count.c
 bug_fix         = bug_fix.c
 regset_SOURCES  = regset.c
+scan_SOURCES    = scan.c
 
 sampledir = .
 
@@ -47,3 +48,4 @@ endif
 	$(sampledir)/count
 	$(sampledir)/bug_fix
 	$(sampledir)/regset
+	$(sampledir)/scan
