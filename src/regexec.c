@@ -3553,6 +3553,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     CASE_OP(BEGIN_BUF)
       if (! ON_STR_BEGIN(s)) goto fail;
+      if (OPTON_NOT_BEGIN_STRING(msa->options)) goto fail;
 
       INC_OP;
       JUMP_OUT;
