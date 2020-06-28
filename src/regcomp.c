@@ -5241,7 +5241,7 @@ check_call_reference(CallNode* cn, ScanEnv* env, int state)
   MemEnv* mem_env = SCANENV_MEMENV(env);
 
   if (cn->by_number != 0) {
-    int gnum = cn->group_num;
+    int gnum = cn->called_gnum;
 
     if (env->num_named > 0 &&
         IS_SYNTAX_BV(env->syntax, ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP) &&
@@ -5256,7 +5256,7 @@ check_call_reference(CallNode* cn, ScanEnv* env, int state)
     }
 
   set_call_attr:
-    NODE_CALL_BODY(cn) = mem_env[cn->group_num].mem_node;
+    NODE_CALL_BODY(cn) = mem_env[cn->called_gnum].mem_node;
     if (IS_NULL(NODE_CALL_BODY(cn))) {
       onig_scan_env_set_error_string(env, ONIGERR_UNDEFINED_NAME_REFERENCE,
                                      cn->name, cn->name_end);
@@ -5280,7 +5280,7 @@ check_call_reference(CallNode* cn, ScanEnv* env, int state)
       return ONIGERR_MULTIPLEX_DEFINITION_NAME_CALL;
     }
     else {
-      cn->group_num = refs[0];
+      cn->called_gnum = refs[0];
       goto set_call_attr;
     }
   }
@@ -7942,7 +7942,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
     {
       CallNode* cn = CALL_(node);
       fprintf(f, "<call:%p>", node);
-      fprintf(f, " num: %d, name", cn->group_num);
+      fprintf(f, " num: %d, name", cn->called_gnum);
       p_string(f, cn->name_end - cn->name, cn->name);
     }
     break;
