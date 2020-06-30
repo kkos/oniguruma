@@ -25,6 +25,11 @@
 //#define DUMP_DATA_INTERVAL     100000
 //#define STAT_PATH              "fuzzer.stat_log"
 
+#define OPTIONS_AT_COMPILE   (ONIG_OPTION_IGNORECASE | ONIG_OPTION_EXTEND | ONIG_OPTION_MULTILINE | ONIG_OPTION_SINGLELINE | ONIG_OPTION_FIND_LONGEST | ONIG_OPTION_FIND_NOT_EMPTY | ONIG_OPTION_NEGATE_SINGLELINE | ONIG_OPTION_DONT_CAPTURE_GROUP | ONIG_OPTION_CAPTURE_GROUP | ONIG_OPTION_WORD_IS_ASCII | ONIG_OPTION_DIGIT_IS_ASCII | ONIG_OPTION_SPACE_IS_ASCII | ONIG_OPTION_POSIX_IS_ASCII | ONIG_OPTION_TEXT_SEGMENT_EXTENDED_GRAPHEME_CLUSTER | ONIG_OPTION_TEXT_SEGMENT_WORD )
+
+#define OPTIONS_AT_RUNTIME   (ONIG_OPTION_NOTBOL | ONIG_OPTION_NOTEOL | ONIG_OPTION_CHECK_VALIDITY_OF_STRING | ONIG_OPTION_NOT_BEGIN_STRING | ONIG_OPTION_NOT_BEGIN_POSITION)
+
+
 #define ADJUST_LEN(enc, len) do {\
   int mlen = ONIGENC_MBC_MINLEN(enc);\
   if (mlen != 1) { len -= len % mlen; }\
@@ -113,7 +118,7 @@ output_current_time(FILE* fp)
 #endif
 
 static int
-search(regex_t* reg, unsigned char* str, unsigned char* end, int backward)
+search(regex_t* reg, unsigned char* str, unsigned char* end, OnigOptionType options, int backward)
 {
   int r;
   unsigned char *start, *range;
@@ -142,7 +147,7 @@ search(regex_t* reg, unsigned char* str, unsigned char* end, int backward)
     range = end;
   }
 
-  r = onig_search(reg, str, end, start, range, region, ONIG_OPTION_NONE);
+  r = onig_search(reg, str, end, start, range, region, (options & OPTIONS_AT_RUNTIME));
   if (r >= 0) {
 #ifdef STANDALONE
     int i;
@@ -209,7 +214,7 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   onig_set_subexp_call_max_nest_level(CALL_MAX_NEST_LEVEL);
 
   r = onig_new(&reg, pattern, pattern_end,
-               options, enc, syntax, &einfo);
+               (options & OPTIONS_AT_COMPILE), enc, syntax, &einfo);
   if (r != ONIG_NORMAL) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
     onig_error_code_to_str((UChar* )s, r, &einfo);
@@ -229,12 +234,12 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   }
   REGEX_SUCCESS_COUNT++;
 
-  r = search(reg, pattern, pattern_end, backward);
+  r = search(reg, pattern, pattern_end, options, backward);
   if (r == -2) return -2;
 
   if (onigenc_is_valid_mbc_string(enc, str, end) != 0) {
     VALID_STRING_COUNT++;
-    r = search(reg, str, end, backward);
+    r = search(reg, str, end, options, backward);
     if (r == -2) return -2;
   }
 
@@ -285,13 +290,10 @@ alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   return r;
 }
 
-#define OPTIONS_MASK  (ONIG_OPTION_IGNORECASE | ONIG_OPTION_EXTEND | ONIG_OPTION_MULTILINE | ONIG_OPTION_SINGLELINE | ONIG_OPTION_FIND_LONGEST | ONIG_OPTION_FIND_NOT_EMPTY | ONIG_OPTION_NEGATE_SINGLELINE | ONIG_OPTION_DONT_CAPTURE_GROUP | ONIG_OPTION_CAPTURE_GROUP)
-
-
 #ifdef SYNTAX_TEST
-#define NUM_CONTROL_BYTES      6
+#define NUM_CONTROL_BYTES      7
 #else
-#define NUM_CONTROL_BYTES      5
+#define NUM_CONTROL_BYTES      6
 #endif
 
 int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
@@ -424,23 +426,20 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   syntax = ONIG_SYNTAX_DEFAULT;
 #endif
 
-  if ((data[1] & 0xc0) == 0)
-    options = (data[0] | (data[1] << 8)) & OPTIONS_MASK;
+  if ((data[2] & 0xc0) == 0)
+    options = data[0] | (data[1] << 8) | (data[2] << 16);
   else
     options = data[0] & ONIG_OPTION_IGNORECASE;
 
-  data++;
-  rem_size--;
-  data++;
-  rem_size--;
+  data++; rem_size--;
+  data++; rem_size--;
+  data++; rem_size--;
 
   pattern_size_choice = data[0];
-  data++;
-  rem_size--;
+  data++; rem_size--;
 
   backward = (data[0] == 0xbb);
-  data++;
-  rem_size--;
+  data++; rem_size--;
 
   if (backward != 0) {
     options = options & ~ONIG_OPTION_FIND_LONGEST;
