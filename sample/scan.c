@@ -88,6 +88,14 @@ extern int main(int argc, char* argv[])
   fprintf(stdout, "\n");
 
   exec(ONIG_ENCODING_UTF8, ONIG_OPTION_NONE, ONIG_OPTION_NONE,
+       "(?!\\G)a+\\s*", "a aa aaa baaa");
+  fprintf(stdout, "\n");
+
+  exec(ONIG_ENCODING_UTF8, ONIG_OPTION_NONE, ONIG_OPTION_NOT_BEGIN_POSITION,
+       "(?!\\G)a+\\s*", "a aa aaa baaa");
+  fprintf(stdout, "\n");
+
+  exec(ONIG_ENCODING_UTF8, ONIG_OPTION_NONE, ONIG_OPTION_NONE,
        "a+\\s*", "a aa aaa baaa");
 
   return 0;
