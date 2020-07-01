@@ -383,6 +383,7 @@ typedef unsigned int  MemStatusType;
 #define OPTON_CHECK_VALIDITY_OF_STRING(option)  ((option) & \
                                       ONIG_OPTION_CHECK_VALIDITY_OF_STRING)
 #define OPTON_NOT_BEGIN_STRING(option)    ((option) & ONIG_OPTION_NOT_BEGIN_STRING)
+#define OPTON_NOT_END_STRING(option)      ((option) & ONIG_OPTION_NOT_END_STRING)
 #define OPTON_NOT_BEGIN_POSITION(option)  ((option) & ONIG_OPTION_NOT_BEGIN_POSITION)
 
 #define DISABLE_CASE_FOLD_MULTI_CHAR(case_fold_flag) \
