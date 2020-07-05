@@ -3560,6 +3560,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     CASE_OP(END_BUF)
       if (! ON_STR_END(s)) goto fail;
+      if (OPTON_NOTEOL(msa->options)) goto fail;
       if (OPTON_NOT_END_STRING(msa->options)) goto fail;
 
       INC_OP;
