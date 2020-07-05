@@ -3608,6 +3608,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         if (IS_EMPTY_STR || !ONIGENC_IS_MBC_NEWLINE(encode, sprev, end)) {
 #endif
           if (OPTON_NOTEOL(msa->options)) goto fail;
+          if (OPTON_NOT_END_STRING(msa->options)) goto fail;
           INC_OP;
           JUMP_OUT;
 #ifndef USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE
@@ -3617,6 +3618,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       else if (ONIGENC_IS_MBC_NEWLINE(encode, s, end) &&
                ON_STR_END(s + enclen(encode, s))) {
         if (OPTON_NOTEOL(msa->options)) goto fail;
+        if (OPTON_NOT_END_STRING(msa->options)) goto fail;
         INC_OP;
         JUMP_OUT;
       }
@@ -3626,6 +3628,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         ss += enclen(encode, ss);
         if (ON_STR_END(ss)) {
           if (OPTON_NOTEOL(msa->options)) goto fail;
+          if (OPTON_NOT_END_STRING(msa->options)) goto fail;
           INC_OP;
           JUMP_OUT;
         }
