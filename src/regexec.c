@@ -3615,6 +3615,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       }
       else if (ONIGENC_IS_MBC_NEWLINE(encode, s, end) &&
                ON_STR_END(s + enclen(encode, s))) {
+        if (OPTON_NOTEOL(msa->options)) goto fail;
         INC_OP;
         JUMP_OUT;
       }
@@ -3623,6 +3624,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         UChar* ss = s + enclen(encode, s);
         ss += enclen(encode, ss);
         if (ON_STR_END(ss)) {
+          if (OPTON_NOTEOL(msa->options)) goto fail;
           INC_OP;
           JUMP_OUT;
         }
