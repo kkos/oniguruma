@@ -12,7 +12,8 @@ TARGETS = fuzzer-encode fuzzer-syntax fuzzer-utf16-be fuzzer-utf16-le \
 OTHER_TARGETS = libfuzzer-onig libfuzzer-onig-full fuzzer-deluxe read-deluxe
 
 
-default: $(TARGETS)
+#default: $(TARGETS)
+default: read-syntax
 
 fuzzer-encode: base.c $(ONIG_LIB)
 	clang $(CFLAGS) $< $(LIBS) -o $@
