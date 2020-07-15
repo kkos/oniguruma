@@ -4525,12 +4525,27 @@ reduce_string_list(Node* node)
           }
         }
         else {
-          prev = NULL_NODE;
+          if (IS_NOT_NULL(prev)) {
+#ifdef CHECK_STRING_VALIDITY
+            StrNode* sn = STR_(prev);
+            if (! ONIGENC_IS_VALID_MBC_STRING(enc, sn->s, sn->end))
+              return ONIGERR_INVALID_WIDE_CHAR_VALUE;
+#endif
+            prev = NULL_NODE;
+          }
           prev_node = node;
         }
 
         node = next_node;
       } while (r == 0 && IS_NOT_NULL(node));
+
+#ifdef CHECK_STRING_VALIDITY
+      if (IS_NOT_NULL(prev)) {
+        StrNode* sn = STR_(prev);
+        if (! ONIGENC_IS_VALID_MBC_STRING(enc, sn->s, sn->end))
+          return ONIGERR_INVALID_WIDE_CHAR_VALUE;
+      }
+#endif
     }
     break;
 
@@ -4539,6 +4554,16 @@ reduce_string_list(Node* node)
       r = reduce_string_list(NODE_CAR(node));
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
+
+#ifdef CHECK_STRING_VALIDITY
+  case NODE_STRING:
+    {
+      StrNode* sn = STR_(node);
+      if (! ONIGENC_IS_VALID_MBC_STRING(enc, sn->s, sn->end))
+        return ONIGERR_INVALID_WIDE_CHAR_VALUE;
+    }
+    break;
+#endif
 
   case NODE_ANCHOR:
     if (IS_NULL(NODE_BODY(node)))
