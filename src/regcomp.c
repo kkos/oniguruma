@@ -5116,6 +5116,7 @@ unravel_case_fold_string(Node* node, regex_t* reg, int state)
     one_len = (OnigLen )enclen(enc, p);
     if (n == 0) {
       q = p + one_len;
+      if (q > end) q = end;
       r = unravel_cf_string_add(&list, &sn, p, q, 0 /* flag */);
       if (r != 0) goto err;
     }
