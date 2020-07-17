@@ -2,7 +2,7 @@
   utf16_le.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2019  K.Kosako
+ * Copyright (c) 2002-2020  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -247,6 +247,9 @@ static int
 utf16le_get_case_fold_codes_by_str(OnigCaseFoldType flag,
     const OnigUChar* p, const OnigUChar* end, OnigCaseFoldCodeItem items[])
 {
+  if (! is_valid_mbc_string(p, end))
+    return 0;
+
   return onigenc_unicode_get_case_fold_codes_by_str(ONIG_ENCODING_UTF16_LE,
                                                     flag, p, end, items);
 }
