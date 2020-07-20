@@ -7709,10 +7709,17 @@ node_detect_can_be_very_slow(Node* node)
     break;
 
   case NODE_ANCHOR:
-    if (IS_NOT_NULL(NODE_BODY(node)))
-      r = node_detect_can_be_very_slow(NODE_BODY(node));
-    else
+    switch (ANCHOR_(node)->type) {
+    case ANCR_PREC_READ:
+    case ANCR_PREC_READ_NOT:
+    case ANCR_LOOK_BEHIND:
+    case ANCR_LOOK_BEHIND_NOT:
+      r = 1;
+      break;
+    default:
       r = 0;
+      break;
+    }
     break;
 
   case NODE_BAG:
