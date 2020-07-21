@@ -4494,7 +4494,7 @@ remove_from_list(Node* prev, Node* a)
 }
 
 static int
-reduce_string_list(Node* node)
+reduce_string_list(Node* node, OnigEncoding enc)
 {
   int r = 0;
 
@@ -4526,20 +4526,22 @@ reduce_string_list(Node* node)
         }
         else {
           if (IS_NOT_NULL(prev)) {
-#ifdef CHECK_STRING_VALIDITY
+#ifdef USE_CHECK_VALIDITY_OF_STRING_IN_TREE
             StrNode* sn = STR_(prev);
             if (! ONIGENC_IS_VALID_MBC_STRING(enc, sn->s, sn->end))
               return ONIGERR_INVALID_WIDE_CHAR_VALUE;
 #endif
             prev = NULL_NODE;
           }
+	  r = reduce_string_list(curr, enc);
+	  if (r != 0) return r;
           prev_node = node;
         }
 
         node = next_node;
       } while (r == 0 && IS_NOT_NULL(node));
 
-#ifdef CHECK_STRING_VALIDITY
+#ifdef USE_CHECK_VALIDITY_OF_STRING_IN_TREE
       if (IS_NOT_NULL(prev)) {
         StrNode* sn = STR_(prev);
         if (! ONIGENC_IS_VALID_MBC_STRING(enc, sn->s, sn->end))
@@ -4551,11 +4553,11 @@ reduce_string_list(Node* node)
 
   case NODE_ALT:
     do {
-      r = reduce_string_list(NODE_CAR(node));
+      r = reduce_string_list(NODE_CAR(node), enc);
     } while (r == 0 && IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
-#ifdef CHECK_STRING_VALIDITY
+#ifdef USE_CHECK_VALIDITY_OF_STRING_IN_TREE
   case NODE_STRING:
     {
       StrNode* sn = STR_(node);
@@ -4570,23 +4572,23 @@ reduce_string_list(Node* node)
       break;
     /* fall */
   case NODE_QUANT:
-    r = reduce_string_list(NODE_BODY(node));
+    r = reduce_string_list(NODE_BODY(node), enc);
     break;
 
   case NODE_BAG:
     {
       BagNode* en = BAG_(node);
 
-      r = reduce_string_list(NODE_BODY(node));
+      r = reduce_string_list(NODE_BODY(node), enc);
       if (r != 0) return r;
 
       if (en->type == BAG_IF_ELSE) {
         if (IS_NOT_NULL(en->te.Then)) {
-          r = reduce_string_list(en->te.Then);
+          r = reduce_string_list(en->te.Then, enc);
           if (r != 0) return r;
         }
         if (IS_NOT_NULL(en->te.Else)) {
-          r = reduce_string_list(en->te.Else);
+          r = reduce_string_list(en->te.Else, enc);
           if (r != 0) return r;
         }
       }
@@ -7278,7 +7280,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   r = onig_parse_tree(&root, pattern, pattern_end, reg, &scan_env);
   if (r != 0) goto err;
 
-  r = reduce_string_list(root);
+  r = reduce_string_list(root, reg->enc);
   if (r != 0) goto err;
 
   /* mixed use named group and no-named group */
