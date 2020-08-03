@@ -4533,8 +4533,8 @@ reduce_string_list(Node* node, OnigEncoding enc)
 #endif
             prev = NULL_NODE;
           }
-	  r = reduce_string_list(curr, enc);
-	  if (r != 0) return r;
+          r = reduce_string_list(curr, enc);
+          if (r != 0) return r;
           prev_node = node;
         }
 
@@ -7692,34 +7692,43 @@ onig_is_code_in_cc(OnigEncoding enc, OnigCodePoint code, CClassNode* cc)
   return onig_is_code_in_cc_len(len, code, cc);
 }
 
+typedef struct {
+  int prec_read;
+  int look_behind;
+  int backref_with_level;
+  int call;
+} SlowElementCount;
+
 static int
-node_detect_can_be_slow(Node* node)
+node_detect_can_be_slow(Node* node, SlowElementCount* ct)
 {
   int r;
 
+  r = 0;
   switch (NODE_TYPE(node)) {
   case NODE_LIST:
   case NODE_ALT:
     do {
-      r = node_detect_can_be_slow(NODE_CAR(node));
+      r = node_detect_can_be_slow(NODE_CAR(node), ct);
       if (r != 0) return r;
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NODE_QUANT:
-    r = node_detect_can_be_slow(NODE_BODY(node));
+    r = node_detect_can_be_slow(NODE_BODY(node), ct);
     break;
 
   case NODE_ANCHOR:
     switch (ANCHOR_(node)->type) {
     case ANCR_PREC_READ:
     case ANCR_PREC_READ_NOT:
+      ct->prec_read++;
+      break;
     case ANCR_LOOK_BEHIND:
     case ANCR_LOOK_BEHIND_NOT:
-      r = 1;
+      ct->look_behind++;
       break;
     default:
-      r = 0;
       break;
     }
     break;
@@ -7728,16 +7737,16 @@ node_detect_can_be_slow(Node* node)
     {
       BagNode* en = BAG_(node);
 
-      r = node_detect_can_be_slow(NODE_BODY(node));
+      r = node_detect_can_be_slow(NODE_BODY(node), ct);
       if (r != 0) return r;
 
       if (en->type == BAG_IF_ELSE) {
         if (IS_NOT_NULL(en->te.Then)) {
-          r = node_detect_can_be_slow(en->te.Then);
+          r = node_detect_can_be_slow(en->te.Then, ct);
           if (r != 0) return r;
         }
         if (IS_NOT_NULL(en->te.Else)) {
-          r = node_detect_can_be_slow(en->te.Else);
+          r = node_detect_can_be_slow(en->te.Else, ct);
           if (r != 0) return r;
         }
       }
@@ -7747,14 +7756,17 @@ node_detect_can_be_slow(Node* node)
 #ifdef USE_BACKREF_WITH_LEVEL
   case NODE_BACKREF:
     if (NODE_IS_NEST_LEVEL(node))
-      r = 1;
-    else
-      r = 0;
+      ct->backref_with_level++;
+    break;
+#endif
+
+#ifdef USE_CALL
+  case NODE_CALL:
+    ct->call++;
     break;
 #endif
 
   default:
-    r = 0;
     break;
   }
 
@@ -7770,6 +7782,7 @@ onig_detect_can_be_very_slow_pattern(const UChar* pattern,
   regex_t* reg;
   Node* root;
   ScanEnv scan_env;
+  SlowElementCount count;
 
   reg = (regex_t* )xmalloc(sizeof(regex_t));
   if (IS_NULL(reg)) return ONIGERR_MEMORY;
@@ -7783,7 +7796,17 @@ onig_detect_can_be_very_slow_pattern(const UChar* pattern,
   root = 0;
   r = onig_parse_tree(&root, pattern, pattern_end, reg, &scan_env);
   if (r == 0) {
-    r = node_detect_can_be_slow(root);
+    count.prec_read          = 0;
+    count.look_behind        = 0;
+    count.backref_with_level = 0;
+    count.call               = 0;
+
+    r = node_detect_can_be_slow(root, &count);
+    if (r == 0) {
+      int n = count.prec_read + count.look_behind
+            + count.backref_with_level + count.call;
+      r = n;
+    }
   }
 
   if (IS_NOT_NULL(scan_env.mem_env_dynamic))
