@@ -7693,7 +7693,7 @@ onig_is_code_in_cc(OnigEncoding enc, OnigCodePoint code, CClassNode* cc)
 }
 
 static int
-node_detect_can_be_very_slow(Node* node)
+node_detect_can_be_slow(Node* node)
 {
   int r;
 
@@ -7701,13 +7701,13 @@ node_detect_can_be_very_slow(Node* node)
   case NODE_LIST:
   case NODE_ALT:
     do {
-      r = node_detect_can_be_very_slow(NODE_CAR(node));
+      r = node_detect_can_be_slow(NODE_CAR(node));
       if (r != 0) return r;
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NODE_QUANT:
-    r = node_detect_can_be_very_slow(NODE_BODY(node));
+    r = node_detect_can_be_slow(NODE_BODY(node));
     break;
 
   case NODE_ANCHOR:
@@ -7728,16 +7728,16 @@ node_detect_can_be_very_slow(Node* node)
     {
       BagNode* en = BAG_(node);
 
-      r = node_detect_can_be_very_slow(NODE_BODY(node));
+      r = node_detect_can_be_slow(NODE_BODY(node));
       if (r != 0) return r;
 
       if (en->type == BAG_IF_ELSE) {
         if (IS_NOT_NULL(en->te.Then)) {
-          r = node_detect_can_be_very_slow(en->te.Then);
+          r = node_detect_can_be_slow(en->te.Then);
           if (r != 0) return r;
         }
         if (IS_NOT_NULL(en->te.Else)) {
-          r = node_detect_can_be_very_slow(en->te.Else);
+          r = node_detect_can_be_slow(en->te.Else);
           if (r != 0) return r;
         }
       }
@@ -7783,7 +7783,7 @@ onig_detect_can_be_very_slow_pattern(const UChar* pattern,
   root = 0;
   r = onig_parse_tree(&root, pattern, pattern_end, reg, &scan_env);
   if (r == 0) {
-    r = node_detect_can_be_very_slow(root);
+    r = node_detect_can_be_slow(root);
   }
 
   if (IS_NOT_NULL(scan_env.mem_env_dynamic))
