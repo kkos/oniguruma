@@ -7731,6 +7731,9 @@ node_detect_can_be_slow(Node* node, SlowElementCount* ct)
     default:
       break;
     }
+
+    if (ANCHOR_HAS_BODY(ANCHOR_(node)))
+      r = node_detect_can_be_slow(NODE_BODY(node), ct);
     break;
 
   case NODE_BAG:
