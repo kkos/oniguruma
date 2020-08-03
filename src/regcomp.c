@@ -7774,7 +7774,7 @@ node_detect_can_be_slow(Node* node, SlowElementCount* ct)
 }
 
 extern int
-onig_detect_can_be_very_slow_pattern(const UChar* pattern,
+onig_detect_can_be_slow_pattern(const UChar* pattern,
   const UChar* pattern_end, OnigOptionType option, OnigEncoding enc,
   OnigSyntaxType* syntax)
 {
