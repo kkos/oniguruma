@@ -20,6 +20,7 @@
 #define MATCH_STACK_LIMIT    10000000
 #define MAX_REM_SIZE          1048576
 #define MAX_SLOW_REM_SIZE        1024
+#define SLOW_RETRY_LIMIT         2000
 
 //#define EXEC_PRINT_INTERVAL    500000
 //#define DUMP_DATA_INTERVAL     100000
@@ -118,7 +119,7 @@ output_current_time(FILE* fp)
 #endif
 
 static int
-search(regex_t* reg, unsigned char* str, unsigned char* end, OnigOptionType options, int backward)
+search(regex_t* reg, unsigned char* str, unsigned char* end, OnigOptionType options, int backward, int sl)
 {
   int r;
   unsigned char *start, *range;
@@ -129,8 +130,12 @@ search(regex_t* reg, unsigned char* str, unsigned char* end, OnigOptionType opti
   region = onig_region_new();
 
   len = (size_t )(end - str);
-  if (len < BASE_LENGTH)
-    retry_limit = (unsigned int )BASE_RETRY_LIMIT;
+  if (len < BASE_LENGTH) {
+    if (sl >= 3)
+      retry_limit = (unsigned int )SLOW_RETRY_LIMIT;
+    else
+      retry_limit = (unsigned int )BASE_RETRY_LIMIT;
+  }
   else
     retry_limit = (unsigned int )(BASE_RETRY_LIMIT * BASE_LENGTH / len);
 
@@ -195,7 +200,8 @@ static long VALID_STRING_COUNT;
 
 static int
 exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
-     char* apattern, char* apattern_end, char* astr, UChar* end, int backward)
+     char* apattern, char* apattern_end, char* astr, UChar* end, int backward,
+     int sl)
 {
   int r;
   regex_t* reg;
@@ -234,12 +240,12 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   }
   REGEX_SUCCESS_COUNT++;
 
-  r = search(reg, pattern, pattern_end, options, backward);
+  r = search(reg, pattern, pattern_end, options, backward, sl);
   if (r == -2) return -2;
 
   if (onigenc_is_valid_mbc_string(enc, str, end) != 0) {
     VALID_STRING_COUNT++;
-    r = search(reg, str, end, options, backward);
+    r = search(reg, str, end, options, backward, sl);
     if (r == -2) return -2;
   }
 
@@ -252,9 +258,10 @@ static int
 alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
            int backward, int pattern_size, size_t rem_size, unsigned char *data)
 {
-  extern int onig_detect_can_be_very_slow_pattern(const UChar* pattern, const UChar* pattern_end, OnigOptionType option, OnigEncoding enc, OnigSyntaxType* syntax);
+  extern int onig_detect_can_be_slow_pattern(const UChar* pattern, const UChar* pattern_end, OnigOptionType option, OnigEncoding enc, OnigSyntaxType* syntax);
 
   int r;
+  int sl;
   unsigned char *pattern;
   unsigned char *pattern_end;
   unsigned char *str_null_end;
@@ -267,9 +274,10 @@ alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
 
   if (rem_size > MAX_REM_SIZE) rem_size = MAX_REM_SIZE;
 
-  if (rem_size > MAX_SLOW_REM_SIZE) {
-    r = onig_detect_can_be_very_slow_pattern(pattern, pattern_end, options, enc, syntax);
-    if (r > 0) rem_size = MAX_SLOW_REM_SIZE;
+  sl = onig_detect_can_be_slow_pattern(pattern, pattern_end, options, enc, syntax);
+  if (sl > 0) {
+    if (rem_size > MAX_SLOW_REM_SIZE)
+      rem_size = MAX_SLOW_REM_SIZE;
   }
 
   ADJUST_LEN(enc, rem_size);
@@ -283,7 +291,7 @@ alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
 
   r = exec(enc, options, syntax,
            (char *)pattern, (char *)pattern_end,
-           (char *)str, str_null_end, backward);
+           (char *)str, str_null_end, backward, sl);
 
   free(pattern);
   free(str);
