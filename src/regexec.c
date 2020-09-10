@@ -1060,7 +1060,8 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 
 
 /** stack **/
-#define INVALID_STACK_INDEX   -1
+static char TIS_INVALID_STACK;
+#define INVALID_STACK_INDEX   ((intptr_t)(&TIS_INVALID_STACK))
 
 #define STK_ALT_FLAG               0x0001
 
