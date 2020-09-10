@@ -4945,7 +4945,7 @@ sunday_quick_search_step_forward(regex_t* reg,
   tail = target_end - 1;
   tlen1 = (int )(tail - target);
   end = text_range;
-  if (end + tlen1 > text_end)
+  if (tlen1 > text_end - end)
     end = text_end - tlen1;
 
   map_offset = reg->map_offset;
