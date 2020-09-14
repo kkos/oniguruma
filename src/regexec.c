@@ -3447,16 +3447,17 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           if (! IS_MBC_WORD_ASCII_MODE(encode, s, end, mode))
             goto fail;
         }
-        else if (ON_STR_END(s)) {
-          UChar* sprev = (UChar* )onigenc_get_prev_char_head(encode, str, s);
-          if (! IS_MBC_WORD_ASCII_MODE(encode, sprev, end, mode))
-            goto fail;
-        }
         else {
           UChar* sprev = (UChar* )onigenc_get_prev_char_head(encode, str, s);
-          if (IS_MBC_WORD_ASCII_MODE(encode, s, end, mode)
-              == IS_MBC_WORD_ASCII_MODE(encode, sprev, end, mode))
-            goto fail;
+          if (ON_STR_END(s)) {
+            if (! IS_MBC_WORD_ASCII_MODE(encode, sprev, end, mode))
+              goto fail;
+          }
+          else {
+            if (IS_MBC_WORD_ASCII_MODE(encode, s, end, mode)
+                == IS_MBC_WORD_ASCII_MODE(encode, sprev, end, mode))
+              goto fail;
+          }
         }
       }
       INC_OP;
@@ -3471,16 +3472,17 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           if (DATA_ENSURE_CHECK1 && IS_MBC_WORD_ASCII_MODE(encode, s, end, mode))
             goto fail;
         }
-        else if (ON_STR_END(s)) {
-          UChar* sprev = (UChar* )onigenc_get_prev_char_head(encode, str, s);
-          if (IS_MBC_WORD_ASCII_MODE(encode, sprev, end, mode))
-            goto fail;
-        }
         else {
           UChar* sprev = (UChar* )onigenc_get_prev_char_head(encode, str, s);
-          if (IS_MBC_WORD_ASCII_MODE(encode, s, end, mode)
-              != IS_MBC_WORD_ASCII_MODE(encode, sprev, end, mode))
-            goto fail;
+          if (ON_STR_END(s)) {
+            if (IS_MBC_WORD_ASCII_MODE(encode, sprev, end, mode))
+              goto fail;
+          }
+          else {
+            if (IS_MBC_WORD_ASCII_MODE(encode, s, end, mode)
+                != IS_MBC_WORD_ASCII_MODE(encode, sprev, end, mode))
+              goto fail;
+          }
         }
       }
       INC_OP;
