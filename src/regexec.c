@@ -4382,7 +4382,6 @@ typedef struct {
   int    state;  /* value of enum SearchRangeStatus */
   UChar* low;
   UChar* high;
-  UChar* low_prev;
   UChar* sch_range;
 } SearchRange;
 
@@ -4403,7 +4402,7 @@ regset_search_body_position_lead(OnigRegSet* set,
            OnigOptionType option, MatchArg* msas, int* rmatch_pos)
 {
   int r, n, i;
-  UChar *s, *prev;
+  UChar *s;
   UChar *low, *high, *low_prev;
   UChar* sch_range;
   regex_t* reg;
@@ -4412,12 +4411,7 @@ regset_search_body_position_lead(OnigRegSet* set,
 
   n   = set->n;
   enc = set->enc;
-
   s = (UChar* )start;
-  if (s > str)
-    prev = onigenc_get_prev_char_head(enc, str, s);
-  else
-    prev = (UChar* )NULL;
 
   sr = (SearchRange* )xmalloc(sizeof(*sr) * n);
   CHECK_NULL_RETURN_MEMERR(sr);
@@ -4437,7 +4431,6 @@ regset_search_body_position_lead(OnigRegSet* set,
           sr[i].state = SRS_LOW_HIGH;
           sr[i].low  = low;
           sr[i].high = high;
-          sr[i].low_prev = low_prev;
           sr[i].sch_range = sch_range;
         }
       }
@@ -4454,7 +4447,6 @@ regset_search_body_position_lead(OnigRegSet* set,
       sr[i].state    = SRS_ALL_RANGE;
       sr[i].low      = s;
       sr[i].high     = (UChar* )range;
-      sr[i].low_prev = prev;
     }
   }
 
@@ -4473,7 +4465,6 @@ regset_search_body_position_lead(OnigRegSet* set,
                              &low, &high, &low_prev) != 0) {
             sr[i].low      = low;
             sr[i].high     = high;
-            sr[i].low_prev = low_prev;
             if (s < low) continue;
           }
           else {
@@ -4494,16 +4485,13 @@ regset_search_body_position_lead(OnigRegSet* set,
         for (i = 0; i < n; i++) {
           if (sr[i].state == SRS_LOW_HIGH && low > sr[i].low) {
             low = sr[i].low;
-            low_prev = sr[i].low_prev;
           }
         }
         if (low == range) break;
 
         s = low;
-        prev = low_prev;
       }
       else {
-        prev = s;
         s += enclen(enc, s);
       }
     } while (1);
@@ -4541,7 +4529,6 @@ regset_search_body_position_lead(OnigRegSet* set,
       if (set->anychar_inf != 0)
         prev_is_newline = ONIGENC_IS_MBC_NEWLINE(set->enc, s, end);
 
-      prev = s;
       s += enclen(enc, s);
     } while (1);
   }
@@ -4610,7 +4597,7 @@ onig_regset_search_with_param(OnigRegSet* set,
 {
   int r;
   int i;
-  UChar *s, *prev;
+  UChar *s;
   regex_t* reg;
   OnigEncoding enc;
   OnigRegion* region;
@@ -4712,7 +4699,6 @@ onig_regset_search_with_param(OnigRegSet* set,
   else if (str == end) { /* empty string */
     start = end = str;
     s = (UChar* )start;
-    prev = (UChar* )NULL;
 
     msas = (MatchArg* )xmalloc(sizeof(*msas) * set->n);
     CHECK_NULL_RETURN_MEMERR(msas);
