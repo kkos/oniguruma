@@ -5319,7 +5319,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
                 OnigOptionType option, OnigMatchParam* mp)
 {
   int r;
-  UChar *s, *prev;
+  UChar *s;
   MatchArg msa;
   const UChar *orig_start = start;
 
@@ -5472,7 +5472,6 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
     if (reg->threshold_len == 0) {
       start = end = str = address_for_empty_string;
       s = (UChar* )start;
-      prev = (UChar* )NULL;
 
       MATCH_ARG_INIT(msa, reg, option, region, start, mp);
       MATCH_AND_RETURN_CHECK(end);
@@ -5490,11 +5489,6 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
 
   s = (UChar* )start;
   if (range > start) {   /* forward search */
-    if (s > str)
-      prev = onigenc_get_prev_char_head(reg->enc, str, s);
-    else
-      prev = (UChar* )NULL;
-
     if (reg->optimize != OPTIMIZE_NONE) {
       UChar *sch_range, *low, *high, *low_prev;
 
@@ -5521,11 +5515,9 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
                                &low_prev)) goto mismatch;
           if (s < low) {
             s    = low;
-            prev = low_prev;
           }
           while (s <= high) {
             MATCH_AND_RETURN_CHECK(data_range);
-            prev = s;
             s += enclen(reg->enc, s);
           }
         } while (s < range);
@@ -5538,6 +5530,8 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
         if ((reg->anchor & ANCR_ANYCHAR_INF) != 0 &&
             (reg->anchor & (ANCR_LOOK_BEHIND | ANCR_PREC_READ_NOT)) == 0) {
           do {
+	    UChar* prev;
+
             MATCH_AND_RETURN_CHECK(data_range);
             prev = s;
             s += enclen(reg->enc, s);
@@ -5554,7 +5548,6 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
 
     do {
       MATCH_AND_RETURN_CHECK(data_range);
-      prev = s;
       s += enclen(reg->enc, s);
     } while (s < range);
 
@@ -5600,9 +5593,8 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
             s = high;
 
           while (s >= low) {
-            prev = onigenc_get_prev_char_head(reg->enc, str, s);
             MATCH_AND_RETURN_CHECK(orig_start);
-            s = prev;
+            s = onigenc_get_prev_char_head(reg->enc, str, s);
           }
         } while (s >= range);
         goto mismatch;
@@ -5616,9 +5608,8 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
     }
 
     do {
-      prev = onigenc_get_prev_char_head(reg->enc, str, s);
       MATCH_AND_RETURN_CHECK(orig_start);
-      s = prev;
+      s = onigenc_get_prev_char_head(reg->enc, str, s);
     } while (s >= range);
   }
 
