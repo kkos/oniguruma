@@ -2656,7 +2656,7 @@ typedef struct {
 
 #define BYTECODE_INTERPRETER_START      GOTO_OP;
 #define BYTECODE_INTERPRETER_END
-#define CASE_OP(x)   L_##x: SOP_IN(OP_##x); sbegin = s; MATCH_DEBUG_OUT(0)
+#define CASE_OP(x)   L_##x: SOP_IN(OP_##x); MATCH_DEBUG_OUT(0)
 #define DEFAULT_OP   /* L_DEFAULT: */
 #define NEXT_OP      JUMP_OP
 #define JUMP_OP      GOTO_OP
@@ -2672,7 +2672,6 @@ typedef struct {
 #define BYTECODE_INTERPRETER_START \
   while (1) {\
   MATCH_DEBUG_OUT(0)\
-  sbegin = s;\
   switch (p->opcode) {
 #define BYTECODE_INTERPRETER_END  } }
 #define CASE_OP(x)   case OP_##x: SOP_IN(OP_##x);
@@ -2876,7 +2875,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   LengthType tlen, tlen2;
   MemNumType mem;
   RelAddrType addr;
-  UChar *s, *ps, *sbegin;
+  UChar *s, *ps;
   UChar *right_range;
   int is_alloca;
   char *alloc_base;
