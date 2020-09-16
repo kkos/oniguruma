@@ -3713,21 +3713,24 @@ get_next_code_point(UChar** src, UChar* end, int base, OnigEncoding enc, int in_
 
   while (! PEND) {
     PFETCH(c);
-    if (! IS_CODE_POINT_DIVIDE(c)) break;
+    if (! IS_CODE_POINT_DIVIDE(c)) {
+      if (c == '}') {
+        *src = p;
+        return 1; /* end of sequence */
+      }
+      else if (c == '-' && in_cc == TRUE) {
+        *src = p;
+        return 2; /* range */
+      }
+      PUNFETCH;
+      break;
+    }
+    else {
+      if (PEND)
+        return ONIGERR_INVALID_CODE_POINT_VALUE;
+    }
   }
-  if (IS_CODE_POINT_DIVIDE(c))
-    return ONIGERR_INVALID_CODE_POINT_VALUE;
 
-  if (c == '}') {
-    *src = p;
-    return 1; /* end of sequence */
-  }
-  else if (c == '-' && in_cc == TRUE) {
-    *src = p;
-    return 2; /* range */
-  }
-
-  PUNFETCH;
   r = scan_number_of_base(&p, end, 1, enc, rcode, base);
   if (r != 0) return r;
 
