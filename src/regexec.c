@@ -5007,7 +5007,6 @@ onig_match_with_param(regex_t* reg, const UChar* str, const UChar* end,
                       OnigMatchParam* mp)
 {
   int r;
-  UChar *prev;
   MatchArg msa;
 
 #ifndef USE_POSIX_API
@@ -5034,7 +5033,6 @@ onig_match_with_param(regex_t* reg, const UChar* str, const UChar* end,
       }
     }
 
-    prev = (UChar* )onigenc_get_prev_char_head(reg->enc, str, at);
     r = match_at(reg, str, end, end, at, &msa);
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
     if (OPTON_FIND_LONGEST(option) && r == ONIG_MISMATCH) {
