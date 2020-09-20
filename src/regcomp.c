@@ -133,6 +133,7 @@ ops_init(regex_t* reg, int init_alloc_size)
     size = sizeof(Operation) * init_alloc_size;
     p = (Operation* )xrealloc(reg->ops, size);
     CHECK_NULL_RETURN_MEMERR(p);
+    reg->ops = p;
 #ifdef USE_DIRECT_THREADED_CODE
     {
       enum OpCode* cp;
@@ -144,13 +145,12 @@ ops_init(regex_t* reg, int init_alloc_size)
 #endif
   }
   else {
-    p  = (Operation* )0;
+    reg->ops = (Operation* )0;
 #ifdef USE_DIRECT_THREADED_CODE
     reg->ocs = (enum OpCode* )0;
 #endif
   }
 
-  reg->ops = p;
   reg->ops_curr  = 0; /* !!! not yet done ops_new() */
   reg->ops_alloc = init_alloc_size;
   reg->ops_used  = 0;
