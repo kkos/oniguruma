@@ -3987,6 +3987,7 @@ set_empty_repeat_node_trav(Node* node, Node* empty, ScanEnv* env)
     {
       BagNode* en = BAG_(node);
 
+      r = 0;
       if (en->type == BAG_MEMORY) {
         if (NODE_IS_BACKREF(node)) {
           if (IS_NOT_NULL(empty))
