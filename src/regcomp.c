@@ -176,6 +176,7 @@ ops_expand(regex_t* reg, int n)
   size = sizeof(Operation) * n;
   p = (Operation* )xrealloc(reg->ops, size);
   CHECK_NULL_RETURN_MEMERR(p);
+  reg->ops = p;
 
 #ifdef USE_DIRECT_THREADED_CODE
   size = sizeof(enum OpCode) * n;
@@ -184,7 +185,6 @@ ops_expand(regex_t* reg, int n)
   reg->ocs = cp;
 #endif
 
-  reg->ops = p;
   reg->ops_alloc = n;
   if (reg->ops_used == 0)
     reg->ops_curr = 0;
