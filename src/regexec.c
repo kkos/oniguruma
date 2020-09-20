@@ -3836,11 +3836,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         tlen  = p->backref_general.num;
         mems = tlen == 1 ? &(p->backref_general.n1) : p->backref_general.ns;
 
-        if (backref_match_at_nested_level(reg, stk, stk_base, n,
-                    case_fold_flag, level, (int )tlen, mems, &s, end)) {
-        }
-        else
+        if (! backref_match_at_nested_level(reg, stk, stk_base, n,
+                      case_fold_flag, level, (int )tlen, mems, &s, end)) {
           goto fail;
+        }
       }
       INC_OP;
       JUMP_OUT;
@@ -5527,7 +5526,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
         if ((reg->anchor & ANCR_ANYCHAR_INF) != 0 &&
             (reg->anchor & (ANCR_LOOK_BEHIND | ANCR_PREC_READ_NOT)) == 0) {
           do {
-	    UChar* prev;
+            UChar* prev;
 
             MATCH_AND_RETURN_CHECK(data_range);
             prev = s;
