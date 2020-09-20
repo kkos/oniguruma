@@ -1830,7 +1830,6 @@ compile_bag_memory_node(BagNode* node, regex_t* reg, ScanEnv* env)
   COP(reg)->memory_end.num = node->m.regnum;
 
   if (NODE_IS_CALLED(node)) {
-    if (r != 0) return r;
     r = add_op(reg, OP_RETURN);
   }
 #else
