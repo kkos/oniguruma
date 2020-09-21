@@ -3140,7 +3140,6 @@ make_absent_tree_for_simple_one_char_repeat(Node** node, Node* absent, Node* qua
 
   lower = QUANT_(quant)->lower;
   upper = QUANT_(quant)->upper;
-  onig_node_free(quant);
 
   r = node_new_save_gimmick(&ns[0], SAVE_RIGHT_RANGE, env);
   if (r != 0) goto err;
@@ -3207,9 +3206,9 @@ make_absent_tree(Node** node, Node* absent, Node* expr, int is_range_cutter,
       simple:
         r = make_absent_tree_for_simple_one_char_repeat(node, absent, quant,
                                                         body, possessive, env);
+        onig_node_free(quant);
         if (r != 0) {
           ns[4] = NULL_NODE;
-          onig_node_free(quant);
           onig_node_free(body);
           goto err;
         }
