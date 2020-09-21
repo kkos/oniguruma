@@ -50,6 +50,7 @@ make_regset(int line_no, int n, char* pat[], OnigRegSet** rset, int error_no)
           nfail++;
         }
       }
+      onig_regset_free(set);
       return r;
     }
 
