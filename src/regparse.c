@@ -7105,16 +7105,16 @@ prs_callout_of_contents(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* 
   contents = onigenc_strdup(enc, code_start, code_end);
   CHECK_NULL_RETURN_MEMERR(contents);
 
-  r = node_new_callout(np, ONIG_CALLOUT_OF_CONTENTS, num, ONIG_NON_NAME_ID, env);
-  if (r != 0) {
-    xfree(contents);
-    return r;
-  }
-
   e = onig_reg_callout_list_at(env->reg, num);
   if (IS_NULL(e)) {
     xfree(contents);
     return ONIGERR_MEMORY;
+  }
+
+  r = node_new_callout(np, ONIG_CALLOUT_OF_CONTENTS, num, ONIG_NON_NAME_ID, env);
+  if (r != 0) {
+    xfree(contents);
+    return r;
   }
 
   e->of      = ONIG_CALLOUT_OF_CONTENTS;
