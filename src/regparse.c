@@ -8552,7 +8552,12 @@ prs_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
           *np = node_new_cclass();
           CHECK_NULL_RETURN_MEMERR(*np);
           cc = CCLASS_(*np);
-          add_ctype_to_cc(cc, tok->u.prop.ctype, FALSE, env);
+          r = add_ctype_to_cc(cc, tok->u.prop.ctype, FALSE, env);
+          if (r != 0) {
+            onig_node_free(*np);
+            *np = NULL_NODE;
+            return r;
+          }
           if (tok->u.prop.not != 0) NCCLASS_SET_NOT(cc);
         }
         break;
