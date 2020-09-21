@@ -161,7 +161,10 @@ time_compare(int n, char* ps[], char* s, char* end)
   for (i = 0; i < n; i++) {
     fisher_yates_shuffle(n, ps, cps);
     r = time_test(repeat, n, cps, s, end, &t_set, &t_reg);
-    if (r != 0) return ;
+    if (r != 0) {
+      free(cps);
+      return ;
+    }
     total_set += t_set;
     total_reg += t_reg;
   }
