@@ -237,6 +237,7 @@ xx(int line_no, int n, char* ps[], char* s, int from, int to, int mem, int not, 
       if (region == 0) {
         fprintf(stderr, "ERROR: %d: can't get region.\n", line_no);
         nerror++;
+        onig_regset_free(set);
         return ;
       }
 
