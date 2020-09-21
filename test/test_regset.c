@@ -292,7 +292,7 @@ n(int line_no, int n, char* ps[], char* s)
 static int
 get_all_content_of_file(char* path, char** rs, char** rend)
 {
-  size_t len;
+  ssize_t len;
   size_t n;
   char* line;
   FILE* fp;
