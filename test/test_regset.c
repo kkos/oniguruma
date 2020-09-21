@@ -97,6 +97,7 @@ time_test(int repeat, int n, char* ps[], char* s, char* end, double* rt_set, dou
                            ONIG_REGSET_POSITION_LEAD, ONIG_OPTION_NONE, &match_pos);
     if (r < 0) {
       fprintf(stderr, "FAIL onig_regset_search(POSITION_LEAD): %d\n", r);
+      onig_regset_free(set);
       return r;
     }
   }
