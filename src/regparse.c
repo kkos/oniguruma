@@ -3880,13 +3880,17 @@ not_code_range_buf(OnigEncoding enc, BBuf* bbuf, BBuf** pbuf)
     to   = data[i*2+1];
     if (pre <= from - 1) {
       r = add_code_range_to_buf(pbuf, pre, from - 1);
-      if (r != 0) return r;
+      if (r != 0) {
+        bbuf_free(*pbuf);
+        return r;
+      }
     }
     if (to == ~((OnigCodePoint )0)) break;
     pre = to + 1;
   }
   if (to < ~((OnigCodePoint )0)) {
     r = add_code_range_to_buf(pbuf, to + 1, ~((OnigCodePoint )0));
+    if (r != 0) bbuf_free(*pbuf);
   }
   return r;
 }
