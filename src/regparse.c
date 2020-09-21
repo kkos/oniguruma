@@ -290,7 +290,7 @@ bbuf_clone(BBuf** rto, BBuf* from)
   CHECK_NULL_RETURN_MEMERR(to);
   r = BB_INIT(to, from->alloc);
   if (r != 0) {
-    xfree(to->p);
+    bbuf_free(to);
     *rto = 0;
     return r;
   }
