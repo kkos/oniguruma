@@ -6741,6 +6741,7 @@ prs_cc(Node** np, PToken* tok, UChar** src, UChar* end, ScanEnv* env)
           p = psave;
           for (i = 1; i < len; i++) {
             r = fetch_token_cc(tok, &p, end, env, CS_COMPLETE);
+            if (r < 0) goto err;
           }
           fetched = 0;
         }
