@@ -7478,13 +7478,13 @@ prs_callout_of_name(Node** np, int cterm, UChar** src, UChar* end, ScanEnv* env)
     if (r != ONIG_NORMAL) goto err_clear;
   }
 
-  r = node_new_callout(&node, ONIG_CALLOUT_OF_NAME, num, name_id, env);
-  if (r != ONIG_NORMAL) goto err_clear;
-
   e = onig_reg_callout_list_at(env->reg, num);
   if (IS_NULL(e)) {
     r = ONIGERR_MEMORY; goto err_clear;
   }
+
+  r = node_new_callout(&node, ONIG_CALLOUT_OF_NAME, num, name_id, env);
+  if (r != ONIG_NORMAL) goto err_clear;
 
   e->of         = ONIG_CALLOUT_OF_NAME;
   e->in         = in;
