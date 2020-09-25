@@ -76,6 +76,7 @@
 #define USE_QUANT_PEEK_NEXT
 #define USE_ST_LIBRARY
 #define USE_TIMEOFDAY
+#define USE_STRICT_POINTER_ADDRESS
 
 #define USE_WORD_BEGIN_END   /* "\<", "\>" */
 #define USE_CAPTURE_HISTORY
