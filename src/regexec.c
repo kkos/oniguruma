@@ -4856,7 +4856,7 @@ slow_search_backward(OnigEncoding enc, UChar* target, UChar* target_end,
   else
     s = ONIGENC_LEFT_ADJUST_CHAR_HEAD(enc, adjust_text, s);
 
-  while (s >= text) {
+  while (PTR_GE(s, text)) {
     if (*s == *target) {
       p = s + 1;
       t = target + 1;
@@ -4996,7 +4996,7 @@ map_search_backward(OnigEncoding enc, UChar map[],
 {
   const UChar *s = text_start;
 
-  while (s >= text) {
+  while (PTR_GE(s, text)) {
     if (map[*s]) return (UChar* )s;
 
     s = onigenc_get_prev_char_head(enc, adjust_text, s);
@@ -5604,11 +5604,11 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
           if (s > high)
             s = high;
 
-          while (s >= low) {
+          while (PTR_GE(s, low)) {
             MATCH_AND_RETURN_CHECK(orig_start);
             s = onigenc_get_prev_char_head(reg->enc, str, s);
           }
-        } while (s >= range);
+        } while (PTR_GE(s, range));
         goto mismatch;
       }
       else { /* check only. */
@@ -5622,7 +5622,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
     do {
       MATCH_AND_RETURN_CHECK(orig_start);
       s = onigenc_get_prev_char_head(reg->enc, str, s);
-    } while (s >= range);
+    } while (PTR_GE(s, range));
   }
 
  mismatch:

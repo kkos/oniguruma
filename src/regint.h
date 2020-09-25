@@ -77,6 +77,7 @@
 #define USE_ST_LIBRARY
 #define USE_TIMEOFDAY
 #define USE_STRICT_POINTER_ADDRESS
+#define USE_STRICT_POINTER_COMPARISON
 
 #define USE_WORD_BEGIN_END   /* "\<", "\>" */
 #define USE_CAPTURE_HISTORY
@@ -186,6 +187,12 @@
 #define CHECK_NULL_RETURN(p)          if (IS_NULL(p)) return NULL
 #define CHECK_NULL_RETURN_MEMERR(p)   if (IS_NULL(p)) return ONIGERR_MEMORY
 #define NULL_UCHARP                   ((UChar* )0)
+
+#ifdef USE_STRICT_POINTER_COMPARISON
+#define PTR_GE(p,q)   ((p) != NULL && (p) >= (q))
+#else
+#define PTR_GE(p,q)   (p) >= (q)
+#endif
 
 #ifndef ONIG_INT_MAX
 #define ONIG_INT_MAX    INT_MAX
