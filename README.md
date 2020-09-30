@@ -168,7 +168,15 @@ License
 Install
 -------
 
-### Case 1: Unix and Cygwin platform
+### Case 1: Linux distribution packages
+
+   * Fedora:         `dnf install oniguruma`
+   * RHEL/CentOS:    `yum install oniguruma`
+   * Debian/Ubuntu:  `apt install libonig5`
+   * Arch:           `pacman -S oniguruma`
+   * openSUSE:       `zypper install oniguruma`
+
+### Case 2: Manual compilation on Linux, Unix, and Cygwin platform
 
    1. autoreconf -vfi   (* case: configure script is not found.)
 
@@ -189,7 +197,7 @@ Install
 
 
 
-### Case 2: Windows 64/32bit platform (Visual Studio)
+### Case 3: Windows 64/32bit platform (Visual Studio)
 
    Execute make_win.bat
 
