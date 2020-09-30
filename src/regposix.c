@@ -33,6 +33,16 @@
 
 #include "onigposix.h"
 
+#undef regex_t
+#undef regcomp
+#undef regexec
+#undef regfree
+#undef regerror
+#undef reg_set_encoding
+#undef reg_name_to_group_numbers
+#undef reg_foreach_name
+#undef reg_number_of_names
+
 #define ONIG_C(reg)    ((onig_regex_t* )((reg)->onig))
 #define PONIG_C(reg)   ((onig_regex_t** )(&(reg)->onig))
 
@@ -145,7 +155,7 @@ onig2posix_error_code(int code)
 }
 
 extern int
-regcomp(regex_t* reg, const char* pattern, int posix_options)
+onig_posix_regcomp(onig_posix_regex_t* reg, const char* pattern, int posix_options)
 {
   int r, len;
   OnigSyntaxType* syntax = OnigDefaultSyntax;
@@ -179,8 +189,8 @@ regcomp(regex_t* reg, const char* pattern, int posix_options)
 }
 
 extern int
-regexec(regex_t* reg, const char* str, size_t nmatch,
-        regmatch_t pmatch[], int posix_options)
+onig_posix_regexec(onig_posix_regex_t* reg, const char* str, size_t nmatch,
+                   regmatch_t pmatch[], int posix_options)
 {
   int r, i, len;
   UChar* end;
@@ -237,7 +247,7 @@ regexec(regex_t* reg, const char* str, size_t nmatch,
 }
 
 extern void
-regfree(regex_t* reg)
+onig_posix_regfree(onig_posix_regex_t* reg)
 {
   onig_free(ONIG_C(reg));
   reg->onig = (void* )0;
@@ -245,7 +255,7 @@ regfree(regex_t* reg)
 
 
 extern void
-reg_set_encoding(int mb_code)
+onig_posix_reg_set_encoding(int mb_code)
 {
   OnigEncoding enc;
 
@@ -280,15 +290,15 @@ reg_set_encoding(int mb_code)
 }
 
 extern int
-reg_name_to_group_numbers(regex_t* reg,
+onig_posix_reg_name_to_group_numbers(onig_posix_regex_t* reg,
   const unsigned char* name, const unsigned char* name_end, int** nums)
 {
   return onig_name_to_group_numbers(ONIG_C(reg), name, name_end, nums);
 }
 
 typedef struct {
-  int (*func)(const unsigned char*, const unsigned char*,int,int*,regex_t*,void*);
-  regex_t* reg;
+  int (*func)(const unsigned char*, const unsigned char*,int,int*,onig_posix_regex_t*,void*);
+  onig_posix_regex_t* reg;
   void* arg;
 } i_wrap;
 
@@ -302,8 +312,8 @@ i_wrapper(const UChar* name, const UChar* name_end, int ng, int* gs,
 }
 
 extern int
-reg_foreach_name(regex_t* reg,
- int (*func)(const unsigned char*, const unsigned char*,int,int*,regex_t*,void*),
+onig_posix_reg_foreach_name(onig_posix_regex_t* reg,
+ int (*func)(const unsigned char*, const unsigned char*,int,int*,onig_posix_regex_t*,void*),
  void* arg)
 {
   i_wrap warg;
@@ -316,7 +326,7 @@ reg_foreach_name(regex_t* reg,
 }
 
 extern int
-reg_number_of_names(regex_t* reg)
+onig_posix_reg_number_of_names(onig_posix_regex_t* reg)
 {
   return onig_number_of_names(ONIG_C(reg));
 }

@@ -37,6 +37,16 @@
 #include "config.h"
 #include "onigposix.h"
 
+#undef regex_t
+#undef regcomp
+#undef regexec
+#undef regfree
+#undef regerror
+#undef reg_set_encoding
+#undef reg_name_to_group_numbers
+#undef reg_foreach_name
+#undef reg_number_of_names
+
 #ifndef ONIG_NO_STANDARD_C_HEADERS
 #include <string.h>
 #include <stdio.h>
@@ -92,10 +102,9 @@ static char* ESTRING[] = {
 };
 
 
-
 extern size_t
-regerror(int posix_ecode, const regex_t* reg ARG_UNUSED, char* buf,
-         size_t size)
+onig_posix_regerror(int posix_ecode, const onig_posix_regex_t* reg ARG_UNUSED,
+                    char* buf, size_t size)
 {
   char* s;
   char tbuf[35];
