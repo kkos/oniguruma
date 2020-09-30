@@ -330,3 +330,48 @@ onig_posix_reg_number_of_names(onig_posix_regex_t* reg)
 {
   return onig_number_of_names(ONIG_C(reg));
 }
+
+
+#ifdef USE_BINARY_COMPATIBLE_POSIX_API
+
+extern int
+regcomp(onig_posix_regex_t* reg, const char* pattern, int posix_options)
+{
+  return onig_posix_regcomp(reg, pattern, posix_options);
+}
+
+extern int
+regexec(onig_posix_regex_t* reg, const char* str, size_t nmatch,
+        regmatch_t pmatch[], int posix_options)
+{
+  return onig_posix_regexec(reg, str, nmatch, pmatch, posix_options);
+}
+
+extern void
+regfree(onig_posix_regex_t* reg)
+{
+  onig_posix_regfree(reg);
+}
+
+extern void
+reg_set_encoding(int mb_code)
+{
+  onig_posix_reg_set_encoding(mb_code);
+}
+
+extern int
+reg_name_to_group_numbers(onig_posix_regex_t* reg,
+  const unsigned char* name, const unsigned char* name_end, int** nums)
+{
+  return onig_posix_reg_name_to_group_numbers(reg, name, name_end, nums);
+}
+
+extern int
+reg_foreach_name(onig_posix_regex_t* reg,
+  int (*func)(const unsigned char*, const unsigned char*,int,int*,onig_posix_regex_t*,void*),
+  void* arg)
+{
+  return onig_posix_reg_foreach_name(reg, func, arg);
+}
+
+#endif

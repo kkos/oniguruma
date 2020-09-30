@@ -27,6 +27,20 @@ case "${enableval}" in
  *)   AC_MSG_ERROR(bad value for --enable-posix-api) ;;
 esac],
 enable_posix_api=no)
+
+dnl check for Binary compatible POSIX API
+AC_ARG_ENABLE([binary-compatible-posix-api],
+  [AS_HELP_STRING([--enable-binary-compatible-posix-api],
+    [turn on to Binary compatible POSIX API [default=no]])],
+[\
+case "${enableval}" in
+ yes) enable_binary_compatible_posix_api=yes; enable_posix_api=yes ;;
+ no)  enable_binary_compatible_posix_api=no ;;
+ *)   AC_MSG_ERROR(bad value for --enable-binary-compatible-posix-api) ;;
+esac],
+enable_binary_compatible_posix_api=no)
+
+AM_CONDITIONAL(ENABLE_BINARY_COMPATIBLE_POSIX_API, test x"${enable_binary_compatible_posix_api}" = xyes)
 AM_CONDITIONAL(ENABLE_POSIX_API, test x"${enable_posix_api}" = xyes)
 
 

@@ -130,3 +130,14 @@ onig_posix_regerror(int posix_ecode, const onig_posix_regex_t* reg ARG_UNUSED,
   }
   return len;
 }
+
+#ifdef USE_BINARY_COMPATIBLE_POSIX_API
+
+extern size_t
+regerror(int posix_ecode, const onig_posix_regex_t* reg ARG_UNUSED,
+         char* buf, size_t size)
+{
+  return onig_posix_regerror(posix_ecode, reg, buf, size);
+}
+
+#endif

@@ -16,6 +16,10 @@ else
 posix_sources =
 endif
 
+if ENABLE_BINARY_COMPATIBLE_POSIX_API
+AM_CFLAGS += -DUSE_BINARY_COMPATIBLE_POSIX_API
+endif
+
 
 lib_LTLIBRARIES = $(libname)
 
