@@ -38,6 +38,8 @@
 #include "onigposix.h"
 
 #undef regex_t
+#undef regmatch_t
+#undef regoff_t
 #undef regcomp
 #undef regexec
 #undef regfree

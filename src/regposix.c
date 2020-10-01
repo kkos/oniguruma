@@ -34,6 +34,8 @@
 #include "onigposix.h"
 
 #undef regex_t
+#undef regmatch_t
+#undef regoff_t
 #undef regcomp
 #undef regexec
 #undef regfree
@@ -190,11 +192,11 @@ onig_posix_regcomp(onig_posix_regex_t* reg, const char* pattern, int posix_optio
 
 extern int
 onig_posix_regexec(onig_posix_regex_t* reg, const char* str, size_t nmatch,
-                   regmatch_t pmatch[], int posix_options)
+                   onig_posix_regmatch_t pmatch[], int posix_options)
 {
   int r, i, len;
   UChar* end;
-  regmatch_t* pm;
+  onig_posix_regmatch_t* pm;
   OnigOptionType options;
 
   options = ONIG_OPTION_POSIX_REGION;
@@ -202,11 +204,11 @@ onig_posix_regexec(onig_posix_regex_t* reg, const char* str, size_t nmatch,
   if ((posix_options & REG_NOTEOL) != 0) options |= ONIG_OPTION_NOTEOL;
 
   if (nmatch == 0 || (reg->comp_options & REG_NOSUB) != 0) {
-    pm = (regmatch_t* )NULL;
+    pm = (onig_posix_regmatch_t* )NULL;
     nmatch = 0;
   }
   else if ((int )nmatch < ONIG_C(reg)->num_mem + 1) {
-    pm = (regmatch_t* )xmalloc(sizeof(regmatch_t)
+    pm = (onig_posix_regmatch_t* )xmalloc(sizeof(onig_posix_regmatch_t)
                                * (ONIG_C(reg)->num_mem + 1));
     if (pm == NULL)
       return REG_ESPACE;
@@ -223,7 +225,7 @@ onig_posix_regexec(onig_posix_regex_t* reg, const char* str, size_t nmatch,
   if (r >= 0) {
     r = 0; /* Match */
     if (pm != pmatch && pm != NULL) {
-      xmemcpy(pmatch, pm, sizeof(regmatch_t) * nmatch);
+      xmemcpy(pmatch, pm, sizeof(onig_posix_regmatch_t) * nmatch);
     }
   }
   else if (r == ONIG_MISMATCH) {
@@ -342,7 +344,7 @@ regcomp(onig_posix_regex_t* reg, const char* pattern, int posix_options)
 
 extern int
 regexec(onig_posix_regex_t* reg, const char* str, size_t nmatch,
-        regmatch_t pmatch[], int posix_options)
+        onig_posix_regmatch_t pmatch[], int posix_options)
 {
   return onig_posix_regexec(reg, str, nmatch, pmatch, posix_options);
 }

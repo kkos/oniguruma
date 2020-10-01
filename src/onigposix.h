@@ -74,12 +74,12 @@ extern "C" {
 #define REG_POSIX_ENCODING_UTF16_LE  5
 
 
-typedef int regoff_t;
+typedef int onig_posix_regoff_t;
 
 typedef struct {
-  regoff_t  rm_so;
-  regoff_t  rm_eo;
-} regmatch_t;
+  onig_posix_regoff_t  rm_so;
+  onig_posix_regoff_t  rm_eo;
+} onig_posix_regmatch_t;
 
 /* POSIX regex_t */
 typedef struct {
@@ -161,7 +161,7 @@ ONIG_EXTERN int onig_end P_((void));
 
 
 ONIG_EXTERN int    onig_posix_regcomp P_((onig_posix_regex_t* reg, const char* pat, int options));
-ONIG_EXTERN int    onig_posix_regexec P_((onig_posix_regex_t* reg, const char* str, size_t nmatch, regmatch_t* matches, int options));
+ONIG_EXTERN int    onig_posix_regexec P_((onig_posix_regex_t* reg, const char* str, size_t nmatch, onig_posix_regmatch_t* matches, int options));
 ONIG_EXTERN void   onig_posix_regfree P_((onig_posix_regex_t* reg));
 ONIG_EXTERN size_t onig_posix_regerror P_((int code, const onig_posix_regex_t* reg, char* buf, size_t size));
 
@@ -173,7 +173,9 @@ ONIG_EXTERN int  onig_posix_reg_number_of_names P_((onig_posix_regex_t* reg));
 
 
 /* aliases */
-#define regex_t onig_posix_regex_t
+#define regex_t    onig_posix_regex_t
+#define regmatch_t onig_posix_regmatch_t
+#define regoff_t   onig_posix_regoff_t
 
 #define regcomp  onig_posix_regcomp
 #define regexec  onig_posix_regexec
