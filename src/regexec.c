@@ -5501,7 +5501,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
   s = (UChar* )start;
   if (range > start) {   /* forward search */
     if (reg->optimize != OPTIMIZE_NONE) {
-      UChar *sch_range, *low, *high, *low_prev;
+      UChar *sch_range, *low, *high;
 
       if (reg->dist_max != 0) {
         if (reg->dist_max == INFINITE_LEN)
@@ -5523,7 +5523,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
       if (reg->dist_max != INFINITE_LEN) {
         do {
           if (! forward_search(reg, str, end, s, sch_range, &low, &high,
-                               &low_prev)) goto mismatch;
+                               NULL)) goto mismatch;
           if (s < low) {
             s    = low;
           }
