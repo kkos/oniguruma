@@ -8,6 +8,7 @@ set(PACKAGE_VERSION ${PROJECT_VERSION})
 
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(ENABLE_POSIX_API  "Include POSIX API" OFF)
+option(ENABLE_BINARY_COMPATIBLE_POSIX_API  "Include Binary compatible POSIX API" OFF)
 if(MSVC)
   option(MSVC_STATIC_RUNTIME "Build with static runtime" OFF)
 endif()
@@ -56,10 +57,14 @@ set(_SRCS src/regint.h src/regparse.h src/regenc.h src/st.h
 
 set(_INST_HEADERS src/oniguruma.h src/oniggnu.h)
 
-if(ENABLE_POSIX_API)
+if(ENABLE_POSIX_API OR ENABLE_BINARY_COMPATIBLE_POSIX_API)
   set(_SRCS ${_SRCS} src/regposix.c src/regposerr.c)
   set(_INST_HEADERS ${_INST_HEADERS} src/onigposix.h)
   add_definitions("-DUSE_POSIX_API")
+endif()
+
+if(ENABLE_BINARY_COMPATIBLE_POSIX_API)
+  add_definitions("-DUSE_BINARY_COMPATIBLE_POSIX_API")
 endif()
 
 add_library(onig ${_SRCS})
