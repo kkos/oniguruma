@@ -54,7 +54,7 @@
   (MEM_STATUS_AT((reg)->push_mem_end, (i)) != 0 ? \
    STACK_AT(mem_end_stk[i])->u.mem.pstr : (UChar* )((void* )(mem_end_stk[i])))
 
-static int forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start, UChar* range, UChar** low, UChar** high, UChar** low_prev);
+static int forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start, UChar* range, UChar** low, UChar** high);
 
 static int
 search_in_range(regex_t* reg, const UChar* str, const UChar* end, const UChar* start, const UChar* range, /* match range */ const UChar* data_range, /* subject string range */ OnigRegion* region, OnigOptionType option, OnigMatchParam* mp);
@@ -4425,7 +4425,7 @@ regset_search_body_position_lead(OnigRegSet* set,
         else
           sch_range = (UChar* )end;
 
-        if (forward_search(reg, str, end, s, sch_range, &low, &high, NULL)) {
+        if (forward_search(reg, str, end, s, sch_range, &low, &high)) {
           sr[i].state = SRS_LOW_HIGH;
           sr[i].low  = low;
           sr[i].high = high;
@@ -4434,8 +4434,7 @@ regset_search_body_position_lead(OnigRegSet* set,
       }
       else {
         sch_range = (UChar* )end;
-        if (forward_search(reg, str, end, s, sch_range,
-                           &low, &high, (UChar** )NULL)) {
+        if (forward_search(reg, str, end, s, sch_range, &low, &high)) {
           goto total_active;
         }
       }
@@ -4460,7 +4459,7 @@ regset_search_body_position_lead(OnigRegSet* set,
         if (s <  sr[i].low) continue;
         if (s >= sr[i].high) {
           if (forward_search(set->rs[i].reg, str, end, s, sr[i].sch_range,
-                             &low, &high, NULL) != 0) {
+                             &low, &high) != 0) {
             sr[i].low      = low;
             sr[i].high     = high;
             if (s < low) continue;
@@ -4503,7 +4502,7 @@ regset_search_body_position_lead(OnigRegSet* set,
           if (s <  sr[i].low) continue;
           if (s >= sr[i].high) {
             if (forward_search(set->rs[i].reg, str, end, s, sr[i].sch_range,
-                               &low, &high, NULL) != 0) {
+                               &low, &high) != 0) {
               sr[i].low      = low;
               sr[i].high     = high;
               if (s < low) continue;
@@ -5064,7 +5063,7 @@ onig_match_with_param(regex_t* reg, const UChar* str, const UChar* end,
 
 static int
 forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
-               UChar* range, UChar** low, UChar** high, UChar** low_prev)
+               UChar* range, UChar** low, UChar** high)
 {
   UChar *p, *pprev = (UChar* )NULL;
 
@@ -5148,33 +5147,19 @@ forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
     }
 
     if (reg->dist_max == 0) {
-      *low = p;
-      if (low_prev) {
-        if (*low > start)
-          *low_prev = onigenc_get_prev_char_head(reg->enc, start, p);
-        else
-          *low_prev = onigenc_get_prev_char_head(reg->enc,
-                                                 (pprev ? pprev : str), p);
-      }
+      *low  = p;
       *high = p;
     }
     else {
       if (reg->dist_max != INFINITE_LEN) {
         if (p - str < reg->dist_max) {
           *low = (UChar* )str;
-          if (low_prev)
-            *low_prev = onigenc_get_prev_char_head(reg->enc, str, *low);
         }
         else {
           *low = p - reg->dist_max;
           if (*low > start) {
             *low = onigenc_get_right_adjust_char_head_with_prev(reg->enc, start,
-                                                 *low, (const UChar** )low_prev);
-          }
-          else {
-            if (low_prev)
-              *low_prev = onigenc_get_prev_char_head(reg->enc,
-                                                     (pprev ? pprev : str), *low);
+                                                 *low, (const UChar** )NULL);
           }
         }
       }
@@ -5522,8 +5507,8 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
 
       if (reg->dist_max != INFINITE_LEN) {
         do {
-          if (! forward_search(reg, str, end, s, sch_range, &low, &high,
-                               NULL)) goto mismatch;
+          if (! forward_search(reg, str, end, s, sch_range, &low, &high))
+            goto mismatch;
           if (s < low) {
             s    = low;
           }
@@ -5535,8 +5520,8 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
         goto mismatch;
       }
       else { /* check only. */
-        if (! forward_search(reg, str, end, s, sch_range, &low, &high,
-                             (UChar** )NULL)) goto mismatch;
+        if (! forward_search(reg, str, end, s, sch_range, &low, &high))
+          goto mismatch;
 
         if ((reg->anchor & ANCR_ANYCHAR_INF) != 0 &&
             (reg->anchor & (ANCR_LOOK_BEHIND | ANCR_PREC_READ_NOT)) == 0) {
