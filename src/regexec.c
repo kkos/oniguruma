@@ -5158,8 +5158,7 @@ forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
         else {
           *low = p - reg->dist_max;
           if (*low > start) {
-            *low = onigenc_get_right_adjust_char_head_with_prev(reg->enc, start,
-                                                 *low, (const UChar** )NULL);
+            *low = onigenc_get_right_adjust_char_head(reg->enc, start, *low);
           }
         }
       }
