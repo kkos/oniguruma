@@ -35,6 +35,7 @@ Master branch
 * NEW API: ONIG_OPTION_NOT_BEGIN_STRING / NOT_END_STRING / NOT_BEGIN_POSITION
 * Fixed behavior of ONIG_OPTION_NOTBOL / NOTEOL
 * Fixed many problems found by OSS-Fuzz
+* Fixed CVE-2020-26159
 
 
 Version 6.9.5 revised 1
