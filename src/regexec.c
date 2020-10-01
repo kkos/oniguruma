@@ -4401,7 +4401,7 @@ regset_search_body_position_lead(OnigRegSet* set,
 {
   int r, n, i;
   UChar *s;
-  UChar *low, *high, *low_prev;
+  UChar *low, *high;
   UChar* sch_range;
   regex_t* reg;
   OnigEncoding enc;
@@ -4425,7 +4425,7 @@ regset_search_body_position_lead(OnigRegSet* set,
         else
           sch_range = (UChar* )end;
 
-        if (forward_search(reg, str, end, s, sch_range, &low, &high, &low_prev)) {
+        if (forward_search(reg, str, end, s, sch_range, &low, &high, NULL)) {
           sr[i].state = SRS_LOW_HIGH;
           sr[i].low  = low;
           sr[i].high = high;
@@ -4460,7 +4460,7 @@ regset_search_body_position_lead(OnigRegSet* set,
         if (s <  sr[i].low) continue;
         if (s >= sr[i].high) {
           if (forward_search(set->rs[i].reg, str, end, s, sr[i].sch_range,
-                             &low, &high, &low_prev) != 0) {
+                             &low, &high, NULL) != 0) {
             sr[i].low      = low;
             sr[i].high     = high;
             if (s < low) continue;
@@ -4503,10 +4503,9 @@ regset_search_body_position_lead(OnigRegSet* set,
           if (s <  sr[i].low) continue;
           if (s >= sr[i].high) {
             if (forward_search(set->rs[i].reg, str, end, s, sr[i].sch_range,
-                               &low, &high, &low_prev) != 0) {
+                               &low, &high, NULL) != 0) {
               sr[i].low      = low;
               sr[i].high     = high;
-              /* sr[i].low_prev = low_prev; */
               if (s < low) continue;
             }
             else {
