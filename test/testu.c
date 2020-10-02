@@ -29,10 +29,6 @@ static OnigEncoding ENC;
 
 static void uconv(char* from, char* to, int len)
 {
-#ifdef __TRUSTINSOFT_ANALYZER__
-  if (nall++ % TIS_TEST_CHOOSE_MAX != TIS_TEST_CHOOSE_CURRENT) return;
-#endif
-
   int i;
   unsigned char c;
   char *q;
@@ -66,6 +62,10 @@ static void uconv(char* from, char* to, int len)
 
 static void xx(char* pattern, char* str, int from, int to, int mem, int not)
 {
+#ifdef __TRUSTINSOFT_ANALYZER__
+  if (nall++ % TIS_TEST_CHOOSE_MAX != TIS_TEST_CHOOSE_CURRENT) return;
+#endif
+
   int r;
   char cpat[4000], cstr[4000];
 
