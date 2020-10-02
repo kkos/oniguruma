@@ -1100,7 +1100,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_MASK_TO_VOID_TARGET    0x100e
 #define STK_MASK_MEM_END_OR_MARK   0x8000  /* MEM_END or MEM_END_MARK */
 
-typedef intptr_t StackIndex;
+typedef ptrdiff_t StackIndex;
 
 #define INVALID_STACK_INDEX   ((StackIndex )-1)
 
