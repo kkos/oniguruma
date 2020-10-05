@@ -1060,6 +1060,9 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 
 
 /** stack **/
+static char TIS_INVALID_STACK;
+#define INVALID_STACK_INDEX   ((intptr_t)(&TIS_INVALID_STACK))
+
 #define STK_ALT_FLAG               0x0001
 
 /* stack type */
@@ -1101,8 +1104,6 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STK_MASK_MEM_END_OR_MARK   0x8000  /* MEM_END or MEM_END_MARK */
 
 typedef ssize_t StackIndex;
-
-#define INVALID_STACK_INDEX   ((StackIndex )-1)
 
 typedef union {
   StackIndex i;
