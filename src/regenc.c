@@ -263,12 +263,12 @@ onigenc_strlen_null(OnigEncoding enc, const UChar* s)
 extern int
 onigenc_str_bytelen_null(OnigEncoding enc, const UChar* s)
 {
-  UChar* start = (UChar* )s;
-  UChar* p = (UChar* )s;
+  const UChar* start = s;
+  const UChar* p = s;
 
   while (1) {
     if (*p == '\0') {
-      UChar* q;
+      const UChar* q;
       int len = ONIGENC_MBC_MINLEN(enc);
 
       if (len == 1) return (int )(p - start);
