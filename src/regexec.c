@@ -4938,15 +4938,22 @@ sunday_quick_search(regex_t* reg, const UChar* target, const UChar* target_end,
   const UChar *s, *t, *p, *end;
   const UChar *tail;
   int map_offset;
-
-  if (target_end - target > text_end - text_range)
-    end = text_end;
-  else
-    end = text_range + (target_end - target);
+  ptrdiff_t target_len;
 
   map_offset = reg->map_offset;
   tail = target_end - 1;
-  s = text + (tail - target);
+  target_len = target_end - target;
+
+  if (target_len > text_end - text_range) {
+    end = text_end;
+    if (target_len > text_end - text)
+      return (UChar* )NULL;
+  }
+  else {
+    end = text_range + target_len;
+  }
+
+  s = text + target_len - 1;
 
 #ifdef USE_STRICT_POINTER_ADDRESS
   if (s < end) {
