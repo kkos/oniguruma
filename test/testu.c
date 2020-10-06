@@ -40,7 +40,7 @@ static void uconv(char* from, char* to, int len)
     if (c == 0) {
       c = (unsigned char )from[i+1];
       if (c < 0x20 || c >= 0x7f || c == 0x5c || c == 0x22) {
-        sprintf(q, "\\%03o", c);
+        sprintf(q, "\\%03o", (unsigned int )c);
         q += 4;
       }
       else {
@@ -49,10 +49,10 @@ static void uconv(char* from, char* to, int len)
       }
     }
     else {
-      sprintf(q, "\\%03o", c);
+      sprintf(q, "\\%03o", (unsigned int )c);
       q += 4;
       c = (unsigned char )from[i+1];
-      sprintf(q, "\\%03o", c);
+      sprintf(q, "\\%03o", (unsigned int )c);
       q += 4;
     }
   }
