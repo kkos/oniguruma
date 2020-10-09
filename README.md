@@ -31,7 +31,7 @@ Supported character encodings:
 
 Version 6.9.6
 -------------
-* In a Unix environment, if you have the POSIX API enabled in an earlier version (disabled by default in 6.9.5) and you need application binary compatibility with the POSIX API, specify "--enable-binary-compatible-posix-api=yes" instead of "--enable-posix-api=yes".  "--enable-posix-api=yes" only supports source-level compatibility for POSIX API since 6.9.6.
+* In a Unix environment, if you have the POSIX API enabled in an earlier version (disabled by default in 6.9.5) and you need application binary compatibility with the POSIX API, specify "--enable-binary-compatible-posix-api=yes" instead of "--enable-posix-api=yes". Starting in 6.9.6, "--enable-posix-api=yes" only supports source-level compatibility for 6.9.5 and earlier about POSIX API.
 
 * NEW: configure option --enable-binary-compatible-posix-api=[yes/no]
 * NEW API: Limiting the maximum number of calls of subexp-call
