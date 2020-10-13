@@ -79,4 +79,20 @@ AC_FUNC_ALLOCA
 
 AC_CONFIG_FILES([Makefile src/Makefile test/Makefile sample/Makefile onig-config])
 AC_CONFIG_COMMANDS([default],[chmod +x onig-config],[])
+
+# for Issue #220
+FIX_TO_LDFLAGS=
+EXPORT_ALL_SYMBOLS=
+case $host_os in
+  cygwin* | mingw* )
+    if test X"$enable_shared" = Xyes; then
+      FIX_TO_LDFLAGS="-no-undefined"
+      EXPORT_ALL_SYMBOLS="-Wl,--export-all-symbols"
+    fi
+    ;;
+esac
+
+EXTRA_LIBONIG_LDFLAGS="$EXTRA_LIBONIG_LDFLAGS $FIX_TO_LDFLAGS"
+AC_SUBST(EXTRA_LIBONIG_LDFLAGS)
+
 AC_OUTPUT

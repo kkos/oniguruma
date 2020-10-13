@@ -50,7 +50,7 @@ libonig_la_SOURCES = regint.h regparse.h regenc.h st.h \
 	gb18030.c koi8_r.c cp1251.c \
 	onig_init.c
 
-libonig_la_LDFLAGS = -version-info $(LTVERSION)
+libonig_la_LDFLAGS = $(EXTRA_LIBONIG_LDFLAGS) -version-info $(LTVERSION)
 
 EXTRA_DIST = koi8.c mktable.c \
 	unicode_fold_data.c unicode_property_data.c \
