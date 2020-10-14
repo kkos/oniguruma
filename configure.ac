@@ -85,7 +85,7 @@ FIX_TO_LDFLAGS=
 case $host_os in
   cygwin* | mingw* )
     if test X"$enable_shared" = Xyes; then
-      FIX_TO_LDFLAGS="-no-undefined"
+      FIX_TO_LDFLAGS="-no-undefined -Wl,--output-def,libonig.def"
     fi
     ;;
 esac
