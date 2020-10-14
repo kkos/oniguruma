@@ -82,12 +82,10 @@ AC_CONFIG_COMMANDS([default],[chmod +x onig-config],[])
 
 # for Issue #220
 FIX_TO_LDFLAGS=
-EXPORT_ALL_SYMBOLS=
 case $host_os in
   cygwin* | mingw* )
     if test X"$enable_shared" = Xyes; then
       FIX_TO_LDFLAGS="-no-undefined"
-      EXPORT_ALL_SYMBOLS="-Wl,--export-all-symbols"
     fi
     ;;
 esac
