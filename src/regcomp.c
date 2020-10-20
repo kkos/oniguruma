@@ -6238,7 +6238,7 @@ concat_opt_exact(OptStr* to, OptStr* add, OnigEncoding enc)
   end = p + add->len;
   for (i = to->len; p < end; ) {
     len = enclen(enc, p);
-    if (i + len >= OPT_EXACT_MAXLEN) {
+    if (i + len > OPT_EXACT_MAXLEN) {
       r = 1; /* 1:full */
       break;
     }
@@ -6264,7 +6264,7 @@ concat_opt_exact_str(OptStr* to, UChar* s, UChar* end, OnigEncoding enc)
 
   for (i = to->len, p = s; p < end && i < OPT_EXACT_MAXLEN; ) {
     len = enclen(enc, p);
-    if (i + len >= OPT_EXACT_MAXLEN) break;
+    if (i + len > OPT_EXACT_MAXLEN) break;
     for (j = 0; j < len && p < end; j++)
       to->s[i++] = *p++;
   }
