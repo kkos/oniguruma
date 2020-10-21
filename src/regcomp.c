@@ -6242,8 +6242,10 @@ concat_opt_exact(OptStr* to, OptStr* add, OnigEncoding enc)
       r = 1; /* 1:full */
       break;
     }
-    for (j = 0; j < len && p < end; j++)
+    for (j = 0; j < len && p < end; j++) {
+      /* coverity[overrun-local] */
       to->s[i++] = *p++;
+    }
   }
 
   to->len = i;
@@ -6265,8 +6267,10 @@ concat_opt_exact_str(OptStr* to, UChar* s, UChar* end, OnigEncoding enc)
   for (i = to->len, p = s; p < end && i < OPT_EXACT_MAXLEN; ) {
     len = enclen(enc, p);
     if (i + len > OPT_EXACT_MAXLEN) break;
-    for (j = 0; j < len && p < end; j++)
+    for (j = 0; j < len && p < end; j++) {
+      /* coverity[overrun-local] */
       to->s[i++] = *p++;
+    }
   }
 
   to->len = i;
