@@ -1,5 +1,7 @@
 History
 
+2020/10/27: fix Issue 26675 in oss-fuzz: Timeout
+
 2020/10/21: Release Candidate 4 for Version 6.9.6
 
 2020/10/20: #221: revert cbe9f8b and 8155473: Out-of-bounds write in #207 (Issues found with Coverity) is fake
