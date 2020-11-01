@@ -131,7 +131,7 @@ search(regex_t* reg, unsigned char* str, unsigned char* end, OnigOptionType opti
 
   len = (size_t )(end - str);
   if (len < BASE_LENGTH) {
-    if (sl >= 3)
+    if (sl >= 2)
       retry_limit = (unsigned int )SLOW_RETRY_LIMIT;
     else
       retry_limit = (unsigned int )BASE_RETRY_LIMIT;
