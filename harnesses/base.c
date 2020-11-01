@@ -139,6 +139,10 @@ search(regex_t* reg, unsigned char* str, unsigned char* end, OnigOptionType opti
   else
     retry_limit = (unsigned int )(BASE_RETRY_LIMIT * BASE_LENGTH / len);
 
+#ifdef STANDALONE
+  fprintf(stdout, "retry limit: %u\n", retry_limit);
+#endif
+
   onig_set_retry_limit_in_search(retry_limit);
   onig_set_match_stack_limit_size(MATCH_STACK_LIMIT);
   onig_set_subexp_call_limit_in_search(SUBEXP_CALL_LIMIT);
