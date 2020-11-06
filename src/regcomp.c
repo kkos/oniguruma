@@ -7706,6 +7706,7 @@ onig_is_code_in_cc(OnigEncoding enc, OnigCodePoint code, CClassNode* cc)
 typedef struct {
   int prec_read;
   int look_behind;
+  int backref;
   int backref_with_level;
   int call;
 } SlowElementCount;
@@ -7771,6 +7772,8 @@ node_detect_can_be_slow(Node* node, SlowElementCount* ct)
   case NODE_BACKREF:
     if (NODE_IS_NEST_LEVEL(node))
       ct->backref_with_level++;
+    else
+      ct->backref++;
     break;
 #endif
 
@@ -7812,13 +7815,14 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
   if (r == 0) {
     count.prec_read          = 0;
     count.look_behind        = 0;
+    count.backref            = 0;
     count.backref_with_level = 0;
     count.call               = 0;
 
     r = node_detect_can_be_slow(root, &count);
     if (r == 0) {
       int n = count.prec_read + count.look_behind
-            + count.backref_with_level + count.call;
+            + count.backref + count.backref_with_level + count.call;
       r = n;
     }
   }
