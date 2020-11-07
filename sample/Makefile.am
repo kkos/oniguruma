@@ -4,7 +4,7 @@ lib_onig = ../src/libonig.la
 LDADD  = $(lib_onig)
 
 AM_CFLAGS   = -Wall
-AM_LDFLAGS  = -L$(prefix)/lib
+AM_LDFLAGS  = -L$(libdir)
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
 if ENABLE_POSIX_API

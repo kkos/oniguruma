@@ -1,7 +1,7 @@
 ## Makefile.am for Oniguruma
 lib_onig = ../src/libonig.la
 
-AM_LDFLAGS  = -L$(prefix)/lib
+AM_LDFLAGS  = -L$(libdir)
 AM_CFLAGS = -Wall -Wno-invalid-source-encoding
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
