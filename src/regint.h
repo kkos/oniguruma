@@ -884,6 +884,7 @@ typedef struct {
     } empty_check_start;
     struct {
       MemNumType mem;
+      MemStatusType empty_status_mem;
     } empty_check_end; /* EMPTY_CHECK_END, EMPTY_CHECK_END_MEMST, EMPTY_CHECK_END_MEMST_PUSH */
     struct {
       RelAddrType addr;
