@@ -8946,7 +8946,6 @@ onig_parse_tree(Node** root, const UChar* pattern, const UChar* end,
   reg->num_empty_check    = 0;
   reg->repeat_range_alloc = 0;
   reg->repeat_range       = (RepeatRange* )NULL;
-  reg->empty_status_mem   = 0;
 
   names_clear(reg);
 

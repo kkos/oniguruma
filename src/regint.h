@@ -978,7 +978,6 @@ struct re_pattern_buffer {
   MemStatusType  capture_history;  /* (?@...) flag (1-31) */
   MemStatusType  push_mem_start;   /* need backtrack flag */
   MemStatusType  push_mem_end;     /* need backtrack flag */
-  MemStatusType  empty_status_mem;
   int            stack_pop_level;
   int            repeat_range_alloc;
   RepeatRange*   repeat_range;
