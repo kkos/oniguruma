@@ -1060,7 +1060,7 @@ compile_quant_body_with_empty_check(QuantNode* qn, regex_t* reg, ScanEnv* env)
     if (emptiness == BODY_MAY_BE_EMPTY)
       r = add_op(reg, OP_EMPTY_CHECK_END);
     else if (emptiness == BODY_MAY_BE_EMPTY_MEM) {
-      if (NODE_IS_EMPTY_STATUS_CHECK(qn) != 0) {
+      if (NODE_IS_EMPTY_STATUS_CHECK(qn) != 0 && qn->empty_status_mem != 0) {
         r = add_op(reg, OP_EMPTY_CHECK_END_MEMST);
         if (r != 0) return r;
         COP(reg)->empty_check_end.empty_status_mem = qn->empty_status_mem;
@@ -1069,10 +1069,11 @@ compile_quant_body_with_empty_check(QuantNode* qn, regex_t* reg, ScanEnv* env)
         r = add_op(reg, OP_EMPTY_CHECK_END);
     }
 #ifdef USE_CALL
-    else if (emptiness == BODY_MAY_BE_EMPTY_REC)
+    else if (emptiness == BODY_MAY_BE_EMPTY_REC) {
       r = add_op(reg, OP_EMPTY_CHECK_END_MEMST_PUSH);
       if (r != 0) return r;
       COP(reg)->empty_check_end.empty_status_mem = qn->empty_status_mem;
+    }
 #endif
 
     if (r != 0) return r;
