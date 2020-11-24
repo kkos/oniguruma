@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.9.6   2020/11/19
+鬼車インターフェース Version 6.9.6   2020/11/24
 
 #include <oniguruma.h>
 
@@ -331,9 +331,9 @@
   7 option: 検索時オプション
 
     ONIG_OPTION_NOTBOL              strの先頭を行頭および文字列先頭と看做さない
-    ONIG_OPTION_NOTEOL              endの末尾を行末および文字列終端と看做さない
+    ONIG_OPTION_NOTEOL              endを行末および文字列終端と看做さない
     ONIG_OPTION_NOT_BEGIN_STRING    strの先頭を文字列の先頭と看做さない (\A 失敗)
-    ONIG_OPTION_NOT_END_STRING      endの末尾を文字列終端と看做さない (\z, \Z 失敗)
+    ONIG_OPTION_NOT_END_STRING      endを文字列終端と看做さない (\z, \Z 失敗)
     ONIG_OPTION_NOT_BEGIN_POSITION  startを検索開始位置と看做さない (\G 失敗)
 
 
@@ -367,9 +367,9 @@
   6 option: 検索時オプション
 
     ONIG_OPTION_NOTBOL              strの先頭を行頭および文字列先頭と看做さない
-    ONIG_OPTION_NOTEOL              endの末尾を行末および文字列終端と看做さない
+    ONIG_OPTION_NOTEOL              endを行末および文字列終端と看做さない
     ONIG_OPTION_NOT_BEGIN_STRING    strの先頭を文字列の先頭と看做さない (\A 失敗)
-    ONIG_OPTION_NOT_END_STRING      endの末尾を文字列終端と看做さない (\z, \Z 失敗)
+    ONIG_OPTION_NOT_END_STRING      endを文字列終端と看做さない (\z, \Z 失敗)
     ONIG_OPTION_NOT_BEGIN_POSITION  startを検索開始位置と看做さない (\G 失敗)
 
 
@@ -504,9 +504,9 @@
     ONIG_REGSET_PRIORITY_TO_REGEX_ORDER (最初にマッチした正規表現の結果を返す)
   7 option: 検索時オプション
     ONIG_OPTION_NOTBOL              strの先頭を行頭および文字列先頭と看做さない
-    ONIG_OPTION_NOTEOL              endの末尾を行末および文字列終端と看做さない
+    ONIG_OPTION_NOTEOL              endを行末および文字列終端と看做さない
     ONIG_OPTION_NOT_BEGIN_STRING    strの先頭を文字列の先頭と看做さない (\A 失敗)
-    ONIG_OPTION_NOT_END_STRING      endの末尾を文字列終端と看做さない (\z, \Z 失敗)
+    ONIG_OPTION_NOT_END_STRING      endを文字列終端と看做さない (\z, \Z 失敗)
     ONIG_OPTION_NOT_BEGIN_POSITION  startを検索開始位置と看做さない (\G 失敗)
   8 rmatch_pos: マッチした位置を返すためのアドレス (match_address - str)
 
@@ -537,9 +537,9 @@
     ONIG_REGSET_PRIORITY_TO_REGEX_ORDER (最初にマッチした正規表現の結果を返す)
   7 option: 検索時オプション
     ONIG_OPTION_NOTBOL              strの先頭を行頭および文字列先頭と看做さない
-    ONIG_OPTION_NOTEOL              endの末尾を行末および文字列終端と看做さない
+    ONIG_OPTION_NOTEOL              endを行末および文字列終端と看做さない
     ONIG_OPTION_NOT_BEGIN_STRING    strの先頭を文字列の先頭と看做さない (\A 失敗)
-    ONIG_OPTION_NOT_END_STRING      endの末尾を文字列終端と看做さない (\z, \Z 失敗)
+    ONIG_OPTION_NOT_END_STRING      endを文字列終端と看做さない (\z, \Z 失敗)
     ONIG_OPTION_NOT_BEGIN_POSITION  startを検索開始位置と看做さない (\G 失敗)
   8 mps:    OnigMatchParamオブジェクトの配列
   9 rmatch_pos: マッチした位置を返すためのアドレス (match_address - str)
