@@ -399,8 +399,10 @@ typedef unsigned int        OnigOptionType;
 #define ONIG_OPTION_NOT_BEGIN_STRING     (ONIG_OPTION_TEXT_SEGMENT_WORD << 1)
 #define ONIG_OPTION_NOT_END_STRING       (ONIG_OPTION_NOT_BEGIN_STRING << 1)
 #define ONIG_OPTION_NOT_BEGIN_POSITION   (ONIG_OPTION_NOT_END_STRING << 1)
+/* options (compile time) */
+#define ONIG_OPTION_ASCII_ONLY_IGNORECASE (ONIG_OPTION_NOT_BEGIN_POSITION << 1)
 
-#define ONIG_OPTION_MAXBIT               ONIG_OPTION_NOT_BEGIN_POSITION
+#define ONIG_OPTION_MAXBIT               ONIG_OPTION_ASCII_ONLY_IGNORECASE
 
 #define ONIG_OPTION_ON(options,regopt)      ((options) |= (regopt))
 #define ONIG_OPTION_OFF(options,regopt)     ((options) &= ~(regopt))
