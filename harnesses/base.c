@@ -14,13 +14,14 @@
 
 #define PARSE_DEPTH_LIMIT           8
 #define CALL_MAX_NEST_LEVEL         8
-#define SUBEXP_CALL_LIMIT         500
+#define SUBEXP_CALL_LIMIT        1000
 #define BASE_RETRY_LIMIT        20000
 #define BASE_LENGTH              2048
 #define MATCH_STACK_LIMIT    10000000
 #define MAX_REM_SIZE          1048576
 #define MAX_SLOW_REM_SIZE        1024
 #define SLOW_RETRY_LIMIT         2000
+#define SLOW_SUBEXP_CALL_LIMIT    200
 
 //#define EXEC_PRINT_INTERVAL    500000
 //#define DUMP_DATA_INTERVAL     100000
@@ -145,7 +146,10 @@ search(regex_t* reg, unsigned char* str, unsigned char* end, OnigOptionType opti
 
   onig_set_retry_limit_in_search(retry_limit);
   onig_set_match_stack_limit_size(MATCH_STACK_LIMIT);
-  onig_set_subexp_call_limit_in_search(SUBEXP_CALL_LIMIT);
+  if (sl >= 2)
+    onig_set_subexp_call_limit_in_search(SLOW_SUBEXP_CALL_LIMIT);
+  else
+    onig_set_subexp_call_limit_in_search(SUBEXP_CALL_LIMIT);
 
   if (backward != 0) {
     start = end;
