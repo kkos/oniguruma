@@ -2212,7 +2212,7 @@ stack_double(int* is_alloca, char** arg_alloc_base,
   StackType* klow = stk;\
   while (1) {\
     klow--;\
-    STACK_BASE_CHECK(k, "STACK_EMPTY_CHECK_MEM_REC");\
+    STACK_BASE_CHECK(klow, "STACK_EMPTY_CHECK_MEM_REC");\
     if (klow->type == STK_EMPTY_CHECK_START) {\
       if (klow->zid == (sid)) {\
         if (level == 0) {\
