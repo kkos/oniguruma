@@ -91,6 +91,7 @@ typedef unsigned int OnigCaseFoldType; /* case fold flag */
 
 ONIG_EXTERN OnigCaseFoldType OnigDefaultCaseFoldFlag;
 
+#define ONIGENC_CASE_FOLD_ASCII_ONLY            (1)
 /* #define ONIGENC_CASE_FOLD_HIRAGANA_KATAKANA  (1<<1) */
 /* #define ONIGENC_CASE_FOLD_KATAKANA_WIDTH     (1<<2) */
 #define ONIGENC_CASE_FOLD_TURKISH_AZERI         (1<<20)
