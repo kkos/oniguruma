@@ -31,6 +31,9 @@
 
 #define OPS_INIT_SIZE  8
 
+#define NODE_IS_REAL_IGNORECASE(node) \
+  (NODE_IS_IGNORECASE(node) && !NODE_STRING_IS_CRUDE(node))
+
 typedef struct {
   OnigLen min;
   OnigLen max;
@@ -768,7 +771,7 @@ node_char_len1(Node* node, regex_t* reg, MinMaxCharLen* ci, ScanEnv* env,
       StrNode* sn = STR_(node);
       UChar *s = sn->s;
 
-      if (NODE_IS_IGNORECASE(node) && ! NODE_STRING_IS_CRUDE(node)) {
+      if (NODE_IS_REAL_IGNORECASE(node)) {
         /* Such a case is possible.
            ex. /(?i)(?<=\1)(a)/
            Backref node refer to capture group, but it doesn't tune yet.
@@ -3291,8 +3294,7 @@ get_tree_head_literal(Node* node, int exact, regex_t* reg)
       if (sn->end <= sn->s)
         break;
 
-      if (exact == 0 ||
-          ! NODE_IS_IGNORECASE(node) || NODE_STRING_IS_CRUDE(node)) {
+      if (exact == 0 || !NODE_IS_REAL_IGNORECASE(node)) {
         n = node;
       }
     }
@@ -3387,7 +3389,7 @@ get_tree_tail_literal(Node* node, Node** rnode, regex_t* reg)
         break;
       }
 
-      if (NODE_IS_IGNORECASE(node) && ! NODE_STRING_IS_CRUDE(node)) {
+      if (NODE_IS_REAL_IGNORECASE(node)) {
         r = GET_VALUE_NONE;
         break;
       }
@@ -5838,7 +5840,7 @@ tune_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     break;
 
   case NODE_STRING:
-    if (NODE_IS_IGNORECASE(node) && ! NODE_STRING_IS_CRUDE(node)) {
+    if (NODE_IS_REAL_IGNORECASE(node)) {
       r = unravel_case_fold_string(node, reg, state);
     }
     break;
