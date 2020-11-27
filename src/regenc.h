@@ -142,6 +142,10 @@ struct PropertyNameCtype {
 #define ENC_GET_SKIP_OFFSET(enc) \
   (((enc)->flag & ENC_FLAG_SKIP_OFFSET_MASK)>>2)
 
+#define CASE_FOLD_IS_ASCII_ONLY(flag) \
+  (((flag) & ONIGENC_CASE_FOLD_ASCII_ONLY) != 0)
+#define CASE_FOLD_IS_NOT_ASCII_ONLY(flag) \
+  (((flag) & ONIGENC_CASE_FOLD_ASCII_ONLY) == 0)
 
 /* for encoding system implementation (internal) */
 extern int onigenc_end(void);
