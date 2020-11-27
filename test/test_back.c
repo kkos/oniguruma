@@ -141,7 +141,7 @@ static void xe(char* pattern, char* str, int error_no, int line_no)
 #define x2(p,s,f,t)    xx2(p,s,f,t, __LINE__)
 #define x3(p,s,f,t,m)  xx3(p,s,f,t,m, __LINE__)
 #define n(p,s)          xn(p,s,   __LINE__)
-#define e(p,s,e)        xe(p,s,e, __LINE__)
+#define e(p,s,en)       xe(p,s,en, __LINE__)
 
 extern int main(int argc, char* argv[])
 {
