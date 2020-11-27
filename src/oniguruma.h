@@ -401,9 +401,9 @@ typedef unsigned int        OnigOptionType;
 #define ONIG_OPTION_NOT_END_STRING       (ONIG_OPTION_NOT_BEGIN_STRING << 1)
 #define ONIG_OPTION_NOT_BEGIN_POSITION   (ONIG_OPTION_NOT_END_STRING << 1)
 /* options (compile time) */
-#define ONIG_OPTION_IGNORECASE_IS_ASCII_ONLY (ONIG_OPTION_NOT_BEGIN_POSITION << 1)
+#define ONIG_OPTION_IGNORECASE_IS_ASCII  (ONIG_OPTION_NOT_BEGIN_POSITION << 1)
 
-#define ONIG_OPTION_MAXBIT               ONIG_OPTION_IGNORECASE_IS_ASCII_ONLY
+#define ONIG_OPTION_MAXBIT               ONIG_OPTION_IGNORECASE_IS_ASCII
 
 #define ONIG_OPTION_ON(options,regopt)      ((options) |= (regopt))
 #define ONIG_OPTION_OFF(options,regopt)     ((options) &= ~(regopt))

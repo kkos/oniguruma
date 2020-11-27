@@ -7522,7 +7522,7 @@ onig_reg_init(regex_t* reg, OnigOptionType option, OnigCaseFoldType case_fold_fl
   else
     option |= syntax->options;
 
-  if ((option & ONIG_OPTION_IGNORECASE_IS_ASCII_ONLY) != 0) {
+  if ((option & ONIG_OPTION_IGNORECASE_IS_ASCII) != 0) {
     case_fold_flag &= ~(INTERNAL_ONIGENC_CASE_FOLD_MULTI_CHAR |
                         ONIGENC_CASE_FOLD_TURKISH_AZERI);
     case_fold_flag |= ONIGENC_CASE_FOLD_ASCII_ONLY;
