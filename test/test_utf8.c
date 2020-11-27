@@ -27,7 +27,7 @@ static FILE* err_file;
 static OnigRegion* region;
 
 static void xx(char* pattern, char* str, int from, int to, int mem, int not,
-               int error_no)
+               int error_no, int line_no)
 {
 #ifdef __TRUSTINSOFT_ANALYZER__
   if (nall++ % TIS_TEST_CHOOSE_MAX != TIS_TEST_CHOOSE_CURRENT) return;
@@ -44,17 +44,17 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not,
 
     if (error_no == 0) {
       onig_error_code_to_str((UChar* )s, r, &einfo);
-      fprintf(err_file, "ERROR: %s  /%s/\n", s, pattern);
+      fprintf(err_file, "ERROR: %s  /%s/  #%d\n", s, pattern, line_no);
       nerror++;
     }
     else {
       if (r == error_no) {
-        fprintf(stdout, "OK(ERROR): /%s/ %d\n", pattern, r);
+        fprintf(stdout, "OK(ERROR): /%s/ %d  #%d\n", pattern, r, line_no);
         nsucc++;
       }
       else {
-        fprintf(stdout, "FAIL(ERROR): /%s/ '%s', %d, %d\n", pattern, str,
-                error_no, r);
+        fprintf(stdout, "FAIL(ERROR): /%s/ '%s', %d, %d  #%d\n", pattern, str,
+                error_no, r, line_no);
         nfail++;
       }
     }
@@ -70,17 +70,18 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not,
 
     if (error_no == 0) {
       onig_error_code_to_str((UChar* )s, r);
-      fprintf(err_file, "ERROR: %s  /%s/\n", s, pattern);
+      fprintf(err_file, "ERROR: %s  /%s/  #%d\n", s, pattern, line_no);
       nerror++;
     }
     else {
       if (r == error_no) {
-        fprintf(stdout, "OK(ERROR): /%s/ '%s', %d\n", pattern, str, r);
+        fprintf(stdout, "OK(ERROR): /%s/ '%s', %d  #%d\n",
+                pattern, str, r, line_no);
         nsucc++;
       }
       else {
-        fprintf(stdout, "FAIL ERROR NO: /%s/ '%s', %d, %d\n", pattern, str,
-                error_no, r);
+        fprintf(stdout, "FAIL ERROR NO: /%s/ '%s', %d, %d  #%d\n",
+                pattern, str, error_no, r, line_no);
         nfail++;
       }
     }
@@ -90,27 +91,27 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not,
 
   if (r == ONIG_MISMATCH) {
     if (not) {
-      fprintf(stdout, "OK(N): /%s/ '%s'\n", pattern, str);
+      fprintf(stdout, "OK(N): /%s/ '%s'  #%d\n", pattern, str, line_no);
       nsucc++;
     }
     else {
-      fprintf(stdout, "FAIL: /%s/ '%s'\n", pattern, str);
+      fprintf(stdout, "FAIL: /%s/ '%s'  #%d\n", pattern, str, line_no);
       nfail++;
     }
   }
   else {
     if (not) {
-      fprintf(stdout, "FAIL(N): /%s/ '%s'\n", pattern, str);
+      fprintf(stdout, "FAIL(N): /%s/ '%s'  #%d\n", pattern, str, line_no);
       nfail++;
     }
     else {
       if (region->beg[mem] == from && region->end[mem] == to) {
-        fprintf(stdout, "OK: /%s/ '%s'\n", pattern, str);
+        fprintf(stdout, "OK: /%s/ '%s'  #%d\n", pattern, str, line_no);
         nsucc++;
       }
       else {
-        fprintf(stdout, "FAIL: /%s/ '%s' %d-%d : %d-%d\n", pattern, str,
-                from, to, region->beg[mem], region->end[mem]);
+        fprintf(stdout, "FAIL: /%s/ '%s' %d-%d : %d-%d  #%d\n", pattern, str,
+                from, to, region->beg[mem], region->end[mem], line_no);
         nfail++;
       }
     }
@@ -118,25 +119,30 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not,
   onig_free(reg);
 }
 
-static void x2(char* pattern, char* str, int from, int to)
+static void xx2(char* pattern, char* str, int from, int to, int line_no)
 {
-  xx(pattern, str, from, to, 0, 0, 0);
+  xx(pattern, str, from, to, 0, 0, 0, line_no);
 }
 
-static void x3(char* pattern, char* str, int from, int to, int mem)
+static void xx3(char* pattern, char* str, int from, int to, int mem, int line_no)
 {
-  xx(pattern, str, from, to, mem, 0, 0);
+  xx(pattern, str, from, to, mem, 0, 0, line_no);
 }
 
-static void n(char* pattern, char* str)
+static void xn(char* pattern, char* str, int line_no)
 {
-  xx(pattern, str, 0, 0, 0, 1, 0);
+  xx(pattern, str, 0, 0, 0, 1, 0, line_no);
 }
 
-static void e(char* pattern, char* str, int error_no)
+static void xe(char* pattern, char* str, int error_no, int line_no)
 {
-  xx(pattern, str, 0, 0, 0, 0, error_no);
+  xx(pattern, str, 0, 0, 0, 0, error_no, line_no);
 }
+
+#define x2(p,s,f,t)    xx2(p,s,f,t, __LINE__)
+#define x3(p,s,f,t,m)  xx3(p,s,f,t,m, __LINE__)
+#define n(p,s)          xn(p,s,   __LINE__)
+#define e(p,s,en)       xe(p,s,en, __LINE__)
 
 extern int main(int argc, char* argv[])
 {
