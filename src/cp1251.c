@@ -105,12 +105,16 @@ static const unsigned short EncCP1251_CtypeTable[256] = {
 };
 
 static int
-cp1251_mbc_case_fold(OnigCaseFoldType flag ARG_UNUSED,
+cp1251_mbc_case_fold(OnigCaseFoldType flag,
              const UChar** pp, const UChar* end ARG_UNUSED, UChar* lower)
 {
   const UChar* p = *pp;
 
-  *lower = ENC_CP1251_TO_LOWER_CASE(*p);
+  if (CASE_FOLD_IS_NOT_ASCII_ONLY(flag) || ONIGENC_IS_ASCII_CODE(*p))
+    *lower = ENC_CP1251_TO_LOWER_CASE(*p);
+  else
+    *lower = *p;
+
   (*pp)++;
   return 1;
 }

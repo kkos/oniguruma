@@ -8268,7 +8268,8 @@ typedef struct {
 } IApplyCaseFoldArg;
 
 static int
-i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[], int to_len, void* arg)
+i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[], int to_len,
+                  void* arg)
 {
   IApplyCaseFoldArg* iarg;
   ScanEnv* env;
@@ -8277,6 +8278,13 @@ i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[], int to_len, void* arg)
   iarg = (IApplyCaseFoldArg* )arg;
   env = iarg->env;
   cc  = iarg->cc;
+
+#if 0
+  if (CASE_FOLD_IS_ASCII_ONLY(env->case_fold_flag)) {
+    if (! ONIGENC_IS_ASCII_CODE(from) || to_len != 1 || ! ONIGENC_IS_ASCII_CODE(*to))
+      return 0;
+  }
+#endif
 
   if (to_len == 1) {
     int is_in = onig_is_code_in_cc(env->enc, from, cc);

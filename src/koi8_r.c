@@ -109,7 +109,11 @@ koi8_r_mbc_case_fold(OnigCaseFoldType flag ARG_UNUSED,
 {
   const UChar* p = *pp;
 
-  *lower = ENC_KOI8_R_TO_LOWER_CASE(*p);
+  if (CASE_FOLD_IS_NOT_ASCII_ONLY(flag) || ONIGENC_IS_ASCII_CODE(*p))
+    *lower = ENC_KOI8_R_TO_LOWER_CASE(*p);
+  else
+    *lower = *p;
+
   (*pp)++;
   return 1;
 }

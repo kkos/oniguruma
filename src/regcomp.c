@@ -771,7 +771,8 @@ node_char_len1(Node* node, regex_t* reg, MinMaxCharLen* ci, ScanEnv* env,
       StrNode* sn = STR_(node);
       UChar *s = sn->s;
 
-      if (NODE_IS_REAL_IGNORECASE(node)) {
+      if (NODE_IS_REAL_IGNORECASE(node) &&
+          CASE_FOLD_IS_NOT_ASCII_ONLY(env->case_fold_flag)) {
         /* Such a case is possible.
            ex. /(?i)(?<=\1)(a)/
            Backref node refer to capture group, but it doesn't tune yet.

@@ -114,7 +114,7 @@ apply_all_case_fold(OnigCaseFoldType flag,
 }
 
 static int
-get_case_fold_codes_by_str(OnigCaseFoldType flag ARG_UNUSED,
+get_case_fold_codes_by_str(OnigCaseFoldType flag,
                            const OnigUChar* p, const OnigUChar* end,
                            OnigCaseFoldCodeItem items[])
 {
@@ -123,7 +123,8 @@ get_case_fold_codes_by_str(OnigCaseFoldType flag ARG_UNUSED,
 
   if (0x41 <= *p && *p <= 0x5a) {
     if (*p == LARGE_S && end > p + 1
-        && (*(p+1) == LARGE_S || *(p+1) == SMALL_S)) { /* SS */
+        && (*(p+1) == LARGE_S || *(p+1) == SMALL_S)
+        && CASE_FOLD_IS_NOT_ASCII_ONLY(flag)) { /* SS */
     ss_combination:
       items[0].byte_len = 2;
       items[0].code_len = 1;
@@ -152,7 +153,8 @@ get_case_fold_codes_by_str(OnigCaseFoldType flag ARG_UNUSED,
   }
   else if (0x61 <= *p && *p <= 0x7a) {
     if (*p == SMALL_S && end > p + 1
-        && (*(p+1) == SMALL_S || *(p+1) == LARGE_S)) { /* ss */
+        && (*(p+1) == SMALL_S || *(p+1) == LARGE_S)
+        && CASE_FOLD_IS_NOT_ASCII_ONLY(flag)) { /* ss */
       goto ss_combination;
     }
 
@@ -161,55 +163,57 @@ get_case_fold_codes_by_str(OnigCaseFoldType flag ARG_UNUSED,
     items[0].code[0] = (OnigCodePoint )(*p - 0x20);
     return 1;
   }
-  else if (0xc0 <= *p && *p <= 0xcf) {
-    items[0].byte_len = 1;
-    items[0].code_len = 1;
-    items[0].code[0] = (OnigCodePoint )(*p + 0x20);
-    return 1;
-  }
-  else if (0xd0 <= *p && *p <= 0xdf) {
-    if (*p == 0xdf) {
-      items[0].byte_len = 1;
-      items[0].code_len = 2;
-      items[0].code[0] = (OnigCodePoint )'s';
-      items[0].code[1] = (OnigCodePoint )'s';
-
-      items[1].byte_len = 1;
-      items[1].code_len = 2;
-      items[1].code[0] = (OnigCodePoint )'S';
-      items[1].code[1] = (OnigCodePoint )'S';
-
-      items[2].byte_len = 1;
-      items[2].code_len = 2;
-      items[2].code[0] = (OnigCodePoint )'s';
-      items[2].code[1] = (OnigCodePoint )'S';
-
-      items[3].byte_len = 1;
-      items[3].code_len = 2;
-      items[3].code[0] = (OnigCodePoint )'S';
-      items[3].code[1] = (OnigCodePoint )'s';
-
-      return 4;
-    }
-    else if (*p != 0xd7) {
+  else if (CASE_FOLD_IS_NOT_ASCII_ONLY(flag)) {
+    if (0xc0 <= *p && *p <= 0xcf) {
       items[0].byte_len = 1;
       items[0].code_len = 1;
       items[0].code[0] = (OnigCodePoint )(*p + 0x20);
       return 1;
     }
-  }
-  else if (0xe0 <= *p && *p <= 0xef) {
-    items[0].byte_len = 1;
-    items[0].code_len = 1;
-    items[0].code[0] = (OnigCodePoint )(*p - 0x20);
-    return 1;
-  }
-  else if (0xf0 <= *p && *p <= 0xfe) {
-    if (*p != 0xf7) {
+    else if (0xd0 <= *p && *p <= 0xdf) {
+      if (*p == 0xdf) {
+        items[0].byte_len = 1;
+        items[0].code_len = 2;
+        items[0].code[0] = (OnigCodePoint )'s';
+        items[0].code[1] = (OnigCodePoint )'s';
+
+        items[1].byte_len = 1;
+        items[1].code_len = 2;
+        items[1].code[0] = (OnigCodePoint )'S';
+        items[1].code[1] = (OnigCodePoint )'S';
+
+        items[2].byte_len = 1;
+        items[2].code_len = 2;
+        items[2].code[0] = (OnigCodePoint )'s';
+        items[2].code[1] = (OnigCodePoint )'S';
+
+        items[3].byte_len = 1;
+        items[3].code_len = 2;
+        items[3].code[0] = (OnigCodePoint )'S';
+        items[3].code[1] = (OnigCodePoint )'s';
+
+        return 4;
+      }
+      else if (*p != 0xd7) {
+        items[0].byte_len = 1;
+        items[0].code_len = 1;
+        items[0].code[0] = (OnigCodePoint )(*p + 0x20);
+        return 1;
+      }
+    }
+    else if (0xe0 <= *p && *p <= 0xef) {
       items[0].byte_len = 1;
       items[0].code_len = 1;
       items[0].code[0] = (OnigCodePoint )(*p - 0x20);
       return 1;
+    }
+    else if (0xf0 <= *p && *p <= 0xfe) {
+      if (*p != 0xf7) {
+        items[0].byte_len = 1;
+        items[0].code_len = 1;
+        items[0].code[0] = (OnigCodePoint )(*p - 0x20);
+        return 1;
+      }
     }
   }
 
@@ -229,7 +233,11 @@ mbc_case_fold(OnigCaseFoldType flag, const UChar** pp,
     return 2;
   }
 
-  *lower = ONIGENC_ISO_8859_1_TO_LOWER_CASE(*p);
+  if (CASE_FOLD_IS_NOT_ASCII_ONLY(flag) || ONIGENC_IS_ASCII_CODE(*p))
+    *lower = ONIGENC_ISO_8859_1_TO_LOWER_CASE(*p);
+  else
+    *lower = *p;
+
   (*pp)++;
   return 1;
 }

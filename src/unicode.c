@@ -77,9 +77,8 @@ static const unsigned short EncUNICODE_ISO_8859_1_CtypeTable[256] = {
 #include "unicode_fold_data.c"
 
 extern int
-onigenc_unicode_mbc_case_fold(OnigEncoding enc,
-    OnigCaseFoldType flag ARG_UNUSED, const UChar** pp, const UChar* end,
-    UChar* fold)
+onigenc_unicode_mbc_case_fold(OnigEncoding enc, OnigCaseFoldType flag,
+    const UChar** pp, const UChar* end, UChar* fold)
 {
   const struct ByUnfoldKey* buk;
 
@@ -104,23 +103,27 @@ onigenc_unicode_mbc_case_fold(OnigEncoding enc,
   }
 #endif
 
-  buk = onigenc_unicode_unfold_key(code);
-  if (buk != 0) {
-    if (buk->fold_len == 1) {
-      return ONIGENC_CODE_TO_MBC(enc, *FOLDS1_FOLD(buk->index), fold);
-    }
-    else {
-      OnigCodePoint* addr;
-
-      FOLDS_FOLD_ADDR_BUK(buk, addr);
-      rlen = 0;
-      for (i = 0; i < buk->fold_len; i++) {
-        OnigCodePoint c = addr[i];
-        len = ONIGENC_CODE_TO_MBC(enc, c, fold);
-        fold += len;
-        rlen += len;
+  if (CASE_FOLD_IS_NOT_ASCII_ONLY(flag) || ONIGENC_IS_ASCII_CODE(code)) {
+    buk = onigenc_unicode_unfold_key(code);
+    if (buk != 0) {
+      if (buk->fold_len == 1) {
+        if (CASE_FOLD_IS_NOT_ASCII_ONLY(flag) ||
+            ONIGENC_IS_ASCII_CODE(*FOLDS1_FOLD(buk->index)))
+          return ONIGENC_CODE_TO_MBC(enc, *FOLDS1_FOLD(buk->index), fold);
       }
-      return rlen;
+      else {
+        OnigCodePoint* addr;
+
+        FOLDS_FOLD_ADDR_BUK(buk, addr);
+        rlen = 0;
+        for (i = 0; i < buk->fold_len; i++) {
+          OnigCodePoint c = addr[i];
+          len = ONIGENC_CODE_TO_MBC(enc, c, fold);
+          fold += len;
+          rlen += len;
+        }
+        return rlen;
+      }
     }
   }
 
@@ -131,15 +134,21 @@ onigenc_unicode_mbc_case_fold(OnigEncoding enc,
 }
 
 static int
-apply_case_fold1(int from, int to, OnigApplyAllCaseFoldFunc f, void* arg)
+apply_case_fold1(OnigCaseFoldType flag, int from, int to,
+                 OnigApplyAllCaseFoldFunc f, void* arg)
 {
   int i, j, k, n, r;
 
   for (i = from; i < to; ) {
     OnigCodePoint fold = *FOLDS1_FOLD(i);
+    if (CASE_FOLD_IS_ASCII_ONLY(flag) && ! ONIGENC_IS_ASCII_CODE(fold)) break;
+
     n = FOLDS1_UNFOLDS_NUM(i);
     for (j = 0; j < n; j++) {
       OnigCodePoint unfold = FOLDS1_UNFOLDS(i)[j];
+
+      if (CASE_FOLD_IS_ASCII_ONLY(flag) && ! ONIGENC_IS_ASCII_CODE(unfold))
+        continue;
 
       r = (*f)(fold, &unfold, 1, arg);
       if (r != 0) return r;
@@ -148,6 +157,9 @@ apply_case_fold1(int from, int to, OnigApplyAllCaseFoldFunc f, void* arg)
 
       for (k = 0; k < j; k++) {
         OnigCodePoint unfold2 = FOLDS1_UNFOLDS(i)[k];
+        if (CASE_FOLD_IS_ASCII_ONLY(flag) &&
+            ! ONIGENC_IS_ASCII_CODE(unfold2)) continue;
+
         r = (*f)(unfold, &unfold2, 1, arg);
         if (r != 0) return r;
         r = (*f)(unfold2, &unfold, 1, arg);
@@ -225,7 +237,7 @@ onigenc_unicode_apply_all_case_fold(OnigCaseFoldType flag,
 {
   int r;
 
-  r = apply_case_fold1(0, FOLDS1_NORMAL_END_INDEX, f, arg);
+  r = apply_case_fold1(flag, 0, FOLDS1_NORMAL_END_INDEX, f, arg);
   if (r != 0) return r;
 
 #ifdef USE_UNICODE_CASE_FOLD_TURKISH_AZERI
@@ -246,7 +258,7 @@ onigenc_unicode_apply_all_case_fold(OnigCaseFoldType flag,
   }
   else {
 #endif
-    r = apply_case_fold1(FOLDS1_NORMAL_END_INDEX, FOLDS1_END_INDEX, f, arg);
+    r = apply_case_fold1(flag, FOLDS1_NORMAL_END_INDEX, FOLDS1_END_INDEX, f, arg);
     if (r != 0) return r;
 #ifdef USE_UNICODE_CASE_FOLD_TURKISH_AZERI
   }
@@ -288,6 +300,9 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
   n = 0;
 
   code = ONIGENC_MBC_TO_CODE(enc, p, end);
+  if (CASE_FOLD_IS_ASCII_ONLY(flag)) {
+    if (! ONIGENC_IS_ASCII_CODE(code)) return n;
+  }
   len = enclen(enc, p);
 
 #ifdef USE_UNICODE_CASE_FOLD_TURKISH_AZERI
@@ -449,19 +464,26 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
   if (buk1 != 0) {
     if (buk1->fold_len == 1) {
       int un;
-      items[0].byte_len = lens[0];
-      items[0].code_len = 1;
-      items[0].code[0]  = *FOLDS1_FOLD(buk1->index);
-      n++;
+
+      if (CASE_FOLD_IS_NOT_ASCII_ONLY(flag) ||
+          ONIGENC_IS_ASCII_CODE(*FOLDS1_FOLD(buk1->index))) {
+        items[0].byte_len = lens[0];
+        items[0].code_len = 1;
+        items[0].code[0]  = *FOLDS1_FOLD(buk1->index);
+        n++;
+      }
 
       un = FOLDS1_UNFOLDS_NUM(buk1->index);
       for (i = 0; i < un; i++) {
         OnigCodePoint unfold = FOLDS1_UNFOLDS(buk1->index)[i];
         if (unfold != orig_codes[0]) {
-          items[n].byte_len = lens[0];
-          items[n].code_len = 1;
-          items[n].code[0]  = unfold;
-          n++;
+          if (CASE_FOLD_IS_NOT_ASCII_ONLY(flag) ||
+              ONIGENC_IS_ASCII_CODE(unfold)) {
+            items[n].byte_len = lens[0];
+            items[n].code_len = 1;
+            items[n].code[0]  = unfold;
+            n++;
+          }
         }
       }
     }
@@ -548,10 +570,13 @@ onigenc_unicode_get_case_fold_codes_by_str(OnigEncoding enc,
     if (index >= 0) {
       int m = FOLDS1_UNFOLDS_NUM(index);
       for (i = 0; i < m; i++) {
-        items[n].byte_len = lens[0];
-        items[n].code_len = 1;
-        items[n].code[0]  = FOLDS1_UNFOLDS(index)[i];
-        n++;
+        code = FOLDS1_UNFOLDS(index)[i];
+        if (CASE_FOLD_IS_NOT_ASCII_ONLY(flag)||ONIGENC_IS_ASCII_CODE(code)) {
+          items[n].byte_len = lens[0];
+          items[n].code_len = 1;
+          items[n].code[0]  = code;
+          n++;
+        }
       }
     }
   }
