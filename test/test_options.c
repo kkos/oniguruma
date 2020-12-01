@@ -164,6 +164,11 @@ extern int main(int argc, char* argv[])
 
   x2(ONIG_OPTION_IGNORECASE, "a", "A", 0, 1);
   n(ONIG_OPTION_IGNORECASE_IS_ASCII, "a", "A");
+  /* KELVIN SIGN */
+  x2(ONIG_OPTION_IGNORECASE, "\xe2\x84\xaa", "k", 0, 1);
+  x2(ONIG_OPTION_IGNORECASE, "k", "\xe2\x84\xaa", 0, 3);
+  n(OIA, "\xe2\x84\xaa", "k");
+  n(OIA, "k", "\xe2\x84\xaa");
   x2(OIA, "a", "a", 0, 1);
   x2(OIA, "A", "A", 0, 1);
   x2(OIA, "a", "A", 0, 1);
