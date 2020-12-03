@@ -1,4 +1,4 @@
-Oniguruma API  Version 6.9.6  2020/11/19
+Oniguruma API  Version 6.9.7  2020/12/03
 
 #include <oniguruma.h>
 
@@ -83,6 +83,7 @@ Oniguruma API  Version 6.9.6  2020/11/19
       ONIG_OPTION_DONT_CAPTURE_GROUP only named group captured.
       ONIG_OPTION_CAPTURE_GROUP      named and no-named group captured.
 
+      ONIG_OPTION_IGNORECASE_IS_ASCII  Limit IGNORECASE((?i)) to a range of ASCII characters
       ONIG_OPTION_WORD_IS_ASCII      ASCII only word (\w, \p{Word}, [[:word:]])
                                      ASCII only word bound (\b)
       ONIG_OPTION_DIGIT_IS_ASCII     ASCII only digit (\d, \p{Digit}, [[:digit:]])
