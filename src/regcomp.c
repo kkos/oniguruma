@@ -7040,8 +7040,34 @@ static void print_enc_string(FILE* fp, OnigEncoding enc,
       s++;
     }
   }
+}
 
-  fprintf(fp, "/\n");
+static void
+print_options(FILE* fp, OnigOptionType o)
+{
+  if ((o & ONIG_OPTION_IGNORECASE) != 0)      fprintf(fp, " IGNORECASE");
+  if ((o & ONIG_OPTION_EXTEND) != 0)          fprintf(fp, " EXTEND");
+  if ((o & ONIG_OPTION_MULTILINE) != 0)       fprintf(fp, " MULTILINE");
+  if ((o & ONIG_OPTION_SINGLELINE) != 0)      fprintf(fp, " SINGLELINE");
+  if ((o & ONIG_OPTION_FIND_LONGEST) != 0)    fprintf(fp, " FIND_LONGEST");
+  if ((o & ONIG_OPTION_FIND_NOT_EMPTY) != 0)  fprintf(fp, " FIND_NOT_EMPTY");
+  if ((o & ONIG_OPTION_NEGATE_SINGLELINE) != 0)  fprintf(fp, " NEGATE_SINGLELINE");
+  if ((o & ONIG_OPTION_DONT_CAPTURE_GROUP) != 0) fprintf(fp, " DONT_CAPTURE_GROUP");
+  if ((o & ONIG_OPTION_CAPTURE_GROUP) != 0)   fprintf(fp, " CAPTURE_GROUP");
+  if ((o & ONIG_OPTION_NOTBOL) != 0)          fprintf(fp, " NOTBOL");
+  if ((o & ONIG_OPTION_NOTEOL) != 0)          fprintf(fp, " NOTEOL");
+  if ((o & ONIG_OPTION_POSIX_REGION) != 0)    fprintf(fp, " POSIX_REGION");
+  if ((o & ONIG_OPTION_CHECK_VALIDITY_OF_STRING) != 0) fprintf(fp, " CHECK_VALIDITY_OF_STRING");
+  if ((o & ONIG_OPTION_IGNORECASE_IS_ASCII) != 0) fprintf(fp, " IGNORECASE_IS_ASCII");
+  if ((o & ONIG_OPTION_WORD_IS_ASCII) != 0)   fprintf(fp, " WORD_IS_ASCII");
+  if ((o & ONIG_OPTION_DIGIT_IS_ASCII) != 0)  fprintf(fp, " DIGIT_IS_ASCII");
+  if ((o & ONIG_OPTION_SPACE_IS_ASCII) != 0)  fprintf(fp, " SPACE_IS_ASCII");
+  if ((o & ONIG_OPTION_POSIX_IS_ASCII) != 0)  fprintf(fp, " POSIX_IS_ASCII");
+  if ((o & ONIG_OPTION_TEXT_SEGMENT_EXTENDED_GRAPHEME_CLUSTER) != 0) fprintf(fp, " TEXT_SEGMENT_EXTENDED_GRAPHEME_CLUSTER");
+  if ((o & ONIG_OPTION_TEXT_SEGMENT_WORD) != 0) fprintf(fp, " TEXT_SEGMENT_WORD");
+  if ((o & ONIG_OPTION_NOT_BEGIN_STRING) != 0) fprintf(fp, " NOT_BIGIN_STRING");
+  if ((o & ONIG_OPTION_NOT_END_STRING) != 0)   fprintf(fp, " NOT_END_STRING");
+  if ((o & ONIG_OPTION_NOT_BEGIN_POSITION) != 0) fprintf(fp, " NOT_BEGIN_POSITION");
 }
 
 #endif /* ONIG_DEBUG */
@@ -7288,6 +7314,10 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 #ifdef ONIG_DEBUG
   fprintf(DBGFP, "\nPATTERN: /");
   print_enc_string(DBGFP, reg->enc, pattern, pattern_end);
+  fprintf(DBGFP, "/\n");
+  fprintf(DBGFP, "OPTIONS:");
+  print_options(DBGFP, reg->options);
+  fprintf(DBGFP, "\n");
 #endif
 
   if (reg->ops_alloc == 0) {
