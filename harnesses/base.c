@@ -12,20 +12,20 @@
 #include <time.h>
 #include "oniguruma.h"
 
-#define PARSE_DEPTH_LIMIT           8
-#define CALL_MAX_NEST_LEVEL         8
-#define SUBEXP_CALL_LIMIT        1000
-#define BASE_RETRY_LIMIT        20000
-#define BASE_LENGTH              2048
-#define MATCH_STACK_LIMIT    10000000
-#define MAX_REM_SIZE          1048576
-#define MAX_SLOW_REM_SIZE        1024
-#define SLOW_RETRY_LIMIT         2000
-#define SLOW_SUBEXP_CALL_LIMIT     50
+#define PARSE_DEPTH_LIMIT               8
+#define MAX_SUBEXP_CALL_NEST_LEVEL      8
+#define SUBEXP_CALL_LIMIT            1000
+#define BASE_RETRY_LIMIT            20000
+#define BASE_LENGTH                  2048
+#define MATCH_STACK_LIMIT        10000000
+#define MAX_REM_SIZE              1048576
+#define MAX_SLOW_REM_SIZE            1024
+#define SLOW_RETRY_LIMIT             2000
+#define SLOW_SUBEXP_CALL_LIMIT         50
 
-//#define EXEC_PRINT_INTERVAL    500000
-//#define DUMP_DATA_INTERVAL     100000
-//#define STAT_PATH              "fuzzer.stat_log"
+//#define EXEC_PRINT_INTERVAL      500000
+//#define DUMP_DATA_INTERVAL       100000
+//#define STAT_PATH                "fuzzer.stat_log"
 
 #define OPTIONS_AT_COMPILE   (ONIG_OPTION_IGNORECASE | ONIG_OPTION_EXTEND | ONIG_OPTION_MULTILINE | ONIG_OPTION_SINGLELINE | ONIG_OPTION_FIND_LONGEST | ONIG_OPTION_FIND_NOT_EMPTY | ONIG_OPTION_NEGATE_SINGLELINE | ONIG_OPTION_DONT_CAPTURE_GROUP | ONIG_OPTION_CAPTURE_GROUP | ONIG_OPTION_WORD_IS_ASCII | ONIG_OPTION_DIGIT_IS_ASCII | ONIG_OPTION_SPACE_IS_ASCII | ONIG_OPTION_POSIX_IS_ASCII | ONIG_OPTION_TEXT_SEGMENT_EXTENDED_GRAPHEME_CLUSTER | ONIG_OPTION_TEXT_SEGMENT_WORD | ONIG_OPTION_IGNORECASE_IS_ASCII)
 
@@ -237,7 +237,7 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
 #ifdef PARSE_DEPTH_LIMIT
   onig_set_parse_depth_limit(PARSE_DEPTH_LIMIT);
 #endif
-  onig_set_subexp_call_max_nest_level(CALL_MAX_NEST_LEVEL);
+  onig_set_subexp_call_max_nest_level(MAX_SUBEXP_CALL_NEST_LEVEL);
 
   r = onig_new(&reg, pattern, pattern_end,
                (options & OPTIONS_AT_COMPILE), enc, syntax, &einfo);
