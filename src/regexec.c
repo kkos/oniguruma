@@ -4133,6 +4133,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         }
       }
 
+#ifdef ONIG_DEBUG_CALL
+      fprintf(DBGFP, "CALL: id:%d, at:%ld, level:%lu\n", p->call.called_mem, s - str, subexp_call_nest_counter);
+#endif
       addr = p->call.addr;
       INC_OP; STACK_PUSH_CALL_FRAME(p);
       p = reg->ops + addr;

@@ -35,6 +35,7 @@
 /* #define ONIG_DEBUG_SEARCH */
 /* #define ONIG_DEBUG_MATCH */
 /* #define ONIG_DEBUG_MATCH_COUNTER */
+/* #define ONIG_DEBUG_CALL */
 /* #define ONIG_DONT_OPTIMIZE */
 
 /* for byte-code statistical data. */
@@ -42,7 +43,8 @@
 
 #if defined(ONIG_DEBUG_PARSE) || defined(ONIG_DEBUG_MATCH) || \
     defined(ONIG_DEBUG_SEARCH) || defined(ONIG_DEBUG_COMPILE) || \
-    defined(ONIG_DEBUG_MATCH_COUNTER) || defined(ONIG_DEBUG_STATISTICS)
+    defined(ONIG_DEBUG_MATCH_COUNTER) || defined(ONIG_DEBUG_CALL) || \
+    defined(ONIG_DEBUG_STATISTICS)
 #ifndef ONIG_DEBUG
 #define ONIG_DEBUG
 #define DBGFP   stderr
@@ -921,7 +923,7 @@ typedef struct {
     } update_var;
     struct {
       AbsAddrType addr;
-#ifdef ONIG_DEBUG_MATCH_COUNTER
+#if defined(ONIG_DEBUG_MATCH_COUNTER) || defined(ONIG_DEBUG_CALL)
       MemNumType called_mem;
 #endif
     } call;
