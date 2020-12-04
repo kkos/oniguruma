@@ -39,6 +39,18 @@
 
 typedef unsigned char uint8_t;
 
+
+//#define TEST_PATTERN
+
+#ifdef TEST_PATTERN
+
+#if 1
+unsigned char TestPattern[] = {
+};
+#endif
+
+#endif /* TEST_PATTERN */
+
 #ifdef DUMP_INPUT
 static void
 dump_input(unsigned char* data, size_t len)
@@ -274,9 +286,16 @@ alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   unsigned char *pattern_end;
   unsigned char *str_null_end;
 
+#ifdef TEST_PATTERN
+  pattern = (unsigned char *)malloc(sizeof(TestPattern));
+  memcpy(pattern, TestPattern, sizeof(TestPattern));
+  pattern_end = pattern + sizeof(TestPattern);
+#else
   pattern = (unsigned char *)malloc(pattern_size != 0 ? pattern_size : 1);
   memcpy(pattern, data, pattern_size);
   pattern_end = pattern + pattern_size;
+#endif
+
   data += pattern_size;
   rem_size -= pattern_size;
 
