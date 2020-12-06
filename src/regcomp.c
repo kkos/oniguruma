@@ -8116,8 +8116,11 @@ print_indent_tree(FILE* f, Node* node, int indent)
       break;
     case BAG_MEMORY:
       fprintf(f, "memory:%d", BAG_(node)->m.regnum);
-      if (NODE_IS_CALLED(node))
+      if (NODE_IS_CALLED(node)) {
         fprintf(f, ", called");
+        if (NODE_IS_RECURSION(node))
+          fprintf(f, ", recursion");
+      }
       else if (NODE_IS_REFERENCED(node))
         fprintf(f, ", referenced");
       if (NODE_IS_FIXED_ADDR(node))
