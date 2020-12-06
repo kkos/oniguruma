@@ -7902,6 +7902,8 @@ Indent(FILE* f, int indent)
 static void
 print_indent_tree(FILE* f, Node* node, int indent)
 {
+  static char* emptiness_name[] = { "", " empty", " empty_mem", " empty_rec" };
+
   int i;
   NodeType type;
   UChar* p;
@@ -8073,11 +8075,14 @@ print_indent_tree(FILE* f, Node* node, int indent)
 #endif
 
   case NODE_QUANT:
-    fprintf(f, "<quantifier:%p>{%d,%d}%s%s\n", node,
-            QUANT_(node)->lower, QUANT_(node)->upper,
-            (QUANT_(node)->greedy ? "" : "?"),
-            QUANT_(node)->include_referred == 0 ? "" : " referred");
-    print_indent_tree(f, NODE_BODY(node), indent + add);
+    {
+      fprintf(f, "<quantifier:%p>{%d,%d}%s%s%s\n", node,
+              QUANT_(node)->lower, QUANT_(node)->upper,
+              (QUANT_(node)->greedy ? "" : "?"),
+              QUANT_(node)->include_referred == 0 ? "" : " referred",
+              emptiness_name[QUANT_(node)->emptiness]);
+      print_indent_tree(f, NODE_BODY(node), indent + add);
+    }
     break;
 
   case NODE_BAG:
