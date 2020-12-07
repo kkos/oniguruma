@@ -5770,6 +5770,9 @@ tune_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
 #else
       qn->emptiness = BODY_MAY_BE_EMPTY;
 #endif
+      if (NODE_IS_RECURSION(node) && NODE_IS_INPEEK(node)) {
+        return ONIGERR_VERY_INEFFICIENT_PATTERN;
+      }
     }
   }
 
