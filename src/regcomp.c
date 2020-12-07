@@ -4435,6 +4435,8 @@ recursive_call_check_trav(Node* node, ScanEnv* env, int state)
       if (r == FOUND_CALLED_NODE)
         QUANT_(node)->include_referred = 1;
     }
+    if ((state & IN_RECURSION) != 0)
+      NODE_STATUS_ADD(node, RECURSION);
     break;
 
   case NODE_ANCHOR:
@@ -4626,7 +4628,7 @@ reduce_string_list(Node* node, OnigEncoding enc)
 #define IN_ZERO_REPEAT  (1<<4)
 #define IN_MULTI_ENTRY  (1<<5)
 #define IN_LOOK_BEHIND  (1<<6)
-
+#define IN_PEEK         (1<<7)
 
 /* divide different length alternatives in look-behind.
   (?<=A|B) ==> (?<=A)|(?<=B)
@@ -5560,10 +5562,12 @@ tune_called_state_call(Node* node, int state)
       switch (an->type) {
       case ANCR_PREC_READ_NOT:
       case ANCR_LOOK_BEHIND_NOT:
-        state |= IN_NOT;
-        /* fall */
+        state |= (IN_NOT | IN_PEEK);
+        tune_called_state_call(NODE_ANCHOR_BODY(an), state);
+        break;
       case ANCR_PREC_READ:
       case ANCR_LOOK_BEHIND:
+        state |= IN_PEEK;
         tune_called_state_call(NODE_ANCHOR_BODY(an), state);
         break;
       default:
@@ -5668,7 +5672,6 @@ tune_called_state(Node* node, int state)
         state |= IN_REAL_REPEAT;
       if (qn->lower != qn->upper)
         state |= IN_VAR_REPEAT;
-
       tune_called_state(NODE_QUANT_BODY(qn), state);
     }
     break;
@@ -5680,10 +5683,12 @@ tune_called_state(Node* node, int state)
       switch (an->type) {
       case ANCR_PREC_READ_NOT:
       case ANCR_LOOK_BEHIND_NOT:
-        state |= IN_NOT;
-        /* fall */
+        state |= (IN_NOT | IN_PEEK);
+        tune_called_state(NODE_ANCHOR_BODY(an), state);
+        break;
       case ANCR_PREC_READ:
       case ANCR_LOOK_BEHIND:
+        state |= IN_PEEK;
         tune_called_state(NODE_ANCHOR_BODY(an), state);
         break;
       default:
@@ -8078,69 +8083,74 @@ print_indent_tree(FILE* f, Node* node, int indent)
 
   case NODE_QUANT:
     {
-      fprintf(f, "<quantifier:%p>{%d,%d}%s%s%s\n", node,
+      fprintf(f, "<quantifier:%p>{%d,%d}%s%s%s", node,
               QUANT_(node)->lower, QUANT_(node)->upper,
               (QUANT_(node)->greedy ? "" : "?"),
               QUANT_(node)->include_referred == 0 ? "" : " referred",
               emptiness_name[QUANT_(node)->emptiness]);
+      if (NODE_IS_RECURSION(node)) fprintf(f, ", recursion");
+      fprintf(f, "\n");
       print_indent_tree(f, NODE_BODY(node), indent + add);
     }
     break;
 
   case NODE_BAG:
-    fprintf(f, "<bag:%p> ", node);
-    if (BAG_(node)->type == BAG_IF_ELSE) {
-      Node* Then;
-      Node* Else;
-      BagNode* bn;
+    {
+      BagNode* bn = BAG_(node);
+      fprintf(f, "<bag:%p> ", node);
+      if (bn->type == BAG_IF_ELSE) {
+        Node* Then;
+        Node* Else;
 
-      bn = BAG_(node);
-      fprintf(f, "if-else\n");
-      print_indent_tree(f, NODE_BODY(node), indent + add);
+        fprintf(f, "if-else\n");
+        print_indent_tree(f, NODE_BODY(node), indent + add);
 
-      Then = bn->te.Then;
-      Else = bn->te.Else;
-      if (IS_NULL(Then)) {
-        Indent(f, indent + add);
-        fprintf(f, "THEN empty\n");
+        Then = bn->te.Then;
+        Else = bn->te.Else;
+        if (IS_NULL(Then)) {
+          Indent(f, indent + add);
+          fprintf(f, "THEN empty\n");
+        }
+        else
+          print_indent_tree(f, Then, indent + add);
+
+        if (IS_NULL(Else)) {
+          Indent(f, indent + add);
+          fprintf(f, "ELSE empty\n");
+        }
+        else
+          print_indent_tree(f, Else, indent + add);
       }
-      else
-        print_indent_tree(f, Then, indent + add);
+      else {
+        switch (bn->type) {
+        case BAG_OPTION:
+          fprintf(f, "option:%d", bn->o.options);
+          break;
+        case BAG_MEMORY:
+          fprintf(f, "memory:%d", bn->m.regnum);
+          if (NODE_IS_CALLED(node)) {
+            fprintf(f, ", called");
+            if (NODE_IS_RECURSION(node))
+              fprintf(f, ", recursion");
+          }
+          else if (NODE_IS_REFERENCED(node))
+            fprintf(f, ", referenced");
 
-      if (IS_NULL(Else)) {
-        Indent(f, indent + add);
-        fprintf(f, "ELSE empty\n");
+          if (NODE_IS_FIXED_ADDR(node))
+            fprintf(f, ", fixed-addr");
+          if ((bn->m.called_state & IN_PEEK) != 0)
+            fprintf(f, ", in-peek");
+          break;
+        case BAG_STOP_BACKTRACK:
+          fprintf(f, "stop-bt");
+          break;
+        default:
+          break;
+        }
+        fprintf(f, "\n");
+        print_indent_tree(f, NODE_BODY(node), indent + add);
       }
-      else
-        print_indent_tree(f, Else, indent + add);
-
-      break;
     }
-
-    switch (BAG_(node)->type) {
-    case BAG_OPTION:
-      fprintf(f, "option:%d", BAG_(node)->o.options);
-      break;
-    case BAG_MEMORY:
-      fprintf(f, "memory:%d", BAG_(node)->m.regnum);
-      if (NODE_IS_CALLED(node)) {
-        fprintf(f, ", called");
-        if (NODE_IS_RECURSION(node))
-          fprintf(f, ", recursion");
-      }
-      else if (NODE_IS_REFERENCED(node))
-        fprintf(f, ", referenced");
-      if (NODE_IS_FIXED_ADDR(node))
-        fprintf(f, ", fixed-addr");
-      break;
-    case BAG_STOP_BACKTRACK:
-      fprintf(f, "stop-bt");
-      break;
-    default:
-      break;
-    }
-    fprintf(f, "\n");
-    print_indent_tree(f, NODE_BODY(node), indent + add);
     break;
 
   case NODE_GIMMICK:
