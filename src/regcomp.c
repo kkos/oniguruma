@@ -5550,6 +5550,8 @@ tune_called_state_call(Node* node, int state)
         state |= IN_REAL_REPEAT;
       if (qn->lower != qn->upper)
         state |= IN_VAR_REPEAT;
+      if ((state & IN_PEEK) != 0)
+        NODE_STATUS_ADD(node, INPEEK);
 
       tune_called_state_call(NODE_QUANT_BODY(qn), state);
     }
@@ -5672,6 +5674,9 @@ tune_called_state(Node* node, int state)
         state |= IN_REAL_REPEAT;
       if (qn->lower != qn->upper)
         state |= IN_VAR_REPEAT;
+      if ((state & IN_PEEK) != 0)
+        NODE_STATUS_ADD(node, INPEEK);
+
       tune_called_state(NODE_QUANT_BODY(qn), state);
     }
     break;
@@ -8089,6 +8094,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
               QUANT_(node)->include_referred == 0 ? "" : " referred",
               emptiness_name[QUANT_(node)->emptiness]);
       if (NODE_IS_RECURSION(node)) fprintf(f, ", recursion");
+      if (NODE_IS_INPEEK(node)) fprintf(f, ", in-peek");
       fprintf(f, "\n");
       print_indent_tree(f, NODE_BODY(node), indent + add);
     }
