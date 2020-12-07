@@ -8070,6 +8070,8 @@ print_indent_tree(FILE* f, Node* node, int indent)
       fprintf(f, "<call:%p>", node);
       fprintf(f, " num: %d, name", cn->called_gnum);
       p_string(f, cn->name_end - cn->name, cn->name);
+      if (NODE_IS_RECURSION(node))
+        fprintf(f, ", recursion");
     }
     break;
 #endif
