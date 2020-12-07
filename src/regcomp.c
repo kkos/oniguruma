@@ -7389,7 +7389,14 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 #endif
 
   r = tune_tree(root, reg, 0, &scan_env);
-  if (r != 0) goto err_unset;
+  if (r != 0) {
+#ifdef ONIG_DEBUG_PARSE
+    fprintf(DBGFP, "TREE (error in tune)\n");
+    print_tree(DBGFP, root);
+    fprintf(DBGFP, "\n");
+#endif
+    goto err_unset;
+  }
 
   if (scan_env.backref_num != 0) {
     set_parent_node_trav(root, NULL_NODE);
