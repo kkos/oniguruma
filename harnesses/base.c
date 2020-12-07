@@ -21,7 +21,7 @@
 #define MAX_REM_SIZE              1048576
 #define MAX_SLOW_REM_SIZE            1024
 #define SLOW_RETRY_LIMIT             2000
-#define SLOW_SUBEXP_CALL_LIMIT         50
+#define SLOW_SUBEXP_CALL_LIMIT        100
 
 //#define EXEC_PRINT_INTERVAL      500000
 //#define DUMP_DATA_INTERVAL       100000
