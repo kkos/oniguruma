@@ -1,4 +1,4 @@
-Oniguruma API  Version 6.9.7  2020/12/03
+Oniguruma API  Version 6.9.7  2020/12/07
 
 #include <oniguruma.h>
 
@@ -15,6 +15,10 @@ Oniguruma API  Version 6.9.7  2020/12/03
   1 use_encodings:         array of encodings used in application.
   2 num_encodings:         number of encodings.
 
+  return value
+  normal: ONIG_NORMAL == 0
+  error:  error code < 0
+
 
 # int onig_error_code_to_str(UChar* err_buf, int err_code, ...)
 
@@ -22,7 +26,8 @@ Oniguruma API  Version 6.9.7  2020/12/03
   If this function is used for onig_new(),
   don't call this after the pattern argument of onig_new() is freed.
 
-  normal return: error message string length
+  return value
+  normal: error message string length
 
   arguments
   1 err_buf:              error message string buffer.
@@ -60,7 +65,9 @@ Oniguruma API  Version 6.9.7  2020/12/03
 
   Create a regex object.
 
-  normal return: ONIG_NORMAL
+  return value
+  normal: ONIG_NORMAL == 0
+  error:  error code < 0
 
   arguments
   1 reg:         return regex object's address.
@@ -165,8 +172,9 @@ Oniguruma API  Version 6.9.7  2020/12/03
   Create a regex object.
   reg object area is not allocated in this function.
 
-  normal return: ONIG_NORMAL
-
+  return value
+  normal: ONIG_NORMAL == 0
+  error:  error code < 0
 
 
 # int onig_new_deluxe(regex_t** reg, const UChar* pattern, const UChar* pattern_end,
@@ -178,7 +186,9 @@ Oniguruma API  Version 6.9.7  2020/12/03
   Create a regex object.
   This function is deluxe version of onig_new().
 
-  normal return: ONIG_NORMAL
+  return value
+  normal: ONIG_NORMAL == 0
+  error:  error code < 0
 
   arguments
   1 reg:         return address of regex object.
@@ -320,9 +330,10 @@ Oniguruma API  Version 6.9.7  2020/12/03
   Search string and return search result and matching region.
   Do not pass invalid byte string in the regex character encoding.
 
-  normal return: match position offset (i.e.  p - str >= 0)
-  not found:     ONIG_MISMATCH (< 0)
-  error:         error code    (< 0)
+  return value
+  normal:    match position offset (i.e.  p - str >= 0)
+  not found: ONIG_MISMATCH (< 0)
+  error:     error code    (< 0)
 
   arguments
   1 reg:    regex object
@@ -360,9 +371,10 @@ Oniguruma API  Version 6.9.7  2020/12/03
   Match string and return result and matching region.
   Do not pass invalid byte string in the regex character encoding.
 
-  normal return: match length  (>= 0)
-  not match:     ONIG_MISMATCH (< 0)
-  error:         error code    (< 0)
+  return value
+  normal:    match length  (>= 0)
+  not match: ONIG_MISMATCH (< 0)
+  error:     error code    (< 0)
 
   arguments
   1 reg:    regex object
@@ -399,9 +411,10 @@ Oniguruma API  Version 6.9.7  2020/12/03
   Scan string and callback with matching region.
   Do not pass invalid byte string in the regex character encoding.
 
-  normal return: number of matching times
-  error:         error code
-  interruption:  return value of callback function (!= 0)
+  return value
+  normal:       number of matching times
+  error:        error code
+  interruption: return value of callback function (!= 0)
 
   arguments
   1 reg:    regex object
@@ -424,7 +437,9 @@ Oniguruma API  Version 6.9.7  2020/12/03
   2 n:    number of regex in regs
   3 regs: array of regex
 
-  normal return: ONIG_NORMAL
+  return value
+  normal: ONIG_NORMAL == 0
+  error:  error code < 0
 
 
 # int onig_regset_add(OnigRegSet* set, regex_t* reg)
@@ -437,7 +452,9 @@ Oniguruma API  Version 6.9.7  2020/12/03
   1 set: regset object
   2 reg: regex object
 
-  normal return: ONIG_NORMAL
+  return value
+  normal: ONIG_NORMAL == 0
+  error:  error code < 0
 
 
 # int onig_regset_replace(OnigRegSet* set, int at, regex_t* reg)
@@ -450,7 +467,9 @@ Oniguruma API  Version 6.9.7  2020/12/03
   2 at:  index of regex (zero origin)
   3 reg: regex object
 
-  normal return: ONIG_NORMAL
+  return value
+  normal: ONIG_NORMAL == 0
+  error:  error code < 0
 
 
 # void onig_regset_free(OnigRegSet* set)
@@ -493,9 +512,9 @@ Oniguruma API  Version 6.9.7  2020/12/03
   Perform a search with regset.
 
   return value:
-    normal return: index of match regex (zero origin)
-    not found:     ONIG_MISMATCH (< 0)
-    error:         error code    (< 0)
+  normal:    index of match regex (zero origin)
+  not found: ONIG_MISMATCH (< 0)
+  error:     error code    (< 0)
 
   arguments
   1 set:    regset object
@@ -526,9 +545,9 @@ Oniguruma API  Version 6.9.7  2020/12/03
   Perform a search with regset and match-params.
 
   return value:
-    normal return: index of match regex (zero origin)
-    not found:     ONIG_MISMATCH (< 0)
-    error:         error code    (< 0)
+  normal:    index of match regex (zero origin)
+  not found: ONIG_MISMATCH (< 0)
+  error:     error code    (< 0)
 
   arguments
   1 set:    regset object
@@ -586,7 +605,9 @@ Oniguruma API  Version 6.9.7  2020/12/03
 
   Resize group range area of region.
 
-  normal return: ONIG_NORMAL
+  return value
+  normal: ONIG_NORMAL == 0
+  error:  error code < 0
 
   arguments
   1 region: target region
@@ -599,8 +620,9 @@ Oniguruma API  Version 6.9.7  2020/12/03
   Return the group number list of the name.
   Named subexp is defined by (?<name>....).
 
-  normal return:  number of groups for the name.
-                  (ex. /(?<x>..)(?<x>..)/  ==>  2)
+  return value
+  normal: number of groups for the name.
+          (ex. /(?<x>..)(?<x>..)/  ==>  2)
   name not found: -1
 
   arguments
@@ -617,7 +639,9 @@ Oniguruma API  Version 6.9.7  2020/12/03
   If two or more regions for the groups of the name are effective,
   the greatest number in it is obtained.
 
-  normal return: group number.
+  return value
+  normal: group number
+  error:  error code < 0
 
   arguments
   1 reg:      regex object.
@@ -632,8 +656,9 @@ Oniguruma API  Version 6.9.7  2020/12/03
 
   Iterate function call for all names.
 
-  normal return: 0
-  error:         func's return value.
+  return value
+  normal: 0
+  error:  return value of callback function
 
   arguments
   1 reg:     regex object.
@@ -699,8 +724,9 @@ Oniguruma API  Version 6.9.7  2020/12/03
 
  Traverse and callback in capture history data tree.
 
-  normal return: 0
-  error:         callback func's return value.
+  return value
+  normal: 0
+  error:  return value of callback function
 
   arguments
   1 region:  match region data.
@@ -733,6 +759,7 @@ Oniguruma API  Version 6.9.7  2020/12/03
 
   Return noname group capture activity.
 
+  return value
   active:   1
   inactive: 0
 
@@ -994,7 +1021,9 @@ Oniguruma API  Version 6.9.7  2020/12/03
 
     * Don't destroy the ranges after having called this function.
 
-  normal return: ONIG_NORMAL
+  return value
+  normal: ONIG_NORMAL == 0
+  error:  error code < 0
 
 
 # unsigned int onig_get_parse_depth_limit(void)
