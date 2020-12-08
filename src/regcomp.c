@@ -3638,10 +3638,8 @@ node_min_byte_len(Node* node, ScanEnv* env)
   case NODE_CALL:
     {
       Node* t = NODE_BODY(node);
-      if (NODE_IS_RECURSION(node)) {
-        if (NODE_IS_FIXED_MIN(t))
-          len = BAG_(t)->min_len;
-      }
+      if (NODE_IS_FIXED_MIN(t))
+        len = BAG_(t)->min_len;
       else
         len = node_min_byte_len(t, env);
     }
