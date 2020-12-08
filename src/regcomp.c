@@ -4336,6 +4336,62 @@ infinite_recursive_call_check_trav(Node* node, ScanEnv* env)
 }
 
 static int
+find_recursive_call_node(Node* node)
+{
+  int r;
+
+  switch (NODE_TYPE(node)) {
+  case NODE_LIST:
+  case NODE_ALT:
+    r = 0;
+    do {
+      r |= find_recursive_call_node(NODE_CAR(node));
+    } while (IS_NOT_NULL(node = NODE_CDR(node)));
+    break;
+
+  case NODE_ANCHOR:
+    if (! ANCHOR_HAS_BODY(ANCHOR_(node))) {
+      r = 0;
+      break;
+    }
+    /* fall */
+  case NODE_QUANT:
+    r = find_recursive_call_node(NODE_BODY(node));
+    break;
+
+  case NODE_CALL:
+    r = NODE_IS_RECURSION(node);
+    break;
+
+  case NODE_BAG:
+    {
+      BagNode* en = BAG_(node);
+
+      if (en->type == BAG_IF_ELSE) {
+        r = 0;
+        if (IS_NOT_NULL(en->te.Then)) {
+          r |= find_recursive_call_node(en->te.Then);
+        }
+        if (IS_NOT_NULL(en->te.Else)) {
+          r |= find_recursive_call_node(en->te.Else);
+        }
+        r |= find_recursive_call_node(NODE_BODY(node));
+      }
+      else {
+        r = find_recursive_call_node(NODE_BODY(node));
+      }
+    }
+    break;
+
+  default:
+    r = 0;
+    break;
+  }
+
+  return r;
+}
+
+static int
 recursive_call_check(Node* node)
 {
   int r;
@@ -4433,8 +4489,10 @@ recursive_call_check_trav(Node* node, ScanEnv* env, int state)
       if (r == FOUND_CALLED_NODE)
         QUANT_(node)->include_referred = 1;
     }
-    if ((state & IN_RECURSION) != 0)
-      NODE_STATUS_ADD(node, RECURSION);
+    if ((state & IN_RECURSION) != 0) {
+      if (find_recursive_call_node(NODE_BODY(node)) != 0)
+        NODE_STATUS_ADD(node, RECURSION);
+    }
     break;
 
   case NODE_ANCHOR:
