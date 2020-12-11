@@ -8159,7 +8159,7 @@ print_indent_tree(FILE* f, Node* node, int indent)
               (QUANT_(node)->greedy ? "" : "?"),
               QUANT_(node)->include_referred == 0 ? "" : " referred",
               emptiness_name[QUANT_(node)->emptiness]);
-      if (NODE_IS_RECURSION(node)) fprintf(f, ", recursion");
+      if (NODE_IS_RECURSION(node)) fprintf(f, ", in-recursion");
       if (NODE_IS_INPEEK(node)) fprintf(f, ", in-peek");
       fprintf(f, "\n");
       print_indent_tree(f, NODE_BODY(node), indent + add);
