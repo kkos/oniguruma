@@ -4198,6 +4198,8 @@ infinite_recursive_call_check(Node* node, ScanEnv* env, int head)
     break;
 
   case NODE_QUANT:
+    if (QUANT_(node)->upper == 0) break;
+
     r = infinite_recursive_call_check(NODE_BODY(node), env, head);
     if (r < 0) return r;
     if ((r & RECURSION_MUST) != 0) {
