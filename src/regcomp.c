@@ -5838,9 +5838,6 @@ tune_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
 #else
       qn->emptiness = BODY_MAY_BE_EMPTY;
 #endif
-      if (NODE_IS_RECURSION(node) && NODE_IS_INPEEK(node)) {
-        return ONIGERR_VERY_INEFFICIENT_PATTERN;
-      }
     }
   }
 
@@ -6017,6 +6014,10 @@ tune_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
 #ifdef USE_CALL
   case NODE_CALL:
+    if (NODE_IS_RECURSION(node) && NODE_IS_INPEEK(node) &&
+        NODE_IS_IN_REAL_REPEAT(node)) {
+      return ONIGERR_VERY_INEFFICIENT_PATTERN;
+    }
 #endif
   case NODE_CTYPE:
   case NODE_CCLASS:
