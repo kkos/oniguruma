@@ -5670,6 +5670,11 @@ tune_called_state_call(Node* node, int state)
     break;
 
   case NODE_CALL:
+    if ((state & IN_PEEK) != 0)
+      NODE_STATUS_ADD(node, INPEEK);
+    if ((state & IN_REAL_REPEAT) != 0)
+      NODE_STATUS_ADD(node, IN_REAL_REPEAT);
+
     tune_called_state_call(NODE_BODY(node), state);
     break;
 
@@ -5693,6 +5698,11 @@ tune_called_state(Node* node, int state)
 
 #ifdef USE_CALL
   case NODE_CALL:
+    if ((state & IN_PEEK) != 0)
+      NODE_STATUS_ADD(node, INPEEK);
+    if ((state & IN_REAL_REPEAT) != 0)
+      NODE_STATUS_ADD(node, IN_REAL_REPEAT);
+
     tune_called_state_call(node, state);
     break;
 #endif
@@ -8148,8 +8158,9 @@ print_indent_tree(FILE* f, Node* node, int indent)
       fprintf(f, "<call:%p>", node);
       fprintf(f, " num: %d, name", cn->called_gnum);
       p_string(f, cn->name_end - cn->name, cn->name);
-      if (NODE_IS_RECURSION(node))
-        fprintf(f, ", recursion");
+      if (NODE_IS_RECURSION(node)) fprintf(f, ", recursion");
+      if (NODE_IS_INPEEK(node))    fprintf(f, ", in-peek");
+      if (NODE_IS_IN_REAL_REPEAT(node)) fprintf(f, ", in-real-repeat");
     }
     break;
 #endif
