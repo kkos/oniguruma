@@ -100,6 +100,12 @@ if(MSVC)
 	  $<$<CONFIG:RelWithDebgInfo>:/MTd>
 	  )
   endif()
+  if(MSVC_VERSION LESS_EQUAL "1600")
+    # <= VS2010
+    target_compile_definitions(onig PRIVATE
+      -Dinline=__inline
+      )
+  endif()
 elseif(CMAKE_COMPILER_IS_GNUCC)
   target_compile_options(onig PRIVATE
 	-Wall
