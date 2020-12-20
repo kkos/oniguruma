@@ -30,9 +30,11 @@
 
 #include "regenc.h"
 
-#if 1
+/* #define DEBUG_GB18030 */
 
-#define DEBUG_GB18030(arg)
+#ifndef DEBUG_GB18030
+
+#define DEBUG_OUT(arg)
 
 #else
 
@@ -43,7 +45,7 @@
 /* for printf() */
 #include "regint.h"
 
-#define DEBUG_GB18030(arg) printf arg
+#define DEBUG_OUT(arg) printf arg
 
 #endif
 
@@ -177,8 +179,8 @@ gb18030_is_code_ctype(OnigCodePoint code, unsigned int ctype)
 }
 
 enum state {
-  S_START,
-  S_one_C2,
+  S_START = 0,
+  S_one_C2 = 1,
   S_one_C4,
   S_one_CM,
 
@@ -210,15 +212,43 @@ enum state {
   S_odd_CM_even_C4CM,
 };
 
+#ifdef DEBUG_GB18030
+static char* StateNames[] = {
+  "S_START",
+  "S_one_C2",
+  "S_one_C4",
+  "S_one_CM",
+  "S_odd_CM_one_CX",
+  "S_even_CM_one_CX",
+  "S_one_CMC4",
+  "S_odd_CMC4",
+  "S_one_C4_odd_CMC4",
+  "S_even_CMC4",
+  "S_one_C4_even_CMC4",
+  "S_odd_CM_odd_CMC4",
+  "S_even_CM_odd_CMC4",
+  "S_odd_CM_even_CMC4",
+  "S_even_CM_even_CMC4",
+  "S_odd_C4CM",
+  "S_one_CM_odd_C4CM",
+  "S_even_C4CM",
+  "S_one_CM_even_C4CM",
+  "S_even_CM_odd_C4CM",
+  "S_odd_CM_odd_C4CM",
+  "S_even_CM_even_C4CM",
+  "S_odd_CM_even_C4CM"
+};
+#endif
+
 static UChar*
 gb18030_left_adjust_char_head(const UChar* start, const UChar* s)
 {
   const UChar *p;
   enum state state = S_START;
 
-  DEBUG_GB18030(("----------------\n"));
+  DEBUG_OUT(("----------------\n"));
   for (p = s; p >= start; p--) {
-    DEBUG_GB18030(("state %d --(%02x)-->\n", state, *p));
+    DEBUG_OUT(("%5d: state %-19s (0x%02x)->\n", (int )(p - start), StateNames[state], *p));
     switch (state) {
     case S_START:
       switch (GB18030_MAP[*p]) {
@@ -499,7 +529,7 @@ gb18030_left_adjust_char_head(const UChar* start, const UChar* s)
     }
   }
 
-  DEBUG_GB18030(("state %d\n", state));
+  DEBUG_OUT(("state %-19s\n", StateNames[state]));
   switch (state) {
   case S_START:             return (UChar *)(s - 0);
   case S_one_C2:            return (UChar *)(s - 0);
