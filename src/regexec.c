@@ -4911,7 +4911,7 @@ sunday_quick_search_step_forward(regex_t* reg,
                                  const UChar* text_range)
 {
   const UChar *s, *se, *t, *p, *end;
-  const UChar *tail;
+  const UChar *tail, *next;
   int skip, tlen1;
   int map_offset;
   OnigEncoding enc;
@@ -4948,9 +4948,11 @@ sunday_quick_search_step_forward(regex_t* reg,
       s += enclen(enc, s);
     } while ((s - t) < skip && s < end);
 #else
-    s += skip;
-    if (s < end)
-      s = onigenc_get_right_adjust_char_head(enc, text, s);
+    next = s + skip;
+    if (next < end)
+      s = onigenc_get_right_adjust_char_head(enc, s, next);
+    else
+      break;
 #endif
   }
 
