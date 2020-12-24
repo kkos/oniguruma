@@ -5192,7 +5192,7 @@ unravel_case_fold_string(Node* node, regex_t* reg, int state)
   return r;
 }
 
-#ifdef USE_STUBBORN_CHECK_CAPTURES_IN_EMPTY_REPEAT
+#ifdef USE_RIGID_CHECK_CAPTURES_IN_EMPTY_REPEAT
 static enum BodyEmptyType
 quantifiers_memory_node_info(Node* node)
 {
@@ -5274,7 +5274,7 @@ quantifiers_memory_node_info(Node* node)
 
   return r;
 }
-#endif /* USE_STUBBORN_CHECK_CAPTURES_IN_EMPTY_REPEAT */
+#endif /* USE_RIGID_CHECK_CAPTURES_IN_EMPTY_REPEAT */
 
 
 #ifdef USE_CALL
@@ -5773,7 +5773,7 @@ tune_quant(Node* node, regex_t* reg, int state, ScanEnv* env)
   if (IS_INFINITE_REPEAT(qn->upper) || qn->upper >= 1) {
     OnigLen d = node_min_byte_len(body, env);
     if (d == 0) {
-#ifdef USE_STUBBORN_CHECK_CAPTURES_IN_EMPTY_REPEAT
+#ifdef USE_RIGID_CHECK_CAPTURES_IN_EMPTY_REPEAT
       qn->emptiness = quantifiers_memory_node_info(body);
 #else
       qn->emptiness = BODY_MAY_BE_EMPTY;
