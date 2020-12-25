@@ -7920,6 +7920,9 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
   Node* root;
   ScanEnv scan_env;
   SlowElementCount count;
+#ifdef USE_CALL
+  UnsetAddrList  uslist = {0};
+#endif
 
   reg = (regex_t* )xmalloc(sizeof(regex_t));
   if (IS_NULL(reg)) return ONIGERR_MEMORY;
@@ -7930,26 +7933,30 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
     return r;
   }
 
-  root = 0;
-  r = onig_parse_tree(&root, pattern, pattern_end, reg, &scan_env);
-  if (r == 0) {
-    count.prec_read          = 0;
-    count.look_behind        = 0;
-    count.backref            = 0;
-    count.backref_with_level = 0;
-    count.call               = 0;
+  r = parse_and_tune(reg, pattern, pattern_end, &scan_env, &root, NULL
+#ifdef USE_CALL
+                     , &uslist
+#endif
+                    );
+  if (r != 0) goto err;
 
-    r = node_detect_can_be_slow(root, &count);
-    if (r == 0) {
-      int n = count.prec_read + count.look_behind
-            + count.backref + count.backref_with_level + count.call;
-      r = n;
-    }
+  count.prec_read          = 0;
+  count.look_behind        = 0;
+  count.backref            = 0;
+  count.backref_with_level = 0;
+  count.call               = 0;
+
+  r = node_detect_can_be_slow(root, &count);
+  if (r == 0) {
+    int n = count.prec_read + count.look_behind
+      + count.backref + count.backref_with_level + count.call;
+    r = n;
   }
 
   if (IS_NOT_NULL(scan_env.mem_env_dynamic))
     xfree(scan_env.mem_env_dynamic);
 
+ err:
   onig_node_free(root);
   onig_free(reg);
   return r;
