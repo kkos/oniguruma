@@ -7316,6 +7316,110 @@ static void print_tree P_((FILE* f, Node* node));
 
 extern int onig_init_for_match_at(regex_t* reg);
 
+static int parse_and_tune(regex_t* reg, const UChar* pattern,
+  const UChar* pattern_end, ScanEnv *scan_env, Node** rroot,
+  OnigErrorInfo* einfo
+#ifdef USE_CALL
+  , UnsetAddrList* uslist
+#endif
+)
+{
+  int r;
+  Node* root;
+
+  root = NULL_NODE;
+  if (IS_NOT_NULL(einfo)) {
+    einfo->enc = reg->enc;
+    einfo->par = (UChar* )NULL;
+  }
+
+  r = onig_parse_tree(&root, pattern, pattern_end, reg, scan_env);
+  if (r != 0) goto err;
+
+  r = reduce_string_list(root, reg->enc);
+  if (r != 0) goto err;
+
+  /* mixed use named group and no-named group */
+  if (scan_env->num_named > 0 &&
+      IS_SYNTAX_BV(scan_env->syntax, ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP) &&
+      ! OPTON_CAPTURE_GROUP(reg->options)) {
+    if (scan_env->num_named != scan_env->num_mem)
+      r = disable_noname_group_capture(&root, reg, scan_env);
+    else
+      r = numbered_ref_check(root);
+
+    if (r != 0) goto err;
+  }
+
+  r = check_backrefs(root, scan_env);
+  if (r != 0) goto err;
+
+#ifdef USE_CALL
+  if (scan_env->num_call > 0) {
+    r = unset_addr_list_init(uslist, scan_env->num_call);
+    if (r != 0) goto err;
+    scan_env->unset_addr_list = uslist;
+    r = tune_call(root, scan_env, 0);
+    if (r != 0) goto err_unset;
+    r = tune_call2(root);
+    if (r != 0) goto err_unset;
+    r = recursive_call_check_trav(root, scan_env, 0);
+    if (r  < 0) goto err_unset;
+    r = infinite_recursive_call_check_trav(root, scan_env);
+    if (r != 0) goto err_unset;
+
+    tune_called_state(root, 0);
+  }
+
+  reg->num_call = scan_env->num_call;
+#endif
+
+#ifdef ONIG_DEBUG_PARSE
+  fprintf(DBGFP, "MAX PARSE DEPTH: %d\n", scan_env->max_parse_depth);
+#endif
+
+  r = tune_tree(root, reg, 0, scan_env);
+  if (r != 0) {
+#ifdef ONIG_DEBUG_PARSE
+    fprintf(DBGFP, "TREE (error in tune)\n");
+    print_tree(DBGFP, root);
+    fprintf(DBGFP, "\n");
+#endif
+    goto err_unset;
+  }
+
+  if (scan_env->backref_num != 0) {
+    set_parent_node_trav(root, NULL_NODE);
+    r = set_empty_repeat_node_trav(root, NULL_NODE, scan_env);
+    if (r != 0) goto err_unset;
+    set_empty_status_check_trav(root, scan_env);
+  }
+
+  *rroot = root;
+  return r;
+
+ err_unset:
+#ifdef USE_CALL
+  if (scan_env->num_call > 0) {
+    unset_addr_list_end(uslist);
+  }
+#endif
+ err:
+  if (IS_NOT_NULL(scan_env->error)) {
+    if (IS_NOT_NULL(einfo)) {
+      einfo->par     = scan_env->error;
+      einfo->par_end = scan_env->error_end;
+    }
+  }
+
+  onig_node_free(root);
+  if (IS_NOT_NULL(scan_env->mem_env_dynamic))
+    xfree(scan_env->mem_env_dynamic);
+
+  *rroot = NULL_NODE;
+  return r;
+}
+
 extern int
 onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
              OnigErrorInfo* einfo)
@@ -7326,12 +7430,6 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 #ifdef USE_CALL
   UnsetAddrList  uslist = {0};
 #endif
-
-  root = 0;
-  if (IS_NOT_NULL(einfo)) {
-    einfo->enc = reg->enc;
-    einfo->par = (UChar* )NULL;
-  }
 
 #ifdef ONIG_DEBUG
   fprintf(DBGFP, "\nPATTERN: /");
@@ -7344,75 +7442,23 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 
   if (reg->ops_alloc == 0) {
     r = ops_init(reg, OPS_INIT_SIZE);
-    if (r != 0) goto end;
+    if (r != 0) {
+      if (IS_NOT_NULL(einfo)) {
+        einfo->enc = reg->enc;
+        einfo->par = (UChar* )NULL;
+      }
+      return r;
+    }
   }
   else
     reg->ops_used = 0;
 
-  r = onig_parse_tree(&root, pattern, pattern_end, reg, &scan_env);
-  if (r != 0) goto err;
-
-  r = reduce_string_list(root, reg->enc);
-  if (r != 0) goto err;
-
-  /* mixed use named group and no-named group */
-  if (scan_env.num_named > 0 &&
-      IS_SYNTAX_BV(scan_env.syntax, ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP) &&
-      ! OPTON_CAPTURE_GROUP(reg->options)) {
-    if (scan_env.num_named != scan_env.num_mem)
-      r = disable_noname_group_capture(&root, reg, &scan_env);
-    else
-      r = numbered_ref_check(root);
-
-    if (r != 0) goto err;
-  }
-
-  r = check_backrefs(root, &scan_env);
-  if (r != 0) goto err;
-
+  r = parse_and_tune(reg, pattern, pattern_end, &scan_env, &root, einfo
 #ifdef USE_CALL
-  if (scan_env.num_call > 0) {
-    r = unset_addr_list_init(&uslist, scan_env.num_call);
-    if (r != 0) goto err;
-    scan_env.unset_addr_list = &uslist;
-    r = tune_call(root, &scan_env, 0);
-    if (r != 0) goto err_unset;
-    r = tune_call2(root);
-    if (r != 0) goto err_unset;
-    r = recursive_call_check_trav(root, &scan_env, 0);
-    if (r  < 0) goto err_unset;
-    r = infinite_recursive_call_check_trav(root, &scan_env);
-    if (r != 0) goto err_unset;
-
-    tune_called_state(root, 0);
-  }
-
-  reg->num_call = scan_env.num_call;
+                     , &uslist
 #endif
-
-#ifdef ONIG_DEBUG_PARSE
-  fprintf(DBGFP, "MAX PARSE DEPTH: %d\n", scan_env.max_parse_depth);
-  fprintf(DBGFP, "TREE (parsed)\n");
-  print_tree(DBGFP, root);
-  fprintf(DBGFP, "\n");
-#endif
-
-  r = tune_tree(root, reg, 0, &scan_env);
-  if (r != 0) {
-#ifdef ONIG_DEBUG_PARSE
-    fprintf(DBGFP, "TREE (error in tune)\n");
-    print_tree(DBGFP, root);
-    fprintf(DBGFP, "\n");
-#endif
-    goto err_unset;
-  }
-
-  if (scan_env.backref_num != 0) {
-    set_parent_node_trav(root, NULL_NODE);
-    r = set_empty_repeat_node_trav(root, NULL_NODE, &scan_env);
-    if (r != 0) goto err_unset;
-    set_empty_status_check_trav(root, &scan_env);
-  }
+                    );
+  if (r != 0) return r;
 
 #ifdef ONIG_DEBUG_PARSE
   fprintf(DBGFP, "TREE (after tune)\n");
@@ -7445,7 +7491,14 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   clear_optimize_info(reg);
 #ifndef ONIG_DONT_OPTIMIZE
   r = set_optimize_info_from_tree(root, reg, &scan_env);
-  if (r != 0) goto err_unset;
+  if (r != 0)  {
+#ifdef USE_CALL
+    if (scan_env.num_call > 0) {
+      unset_addr_list_end(&uslist);
+    }
+#endif
+    goto err;
+  }
 #endif
 
   if (IS_NOT_NULL(scan_env.mem_env_dynamic)) {
@@ -7517,15 +7570,8 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   onig_init_for_match_at(reg);
 #endif
 
- end:
   return r;
 
- err_unset:
-#ifdef USE_CALL
-  if (scan_env.num_call > 0) {
-    unset_addr_list_end(&uslist);
-  }
-#endif
  err:
   if (IS_NOT_NULL(scan_env.error)) {
     if (IS_NOT_NULL(einfo)) {
