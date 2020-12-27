@@ -7972,6 +7972,12 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
                     );
   if (r != 0) goto err;
 
+#ifdef USE_CALL
+  if (scan_env.num_call > 0) {
+    unset_addr_list_end(&uslist);
+  }
+#endif
+
   count.prec_read          = 0;
   count.look_behind        = 0;
   count.backref            = 0;
