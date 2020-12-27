@@ -4625,8 +4625,9 @@ reduce_string_list(Node* node, OnigEncoding enc)
 #define IN_VAR_REPEAT   (1<<3)
 #define IN_ZERO_REPEAT  (1<<4)
 #define IN_MULTI_ENTRY  (1<<5)
-#define IN_LOOK_BEHIND  (1<<6)
-#define IN_PEEK         (1<<7)
+#define IN_PREC_READ    (1<<6)
+#define IN_LOOK_BEHIND  (1<<7)
+#define IN_PEEK         (1<<8)
 
 /* divide different length alternatives in look-behind.
   (?<=A|B) ==> (?<=A)|(?<=B)
@@ -5734,10 +5735,11 @@ tune_anchor(Node* node, regex_t* reg, int state, ScanEnv* env)
 
   switch (an->type) {
   case ANCR_PREC_READ:
-    r = tune_tree(NODE_ANCHOR_BODY(an), reg, state, env);
+    r = tune_tree(NODE_ANCHOR_BODY(an), reg, (state | IN_PREC_READ), env);
     break;
   case ANCR_PREC_READ_NOT:
-    r = tune_tree(NODE_ANCHOR_BODY(an), reg, (state | IN_NOT), env);
+    r = tune_tree(NODE_ANCHOR_BODY(an), reg, (state | IN_PREC_READ | IN_NOT),
+                  env);
     break;
 
   case ANCR_LOOK_BEHIND:
@@ -5945,6 +5947,9 @@ tune_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
     break;
 
   case NODE_QUANT:
+    if ((state & (IN_PREC_READ | IN_LOOK_BEHIND)) != 0)
+      NODE_STATUS_ADD(node, INPEEK);
+
     r = tune_quant(node, reg, state, env);
     break;
 
