@@ -7829,6 +7829,8 @@ typedef struct {
   int backref;
   int backref_with_level;
   int call;
+  int empty_check_nest_level;
+  int max_empty_check_nest_level;
 } SlowElementCount;
 
 static int
@@ -7847,7 +7849,16 @@ node_detect_can_be_slow(Node* node, SlowElementCount* ct)
     break;
 
   case NODE_QUANT:
+    if (QUANT_(node)->emptiness != BODY_IS_NOT_EMPTY) {
+      ct->empty_check_nest_level++;
+      if (ct->empty_check_nest_level > ct->max_empty_check_nest_level)
+        ct->max_empty_check_nest_level = ct->empty_check_nest_level;
+    }
+
     r = node_detect_can_be_slow(NODE_BODY(node), ct);
+
+    if (QUANT_(node)->emptiness != BODY_IS_NOT_EMPTY)
+      ct->empty_check_nest_level--;
     break;
 
   case NODE_ANCHOR:
@@ -7900,6 +7911,9 @@ node_detect_can_be_slow(Node* node, SlowElementCount* ct)
 #ifdef USE_CALL
   case NODE_CALL:
     ct->call++;
+    if (! NODE_IS_RECURSION(node)) {
+      r = node_detect_can_be_slow(NODE_BODY(node), ct);
+    }
     break;
 #endif
 
@@ -7945,6 +7959,8 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
   count.backref            = 0;
   count.backref_with_level = 0;
   count.call               = 0;
+  count.empty_check_nest_level     = 0;
+  count.max_empty_check_nest_level = 0;
 
   r = node_detect_can_be_slow(root, &count);
   if (r == 0) {
