@@ -7836,6 +7836,7 @@ typedef struct {
   int call;
   int empty_check_nest_level;
   int max_empty_check_nest_level;
+  int heavy_element;
 } SlowElementCount;
 
 static int
@@ -7854,16 +7855,28 @@ node_detect_can_be_slow(Node* node, SlowElementCount* ct)
     break;
 
   case NODE_QUANT:
-    if (QUANT_(node)->emptiness != BODY_IS_NOT_EMPTY) {
-      ct->empty_check_nest_level++;
-      if (ct->empty_check_nest_level > ct->max_empty_check_nest_level)
-        ct->max_empty_check_nest_level = ct->empty_check_nest_level;
+    {
+      int prev_heavy_element;
+
+      if (QUANT_(node)->emptiness != BODY_IS_NOT_EMPTY) {
+        prev_heavy_element = ct->heavy_element;
+        ct->empty_check_nest_level++;
+        if (ct->empty_check_nest_level > ct->max_empty_check_nest_level)
+          ct->max_empty_check_nest_level = ct->empty_check_nest_level;
+      }
+
+      r = node_detect_can_be_slow(NODE_BODY(node), ct);
+
+      if (QUANT_(node)->emptiness != BODY_IS_NOT_EMPTY) {
+        if (NODE_IS_INPEEK(node)) {
+          if (ct->empty_check_nest_level > 2) {
+            if (prev_heavy_element == ct->heavy_element)
+              ct->heavy_element++;
+          }
+        }
+        ct->empty_check_nest_level--;
+      }
     }
-
-    r = node_detect_can_be_slow(NODE_BODY(node), ct);
-
-    if (QUANT_(node)->emptiness != BODY_IS_NOT_EMPTY)
-      ct->empty_check_nest_level--;
     break;
 
   case NODE_ANCHOR:
@@ -7966,11 +7979,15 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
   count.call               = 0;
   count.empty_check_nest_level     = 0;
   count.max_empty_check_nest_level = 0;
+  count.heavy_element = 0;
 
   r = node_detect_can_be_slow(root, &count);
   if (r == 0) {
     int n = count.prec_read + count.look_behind
-      + count.backref + count.backref_with_level + count.call;
+          + count.backref + count.backref_with_level + count.call;
+    if (count.heavy_element != 0)
+      n += 10;
+
     r = n;
   }
 
