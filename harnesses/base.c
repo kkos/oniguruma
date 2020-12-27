@@ -303,6 +303,9 @@ alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   if (rem_size > MAX_REM_SIZE) rem_size = MAX_REM_SIZE;
 
   sl = onig_detect_can_be_slow_pattern(pattern, pattern_end, options, enc, syntax);
+#ifdef STANDALONE
+  fprintf(stdout, "sl: %d\n", sl);
+#endif
   if (sl > 0) {
     if (rem_size > MAX_SLOW_REM_SIZE)
       rem_size = MAX_SLOW_REM_SIZE;
