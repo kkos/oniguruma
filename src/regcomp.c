@@ -7840,7 +7840,7 @@ typedef struct {
 } SlowElementCount;
 
 static int
-node_detect_can_be_slow(Node* node, SlowElementCount* ct)
+detect_can_be_slow(Node* node, SlowElementCount* ct)
 {
   int r;
 
@@ -7849,7 +7849,7 @@ node_detect_can_be_slow(Node* node, SlowElementCount* ct)
   case NODE_LIST:
   case NODE_ALT:
     do {
-      r = node_detect_can_be_slow(NODE_CAR(node), ct);
+      r = detect_can_be_slow(NODE_CAR(node), ct);
       if (r != 0) return r;
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
@@ -7865,7 +7865,7 @@ node_detect_can_be_slow(Node* node, SlowElementCount* ct)
           ct->max_empty_check_nest_level = ct->empty_check_nest_level;
       }
 
-      r = node_detect_can_be_slow(NODE_BODY(node), ct);
+      r = detect_can_be_slow(NODE_BODY(node), ct);
 
       if (QUANT_(node)->emptiness != BODY_IS_NOT_EMPTY) {
         if (NODE_IS_INPEEK(node)) {
@@ -7894,23 +7894,23 @@ node_detect_can_be_slow(Node* node, SlowElementCount* ct)
     }
 
     if (ANCHOR_HAS_BODY(ANCHOR_(node)))
-      r = node_detect_can_be_slow(NODE_BODY(node), ct);
+      r = detect_can_be_slow(NODE_BODY(node), ct);
     break;
 
   case NODE_BAG:
     {
       BagNode* en = BAG_(node);
 
-      r = node_detect_can_be_slow(NODE_BODY(node), ct);
+      r = detect_can_be_slow(NODE_BODY(node), ct);
       if (r != 0) return r;
 
       if (en->type == BAG_IF_ELSE) {
         if (IS_NOT_NULL(en->te.Then)) {
-          r = node_detect_can_be_slow(en->te.Then, ct);
+          r = detect_can_be_slow(en->te.Then, ct);
           if (r != 0) return r;
         }
         if (IS_NOT_NULL(en->te.Else)) {
-          r = node_detect_can_be_slow(en->te.Else, ct);
+          r = detect_can_be_slow(en->te.Else, ct);
           if (r != 0) return r;
         }
       }
@@ -7930,7 +7930,7 @@ node_detect_can_be_slow(Node* node, SlowElementCount* ct)
   case NODE_CALL:
     ct->call++;
     if (! NODE_IS_RECURSION(node)) {
-      r = node_detect_can_be_slow(NODE_BODY(node), ct);
+      r = detect_can_be_slow(NODE_BODY(node), ct);
     }
     break;
 #endif
@@ -7987,7 +7987,7 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
   count.max_empty_check_nest_level = 0;
   count.heavy_element = 0;
 
-  r = node_detect_can_be_slow(root, &count);
+  r = detect_can_be_slow(root, &count);
   if (r == 0) {
     int n = count.prec_read + count.look_behind
           + count.backref + count.backref_with_level + count.call;
