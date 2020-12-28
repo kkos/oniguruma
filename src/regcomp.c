@@ -7828,6 +7828,9 @@ onig_is_code_in_cc(OnigEncoding enc, OnigCodePoint code, CClassNode* cc)
   return onig_is_code_in_cc_len(len, code, cc);
 }
 
+
+#define MAX_CALLS_IN_DETECT   10
+
 typedef struct {
   int prec_read;
   int look_behind;
@@ -7840,7 +7843,7 @@ typedef struct {
 } SlowElementCount;
 
 static int
-detect_can_be_slow(Node* node, SlowElementCount* ct)
+detect_can_be_slow(Node* node, SlowElementCount* ct, int ncall, int calls[])
 {
   int r;
 
@@ -7849,7 +7852,7 @@ detect_can_be_slow(Node* node, SlowElementCount* ct)
   case NODE_LIST:
   case NODE_ALT:
     do {
-      r = detect_can_be_slow(NODE_CAR(node), ct);
+      r = detect_can_be_slow(NODE_CAR(node), ct, ncall, calls);
       if (r != 0) return r;
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
@@ -7865,7 +7868,7 @@ detect_can_be_slow(Node* node, SlowElementCount* ct)
           ct->max_empty_check_nest_level = ct->empty_check_nest_level;
       }
 
-      r = detect_can_be_slow(NODE_BODY(node), ct);
+      r = detect_can_be_slow(NODE_BODY(node), ct, ncall, calls);
 
       if (QUANT_(node)->emptiness != BODY_IS_NOT_EMPTY) {
         if (NODE_IS_INPEEK(node)) {
@@ -7894,23 +7897,23 @@ detect_can_be_slow(Node* node, SlowElementCount* ct)
     }
 
     if (ANCHOR_HAS_BODY(ANCHOR_(node)))
-      r = detect_can_be_slow(NODE_BODY(node), ct);
+      r = detect_can_be_slow(NODE_BODY(node), ct, ncall, calls);
     break;
 
   case NODE_BAG:
     {
       BagNode* en = BAG_(node);
 
-      r = detect_can_be_slow(NODE_BODY(node), ct);
+      r = detect_can_be_slow(NODE_BODY(node), ct, ncall, calls);
       if (r != 0) return r;
 
       if (en->type == BAG_IF_ELSE) {
         if (IS_NOT_NULL(en->te.Then)) {
-          r = detect_can_be_slow(en->te.Then, ct);
+          r = detect_can_be_slow(en->te.Then, ct, ncall, calls);
           if (r != 0) return r;
         }
         if (IS_NOT_NULL(en->te.Else)) {
-          r = detect_can_be_slow(en->te.Else, ct);
+          r = detect_can_be_slow(en->te.Else, ct, ncall, calls);
           if (r != 0) return r;
         }
       }
@@ -7928,9 +7931,31 @@ detect_can_be_slow(Node* node, SlowElementCount* ct)
 
 #ifdef USE_CALL
   case NODE_CALL:
-    ct->call++;
-    if (! NODE_IS_RECURSION(node)) {
-      r = detect_can_be_slow(NODE_BODY(node), ct);
+    {
+      int i;
+      int found;
+      int gnum;
+
+      gnum = CALL_(node)->called_gnum;
+      ct->call++;
+
+      found = FALSE;
+      for (i = 0; i < ncall; i++) {
+        if (gnum == calls[i]) {
+          found = TRUE;
+          break;
+        }
+      }
+
+      if (! found) {
+        if (ncall + 1 < MAX_CALLS_IN_DETECT) {
+          calls[ncall] = gnum;
+          r = detect_can_be_slow(NODE_BODY(node), ct, ncall + 1, calls);
+        }
+        else {
+          ct->heavy_element++;
+        }
+      }
     }
     break;
 #endif
@@ -7952,6 +7977,7 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
   Node* root;
   ScanEnv scan_env;
   SlowElementCount count;
+  int calls[MAX_CALLS_IN_DETECT];
 #ifdef USE_CALL
   UnsetAddrList  uslist = {0};
 #endif
@@ -7987,7 +8013,7 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
   count.max_empty_check_nest_level = 0;
   count.heavy_element = 0;
 
-  r = detect_can_be_slow(root, &count);
+  r = detect_can_be_slow(root, &count, 0, calls);
   if (r == 0) {
     int n = count.prec_read + count.look_behind
           + count.backref + count.backref_with_level + count.call;
