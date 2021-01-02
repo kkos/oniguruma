@@ -1,6 +1,6 @@
 /*
  * base.c  contributed by Mark Griffin
- * Copyright (c) 2019-2020  K.Kosako
+ * Copyright (c) 2019-2021  K.Kosako
  */
 #include <stdio.h>
 #include <unistd.h>
@@ -133,6 +133,12 @@ output_current_time(FILE* fp)
 #endif
 
 static int
+progress_callout_func(OnigCalloutArgs* args, void* user_data)
+{
+  return ONIG_CALLOUT_SUCCESS;
+}
+
+static int
 search(regex_t* reg, unsigned char* str, unsigned char* end, OnigOptionType options, int backward, int sl)
 {
   int r;
@@ -235,6 +241,7 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   EXEC_COUNT_INTERVAL++;
 
   onig_initialize(&enc, 1);
+  (void)onig_set_progress_callout(progress_callout_func);
 #ifdef PARSE_DEPTH_LIMIT
   onig_set_parse_depth_limit(PARSE_DEPTH_LIMIT);
 #endif
