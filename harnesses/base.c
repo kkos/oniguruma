@@ -20,6 +20,7 @@
 #define MATCH_STACK_LIMIT        10000000
 #define MAX_REM_SIZE              1048576
 #define MAX_SLOW_REM_SIZE            1024
+#define MAX_SLOW_REM_SIZE2            100
 #define SLOW_RETRY_LIMIT             2000
 #define SLOW_SUBEXP_CALL_LIMIT        100
 #define MAX_SLOW_BACKWARD_REM_SIZE    200
@@ -314,8 +315,14 @@ alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   fprintf(stdout, "sl: %d\n", sl);
 #endif
   if (sl > 0) {
-    if (rem_size > MAX_SLOW_REM_SIZE)
-      rem_size = MAX_SLOW_REM_SIZE;
+    if (sl >= 10) {
+      if (rem_size > MAX_SLOW_REM_SIZE2)
+        rem_size = MAX_SLOW_REM_SIZE2;
+    }
+    else {
+      if (rem_size > MAX_SLOW_REM_SIZE)
+        rem_size = MAX_SLOW_REM_SIZE;
+    }
   }
   if (backward != 0 && enc == ONIG_ENCODING_GB18030) {
     if (rem_size > MAX_SLOW_BACKWARD_REM_SIZE)

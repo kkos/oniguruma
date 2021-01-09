@@ -5959,10 +5959,6 @@ tune_tree(Node* node, regex_t* reg, int state, ScanEnv* env)
 
 #ifdef USE_CALL
   case NODE_CALL:
-    if (NODE_IS_RECURSION(node) && NODE_IS_INPEEK(node) &&
-        NODE_IS_IN_REAL_REPEAT(node)) {
-      return ONIGERR_VERY_INEFFICIENT_PATTERN;
-    }
 #endif
   case NODE_CTYPE:
   case NODE_CCLASS:
@@ -7938,6 +7934,11 @@ detect_can_be_slow(Node* node, SlowElementCount* ct, int ncall, int calls[])
 
       gnum = CALL_(node)->called_gnum;
       ct->call++;
+
+      if (NODE_IS_RECURSION(node) && NODE_IS_INPEEK(node) &&
+          NODE_IS_IN_REAL_REPEAT(node)) {
+         ct->heavy_element++;
+      }
 
       found = FALSE;
       for (i = 0; i < ncall; i++) {
