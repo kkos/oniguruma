@@ -28,8 +28,13 @@
 //#define EXEC_PRINT_INTERVAL      500000
 //#define DUMP_DATA_INTERVAL       100000
 //#define STAT_PATH                "fuzzer.stat_log"
+//#define PREV_CONTROL
 
+#ifdef PREV_CONTROL
+#define OPTIONS_AT_COMPILE   (ONIG_OPTION_IGNORECASE | ONIG_OPTION_EXTEND | ONIG_OPTION_MULTILINE | ONIG_OPTION_SINGLELINE | ONIG_OPTION_FIND_LONGEST | ONIG_OPTION_FIND_NOT_EMPTY | ONIG_OPTION_NEGATE_SINGLELINE | ONIG_OPTION_DONT_CAPTURE_GROUP | ONIG_OPTION_CAPTURE_GROUP | ONIG_OPTION_WORD_IS_ASCII | ONIG_OPTION_DIGIT_IS_ASCII | ONIG_OPTION_SPACE_IS_ASCII | ONIG_OPTION_POSIX_IS_ASCII | ONIG_OPTION_TEXT_SEGMENT_EXTENDED_GRAPHEME_CLUSTER | ONIG_OPTION_TEXT_SEGMENT_WORD)
+#else
 #define OPTIONS_AT_COMPILE   (ONIG_OPTION_IGNORECASE | ONIG_OPTION_EXTEND | ONIG_OPTION_MULTILINE | ONIG_OPTION_SINGLELINE | ONIG_OPTION_FIND_LONGEST | ONIG_OPTION_FIND_NOT_EMPTY | ONIG_OPTION_NEGATE_SINGLELINE | ONIG_OPTION_DONT_CAPTURE_GROUP | ONIG_OPTION_CAPTURE_GROUP | ONIG_OPTION_WORD_IS_ASCII | ONIG_OPTION_DIGIT_IS_ASCII | ONIG_OPTION_SPACE_IS_ASCII | ONIG_OPTION_POSIX_IS_ASCII | ONIG_OPTION_TEXT_SEGMENT_EXTENDED_GRAPHEME_CLUSTER | ONIG_OPTION_TEXT_SEGMENT_WORD | ONIG_OPTION_IGNORECASE_IS_ASCII)
+#endif
 
 #define OPTIONS_AT_RUNTIME   (ONIG_OPTION_NOTBOL | ONIG_OPTION_NOTEOL | ONIG_OPTION_CHECK_VALIDITY_OF_STRING | ONIG_OPTION_NOT_BEGIN_STRING | ONIG_OPTION_NOT_END_STRING | ONIG_OPTION_NOT_BEGIN_POSITION)
 
@@ -347,10 +352,18 @@ alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   return r;
 }
 
+#ifdef PREV_CONTROL
+#ifdef SYNTAX_TEST
+#define NUM_CONTROL_BYTES      7
+#else
+#define NUM_CONTROL_BYTES      6
+#endif
+#else
 #ifdef SYNTAX_TEST
 #define NUM_CONTROL_BYTES      8
 #else
 #define NUM_CONTROL_BYTES      7
+#endif
 #endif
 
 int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
@@ -483,15 +496,22 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   syntax = ONIG_SYNTAX_DEFAULT;
 #endif
 
+#ifdef PREV_CONTROL
+  if ((data[2] & 0xc0) == 0)
+    options = data[0] | (data[1] << 8) | (data[2] << 16);
+#else
   if ((data[3] & 0xc0) == 0)
     options = data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
+#endif
   else
     options = data[0] & ONIG_OPTION_IGNORECASE;
 
   data++; rem_size--;
   data++; rem_size--;
   data++; rem_size--;
+#ifndef PREV_CONTROL
   data++; rem_size--;
+#endif
 
   pattern_size_choice = data[0];
   data++; rem_size--;
