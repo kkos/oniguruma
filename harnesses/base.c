@@ -58,6 +58,22 @@ unsigned char TestPattern[] = {
 
 #endif /* TEST_PATTERN */
 
+#ifdef STANDALONE
+static void
+to_binary(unsigned int v, char s[/* 33 */])
+{
+  unsigned int mask;
+  int i;
+
+  mask = 1 << (sizeof(v) * 8 - 1);
+  i = 0;
+  do {
+    s[i++] = (mask & v ? '1' : '0');
+  } while (mask >>= 1);
+  s[i] = 0;
+}
+#endif
+
 #ifdef DUMP_INPUT
 static void
 dump_input(unsigned char* data, size_t len)
@@ -531,18 +547,22 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   }
 
 #ifdef STANDALONE
-  dump_data(stdout, data, pattern_size);
+  {
+    char soptions[33];
+
+    dump_data(stdout, data, pattern_size);
+    to_binary(options, soptions);
 #ifdef SYNTAX_TEST
-  fprintf(stdout,
-          "enc: %s, syntax: %s, options: %u, pattern_size: %d, back:%d\n",
-          ONIGENC_NAME(enc),
-          syntax_names[syntax_choice % num_syntaxes],
-          options,
-          pattern_size, backward);
+    fprintf(stdout,
+	    "enc: %s, syntax: %s, pattern_size: %d, back:%d\noptions: %s\n",
+	    ONIGENC_NAME(enc),
+	    syntax_names[syntax_choice % num_syntaxes],
+	    pattern_size, backward, soptions);
 #else
-  fprintf(stdout, "enc: %s, options: %u, pattern_size: %d, back:%d\n",
-          ONIGENC_NAME(enc), options, pattern_size, backward);
+    fprintf(stdout, "enc: %s, pattern_size: %d, back:%d\noptions: %s\n",
+	    ONIGENC_NAME(enc), pattern_size, backward, soptions);
 #endif
+  }
 #endif
 
 #ifdef DUMP_INPUT
