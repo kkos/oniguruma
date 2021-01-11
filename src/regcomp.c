@@ -7937,7 +7937,7 @@ detect_can_be_slow(Node* node, SlowElementCount* ct, int ncall, int calls[])
 
       if (NODE_IS_RECURSION(node) && NODE_IS_INPEEK(node) &&
           NODE_IS_IN_REAL_REPEAT(node)) {
-         ct->heavy_element++;
+         ct->heavy_element += 10;
       }
 
       found = FALSE;
@@ -8019,7 +8019,7 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
     int n = count.prec_read + count.look_behind
           + count.backref + count.backref_with_level + count.call;
     if (count.heavy_element != 0)
-      n += 10;
+      n += count.heavy_element * 10;
 
     r = n;
   }

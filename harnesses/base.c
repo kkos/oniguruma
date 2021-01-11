@@ -320,7 +320,7 @@ alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   fprintf(stdout, "sl: %d\n", sl);
 #endif
   if (sl > 0) {
-    if (sl >= 10) {
+    if (sl >= 100) {
       if (rem_size > MAX_SLOW_REM_SIZE2)
         rem_size = MAX_SLOW_REM_SIZE2;
     }
