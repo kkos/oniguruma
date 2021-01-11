@@ -140,6 +140,7 @@ dump_data(FILE* fp, unsigned char* data, int len)
 
 #else
 
+#ifdef EXEC_PRINT_INTERVAL
 static void
 output_current_time(FILE* fp)
 {
@@ -151,6 +152,7 @@ output_current_time(FILE* fp)
 
   fprintf(fp, "%s", d);
 }
+#endif
 
 #endif
 
@@ -468,7 +470,9 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
   OnigSyntaxType* syntax;
 
 #ifndef STANDALONE
+#ifdef EXEC_PRINT_INTERVAL
   static FILE* STAT_FP;
+#endif
 #endif
 
   INPUT_COUNT++;
