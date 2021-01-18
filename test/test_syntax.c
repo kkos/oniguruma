@@ -260,6 +260,9 @@ extern int main(int argc, char* argv[])
   x2("\\u0041", "A", 0, 1);
   x2("\\U00000041", "A", 0, 1);
   e("\\U0041", "A", ONIGERR_INVALID_CODE_POINT_VALUE);
+  x2("a\\Z", "a", 0, 1);
+  n("a\\Z", "a\n");
+  e("\\z", "a", ONIGERR_UNDEFINED_OPERATOR);
 
 
   fprintf(stdout,
