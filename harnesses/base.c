@@ -441,6 +441,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
     ONIG_SYNTAX_GNU_REGEX,
     ONIG_SYNTAX_JAVA,
     ONIG_SYNTAX_PERL_NG,
+    ONIG_SYNTAX_PYTHON,
     ONIG_SYNTAX_ONIGURUMA
   };
 
@@ -452,6 +453,7 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
     "GNU Regex",
     "Java",
     "Perl+NG",
+    "Python",
     "Oniguruma"
   };
 #endif
