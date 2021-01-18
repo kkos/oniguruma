@@ -242,13 +242,20 @@ static int test_python_z()
   x2("a\\Z", "a", 0, 1);
   n("a\\Z", "a\n");
   e("\\z", "a", ONIGERR_UNDEFINED_OPERATOR);
+
+  return 0;
+}
+
+static int test_python_single_multi()
+{
   n(".", "\n");
   x2("(?s).", "\n", 0, 1);
+
   n("^abc", "\nabc");
   x2("(?m)^abc", "\nabc", 1, 4);
   n("abc$", "abc\ndef");
   x2("abc$", "abc\n", 0, 3);
-  x2("(?m)abc$", "abc\n", 0, 3);
+  x2("(?m)abc$", "abc\ndef", 0, 3);
 
   return 0;
 }
@@ -294,6 +301,7 @@ extern int main(int argc, char* argv[])
   test_reluctant_interval();
   test_python_option_ascii();
   test_python_z();
+  test_python_single_multi();
   x2("(?P<name>abc)", "abc", 0, 3);
   x2("(?P<name>abc)(?P=name)", "abcabc", 0, 6);
   x2("(?P<name>abc){0}(?P>name)", "abc", 0, 3);
