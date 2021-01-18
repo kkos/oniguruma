@@ -5061,6 +5061,7 @@ fetch_token_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env, int state)
   int r;
   OnigCodePoint code;
   OnigCodePoint c, c2;
+  int mindigits, maxdigits;
   OnigSyntaxType* syn = env->syntax;
   OnigEncoding enc = env->enc;
   UChar* prev;
@@ -5249,10 +5250,11 @@ fetch_token_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env, int state)
 
     case 'u':
       if (PEND) break;
-
       prev = p;
       if (IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_U_HEX4)) {
-        r = scan_hexadecimal_number(&p, end, 4, 4, enc, &code);
+        mindigits = maxdigits = 4;
+      u_hex_digits:
+        r = scan_hexadecimal_number(&p, end, mindigits, maxdigits, enc, &code);
         if (r < 0) return r;
         if (p == prev) {  /* can't read nothing. */
           code = 0; /* but, it's not error */
@@ -5260,6 +5262,15 @@ fetch_token_cc(PToken* tok, UChar** src, UChar* end, ScanEnv* env, int state)
         tok->type = TK_CODE_POINT;
         tok->base_num = 16;
         tok->u.code   = code;
+      }
+      break;
+
+    case 'U':
+      if (PEND) break;
+      prev = p;
+      if (IS_SYNTAX_BV(syn, ONIG_SYN_PYTHON)) {
+        mindigits = maxdigits = 8;
+        goto u_hex_digits;
       }
       break;
 
@@ -5334,6 +5345,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   int r;
   OnigCodePoint code;
   OnigCodePoint c;
+  int mindigits, maxdigits;
   UChar* prev;
   int allow_num;
   OnigEncoding enc;
@@ -5676,10 +5688,11 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
     case 'u':
       if (PEND) break;
-
       prev = p;
+      mindigits = maxdigits = 4;
       if (IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_U_HEX4)) {
-        r = scan_hexadecimal_number(&p, end, 4, 4, enc, &code);
+    u_hex_digits:
+        r = scan_hexadecimal_number(&p, end, mindigits, maxdigits, enc, &code);
         if (r < 0) return r;
         if (p == prev) {  /* can't read nothing. */
           code = 0; /* but, it's not error */
@@ -5687,6 +5700,15 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
         tok->type = TK_CODE_POINT;
         tok->base_num = 16;
         tok->u.code   = code;
+      }
+      break;
+
+    case 'U':
+      if (PEND) break;
+      prev = p;
+      if (IS_SYNTAX_BV(syn, ONIG_SYN_PYTHON)) {
+        mindigits = maxdigits = 8;
+        goto u_hex_digits;
       }
       break;
 
