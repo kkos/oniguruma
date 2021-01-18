@@ -257,6 +257,9 @@ extern int main(int argc, char* argv[])
   x2("(?P<name>abc)(?P=name)", "abcabc", 0, 6);
   x2("(?P<name>abc){0}(?P>name)", "abc", 0, 3);
   x2("(?P<expr>[^()]+|\\((?P>expr)\\)){0}(?P>expr)", "((((xyz))))", 0, 11);
+  x2("\\u0041", "A", 0, 1);
+  x2("\\U00000041", "A", 0, 1);
+  e("\\U0041", "A", ONIGERR_INVALID_CODE_POINT_VALUE);
 
 
   fprintf(stdout,
