@@ -5594,12 +5594,20 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
       break;
 
     case 'Z':
-      if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_AZ_BUF_ANCHOR)) break;
-      tok->type = TK_ANCHOR;
-      tok->u.subtype = ANCR_SEMI_END_BUF;
+      if (IS_SYNTAX_BV(syn, ONIG_SYN_PYTHON)) {
+        goto end_buf;
+      }
+      else {
+        if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_AZ_BUF_ANCHOR)) break;
+        tok->type = TK_ANCHOR;
+        tok->u.subtype = ANCR_SEMI_END_BUF;
+      }
       break;
 
     case 'z':
+      if (IS_SYNTAX_BV(syn, ONIG_SYN_PYTHON))
+        return ONIGERR_UNDEFINED_OPERATOR;
+
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_AZ_BUF_ANCHOR)) break;
     end_buf:
       tok->type = TK_ANCHOR;
