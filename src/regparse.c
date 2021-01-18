@@ -2,7 +2,7 @@
   regparse.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2020  K.Kosako
+ * Copyright (c) 2002-2021  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -5753,7 +5753,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
 
           allow_num = 1;
 
-	backref_start:
+        backref_start:
           prev = p;
 
 #ifdef USE_BACKREF_WITH_LEVEL
@@ -5993,6 +5993,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
     case '(':
       if (!PEND && PPEEK_IS('?') &&
           IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_QMARK_GROUP_EFFECT)) {
+        prev = p;
         PINC;
         if (! PEND) {
           c = PPEEK;
@@ -6083,6 +6084,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
           else if (c == 'P' &&
                    IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_CAPITAL_P_NAME)) {
             if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+            PINC; /* skip 'P' */
             PFETCH(c);
             allow_num = 0;
             if (c == '=') {
@@ -6093,14 +6095,17 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
               c = '(';
               goto call_start;
             }
-            else
-              return ONIGERR_UNDEFINED_GROUP_OPTION;
+            else {
+              p = prev;
+              goto lparen_qmark_end2;
+            }
           }
         }
       lparen_qmark_end:
         PUNFETCH;
       }
 
+    lparen_qmark_end2:
       if (! IS_SYNTAX_OP(syn, ONIG_SYN_OP_LPAREN_SUBEXP)) break;
       tok->type = TK_SUBEXP_OPEN;
       break;
