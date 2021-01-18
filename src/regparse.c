@@ -6113,8 +6113,8 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
           }
           else if (c == 'P' &&
                    IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_CAPITAL_P_NAME)) {
-            if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
             PINC; /* skip 'P' */
+            if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
             PFETCH(c);
             allow_num = 0;
             if (c == '=') {
