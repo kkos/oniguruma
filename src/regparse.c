@@ -5334,10 +5334,16 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
   int r;
   OnigCodePoint code;
   OnigCodePoint c;
-  OnigEncoding enc = env->enc;
-  OnigSyntaxType* syn = env->syntax;
   UChar* prev;
-  UChar* p = *src;
+  int allow_num;
+  OnigEncoding enc;
+  OnigSyntaxType* syn;
+  UChar* p;
+
+  enc = env->enc;
+  syn = env->syntax;
+  p = *src;
+
   PFETCH_READY;
 
   if (tok->code_point_continue != 0) {
@@ -5745,6 +5751,9 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
           int back_num;
           enum REF_NUM num_type;
 
+          allow_num = 1;
+
+	backref_start:
           prev = p;
 
 #ifdef USE_BACKREF_WITH_LEVEL
@@ -5759,6 +5768,8 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
           if (r < 0) return r;
 
           if (num_type != IS_NOT_NUM) {
+            if (allow_num == 0) return ONIGERR_INVALID_BACKREF;
+
             if (num_type == IS_REL_NUM) {
               back_num = backref_rel_to_abs(back_num, env);
             }
@@ -5815,12 +5826,17 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
           UChar* name_end;
           enum REF_NUM num_type;
 
+          allow_num = 1;
+
+        call_start:
           prev = p;
           r = fetch_name((OnigCodePoint )c, &p, end, &name_end, env,
                          &gnum, &num_type, TRUE);
           if (r < 0) return r;
 
           if (num_type != IS_NOT_NUM) {
+            if (allow_num == 0) return ONIGERR_UNDEFINED_GROUP_REFERENCE;
+
             if (num_type == IS_REL_NUM) {
               gnum = backref_rel_to_abs(gnum, env);
               if (gnum < 0) {
@@ -6063,6 +6079,22 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
               }
               break;
             }
+          }
+          else if (c == 'P' &&
+                   IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_CAPITAL_P_NAME)) {
+            if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+            PFETCH(c);
+            allow_num = 0;
+            if (c == '=') {
+              c = '(';
+              goto backref_start;
+            }
+            else if (c == '>') {
+              c = '(';
+              goto call_start;
+            }
+            else
+              return ONIGERR_UNDEFINED_GROUP_OPTION;
           }
         }
       lparen_qmark_end:
@@ -7934,12 +7966,25 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
       break;
 #endif
 
+    case 'P':
+      if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_CAPITAL_P_NAME)) {
+        if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
+        PFETCH(c);
+        if (c == '<') goto named_group1;
+
+        return ONIGERR_UNDEFINED_GROUP_OPTION;
+      }
+      /* else fall */
+    case 'W': case 'D': case 'S':
+    case 'y':
+      if (! IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_OPTION_ONIGURUMA))
+        return ONIGERR_UNDEFINED_GROUP_OPTION;
+      /* else fall */
+
 #ifdef USE_POSIXLINE_OPTION
     case 'p':
 #endif
     case '-': case 'i': case 'm': case 's': case 'x':
-    case 'W': case 'D': case 'S': case 'P':
-    case 'y':
       {
         int neg = 0;
 
