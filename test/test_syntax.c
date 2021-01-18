@@ -1,6 +1,6 @@
 /*
  * test_syntax.c
- * Copyright (c) 2019-2020  K.Kosako
+ * Copyright (c) 2019-2021  K.Kosako
  */
 #include "config.h"
 #ifdef ONIG_ESCAPE_UCHAR_COLLISION
@@ -139,7 +139,7 @@ static void e(char* pattern, char* str, int error_no)
   xx(pattern, str, 0, 0, 0, 0, error_no);
 }
 
-static int test_fixed_interval()
+static int test_reluctant_interval()
 {
   x2("a{1,3}?", "aaa", 0, 1);
   x2("a{3}", "aaa", 0, 3);
@@ -148,6 +148,11 @@ static int test_fixed_interval()
   x2("a{3,3}?", "aaa", 0, 3);
   n("a{3,3}?", "aa");
 
+  return 0;
+}
+
+static int test_possessive_interval()
+{
   x2("a{1,3}+", "aaaaaa", 0, 3);
   x2("a{3}+", "aaaaaa", 0, 3);
   x2("a{3,3}+", "aaaaaa", 0, 3);
@@ -222,7 +227,8 @@ extern int main(int argc, char* argv[])
 
   Syntax = ONIG_SYNTAX_PERL;
 
-  test_fixed_interval();
+  test_reluctant_interval();
+  test_possessive_interval();
   test_isolated_option();
   test_prec_read();
   test_look_behind();
@@ -235,13 +241,23 @@ extern int main(int argc, char* argv[])
 
   Syntax = ONIG_SYNTAX_JAVA;
 
-  test_fixed_interval();
+  test_reluctant_interval();
+  test_possessive_interval();
   test_isolated_option();
   test_prec_read();
   test_look_behind();
   x2("(?<=ab|(.))\\1", "abb", 2, 3);
   n("(?<!ab|b)c", "bbc");
   n("(?<!b|ab)c", "bbc");
+
+  Syntax = ONIG_SYNTAX_PYTHON;
+
+  test_reluctant_interval();
+  x2("(?P<name>abc)", "abc", 0, 3);
+  x2("(?P<name>abc)(?P=name)", "abcabc", 0, 6);
+  x2("(?P<name>abc){0}(?P>name)", "abc", 0, 3);
+  x2("(?P<expr>[^()]+|\\((?P>expr)\\)){0}(?P>expr)", "((((xyz))))", 0, 11);
+
 
   fprintf(stdout,
        "\nRESULT   SUCC: %4d,  FAIL: %d,  ERROR: %d      (by Oniguruma %s)\n",
