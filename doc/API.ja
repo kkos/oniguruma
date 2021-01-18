@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.9.7   2020/12/07
+鬼車インターフェース Version 6.9.7   2021/01/18
 
 #include <oniguruma.h>
 
@@ -681,10 +681,18 @@
 
 # OnigEncoding     onig_get_encoding(regex_t* reg)
 # OnigOptionType   onig_get_options(regex_t* reg)
-# OnigCaseFoldType onig_get_case_fold_flag(regex_t* reg)
 # OnigSyntaxType*  onig_get_syntax(regex_t* reg)
 
   正規表現オブジェクトに対して、対応する値を返す。
+
+  引数
+  1 reg:    正規表現オブジェクト
+
+
+# OnigCaseFoldType onig_get_case_fold_flag(regex_t* reg)
+
+  正規表現オブジェクトに対して、case_fold_flag値を返す。
+  この関数は廃止予定(非推奨)。
 
   引数
   1 reg:    正規表現オブジェクト
@@ -898,11 +906,13 @@
 # OnigCaseFoldType onig_get_default_case_fold_flag()
 
   デフォルトのcase foldフラグを取得する。
+  この関数は廃止予定(非推奨)。
 
 
 # int onig_set_default_case_fold_flag(OnigCaseFoldType case_fold_flag)
 
   デフォルトのcase foldフラグをセットする。
+  この関数は廃止予定(非推奨)。
 
   引数
   1 case_fold_flag: case foldフラグ

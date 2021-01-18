@@ -1,4 +1,4 @@
-Oniguruma API  Version 6.9.7  2020/12/07
+Oniguruma API  Version 6.9.7  2021/01/18
 
 #include <oniguruma.h>
 
@@ -680,10 +680,18 @@ Oniguruma API  Version 6.9.7  2020/12/07
 
 # OnigEncoding     onig_get_encoding(regex_t* reg)
 # OnigOptionType   onig_get_options(regex_t* reg)
-# OnigCaseFoldType onig_get_case_fold_flag(regex_t* reg)
 # OnigSyntaxType*  onig_get_syntax(regex_t* reg)
 
   Return a value of the regex object.
+
+  arguments
+  1 reg:     regex object.
+
+
+# OnigCaseFoldType onig_get_case_fold_flag(regex_t* reg)
+
+  Return the case_fold_flag of the regex object.
+  This function is deprecated.
 
   arguments
   1 reg:     regex object.
@@ -896,11 +904,13 @@ Oniguruma API  Version 6.9.7  2020/12/07
 # OnigCaseFoldType onig_get_default_case_fold_flag()
 
   Get default case fold flag.
+  This function is deprecated.
 
 
 # int onig_set_default_case_fold_flag(OnigCaseFoldType case_fold_flag)
 
   Set default case fold flag.
+  This function is deprecated.
 
   1 case_fold_flag: case fold flag
 
