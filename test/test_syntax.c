@@ -263,6 +263,13 @@ extern int main(int argc, char* argv[])
   x2("a\\Z", "a", 0, 1);
   n("a\\Z", "a\n");
   e("\\z", "a", ONIGERR_UNDEFINED_OPERATOR);
+  n(".", "\n");
+  x2("(?s).", "\n", 0, 1);
+  n("^abc", "\nabc");
+  x2("(?m)^abc", "\nabc", 1, 4);
+  n("abc$", "abc\ndef");
+  x2("abc$", "abc\n", 0, 3);
+  x2("(?m)abc$", "abc\n", 0, 3);
 
 
   fprintf(stdout,
