@@ -8019,6 +8019,7 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
 #ifdef USE_POSIXLINE_OPTION
     case 'p':
 #endif
+    case 'a':
     case '-': case 'i': case 'm': case 's': case 'x':
       {
         int neg = 0;
@@ -8056,10 +8057,26 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
             OPTION_NEGATE(option, ONIG_OPTION_MULTILINE|ONIG_OPTION_SINGLELINE, neg);
             break;
 #endif
-          case 'W': OPTION_NEGATE(option, ONIG_OPTION_WORD_IS_ASCII, neg); break;
-          case 'D': OPTION_NEGATE(option, ONIG_OPTION_DIGIT_IS_ASCII, neg); break;
-          case 'S': OPTION_NEGATE(option, ONIG_OPTION_SPACE_IS_ASCII, neg); break;
-          case 'P': OPTION_NEGATE(option, ONIG_OPTION_POSIX_IS_ASCII, neg); break;
+          case 'W':
+            if (! IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_OPTION_ONIGURUMA))
+              return ONIGERR_UNDEFINED_GROUP_OPTION;
+            OPTION_NEGATE(option, ONIG_OPTION_WORD_IS_ASCII, neg);
+            break;
+          case 'D':
+            if (! IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_OPTION_ONIGURUMA))
+              return ONIGERR_UNDEFINED_GROUP_OPTION;
+            OPTION_NEGATE(option, ONIG_OPTION_DIGIT_IS_ASCII, neg);
+            break;
+          case 'S':
+            if (! IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_OPTION_ONIGURUMA))
+              return ONIGERR_UNDEFINED_GROUP_OPTION;
+            OPTION_NEGATE(option, ONIG_OPTION_SPACE_IS_ASCII, neg);
+            break;
+          case 'P':
+            if (! IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_OPTION_ONIGURUMA))
+              return ONIGERR_UNDEFINED_GROUP_OPTION;
+            OPTION_NEGATE(option, ONIG_OPTION_POSIX_IS_ASCII, neg);
+            break;
 
           case 'y': /* y{g}, y{w} */
             {
@@ -8098,8 +8115,15 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
               PFETCH(c);
               if (c != '}')
                 return ONIGERR_UNDEFINED_GROUP_OPTION;
-              break;
             } /* case 'y' */
+            break;
+
+          case 'a':
+            if (! IS_SYNTAX_BV(env->syntax, ONIG_SYN_PYTHON))
+              return ONIGERR_UNDEFINED_GROUP_OPTION;
+
+            OPTION_NEGATE(option, ONIG_OPTION_POSIX_IS_ASCII, neg);
+            break;
 
           default:
             return ONIGERR_UNDEFINED_GROUP_OPTION;
