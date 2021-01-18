@@ -612,6 +612,7 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED         -209
 #define ONIGERR_TOO_MANY_CAPTURES                            -210
 #define ONIGERR_TOO_LONG_WIDE_CHAR_VALUE                     -212
+#define ONIGERR_UNDEFINED_OPERATOR                           -213
 #define ONIGERR_EMPTY_GROUP_NAME                             -214
 #define ONIGERR_INVALID_GROUP_NAME                           -215
 #define ONIGERR_INVALID_CHAR_IN_GROUP_NAME                   -216
