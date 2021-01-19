@@ -6122,8 +6122,12 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ScanEnv* env)
               goto backref_start;
             }
             else if (c == '>') {
+#ifdef USE_CALL
               c = '(';
               goto call_start;
+#else
+              return ONIGERR_UNDEFINED_OPERATOR;
+#endif
             }
             else {
               p = prev;
