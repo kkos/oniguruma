@@ -1593,6 +1593,7 @@ extern int main(int argc, char* argv[])
   e("[\\x61-\\x{0063-0065}]+", "", ONIGERR_INVALID_CODE_POINT_VALUE);
   x2("[t\\x{0063 0071}]+", "tcqb", 0, 3);
   x2("[\\W\\x{0063 0071}]+", "*cqa", 0, 3);
+  x2("(\\O|(?=z\\g<2>*))(\\g<0>){0}", "a", 0, 1);
 
   n("a(b|)+d", "abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcd"); /* https://www.haijin-boys.com/discussions/5079 */
   n("   \xfd", ""); /* https://bugs.php.net/bug.php?id=77370 */
