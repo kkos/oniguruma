@@ -4452,7 +4452,12 @@ recursive_call_check_trav(Node* node, ScanEnv* env, int state)
       BagNode* en = BAG_(node);
 
       if (en->type == BAG_MEMORY) {
-        if (NODE_IS_CALLED(node) || (state & IN_RECURSION) != 0) {
+        if (NODE_IS_CALLED(node)) {
+          r = FOUND_CALLED_NODE;
+          goto check_recursion;
+        }
+        else if ((state & IN_RECURSION) != 0) {
+        check_recursion:
           if (! NODE_IS_RECURSION(node)) {
             NODE_STATUS_ADD(node, MARK1);
             ret = recursive_call_check(NODE_BODY(node));
@@ -4462,9 +4467,6 @@ recursive_call_check_trav(Node* node, ScanEnv* env, int state)
             }
             NODE_STATUS_REMOVE(node, MARK1);
           }
-
-          if (NODE_IS_CALLED(node))
-            r = FOUND_CALLED_NODE;
         }
       }
 
