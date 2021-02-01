@@ -4455,8 +4455,8 @@ recursive_call_check_trav(Node* node, ScanEnv* env, int state)
         if (NODE_IS_CALLED(node) || (state & IN_RECURSION) != 0) {
           if (! NODE_IS_RECURSION(node)) {
             NODE_STATUS_ADD(node, MARK1);
-            r = recursive_call_check(NODE_BODY(node));
-            if (r != 0) {
+            ret = recursive_call_check(NODE_BODY(node));
+            if (ret != 0) {
               NODE_STATUS_ADD(node, RECURSION);
               MEM_STATUS_ON(env->backtrack_mem, en->m.regnum);
             }
