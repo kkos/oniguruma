@@ -2,7 +2,7 @@
   regcomp.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2020  K.Kosako
+ * Copyright (c) 2002-2021  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -7835,6 +7835,7 @@ typedef struct {
   int backref;
   int backref_with_level;
   int call;
+  int anychar_reluctant_many;
   int empty_check_nest_level;
   int max_empty_check_nest_level;
   int heavy_element;
@@ -7858,17 +7859,29 @@ detect_can_be_slow(Node* node, SlowElementCount* ct, int ncall, int calls[])
   case NODE_QUANT:
     {
       int prev_heavy_element;
+      QuantNode* qn;
+      Node* body;
 
-      if (QUANT_(node)->emptiness != BODY_IS_NOT_EMPTY) {
+      qn = QUANT_(node);
+      body = NODE_BODY(node);
+
+      if (qn->emptiness != BODY_IS_NOT_EMPTY) {
         prev_heavy_element = ct->heavy_element;
         ct->empty_check_nest_level++;
         if (ct->empty_check_nest_level > ct->max_empty_check_nest_level)
           ct->max_empty_check_nest_level = ct->empty_check_nest_level;
       }
+      else if (qn->greedy == 0) {
+        if (IS_INFINITE_REPEAT(qn->upper) || qn->upper > 20) {
+          if (NODE_TYPE(body) == NODE_CTYPE &&
+              CTYPE_(body)->ctype == CTYPE_ANYCHAR)
+            ct->anychar_reluctant_many++;
+        }
+      }
 
-      r = detect_can_be_slow(NODE_BODY(node), ct, ncall, calls);
+      r = detect_can_be_slow(body, ct, ncall, calls);
 
-      if (QUANT_(node)->emptiness != BODY_IS_NOT_EMPTY) {
+      if (qn->emptiness != BODY_IS_NOT_EMPTY) {
         if (NODE_IS_INPEEK(node)) {
           if (ct->empty_check_nest_level > 2) {
             if (prev_heavy_element == ct->heavy_element)
@@ -8012,6 +8025,7 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
   count.backref            = 0;
   count.backref_with_level = 0;
   count.call               = 0;
+  count.anychar_reluctant_many     = 0;
   count.empty_check_nest_level     = 0;
   count.max_empty_check_nest_level = 0;
   count.heavy_element = 0;
@@ -8019,7 +8033,8 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
   r = detect_can_be_slow(root, &count, 0, calls);
   if (r == 0) {
     int n = count.prec_read + count.look_behind
-          + count.backref + count.backref_with_level + count.call;
+          + count.backref + count.backref_with_level + count.call
+          + count.anychar_reluctant_many;
     if (count.heavy_element != 0)
       n += count.heavy_element * 10;
 
