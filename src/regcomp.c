@@ -7826,6 +7826,113 @@ onig_is_code_in_cc(OnigEncoding enc, OnigCodePoint code, CClassNode* cc)
   return onig_is_code_in_cc_len(len, code, cc);
 }
 
+typedef enum {
+  MJ_NO     = 0,
+  MJ_YES    = 1,
+  MJ_IGNORE = 2,
+} MJ_RESULT;
+
+static MJ_RESULT
+mostly_just_anychar(Node* node)
+{
+  MJ_RESULT r;
+
+  r = MJ_NO;
+  switch (NODE_TYPE(node)) {
+  case NODE_LIST:
+    {
+      int found = FALSE;
+      do {
+        r = mostly_just_anychar(NODE_CAR(node));
+        if (r == MJ_NO) break;
+        if (r == MJ_YES) found = TRUE;
+      } while (IS_NOT_NULL(node = NODE_CDR(node)));
+      if (r == MJ_IGNORE) {
+        if (found == TRUE) r = MJ_YES;
+      }
+    }
+    break;
+
+  case NODE_ALT:
+    r = MJ_IGNORE;
+    do {
+      r = mostly_just_anychar(NODE_CAR(node));
+      if (r == MJ_YES) break;
+    } while (IS_NOT_NULL(node = NODE_CDR(node)));
+    break;
+
+  case NODE_QUANT:
+    if (QUANT_(node)->upper == 0)
+      r = MJ_IGNORE;
+    else
+      r = mostly_just_anychar(NODE_BODY(node));
+    break;
+
+  case NODE_ANCHOR:
+    switch (ANCHOR_(node)->type) {
+    case ANCR_PREC_READ:
+    case ANCR_PREC_READ_NOT:
+    case ANCR_LOOK_BEHIND:
+    case ANCR_LOOK_BEHIND_NOT:
+    case ANCR_TEXT_SEGMENT_BOUNDARY: /* \y */
+      r = MJ_IGNORE;
+      break;
+    default:
+      break;
+    }
+    break;
+
+  case NODE_BAG:
+    {
+      BagNode* en = BAG_(node);
+
+      if (en->type == BAG_IF_ELSE) {
+        if (IS_NOT_NULL(en->te.Then)) {
+          r = mostly_just_anychar(en->te.Then);
+          if (r == MJ_YES) break;
+        }
+        if (IS_NOT_NULL(en->te.Else)) {
+          r = mostly_just_anychar(en->te.Else);
+        }
+      }
+      else {
+        r = mostly_just_anychar(NODE_BODY(node));
+      }
+    }
+    break;
+
+  case NODE_CTYPE:
+    if (CTYPE_(node)->ctype == CTYPE_ANYCHAR)
+      r = MJ_YES;
+    else
+      r = MJ_NO;
+    break;
+
+  case NODE_STRING:
+    if (NODE_STRING_LEN(node) == 0) {
+      r = MJ_IGNORE;
+      break;
+    }
+    /* fall */
+  case NODE_CCLASS:
+    r = MJ_NO;
+    break;
+
+#ifdef USE_CALL
+  case NODE_CALL:
+    /* ignore call */
+#endif
+  case NODE_BACKREF:
+  case NODE_GIMMICK:
+    r = MJ_IGNORE;
+    break;
+
+  default:
+    break;
+  }
+
+  return r;
+}
 
 #define MAX_CALLS_IN_DETECT   10
 
@@ -7873,8 +7980,8 @@ detect_can_be_slow(Node* node, SlowElementCount* ct, int ncall, int calls[])
       }
       else if (qn->greedy == 0) {
         if (IS_INFINITE_REPEAT(qn->upper) || qn->upper > 20) {
-          if (NODE_TYPE(body) == NODE_CTYPE &&
-              CTYPE_(body)->ctype == CTYPE_ANYCHAR)
+          MJ_RESULT mr = mostly_just_anychar(body);
+          if (mr == MJ_YES)
             ct->anychar_reluctant_many++;
         }
       }
