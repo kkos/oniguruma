@@ -7826,6 +7826,9 @@ onig_is_code_in_cc(OnigEncoding enc, OnigCodePoint code, CClassNode* cc)
   return onig_is_code_in_cc_len(len, code, cc);
 }
 
+
+#define MANY_REPEAT_OF_ANYCHAR   20
+
 typedef enum {
   MJ_NO     = 0,
   MJ_YES    = 1,
@@ -7833,7 +7836,7 @@ typedef enum {
 } MJ_RESULT;
 
 static MJ_RESULT
-mostly_just_anychar(Node* node)
+mostly_just_anychar(Node* node, int in_reluctant)
 {
   MJ_RESULT r;
 
@@ -7843,7 +7846,7 @@ mostly_just_anychar(Node* node)
     {
       int found = FALSE;
       do {
-        r = mostly_just_anychar(NODE_CAR(node));
+        r = mostly_just_anychar(NODE_CAR(node), in_reluctant);
         if (r == MJ_NO) break;
         if (r == MJ_YES) found = TRUE;
       } while (IS_NOT_NULL(node = NODE_CDR(node)));
@@ -7856,16 +7859,28 @@ mostly_just_anychar(Node* node)
   case NODE_ALT:
     r = MJ_IGNORE;
     do {
-      r = mostly_just_anychar(NODE_CAR(node));
+      r = mostly_just_anychar(NODE_CAR(node), in_reluctant);
       if (r == MJ_YES) break;
     } while (IS_NOT_NULL(node = NODE_CDR(node)));
     break;
 
   case NODE_QUANT:
-    if (QUANT_(node)->upper == 0)
-      r = MJ_IGNORE;
-    else
-      r = mostly_just_anychar(NODE_BODY(node));
+    {
+      QuantNode* qn = QUANT_(node);
+
+      if (qn->upper == 0)
+        r = MJ_IGNORE;
+      else {
+        if (in_reluctant == FALSE) {
+          if (qn->greedy != 0 &&
+              (! IS_INFINITE_REPEAT(qn->upper) &&
+               qn->upper <= MANY_REPEAT_OF_ANYCHAR)) {
+            in_reluctant = TRUE;
+          }
+        }
+        r = mostly_just_anychar(NODE_BODY(node), in_reluctant);
+      }
+    }
     break;
 
   case NODE_ANCHOR:
@@ -7888,15 +7903,15 @@ mostly_just_anychar(Node* node)
 
       if (en->type == BAG_IF_ELSE) {
         if (IS_NOT_NULL(en->te.Then)) {
-          r = mostly_just_anychar(en->te.Then);
+          r = mostly_just_anychar(en->te.Then, in_reluctant);
           if (r == MJ_YES) break;
         }
         if (IS_NOT_NULL(en->te.Else)) {
-          r = mostly_just_anychar(en->te.Else);
+          r = mostly_just_anychar(en->te.Else, in_reluctant);
         }
       }
       else {
-        r = mostly_just_anychar(NODE_BODY(node));
+        r = mostly_just_anychar(NODE_BODY(node), in_reluctant);
       }
     }
     break;
@@ -7978,12 +7993,11 @@ detect_can_be_slow(Node* node, SlowElementCount* ct, int ncall, int calls[])
         if (ct->empty_check_nest_level > ct->max_empty_check_nest_level)
           ct->max_empty_check_nest_level = ct->empty_check_nest_level;
       }
-      else if (qn->greedy == 0) {
-        if (IS_INFINITE_REPEAT(qn->upper) || qn->upper > 20) {
-          MJ_RESULT mr = mostly_just_anychar(body);
-          if (mr == MJ_YES)
-            ct->anychar_reluctant_many++;
-        }
+      else if (IS_INFINITE_REPEAT(qn->upper) ||
+               qn->upper > MANY_REPEAT_OF_ANYCHAR) {
+        MJ_RESULT mr = mostly_just_anychar(body, (qn->greedy == 0));
+        if (mr == MJ_YES)
+          ct->anychar_reluctant_many++;
       }
 
       r = detect_can_be_slow(body, ct, ncall, calls);
