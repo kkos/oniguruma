@@ -3009,8 +3009,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
             msa->best_s   = (UChar* )sstart;
             goto set_region;
           }
-          else
+          else {
+            SOP_OUT;
             goto end_best_len;
+          }
         }
 #endif
         best_len = n;
@@ -3080,12 +3082,12 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         } /* if (region) */
       } /* n > best_len */
 
-#ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
-    end_best_len:
-#endif
       SOP_OUT;
 
       if (OPTON_FIND_CONDITION(option)) {
+#ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
+    end_best_len:
+#endif
         if (OPTON_FIND_NOT_EMPTY(option) && s == sstart) {
           best_len = ONIG_MISMATCH;
           goto fail; /* for retry */
