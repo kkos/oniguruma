@@ -2,7 +2,7 @@
   regexec.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2020  K.Kosako
+ * Copyright (c) 2002-2021  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -3090,12 +3090,14 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           best_len = ONIG_MISMATCH;
           goto fail; /* for retry */
         }
+#ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
         if (OPTON_FIND_LONGEST(option)) {
           if (s >= in_right_range && msa->best_s == sstart)
             best_len = msa->best_len;
           else
             goto fail; /* for retry */
         }
+#endif
       }
 
       /* default behavior: return first-matching result. */
@@ -5916,8 +5918,10 @@ onig_regset_add(OnigRegSet* set, regex_t* reg)
 {
   OnigRegion* region;
 
+#ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
   if (OPTON_FIND_LONGEST(reg->options))
     return ONIGERR_INVALID_ARGUMENT;
+#endif
 
   if (set->n != 0 && reg->enc != set->enc)
     return ONIGERR_INVALID_ARGUMENT;
@@ -5962,8 +5966,10 @@ onig_regset_replace(OnigRegSet* set, int at, regex_t* reg)
     set->n--;
   }
   else {
+#ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
     if (OPTON_FIND_LONGEST(reg->options))
       return ONIGERR_INVALID_ARGUMENT;
+#endif
 
     if (set->n > 1 && reg->enc != set->enc)
       return ONIGERR_INVALID_ARGUMENT;
