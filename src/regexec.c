@@ -3007,17 +3007,20 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           if (n > msa->best_len) {
             msa->best_len = n;
             msa->best_s   = (UChar* )sstart;
-            goto set_region;
           }
           else {
             SOP_OUT;
             goto end_best_len;
           }
         }
-#endif
+        else {
+          best_len = n;
+        }
+#else
         best_len = n;
+#endif
 
-      set_region:
+        /* set region */
         region = msa->region;
         if (region) {
           if (keep > s) keep = s;
