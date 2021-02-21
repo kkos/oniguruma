@@ -2912,6 +2912,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   StackType *stkp; /* used as any purpose. */
   StkPtrType *mem_start_stk, *mem_end_stk;
   UChar* keep;
+  OnigRegion* region;
 
 #ifdef USE_REPEAT_AND_EMPTY_CHECK_LOCAL_VAR
   StackIndex *repeat_stk;
@@ -3001,7 +3002,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     CASE_OP(END)
       n = (int )(s - sstart);
       if (n > best_len) {
-        OnigRegion* region;
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
         if (OPTON_FIND_LONGEST(option)) {
           if (n > msa->best_len) {
@@ -3019,71 +3019,71 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #else
         best_len = n;
 #endif
+      }
 
-        /* set region */
-        region = msa->region;
-        if (region) {
-          if (keep > s) keep = s;
+      /* set region */
+      region = msa->region;
+      if (region) {
+        if (keep > s) keep = s;
 
 #ifdef USE_POSIX_API
-          if (OPTON_POSIX_REGION(msa->options)) {
-            posix_regmatch_t* rmt = (posix_regmatch_t* )region;
+        if (OPTON_POSIX_REGION(msa->options)) {
+          posix_regmatch_t* rmt = (posix_regmatch_t* )region;
 
-            rmt[0].rm_so = (regoff_t )(keep - str);
-            rmt[0].rm_eo = (regoff_t )(s    - str);
-            for (i = 1; i <= num_mem; i++) {
-              if (mem_end_stk[i].i != INVALID_STACK_INDEX) {
-                rmt[i].rm_so = (regoff_t )(STACK_MEM_START(reg, i) - str);
-                rmt[i].rm_eo = (regoff_t )(STACK_MEM_END(reg, i)   - str);
-              }
-              else {
-                rmt[i].rm_so = rmt[i].rm_eo = ONIG_REGION_NOTPOS;
-              }
+          rmt[0].rm_so = (regoff_t )(keep - str);
+          rmt[0].rm_eo = (regoff_t )(s    - str);
+          for (i = 1; i <= num_mem; i++) {
+            if (mem_end_stk[i].i != INVALID_STACK_INDEX) {
+              rmt[i].rm_so = (regoff_t )(STACK_MEM_START(reg, i) - str);
+              rmt[i].rm_eo = (regoff_t )(STACK_MEM_END(reg, i)   - str);
+            }
+            else {
+              rmt[i].rm_so = rmt[i].rm_eo = ONIG_REGION_NOTPOS;
             }
           }
-          else {
+        }
+        else {
 #endif /* USE_POSIX_API */
-            region->beg[0] = (int )(keep - str);
-            region->end[0] = (int )(s    - str);
-            for (i = 1; i <= num_mem; i++) {
-              if (mem_end_stk[i].i != INVALID_STACK_INDEX) {
-                region->beg[i] = (int )(STACK_MEM_START(reg, i) - str);
-                region->end[i] = (int )(STACK_MEM_END(reg, i)   - str);
-              }
-              else {
-                region->beg[i] = region->end[i] = ONIG_REGION_NOTPOS;
-              }
+          region->beg[0] = (int )(keep - str);
+          region->end[0] = (int )(s    - str);
+          for (i = 1; i <= num_mem; i++) {
+            if (mem_end_stk[i].i != INVALID_STACK_INDEX) {
+              region->beg[i] = (int )(STACK_MEM_START(reg, i) - str);
+              region->end[i] = (int )(STACK_MEM_END(reg, i)   - str);
             }
+            else {
+              region->beg[i] = region->end[i] = ONIG_REGION_NOTPOS;
+            }
+          }
 
 #ifdef USE_CAPTURE_HISTORY
-            if (reg->capture_history != 0) {
-              int r;
-              OnigCaptureTreeNode* node;
+          if (reg->capture_history != 0) {
+            int r;
+            OnigCaptureTreeNode* node;
 
-              if (IS_NULL(region->history_root)) {
-                region->history_root = node = history_node_new();
-                CHECK_NULL_RETURN_MEMERR(node);
-              }
-              else {
-                node = region->history_root;
-                history_tree_clear(node);
-              }
-
-              node->group = 0;
-              node->beg   = (int )(keep - str);
-              node->end   = (int )(s    - str);
-
-              stkp = stk_base;
-              r = make_capture_history_tree(region->history_root, &stkp,
-                                            stk, (UChar* )str, reg);
-              if (r < 0) MATCH_AT_ERROR_RETURN(r);
+            if (IS_NULL(region->history_root)) {
+              region->history_root = node = history_node_new();
+              CHECK_NULL_RETURN_MEMERR(node);
             }
+            else {
+              node = region->history_root;
+              history_tree_clear(node);
+            }
+
+            node->group = 0;
+            node->beg   = (int )(keep - str);
+            node->end   = (int )(s    - str);
+
+            stkp = stk_base;
+            r = make_capture_history_tree(region->history_root, &stkp,
+                                          stk, (UChar* )str, reg);
+            if (r < 0) MATCH_AT_ERROR_RETURN(r);
+          }
 #endif /* USE_CAPTURE_HISTORY */
 #ifdef USE_POSIX_API
-          } /* else OPTON_POSIX_REGION() */
+        } /* else OPTON_POSIX_REGION() */
 #endif
-        } /* if (region) */
-      } /* n > best_len */
+      } /* if (region) */
 
       SOP_OUT;
 
