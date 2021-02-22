@@ -2948,8 +2948,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   unsigned long subexp_call_counters[MAX_SUBEXP_CALL_COUNTERS];
 #endif
 
+  OnigOptionType options;
   Operation* p = reg->ops;
-  OnigOptionType options = msa->options;
   OnigEncoding encode = reg->enc;
   OnigCaseFoldType case_fold_flag = reg->case_fold_flag;
 
@@ -2978,6 +2978,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
     return ONIG_NORMAL;
   }
 #endif
+
+  options = msa->options;
 
 #ifdef USE_CALLOUT
   msa->mp->match_at_call_counter++;
