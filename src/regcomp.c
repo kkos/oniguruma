@@ -7093,6 +7093,7 @@ print_options(FILE* fp, OnigOptionType o)
   if ((o & ONIG_OPTION_NOT_BEGIN_STRING) != 0) fprintf(fp, " NOT_BIGIN_STRING");
   if ((o & ONIG_OPTION_NOT_END_STRING) != 0)   fprintf(fp, " NOT_END_STRING");
   if ((o & ONIG_OPTION_NOT_BEGIN_POSITION) != 0) fprintf(fp, " NOT_BEGIN_POSITION");
+  if ((o & ONIG_OPTION_CALLBACK_EACH_MATCH) != 0) fprintf(fp, " CALLBACK_EACH_MATCH");
 }
 
 #endif /* ONIG_DEBUG */
