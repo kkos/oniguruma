@@ -873,6 +873,23 @@ onig_get_capture_tree(OnigRegion* region)
 }
 #endif /* USE_CAPTURE_HISTORY */
 
+
+static OnigCallbackEachMatchFunc CallbackEachMatch;
+
+extern OnigCallbackEachMatchFunc
+onig_get_callback_each_match(void)
+{
+  return CallbackEachMatch;
+}
+
+extern int
+onig_set_callback_each_match(OnigCallbackEachMatchFunc f)
+{
+  CallbackEachMatch = f;
+  return ONIG_NORMAL;
+}
+
+
 extern void
 onig_region_clear(OnigRegion* region)
 {
@@ -1238,7 +1255,7 @@ struct OnigCalloutArgsStruct {
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
 #define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start, mpv) do { \
   (msa).stack_p  = (void* )0;\
-  (msa).options  = (arg_option);\
+  (msa).options  = (arg_option)|(reg)->options;\
   (msa).region   = (arg_region);\
   (msa).start    = (arg_start);\
   (msa).match_stack_limit  = (mpv)->match_stack_limit;\
@@ -1251,7 +1268,7 @@ struct OnigCalloutArgsStruct {
 #else
 #define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start, mpv) do { \
   (msa).stack_p  = (void* )0;\
-  (msa).options  = (arg_option);\
+  (msa).options  = (arg_option)|(reg)->options;\
   (msa).region   = (arg_region);\
   (msa).start    = (arg_start);\
   (msa).match_stack_limit  = (mpv)->match_stack_limit;\
@@ -1404,6 +1421,7 @@ onig_set_subexp_call_limit_in_search(unsigned long n)
 }
 
 #endif
+
 
 #ifdef USE_CALLOUT
 static OnigCalloutFunc DefaultProgressCallout;
@@ -2931,7 +2949,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
 
   Operation* p = reg->ops;
-  OnigOptionType option = reg->options;
+  OnigOptionType options = msa->options;
   OnigEncoding encode = reg->enc;
   OnigCaseFoldType case_fold_flag = reg->case_fold_flag;
 
@@ -3001,16 +3019,26 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   BYTECODE_INTERPRETER_START {
     CASE_OP(END)
       n = (int )(s - sstart);
+      if (n == 0 && OPTON_FIND_NOT_EMPTY(options)) {
+        best_len = ONIG_MISMATCH;
+        goto fail; /* for retry */
+      }
+
       if (n > best_len) {
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
-        if (OPTON_FIND_LONGEST(option)) {
+        if (OPTON_FIND_LONGEST(options)) {
           if (n > msa->best_len) {
             msa->best_len = n;
             msa->best_s   = (UChar* )sstart;
           }
           else {
-            SOP_OUT;
-            goto end_best_len;
+            if (s >= in_right_range && msa->best_s == sstart) {
+              best_len = msa->best_len; /* end of find */
+            }
+            else {
+              SOP_OUT;
+              goto fail; /* for retry */
+            }
           }
         }
         else {
@@ -3027,7 +3055,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         if (keep > s) keep = s;
 
 #ifdef USE_POSIX_API
-        if (OPTON_POSIX_REGION(msa->options)) {
+        if (OPTON_POSIX_REGION(options)) {
           posix_regmatch_t* rmt = (posix_regmatch_t* )region;
 
           rmt[0].rm_so = (regoff_t )(keep - str);
@@ -3087,22 +3115,18 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
       SOP_OUT;
 
-      if (OPTON_FIND_CONDITION(option)) {
+      if (OPTON_CALLBACK_EACH_MATCH(options) &&
+          IS_NOT_NULL(CallbackEachMatch)) {
+        int r = CallbackEachMatch(str, end, in_right_range, sstart, s,
+                                  region, msa->mp->callout_user_data);
+        if (r < 0) MATCH_AT_ERROR_RETURN(r);
+
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
-    end_best_len:
+        if (! OPTON_FIND_LONGEST(options))
 #endif
-        if (OPTON_FIND_NOT_EMPTY(option) && s == sstart) {
           best_len = ONIG_MISMATCH;
-          goto fail; /* for retry */
-        }
-#ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
-        if (OPTON_FIND_LONGEST(option)) {
-          if (s >= in_right_range && msa->best_s == sstart)
-            best_len = msa->best_len;
-          else
-            goto fail; /* for retry */
-        }
-#endif
+
+        goto fail;
       }
 
       /* default behavior: return first-matching result. */
@@ -3595,23 +3619,23 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
     CASE_OP(BEGIN_BUF)
       if (! ON_STR_BEGIN(s)) goto fail;
-      if (OPTON_NOTBOL(msa->options)) goto fail;
-      if (OPTON_NOT_BEGIN_STRING(msa->options)) goto fail;
+      if (OPTON_NOTBOL(options)) goto fail;
+      if (OPTON_NOT_BEGIN_STRING(options)) goto fail;
 
       INC_OP;
       JUMP_OUT;
 
     CASE_OP(END_BUF)
       if (! ON_STR_END(s)) goto fail;
-      if (OPTON_NOTEOL(msa->options)) goto fail;
-      if (OPTON_NOT_END_STRING(msa->options)) goto fail;
+      if (OPTON_NOTEOL(options)) goto fail;
+      if (OPTON_NOT_END_STRING(options)) goto fail;
 
       INC_OP;
       JUMP_OUT;
 
     CASE_OP(BEGIN_LINE)
       if (ON_STR_BEGIN(s)) {
-        if (OPTON_NOTBOL(msa->options)) goto fail;
+        if (OPTON_NOTBOL(options)) goto fail;
         INC_OP;
         JUMP_OUT;
       }
@@ -3630,7 +3654,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         UChar* sprev = (UChar* )onigenc_get_prev_char_head(encode, str, s);
         if (IS_EMPTY_STR || !ONIGENC_IS_MBC_NEWLINE(encode, sprev, end)) {
 #endif
-          if (OPTON_NOTEOL(msa->options)) goto fail;
+          if (OPTON_NOTEOL(options)) goto fail;
           INC_OP;
           JUMP_OUT;
 #ifndef USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE
@@ -3655,8 +3679,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         UChar* sprev = (UChar* )onigenc_get_prev_char_head(encode, str, s);
         if (IS_EMPTY_STR || !ONIGENC_IS_MBC_NEWLINE(encode, sprev, end)) {
 #endif
-          if (OPTON_NOTEOL(msa->options)) goto fail;
-          if (OPTON_NOT_END_STRING(msa->options)) goto fail;
+          if (OPTON_NOTEOL(options)) goto fail;
+          if (OPTON_NOT_END_STRING(options)) goto fail;
           INC_OP;
           JUMP_OUT;
 #ifndef USE_NEWLINE_AT_END_OF_STRING_HAS_EMPTY_LINE
@@ -3665,8 +3689,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       }
       else if (ONIGENC_IS_MBC_NEWLINE(encode, s, end) &&
                ON_STR_END(s + enclen(encode, s))) {
-        if (OPTON_NOTEOL(msa->options)) goto fail;
-        if (OPTON_NOT_END_STRING(msa->options)) goto fail;
+        if (OPTON_NOTEOL(options)) goto fail;
+        if (OPTON_NOT_END_STRING(options)) goto fail;
         INC_OP;
         JUMP_OUT;
       }
@@ -3675,8 +3699,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         UChar* ss = s + enclen(encode, s);
         ss += enclen(encode, ss);
         if (ON_STR_END(ss)) {
-          if (OPTON_NOTEOL(msa->options)) goto fail;
-          if (OPTON_NOT_END_STRING(msa->options)) goto fail;
+          if (OPTON_NOTEOL(options)) goto fail;
+          if (OPTON_NOT_END_STRING(options)) goto fail;
           INC_OP;
           JUMP_OUT;
         }
@@ -3688,7 +3712,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       switch (p->check_position.type) {
       case CHECK_POSITION_SEARCH_START:
         if (s != msa->start) goto fail;
-        if (OPTON_NOT_BEGIN_POSITION(msa->options)) goto fail;
+        if (OPTON_NOT_BEGIN_POSITION(options)) goto fail;
         break;
       case CHECK_POSITION_CURRENT_RIGHT_RANGE:
         if (s != right_range) goto fail;
@@ -4643,7 +4667,7 @@ onig_regset_search_with_param(OnigRegSet* set,
   if (set->n == 0)
     return ONIG_MISMATCH;
 
-  if (OPTON_POSIX_REGION(option))
+  if (OPTON_POSIX_REGION(option) || OPTON_CALLBACK_EACH_MATCH(option))
     return ONIGERR_INVALID_ARGUMENT;
 
   r = 0;
