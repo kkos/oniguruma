@@ -25,6 +25,11 @@ each_match_callback(const UChar* str, const UChar* end, const UChar* range,
   fputc('>', stdout);
 #endif
 
+#if 0
+  /* terminate match/search if returns error code < 0 */
+  return ONIG_ABORT;
+#endif
+
   return ONIG_NORMAL;
 }
 
