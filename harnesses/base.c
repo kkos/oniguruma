@@ -36,7 +36,7 @@
 #define OPTIONS_AT_COMPILE   (ONIG_OPTION_IGNORECASE | ONIG_OPTION_EXTEND | ONIG_OPTION_MULTILINE | ONIG_OPTION_SINGLELINE | ONIG_OPTION_FIND_LONGEST | ONIG_OPTION_FIND_NOT_EMPTY | ONIG_OPTION_NEGATE_SINGLELINE | ONIG_OPTION_DONT_CAPTURE_GROUP | ONIG_OPTION_CAPTURE_GROUP | ONIG_OPTION_WORD_IS_ASCII | ONIG_OPTION_DIGIT_IS_ASCII | ONIG_OPTION_SPACE_IS_ASCII | ONIG_OPTION_POSIX_IS_ASCII | ONIG_OPTION_TEXT_SEGMENT_EXTENDED_GRAPHEME_CLUSTER | ONIG_OPTION_TEXT_SEGMENT_WORD | ONIG_OPTION_IGNORECASE_IS_ASCII)
 #endif
 
-#define OPTIONS_AT_RUNTIME   (ONIG_OPTION_NOTBOL | ONIG_OPTION_NOTEOL | ONIG_OPTION_CHECK_VALIDITY_OF_STRING | ONIG_OPTION_NOT_BEGIN_STRING | ONIG_OPTION_NOT_END_STRING | ONIG_OPTION_NOT_BEGIN_POSITION)
+#define OPTIONS_AT_RUNTIME   (ONIG_OPTION_NOTBOL | ONIG_OPTION_NOTEOL | ONIG_OPTION_CHECK_VALIDITY_OF_STRING | ONIG_OPTION_NOT_BEGIN_STRING | ONIG_OPTION_NOT_END_STRING | ONIG_OPTION_NOT_BEGIN_POSITION | ONIG_OPTION_CALLBACK_EACH_MATCH)
 
 
 #define ADJUST_LEN(enc, len) do {\
@@ -163,6 +163,14 @@ progress_callout_func(OnigCalloutArgs* args, void* user_data)
 }
 
 static int
+each_match_callback_func(const UChar* str, const UChar* end,
+  const UChar* range, const UChar* match_start, const UChar* match_end,
+  OnigRegion* region, void* user_data)
+{
+  return ONIG_NORMAL;
+}
+
+static int
 search(regex_t* reg, unsigned char* str, unsigned char* end, OnigOptionType options, int backward, int sl)
 {
   int r;
@@ -270,6 +278,7 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   onig_set_parse_depth_limit(PARSE_DEPTH_LIMIT);
 #endif
   onig_set_subexp_call_max_nest_level(MAX_SUBEXP_CALL_NEST_LEVEL);
+  onig_set_callback_each_match(each_match_callback_func);
 
   r = onig_new(&reg, pattern, pattern_end,
                (options & OPTIONS_AT_COMPILE), enc, syntax, &einfo);
@@ -560,13 +569,13 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
     to_binary(options, soptions);
 #ifdef SYNTAX_TEST
     fprintf(stdout,
-	    "enc: %s, syntax: %s, pattern_size: %d, back:%d\noptions: %s\n",
-	    ONIGENC_NAME(enc),
-	    syntax_names[syntax_choice % num_syntaxes],
-	    pattern_size, backward, soptions);
+            "enc: %s, syntax: %s, pattern_size: %d, back:%d\noptions: %s\n",
+            ONIGENC_NAME(enc),
+            syntax_names[syntax_choice % num_syntaxes],
+            pattern_size, backward, soptions);
 #else
     fprintf(stdout, "enc: %s, pattern_size: %d, back:%d\noptions: %s\n",
-	    ONIGENC_NAME(enc), pattern_size, backward, soptions);
+            ONIGENC_NAME(enc), pattern_size, backward, soptions);
 #endif
   }
 #endif
