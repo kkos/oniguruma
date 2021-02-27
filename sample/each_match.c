@@ -7,13 +7,13 @@
 
 static int
 each_match_callback(const UChar* str, const UChar* end, const UChar* range,
-  const UChar* match_start, const UChar* match_end, OnigRegion* region,
-  void* user_data)
+  const UChar* match_start, OnigRegion* region, void* user_data)
 {
 #if 1
-  fprintf(stdout, "each_match_callback: %ld - %ld: %p\n",
-          match_start - str, match_end - str, user_data);
-  fprintf(stdout, "  region[0]: (%d-%d)\n", region->beg[0], region->end[0]);
+  fprintf(stdout, "each_match_callback:\n");
+  fprintf(stdout, "  match at:  %ld - %d: %p\n", match_start - str, region->end[0],
+          user_data);
+  fprintf(stdout, "  region[0]: %d - %d\n", region->beg[0], region->end[0]);
 #else
   int i;
   i = region->beg[0];
@@ -93,7 +93,7 @@ extern int main(int argc, char* argv[])
 {
   OnigEncoding use_encs[1];
 
-  static UChar* pattern = (UChar* )"a(.*)b|[e-f]+";
+  static UChar* pattern = (UChar* )"a(.*)\\Kb|[e-f]+";
   static UChar* str     = (UChar* )"zzzzafffb";
 
   use_encs[0] = ONIG_ENCODING_ASCII;
