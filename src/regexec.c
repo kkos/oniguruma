@@ -3119,8 +3119,8 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
       if (OPTON_CALLBACK_EACH_MATCH(options) &&
           IS_NOT_NULL(CallbackEachMatch)) {
-        int r = CallbackEachMatch(str, end, in_right_range, sstart, s,
-                                  region, msa->mp->callout_user_data);
+        int r = CallbackEachMatch(str, end, in_right_range, sstart, region,
+                                  msa->mp->callout_user_data);
         if (r < 0) MATCH_AT_ERROR_RETURN(r);
 
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
