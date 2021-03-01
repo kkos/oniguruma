@@ -164,8 +164,7 @@ progress_callout_func(OnigCalloutArgs* args, void* user_data)
 
 static int
 each_match_callback_func(const UChar* str, const UChar* end,
-  const UChar* range, const UChar* match_start, const UChar* match_end,
-  OnigRegion* region, void* user_data)
+  const UChar* match_start, OnigRegion* region, void* user_data)
 {
   return ONIG_NORMAL;
 }
