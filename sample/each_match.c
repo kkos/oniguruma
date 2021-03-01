@@ -6,8 +6,8 @@
 #include "oniguruma.h"
 
 static int
-each_match_callback(const UChar* str, const UChar* end, const UChar* range,
-  const UChar* match_start, OnigRegion* region, void* user_data)
+each_match_callback(const UChar* str, const UChar* end,
+     const UChar* match_start, OnigRegion* region, void* user_data)
 {
 #if 1
   fprintf(stdout, "each_match_callback:\n");
