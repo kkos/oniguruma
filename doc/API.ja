@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.9.7   2021/01/18
+鬼車インターフェース Version 6.9.7   2021/03/01
 
 #include <oniguruma.h>
 
@@ -330,6 +330,8 @@
   正常終了: マッチ位置 (p - str >= 0)
   検索失敗: ONIG_MISMATCH (< 0)
 
+    * 若しONIG_OPTION_CALLBACK_EACH_MATCHが使用されると、マッチするものがあってもONIG_MISMATCHが返される。
+
   引数
   1 reg:    正規表現オブジェクト
   2 str:    検索対象文字列
@@ -346,6 +348,7 @@
     ONIG_OPTION_NOT_BEGIN_STRING    strの先頭を文字列の先頭と看做さない (\A 失敗)
     ONIG_OPTION_NOT_END_STRING      endを文字列終端と看做さない (\z, \Z 失敗)
     ONIG_OPTION_NOT_BEGIN_POSITION  startを検索開始位置と看做さない (\G 失敗)
+    ONIG_OPTION_CALLBACK_EACH_MATCH 全てのマッチ成功に対してコールバック関数が呼び出される。(マッチ開始位置が同じ場合であっても)
 
 
 # int onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
@@ -370,6 +373,8 @@
   正常終了: マッチしたバイト長 (>= 0)
   not match: ONIG_MISMATCH      ( < 0)
 
+    * 若しONIG_OPTION_CALLBACK_EACH_MATCHが使用されると、マッチするものがあってもONIG_MISMATCHが返される。
+
   引数
   1 reg:    正規表現オブジェクト
   2 str:    検索対象文字列
@@ -383,6 +388,7 @@
     ONIG_OPTION_NOT_BEGIN_STRING    strの先頭を文字列の先頭と看做さない (\A 失敗)
     ONIG_OPTION_NOT_END_STRING      endを文字列終端と看做さない (\z, \Z 失敗)
     ONIG_OPTION_NOT_BEGIN_POSITION  startを検索開始位置と看做さない (\G 失敗)
+    ONIG_OPTION_CALLBACK_EACH_MATCH 全てのマッチ成功に対してコールバック関数が呼び出される。
 
 
 # int onig_match_with_param(regex_t* reg, const UChar* str, const UChar* end,
@@ -702,6 +708,23 @@
 
   引数
   1 reg:    正規表現オブジェクト
+
+
+# OnigCallbackEachMatchFunc onig_get_callback_each_match(void)
+
+  ONIG_OPTION_CALLBACK_EACH_MATCHに対する現在のコールバック関数を返す。
+
+
+# int onig_set_callback_each_match(OnigCallbackEachMatchFunc func)
+
+  ONIG_OPTION_CALLBACK_EACH_MATCHに対するコールバック関数をセットする。
+  若しNULLがセットされると、コールバックは実行されない。
+
+  戻り値
+  正常終了: ONIG_NORMAL == 0
+
+  引数
+  1 func: コールバック関数
 
 
 # int onig_number_of_capture_histories(regex_t* reg)
