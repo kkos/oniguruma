@@ -157,19 +157,16 @@ ops_init(regex_t* reg, int init_alloc_size)
 }
 
 static int
-ops_expand(regex_t* reg, int n)
+ops_resize(regex_t* reg, int n)
 {
-#define MIN_OPS_EXPAND_SIZE   4
-
 #ifdef USE_DIRECT_THREADED_CODE
   enum OpCode* cp;
 #endif
   Operation* p;
   size_t size;
 
-  if (n <= 0) n = MIN_OPS_EXPAND_SIZE;
-
-  n += reg->ops_alloc;
+  if (n <= 0)
+    return ONIGERR_PARSER_BUG;
 
   size = sizeof(Operation) * n;
   p = (Operation* )xrealloc(reg->ops, size);
@@ -196,7 +193,7 @@ static int
 ops_new(regex_t* reg)
 {
   if (reg->ops_used >= reg->ops_alloc) {
-    int r = ops_expand(reg, reg->ops_alloc);
+    int r = ops_resize(reg, reg->ops_alloc << 1);
     if (r != ONIG_NORMAL) return r;
   }
 
