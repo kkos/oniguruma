@@ -165,8 +165,8 @@ ops_resize(regex_t* reg, int n)
   Operation* p;
   size_t size;
 
-  if (n <= 0)
-    return ONIGERR_PARSER_BUG;
+  if (n == reg->ops_alloc) return ONIG_NORMAL;
+  if (n <= 0) return ONIGERR_PARSER_BUG;
 
   size = sizeof(Operation) * n;
   p = (Operation* )xrealloc(reg->ops, size);
@@ -7521,6 +7521,9 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
       if (r != 0) goto err;
     }
 #endif
+
+    r = ops_resize(reg, reg->ops_used);
+    if (r != ONIG_NORMAL) goto err;
 
     set_addr_in_repeat_range(reg);
 
