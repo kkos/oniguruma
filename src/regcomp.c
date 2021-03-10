@@ -662,6 +662,8 @@ mmcl_alt_merge(MinMaxCharLen* to, MinMaxCharLen* alt)
   if (to->max < alt->max) to->max = alt->max;
 }
 
+#ifndef ONIG_DONT_OPTIMIZE
+
 static int
 mml_is_equal(MinMaxLen* a, MinMaxLen* b)
 {
@@ -701,6 +703,8 @@ mml_alt_merge(MinMaxLen* to, MinMaxLen* alt)
   if (to->min > alt->min) to->min = alt->min;
   if (to->max < alt->max) to->max = alt->max;
 }
+
+#endif
 
 /* fixed size pattern node only */
 static int
@@ -3739,6 +3743,7 @@ node_min_byte_len(Node* node, ParseEnv* env)
   return len;
 }
 
+#ifndef ONIG_DONT_OPTIMIZE
 static OnigLen
 node_max_byte_len(Node* node, ParseEnv* env)
 {
@@ -3873,6 +3878,7 @@ node_max_byte_len(Node* node, ParseEnv* env)
 
   return len;
 }
+#endif
 
 static int
 check_backrefs(Node* node, ParseEnv* env)
@@ -5962,6 +5968,7 @@ tune_tree(Node* node, regex_t* reg, int state, ParseEnv* env)
   return r;
 }
 
+#ifndef ONIG_DONT_OPTIMIZE
 static int
 set_sunday_quick_search_or_bmh_skip_table(regex_t* reg, int case_expand,
                                           UChar* s, UChar* end,
@@ -6031,6 +6038,7 @@ set_sunday_quick_search_or_bmh_skip_table(regex_t* reg, int case_expand,
 
   return 0;
 }
+#endif
 
 
 #define OPT_EXACT_MAXLEN   24
@@ -6075,6 +6083,8 @@ typedef struct {
   OptMap  map;    /* boundary */
 } OptNode;
 
+
+#ifndef ONIG_DONT_OPTIMIZE
 
 static int
 map_position_value(OnigEncoding enc, int i)
@@ -7009,6 +7019,7 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ParseEnv* scan_env)
 #endif
   return r;
 }
+#endif /* ONIG_DONT_OPTIMIZE */
 
 static void
 clear_optimize_info(regex_t* reg)
