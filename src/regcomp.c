@@ -6853,22 +6853,22 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
         {
           OptEnv nenv;
 
-          copy_opt_env(&nenv, env);
-          r = optimize_nodes(NODE_BAG_BODY(en), &xo, &nenv);
-          if (r == 0) {
-            mml_add(&nenv.mm, &xo.len);
-            concat_left_node_opt_info(enc, opt, &xo);
-            if (IS_NOT_NULL(en->te.Then)) {
-              r = optimize_nodes(en->te.Then, &xo, &nenv);
-              if (r == 0) {
-                concat_left_node_opt_info(enc, opt, &xo);
+          if (IS_NOT_NULL(en->te.Else)) {
+            copy_opt_env(&nenv, env);
+            r = optimize_nodes(NODE_BAG_BODY(en), &xo, &nenv);
+            if (r == 0) {
+              mml_add(&nenv.mm, &xo.len);
+              concat_left_node_opt_info(enc, opt, &xo);
+              if (IS_NOT_NULL(en->te.Then)) {
+                r = optimize_nodes(en->te.Then, &xo, &nenv);
+                if (r == 0) {
+                  concat_left_node_opt_info(enc, opt, &xo);
+                }
               }
-            }
 
-            if (IS_NOT_NULL(en->te.Else)) {
-              r = optimize_nodes(en->te.Else, &xo, env);
-              if (r == 0)
-                alt_merge_node_opt_info(opt, &xo, env);
+                r = optimize_nodes(en->te.Else, &xo, env);
+                if (r == 0)
+                  alt_merge_node_opt_info(opt, &xo, env);
             }
           }
         }
