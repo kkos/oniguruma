@@ -1331,10 +1331,10 @@ extern int main(int argc, char* argv[])
   x2("(?<!v|^t|^a+.*[efg])z", "uabcdfz", 6, 7);
 
   x2("((?(a)\\g<1>|b))", "aab", 2, 3);
-  x2("((?(a)\\g<1>))", "aab", 1, 2);
+  x2("((?(a)\\g<1>))", "aab", 3, 3);
   x2("(b(?(a)|\\g<1>))", "bba", 1, 3);
   e("(()(?(2)\\g<1>))", "", ONIGERR_NEVER_ENDING_RECURSION);
-  x2("(?(a)(?:b|c))", "ac", 0, 2);
+  x2("(?(a)(?:b|c))", "ac", 2, 2);
   n("^(?(a)b|c)", "ac");
   x2("(?i)a|b", "B", 0, 1);
   n("((?i)a|b.)|c", "C");
