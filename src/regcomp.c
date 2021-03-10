@@ -7098,6 +7098,8 @@ print_options(FILE* fp, OnigOptionType o)
 
 #if defined(ONIG_DEBUG_COMPILE) || defined(ONIG_DEBUG_MATCH)
 
+#ifndef ONIG_DONT_OPTIMIZE
+
 static void
 print_distance_range(FILE* f, OnigLen a, OnigLen b)
 {
@@ -7220,7 +7222,8 @@ print_optimize_info(FILE* f, regex_t* reg)
     }
   }
 }
-#endif
+#endif /* ONIG_DONT_OPTIMIZE */
+#endif /* defined(ONIG_DEBUG_COMPILE) || defined(ONIG_DEBUG_MATCH) */
 
 
 extern RegexExt*
