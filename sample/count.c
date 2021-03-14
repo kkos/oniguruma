@@ -59,8 +59,8 @@ test(OnigEncoding enc, OnigMatchParam* mp, char* in_pattern, char* in_str)
     tag_len = ulen(enc, tag);
 
     slot = 0;
-    r = onig_get_callout_data_by_tag(reg, mp, (UChar* )tag, (UChar* )tag + tag_len,
-                                     slot, 0, &val);
+    r = onig_get_callout_data_by_tag_dont_clear_old(reg, mp, (UChar* )tag,
+                 (UChar* )tag + tag_len, slot, 0, &val);
     if (r < ONIG_NORMAL) goto err;
     else if (r == ONIG_VALUE_IS_NOT_SET) {
       fprintf(stdout, "COUNT[x]: NO DATA\n");
