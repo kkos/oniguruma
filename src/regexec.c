@@ -1550,7 +1550,7 @@ onig_get_callout_data_dont_clear_old(regex_t* reg, OnigMatchParam* mp,
   t = d->slot[slot].type;
   if (IS_NOT_NULL(type)) *type = t;
   if (IS_NOT_NULL(val))  *val  = d->slot[slot].val;
-  return (t == ONIG_TYPE_VOID ? 1 : ONIG_NORMAL);
+  return (t == ONIG_TYPE_VOID ? ONIG_VALUE_IS_NOT_SET : ONIG_NORMAL);
 }
 
 extern int
@@ -1581,7 +1581,7 @@ onig_get_callout_data(regex_t* reg, OnigMatchParam* mp,
   t = d->slot[slot].type;
   if (IS_NOT_NULL(type)) *type = t;
   if (IS_NOT_NULL(val))  *val  = d->slot[slot].val;
-  return (t == ONIG_TYPE_VOID ? 1 : ONIG_NORMAL);
+  return (t == ONIG_TYPE_VOID ? ONIG_VALUE_IS_NOT_SET : ONIG_NORMAL);
 }
 
 extern int

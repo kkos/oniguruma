@@ -554,8 +554,10 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 
 /* error codes */
 #define ONIG_IS_PATTERN_ERROR(ecode)   ((ecode) <= -100 && (ecode) > -1000)
+
 /* normal return */
 #define ONIG_NORMAL                                            0
+#define ONIG_VALUE_IS_NOT_SET                                  1
 #define ONIG_MISMATCH                                         -1
 #define ONIG_NO_SUPPORT_CONFIG                                -2
 #define ONIG_ABORT                                            -3
