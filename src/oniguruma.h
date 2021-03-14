@@ -999,6 +999,8 @@ ONIG_EXTERN
 int onig_get_callout_data_by_tag P_((OnigRegex reg, OnigMatchParam* mp, const OnigUChar* tag, const OnigUChar* tag_end, int slot, OnigType* type, OnigValue* val));
 ONIG_EXTERN
 int onig_set_callout_data_by_tag P_((OnigRegex reg, OnigMatchParam* mp, const OnigUChar* tag, const OnigUChar* tag_end, int slot, OnigType type, OnigValue* val));
+ONIG_EXTERN
+int onig_get_callout_data_by_tag_dont_clear_old P_((regex_t* reg, OnigMatchParam* mp, const UChar* tag, const UChar* tag_end, int slot, OnigType* type, OnigValue* val));
 
 /* used in callout functions */
 ONIG_EXTERN

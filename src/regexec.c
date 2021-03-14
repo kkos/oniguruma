@@ -1554,9 +1554,22 @@ onig_get_callout_data_dont_clear_old(regex_t* reg, OnigMatchParam* mp,
 }
 
 extern int
-onig_get_callout_data_by_callout_args_self_dont_clear_old(OnigCalloutArgs* args,
-                                                          int slot, OnigType* type,
-                                                          OnigValue* val)
+onig_get_callout_data_by_tag_dont_clear_old(regex_t* reg,
+  OnigMatchParam* mp, const UChar* tag, const UChar* tag_end, int slot,
+  OnigType* type, OnigValue* val)
+{
+  int num;
+
+  num = onig_get_callout_num_by_tag(reg, tag, tag_end);
+  if (num < 0)  return num;
+  if (num == 0) return ONIGERR_INVALID_CALLOUT_TAG_NAME;
+
+  return onig_get_callout_data_dont_clear_old(reg, mp, num, slot, type, val);
+}
+
+extern int
+onig_get_callout_data_by_callout_args_self_dont_clear_old(
+  OnigCalloutArgs* args, int slot, OnigType* type, OnigValue* val)
 {
   return onig_get_callout_data_dont_clear_old(args->regex, args->msa->mp,
                                               args->num, slot, type, val);
