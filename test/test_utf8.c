@@ -1467,6 +1467,7 @@ extern int main(int argc, char* argv[])
   e("(()(?(2)\\g<1>))", "", ONIGERR_NEVER_ENDING_RECURSION);
   x2("(?(a)(?:b|c))", "ac", 0, 2);
   x2("(?(a)(?:b|c))", "", 0, 0);
+  x2("(?(a)b)", "", 0, 0);
   n("^(?(a)b|c)", "ac");
   x2("(?i)a|b", "B", 0, 1);
   n("((?i)a|b.)|c", "C");
