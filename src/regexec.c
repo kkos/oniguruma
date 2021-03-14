@@ -76,11 +76,12 @@ struct OnigMatchParamStruct {
   unsigned long   retry_limit_in_match;
   unsigned long   retry_limit_in_search;
 #endif
+
+  void*           callout_user_data; /* used in callback each match */
 #ifdef USE_CALLOUT
   OnigCalloutFunc progress_callout_of_contents;
   OnigCalloutFunc retraction_callout_of_contents;
   int             match_at_call_counter;
-  void*           callout_user_data;
   CalloutData*    callout_data;
   int             callout_data_alloc_num;
 #endif
@@ -143,12 +144,8 @@ onig_set_retraction_callout_of_match_param(OnigMatchParam* param, OnigCalloutFun
 extern int
 onig_set_callout_user_data_of_match_param(OnigMatchParam* param, void* user_data)
 {
-#ifdef USE_CALLOUT
   param->callout_user_data = user_data;
   return ONIG_NORMAL;
-#else
-  return ONIG_NO_SUPPORT_CONFIG;
-#endif
 }
 
 
@@ -1470,11 +1467,12 @@ onig_initialize_match_param(OnigMatchParam* mp)
   mp->retry_limit_in_search = RetryLimitInSearch;
 #endif
 
+  mp->callout_user_data = 0;
+
 #ifdef USE_CALLOUT
   mp->progress_callout_of_contents   = DefaultProgressCallout;
   mp->retraction_callout_of_contents = DefaultRetractionCallout;
   mp->match_at_call_counter  = 0;
-  mp->callout_user_data      = 0;
   mp->callout_data           = 0;
   mp->callout_data_alloc_num = 0;
 #endif
