@@ -1,8 +1,7 @@
 /*
  * test_options.c
- * Copyright (c) 2020  K.Kosako
+ * Copyright (c) 2020-2021  K.Kosako
  */
-#include "config.h"
 #ifdef ONIG_ESCAPE_UCHAR_COLLISION
 #undef ONIG_ESCAPE_UCHAR_COLLISION
 #endif

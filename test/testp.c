@@ -1,8 +1,7 @@
 /*
  * testp.c
- * Copyright (c) 2020  K.Kosako
+ * Copyright (c) 2020-2021  K.Kosako
  */
-#include "config.h"
 #include <stdio.h>
 #include <string.h>
 
