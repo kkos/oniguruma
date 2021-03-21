@@ -179,18 +179,17 @@ Install
 
 ### Case 3: Windows 64/32bit platform (Visual Studio)
 
-   Execute make_win.bat
+   * build library
+
+      .\make_win.bat
 
       onig_s.lib:  static link library
       onig.dll:    dynamic link library
 
-   * test (ASCII/Shift_JIS)
+   * make test programs
 
-      1. cd src
-      2. copy ..\windows\testc.c .
-      3. nmake -f Makefile.windows ctest
+      .\make_win.bat all-test
 
-   (I have checked by Visual Studio Community 2015)
 
 Alternatively, you can build and install oniguruma using [vcpkg](https://github.com/microsoft/vcpkg/) dependency manager:
 
