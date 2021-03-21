@@ -1,4 +1,4 @@
-Callouts API  Version 6.8.2 2018/06/08
+Callouts API  Version 6.9.7 2021/03/21
 
 #include <oniguruma.h>
 
@@ -269,49 +269,50 @@ Callouts API  Version 6.8.2 2018/06/08
 
   callout_num/slotによって示された呼び出しスロットに対するデータの値/型を返す。
 
-  正常終了: ONIG_NORMAL
-        1: 値が未セット (typeは ONIG_TYPE_VOID)
-      < 0: エラーコード
+  ONIG_NORMAL:           正常終了
+  ONIG_VALUE_IS_NOT_SET: 値が未セット / 型がVOID
+  < 0: エラーコード
 
 
 # int onig_get_callout_data_by_callout_args_self(OnigCalloutArgs* args, int slot, OnigType* type, OnigValue* val)
 
   自分自身の呼び出しのslotによって示されたスロットに対するデータの値/型を返す。
 
-  正常終了: ONIG_NORMAL
-        1: 値が未セット (typeは ONIG_TYPE_VOID)
-      < 0: エラーコード
+  ONIG_NORMAL:           正常終了
+  ONIG_VALUE_IS_NOT_SET: 値が未セット / 型がVOID
+  < 0: エラーコード
 
 
 # int onig_set_callout_data_by_callout_args(OnigCalloutArgs* args, int callout_num, int slot, OnigType type, OnigValue* val)
 
   callout_num/slotによって示された呼び出しスロットに対する値/型をセットする。。
 
-  正常終了: ONIG_NORMAL
-      < 0: エラーコード
+  ONIG_NORMAL: 正常終了
+          < 0: エラーコード
 
 
 # int onig_set_callout_data_by_callout_args_self(OnigCalloutArgs* args, int slot, OnigType type, OnigValue* val)
 
   自分自身の呼び出しのslotによって示されたスロットに対する値/型をセットする。。
 
-  正常終了: ONIG_NORMAL
-      < 0: エラーコード
+  ONIG_NORMAL: 正常終了
+          < 0: エラーコード
 
 
 # int onig_get_callout_data_by_callout_args_self_dont_clear_old(OnigCalloutArgs* args, int slot, OnigType* type, OnigValue* val)
 
   この関数は、onig_get_callout_data_by_callout_args_self()とほぼ同じである。
-  しかしこの関数は、現在の照合処理以前の失敗した照合処理の中でセットされた値を
-  クリアしない。
-  他のonig_get_callout_data_xxxx()関数は、以前の失敗した照合処理の中でセットされた値を
-  クリアする。
+  しかしこの関数は、現在の位置より以前の照合位置の中でセットされた値をクリアしない。(dont_clear_old)
+  他のonig_get_callout_data_xxxx()関数は、以前の位置の照合処理の中でセットされた値をクリアする。
 
   例えば、組み込み呼び出し(*TOTAL_COUNT)は、検索処理の中の全ての照合処理の積算カウントを
   得るためにこの関数を使用して実装されている。
   組み込む呼び出し(*COUNT)は、この関数を使用しないので、最後の成功した照合処理だけの
   カウントを返す。
 
+  ONIG_NORMAL:           正常終了
+  ONIG_VALUE_IS_NOT_SET: 値が未セット / 型がVOID
+  < 0: エラーコード
 
 
 (8) 呼び出しデータ (アプリケーションから使用される)
@@ -320,34 +321,34 @@ Callouts API  Version 6.8.2 2018/06/08
 
   callout_num/slotによって示された呼び出しスロットに対するデータの値/型を返す。
 
-  正常終了: ONIG_NORMAL
-        1: 値が未セット (typeは ONIG_TYPE_VOID)
-      < 0: エラーコード
+  ONIG_NORMAL:           正常終了
+  ONIG_VALUE_IS_NOT_SET: 値が未セット / 型がVOID
+  < 0: エラーコード
 
 
 # int onig_get_callout_data_by_tag(OnigRegex reg, OnigMatchParam* mp, const OnigUChar* tag, const OnigUChar* tag_end, int slot, OnigType* type, OnigValue* val)
 
   tag/slotによって示された呼び出しスロットに対するデータの値/型を返す。
 
-  正常終了: ONIG_NORMAL
-        1: 値が未セット (typeは ONIG_TYPE_VOID)
-      < 0: エラーコード
+  ONIG_NORMAL:           正常終了
+  ONIG_VALUE_IS_NOT_SET: 値が未セット / 型がVOID
+  < 0: エラーコード
 
 
 # int onig_set_callout_data(OnigRegex reg, OnigMatchParam* mp, int callout_num, int slot, OnigType type, OnigValue* val)
 
   callout_num/slotによって示された呼び出しスロットに対する値/型をセットする。。
 
-  正常終了: ONIG_NORMAL
-      < 0: エラーコード
+  ONIG_NORMAL: 正常終了
+          < 0: エラーコード
 
 
 # int onig_set_callout_data_by_tag(OnigRegex reg, OnigMatchParam* mp, const OnigUChar* tag, const OnigUChar* tag_end, int slot, OnigType type, OnigValue* val)
 
-  tag/slotによって示された呼び出しスロットに対する値/型をセットする。。
+  tag/slotによって示された呼び出しスロットに対する値/型をセットする。
 
-  正常終了: ONIG_NORMAL
-      < 0: エラーコード
+  ONIG_NORMAL: 正常終了
+          < 0: エラーコード
 
 
 # int onig_get_callout_data_dont_clear_old(OnigRegex reg, OnigMatchParam* mp, int callout_num, int slot, OnigType* type, OnigValue* val)
@@ -355,6 +356,16 @@ Callouts API  Version 6.8.2 2018/06/08
   この関数を使用する必要はないと思われる。
   廃止予定。
 
+
+# int onig_get_callout_data_by_tag_dont_clear_old(regex_t* reg, OnigMatchParam* mp, const UChar* tag, const UChar* tag_end, int slot, OnigType* type, OnigValue* val)
+
+  tag/slotによって示された呼び出しスロットに対するデータの値/型を返す。
+  この関数は、現在の位置より以前の照合位置の中でセットされた値をクリアしない。
+  (dont_clear_old)
+
+  ONIG_NORMAL:           正常終了
+  ONIG_VALUE_IS_NOT_SET: 値が未セット / 型がVOID
+  < 0: エラーコード
 
 
 (9) その他の関数
