@@ -2,8 +2,9 @@
 
 product_name = oniguruma
 
-TEST_DIR = $(ONIG_DIR)/../test
-WIN_DIR  = $(ONIG_DIR)/../windows
+TEST_DIR   = $(ONIG_DIR)/../test
+SAMPLE_DIR = $(ONIG_DIR)/../sample
+WIN_DIR    = $(ONIG_DIR)/../windows
 
 CPPFLAGS =
 CFLAGS = -O2 -nologo /W3
@@ -14,6 +15,8 @@ ARLIB_FLAGS = -nologo
 ARDLL = cl
 ARDLL_FLAGS = -nologo -LD $(LINKFLAGS) -dll
 LINKFLAGS = -link -incremental:no -pdb:none
+
+SAMPLE_CFLAGS = $(CFLAGS) /I$(ONIG_DIR)
 
 INSTALL = install -c
 CP      = copy
@@ -181,10 +184,13 @@ clean:
 
 
 samples: all
-	$(CC) $(CFLAGS) -I. /Fe:simple  $(ONIG_DIR)\sample\simple.c  $(dlllib)
-	$(CC) $(CFLAGS) -I. /Fe:posix   $(ONIG_DIR)\sample\posix.c   $(dlllib)
-	$(CC) $(CFLAGS) -I. /Fe:names   $(ONIG_DIR)\sample\names.c   $(dlllib)
-	$(CC) $(CFLAGS) -I. /Fe:listcap $(ONIG_DIR)\sample\listcap.c $(dlllib)
-	$(CC) $(CFLAGS) -I. /Fe:sql     $(ONIG_DIR)\sample\sql.c     $(dlllib)
-	$(CC) $(CFLAGS) -I. /Fe:encode  $(ONIG_DIR)\sample\encode.c  $(dlllib)
-	$(CC) $(CFLAGS) -I. /Fe:syntax  $(ONIG_DIR)\sample\syntax.c  $(dlllib)
+	$(CC) $(SAMPLE_CFLAGS) /Fe:simple  $(SAMPLE_DIR)\simple.c  $(dlllib)
+	$(CC) $(SAMPLE_CFLAGS) /Fe:posix   $(SAMPLE_DIR)\posix.c   $(dlllib)
+	$(CC) $(SAMPLE_CFLAGS) /Fe:names   $(SAMPLE_DIR)\names.c   $(dlllib)
+	$(CC) $(SAMPLE_CFLAGS) /Fe:listcap $(SAMPLE_DIR)\listcap.c $(dlllib)
+	$(CC) $(SAMPLE_CFLAGS) /Fe:sql     $(SAMPLE_DIR)\sql.c     $(dlllib)
+	$(CC) $(SAMPLE_CFLAGS) /Fe:encode  $(SAMPLE_DIR)\encode.c  $(dlllib)
+	$(CC) $(SAMPLE_CFLAGS) /Fe:syntax  $(SAMPLE_DIR)\syntax.c  $(dlllib)
+	$(CC) $(SAMPLE_CFLAGS) /Fe:count   $(SAMPLE_DIR)\count.c   $(dlllib)
+	$(CC) $(SAMPLE_CFLAGS) /Fe:regset  $(SAMPLE_DIR)\regset.c  $(dlllib)
+	$(CC) $(SAMPLE_CFLAGS) /Fe:callback_each_match $(SAMPLE_DIR)\callback_each_match.c  $(dlllib)
