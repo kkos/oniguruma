@@ -150,7 +150,7 @@ $(BUILD_DIR)/unicode_fold1_key.obj: $(ONIG_DIR)/unicode_fold1_key.c $(ONIG_DIR)/
 $(BUILD_DIR)/unicode_fold2_key.obj: $(ONIG_DIR)/unicode_fold2_key.c $(ONIG_DIR)/regenc.h $(BUILD_DIR)/config.h
 $(BUILD_DIR)/unicode_fold3_key.obj: $(ONIG_DIR)/unicode_fold3_key.c $(ONIG_DIR)/regenc.h $(BUILD_DIR)/config.h
 
-all-test: test_syntax test_regset test_utf8 testc testp testu
+all-test: test_syntax test_regset test_utf8 test_options test_back testc testp testu
 
 test_syntax: $(TEST_DIR)/test_syntax.c $(libname)
 	$(CC) -nologo /Fe:$@ /I. /I$(ONIG_DIR) /DONIG_EXTERN=extern /utf-8 $(TEST_DIR)/test_syntax.c $(libname)
@@ -160,6 +160,12 @@ test_regset: $(TEST_DIR)/test_regset.c $(libname)
 
 test_utf8: $(TEST_DIR)/test_utf8.c $(libname)
 	$(CC) -nologo /Fe:$@ /I. /I$(ONIG_DIR) /DONIG_EXTERN=extern /utf-8 $(TEST_DIR)/test_utf8.c $(libname)
+
+test_options: $(TEST_DIR)/test_options.c $(libname)
+	$(CC) -nologo /Fe:$@ /I. /I$(ONIG_DIR) /DONIG_EXTERN=extern /utf-8 $(TEST_DIR)/test_options.c $(libname)
+
+test_back: $(TEST_DIR)/test_back.c $(libname)
+	$(CC) -nologo /Fe:$@ /I. /I$(ONIG_DIR) /DONIG_EXTERN=extern /utf-8 $(TEST_DIR)/test_back.c $(libname)
 
 testc: $(WIN_DIR)/testc.c $(libname)
 	$(CC) -nologo /Fe:$@ /I. /I$(ONIG_DIR) /DONIG_EXTERN=extern $(WIN_DIR)/testc.c $(libname)
@@ -171,7 +177,7 @@ testu: $(TEST_DIR)/testu.c $(libname)
 	$(CC) -nologo /Fe:$@ /I. /I$(ONIG_DIR) /DONIG_EXTERN=extern $(TEST_DIR)/testu.c $(libname)
 
 clean:
-	del $(BUILD_DIR)\*.obj $(BUILD_DIR)\*.lib $(BUILD_DIR)\*.exp $(BUILD_DIR)\*.dll $(BUILD_DIR)\test_regset.exe $(BUILD_DIR)\test_syntax.exe $(BUILD_DIR)\test_utf8.exe $(BUILD_DIR)\testp.exe $(BUILD_DIR)\testc.exe $(BUILD_DIR)\testu.exe
+	del $(BUILD_DIR)\*.obj $(BUILD_DIR)\*.lib $(BUILD_DIR)\*.exp $(BUILD_DIR)\*.dll $(BUILD_DIR)\test_regset.exe $(BUILD_DIR)\test_syntax.exe $(BUILD_DIR)\test_utf8.exe $(BUILD_DIR)\test_options.exe $(BUILD_DIR)\test_back.exe $(BUILD_DIR)\testp.exe $(BUILD_DIR)\testc.exe $(BUILD_DIR)\testu.exe
 
 
 samples: all
