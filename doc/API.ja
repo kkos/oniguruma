@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.9.7   2021/03/03
+鬼車インターフェース Version 6.9.7   2021/03/16
 
 #include <oniguruma.h>
 
@@ -353,14 +353,13 @@
       全てのマッチ成功に対してコールバック関数が呼び出される。
       (マッチ開始位置が同じものも含めて)
       ある位置でマッチするものが見つかっても探索が止まることはない。
-      呼び出されるコールバック関数は、onig_set_callback_each_match()で
-      セットする。
+      呼び出されるコールバック関数は、onig_set_callback_each_match()で与える。
       コールバック関数に渡される引数の中のuser_dataは、
       onig_set_callout_user_data_of_match_param(mp, user_data)で指定する。
-      従って、user_dataを指定したい場合には、onig_search()ではなく、
-      onig_search_with_param()を使用する。
+      このため、user_dataを指定したい場合には、onig_search()ではなく、
+      onig_search_with_param()を使用することになる。
       onig_set_callout_user_data_of_match_param()で指定するuser_dataは、
-      calloutで使用されるuser_dataと共用されることになる。
+      calloutで使用されるuser_dataと共用される。
 
 
 # int onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
