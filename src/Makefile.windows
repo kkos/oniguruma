@@ -89,11 +89,6 @@ makeargs = $(MFLAGS) CPPFLAGS='$(CPPFLAGS)' CFLAGS='$(CFLAGS)' CC='$(CC)'
 # targets
 default: all
 
-setup:
-	$(CP) ..\win32\config.h config.h
-	$(CP) ..\win32\testc.c  testc.c
-
-
 all: $(libname) $(dllname)
 
 $(libname): $(libobjs) $(encobjs)
