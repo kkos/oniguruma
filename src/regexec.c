@@ -6649,7 +6649,7 @@ onig_builtin_monitor(OnigCalloutArgs* args, void* user_data)
 
     tag_len = tag_end - tag_start;
     if (tag_len >= sizeof(buf)) tag_len = sizeof(buf) - 1;
-    for (i = 0; i < tag_len; i++) buf[i] = tag_start[i];
+    for (i = 0; i < (int )tag_len; i++) buf[i] = tag_start[i];
     buf[tag_len] = '\0';
   }
 
