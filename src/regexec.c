@@ -55,7 +55,7 @@
    STACK_AT(mem_end_stk[idx].i)->u.mem.pstr : mem_end_stk[idx].s)
 
 #ifdef _MSC_VER
-#define DIST_CAST(d)   (OnigLen )(d)
+#define DIST_CAST(d)   (ptrdiff_t )(d)
 #else
 #define DIST_CAST(d)   (d)
 #endif
@@ -4502,7 +4502,7 @@ regset_search_body_position_lead(OnigRegSet* set,
     sr[i].state = SRS_DEAD;
     if (reg->optimize != OPTIMIZE_NONE) {
       if (reg->dist_max != INFINITE_LEN) {
-        if (DIST_CAST(end - range) > reg->dist_max)
+        if (end - range > DIST_CAST(reg->dist_max))
           sch_range = (UChar* )range + reg->dist_max;
         else
           sch_range = (UChar* )end;
@@ -5165,7 +5165,7 @@ forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
 
   p = start;
   if (reg->dist_min != 0) {
-    if (DIST_CAST(end - p) <= reg->dist_min)
+    if (end - p <= DIST_CAST(reg->dist_min))
       return 0; /* fail */
 
     if (ONIGENC_IS_SINGLEBYTE(reg->enc)) {
@@ -5198,7 +5198,7 @@ forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
   }
 
   if (p && p < range) {
-    if (DIST_CAST(p - start) < reg->dist_min) {
+    if (p - start < DIST_CAST(reg->dist_min)) {
     retry_gate:
       pprev = p;
       p += enclen(reg->enc, p);
@@ -5243,7 +5243,7 @@ forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
     }
     else {
       if (reg->dist_max != INFINITE_LEN) {
-        if (DIST_CAST(p - str) < reg->dist_max) {
+        if (p - str < DIST_CAST(reg->dist_max)) {
           *low = (UChar* )str;
         }
         else {
@@ -5254,7 +5254,7 @@ forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
         }
       }
       /* no needs to adjust *high, *high is used as range check only */
-      if (DIST_CAST(p - str) < reg->dist_min)
+      if (p - str < DIST_CAST(reg->dist_min))
         *high = (UChar* )str;
       else
         *high = p - reg->dist_min;
@@ -5339,13 +5339,13 @@ backward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
     }
 
     if (reg->dist_max != INFINITE_LEN) {
-      if (DIST_CAST(p - str) < reg->dist_max)
+      if (p - str < DIST_CAST(reg->dist_max))
         *low = (UChar* )str;
       else
         *low = p - reg->dist_max;
 
       if (reg->dist_min != 0) {
-        if (DIST_CAST(p - str) < reg->dist_min)
+        if (p - str < DIST_CAST(reg->dist_min))
           *high = (UChar* )str;
         else
           *high = p - reg->dist_min;
@@ -5489,13 +5489,13 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
 
       if (range > start) {
         if (reg->anc_dist_max != INFINITE_LEN &&
-            DIST_CAST(min_semi_end - start) > reg->anc_dist_max) {
+            min_semi_end - start > DIST_CAST(reg->anc_dist_max)) {
           start = min_semi_end - reg->anc_dist_max;
           if (start < end)
             start = onigenc_get_right_adjust_char_head(reg->enc, str, start);
         }
-        if (DIST_CAST(max_semi_end - (range - 1)) < reg->anc_dist_min) {
-          if (DIST_CAST(max_semi_end - str + 1) < reg->anc_dist_min)
+        if (max_semi_end - (range - 1) < DIST_CAST(reg->anc_dist_min)) {
+          if (max_semi_end - str + 1 < DIST_CAST(reg->anc_dist_min))
             goto mismatch_no_msa;
           else
             range = max_semi_end - reg->anc_dist_min + 1;
@@ -5507,11 +5507,11 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
       }
       else {
         if (reg->anc_dist_max != INFINITE_LEN &&
-            DIST_CAST(min_semi_end - range) > reg->anc_dist_max) {
+            min_semi_end - range > DIST_CAST(reg->anc_dist_max)) {
           range = min_semi_end - reg->anc_dist_max;
         }
-        if (DIST_CAST(max_semi_end - start) < reg->anc_dist_min) {
-          if (DIST_CAST(max_semi_end - str) < reg->anc_dist_min)
+        if (max_semi_end - start < DIST_CAST(reg->anc_dist_min)) {
+          if (max_semi_end - str < DIST_CAST(reg->anc_dist_min))
             goto mismatch_no_msa;
           else {
             start = max_semi_end - reg->anc_dist_min;
@@ -5582,7 +5582,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
         if (reg->dist_max == INFINITE_LEN)
           sch_range = (UChar* )end;
         else {
-          if (DIST_CAST(end - range) < reg->dist_max)
+          if (end - range < DIST_CAST(reg->dist_max))
             sch_range = (UChar* )end;
           else {
             sch_range = (UChar* )range + reg->dist_max;
@@ -5658,14 +5658,14 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
       else
         adjrange = (UChar* )end;
 
-      if (DIST_CAST(end - range) > reg->dist_min)
+      if (end - range > DIST_CAST(reg->dist_min))
         min_range = range + reg->dist_min;
       else
         min_range = end;
 
       if (reg->dist_max != INFINITE_LEN) {
         do {
-          if (DIST_CAST(end - s) > reg->dist_max)
+          if (end - s > DIST_CAST(reg->dist_max))
             sch_start = s + reg->dist_max;
           else {
             sch_start = onigenc_get_prev_char_head(reg->enc, str, end);
