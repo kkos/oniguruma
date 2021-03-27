@@ -3,6 +3,7 @@ History
 2021/04/XX: Version 6.9.7
 2021/03/31: Release Candidate 1 for Version 6.9.7
 
+2021/03/23: fix Issue 32340, 32345, 32355 in oss-fuzz
 2021/03/12: fix invalid optimization info for if-pattern (?(cond)...)
 2021/02/21: NEW API: ONIG_OPTION_CALLBACK_EACH_MATCH
 2021/02/02: fix Issue 30144 in oss-fuzz: Timeout
