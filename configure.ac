@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(onig, 6.9.6)
+AC_INIT(onig, 6.9.7)
 
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -57,7 +57,7 @@ fi
 dnl Checks for programs.
 AC_PROG_CC
 LT_INIT
-LTVERSION="6:0:1"
+LTVERSION="7:0:2"
 AC_SUBST(LTVERSION)
 
 AC_PROG_INSTALL

@@ -113,32 +113,6 @@ Version 6.9.0
 * NEW: add Emoji properties
 
 
-Version 6.8.2
--------------
-
-* Fix: #80 UChar in header causes issue
-* NEW API: onig_set_callout_user_data_of_match_param()  (* omission in 6.8.0)
-* add doc/CALLOUTS.API and doc/CALLOUTS.API.ja
-
-
-Version 6.8.1
--------------
-
-* Update shared library version to 5.0.0 for API incompatible changes from 6.7.1
-
-
-Version 6.8.0
--------------
-
-* Retry-limit-in-match function enabled by default
-* NEW: configure option --enable-posix-api=no  (* enabled by default)
-* NEW API: onig_search_with_param(), onig_match_with_param()
-* NEW: Callouts of contents  (?{...contents...}) (?{...}\[tag]\[X<>]) (?{{...}})
-* NEW: Callouts of name      (*name) (*name\[tag]{args...})
-* NEW: Builtin callouts  (*FAIL) (*MISMATCH) (*ERROR{n}) (*COUNT) (*MAX{n}) etc..
-* Examples of Callouts program: [callout.c](sample/callout.c), [count.c](sample/count.c), [echo.c](sample/echo.c)
-
-
 License
 -------
 
