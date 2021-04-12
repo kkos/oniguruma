@@ -85,6 +85,12 @@ typedef unsigned char  OnigUChar;
 typedef unsigned int   OnigCtype;
 typedef unsigned int   OnigLen;
 
+#ifndef ONIG_NO_STANDARD_C_HEADERS
+#include <stddef.h>  /* for ptrdiff_t */
+#endif
+
+typedef ptrdiff_t  OnigPos;
+
 #define ONIG_INFINITE_DISTANCE  ~((OnigLen )0)
 
 typedef unsigned int OnigCaseFoldType; /* case fold flag */
@@ -656,8 +662,8 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 
 typedef struct OnigCaptureTreeNodeStruct {
   int group;   /* group number */
-  int beg;
-  int end;
+  OnigPos beg;
+  OnigPos end;
   int allocated;
   int num_childs;
   struct OnigCaptureTreeNodeStruct** childs;
@@ -667,8 +673,8 @@ typedef struct OnigCaptureTreeNodeStruct {
 struct re_registers {
   int  allocated;
   int  num_regs;
-  int* beg;
-  int* end;
+  OnigPos* beg;
+  OnigPos* end;
   /* extended */
   OnigCaptureTreeNode* history_root;  /* capture history tree root */
 };
@@ -801,9 +807,9 @@ int onig_initialize P_((OnigEncoding encodings[], int number_of_encodings));
 ONIG_EXTERN
 int onig_init P_((void));
 ONIG_EXTERN
-int ONIG_VARIADIC_FUNC_ATTR onig_error_code_to_str PV_((OnigUChar* s, int err_code, ...));
+int ONIG_VARIADIC_FUNC_ATTR onig_error_code_to_str PV_((OnigUChar* s, OnigPos err_code, ...));
 ONIG_EXTERN
-int onig_is_error_code_needs_param PV_((int code));
+int onig_is_error_code_needs_param PV_((OnigPos code));
 ONIG_EXTERN
 void onig_set_warn_func P_((OnigWarnFunc f));
 ONIG_EXTERN

@@ -916,8 +916,8 @@ onig_region_resize(OnigRegion* region, int n)
     n = ONIG_NREGION;
 
   if (region->allocated == 0) {
-    region->beg = (int* )xmalloc(n * sizeof(int));
-    region->end = (int* )xmalloc(n * sizeof(int));
+    region->beg = (OnigPos* )xmalloc(n * sizeof(*(region->beg)));
+    region->end = (OnigPos* )xmalloc(n * sizeof(*(region->end)));
 
     if (region->beg == 0 || region->end == 0)
       return ONIGERR_MEMORY;
@@ -925,8 +925,8 @@ onig_region_resize(OnigRegion* region, int n)
     region->allocated = n;
   }
   else if (region->allocated < n) {
-    region->beg = (int* )xrealloc(region->beg, n * sizeof(int));
-    region->end = (int* )xrealloc(region->end, n * sizeof(int));
+    region->beg = (OnigPos* )xrealloc(region->beg, n * sizeof(*(region->beg)));
+    region->end = (OnigPos* )xrealloc(region->end, n * sizeof(*(region->end)));
 
     if (region->beg == 0 || region->end == 0)
       return ONIGERR_MEMORY;
@@ -968,8 +968,8 @@ onig_region_init(OnigRegion* region)
 {
   region->num_regs     = 0;
   region->allocated    = 0;
-  region->beg          = (int* )0;
-  region->end          = (int* )0;
+  region->beg          = (OnigPos* )0;
+  region->end          = (OnigPos* )0;
   region->history_root = (OnigCaptureTreeNode* )0;
 }
 
@@ -1003,24 +1003,24 @@ onig_region_free(OnigRegion* r, int free_self)
 extern void
 onig_region_copy(OnigRegion* to, OnigRegion* from)
 {
-#define RREGC_SIZE   (sizeof(int) * from->num_regs)
+#define RREGC_SIZE   (sizeof(OnigPos) * from->num_regs)
   int i;
 
   if (to == from) return;
 
   if (to->allocated == 0) {
     if (from->num_regs > 0) {
-      to->beg = (int* )xmalloc(RREGC_SIZE);
+      to->beg = (OnigPos* )xmalloc(RREGC_SIZE);
       if (IS_NULL(to->beg)) return;
-      to->end = (int* )xmalloc(RREGC_SIZE);
+      to->end = (OnigPos* )xmalloc(RREGC_SIZE);
       if (IS_NULL(to->end)) return;
       to->allocated = from->num_regs;
     }
   }
   else if (to->allocated < from->num_regs) {
-    to->beg = (int* )xrealloc(to->beg, RREGC_SIZE);
+    to->beg = (OnigPos* )xrealloc(to->beg, RREGC_SIZE);
     if (IS_NULL(to->beg)) return;
-    to->end = (int* )xrealloc(to->end, RREGC_SIZE);
+    to->end = (OnigPos* )xrealloc(to->end, RREGC_SIZE);
     if (IS_NULL(to->end)) return;
     to->allocated = from->num_regs;
   }
