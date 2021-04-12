@@ -11,9 +11,9 @@ each_match_callback(const UChar* str, const UChar* end,
 {
 #if 1
   fprintf(stdout, "each_match_callback:\n");
-  fprintf(stdout, "  match at:  %ld - %d: %p\n", match_start - str, region->end[0],
+  fprintf(stdout, "  match at:  %ld - %ld: %p\n", match_start - str, region->end[0],
           user_data);
-  fprintf(stdout, "  region[0]: %d - %d\n", region->beg[0], region->end[0]);
+  fprintf(stdout, "  region[0]: %ld - %ld\n", region->beg[0], region->end[0]);
 #else
   int i;
   i = region->beg[0];

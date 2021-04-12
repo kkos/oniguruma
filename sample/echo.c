@@ -78,7 +78,7 @@ test(OnigEncoding enc, char* in_pattern, char* in_str)
 
     fprintf(stderr, "match at %d\n", r);
     for (i = 0; i < region->num_regs; i++) {
-      fprintf(stderr, "%d: (%d-%d)\n", i, region->beg[i], region->end[i]);
+      fprintf(stderr, "%d: (%ld-%ld)\n", i, region->beg[i], region->end[i]);
     }
   }
   else if (r == ONIG_MISMATCH) {

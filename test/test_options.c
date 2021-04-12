@@ -109,7 +109,7 @@ static void xx(OnigOptionType options, char* pattern, char* str,
         nsucc++;
       }
       else {
-        fprintf(stdout, "FAIL: /%s/ '%s' %d-%d : %d-%d  #%d\n", pattern, str,
+        fprintf(stdout, "FAIL: /%s/ '%s' %d-%d : %ld-%ld  #%d\n", pattern, str,
                 from, to, region->beg[mem], region->end[mem], line_no);
         nfail++;
       }

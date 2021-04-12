@@ -56,7 +56,7 @@ extern int ex(unsigned char* str, unsigned char* pattern,
 
     fprintf(stderr, "match at %d\n", r);
     for (i = 0; i < region->num_regs; i++) {
-      fprintf(stderr, "%d: (%d-%d)\n", i, region->beg[i], region->end[i]);
+      fprintf(stderr, "%d: (%ld-%ld)\n", i, region->beg[i], region->end[i]);
     }
     fprintf(stderr, "\n");
 

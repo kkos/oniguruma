@@ -251,7 +251,7 @@ xx(int line_no, int n, char* ps[], char* s, int from, int to, int mem, int not, 
         len = region->end[mem] - region->beg[mem];
         strncpy(buf, s + region->beg[mem], len);
         buf[len] = '\0';
-        fprintf(stdout, "FAIL: %d: %d-%d : %d-%d (%s)\n", line_no,
+        fprintf(stdout, "FAIL: %d: %d-%d : %ld-%ld (%s)\n", line_no,
                 from, to, region->beg[mem], region->end[mem], buf);
         nfail++;
       }

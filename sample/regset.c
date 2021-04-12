@@ -75,7 +75,7 @@ extern int main(int argc, char* argv[])
 
     region = onig_regset_get_region(set, r);
     for (i = 0; i < region->num_regs; i++) {
-      fprintf(stderr, "%d: (%d-%d)\n", i, region->beg[i], region->end[i]);
+      fprintf(stderr, "%d: (%ld-%ld)\n", i, region->beg[i], region->end[i]);
     }
   }
   else if (r == ONIG_MISMATCH) {
