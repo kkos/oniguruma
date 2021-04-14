@@ -5123,11 +5123,11 @@ map_search_backward(OnigEncoding enc, UChar map[],
   }
   return (UChar* )NULL;
 }
-extern int
+extern OnigPos
 onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at,
            OnigRegion* region, OnigOptionType option)
 {
-  int r;
+  OnigPos r;
   OnigMatchParam mp;
 
   onig_initialize_match_param(&mp);
@@ -5136,12 +5136,12 @@ onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at,
   return r;
 }
 
-extern int
+extern OnigPos
 onig_match_with_param(regex_t* reg, const UChar* str, const UChar* end,
                       const UChar* at, OnigRegion* region, OnigOptionType option,
                       OnigMatchParam* mp)
 {
-  int r;
+  OnigPos r;
   MatchArg msa;
 
 #ifndef USE_POSIX_API
@@ -5155,7 +5155,7 @@ onig_match_with_param(regex_t* reg, const UChar* str, const UChar* end,
       && !OPTON_POSIX_REGION(option)
 #endif
       ) {
-    r = onig_region_resize_clear(region, reg->num_mem + 1);
+    r = (OnigPos )onig_region_resize_clear(region, reg->num_mem + 1);
   }
   else
     r = 0;

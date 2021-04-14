@@ -832,9 +832,9 @@ OnigPos onig_search P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, c
 ONIG_EXTERN
 OnigPos onig_search_with_param P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegion* region, OnigOptionType option, OnigMatchParam* mp));
 ONIG_EXTERN
-int onig_match P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option));
+OnigPos onig_match P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option));
 ONIG_EXTERN
-int onig_match_with_param P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option, OnigMatchParam* mp));
+OnigPos onig_match_with_param P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option, OnigMatchParam* mp));
 
 ONIG_EXTERN
 int onig_regset_new P_((OnigRegSet** rset, int n, regex_t* regs[]));
