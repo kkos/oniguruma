@@ -63,7 +63,7 @@
 
 static int forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start, UChar* range, UChar** low, UChar** high);
 
-static int
+static OnigPos
 search_in_range(regex_t* reg, const UChar* str, const UChar* end, const UChar* start, const UChar* range, /* match range */ const UChar* data_range, /* subject string range */ OnigRegion* region, OnigOptionType option, OnigMatchParam* mp);
 
 
@@ -4508,9 +4508,10 @@ regset_search_body_position_lead(OnigRegSet* set,
            const UChar* str, const UChar* end,
            const UChar* start, const UChar* range, /* match start range */
            const UChar* orig_range, /* data range */
-           OnigOptionType option, MatchArg* msas, int* rmatch_pos)
+           OnigOptionType option, MatchArg* msas, OnigPos* rmatch_pos)
 {
-  int r, n, i;
+  OnigPos r;
+  int n, i;
   UChar *s;
   UChar *low, *high;
   UChar* sch_range;
@@ -4643,23 +4644,24 @@ regset_search_body_position_lead(OnigRegSet* set,
   xfree(sr);
   return ONIG_MISMATCH;
 
+  /* error */
  finish:
   xfree(sr);
-  return r;
+  return (int )r;
 
  match:
   xfree(sr);
-  *rmatch_pos = (int )(s - str);
+  *rmatch_pos = s - str;
   return i;
 }
 
 static inline int
 regset_search_body_regex_lead(OnigRegSet* set,
-              const UChar* str, const UChar* end,
-              const UChar* start, const UChar* orig_range, OnigRegSetLead lead,
-              OnigOptionType option, OnigMatchParam* mps[], int* rmatch_pos)
+            const UChar* str, const UChar* end,
+            const UChar* start, const UChar* orig_range, OnigRegSetLead lead,
+            OnigOptionType option, OnigMatchParam* mps[], OnigPos* rmatch_pos)
 {
-  int r;
+  OnigPos r;
   int i;
   int n;
   int match_index;
@@ -4700,7 +4702,7 @@ onig_regset_search_with_param(OnigRegSet* set,
            const UChar* str, const UChar* end,
            const UChar* start, const UChar* range,
            OnigRegSetLead lead, OnigOptionType option, OnigMatchParam* mps[],
-           int* rmatch_pos)
+           OnigPos* rmatch_pos)
 {
   int r;
   int i;
@@ -4889,8 +4891,8 @@ onig_regset_search_with_param(OnigRegSet* set,
 
 extern int
 onig_regset_search(OnigRegSet* set, const UChar* str, const UChar* end,
-                   const UChar* start, const UChar* range,
-                   OnigRegSetLead lead, OnigOptionType option, int* rmatch_pos)
+             const UChar* start, const UChar* range,
+             OnigRegSetLead lead, OnigOptionType option, OnigPos* rmatch_pos)
 {
   int r;
   int i;
@@ -5401,12 +5403,12 @@ backward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
 }
 
 
-extern int
+extern OnigPos
 onig_search(regex_t* reg, const UChar* str, const UChar* end,
             const UChar* start, const UChar* range, OnigRegion* region,
             OnigOptionType option)
 {
-  int r;
+  OnigPos r;
   OnigMatchParam mp;
   const UChar* data_range;
 
@@ -5426,22 +5428,22 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
 
 }
 
-static int
+static OnigPos
 search_in_range(regex_t* reg, const UChar* str, const UChar* end,
                 const UChar* start, const UChar* range, /* match start range */
                 const UChar* data_range, /* subject string range */
                 OnigRegion* region,
                 OnigOptionType option, OnigMatchParam* mp)
 {
-  int r;
+  OnigPos r;
   UChar *s;
   MatchArg msa;
   const UChar *orig_start = start;
 
 #ifdef ONIG_DEBUG_SEARCH
   fprintf(DBGFP,
-     "onig_search (entry point): str: %p, end: %d, start: %d, range: %d\n",
-     str, (int )(end - str), (int )(start - str), (int )(range - str));
+     "onig_search (entry point): str: %p, end: %ld, start: %ld, range: %ld\n",
+     str, end - str, start - str, range - str);
 #endif
 
   ADJUST_MATCH_PARAM(reg, mp);
@@ -5458,7 +5460,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
       && ! OPTON_POSIX_REGION(option)
 #endif
       ) {
-    r = onig_region_resize_clear(region, reg->num_mem + 1);
+    r = (OnigPos )onig_region_resize_clear(region, reg->num_mem + 1);
     if (r != 0) goto finish_no_msa;
   }
 
@@ -5596,8 +5598,8 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
   }
 
 #ifdef ONIG_DEBUG_SEARCH
-  fprintf(DBGFP, "onig_search(apply anchor): end: %d, start: %d, range: %d\n",
-          (int )(end - str), (int )(start - str), (int )(range - str));
+  fprintf(DBGFP, "onig_search(apply anchor): end: %ld, start: %ld, range: %ld\n",
+          end - str, start - str, range - str);
 #endif
 
   MATCH_ARG_INIT(msa, reg, option, region, orig_start, mp);
@@ -5769,13 +5771,13 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
 
  match:
   MATCH_ARG_FREE(msa);
-  return (int )(s - str);
+  return s - str;
 }
 
-extern int
+extern OnigPos
 onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
-                       const UChar* start, const UChar* range, OnigRegion* region,
-                       OnigOptionType option, OnigMatchParam* mp)
+                 const UChar* start, const UChar* range, OnigRegion* region,
+                 OnigOptionType option, OnigMatchParam* mp)
 {
   const UChar* data_range;
 
@@ -5791,10 +5793,10 @@ onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
 extern int
 onig_scan(regex_t* reg, const UChar* str, const UChar* end,
           OnigRegion* region, OnigOptionType option,
-          int (*scan_callback)(int, int, OnigRegion*, void*),
+          int (*scan_callback)(int, OnigPos, OnigRegion*, void*),
           void* callback_arg)
 {
-  int r;
+  OnigPos r;
   int n;
   int rs;
   const UChar* start;
@@ -5830,7 +5832,7 @@ onig_scan(regex_t* reg, const UChar* str, const UChar* end,
       break;
     }
     else { /* error */
-      return r;
+      return (int )r;
     }
   }
 

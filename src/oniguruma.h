@@ -826,11 +826,11 @@ void onig_free P_((OnigRegex));
 ONIG_EXTERN
 void onig_free_body P_((OnigRegex));
 ONIG_EXTERN
-int onig_scan(OnigRegex reg, const OnigUChar* str, const OnigUChar* end, OnigRegion* region, OnigOptionType option, int (*scan_callback)(int, int, OnigRegion*, void*), void* callback_arg);
+int onig_scan(OnigRegex reg, const OnigUChar* str, const OnigUChar* end, OnigRegion* region, OnigOptionType option, int (*scan_callback)(int, OnigPos, OnigRegion*, void*), void* callback_arg);
 ONIG_EXTERN
-int onig_search P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegion* region, OnigOptionType option));
+OnigPos onig_search P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegion* region, OnigOptionType option));
 ONIG_EXTERN
-int onig_search_with_param P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegion* region, OnigOptionType option, OnigMatchParam* mp));
+OnigPos onig_search_with_param P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegion* region, OnigOptionType option, OnigMatchParam* mp));
 ONIG_EXTERN
 int onig_match P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option));
 ONIG_EXTERN
@@ -851,9 +851,9 @@ regex_t* onig_regset_get_regex P_((OnigRegSet* set, int at));
 ONIG_EXTERN
 OnigRegion* onig_regset_get_region P_((OnigRegSet* set, int at));
 ONIG_EXTERN
-int onig_regset_search P_((OnigRegSet* set, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegSetLead lead, OnigOptionType option, int* rmatch_pos));
+int onig_regset_search P_((OnigRegSet* set, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegSetLead lead, OnigOptionType option, OnigPos* rmatch_pos));
 ONIG_EXTERN
-int onig_regset_search_with_param P_((OnigRegSet* set, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range,  OnigRegSetLead lead, OnigOptionType option, OnigMatchParam* mps[], int* rmatch_pos));
+int onig_regset_search_with_param P_((OnigRegSet* set, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range,  OnigRegSetLead lead, OnigOptionType option, OnigMatchParam* mps[], OnigPos* rmatch_pos));
 
 ONIG_EXTERN
 OnigRegion* onig_region_new P_((void));
