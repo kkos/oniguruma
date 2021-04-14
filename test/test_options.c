@@ -32,7 +32,7 @@ static void xx(OnigOptionType options, char* pattern, char* str,
   if (nall++ % TIS_TEST_CHOOSE_MAX != TIS_TEST_CHOOSE_CURRENT) return;
 #endif
 
-  int r;
+  OnigPos r;
   regex_t* reg;
   OnigErrorInfo einfo;
 
@@ -48,11 +48,11 @@ static void xx(OnigOptionType options, char* pattern, char* str,
     }
     else {
       if (r == error_no) {
-        fprintf(stdout, "OK(ERROR): /%s/ %d  #%d\n", pattern, r, line_no);
+        fprintf(stdout, "OK(ERROR): /%s/ %ld  #%d\n", pattern, r, line_no);
         nsucc++;
       }
       else {
-        fprintf(stdout, "FAIL(ERROR): /%s/ '%s', %d, %d  #%d\n", pattern, str,
+        fprintf(stdout, "FAIL(ERROR): /%s/ '%s', %d, %ld  #%d\n", pattern, str,
                 error_no, r, line_no);
         nfail++;
       }
@@ -74,12 +74,12 @@ static void xx(OnigOptionType options, char* pattern, char* str,
     }
     else {
       if (r == error_no) {
-        fprintf(stdout, "OK(ERROR): /%s/ '%s', %d  #%d\n",
+        fprintf(stdout, "OK(ERROR): /%s/ '%s', %ld  #%d\n",
                 pattern, str, r, line_no);
         nsucc++;
       }
       else {
-        fprintf(stdout, "FAIL ERROR NO: /%s/ '%s', %d, %d  #%d\n",
+        fprintf(stdout, "FAIL ERROR NO: /%s/ '%s', %d, %ld  #%d\n",
                 pattern, str, error_no, r, line_no);
         nfail++;
       }

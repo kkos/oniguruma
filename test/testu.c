@@ -1,6 +1,6 @@
 /*
  * testu.c
- * Copyright (c) 2019  K.Kosako
+ * Copyright (c) 2019-2021  K.Kosako
  */
 #include<stdio.h>
 
@@ -66,10 +66,11 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not)
   if (nall++ % TIS_TEST_CHOOSE_MAX != TIS_TEST_CHOOSE_CURRENT) return;
 #endif
 
-  int r;
   char cpat[4000], cstr[4000];
 
 #ifdef POSIX_TEST
+
+  int r;
   regex_t reg;
   char buf[200];
   regmatch_t pmatch[20];
@@ -123,6 +124,8 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not)
   regfree(&reg);
 
 #else
+
+  OnigPos r;
   regex_t* reg;
   OnigErrorInfo einfo;
 

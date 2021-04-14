@@ -26,7 +26,7 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not)
   if (nall++ % TIS_TEST_CHOOSE_MAX != TIS_TEST_CHOOSE_CURRENT) return;
 #endif
 
-  int r;
+  OnigPos r;
   regex_t* reg;
   OnigErrorInfo einfo;
 
