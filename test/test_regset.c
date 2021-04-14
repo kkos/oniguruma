@@ -1,6 +1,6 @@
 /*
  * test_regset.c  --- test for regset API
- * Copyright (c) 2019  K.Kosako
+ * Copyright (c) 2019-2021  K.Kosako
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -83,7 +83,7 @@ time_test(int repeat, int n, char* ps[], char* s, char* end, double* rt_set, dou
 {
   int r;
   int i;
-  int match_pos;
+  OnigPos match_pos;
   OnigRegSet* set;
   clock_t ts1, ts2;
   double t_set, t_reg;
@@ -182,7 +182,7 @@ static void
 xx(int line_no, int n, char* ps[], char* s, int from, int to, int mem, int not, int error_no)
 {
   int r;
-  int match_pos;
+  OnigPos match_pos;
   int match_index;
   OnigRegSet* set;
   char *end;
