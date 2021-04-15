@@ -36,7 +36,7 @@ endif
 
 test_uchar:
 	@echo "[UChar in oniguruma.h check]"
-	@grep "\(^\|[^g]\)UChar" $(top_srcdir)/src/oniguruma.h
+	@grep -n "\(^\|[^g]\)UChar" $(top_srcdir)/src/oniguruma.h
 	@echo ""
 
 test_utf8_SOURCES = test_utf8.c
