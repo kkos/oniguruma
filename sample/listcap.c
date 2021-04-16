@@ -26,7 +26,7 @@ node_callback(int group, int beg, int end, int level, int at, void* arg)
 extern int ex(unsigned char* str, unsigned char* pattern,
               OnigSyntaxType* syntax, OnigOptionType options)
 {
-  int r;
+  OnigPos r;
   unsigned char *start, *range, *end;
   regex_t* reg;
   OnigErrorInfo einfo;
@@ -54,7 +54,7 @@ extern int ex(unsigned char* str, unsigned char* pattern,
   if (r >= 0) {
     int i;
 
-    fprintf(stderr, "match at %d\n", r);
+    fprintf(stderr, "match at %ld\n", r);
     for (i = 0; i < region->num_regs; i++) {
       fprintf(stderr, "%d: (%ld-%ld)\n", i, region->beg[i], region->end[i]);
     }

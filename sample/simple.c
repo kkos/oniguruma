@@ -7,7 +7,7 @@
 
 extern int main(int argc, char* argv[])
 {
-  int r;
+  OnigPos r;
   unsigned char *start, *range, *end;
   regex_t* reg;
   OnigErrorInfo einfo;
@@ -38,7 +38,7 @@ extern int main(int argc, char* argv[])
   if (r >= 0) {
     int i;
 
-    fprintf(stderr, "match at %d\n", r);
+    fprintf(stderr, "match at %ld\n", r);
     for (i = 0; i < region->num_regs; i++) {
       fprintf(stderr, "%d: (%ld-%ld)\n", i, region->beg[i], region->end[i]);
     }

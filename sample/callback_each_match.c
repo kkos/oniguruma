@@ -36,7 +36,7 @@ each_match_callback(const UChar* str, const UChar* end,
 static int
 search(UChar* pattern, UChar* str, OnigOptionType options, OnigOptionType runtime_options)
 {
-  int r;
+  OnigPos r;
   unsigned char *start, *range, *end;
   regex_t* reg;
   OnigErrorInfo einfo;
@@ -70,7 +70,7 @@ search(UChar* pattern, UChar* str, OnigOptionType options, OnigOptionType runtim
   if (r >= 0) {
     /* If ONIG_OPTION_CALLBACK_EACH_MATCH is used with
        ONIG_OPTION_FIND_LONGEST, it may also return positive value. */
-    fprintf(stdout, "\nr: %d\n", r);
+    fprintf(stdout, "\nr: %ld\n", r);
   }
   else if (r == ONIG_MISMATCH) {
     /* always return ONIG_MISMATCH if ONIG_OPTION_CALLBACK_EACH_MATCH */
@@ -92,7 +92,7 @@ search(UChar* pattern, UChar* str, OnigOptionType options, OnigOptionType runtim
 static int
 match(UChar* pattern, UChar* str, UChar* at, OnigOptionType options, OnigOptionType runtime_options)
 {
-  int r;
+  OnigPos r;
   unsigned char *start, *range, *end;
   regex_t* reg;
   OnigErrorInfo einfo;
@@ -125,7 +125,7 @@ match(UChar* pattern, UChar* str, UChar* at, OnigOptionType options, OnigOptionT
   if (r >= 0) {
     /* If ONIG_OPTION_CALLBACK_EACH_MATCH is used with
        ONIG_OPTION_FIND_LONGEST, it may also return positive value. */
-    fprintf(stdout, "\nr: %d\n", r);
+    fprintf(stdout, "\nr: %ld\n", r);
   }
   else if (r == ONIG_MISMATCH) {
     /* always return ONIG_MISMATCH if ONIG_OPTION_CALLBACK_EACH_MATCH */

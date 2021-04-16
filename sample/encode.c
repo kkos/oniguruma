@@ -7,7 +7,7 @@
 static int
 search(regex_t* reg, unsigned char* str, unsigned char* end)
 {
-  int r;
+  OnigPos r;
   unsigned char *start, *range;
   OnigRegion *region;
 
@@ -19,7 +19,7 @@ search(regex_t* reg, unsigned char* str, unsigned char* end)
   if (r >= 0) {
     int i;
 
-    fprintf(stderr, "match at %d  (%s)\n", r,
+    fprintf(stderr, "match at %ld  (%s)\n", r,
             ONIGENC_NAME(onig_get_encoding(reg)));
     for (i = 0; i < region->num_regs; i++) {
       fprintf(stderr, "%d: (%ld-%ld)\n", i, region->beg[i], region->end[i]);

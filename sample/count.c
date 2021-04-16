@@ -11,7 +11,7 @@
 static int
 test(OnigEncoding enc, OnigMatchParam* mp, char* in_pattern, char* in_str)
 {
-  int r;
+  OnigPos r;
   unsigned char *start, *range, *end;
   regex_t* reg;
   OnigErrorInfo einfo;
@@ -27,7 +27,7 @@ test(OnigEncoding enc, OnigMatchParam* mp, char* in_pattern, char* in_str)
   if (r != ONIG_NORMAL) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
     onig_error_code_to_str((UChar* )s, r, &einfo);
-    fprintf(stderr, "COMPILE ERROR: %d: %s\n", r, s);
+    fprintf(stderr, "COMPILE ERROR: %ld: %s\n", r, s);
     return -1;
   }
 
@@ -44,7 +44,7 @@ test(OnigEncoding enc, OnigMatchParam* mp, char* in_pattern, char* in_str)
     char* tag;
     int tag_len;
 
-    fprintf(stdout, "match at %d\n", r);
+    fprintf(stdout, "match at %ld\n", r);
 
   show_count:
     if (enc == ONIG_ENCODING_UTF16_BE) {
@@ -77,12 +77,12 @@ test(OnigEncoding enc, OnigMatchParam* mp, char* in_pattern, char* in_str)
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
   err:
     onig_error_code_to_str((UChar* )s, r);
-    fprintf(stdout, "SEARCH ERROR: %d: %s\n", r, s);
+    fprintf(stdout, "SEARCH ERROR: %ld: %s\n", r, s);
   }
 
   onig_region_free(region, 1 /* 1:free self, 0:free contents only */);
   onig_free(reg);
-  return r;
+  return (int )r;
 }
 
 extern int main(int argc, char* argv[])

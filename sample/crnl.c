@@ -1,5 +1,5 @@
 /*
- * crnl.c  2007/05/30  K.Kosako
+ * crnl.c  2007-2021  K.Kosako
  *
  * !!! You should enable USE_CRNL_AS_LINE_TERMINATOR. !!!
  *
@@ -11,15 +11,15 @@
 
 static int nfail = 0;
 
-static void result(int no, int from, int to,
-                   int expected_from, int expected_to)
+static void result(int no, OnigPos from, OnigPos to,
+                   OnigPos expected_from, OnigPos expected_to)
 {
   fprintf(stderr, "%3d: ", no);
   if (from == expected_from && to == expected_to) {
     fprintf(stderr, "Success\n");
   }
   else {
-    fprintf(stderr, "Fail: expected: (%d-%d), result: (%d-%d)\n",
+    fprintf(stderr, "Fail: expected: (%ld-%ld), result: (%ld-%ld)\n",
             expected_from, expected_to, from, to);
 
     nfail++;
@@ -28,9 +28,9 @@ static void result(int no, int from, int to,
 
 static int
 x(int no, char* pattern_arg, char* str_arg,
-  int expected_from, int expected_to)
+  OnigPos expected_from, OnigPos expected_to)
 {
-  int r;
+  OnigPos r;
   unsigned char *start, *range, *end;
   regex_t* reg;
   OnigErrorInfo einfo;

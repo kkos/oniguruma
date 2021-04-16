@@ -122,7 +122,7 @@ bar(OnigCalloutArgs* args, void* user_data)
 static int
 test(OnigEncoding enc, OnigMatchParam* mp, char* in_pattern, char* in_str)
 {
-  int r;
+  OnigPos r;
   unsigned char *start, *range, *end;
   regex_t* reg;
   OnigErrorInfo einfo;
@@ -138,7 +138,7 @@ test(OnigEncoding enc, OnigMatchParam* mp, char* in_pattern, char* in_str)
   if (r != ONIG_NORMAL) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
     onig_error_code_to_str((UChar* )s, r, &einfo);
-    fprintf(stderr, "COMPILE ERROR: %d: %s\n", r, s);
+    fprintf(stderr, "COMPILE ERROR: %ld: %s\n", r, s);
     return -1;
   }
 
@@ -152,7 +152,7 @@ test(OnigEncoding enc, OnigMatchParam* mp, char* in_pattern, char* in_str)
   if (r >= 0) {
     int i;
 
-    fprintf(stderr, "match at %d\n", r);
+    fprintf(stderr, "match at %ld\n", r);
     for (i = 0; i < region->num_regs; i++) {
       fprintf(stderr, "%d: (%ld-%ld)\n", i, region->beg[i], region->end[i]);
     }
@@ -163,12 +163,12 @@ test(OnigEncoding enc, OnigMatchParam* mp, char* in_pattern, char* in_str)
   else { /* error */
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
     onig_error_code_to_str((UChar* )s, r);
-    fprintf(stderr, "SEARCH ERROR: %d: %s\n", r, s);
+    fprintf(stderr, "SEARCH ERROR: %ld: %s\n", r, s);
   }
 
   onig_region_free(region, 1 /* 1:free self, 0:free contents only */);
   onig_free(reg);
-  return r;
+  return (int )r;
 }
 
 extern int main(int argc, char* argv[])
