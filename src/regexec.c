@@ -4822,13 +4822,17 @@ onig_regset_search_with_param(OnigRegSet* set,
         /* Can't use REGSET_MATCH_AND_RETURN_CHECK()
            because r must be set regex index (i)
         */
-        r = match_at(reg, str, end, end, s, msas + i);
-        if (r != ONIG_MISMATCH) {
-          if (r >= 0) {
+        OnigPos pos;
+        pos = match_at(reg, str, end, end, s, msas + i);
+        if (pos != ONIG_MISMATCH) {
+          if (pos >= 0) {
             r = i;
             goto match;
           }
-          else goto finish; /* error */
+          else {
+            r = (int )pos;
+            goto finish; /* error */
+          }
         }
       }
     }
@@ -6110,7 +6114,7 @@ onig_regset_get_region(OnigRegSet* set, int at)
 
 
 #ifdef USE_DIRECT_THREADED_CODE
-extern int
+extern OnigPos
 onig_init_for_match_at(regex_t* reg)
 {
   return match_at(reg, (const UChar* )NULL, (const UChar* )NULL,

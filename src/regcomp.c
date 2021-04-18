@@ -7319,7 +7319,7 @@ onig_free(regex_t* reg)
 static void print_tree P_((FILE* f, Node* node));
 #endif
 
-extern int onig_init_for_match_at(regex_t* reg);
+extern OnigPos onig_init_for_match_at(regex_t* reg);
 
 static int parse_and_tune(regex_t* reg, const UChar* pattern,
   const UChar* pattern_end, ParseEnv *scan_env, Node** rroot,
