@@ -5519,7 +5519,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
       min_semi_end = max_semi_end = (UChar* )end;
 
     end_buf:
-      if ((OnigLen )(max_semi_end - str) < reg->anc_dist_min)
+      if (DIST_CAST(max_semi_end - str) < reg->anc_dist_min)
         goto mismatch_no_msa;
 
       if (range > start) {
