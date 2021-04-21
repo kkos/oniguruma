@@ -4749,7 +4749,7 @@ onig_regset_search_with_param(OnigRegSet* set,
   }
 
   if (set->anchor != OPTIMIZE_NONE && str < end) {
-    UChar *min_semi_end, *max_semi_end;
+    UChar *min_semi_end;
 
     if ((set->anchor & ANCR_BEGIN_POSITION) != 0) {
       /* search start-position only */
@@ -4762,10 +4762,10 @@ onig_regset_search_with_param(OnigRegSet* set,
       range = str + 1;
     }
     else if ((set->anchor & ANCR_END_BUF) != 0) {
-      min_semi_end = max_semi_end = (UChar* )end;
+      min_semi_end = (UChar* )end;
 
     end_buf:
-      if (DIST_CAST(max_semi_end - str) < set->anc_dmin)
+      if (DIST_CAST(end - str) < set->anc_dmin)
         goto mismatch_no_msa;
 
       if (DIST_CAST(min_semi_end - start) > set->anc_dmax) {
@@ -4773,15 +4773,14 @@ onig_regset_search_with_param(OnigRegSet* set,
         if (start < end)
           start = onigenc_get_right_adjust_char_head(enc, str, start);
       }
-      if (DIST_CAST(max_semi_end - (range - 1)) < set->anc_dmin) {
-        range = max_semi_end - set->anc_dmin + 1;
+      if (DIST_CAST(end - (range - 1)) < set->anc_dmin) {
+        range = end - set->anc_dmin + 1;
       }
       if (start > range) goto mismatch_no_msa;
     }
     else if ((set->anchor & ANCR_SEMI_END_BUF) != 0) {
       UChar* pre_end = ONIGENC_STEP_BACK(enc, str, end, 1);
 
-      max_semi_end = (UChar* )end;
       if (ONIGENC_IS_MBC_NEWLINE(enc, pre_end, end)) {
         min_semi_end = pre_end;
 
