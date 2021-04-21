@@ -4806,7 +4806,7 @@ onig_regset_search_with_param(OnigRegSet* set,
     }
   }
   else if (str == end) { /* empty string */
-    start = end = str;
+    start = str;
     s = (UChar* )start;
 
     msas = (MatchArg* )xmalloc(sizeof(*msas) * set->n);
