@@ -4765,15 +4765,15 @@ onig_regset_search_with_param(OnigRegSet* set,
       min_semi_end = max_semi_end = (UChar* )end;
 
     end_buf:
-      if ((OnigLen )(max_semi_end - str) < set->anc_dmin)
+      if (DIST_CAST(max_semi_end - str) < set->anc_dmin)
         goto mismatch_no_msa;
 
-      if ((OnigLen )(min_semi_end - start) > set->anc_dmax) {
+      if (DIST_CAST(min_semi_end - start) > set->anc_dmax) {
         start = min_semi_end - set->anc_dmax;
         if (start < end)
           start = onigenc_get_right_adjust_char_head(enc, str, start);
       }
-      if ((OnigLen )(max_semi_end - (range - 1)) < set->anc_dmin) {
+      if (DIST_CAST(max_semi_end - (range - 1)) < set->anc_dmin) {
         range = max_semi_end - set->anc_dmin + 1;
       }
       if (start > range) goto mismatch_no_msa;
