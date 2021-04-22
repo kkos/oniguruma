@@ -289,6 +289,8 @@ typedef unsigned __int64 uint64_t;
 
 typedef size_t   OnigSize;
 
+#define INFINITE_SIZE  ~((OnigSize )0)
+
 #if SIZEOF_VOIDP == SIZEOF_LONG
 typedef unsigned long hash_data_type;
 #elif SIZEOF_VOIDP == SIZEOF_LONG_LONG
