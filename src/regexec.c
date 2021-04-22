@@ -4532,7 +4532,7 @@ regset_search_body_position_lead(OnigRegSet* set,
     sr[i].state = SRS_DEAD;
     if (reg->optimize != OPTIMIZE_NONE) {
       if (reg->dist_max != INFINITE_SIZE) {
-        if (end > range + reg->dist_max)
+        if (DIST_CAST(end - range) > reg->dist_max)
           sch_range = (UChar* )range + reg->dist_max;
         else
           sch_range = (UChar* )end;
@@ -5277,7 +5277,7 @@ forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
     }
     else {
       if (reg->dist_max != INFINITE_SIZE) {
-        if (p < str + reg->dist_max) {
+        if (DIST_CAST(p - str) < reg->dist_max) {
           *low = (UChar* )str;
         }
         else {
@@ -5373,7 +5373,7 @@ backward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* s,
     }
 
     if (reg->dist_max != INFINITE_SIZE) {
-      if (p < str + reg->dist_max)
+      if (DIST_CAST(p - str) < reg->dist_max)
         *low = (UChar* )str;
       else
         *low = p - reg->dist_max;
@@ -5615,7 +5615,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
         if (reg->dist_max == INFINITE_SIZE)
           sch_range = (UChar* )end;
         else {
-          if (end < range + reg->dist_max)
+          if (DIST_CAST(end - range) < reg->dist_max)
             sch_range = (UChar* )end;
           else {
             sch_range = (UChar* )range + reg->dist_max;
@@ -5698,7 +5698,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
 
       if (reg->dist_max != INFINITE_SIZE) {
         do {
-          if (end > s + reg->dist_max)
+          if (DIST_CAST(end - s) > reg->dist_max)
             sch_start = s + reg->dist_max;
           else {
             sch_start = onigenc_get_prev_char_head(reg->enc, str, end);
