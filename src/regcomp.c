@@ -6922,7 +6922,7 @@ set_optimize_exact(regex_t* reg, OptStr* e)
   }
 
   reg->dist_min = e->mm.min;
-  reg->dist_max = e->mm.max;
+  reg->dist_max = (OnigSize )e->mm.max;
 
   if (reg->dist_min != INFINITE_LEN) {
     int n = (int )(reg->exact_end - reg->exact);
@@ -6942,7 +6942,7 @@ set_optimize_map(regex_t* reg, OptMap* m)
 
   reg->optimize   = OPTIMIZE_MAP;
   reg->dist_min   = m->mm.min;
-  reg->dist_max   = m->mm.max;
+  reg->dist_max   = (OnigSize )m->mm.max;
 
   if (reg->dist_min != INFINITE_LEN) {
     reg->threshold_len = reg->dist_min + ONIGENC_MBC_MINLEN(reg->enc);
@@ -7010,6 +7010,9 @@ set_optimize_info_from_tree(Node* node, regex_t* reg, ParseEnv* scan_env)
     if (opt.len.max == 0)
       reg->sub_anchor |= opt.anc.right & ANCR_END_LINE;
   }
+
+  if (reg->dist_max == INFINITE_LEN)
+    reg->dist_max = INFINITE_SIZE;
 
 #if defined(ONIG_DEBUG_COMPILE) || defined(ONIG_DEBUG_MATCH)
   print_optimize_info(DBGFP, reg);
@@ -7191,10 +7194,10 @@ print_optimize_info(FILE* f, regex_t* reg)
     }
     fprintf(f, "]: length: %ld, dmin: %u, ",
             (reg->exact_end - reg->exact), reg->dist_min);
-    if (reg->dist_max == INFINITE_LEN)
+    if (reg->dist_max == INFINITE_SIZE)
       fprintf(f, "dmax: inf.\n");
     else
-      fprintf(f, "dmax: %u\n", reg->dist_max);
+      fprintf(f, "dmax: %lu\n", reg->dist_max);
   }
   else if (reg->optimize & OPTIMIZE_MAP) {
     int c, i, n = 0;
@@ -7202,8 +7205,8 @@ print_optimize_info(FILE* f, regex_t* reg)
     for (i = 0; i < CHAR_MAP_SIZE; i++)
       if (reg->map[i]) n++;
 
-    fprintf(f, "map: n=%d, dmin: %u, dmax: %u\n",
-            n, reg->dist_min, reg->dist_max);
+    fprintf(f, "map: n=%d, dmin: %u, dmax: %lu\n",
+               n, reg->dist_min, reg->dist_max);
     if (n > 0) {
       c = 0;
       fputc('[', f);
