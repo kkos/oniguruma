@@ -5489,7 +5489,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
 
   /* anchor optimize: resume search range */
   if (reg->anchor != 0 && str < end) {
-    UChar *min_semi_end, *max_semi_end;
+    UChar *min_semi_end;
 
     if (reg->anchor & ANCR_BEGIN_POSITION) {
       /* search start-position only */
@@ -5515,10 +5515,10 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
       }
     }
     else if (reg->anchor & ANCR_END_BUF) {
-      min_semi_end = max_semi_end = (UChar* )end;
+      min_semi_end = (UChar* )end;
 
     end_buf:
-      if (DIST_CAST(max_semi_end - str) < reg->anc_dist_min)
+      if (DIST_CAST(end - str) < reg->anc_dist_min)
         goto mismatch_no_msa;
 
       if (range > start) {
@@ -5528,11 +5528,11 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
           if (start < end)
             start = onigenc_get_right_adjust_char_head(reg->enc, str, start);
         }
-        if (DIST_CAST(max_semi_end - (range - 1)) < reg->anc_dist_min) {
-          if (DIST_CAST(max_semi_end - str + 1) < reg->anc_dist_min)
+        if (DIST_CAST(end - (range - 1)) < reg->anc_dist_min) {
+          if (DIST_CAST(end - str + 1) < reg->anc_dist_min)
             goto mismatch_no_msa;
           else
-            range = max_semi_end - reg->anc_dist_min + 1;
+            range = end - reg->anc_dist_min + 1;
         }
 
         if (start > range) goto mismatch_no_msa;
@@ -5544,11 +5544,11 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
             DIST_CAST(min_semi_end - range) > reg->anc_dist_max) {
           range = min_semi_end - reg->anc_dist_max;
         }
-        if (DIST_CAST(max_semi_end - start) < reg->anc_dist_min) {
-          if (DIST_CAST(max_semi_end - str) < reg->anc_dist_min)
+        if (DIST_CAST(end - start) < reg->anc_dist_min) {
+          if (DIST_CAST(end - str) < reg->anc_dist_min)
             goto mismatch_no_msa;
           else {
-            start = max_semi_end - reg->anc_dist_min;
+            start = end - reg->anc_dist_min;
             start = ONIGENC_LEFT_ADJUST_CHAR_HEAD(reg->enc, str, start);
           }
         }
@@ -5558,7 +5558,6 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
     else if (reg->anchor & ANCR_SEMI_END_BUF) {
       UChar* pre_end = ONIGENC_STEP_BACK(reg->enc, str, end, 1);
 
-      max_semi_end = (UChar* )end;
       if (ONIGENC_IS_MBC_NEWLINE(reg->enc, pre_end, end)) {
         min_semi_end = pre_end;
 
