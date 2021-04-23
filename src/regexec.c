@@ -5758,7 +5758,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
 
 #ifdef ONIG_DEBUG
   if (r != ONIG_MISMATCH)
-    fprintf(DBGFP, "onig_search: error %d\n", r);
+    fprintf(DBGFP, "onig_search: error %ld\n", r);
 #endif
   return r;
 
@@ -5767,7 +5767,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
  finish_no_msa:
 #ifdef ONIG_DEBUG
   if (r != ONIG_MISMATCH)
-    fprintf(DBGFP, "onig_search: error %d\n", r);
+    fprintf(DBGFP, "onig_search: error %ld\n", r);
 #endif
   return r;
 
