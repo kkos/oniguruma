@@ -2759,10 +2759,11 @@ typedef struct {
 #define MATCH_DEBUG_OUT(offset) do {\
       Operation *xp;\
       UChar *q, *bp, buf[50];\
-      int len, spos;\
-      spos = IS_NOT_NULL(s) ? (int )(s - str) : -1;\
+      int len;\
+      ptrdiff_t spos;\
+      spos = IS_NOT_NULL(s) ? s - str : -1;\
       xp = p - (offset);\
-      fprintf(DBGFP, "%7u: %7ld: %4d> \"",\
+      fprintf(DBGFP, "%7u: %7ld: %ld> \"",\
               counter, GET_STACK_INDEX(stk), spos);\
       counter++;\
       bp = buf;\
@@ -3024,8 +3025,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
 #ifdef ONIG_DEBUG_MATCH
   fprintf(DBGFP, "match_at: str: %p, end: %p, start: %p\n", str, end, sstart);
-  fprintf(DBGFP, "size: %d, start offset: %d\n",
-          (int )(end - str), (int )(sstart - str));
+  fprintf(DBGFP, "size: %ld, start offset: %ld\n", end - str, sstart - str);
 #endif
 
   best_len = ONIG_MISMATCH;
@@ -5296,9 +5296,8 @@ forward_search(regex_t* reg, const UChar* str, const UChar* end, UChar* start,
 
 #ifdef ONIG_DEBUG_SEARCH
     fprintf(DBGFP,
-            "forward_search success: low: %d, high: %d, dmin: %u, dmax: %lu\n",
-            (int )(*low - str), (int )(*high - str),
-            reg->dist_min, reg->dist_max);
+         "forward_search success: low: %ld, high: %ld, dmin: %u, dmax: %lu\n",
+         *low - str, *high - str, reg->dist_min, reg->dist_max);
 #endif
     return 1; /* success */
   }
