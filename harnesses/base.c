@@ -202,7 +202,7 @@ each_match_callback_func(const UChar* str, const UChar* end,
 static int
 search(regex_t* reg, unsigned char* str, unsigned char* end, OnigOptionType options, int backward, int sl)
 {
-  int r;
+  OnigPos pos;
   unsigned char *start, *range;
   OnigRegion *region;
   unsigned int retry_limit;
@@ -240,19 +240,19 @@ search(regex_t* reg, unsigned char* str, unsigned char* end, OnigOptionType opti
     range = end;
   }
 
-  r = onig_search(reg, str, end, start, range, region, (options & OPTIONS_AT_RUNTIME));
-  if (r >= 0) {
+  pos = onig_search(reg, str, end, start, range, region, (options & OPTIONS_AT_RUNTIME));
+  if (pos >= 0) {
 #ifdef STANDALONE
     int i;
 
-    fprintf(stdout, "match at %d  (%s)\n", r,
+    fprintf(stdout, "match at %ld  (%s)\n", pos,
             ONIGENC_NAME(onig_get_encoding(reg)));
     for (i = 0; i < region->num_regs; i++) {
-      fprintf(stdout, "%d: (%d-%d)\n", i, region->beg[i], region->end[i]);
+      fprintf(stdout, "%d: (%ld-%ld)\n", i, region->beg[i], region->end[i]);
     }
 #endif
   }
-  else if (r == ONIG_MISMATCH) {
+  else if (pos == ONIG_MISMATCH) {
 #ifdef STANDALONE
     fprintf(stdout, "search fail (%s)\n",
             ONIGENC_NAME(onig_get_encoding(reg)));
@@ -262,15 +262,15 @@ search(regex_t* reg, unsigned char* str, unsigned char* end, OnigOptionType opti
 #ifdef STANDALONE
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
 
-    onig_error_code_to_str((UChar* )s, r);
+    onig_error_code_to_str((UChar* )s, pos);
     fprintf(stdout, "ERROR: %s\n", s);
     fprintf(stdout, "  (%s)\n", ONIGENC_NAME(onig_get_encoding(reg)));
 #endif
     onig_region_free(region, 1 /* 1:free self, 0:free contents only */);
 
-    if (r == ONIGERR_STACK_BUG ||
-        r == ONIGERR_UNDEFINED_BYTECODE ||
-        r == ONIGERR_UNEXPECTED_BYTECODE)
+    if (pos == ONIGERR_STACK_BUG ||
+        pos == ONIGERR_UNDEFINED_BYTECODE ||
+        pos == ONIGERR_UNEXPECTED_BYTECODE)
       return -2;
 
     return -1;
