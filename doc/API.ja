@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.9.7   2021/03/16
+鬼車インターフェース Version 7.0.0   2021/04/26
 
 #include <oniguruma.h>
 
@@ -19,7 +19,7 @@
   エラー時: エラーコード < 0
 
 
-# int onig_error_code_to_str(UChar* err_buf, int err_code, ...)
+# int onig_error_code_to_str(UChar* err_buf, OnigPos err_code, ...)
 
   エラーメッセージを取得する。
 
@@ -320,8 +320,7 @@
 
 
 
-# int onig_search(regex_t* reg, const UChar* str, const UChar* end, const UChar* start,
-                   const UChar* range, OnigRegion* region, OnigOptionType option)
+# OnigPos onig_search(regex_t* reg, const UChar* str, const UChar* end, const UChar* start, const UChar* range, OnigRegion* region, OnigOptionType option)
 
   正規表現で文字列を検索し、検索結果とマッチ領域を返す。
   正規表現オブジェクトの文字エンコーディングで、検索文字列として不正な文字列を渡してはいけない。
@@ -362,9 +361,7 @@
       calloutで使用されるuser_dataと共用される。
 
 
-# int onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end,
-                   const UChar* start, const UChar* range, OnigRegion* region,
-                   OnigOptionType option, OnigMatchParam* mp)
+# OnigPos onig_search_with_param(regex_t* reg, const UChar* str, const UChar* end, const UChar* start, const UChar* range, OnigRegion* region, OnigOptionType option, OnigMatchParam* mp)
 
   正規表現で文字列を検索し、検索結果とマッチ領域を返す。
   正規表現オブジェクトの文字エンコーディングで、検索文字列として不正な文字列を渡してはいけない。
@@ -374,8 +371,7 @@
   8 mp: マッチパラメタ値 (match_stack_limit, retry_limit_in_match, retry_limit_in_search)
 
 
-# int onig_match(regex_t* reg, const UChar* str, const UChar* end,
-                 const UChar* at, OnigRegion* region, OnigOptionType option)
+# OnigPos onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at, OnigRegion* region, OnigOptionType option)
 
   文字列の指定位置でマッチングを行い、結果とマッチ領域を返す。
   正規表現オブジェクトの文字エンコーディングで、検索文字列として不正な文字列を渡してはいけない。
@@ -402,9 +398,7 @@
     ONIG_OPTION_CALLBACK_EACH_MATCH 全てのマッチ成功に対してコールバック関数が呼び出される。
 
 
-# int onig_match_with_param(regex_t* reg, const UChar* str, const UChar* end,
-                            const UChar* at, OnigRegion* region,
-                            OnigOptionType option, OnigMatchParam* mp)
+# OnigPos onig_match_with_param(regex_t* reg, const UChar* str, const UChar* end, const UChar* at, OnigRegion* region, OnigOptionType option, OnigMatchParam* mp)
 
   文字列の指定位置でマッチングを行い、結果とマッチ領域を返す。
   正規表現オブジェクトの文字エンコーディングで、検索文字列として不正な文字列を渡してはいけない。
@@ -414,10 +408,7 @@
   7 mp: マッチパラメタ値 (match_stack_limit, retry_limit_in_match, retry_limit_in_search)
 
 
-# int onig_scan(regex_t* reg, const UChar* str, const UChar* end,
-                OnigRegion* region, OnigOptionType option,
-                int (*scan_callback)(int, int, OnigRegion*, void*),
-                void* callback_arg)
+# int onig_scan(regex_t* reg, const UChar* str, const UChar* end, OnigRegion* region, OnigOptionType option, int (*scan_callback)(int, OnigPos, OnigRegion*, void*), void* callback_arg)
 
   正規表現で文字列をスキャンして、マッチングする毎にコールバック関数を呼び出す。
   正規表現オブジェクトの文字エンコーディングで、検索文字列として不正な文字列を渡してはいけない。
@@ -518,7 +509,7 @@
   2 at:  正規表現オブジェクトのインデックス (ゼロ開始)
 
 
-# int onig_regset_search(OnigRegSet* set, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegSetLead lead, OnigOptionType option, int* rmatch_pos)
+# int onig_regset_search(OnigRegSet* set, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegSetLead lead, OnigOptionType option, OnigPos* rmatch_pos)
 
   regsetによる検索を実行する。
 
@@ -551,7 +542,7 @@
     ほとんどの場合、ONIG_REGSET_POSITION_LEADのほうが速いと思われる。
 
 
-# int onig_regset_search_with_param(OnigRegSet* set, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range,  OnigRegSetLead lead, OnigOptionType option, OnigMatchParam* mps[], int* rmatch_pos)
+# int onig_regset_search_with_param(OnigRegSet* set, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range,  OnigRegSetLead lead, OnigOptionType option, OnigMatchParam* mps[], OnigPos* rmatch_pos)
 
   regsetとOnigMatchParamオブジェクトによる検索を実行する。
 
