@@ -2708,7 +2708,7 @@ onig_print_statistics(FILE* f)
 
 
 /* matching region of POSIX API */
-typedef int regoff_t;
+typedef ptrdiff_t  regoff_t;
 
 typedef struct {
   regoff_t  rm_so;
