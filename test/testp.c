@@ -60,7 +60,7 @@ xx(char* pattern, char* str, int from, int to, int mem, int not)
         nsucc++;
       }
       else {
-        fprintf(stdout, "FAIL: /%s/ '%s' %d-%d : %d-%d\n", pattern, str,
+        fprintf(stdout, "FAIL: /%s/ '%s' %d-%d : %ld-%ld\n", pattern, str,
                 from, to, pmatch[mem].rm_so, pmatch[mem].rm_eo);
         nfail++;
       }
