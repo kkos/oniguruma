@@ -1,0 +1,29 @@
+CHANGES_7.0       2021/04/28
+
+The changes from 6.9 to 7.0 are shown below.
+
+* Already changed
+
+    + Defined the OnigPos type (== ptrdiff_t).
+    + Changed the return value of onig_search(), onig_search_with_param(), onig_match() and onig_match_with_param() from int to OnigPos.
+    + Changed the argument value of onig_regset_search(), onig_regset_search_with_param() and onig_error_code_to_str() from int to OnigPos.
+    + POSIX API: Changed the regoff_t type from int to OnigPos
+    + Version number to 7.0.0 in oniguruma.h
+
+
+* Will change
+
+    + Hide the internal structure of OnigEncodingType from the oniguruma.h
+    + Remove ONIGENC_XXX() macros and provide alternative functions.
+    + Eliminate deprecated functions.
+    + LTVERSION
+
+
+* To Be Determined
+
+    + Remove UChar from the oniguruma.h
+    + Disable Capture History (?@..) by default.     (USE_CAPTURE_HISTORY)
+    + Disable Callout (*name..) (?{...}) by default. (USE_CALLOUT)
+
+
+//END
