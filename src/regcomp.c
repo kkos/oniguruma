@@ -6468,7 +6468,7 @@ node_max_byte_len(Node* node, ParseEnv* env)
 
   case NODE_CTYPE:
   case NODE_CCLASS:
-    len = ONIGENC_MBC_MAXLEN_DIST(env->enc);
+    len = ONIGENC_MBC_MAXLEN(env->enc);
     break;
 
   case NODE_BACKREF:
@@ -6640,7 +6640,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
 
       if (IS_NOT_NULL(cc->mbuf) || IS_NCCLASS_NOT(cc)) {
         OnigLen min = ONIGENC_MBC_MINLEN(enc);
-        OnigLen max = ONIGENC_MBC_MAXLEN_DIST(enc);
+        OnigLen max = ONIGENC_MBC_MAXLEN(enc);
 
         mml_set_min_max(&opt->len, min, max);
       }
@@ -6661,7 +6661,7 @@ optimize_nodes(Node* node, OptNode* opt, OptEnv* env)
       int min, max;
       int range;
 
-      max = ONIGENC_MBC_MAXLEN_DIST(enc);
+      max = ONIGENC_MBC_MAXLEN(enc);
 
       if (max == 1) {
         min = 1;
