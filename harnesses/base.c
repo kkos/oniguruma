@@ -148,6 +148,8 @@ dump_data(FILE* fp, unsigned char* data, int len)
     if (isprint((int )c)) {
       if (c == '\\')
         fprintf(fp, " '\\\\'");
+      else if (c == '\'')
+        fprintf(fp, " '\\''");
       else
         fprintf(fp, " '%c'", c);
     }
