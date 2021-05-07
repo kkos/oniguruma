@@ -7215,7 +7215,7 @@ print_optimize_info(FILE* f, regex_t* reg)
               ONIGENC_IS_CODE_PRINT(reg->enc, (OnigCodePoint )i))
             fputc(i, f);
           else
-            fprintf(f, "%d", i);
+            fprintf(f, "0x%02x", i);
         }
       }
       fprintf(f, "]\n");
