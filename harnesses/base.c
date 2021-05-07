@@ -201,6 +201,38 @@ each_match_callback_func(const UChar* str, const UChar* end,
   return ONIG_NORMAL;
 }
 
+static unsigned int calc_retry_limit(sl, len)
+{
+  unsigned int r;
+  unsigned int upper;
+  int heavy;
+
+  heavy = sl >> 8;
+  sl &= 0xff;
+  sl += heavy;
+
+  upper = BASE_RETRY_LIMIT;
+  if (sl == 2) {
+    upper = SLOW_RETRY_LIMIT;
+  }
+  else if (sl > 2) {
+    upper = SLOW_RETRY_LIMIT * 3 / sl;
+    if (upper <= 10) upper = 10;
+  }
+
+  if (len < BASE_LENGTH) {
+    r = BASE_RETRY_LIMIT;
+  }
+  else {
+    r = BASE_RETRY_LIMIT * BASE_LENGTH / len;
+  }
+
+  if (r > upper)
+    r = upper;
+
+  return r;
+}
+
 static int
 search(regex_t* reg, unsigned char* str, unsigned char* end, OnigOptionType options, int backward, int sl)
 {
@@ -213,14 +245,7 @@ search(regex_t* reg, unsigned char* str, unsigned char* end, OnigOptionType opti
   region = onig_region_new();
 
   len = (size_t )(end - str);
-  if (len < BASE_LENGTH) {
-    if (sl >= 2)
-      retry_limit = (unsigned int )SLOW_RETRY_LIMIT;
-    else
-      retry_limit = (unsigned int )BASE_RETRY_LIMIT;
-  }
-  else
-    retry_limit = (unsigned int )(BASE_RETRY_LIMIT * BASE_LENGTH / len);
+  retry_limit = calc_retry_limit(sl, len);
 
 #ifdef STANDALONE
   fprintf(stdout, "retry limit: %u\n", retry_limit);
@@ -378,7 +403,7 @@ alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   fprintf(stdout, "sl: %d\n", sl);
 #endif
   if (sl > 0) {
-    if (sl >= 100) {
+    if (sl >= 256) { // 256: exists heavy element
       if (rem_size > MAX_SLOW_REM_SIZE2)
         rem_size = MAX_SLOW_REM_SIZE2;
     }
