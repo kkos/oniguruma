@@ -232,7 +232,67 @@ typedef enum {
 
 #define ONIGENC_MAX_STD_CTYPE  ONIGENC_CTYPE_ASCII
 
+#define ONIGENC_IS_CODE_NEWLINE(enc,code) \
+        onigenc_is_code_ctype(enc,code,ONIGENC_CTYPE_NEWLINE)
+#define ONIGENC_IS_CODE_GRAPH(enc,code) \
+        onigenc_is_code_ctype(enc,code,ONIGENC_CTYPE_GRAPH)
+#define ONIGENC_IS_CODE_PRINT(enc,code) \
+        onigenc_is_code_ctype(enc,code,ONIGENC_CTYPE_PRINT)
+#define ONIGENC_IS_CODE_ALNUM(enc,code) \
+        onigenc_is_code_ctype(enc,code,ONIGENC_CTYPE_ALNUM)
+#define ONIGENC_IS_CODE_ALPHA(enc,code) \
+        onigenc_is_code_ctype(enc,code,ONIGENC_CTYPE_ALPHA)
+#define ONIGENC_IS_CODE_LOWER(enc,code) \
+        onigenc_is_code_ctype(enc,code,ONIGENC_CTYPE_LOWER)
+#define ONIGENC_IS_CODE_UPPER(enc,code) \
+        onigenc_is_code_ctype(enc,code,ONIGENC_CTYPE_UPPER)
+#define ONIGENC_IS_CODE_CNTRL(enc,code) \
+        onigenc_is_code_ctype(enc,code,ONIGENC_CTYPE_CNTRL)
+#define ONIGENC_IS_CODE_PUNCT(enc,code) \
+        onigenc_is_code_ctype(enc,code,ONIGENC_CTYPE_PUNCT)
+#define ONIGENC_IS_CODE_SPACE(enc,code) \
+        onigenc_is_code_ctype(enc,code,ONIGENC_CTYPE_SPACE)
+#define ONIGENC_IS_CODE_BLANK(enc,code) \
+        onigenc_is_code_ctype(enc,code,ONIGENC_CTYPE_BLANK)
+#define ONIGENC_IS_CODE_DIGIT(enc,code) \
+        onigenc_is_code_ctype(enc,code,ONIGENC_CTYPE_DIGIT)
+#define ONIGENC_IS_CODE_XDIGIT(enc,code) \
+        onigenc_is_code_ctype(enc,code,ONIGENC_CTYPE_XDIGIT)
+#define ONIGENC_IS_CODE_WORD(enc,code) \
+        onigenc_is_code_ctype(enc,code,ONIGENC_CTYPE_WORD)
 
+ONIG_EXTERN
+int onig_enc_len P_((OnigEncoding enc, const OnigUChar* p, const OnigUChar* end));
+ONIG_EXTERN
+int onigenc_is_undef P_((OnigEncoding enc));
+ONIG_EXTERN
+int onigenc_is_singlebyte P_((OnigEncoding enc));
+ONIG_EXTERN
+int onigenc_is_mbc_head P_((OnigEncoding enc, OnigUChar* p));
+ONIG_EXTERN
+int onigenc_is_mbc_ascii P_((OnigUChar* p));
+ONIG_EXTERN
+int onigenc_is_code_ascii P_((OnigCodePoint code));
+ONIG_EXTERN
+int onigenc_is_mbc_word P_((OnigEncoding enc, OnigUChar* s, OnigUChar* end));
+ONIG_EXTERN
+const char* onigenc_name P_((OnigEncoding enc));
+ONIG_EXTERN
+int onigenc_is_allowed_reverse_match P_((OnigEncoding enc, OnigUChar* s, OnigUChar* end));
+ONIG_EXTERN
+int onigenc_mbc_maxlen P_((OnigEncoding enc));
+ONIG_EXTERN
+int onigenc_mbc_minlen P_((OnigEncoding enc));
+ONIG_EXTERN
+int onigenc_is_mbc_newline P_((OnigEncoding enc, OnigUChar* p, OnigUChar* end));
+ONIG_EXTERN
+OnigCodePoint onigenc_mbc_to_code P_((OnigEncoding enc, OnigUChar* p, OnigUChar* end));
+ONIG_EXTERN
+int onigenc_code_to_mbclen P_((OnigEncoding enc, OnigCodePoint code));
+ONIG_EXTERN
+int onigenc_code_to_mbc P_((OnigEncoding enc, OnigCodePoint code, OnigUChar buf[]));
+ONIG_EXTERN
+int onigenc_is_code_ctype P_((OnigEncoding enc, OnigCodePoint code, int ctype));
 ONIG_EXTERN
 OnigUChar* onigenc_step_back P_((OnigEncoding enc, const OnigUChar* start, const OnigUChar* s, int n));
 
