@@ -8165,7 +8165,7 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
           + count.backref + count.backref_with_level + count.call
           + count.anychar_reluctant_many;
     if (count.heavy_element != 0)
-      n += count.heavy_element * 10;
+      n += count.heavy_element << 8;
 
     r = n;
 
