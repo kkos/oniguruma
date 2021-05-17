@@ -40,7 +40,7 @@
 
 
 #define ADJUST_LEN(enc, len) do {\
-  int mlen = ONIGENC_MBC_MINLEN(enc);\
+  int mlen = onigenc_mbc_minlen(enc);\
   if (mlen != 1) { len -= len % mlen; }\
 } while (0)
 
@@ -246,7 +246,7 @@ search(regex_t* reg, unsigned char* str, unsigned char* end, OnigOptionType opti
     int i;
 
     fprintf(stdout, "match at %ld  (%s)\n", pos,
-            ONIGENC_NAME(onig_get_encoding(reg)));
+            onigenc_name(onig_get_encoding(reg)));
     for (i = 0; i < region->num_regs; i++) {
       fprintf(stdout, "%d: (%ld-%ld)\n", i, region->beg[i], region->end[i]);
     }
@@ -255,7 +255,7 @@ search(regex_t* reg, unsigned char* str, unsigned char* end, OnigOptionType opti
   else if (pos == ONIG_MISMATCH) {
 #ifdef STANDALONE
     fprintf(stdout, "search fail (%s)\n",
-            ONIGENC_NAME(onig_get_encoding(reg)));
+            onigenc_name(onig_get_encoding(reg)));
 #endif
   }
   else { /* error */
@@ -264,7 +264,7 @@ search(regex_t* reg, unsigned char* str, unsigned char* end, OnigOptionType opti
 
     onig_error_code_to_str((UChar* )s, pos);
     fprintf(stdout, "ERROR: %s\n", s);
-    fprintf(stdout, "  (%s)\n", ONIGENC_NAME(onig_get_encoding(reg)));
+    fprintf(stdout, "  (%s)\n", onigenc_name(onig_get_encoding(reg)));
 #endif
     onig_region_free(region, 1 /* 1:free self, 0:free contents only */);
 
@@ -599,12 +599,12 @@ int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 #ifdef SYNTAX_TEST
     fprintf(stdout,
             "enc: %s, syntax: %s, pattern_size: %d, back:%d\noptions: %s\n",
-            ONIGENC_NAME(enc),
+            onigenc_name(enc),
             syntax_names[syntax_choice % num_syntaxes],
             pattern_size, backward, soptions);
 #else
     fprintf(stdout, "enc: %s, pattern_size: %d, back:%d\noptions: %s\n",
-            ONIGENC_NAME(enc), pattern_size, backward, soptions);
+            onigenc_name(enc), pattern_size, backward, soptions);
 #endif
 
     print_options(stdout, options);
