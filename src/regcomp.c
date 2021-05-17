@@ -8168,6 +8168,18 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
       n += count.heavy_element * 10;
 
     r = n;
+
+#ifdef ONIG_DEBUG_PARSE
+    fprintf(DBGFP, "-- detect can be slow --\n");
+    fprintf(DBGFP, "  prec_read:          %d\n", count.prec_read);
+    fprintf(DBGFP, "  look_behind:        %d\n", count.look_behind);
+    fprintf(DBGFP, "  backref:            %d\n", count.backref);
+    fprintf(DBGFP, "  backref_with_level: %d\n", count.backref_with_level);
+    fprintf(DBGFP, "  call:               %d\n", count.call);
+    fprintf(DBGFP, "  any_reluctant_many: %d\n", count.anychar_reluctant_many);
+    fprintf(DBGFP, "  heavy_element:      %d\n", count.heavy_element);
+    fprintf(DBGFP, "\n");
+#endif
   }
 
   if (IS_NOT_NULL(scan_env.mem_env_dynamic))
