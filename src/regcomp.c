@@ -8178,6 +8178,7 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
     fprintf(DBGFP, "  call:               %d\n", count.call);
     fprintf(DBGFP, "  any_reluctant_many: %d\n", count.anychar_reluctant_many);
     fprintf(DBGFP, "  heavy_element:      %d\n", count.heavy_element);
+    fprintf(DBGFP, "  r:                  %d\n", r);
     fprintf(DBGFP, "\n");
 #endif
   }
