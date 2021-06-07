@@ -3053,6 +3053,9 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           if (n > msa->best_len) {
             msa->best_len = n;
             msa->best_s   = (UChar* )sstart;
+            if (s >= in_right_range) {
+              best_len = msa->best_len; /* end of find */
+            }
           }
           else {
             if (s >= in_right_range && msa->best_s == sstart) {
