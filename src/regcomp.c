@@ -8165,7 +8165,7 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
       + count.anychar_reluctant_many;
 
     if (count.max_empty_check_nest_level > 2)
-      n += 1;
+      n += count.max_empty_check_nest_level - 2;
     if (count.heavy_element != 0)
       n += count.heavy_element << 8;
 
