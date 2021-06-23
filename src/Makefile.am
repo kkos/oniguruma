@@ -47,8 +47,7 @@ libonig_la_SOURCES = regint.h regparse.h regenc.h st.h \
 	iso8859_13.c iso8859_14.c \
 	iso8859_15.c iso8859_16.c \
 	euc_tw.c euc_kr.c big5.c \
-	gb18030.c koi8_r.c cp1251.c \
-	onig_init.c
+	gb18030.c koi8_r.c cp1251.c
 
 EXTRA_DIST = koi8.c mktable.c \
 	unicode_fold_data.c unicode_property_data.c \

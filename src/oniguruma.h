@@ -768,7 +768,6 @@ typedef struct OnigMatchParamStruct OnigMatchParam;
 
 ONIG_EXTERN
 int onig_initialize P_((OnigEncoding encodings[], int number_of_encodings));
-/* onig_init(): deprecated function. Use onig_initialize(). */
 ONIG_EXTERN
 int onig_init P_((void));
 ONIG_EXTERN

@@ -42,7 +42,7 @@ headers      = $(posixheaders) $(onigheaders)
 
 onigobjs     = $(BUILD_DIR)/reggnu.obj $(BUILD_DIR)/regerror.obj $(BUILD_DIR)/regparse.obj $(BUILD_DIR)/regext.obj $(BUILD_DIR)/regcomp.obj \
 	       $(BUILD_DIR)/regexec.obj $(BUILD_DIR)/regenc.obj $(BUILD_DIR)/regsyntax.obj $(BUILD_DIR)/regtrav.obj \
-	       $(BUILD_DIR)/regversion.obj $(BUILD_DIR)/st.obj $(BUILD_DIR)/onig_init.obj
+	       $(BUILD_DIR)/regversion.obj $(BUILD_DIR)/st.obj
 libobjs      = $(onigobjs) $(posixobjs)
 
 jp_objs      =  $(BUILD_DIR)/euc_jp.obj $(BUILD_DIR)/sjis.obj
@@ -113,7 +113,6 @@ $(BUILD_DIR)/regversion.obj: $(ONIG_DIR)/regversion.c $(ONIG_DIR)/oniguruma.h $(
 $(BUILD_DIR)/regposix.obj:  $(ONIG_DIR)/regposix.c $(posixheaders) $(ONIG_DIR)/oniguruma.h $(BUILD_DIR)/config.h
 $(BUILD_DIR)/regposerr.obj: $(ONIG_DIR)/regposerr.c $(posixheaders) $(BUILD_DIR)/config.h
 $(BUILD_DIR)/st.obj:        $(ONIG_DIR)/st.c $(ONIG_DIR)/regint.h $(ONIG_DIR)/oniguruma.h $(BUILD_DIR)/config.h $(ONIG_DIR)/st.h
-$(BUILD_DIR)/onig_init.obj: $(ONIG_DIR)/onig_init.c $(ONIG_DIR)/oniguruma.h
 
 $(BUILD_DIR)/ascii.obj:      $(ONIG_DIR)/ascii.c $(ONIG_DIR)/regenc.h $(BUILD_DIR)/config.h
 $(BUILD_DIR)/unicode.obj:    $(ONIG_DIR)/unicode.c $(ONIG_DIR)/unicode_fold_data.c $(ONIG_DIR)/unicode_property_data.c $(ONIG_DIR)/regenc.h $(BUILD_DIR)/config.h
