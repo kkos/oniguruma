@@ -311,12 +311,6 @@ ops_make_string_pool(regex_t* reg)
   return 0;
 }
 
-extern OnigCaseFoldType
-onig_get_default_case_fold_flag(void)
-{
-  return OnigDefaultCaseFoldFlag;
-}
-
 extern int
 onig_set_default_case_fold_flag(OnigCaseFoldType case_fold_flag)
 {

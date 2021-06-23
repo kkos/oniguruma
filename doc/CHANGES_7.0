@@ -49,6 +49,7 @@ The changes from 6.9 to 7.0 are shown below.
       onig_init()
       onig_new_deluxe()
       onig_get_case_fold_flag()
+      onig_get_default_case_fold_flag()
 
 
 * Will change
