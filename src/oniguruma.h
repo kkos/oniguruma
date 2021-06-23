@@ -854,8 +854,6 @@ OnigEncoding onig_get_encoding P_((OnigRegex reg));
 ONIG_EXTERN
 OnigOptionType onig_get_options P_((OnigRegex reg));
 ONIG_EXTERN
-OnigCaseFoldType onig_get_case_fold_flag P_((OnigRegex reg));
-ONIG_EXTERN
 OnigSyntaxType* onig_get_syntax P_((OnigRegex reg));
 ONIG_EXTERN
 int onig_set_default_syntax P_((OnigSyntaxType* syntax));

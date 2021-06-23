@@ -47,6 +47,8 @@ The changes from 6.9 to 7.0 are shown below.
 
     + Removed deprecated functions
       onig_init()
+      onig_new_deluxe()
+      onig_get_case_fold_flag()
 
 
 * Will change
