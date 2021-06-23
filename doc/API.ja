@@ -1,4 +1,4 @@
-鬼車インターフェース Version 7.0.0   2021/04/26
+鬼車インターフェース Version 7.0.0   2021/06/23
 
 #include <oniguruma.h>
 
@@ -7,8 +7,6 @@
 
   ライブラリの初期化
   最初に呼び出す必要がある。
-
-  * onig_init() は廃止
 
   引数
   1 use_encodings:         使用する文字エンコーディングの配列
@@ -170,54 +168,6 @@
   戻り値
   正常終了: ONIG_NORMAL == 0
   エラー時: エラーコード < 0
-
-
-
-# int onig_new_deluxe(regex_t** reg, const UChar* pattern, const UChar* pattern_end,
-                      OnigCompileInfo* ci, OnigErrorInfo* einfo)
-
-  この関数は廃止(使用不可)。
-  パターンと対象文字列の文字エンコーディングが異なる場合を許さなくなった。
-
-  正規表現オブジェクト(regex)を作成する。
-  この関数は、onig_new()のデラックス版。
-
-  戻り値
-  正常終了: ONIG_NORMAL == 0
-  エラー時: エラーコード < 0
-
-  引数
-  1 reg:         作成された正規表現オブジェクトを返すアドレス
-  2 pattern:     正規表現パターン文字列
-  3 pattern_end: 正規表現パターン文字列の終端アドレス(pattern + pattern length)
-  4 ci:          コンパイル情報
-
-    ci->num_of_elements: ciの要素数 (現在の版では: 5)
-    ci->pattern_enc:     パターン文字列の文字エンコーディング
-    ci->target_enc:      対象文字列の文字エンコーディング
-    ci->syntax:          正規表現パターン文法定義
-    ci->option:          正規表現コンパイル時オプション
-    ci->case_fold_flag:  ONIG_OPTION_IGNORECASEモードでの
-                         文字曖昧マッチ指定ビットフラグ
-
-       ONIGENC_CASE_FOLD_MIN:           最小
-       ONIGENC_CASE_FOLD_DEFAULT:       最小
-                                        onig_set_default_case_fold_flag()
-
-  5 err_info:    エラー情報を返すためのアドレス
-                 onig_error_code_to_str()の三番目の引数として使用する
-
-
-  異なる文字エンコーディングの組み合わせは、以下の場合にのみ許される。
-
-    pattern_enc: ASCII, ISO_8859_1
-    target_enc:  UTF16_BE, UTF16_LE, UTF32_BE, UTF32_LE
-
-    pattern_enc: UTF16_BE/LE
-    target_enc:  UTF16_LE/BE
-
-    pattern_enc: UTF32_BE/LE
-    target_enc:  UTF32_LE/BE
 
 
 # void onig_free(regex_t* reg)
@@ -695,15 +645,6 @@
   1 reg:    正規表現オブジェクト
 
 
-# OnigCaseFoldType onig_get_case_fold_flag(regex_t* reg)
-
-  正規表現オブジェクトに対して、case_fold_flag値を返す。
-  この関数は廃止予定(非推奨)。
-
-  引数
-  1 reg:    正規表現オブジェクト
-
-
 # int onig_number_of_captures(regex_t* reg)
 
   パターン中で定義された捕獲グループの数を返す。
@@ -924,21 +865,6 @@
           ONIG_META_CHAR_ANYCHAR_ANYTIME
 
   3 code: メタ文字のコードポイント または ONIG_INEFFECTIVE_META_CHAR.
-
-
-# OnigCaseFoldType onig_get_default_case_fold_flag()
-
-  デフォルトのcase foldフラグを取得する。
-  この関数は廃止予定(非推奨)。
-
-
-# int onig_set_default_case_fold_flag(OnigCaseFoldType case_fold_flag)
-
-  デフォルトのcase foldフラグをセットする。
-  この関数は廃止予定(非推奨)。
-
-  引数
-  1 case_fold_flag: case foldフラグ
 
 
 # unsigned int onig_get_match_stack_limit_size(void)
