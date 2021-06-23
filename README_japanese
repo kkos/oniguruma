@@ -1,4 +1,4 @@
-README.ja  2017/08/25
+README.ja  2021/06/23
 
 鬼車  ----   (C) K.Kosako <kkosako0@gmail.com>
 
@@ -126,7 +126,6 @@ https://github.com/kkos/oniguruma
   regcomp.c          コンパイル、最適化関数
   regenc.c           文字エンコーディング枠組み
   regerror.c         エラーメッセージ関数
-  regext.c           拡張API関数
   regexec.c          検索、照合関数
   regparse.c         正規表現パターン解析関数
   regsyntax.c        正規表現パターン文法関数、組込み文法定義

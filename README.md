@@ -250,7 +250,6 @@ Source Files
 |regcomp.c          |compiling and optimization functions                    |
 |regenc.c           |character encodings framework                           |
 |regerror.c         |error message function                                  |
-|regext.c           |extended API functions (deluxe version API)             |
 |regexec.c          |search and match functions                              |
 |regparse.c         |parsing functions.                                      |
 |regsyntax.c        |pattern syntax functions and built-in syntax definitions|

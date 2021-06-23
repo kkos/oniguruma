@@ -25,7 +25,7 @@ lib_LTLIBRARIES = $(libname)
 
 libonig_la_SOURCES = regint.h regparse.h regenc.h st.h \
 	regparse.c regcomp.c regexec.c \
-	regenc.c regerror.c regext.c regsyntax.c regtrav.c regversion.c st.c \
+	regenc.c regerror.c regsyntax.c regtrav.c regversion.c st.c \
 	reggnu.c \
   $(posix_sources) \
 	unicode.c \

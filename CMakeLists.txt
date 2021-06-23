@@ -41,7 +41,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/config.h.cmake.in ${CMAKE_CURRENT
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/oniguruma.pc.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/oniguruma.pc @ONLY)
 
 set(_SRCS src/regint.h src/regparse.h src/regenc.h src/st.h
- src/regerror.c src/regparse.c src/regext.c src/regcomp.c src/regexec.c
+ src/regerror.c src/regparse.c src/regcomp.c src/regexec.c
  src/reggnu.c src/regenc.c src/regsyntax.c src/regtrav.c src/regversion.c
  src/st.c
  src/unicode.c src/ascii.c src/utf8.c src/utf16_be.c src/utf16_le.c
