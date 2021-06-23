@@ -45,7 +45,6 @@ typedef struct {
   int min_is_sure;
 } MinMaxCharLen;
 
-OnigCaseFoldType OnigDefaultCaseFoldFlag = ONIGENC_CASE_FOLD_MIN;
 
 static OnigLen node_min_byte_len(Node* node, ParseEnv* env);
 
@@ -7577,7 +7576,7 @@ onig_new_without_alloc(regex_t* reg,
 {
   int r;
 
-  r = onig_reg_init(reg, option, ONIGENC_CASE_FOLD_DEFAULT, enc, syntax);
+  r = onig_reg_init(reg, option, ONIGENC_CASE_FOLD_MIN, enc, syntax);
   if (r != 0) return r;
 
   r = onig_compile(reg, pattern, pattern_end, einfo);
@@ -7594,7 +7593,7 @@ onig_new(regex_t** reg, const UChar* pattern, const UChar* pattern_end,
   *reg = (regex_t* )xmalloc(sizeof(regex_t));
   if (IS_NULL(*reg)) return ONIGERR_MEMORY;
 
-  r = onig_reg_init(*reg, option, ONIGENC_CASE_FOLD_DEFAULT, enc, syntax);
+  r = onig_reg_init(*reg, option, ONIGENC_CASE_FOLD_MIN, enc, syntax);
   if (r != 0) {
     xfree(*reg);
     *reg = NULL;
@@ -8040,7 +8039,7 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
   reg = (regex_t* )xmalloc(sizeof(regex_t));
   if (IS_NULL(reg)) return ONIGERR_MEMORY;
 
-  r = onig_reg_init(reg, option, ONIGENC_CASE_FOLD_DEFAULT, enc, syntax);
+  r = onig_reg_init(reg, option, ONIGENC_CASE_FOLD_MIN, enc, syntax);
   if (r != 0) {
     xfree(reg);
     return r;
