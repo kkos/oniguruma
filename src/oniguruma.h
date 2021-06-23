@@ -880,8 +880,6 @@ int onig_set_meta_char P_((OnigSyntaxType* syntax, unsigned int what, OnigCodePo
 ONIG_EXTERN
 void onig_copy_encoding P_((OnigEncoding to, OnigEncoding from));
 ONIG_EXTERN
-int onig_set_default_case_fold_flag P_((OnigCaseFoldType case_fold_flag));
-ONIG_EXTERN
 unsigned int onig_get_match_stack_limit_size P_((void));
 ONIG_EXTERN
 int onig_set_match_stack_limit_size P_((unsigned int size));

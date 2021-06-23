@@ -50,6 +50,7 @@ The changes from 6.9 to 7.0 are shown below.
       onig_new_deluxe()
       onig_get_case_fold_flag()
       onig_get_default_case_fold_flag()
+      onig_set_default_case_fold_flag()
 
 
 * Will change
@@ -57,7 +58,6 @@ The changes from 6.9 to 7.0 are shown below.
     + Increase the size of the ONIG_SYN_OP/OP2_XXX flag area.
     + Improve the API of syntax-op.
       (Eliminate the distinction between OP and OP2)
-    + Eliminate deprecated functions.
     + update LTVERSION
 
 
