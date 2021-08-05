@@ -25,7 +25,6 @@ include(CheckSymbolExists)
 include(CheckTypeSize)
 include(TestBigEndian)
 
-check_function_exists(alloca HAVE_ALLOCA)
 check_include_files(alloca.h HAVE_ALLOCA_H)
 check_include_files(stdint.h    HAVE_STDINT_H)
 check_include_files(sys/times.h HAVE_SYS_TIMES_H)
@@ -37,6 +36,12 @@ check_type_size(int SIZEOF_INT)
 check_type_size(long SIZEOF_LONG)
 check_type_size("long long" SIZEOF_LONG_LONG)
 check_type_size("void*" SIZEOF_VOIDP)
+
+if(HAVE_ALLOCA_H)
+  check_symbol_exists(alloca "alloca.h" HAVE_ALLOCA)
+else()
+  check_symbol_exists(alloca "stdlib.h;malloc.h" HAVE_ALLOCA)
+endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/config.h.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
