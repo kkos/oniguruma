@@ -42,6 +42,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/config.h.cmake.in ${CMAKE_CURRENT
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/oniguruma.pc.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/oniguruma.pc @ONLY)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/onig-config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/onig-config @ONLY)
+
 set(_SRCS src/regint.h src/regparse.h src/regenc.h src/st.h
  src/regerror.c src/regparse.c src/regcomp.c src/regexec.c
  src/reggnu.c src/regenc.c src/regsyntax.c src/regtrav.c src/regversion.c
@@ -220,3 +222,6 @@ endif()
 # pkg-config
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/oniguruma.pc
         DESTINATION lib/pkgconfig)
+
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/onig-config
+        DESTINATION "${CMAKE_INSTALL_BINDIR}")
