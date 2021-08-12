@@ -9,6 +9,8 @@ set(PACKAGE_VERSION ${PROJECT_VERSION})
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(ENABLE_POSIX_API  "Include POSIX API" OFF)
 option(ENABLE_BINARY_COMPATIBLE_POSIX_API  "Include Binary compatible POSIX API" OFF)
+option(INSTALL_DOCUMENTATION "Install documentation" ON)
+option(INSTALL_EXAMPLES "Install examples" OFF)
 if(MSVC)
   option(MSVC_STATIC_RUNTIME "Build with static runtime" OFF)
 endif()
@@ -191,16 +193,29 @@ install(
     DESTINATION "${config_install_dir}"
 )
 
-# Documentation (uses onig not oniguruma for directory)
+# Documentation (uses onig not oniguruma for directory
+if(INSTALL_DOCUMENTATION)
 install(FILES doc/API doc/API.ja doc/RE doc/RE.ja doc/FAQ doc/FAQ.ja
               doc/CALLOUTS.BUILTIN doc/CALLOUTS.BUILTIN.ja
               doc/CALLOUTS.API doc/CALLOUTS.API.ja
               doc/UNICODE_PROPERTIES
-        DESTINATION "${CMAKE_INSTALL_DATADIR}/${PACKAGE}")
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/doc/${PACKAGE}")
 
 # Other files (uses onig not oniguruma for directory)
 install(FILES AUTHORS COPYING HISTORY README.md
-        DESTINATION "${CMAKE_INSTALL_DATADIR}/${PACKAGE}")
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/doc/${PACKAGE}")
+endif()
+
+# Examples
+if(INSTALL_EXAMPLES)
+install(FILES sample/bug_fix.c sample/callback_each_match.c
+              sample/callout.c sample/count.c sample/crnl.c
+              sample/echo.c sample/encode.c sample/listcap.c
+              sample/names.c sample/posix.c sample/regset.c
+              sample/scan.c sample/simple.c sample/sql.c
+              sample/syntax.c sample/user_property.c
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/examples/${PACKAGE}")
+endif()
 
 # pkg-config
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/oniguruma.pc
