@@ -165,7 +165,7 @@ configure_package_config_file(
 )
 
 # Targets:
-#   * <prefix>/lib/libonig.a
+#   * <prefix>/lib*/libonig.a
 #   * header location after install: <prefix>/include/
 #   * headers can be included by C code `#include <oniguruma.h>`
 install(
@@ -185,15 +185,15 @@ install(
 )
 
 # Config
-#   * <prefix>/lib/cmake/oniguruma/onigurumaConfig.cmake
-#   * <prefix>/lib/cmake/oniguruma/onigurumaConfigVersion.cmake
+#   * <prefix>/lib*/cmake/oniguruma/onigurumaConfig.cmake
+#   * <prefix>/lib*/cmake/oniguruma/onigurumaConfigVersion.cmake
 install(
     FILES "${project_config}" "${version_config}"
     DESTINATION "${config_install_dir}"
 )
 
 # Config
-#   * <prefix>/lib/cmake/oniguruma/onigurumaTargets.cmake
+#   * <prefix>/lib*/cmake/oniguruma/onigurumaTargets.cmake
 install(
     EXPORT "${TARGETS_EXPORT_NAME}"
     NAMESPACE "${namespace}"
@@ -226,7 +226,7 @@ endif()
 
 # pkg-config
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/oniguruma.pc
-        DESTINATION lib/pkgconfig)
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/onig-config
         DESTINATION "${CMAKE_INSTALL_BINDIR}")
