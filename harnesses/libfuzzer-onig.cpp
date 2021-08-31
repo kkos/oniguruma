@@ -29,9 +29,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t * Data, size_t Size)
 
 #ifdef FULL_TEST
   onig_initialize(&enc, 1);
+#endif
   onig_set_retry_limit_in_match(120);
   onig_set_parse_depth_limit(120);
-#endif
 
   if (onig_new(&reg, Data, Data + Size, ONIG_OPTION_DEFAULT, enc,
                ONIG_SYNTAX_DEFAULT, 0) == 0)
