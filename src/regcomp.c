@@ -3524,7 +3524,13 @@ check_node_in_look_behind(Node* node, int not, int* used)
     break;
 
   case NODE_CALL:
-    r = check_called_node_in_look_behind(NODE_BODY(node), not);
+    if (NODE_IS_RECURSION(node)) {
+      /* fix: Issue 38040 in oss-fuzz */
+      /* This node should be removed before recursive call check. */
+      *used = TRUE;
+    }
+    else
+      r = check_called_node_in_look_behind(NODE_BODY(node), not);
     break;
 
   default:
