@@ -3521,6 +3521,12 @@ check_node_in_look_behind(Node* node, int not, int* used)
   case NODE_GIMMICK:
     if (NODE_IS_ABSENT_WITH_SIDE_EFFECTS(node) != 0)
       return 1;
+
+    {
+      GimmickNode* g = GIMMICK_(node);
+      if (g->type == GIMMICK_SAVE && g->detail_type == SAVE_KEEP)
+        *used = TRUE;
+    }
     break;
 
   case NODE_CALL:
@@ -7898,6 +7904,7 @@ typedef struct {
   int backref;
   int backref_with_level;
   int call;
+  int is_keep;
   int anychar_reluctant_many;
   int empty_check_nest_level;
   int max_empty_check_nest_level;
@@ -8037,6 +8044,13 @@ detect_can_be_slow(Node* node, SlowElementCount* ct, int ncall, int calls[])
     }
     break;
 #endif
+  case NODE_GIMMICK:
+    {
+      GimmickNode* g = GIMMICK_(node);
+      if (g->type == GIMMICK_SAVE && g->detail_type == SAVE_KEEP)
+        ct->is_keep = TRUE;
+    }
+    break;
 
   default:
     break;
@@ -8087,6 +8101,7 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
   count.backref            = 0;
   count.backref_with_level = 0;
   count.call               = 0;
+  count.is_keep            = FALSE;
   count.anychar_reluctant_many     = 0;
   count.empty_check_nest_level     = 0;
   count.max_empty_check_nest_level = 0;
@@ -8099,6 +8114,8 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
     n = count.prec_read + count.look_behind
       + count.backref + count.backref_with_level + count.call
       + count.anychar_reluctant_many;
+
+    if (count.is_keep) count.max_empty_check_nest_level++;
 
     if (count.max_empty_check_nest_level > 2)
       n += count.max_empty_check_nest_level - 2;
@@ -8118,6 +8135,7 @@ onig_detect_can_be_slow_pattern(const UChar* pattern,
     fprintf(DBGFP, "  backref:            %d\n", count.backref);
     fprintf(DBGFP, "  backref_with_level: %d\n", count.backref_with_level);
     fprintf(DBGFP, "  call:               %d\n", count.call);
+    fprintf(DBGFP, "  is_keep:            %d\n", count.is_keep);
     fprintf(DBGFP, "  any_reluctant_many: %d\n", count.anychar_reluctant_many);
     fprintf(DBGFP, "  max_empty_check_nest_level: %d\n", count.max_empty_check_nest_level);
     fprintf(DBGFP, "  heavy_element:      %d\n", count.heavy_element);
