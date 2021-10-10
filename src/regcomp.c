@@ -8003,7 +8003,7 @@ detect_can_be_slow(Node* node, SlowElementCount* ct, int ncall, int calls[])
 #ifdef USE_BACKREF_WITH_LEVEL
   case NODE_BACKREF:
     if (NODE_IS_NEST_LEVEL(node))
-      ct->backref_with_level++;
+      ct->heavy_element++;
     else
       ct->backref++;
     break;
