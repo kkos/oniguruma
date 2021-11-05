@@ -17,10 +17,10 @@ ADD_CAST='s/unsigned +int +hval *= *len/unsigned int hval = (unsigned int )len/'
 ./make_unicode_property_data.py -posix > ${NAME}_posix.gperf
 
 ${GPERF} ${GPERF_OPT} -N unicode_lookup_property_name --output-file ${TMP1} ${NAME}.gperf
-cat ${TMP1} | ${SED} -e 's/^#line.*$//g' | ${SED} -r "${POOL_CAST}" | ${SED} -r "${ADD_STATIC}" | ${SED} -r "${ADD_CAST}" > ${NAME}.c
+cat ${TMP1} | ${SED} -e 's/^#line.*$//g' | ${SED} -E "${POOL_CAST}" | ${SED} -E "${ADD_STATIC}" | ${SED} -E "${ADD_CAST}" > ${NAME}.c
 
 ${GPERF} ${GPERF_OPT} -N unicode_lookup_property_name --output-file ${TMP2} ${NAME}_posix.gperf
-cat ${TMP2} | ${SED} -e 's/^#line.*$//g' | ${SED} -r "${POOL_CAST}" | ${SED} -r "${ADD_STATIC}" > ${NAME}_posix.c
+cat ${TMP2} | ${SED} -e 's/^#line.*$//g' | ${SED} -E "${POOL_CAST}" | ${SED} -E "${ADD_STATIC}" > ${NAME}_posix.c
 
 rm -f ${NAME}.gperf ${NAME}_posix.gperf ${TMP1} ${TMP2}
 
