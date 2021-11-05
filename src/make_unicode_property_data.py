@@ -23,7 +23,7 @@ PA_LINE_REG  = re.compile("(\w+)\s*;\s*(\w+)")
 PVA_LINE_REG = re.compile("(sc|gc)\s*;\s*(\w+)\s*;\s*(\w+)(?:\s*;\s*(\w+))?")
 BL_LINE_REG  = re.compile("([0-9A-Fa-f]+)\.\.([0-9A-Fa-f]+)\s*;\s*(.*)")
 UNICODE_VERSION_REG = re.compile("#\s*.*-(\d+)\.(\d+)\.(\d+)\.txt")
-EMOJI_VERSION_REG   = re.compile("(?i)#.+Version (\d+)\.(\d+).+")
+EMOJI_VERSION_REG   = re.compile("(?i)#.+Version\s+(\d+)\.(\d+)")
 
 VERSION_INFO = [-1, -1, -1]
 EMOJI_VERSION_INFO = [-1, -1]
