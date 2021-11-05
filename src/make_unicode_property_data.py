@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # make_unicode_property_data.py
-# Copyright (c) 2016-2020  K.Kosako
+# Copyright (c) 2016-2021  K.Kosako
 
 import sys
 import re
@@ -425,7 +425,7 @@ argc = len(argv)
 
 COPYRIGHT = '''
 /*-
- * Copyright (c) 2016-2020  K.Kosako
+ * Copyright (c) 2016-2021  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
