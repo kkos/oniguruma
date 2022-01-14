@@ -82,7 +82,7 @@ onig2posix_error_code(int code)
     { ONIGERR_STACK_BUG,                                  REG_EONIG_INTERNAL },
     { ONIGERR_UNDEFINED_BYTECODE,                         REG_EONIG_INTERNAL },
     { ONIGERR_UNEXPECTED_BYTECODE,                        REG_EONIG_INTERNAL },
-    { ONIGERR_DEFAULT_ENCODING_IS_NOT_SETTED,             REG_EONIG_BADARG },
+    { ONIGERR_DEFAULT_ENCODING_IS_NOT_SET,                REG_EONIG_BADARG },
     { ONIGERR_SPECIFIED_ENCODING_CANT_CONVERT_TO_WIDE_CHAR, REG_EONIG_BADARG },
     { ONIGERR_FAIL_TO_INITIALIZE,                         REG_EONIG_INTERNAL },
     { ONIGERR_INVALID_ARGUMENT,                           REG_EONIG_BADARG },
