@@ -68,8 +68,8 @@ onig_error_code_to_format(int code)
     p = "undefined bytecode (bug)"; break;
   case ONIGERR_UNEXPECTED_BYTECODE:
     p = "unexpected bytecode (bug)"; break;
-  case ONIGERR_DEFAULT_ENCODING_IS_NOT_SETTED:
-    p = "default multibyte-encoding is not setted"; break;
+  case ONIGERR_DEFAULT_ENCODING_IS_NOT_SET:
+    p = "default multibyte-encoding is not set"; break;
   case ONIGERR_SPECIFIED_ENCODING_CANT_CONVERT_TO_WIDE_CHAR:
     p = "can't convert to wide-char on specified multibyte-encoding"; break;
   case ONIGERR_FAIL_TO_INITIALIZE:
