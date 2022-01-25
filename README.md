@@ -132,7 +132,7 @@ Install
 
 ### Case 1: Linux distribution packages
 
-   * Fedora:         `dnf install oniguruma`
+   * Fedora:         `dnf install oniguruma-devel`
    * RHEL/CentOS:    `yum install oniguruma`
    * Debian/Ubuntu:  `apt install libonig5`
    * Arch:           `pacman -S oniguruma`
