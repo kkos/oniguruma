@@ -8,7 +8,7 @@ FAQ    2016/04/06
 
 2. CR + LF
 
-   DOSの改行(CR(0x0c) + LF(0x0a)の連続)
+   DOSの改行(CR(0x0d) + LF(0x0a)の連続)
 
    regenc.hの中の、以下の部分を有効にする。
 

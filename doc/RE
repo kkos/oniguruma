@@ -529,7 +529,7 @@ A-2. Original extensions
    + named backref                   \k<name>
    + subexp call                     \g<name>, \g<group-num>
    + absent expression               (?~|...|...)
-   + absent stopper                  (?|...)
+   + absent stopper                  (?~|...)
 
 
 A-3. Missing features compared with perl 5.8.0
