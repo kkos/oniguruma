@@ -285,7 +285,7 @@ Callouts API  Version 6.9.7 2021/03/21
 
 # int onig_set_callout_data_by_callout_args(OnigCalloutArgs* args, int callout_num, int slot, OnigType type, OnigValue* val)
 
-  callout_num/slotによって示された呼び出しスロットに対する値/型をセットする。。
+  callout_num/slotによって示された呼び出しスロットに対する値/型をセットする。
 
   ONIG_NORMAL: 正常終了
           < 0: エラーコード
@@ -293,7 +293,7 @@ Callouts API  Version 6.9.7 2021/03/21
 
 # int onig_set_callout_data_by_callout_args_self(OnigCalloutArgs* args, int slot, OnigType type, OnigValue* val)
 
-  自分自身の呼び出しのslotによって示されたスロットに対する値/型をセットする。。
+  自分自身の呼び出しのslotによって示されたスロットに対する値/型をセットする。
 
   ONIG_NORMAL: 正常終了
           < 0: エラーコード
@@ -337,7 +337,7 @@ Callouts API  Version 6.9.7 2021/03/21
 
 # int onig_set_callout_data(OnigRegex reg, OnigMatchParam* mp, int callout_num, int slot, OnigType type, OnigValue* val)
 
-  callout_num/slotによって示された呼び出しスロットに対する値/型をセットする。。
+  callout_num/slotによって示された呼び出しスロットに対する値/型をセットする。
 
   ONIG_NORMAL: 正常終了
           < 0: エラーコード
