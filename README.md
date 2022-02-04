@@ -7,7 +7,7 @@
 Oniguruma
 =========
 
-**For a long time, Oniguruma has been under attack on Google search.** [(Issue #234)](https://github.com/kkos/oniguruma/issues/234)
+## **For a long time, Oniguruma has been under attack on Google search.** [(Issue #234)](https://github.com/kkos/oniguruma/issues/234)
 
 
 https://github.com/kkos/oniguruma
