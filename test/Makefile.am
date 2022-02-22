@@ -13,7 +13,7 @@ endif
 
 check_PROGRAMS = $(TESTS)
 
-test: test_uchar $(TESTS)
+test: test_uchar test_regex_t $(TESTS)
 	@echo "[Oniguruma API, UTF-8 check]"
 	@./test_utf8  | grep RESULT
 	@echo "[Oniguruma API, SYNTAX check]"
@@ -38,6 +38,12 @@ test_uchar:
 	@echo "[UChar in oniguruma.h check]"
 	@grep "\(^\|[^g]\)UChar" $(top_srcdir)/src/oniguruma.h
 	@echo ""
+
+test_regex_t:
+	@echo "[regex_t in oniguruma.h check]"
+	@grep "\(^\|[^[:alnum:]]\)regex_t" $(top_srcdir)/src/oniguruma.h
+	@echo ""
+
 
 test_utf8_SOURCES = test_utf8.c
 test_utf8_LDADD = $(lib_onig)
