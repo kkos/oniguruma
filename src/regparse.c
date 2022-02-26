@@ -2,7 +2,7 @@
   regparse.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2021  K.Kosako
+ * Copyright (c) 2002-2022  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9003,6 +9003,7 @@ prs_branch(Node** top, PToken* tok, int term, UChar** src, UChar* end,
   else {
     *top = node_new_list(node, NULL);
     if (IS_NULL(*top)) {
+    mem_err:
       onig_node_free(node);
       return ONIGERR_MEMORY;
     }
@@ -9022,6 +9023,7 @@ prs_branch(Node** top, PToken* tok, int term, UChar** src, UChar* end,
       }
       else {
         *headp = node_new_list(node, NULL);
+        if (IS_NULL(*headp)) goto mem_err;
         headp = &(NODE_CDR(*headp));
       }
     }
