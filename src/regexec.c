@@ -3861,7 +3861,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           pend   = STACK_MEM_END(reg, mem);
           n = (int )(pend - pstart);
           if (n != 0) {
-            DATA_ENSURE(n);
+            if (! DATA_ENSURE_CHECK(n)) continue;
             swork = s;
             STRING_CMP_VALUE(swork, pstart, n, is_fail);
             if (is_fail) continue;
@@ -3890,7 +3890,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           pend   = STACK_MEM_END(reg, mem);
           n = (int )(pend - pstart);
           if (n != 0) {
-            DATA_ENSURE(n);
+            if (! DATA_ENSURE_CHECK(n)) continue;
             swork = s;
             STRING_CMP_VALUE_IC(case_fold_flag, pstart, &swork, n, is_fail);
             if (is_fail) continue;
