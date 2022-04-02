@@ -2478,7 +2478,7 @@ static int string_cmp_ic(OnigEncoding enc, int case_fold_flag,
 #define ON_STR_BEGIN(s)        ((s) == str)
 #define ON_STR_END(s)          ((s) == end)
 #define DATA_ENSURE_CHECK1     (s < right_range)
-#define DATA_ENSURE_CHECK(n)   (s + (n) <= right_range)
+#define DATA_ENSURE_CHECK(n)   ((n) <= right_range - s)
 #define DATA_ENSURE(n)         if (right_range - s < (n)) goto fail
 
 #define INIT_RIGHT_RANGE    right_range = (UChar* )in_right_range
