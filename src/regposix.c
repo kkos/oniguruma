@@ -105,6 +105,7 @@ onig2posix_error_code(int code)
     { ONIGERR_END_PATTERN_WITH_UNMATCHED_PARENTHESIS,     REG_EPAREN  },
     { ONIGERR_END_PATTERN_IN_GROUP,                       REG_BADPAT  },
     { ONIGERR_UNDEFINED_GROUP_OPTION,                     REG_BADPAT  },
+    { ONIGERR_INVALID_GROUP_OPTION,                       REG_BADPAT  },
     { ONIGERR_INVALID_POSIX_BRACKET_TYPE,                 REG_BADPAT  },
     { ONIGERR_INVALID_LOOK_BEHIND_PATTERN,                REG_BADPAT  },
     { ONIGERR_INVALID_REPEAT_RANGE_PATTERN,               REG_BADPAT  },

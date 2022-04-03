@@ -601,6 +601,7 @@ ONIG_EXTERN OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIGERR_END_PATTERN_WITH_UNMATCHED_PARENTHESIS       -117
 #define ONIGERR_END_PATTERN_IN_GROUP                         -118
 #define ONIGERR_UNDEFINED_GROUP_OPTION                       -119
+#define ONIGERR_INVALID_GROUP_OPTION                         -120
 #define ONIGERR_INVALID_POSIX_BRACKET_TYPE                   -121
 #define ONIGERR_INVALID_LOOK_BEHIND_PATTERN                  -122
 #define ONIGERR_INVALID_REPEAT_RANGE_PATTERN                 -123

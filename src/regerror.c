@@ -114,6 +114,8 @@ onig_error_code_to_format(int code)
     p = "end pattern in group"; break;
   case ONIGERR_UNDEFINED_GROUP_OPTION:
     p = "undefined group option"; break;
+  case ONIGERR_INVALID_GROUP_OPTION:
+    p = "invalid group option"; break;
   case ONIGERR_INVALID_POSIX_BRACKET_TYPE:
     p = "invalid POSIX bracket type"; break;
   case ONIGERR_INVALID_LOOK_BEHIND_PATTERN:
