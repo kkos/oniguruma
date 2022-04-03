@@ -2094,6 +2094,7 @@ scan_env_clear(ParseEnv* env)
   env->id_num           = 0;
   env->save_alloc_num   = 0;
   env->saves            = 0;
+  env->flags            = 0;
 }
 
 static int

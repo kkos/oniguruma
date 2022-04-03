@@ -452,7 +452,10 @@ typedef struct {
 #ifdef ONIG_DEBUG_PARSE
   unsigned int     max_parse_depth;
 #endif
+  unsigned int     flags;
 } ParseEnv;
+
+#define PE_FLAG_HAS_WHOLE_OPTIONS  (1<<1)
 
 
 extern int    onig_renumber_name_table P_((regex_t* reg, GroupNumMap* map));
