@@ -8251,10 +8251,18 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
           }
 
           if (c == ')') {
+#ifdef USE_WHOLE_OPTIONS
+            if (whole_options == TRUE) {
+              if ((env->flags & PE_FLAG_HAS_WHOLE_OPTIONS) != 0)
+                return ONIGERR_INVALID_GROUP_OPTION;
+
+              env->flags |= PE_FLAG_HAS_WHOLE_OPTIONS;
+            }
+#endif
             *np = node_new_option(option);
             CHECK_NULL_RETURN_MEMERR(*np);
 #ifdef USE_WHOLE_OPTIONS
-            if (whole_options) NODE_STATUS_ADD(*np, WHOLE_OPTIONS);
+            if (whole_options == TRUE) NODE_STATUS_ADD(*np, WHOLE_OPTIONS);
 #endif
             *src = p;
             return 2; /* option only */
@@ -8263,7 +8271,7 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
             OnigOptionType prev = env->options;
 
 #ifdef USE_WHOLE_OPTIONS
-            if (whole_options)
+            if (whole_options == TRUE)
               return ONIGERR_INVALID_GROUP_OPTION;
 #endif
             env->options = option;
