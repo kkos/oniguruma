@@ -102,7 +102,11 @@ OnigSyntaxType OnigSyntaxOniguruma = {
       ONIG_SYN_FIXED_INTERVAL_IS_GREEDY_ONLY |
       ONIG_SYN_ALLOW_INVALID_CODE_END_OF_RANGE_IN_CC |
       ONIG_SYN_WARN_CC_OP_NOT_ESCAPED |
-      ONIG_SYN_WARN_REDUNDANT_NESTED_REPEAT )
+      ONIG_SYN_WARN_REDUNDANT_NESTED_REPEAT |
+#ifdef USE_WHOLE_OPTIONS
+      ONIG_SYN_WHOLE_OPTIONS
+#endif
+    )
   , ONIG_OPTION_NONE
   ,
   {
@@ -8092,6 +8096,15 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
       break;
 #endif
 
+#ifdef USE_WHOLE_OPTIONS
+    case 'I':
+      if (! IS_SYNTAX_BV(env->syntax, ONIG_SYN_WHOLE_OPTIONS))
+        return ONIGERR_UNDEFINED_GROUP_OPTION;
+
+      goto options_start;
+      break;
+#endif
+
     case 'P':
       if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_CAPITAL_P_NAME)) {
         if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
@@ -8112,16 +8125,21 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
 #endif
     case 'a':
     case '-': case 'i': case 'm': case 's': case 'x':
+      options_start:
       {
-        int neg = 0;
-
+        int neg;
+#ifdef USE_WHOLE_OPTIONS
+        int whole_options;
+        whole_options = FALSE;
+#endif
+        neg = FALSE;
         while (1) {
           switch (c) {
           case ':':
           case ')':
             break;
 
-          case '-':  neg = 1; break;
+          case '-':  neg = TRUE; break;
           case 'x':  OPTION_NEGATE(option, ONIG_OPTION_EXTEND,     neg); break;
           case 'i':  OPTION_NEGATE(option, ONIG_OPTION_IGNORECASE, neg); break;
           case 's':
@@ -8134,7 +8152,7 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
 
           case 'm':
             if (IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_OPTION_PERL)) {
-              OPTION_NEGATE(option, ONIG_OPTION_SINGLELINE, (neg == 0 ? TRUE : FALSE));
+              OPTION_NEGATE(option, ONIG_OPTION_SINGLELINE, (neg == FALSE ? TRUE : FALSE));
             }
             else if (IS_SYNTAX_OP2(env->syntax,
                         ONIG_SYN_OP2_OPTION_ONIGURUMA|ONIG_SYN_OP2_OPTION_RUBY)) {
@@ -8174,7 +8192,7 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
               if (! IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_OPTION_ONIGURUMA))
                 return ONIGERR_UNDEFINED_GROUP_OPTION;
 
-              if (neg != 0) return ONIGERR_UNDEFINED_GROUP_OPTION;
+              if (neg == TRUE) return ONIGERR_UNDEFINED_GROUP_OPTION;
 
               if (PEND) return ONIGERR_END_PATTERN_IN_GROUP;
               if (! PPEEK_IS('{')) return ONIGERR_UNDEFINED_GROUP_OPTION;
@@ -8216,6 +8234,17 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
             OPTION_NEGATE(option, ONIG_OPTION_POSIX_IS_ASCII, neg);
             break;
 
+#ifdef USE_WHOLE_OPTIONS
+          case 'I':
+            if (! IS_SYNTAX_BV(env->syntax, ONIG_SYN_WHOLE_OPTIONS))
+              return ONIGERR_UNDEFINED_GROUP_OPTION;
+
+            if (neg == TRUE) return ONIGERR_INVALID_GROUP_OPTION;
+            OPTION_NEGATE(option, ONIG_OPTION_IGNORECASE_IS_ASCII, neg);
+            whole_options = TRUE;
+            break;
+#endif
+
           default:
             return ONIGERR_UNDEFINED_GROUP_OPTION;
           }
@@ -8223,12 +8252,19 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
           if (c == ')') {
             *np = node_new_option(option);
             CHECK_NULL_RETURN_MEMERR(*np);
+#ifdef USE_WHOLE_OPTIONS
+            if (whole_options) NODE_STATUS_ADD(*np, WHOLE_OPTIONS);
+#endif
             *src = p;
             return 2; /* option only */
           }
           else if (c == ':') {
             OnigOptionType prev = env->options;
 
+#ifdef USE_WHOLE_OPTIONS
+            if (whole_options)
+              return ONIGERR_INVALID_GROUP_OPTION;
+#endif
             env->options = option;
             r = fetch_token(tok, &p, end, env);
             if (r < 0) return r;
