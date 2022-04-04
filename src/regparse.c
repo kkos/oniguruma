@@ -8251,29 +8251,35 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
           }
 
           if (c == ')') {
+            *np = node_new_option(option);
+            CHECK_NULL_RETURN_MEMERR(*np);
+            r = 2;  /* option only */
+
 #ifdef USE_WHOLE_OPTIONS
+          set_whole_options:
             if (whole_options == TRUE) {
               if ((env->flags & PE_FLAG_HAS_WHOLE_OPTIONS) != 0)
                 return ONIGERR_INVALID_GROUP_OPTION;
 
               env->flags |= PE_FLAG_HAS_WHOLE_OPTIONS;
             }
-#endif
-            *np = node_new_option(option);
-            CHECK_NULL_RETURN_MEMERR(*np);
-#ifdef USE_WHOLE_OPTIONS
-            if (whole_options == TRUE) NODE_STATUS_ADD(*np, WHOLE_OPTIONS);
+
+            if (whole_options == TRUE) {
+              NODE_STATUS_ADD(*np, WHOLE_OPTIONS);
+
+              env->reg->case_fold_flag &=
+                    ~(INTERNAL_ONIGENC_CASE_FOLD_MULTI_CHAR |
+                      ONIGENC_CASE_FOLD_TURKISH_AZERI);
+              env->reg->case_fold_flag |= ONIGENC_CASE_FOLD_ASCII_ONLY;
+              env->reg->options |= ONIG_OPTION_IGNORECASE_IS_ASCII;
+            }
 #endif
             *src = p;
-            return 2; /* option only */
+            return r;
           }
           else if (c == ':') {
             OnigOptionType prev = env->options;
 
-#ifdef USE_WHOLE_OPTIONS
-            if (whole_options == TRUE)
-              return ONIGERR_INVALID_GROUP_OPTION;
-#endif
             env->options = option;
             r = fetch_token(tok, &p, end, env);
             if (r < 0) return r;
@@ -8286,6 +8292,13 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
             *np = node_new_option(option);
             CHECK_NULL_RETURN_MEMERR(*np);
             NODE_BODY(*np) = target;
+
+#ifdef USE_WHOLE_OPTIONS
+            if (whole_options == TRUE) {
+              r = 0;
+              goto set_whole_options;
+            }
+#endif
             *src = p;
             return 0;
           }
