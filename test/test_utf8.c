@@ -1599,6 +1599,26 @@ extern int main(int argc, char* argv[])
   x2("[\\W\\x{0063 0071}]+", "*cqa", 0, 3);
   x2("(\\O|(?=z\\g<2>*))(\\g<0>){0}", "a", 0, 1);
 
+  /* whole options */
+  x2("(?Ii)abc", "abc", 0, 3);
+  x2("(?Ii)abc", "ABC", 0, 3);
+  x2("(?Ii:abc)", "abc", 0, 3);
+  x2("(?Ii)xyz|abc", "aBc", 0, 3);
+  x2("(?Ii:zz|abc|AZ)", "ABc", 0, 3);
+  e("(?Ii:abc)d", "abc", ONIGERR_INVALID_GROUP_OPTION);
+  x2("(?i)\xe2\x84\xaa", "k", 0, 1);
+  n("(?Ii)\xe2\x84\xaa", "k");
+  e("((?Ii)abc)", "", ONIGERR_INVALID_GROUP_OPTION);
+  x2("(?:(?Ii)abc)", "ABC", 0, 3);
+  x2("(?:(?:(?Ii)abc))", "ABC", 0, 3);
+  e("x(?Ii)", "", ONIGERR_INVALID_GROUP_OPTION);
+  e("()(?Ii)", "", ONIGERR_INVALID_GROUP_OPTION);
+  e("(?:)(?Ii)", "", ONIGERR_INVALID_GROUP_OPTION);
+  e("^(?Ii)", "", ONIGERR_INVALID_GROUP_OPTION);
+  e("(?Ii)$", "", ONIGERR_INVALID_GROUP_OPTION);
+  e("(?Ii)|", "", ONIGERR_INVALID_GROUP_OPTION);
+  e("(?Ii)|(?Ii)", "", ONIGERR_INVALID_GROUP_OPTION);
+
   n("a(b|)+d", "abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcd"); /* https://www.haijin-boys.com/discussions/5079 */
   n("   \xfd", ""); /* https://bugs.php.net/bug.php?id=77370 */
   /* can't use \xfc00.. because compiler error: hex escape sequence out of range */
