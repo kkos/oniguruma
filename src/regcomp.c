@@ -5139,6 +5139,47 @@ check_call_reference(CallNode* cn, ParseEnv* env, int state)
   return 0;
 }
 
+#ifdef USE_WHOLE_OPTIONS
+static int
+check_whole_options_position(Node* node /* root */)
+{
+  int is_list;
+
+  is_list = FALSE;
+
+ start:
+  switch (NODE_TYPE(node)) {
+  case NODE_LIST:
+    if (IS_NOT_NULL(NODE_CDR(node)))
+      is_list = TRUE;
+
+    node = NODE_CAR(node);
+    goto start;
+    break;
+
+  case NODE_BAG:
+    {
+      BagNode* en = BAG_(node);
+
+      if (en->type == BAG_OPTION) {
+        if (NODE_IS_WHOLE_OPTIONS(node)) {
+          if (is_list == TRUE && IS_NOT_NULL(NODE_BODY(node)))
+            break;
+
+          return 0;
+        }
+      }
+    }
+    break;
+
+  default:
+    break;
+  }
+
+  return ONIGERR_INVALID_GROUP_OPTION;
+}
+#endif
+
 static void
 tune_call2_call(Node* node)
 {
@@ -7282,6 +7323,13 @@ static int parse_and_tune(regex_t* reg, const UChar* pattern,
 
   r = onig_parse_tree(&root, pattern, pattern_end, reg, scan_env);
   if (r != 0) goto err;
+
+#ifdef USE_WHOLE_OPTIONS
+  if ((scan_env->flags & PE_FLAG_HAS_WHOLE_OPTIONS) != 0) {
+    r = check_whole_options_position(root);
+    if (r != 0) goto err;
+  }
+#endif
 
   r = reduce_string_list(root, reg->enc);
   if (r != 0) goto err;
