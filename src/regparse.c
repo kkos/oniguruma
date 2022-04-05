@@ -2075,7 +2075,6 @@ scan_env_clear(ParseEnv* env)
 
 #ifdef USE_CALL
   env->unset_addr_list = NULL;
-  env->has_call_zero   = 0;
 #endif
 
   env->num_mem    = 0;
@@ -8908,7 +8907,7 @@ prs_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
       CHECK_NULL_RETURN_MEMERR(*np);
       env->num_call++;
       if (tok->u.call.by_number != 0 && gnum == 0) {
-        env->has_call_zero = 1;
+        env->flags |= PE_FLAG_HAS_CALL_ZERO;
       }
     }
     break;
@@ -9232,7 +9231,7 @@ onig_parse_tree(Node** root, const UChar* pattern, const UChar* end,
   if (r != 0) return r;
 
 #ifdef USE_CALL
-  if (env->has_call_zero != 0) {
+  if ((env->flags & PE_FLAG_HAS_CALL_ZERO) != 0) {
     Node* zero_node;
     r = make_call_zero_body(*root, env, &zero_node);
     if (r != 0) return r;

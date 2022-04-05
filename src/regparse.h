@@ -446,7 +446,6 @@ typedef struct {
   SaveItem*        saves;
 #ifdef USE_CALL
   UnsetAddrList*   unset_addr_list;
-  int              has_call_zero;
 #endif
   unsigned int     parse_depth;
 #ifdef ONIG_DEBUG_PARSE
@@ -455,6 +454,7 @@ typedef struct {
   unsigned int     flags;
 } ParseEnv;
 
+#define PE_FLAG_HAS_CALL_ZERO      (1<<0)
 #define PE_FLAG_HAS_WHOLE_OPTIONS  (1<<1)
 
 
