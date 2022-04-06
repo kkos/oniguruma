@@ -8098,6 +8098,7 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
 
 #ifdef USE_WHOLE_OPTIONS
     case 'I':
+    case 'L':
       if (! IS_SYNTAX_BV(env->syntax, ONIG_SYN_WHOLE_OPTIONS))
         return ONIGERR_UNDEFINED_GROUP_OPTION;
 
@@ -8243,6 +8244,15 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
             OPTION_NEGATE(option, ONIG_OPTION_IGNORECASE_IS_ASCII, neg);
             whole_options = TRUE;
             break;
+
+          case 'L':
+            if (! IS_SYNTAX_BV(env->syntax, ONIG_SYN_WHOLE_OPTIONS))
+              return ONIGERR_UNDEFINED_GROUP_OPTION;
+
+            if (neg == TRUE) return ONIGERR_INVALID_GROUP_OPTION;
+            OPTION_NEGATE(option, ONIG_OPTION_FIND_LONGEST, neg);
+            whole_options = TRUE;
+            break;
 #endif
 
           default:
@@ -8269,6 +8279,9 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
                         ONIGENC_CASE_FOLD_TURKISH_AZERI);
                 env->reg->case_fold_flag |= ONIGENC_CASE_FOLD_ASCII_ONLY;
                 env->reg->options |= ONIG_OPTION_IGNORECASE_IS_ASCII;
+              }
+              if (OPTON_FIND_LONGEST(option)) {
+                env->reg->options |= ONIG_OPTION_FIND_LONGEST;
               }
             }
 #endif
