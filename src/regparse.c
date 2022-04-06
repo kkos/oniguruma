@@ -8261,16 +8261,15 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
                 return ONIGERR_INVALID_GROUP_OPTION;
 
               env->flags |= PE_FLAG_HAS_WHOLE_OPTIONS;
-            }
-
-            if (whole_options == TRUE) {
               NODE_STATUS_ADD(*np, WHOLE_OPTIONS);
 
-              env->reg->case_fold_flag &=
-                    ~(INTERNAL_ONIGENC_CASE_FOLD_MULTI_CHAR |
-                      ONIGENC_CASE_FOLD_TURKISH_AZERI);
-              env->reg->case_fold_flag |= ONIGENC_CASE_FOLD_ASCII_ONLY;
-              env->reg->options |= ONIG_OPTION_IGNORECASE_IS_ASCII;
+              if ((option & ONIG_OPTION_IGNORECASE_IS_ASCII) != 0) {
+                env->reg->case_fold_flag &=
+                      ~(INTERNAL_ONIGENC_CASE_FOLD_MULTI_CHAR |
+                        ONIGENC_CASE_FOLD_TURKISH_AZERI);
+                env->reg->case_fold_flag |= ONIGENC_CASE_FOLD_ASCII_ONLY;
+                env->reg->options |= ONIG_OPTION_IGNORECASE_IS_ASCII;
+              }
             }
 #endif
             *src = p;
