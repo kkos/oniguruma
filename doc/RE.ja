@@ -1,4 +1,4 @@
-鬼車 正規表現 Version 6.9.6    2022/02/04
+鬼車 正規表現 Version 6.9.8    2022/04/09
 
 使用文法: ONIG_SYNTAX_ONIGURUMA (既定値)
 
@@ -284,6 +284,13 @@
                       * これは次の')'またはパターンの終わりまでのグループを形成する
                         /ab(?i)c|def|gh/ == /ab(?i:c|def|gh)/
 
+  /(?IL).../, /(?IL:...)/   全体オプション
+
+                            このオプションは、正規表現全体に影響を及ぼす位置
+                            に置かれなければならない
+
+                            I: ONIG_OPTION_IGNORECASE_IS_ASCII
+                            L: ONIG_OPTION_FIND_LONGEST
 
   (式)              捕獲式集合
   (?:式)            非捕獲式集合

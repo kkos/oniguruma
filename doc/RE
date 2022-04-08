@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.9.6    2022/02/04
+Oniguruma Regular Expressions Version 6.9.8    2022/04/09
 
 syntax: ONIG_SYNTAX_ONIGURUMA (default syntax)
 
@@ -288,6 +288,13 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default syntax)
                       * It makes a group to the next ')' or end of the pattern.
                         /ab(?i)c|def|gh/ == /ab(?i:c|def|gh)/
 
+  /(?IL).../, /(?IL:...)/   whole opiton
+
+                            This option must be placed in a position that
+                            affects the entire regular expression.
+
+                            I: ONIG_OPTION_IGNORECASE_IS_ASCII
+                            L: ONIG_OPTION_FIND_LONGEST
 
   (?:subexp)         non-capturing group
   (subexp)           capturing group
