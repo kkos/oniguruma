@@ -40,6 +40,9 @@ When using configure script, if you have the POSIX API enabled in an earlier ver
 Master branch
 -------------
 * Update Unicode version 14.0.0
+* Whole options
+    * (?I) : ONIG_OPTION_IGNORECASE_IS_ASCII
+    * (?L) : ONIG_OPTION_FIND_LONGEST
 
 
 Version 6.9.7
