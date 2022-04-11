@@ -41,6 +41,7 @@ Master branch
 -------------
 * Update Unicode version 14.0.0
 * Whole options
+    * (?C) : ONIG_OPTION_DONT_CAPTURE_GROUP
     * (?I) : ONIG_OPTION_IGNORECASE_IS_ASCII
     * (?L) : ONIG_OPTION_FIND_LONGEST
 
