@@ -1625,6 +1625,10 @@ extern int main(int argc, char* argv[])
   x2("(?L)a*", "aabcaaa", 4, 7);
   e("x(?L)xxxxx", "", ONIGERR_INVALID_GROUP_OPTION);
   e("(?-L)x", "", ONIGERR_INVALID_GROUP_OPTION);
+  x3("(..)\\1", "abab", 0, 2, 1);
+  e("(?C)(..)\\1", "abab", ONIGERR_INVALID_BACKREF);
+  e("(?-C)", "", ONIGERR_INVALID_GROUP_OPTION);
+  e("(?C)(.)(.)(.)(?<name>.)\\1", "abcdd", ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED);
 
   n("a(b|)+d", "abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcd"); /* https://www.haijin-boys.com/discussions/5079 */
   n("   \xfd", ""); /* https://bugs.php.net/bug.php?id=77370 */
