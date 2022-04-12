@@ -102,10 +102,10 @@ OnigSyntaxType OnigSyntaxOniguruma = {
       ONIG_SYN_FIXED_INTERVAL_IS_GREEDY_ONLY |
       ONIG_SYN_ALLOW_INVALID_CODE_END_OF_RANGE_IN_CC |
       ONIG_SYN_WARN_CC_OP_NOT_ESCAPED |
-      ONIG_SYN_WARN_REDUNDANT_NESTED_REPEAT |
 #ifdef USE_WHOLE_OPTIONS
-      ONIG_SYN_WHOLE_OPTIONS
+      ONIG_SYN_WHOLE_OPTIONS |
 #endif
+      ONIG_SYN_WARN_REDUNDANT_NESTED_REPEAT
     )
   , ONIG_OPTION_NONE
   ,
@@ -8127,7 +8127,9 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
 #endif
     case 'a':
     case '-': case 'i': case 'm': case 's': case 'x':
+#ifdef USE_WHOLE_OPTIONS
       options_start:
+#endif
       {
         int neg;
 #ifdef USE_WHOLE_OPTIONS
