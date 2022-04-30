@@ -212,8 +212,8 @@ endif()
 # Examples
 if(INSTALL_EXAMPLES)
 install(FILES sample/bug_fix.c sample/callback_each_match.c
-              sample/callout.c sample/count.c sample/crnl.c
-              sample/echo.c sample/encode.c sample/listcap.c
+              sample/callout.c sample/count.c sample/echo.c
+              sample/encode.c sample/listcap.c
               sample/names.c sample/posix.c sample/regset.c
               sample/scan.c sample/simple.c sample/sql.c
               sample/syntax.c sample/user_property.c
