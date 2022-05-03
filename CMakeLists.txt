@@ -9,6 +9,7 @@ set(PACKAGE_VERSION ${PROJECT_VERSION})
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(ENABLE_POSIX_API  "Include POSIX API" OFF)
 option(ENABLE_BINARY_COMPATIBLE_POSIX_API  "Include Binary compatible POSIX API" OFF)
+option(ENABLE_STATISTICS  "Include statistics API" OFF)
 option(INSTALL_DOCUMENTATION "Install documentation" ON)
 option(INSTALL_EXAMPLES "Install examples" OFF)
 if(MSVC)
@@ -70,6 +71,10 @@ endif()
 
 if(ENABLE_BINARY_COMPATIBLE_POSIX_API)
   add_definitions("-DUSE_BINARY_COMPATIBLE_POSIX_API")
+endif()
+
+if(ENABLE_STATISTICS)
+  add_definitions("-DONIG_DEBUG_STATISTICS")
 endif()
 
 add_library(onig ${_SRCS})
