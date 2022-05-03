@@ -7,13 +7,10 @@ AM_INIT_AUTOMAKE([-Wno-portability])
 AC_CONFIG_HEADERS([src/config.h])
 
 
-dnl default value for STATISTICS
-STATISTICS=""
 AC_ARG_WITH([statistics],
   [AS_HELP_STRING([--with-statistics],
     [take matching time statistical data])],
-  [STATISTICS=-DONIG_DEBUG_STATISTICS])
-AC_SUBST(STATISTICS)
+  AS_VAR_APPEND([CFLAGS], [" -DONIG_DEBUG_STATISTICS"]))
 
 
 dnl check for POSIX API

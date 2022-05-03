@@ -180,19 +180,7 @@ typedef struct {
 } MatchArg;
 
 
-#if defined(ONIG_DEBUG_COMPILE) || defined(ONIG_DEBUG_MATCH)
-
-/* arguments type */
-typedef enum {
-  ARG_SPECIAL = -1,
-  ARG_NON     =  0,
-  ARG_RELADDR =  1,
-  ARG_ABSADDR =  2,
-  ARG_LENGTH  =  3,
-  ARG_MEMNUM  =  4,
-  ARG_OPTION  =  5,
-  ARG_MODE    =  6
-} OpArgType;
+#if defined(ONIG_DEBUG_COMPILE) || defined(ONIG_DEBUG_MATCH) || defined(ONIG_DEBUG_STATISTICS)
 
 typedef struct {
   short int opcode;
@@ -298,6 +286,22 @@ static OpInfoType OpInfo[] = {
 #endif
   { -1, ""}
 };
+
+#endif
+
+#if defined(ONIG_DEBUG_COMPILE) || defined(ONIG_DEBUG_MATCH)
+
+/* arguments type */
+typedef enum {
+  ARG_SPECIAL = -1,
+  ARG_NON     =  0,
+  ARG_RELADDR =  1,
+  ARG_ABSADDR =  2,
+  ARG_LENGTH  =  3,
+  ARG_MEMNUM  =  4,
+  ARG_OPTION  =  5,
+  ARG_MODE    =  6
+} OpArgType;
 
 static char*
 op2name(int opcode)

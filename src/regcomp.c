@@ -7018,7 +7018,8 @@ clear_optimize_info(regex_t* reg)
   }
 }
 
-#ifdef ONIG_DEBUG
+#if defined(ONIG_DEBUG_PARSE)  || defined(ONIG_DEBUG_MATCH) || \
+    defined(ONIG_DEBUG_SEARCH) || defined(ONIG_DEBUG_COMPILE)
 
 static void print_enc_string(FILE* fp, OnigEncoding enc,
                              const UChar *s, const UChar *end)
@@ -7077,7 +7078,7 @@ print_options(FILE* fp, OnigOptionType o)
   if ((o & ONIG_OPTION_CALLBACK_EACH_MATCH) != 0) fprintf(fp, " CALLBACK_EACH_MATCH");
 }
 
-#endif /* ONIG_DEBUG */
+#endif
 
 #if defined(ONIG_DEBUG_COMPILE) || defined(ONIG_DEBUG_MATCH)
 
@@ -7426,7 +7427,8 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
   UnsetAddrList uslist = {0};
 #endif
 
-#ifdef ONIG_DEBUG
+#if defined(ONIG_DEBUG_PARSE)  || defined(ONIG_DEBUG_MATCH) || \
+    defined(ONIG_DEBUG_SEARCH) || defined(ONIG_DEBUG_COMPILE)
   fprintf(DBGFP, "\nPATTERN: /");
   print_enc_string(DBGFP, reg->enc, pattern, pattern_end);
   fprintf(DBGFP, "/\n");
