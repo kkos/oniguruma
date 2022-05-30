@@ -5103,41 +5103,36 @@ find_str_position(OnigCodePoint s[], int n, UChar* from, UChar* to,
 }
 
 static int
-str_exist_check_with_esc(OnigCodePoint s[], int n, UChar* from, UChar* to,
-                         OnigCodePoint bad, OnigEncoding enc, OnigSyntaxType* syn)
+is_posix_bracket_start(UChar* from, UChar* to, OnigEncoding enc)
 {
-  int i, in_esc;
+  int n;
   OnigCodePoint x;
-  UChar *q;
-  UChar *p = from;
+  UChar *p;
 
-  in_esc = 0;
+  n = 0;
+  p = from;
   while (p < to) {
-    if (in_esc) {
-      in_esc = 0;
-      p += enclen(enc, p);
-    }
-    else {
-      x = ONIGENC_MBC_TO_CODE(enc, p, to);
-      q = p + enclen(enc, p);
-      if (x == s[0]) {
-        for (i = 1; i < n && q < to; i++) {
-          x = ONIGENC_MBC_TO_CODE(enc, q, to);
-          if (x != s[i]) break;
-          q += enclen(enc, q);
-        }
-        if (i >= n) return 1;
-        p += enclen(enc, p);
-      }
-      else {
+    x = ONIGENC_MBC_TO_CODE(enc, p, to);
+    p += enclen(enc, p);
+    if (x == ':') {
+      if (p < to) {
         x = ONIGENC_MBC_TO_CODE(enc, p, to);
-        if (x == bad) return 0;
-        else if (x == MC_ESC(syn)) in_esc = 1;
-        p = q;
+        if (x == ']') {
+          if (n == 0) return FALSE;
+          else        return TRUE;
+        }
       }
+
+      return FALSE;
     }
+    else if (! ONIGENC_IS_CODE_ALPHA(enc, x)) {
+      break;
+    }
+
+    n += 1;
   }
-  return 0;
+
+  return FALSE;
 }
 
 static int
@@ -5392,11 +5387,9 @@ fetch_token_cc(PToken* tok, UChar** src, UChar* end, ParseEnv* env, int state)
   }
   else if (c == '[') {
     if (IS_SYNTAX_OP(syn, ONIG_SYN_OP_POSIX_BRACKET) && (PPEEK_IS(':'))) {
-      OnigCodePoint send[] = { (OnigCodePoint )':', (OnigCodePoint )']' };
       tok->backp = p; /* point at '[' is read */
       PINC;
-      if (str_exist_check_with_esc(send, 2, p, end,
-                                   (OnigCodePoint )']', enc, syn)) {
+      if (is_posix_bracket_start(p, end, enc)) {
         tok->type = TK_CC_POSIX_BRACKET_OPEN;
       }
       else {
