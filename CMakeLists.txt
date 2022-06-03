@@ -12,6 +12,7 @@ option(ENABLE_BINARY_COMPATIBLE_POSIX_API  "Include Binary compatible POSIX API"
 option(ENABLE_STATISTICS  "Include statistics API" OFF)
 option(INSTALL_DOCUMENTATION "Install documentation" ON)
 option(INSTALL_EXAMPLES "Install examples" OFF)
+option(BUILD_TEST "Build tests" ON)
 if(MSVC)
   option(MSVC_STATIC_RUNTIME "Build with static runtime" OFF)
 endif()
@@ -237,34 +238,8 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/oniguruma.pc
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/onig-config
         DESTINATION "${CMAKE_INSTALL_BINDIR}")
 
-
-enable_testing()
-
-add_executable(test_utf8 test/test_utf8.c)
-target_link_libraries(test_utf8 onig)
-
-add_executable(test_syntax test/test_syntax.c)
-target_link_libraries(test_syntax onig)
-
-add_executable(test_options test/test_options.c)
-target_link_libraries(test_options onig)
-
-add_executable(testc test/testc.c)
-target_link_libraries(testc onig)
-if (CMAKE_C_COMPILER_ID MATCHES "Clang|GNU")
-  target_compile_options(testc PRIVATE -Wall -Wno-invalid-source-encoding)
-endif()
-
-if(ENABLE_POSIX_API)
-  add_executable(testp test/testp.c)
-  target_link_libraries(testp onig)
-endif()
-
-add_executable(testcu test/testu.c)
-target_link_libraries(testcu onig)
-
-add_executable(test_regset test/test_regset.c)
-target_link_libraries(test_regset onig)
-
-add_executable(test_back test/test_back.c)
-target_link_libraries(test_back onig)
+# Test
+if(BUILD_TEST)
+  add_subdirectory(test)
+  add_subdirectory(windows)
+endif(BUILD_TEST)
