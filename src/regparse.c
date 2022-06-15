@@ -5125,6 +5125,9 @@ is_posix_bracket_start(UChar* from, UChar* to, OnigEncoding enc)
 
       return FALSE;
     }
+    else if (x == '^' && n == 0) {
+      ;
+    }
     else if (! ONIGENC_IS_CODE_ALPHA(enc, x)) {
       break;
     }
