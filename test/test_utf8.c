@@ -226,6 +226,10 @@ extern int main(int argc, char* argv[])
   x2("[*[:xdigit:]+]", "-@^+", 3, 4);
   n("[[:upper]]", "A");
   x2("[[:upper]]", ":", 0, 1);
+  n("[[:upper:]]", "a");
+  x2("[[:^upper:]]", "a", 0, 1);
+  n("[[:lower:]]", "A");
+  x2("[[:^lower:]]", "A", 0, 1);
 
   // Issue #253
   e("[[:::]",   ":[", ONIGERR_PREMATURE_END_OF_CHAR_CLASS);
