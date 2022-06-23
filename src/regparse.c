@@ -7648,6 +7648,37 @@ prs_callout_of_name(Node** np, int cterm, UChar** src, UChar* end,
 }
 #endif
 
+#ifdef USE_WHOLE_OPTIONS
+static int
+set_whole_options(OnigOptionType option, ParseEnv* env)
+{
+  if ((env->flags & PE_FLAG_HAS_WHOLE_OPTIONS) != 0)
+    return ONIGERR_INVALID_GROUP_OPTION;
+
+  env->flags |= PE_FLAG_HAS_WHOLE_OPTIONS;
+
+  if (OPTON_DONT_CAPTURE_GROUP(option)) {
+    env->reg->options |= ONIG_OPTION_DONT_CAPTURE_GROUP;
+    if ((option & (ONIG_OPTION_DONT_CAPTURE_GROUP|ONIG_OPTION_CAPTURE_GROUP)) == (ONIG_OPTION_DONT_CAPTURE_GROUP|ONIG_OPTION_CAPTURE_GROUP))
+      return ONIGERR_INVALID_COMBINATION_OF_OPTIONS;
+  }
+
+  if ((option & ONIG_OPTION_IGNORECASE_IS_ASCII) != 0) {
+    env->reg->case_fold_flag &=
+      ~(INTERNAL_ONIGENC_CASE_FOLD_MULTI_CHAR |
+        ONIGENC_CASE_FOLD_TURKISH_AZERI);
+    env->reg->case_fold_flag |= ONIGENC_CASE_FOLD_ASCII_ONLY;
+    env->reg->options |= ONIG_OPTION_IGNORECASE_IS_ASCII;
+  }
+
+  if (OPTON_FIND_LONGEST(option)) {
+    env->reg->options |= ONIG_OPTION_FIND_LONGEST;
+  }
+
+  return 0;
+}
+#endif
+
 static int
 prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
         ParseEnv* env)
@@ -8247,43 +8278,27 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
           if (c == ')') {
             *np = node_new_option(option);
             CHECK_NULL_RETURN_MEMERR(*np);
-            r = 2;  /* option only */
 
 #ifdef USE_WHOLE_OPTIONS
-          set_whole_options:
             if (whole_options == TRUE) {
-              if ((env->flags & PE_FLAG_HAS_WHOLE_OPTIONS) != 0)
-                return ONIGERR_INVALID_GROUP_OPTION;
-
-              env->flags |= PE_FLAG_HAS_WHOLE_OPTIONS;
+              r = set_whole_options(option, env);
+              if (r != 0) return r;
               NODE_STATUS_ADD(*np, WHOLE_OPTIONS);
-
-              if (OPTON_DONT_CAPTURE_GROUP(option)) {
-                env->reg->options |= ONIG_OPTION_DONT_CAPTURE_GROUP;
-                if ((option & (ONIG_OPTION_DONT_CAPTURE_GROUP|ONIG_OPTION_CAPTURE_GROUP)) == (ONIG_OPTION_DONT_CAPTURE_GROUP|ONIG_OPTION_CAPTURE_GROUP))
-                  return ONIGERR_INVALID_COMBINATION_OF_OPTIONS;
-              }
-
-              if ((option & ONIG_OPTION_IGNORECASE_IS_ASCII) != 0) {
-                env->reg->case_fold_flag &=
-                      ~(INTERNAL_ONIGENC_CASE_FOLD_MULTI_CHAR |
-                        ONIGENC_CASE_FOLD_TURKISH_AZERI);
-                env->reg->case_fold_flag |= ONIGENC_CASE_FOLD_ASCII_ONLY;
-                env->reg->options |= ONIG_OPTION_IGNORECASE_IS_ASCII;
-              }
-
-              if (OPTON_FIND_LONGEST(option)) {
-                env->reg->options |= ONIG_OPTION_FIND_LONGEST;
-              }
             }
 #endif
             *src = p;
-            return r;
+            return 2; /* option only */
           }
           else if (c == ':') {
             OnigOptionType prev = env->options;
 
             env->options = option;
+#ifdef USE_WHOLE_OPTIONS
+            if (whole_options == TRUE) {
+              r = set_whole_options(option, env);
+              if (r != 0) return r;
+            }
+#endif
             r = fetch_token(tok, &p, end, env);
             if (r < 0) return r;
             r = prs_alts(&target, tok, term, &p, end, env, FALSE);
@@ -8292,16 +8307,12 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
               onig_node_free(target);
               return r;
             }
+
             *np = node_new_option(option);
             CHECK_NULL_RETURN_MEMERR(*np);
             NODE_BODY(*np) = target;
+            NODE_STATUS_ADD(*np, WHOLE_OPTIONS);
 
-#ifdef USE_WHOLE_OPTIONS
-            if (whole_options == TRUE) {
-              r = 0;
-              goto set_whole_options;
-            }
-#endif
             *src = p;
             return 0;
           }
@@ -8856,7 +8867,7 @@ prs_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
         iarg.alt_root = NULL_NODE;
         iarg.ptail    = &(iarg.alt_root);
 
-        r = ONIGENC_APPLY_ALL_CASE_FOLD(env->enc, env->case_fold_flag,
+        r = ONIGENC_APPLY_ALL_CASE_FOLD(env->enc, env->reg->case_fold_flag,
                                         i_apply_case_fold, &iarg);
         if (r != 0) {
           onig_node_free(iarg.alt_root);
