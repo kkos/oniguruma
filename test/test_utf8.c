@@ -1651,6 +1651,19 @@ extern int main(int argc, char* argv[])
   e("(?-C)", "", ONIGERR_INVALID_GROUP_OPTION);
   e("(?C)(.)(.)(.)(?<name>.)\\1", "abcdd", ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED);
 
+  // Issue #264
+  n("(?iI)s", "\xc5\xbf");
+  n("(?iI)[s]", "\xc5\xbf");    // FAIL
+  n("(?iI:s)", "\xc5\xbf");
+  n("(?iI:[s])", "\xc5\xbf");    // FAIL
+  x2("(?iI)(?:[[:word:]])", "\xc5\xbf", 0, 2);
+  n("(?iI)(?W:[[:word:]])", "\xc5\xbf");     // FAIL
+  n("(?iI)(?W:\\w)", "\xc5\xbf");
+  n("(?iI)(?W:[\\w])", "\xc5\xbf");     // FAIL
+  n("(?iI)(?W:\\p{Word})", "\xc5\xbf");
+  n("(?iI)(?W:[\\p{Word}])", "\xc5\xbf");     // FAIL
+
+
   n("a(b|)+d", "abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcd"); /* https://www.haijin-boys.com/discussions/5079 */
   n("   \xfd", ""); /* https://bugs.php.net/bug.php?id=77370 */
   /* can't use \xfc00.. because compiler error: hex escape sequence out of range */
