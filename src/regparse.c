@@ -6649,6 +6649,12 @@ prs_char_property(Node** np, PToken* tok, UChar** src, UChar* end,
   ctype = fetch_char_property_to_ctype(src, end, env);
   if (ctype < 0) return ctype;
 
+  if (ctype == ONIGENC_CTYPE_WORD) {
+    *np = node_new_ctype(ctype, tok->u.prop.not, env->options);
+    CHECK_NULL_RETURN_MEMERR(*np);
+    return 0;
+  }
+
   *np = node_new_cclass();
   CHECK_NULL_RETURN_MEMERR(*np);
   cc = CCLASS_(*np);
