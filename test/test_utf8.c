@@ -1663,6 +1663,30 @@ extern int main(int argc, char* argv[])
   n("(?iI)(?W:\\p{Word})", "\xc5\xbf");
   n("(?iI)(?W:[\\p{Word}])", "\xc5\xbf");     // FAIL
 
+  x2("(?iW:[[:word:]])",  "\xc5\xbf", 0, 2);
+  x2("(?iW:[\\p{Word}])", "\xc5\xbf", 0, 2);
+  x2("(?iW:[\\w])",       "\xc5\xbf", 0, 2);
+  n("(?iW:\\p{Word})",    "\xc5\xbf");
+  n("(?iW:\\w)",          "\xc5\xbf");
+  x2("(?i)\\p{Word}",     "\xc5\xbf", 0, 2);
+  x2("(?i)\\w",           "\xc5\xbf", 0, 2);
+
+  x2("(?iW:[[:^word:]])",  "\xc5\xbf", 0, 2);
+  x2("(?iW:[\\P{Word}])",  "\xc5\xbf", 0, 2);
+  x2("(?iW:[\\W])",        "\xc5\xbf", 0, 2);
+  x2("(?iW:\\P{Word})",    "\xc5\xbf", 0, 2);
+  x2("(?iW:\\W)",          "\xc5\xbf", 0, 2);
+  n("(?i)\\P{Word}",      "\xc5\xbf");
+  n("(?i)\\W",            "\xc5\xbf");
+
+  x2("(?iW:[[:^word:]])",  "s", 0, 1);
+  x2("(?iW:[\\P{Word}])",  "s", 0, 1);
+  x2("(?iW:[\\W])",        "s", 0, 1);
+  n("(?iW:\\P{Word})",     "s");
+  n("(?iW:\\W)",           "s");
+  n("(?i)\\P{Word}",       "s");
+  n("(?i)\\W",             "s");
+
 
   n("a(b|)+d", "abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcd"); /* https://www.haijin-boys.com/discussions/5079 */
   n("   \xfd", ""); /* https://bugs.php.net/bug.php?id=77370 */
