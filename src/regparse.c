@@ -9153,6 +9153,7 @@ prs_alts(Node** top, PToken* tok, int term, UChar** src, UChar* end,
       if (IS_NULL(*headp)) {
         onig_node_free(node);
         onig_node_free(*top);
+        *top = NULL_NODE;
         return ONIGERR_MEMORY;
       }
 
