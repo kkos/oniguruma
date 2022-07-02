@@ -39,6 +39,7 @@ When using configure script, if you have the POSIX API enabled in an earlier ver
 
 Master branch
 -------------
+* Fixed: (?I) option was not enabled for character classes (Issue #264).
 * Changed specification to check for incorrect POSIX bracket (Issue #253).
 
 
