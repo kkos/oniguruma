@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.9.8    2022/04/11
+Oniguruma Regular Expressions Version 6.9.8    2022/07/02
 
 syntax: ONIG_SYNTAX_ONIGURUMA (default syntax)
 
@@ -287,6 +287,9 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default syntax)
 
                       * It makes a group to the next ')' or end of the pattern.
                         /ab(?i)c|def|gh/ == /ab(?i:c|def|gh)/
+
+  * (?i) option has no effect on word types (\w, \p{Word}). However, if the word types are used within a character class, it is valid. But, this would only be a concern when word types are used with the (?W) option.
+
 
   /(?CIL).../, /(?CIL:...)/   whole opiton
 
