@@ -166,6 +166,12 @@ configure_package_config_file(
     INSTALL_DESTINATION "${config_install_dir}"
 )
 
+if(CMAKE_INSTALL_LIBDIR MATCHES "^/")
+    set(onig_pkgconfig_libdir "${CMAKE_INSTALL_LIBDIR}")
+else()
+    set(onig_pkgconfig_libdir "\${exec_prefix}/${CMAKE_INSTALL_LIBDIR}")
+endif()
+
 # Targets:
 #   * <prefix>/lib*/libonig.a
 #   * header location after install: <prefix>/include/

@@ -1,6 +1,6 @@
 prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=${prefix}
-libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+libdir=@onig_pkgconfig_libdir@
 includedir=${prefix}/include
 datarootdir=${prefix}/share
 datadir=${prefix}/share

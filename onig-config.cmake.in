@@ -29,7 +29,7 @@ fi
 
 prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=${prefix}
-libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+libdir=@onig_pkgconfig_libdir@
 includedir=${prefix}/include
 is_set_exec_prefix=no
 
