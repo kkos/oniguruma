@@ -3492,6 +3492,7 @@ node_new_str_crude_char(UChar c, OnigOptionType options)
 
   p[0] = c;
   node = node_new_str_crude(p, p + 1, options);
+  CHECK_NULL_RETURN(node);
 
   /* clear buf tail */
   for (i = 1; i < NODE_STRING_BUF_SIZE; i++)
