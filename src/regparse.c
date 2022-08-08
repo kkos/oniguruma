@@ -6892,6 +6892,9 @@ prs_cc(Node** np, PToken* tok, UChar** src, UChar* end, ParseEnv* env)
           goto crude_single;
         }
         else {
+          if (! ONIGENC_IS_VALID_MBC_STRING(env->enc, buf, buf + len))
+            return ONIGERR_INVALID_WIDE_CHAR_VALUE;
+
           in_code = ONIGENC_MBC_TO_CODE(env->enc, buf, bufe);
           in_type = CV_MB;
         }
