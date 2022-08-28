@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.9.8    2022/07/02
+Oniguruma Regular Expressions Version 6.9.8    2022/08/28
 
 syntax: ONIG_SYNTAX_ONIGURUMA (default syntax)
 
@@ -246,9 +246,7 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default syntax)
       graph    [[:^space:]] && ^Control && ^Unassigned && ^Surrogate
       lower    Lowercase_Letter
       print    [[:graph:]] | [[:space:]]
-      punct    Connector_Punctuation | Dash_Punctuation | Close_Punctuation |
-               Final_Punctuation | Initial_Punctuation | Other_Punctuation |
-               Open_Punctuation
+      punct    Punctuation | Symbol
       space    Space_Separator | Line_Separator | Paragraph_Separator |
                U+0009 | U+000A | U+000B | U+000C | U+000D | U+0085
       upper    Uppercase_Letter
