@@ -1687,6 +1687,12 @@ extern int main(int argc, char* argv[])
   n("(?i)\\P{Word}",       "s");
   n("(?i)\\W",             "s");
 
+  x2("[[:punct:]]", ":", 0, 1);
+  x2("[[:punct:]]", "$", 0, 1);
+  x2("[[:punct:]]+", "$+<=>^`|~", 0, 9);
+  n("[[:punct:]]", "a");
+  n("[[:punct:]]", "7");
+  x2("\\p{PosixPunct}+", "$¦", 0, 3);
 
   n("a(b|)+d", "abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcd"); /* https://www.haijin-boys.com/discussions/5079 */
   n("   \xfd", ""); /* https://bugs.php.net/bug.php?id=77370 */
