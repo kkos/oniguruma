@@ -1,14 +1,15 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # make_unicode_property_data.py
-# Copyright (c) 2016-2021  K.Kosako
+# Copyright (c) 2016-2022  K.Kosako
 
 import sys
 import re
 
 POSIX_LIST = [
-    'NEWLINE', 'Alpha', 'Blank', 'Cntrl', 'Digit', 'Graph', 'Lower',
-    'Print', 'Punct', 'Space', 'Upper', 'XDigit', 'Word', 'Alnum', 'ASCII'
+  'NEWLINE', 'Alpha', 'Blank', 'Cntrl', 'Digit', 'Graph', 'Lower',
+  'Print', 'PosixPunct', 'Space', 'Upper', 'XDigit', 'Word', 'Alnum',
+  'ASCII'
 ]
 
 MAX_CODE_POINT = 0x10ffff
@@ -384,7 +385,7 @@ def add_posix_props(dic):
   dic['Alpha']  = dic['Alphabetic']
   dic['Upper']  = dic['Uppercase']
   dic['Lower']  = dic['Lowercase']
-  dic['Punct']  = dic['P']  # P == Punctuation
+  dic['PosixPunct'] = add_ranges(dic['P'], dic['S'])  # P == Punctuation
   dic['Digit']  = dic['Nd']
   dic['XDigit'] = [(0x0030, 0x0039), (0x0041, 0x0046), (0x0061, 0x0066)]
   dic['Alnum']  = alnum
@@ -425,7 +426,7 @@ argc = len(argv)
 
 COPYRIGHT = '''
 /*-
- * Copyright (c) 2016-2021  K.Kosako
+ * Copyright (c) 2016-2022  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -523,7 +524,12 @@ print COPYRIGHT
 print ''
 
 for prop in POSIX_LIST:
-  print_property(prop, DIC[prop], "POSIX [[:%s:]]" % prop)
+  if prop == 'PosixPunct':
+    desc = "POSIX [[:punct:]]"
+  else:
+    desc = "POSIX [[:%s:]]" % prop
+
+  print_property(prop, DIC[prop], desc)
 
 print ''
 
