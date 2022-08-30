@@ -3042,6 +3042,10 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
   BYTECODE_INTERPRETER_START {
     CASE_OP(END)
+      if (OPTON_MATCH_WHOLE_STRING(options)) {
+        if (! ON_STR_END(s)) goto fail;
+      }
+
       n = (int )(s - sstart);
       if (n == 0 && OPTON_FIND_NOT_EMPTY(options)) {
         best_len = ONIG_MISMATCH;
@@ -3152,14 +3156,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
           best_len = ONIG_MISMATCH;
 
-        goto fail;
-      }
-
-      // FIXME: This doesn't solve the issue. Properly implement backtracking
-      //        to find longest match in whole string. Do we need to introduce
-      //        a phony acnhor at the end of the string?
-      if (OPTON_MATCH_WHOLE_STRING(options)) {
-        best_len = ONIG_MISMATCH;
         goto fail;
       }
 
