@@ -407,7 +407,7 @@ Oniguruma API  Version 6.9.7  2021/03/03
     ONIG_OPTION_NOT_END_STRING      Do not regard the (end) as a string endpoint  (* fail \z, \Z)
     ONIG_OPTION_NOT_BEGIN_POSITION  Do not regard the (start) as start position of search  (* fail \G)
     ONIG_OPTION_CALLBACK_EACH_MATCH Call back for all successful matches.
-
+    ONIG_OPTION_MATCH_WHOLE_STRING  Try to match the whole of (str), rather than returning after the first match is found.
 
 # int onig_match_with_param(regex_t* reg, const UChar* str, const UChar* end,
                             const UChar* at, OnigRegion* region,

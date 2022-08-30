@@ -3155,6 +3155,14 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         goto fail;
       }
 
+      // FIXME: This doesn't solve the issue. Properly implement backtracking
+      //        to find longest match in whole string. Do we need to introduce
+      //        a phony acnhor at the end of the string?
+      if (OPTON_MATCH_WHOLE_STRING(options)) {
+        best_len = ONIG_MISMATCH;
+        goto fail;
+      }
+
       /* default behavior: return first-matching result. */
       goto match_at_end;
 
@@ -5458,7 +5466,6 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
     }\
     else goto finish; /* error */ \
   }
-
 
   /* anchor optimize: resume search range */
   if (reg->anchor != 0 && str < end) {

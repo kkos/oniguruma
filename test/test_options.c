@@ -197,6 +197,10 @@ extern int main(int argc, char* argv[])
   n(ONIG_OPTION_NOT_END_STRING, "ab\\Z", "ab");
   n(ONIG_OPTION_NOT_END_STRING, "ab\\Z", "ab\n");
 
+  x2(ONIG_OPTION_NONE, "a|abc", "abc", 0, 1);
+  x2(ONIG_OPTION_NONE, "(a|abc)\\Z", "abc", 0, 3);
+  x2(ONIG_OPTION_MATCH_WHOLE_STRING, "a|abc", "abc", 0, 3);
+
   x2(ONIG_OPTION_WORD_IS_ASCII, "\\w", "@g", 1, 2);
   n(ONIG_OPTION_WORD_IS_ASCII, "\\w", "あ");
   x2(ONIG_OPTION_NONE, "\\d", "１", 0, 3);
@@ -219,6 +223,5 @@ extern int main(int argc, char* argv[])
 
   onig_region_free(region, 1);
   onig_end();
-
   return ((nfail == 0 && nerror == 0) ? 0 : -1);
 }
