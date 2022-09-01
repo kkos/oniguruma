@@ -3067,7 +3067,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
               best_len = msa->best_len; /* end of find */
             }
             else {
-              SOP_OUT;
               goto fail; /* for retry */
             }
           }
@@ -3143,14 +3142,14 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
       } /* if (region) */
 
-      SOP_OUT;
-
       if (OPTON_CALLBACK_EACH_MATCH(options) &&
           IS_NOT_NULL(CallbackEachMatch)) {
         i = CallbackEachMatch(str, end, sstart, region,
                               msa->mp->callout_user_data);
-        if (i < 0) MATCH_AT_ERROR_RETURN(i);
-
+        if (i < 0) {
+          SOP_OUT;
+          MATCH_AT_ERROR_RETURN(i);
+        }
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
         if (! OPTON_FIND_LONGEST(options))
 #endif
@@ -3160,6 +3159,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       }
 
       /* default behavior: return first-matching result. */
+      SOP_OUT;
       goto match_at_end;
 
     CASE_OP(STR_1)
