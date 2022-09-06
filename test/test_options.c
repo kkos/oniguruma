@@ -200,6 +200,7 @@ extern int main(int argc, char* argv[])
   x2(ONIG_OPTION_NONE, "a|abc", "abc", 0, 1);
   x2(ONIG_OPTION_NONE, "(a|abc)\\Z", "abc", 0, 3);
   x2(ONIG_OPTION_MATCH_WHOLE_STRING, "a|abc", "abc", 0, 3);
+  x2(ONIG_OPTION_MATCH_WHOLE_STRING, "a|abc", "a", 0, 1);
 
   x2(ONIG_OPTION_WORD_IS_ASCII, "\\w", "@g", 1, 2);
   n(ONIG_OPTION_WORD_IS_ASCII, "\\w", "あ");
