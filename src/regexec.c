@@ -3052,19 +3052,17 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         goto fail; /* for retry */
       }
 
-      if (n > best_len) {
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
-        if (OPTON_FIND_LONGEST(options)) {
+      if (OPTON_FIND_LONGEST(options)) {
+        if (n > best_len) {
           if (n > msa->best_len) {
+            best_len = n;
             msa->best_len = n;
             msa->best_s   = (UChar* )sstart;
-            if (s >= in_right_range) {
-              best_len = msa->best_len; /* end of find */
-            }
           }
           else {
             if (s >= in_right_range && msa->best_s == sstart) {
-              best_len = msa->best_len; /* end of find */
+              goto op_end_out;
             }
             else {
               goto fail; /* for retry */
@@ -3072,12 +3070,15 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
           }
         }
         else {
-          best_len = n;
+          goto fail; /* for retry */
         }
-#else
-        best_len = n;
-#endif
       }
+      else {
+        best_len = n;
+      }
+#else
+      best_len = n;
+#endif
 
       /* set region */
       region = msa->region;
@@ -3158,6 +3159,11 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         goto fail;
       }
 
+#ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
+      if (OPTON_FIND_LONGEST(options)) goto fail;
+#endif
+
+  op_end_out:
       /* default behavior: return first-matching result. */
       SOP_OUT;
       goto match_at_end;
@@ -4440,6 +4446,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
 
   STACK_SAVE(msa, is_alloca, alloc_base);
+
+#ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
+  if (OPTON_FIND_LONGEST(options)) {
+    best_len = ONIG_MISMATCH;
+  }
+#endif
+
   return best_len;
 }
 
