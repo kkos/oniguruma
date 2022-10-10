@@ -7021,8 +7021,9 @@ clear_optimize_info(regex_t* reg)
 #if defined(ONIG_DEBUG_PARSE)  || defined(ONIG_DEBUG_MATCH) || \
     defined(ONIG_DEBUG_SEARCH) || defined(ONIG_DEBUG_COMPILE)
 
-static void print_enc_string(FILE* fp, OnigEncoding enc,
-                             const UChar *s, const UChar *end)
+static void
+print_enc_string(FILE* fp, OnigEncoding enc,
+                 const UChar *s, const UChar *end)
 {
   if (ONIGENC_MBC_MINLEN(enc) > 1) {
     const UChar *p;
@@ -7043,7 +7044,17 @@ static void print_enc_string(FILE* fp, OnigEncoding enc,
   }
   else {
     while (s < end) {
-      fputc((int )*s, fp);
+      if (ONIGENC_MBC_MAXLEN(enc) == 1) {
+        if (*s >= 0x80) {
+          fprintf(fp, "\\x%02x", (unsigned int )*s);
+        }
+        else {
+          fputc((int )*s, fp);
+        }
+      }
+      else { /* for UTF-8 */
+        fputc((int )*s, fp);
+      }
       s++;
     }
   }
