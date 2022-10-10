@@ -7991,8 +7991,7 @@ detect_can_be_slow(Node* node, SlowElementCount* ct, int ncall, int calls[])
         if (ct->empty_check_nest_level > ct->max_empty_check_nest_level)
           ct->max_empty_check_nest_level = ct->empty_check_nest_level;
       }
-      else if (IS_INFINITE_REPEAT(qn->upper) ||
-               qn->upper > MANY_REPEAT_OF_ANYCHAR) {
+      else if (IS_INFINITE_REPEAT(qn->upper) || qn->upper > 0) {
         MJ_RESULT mr = mostly_just_anychar(body, (qn->greedy == 0));
         if (mr == MJ_YES)
           ct->anychar_reluctant_many++;
