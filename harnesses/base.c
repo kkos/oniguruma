@@ -315,15 +315,18 @@ static long VALID_STRING_COUNT;
 
 static int
 exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
-     char* apattern, char* apattern_end, char* astr, UChar* end, int backward,
-     int sl)
+     char* apattern, char* apattern_end,
+     char* adata_pattern, char* adata_pattern_end,
+     char* astr, UChar* end, int backward, int sl)
 {
   int r;
   regex_t* reg;
   OnigErrorInfo einfo;
-  UChar* pattern = (UChar* )apattern;
   UChar* str     = (UChar* )astr;
+  UChar* pattern = (UChar* )apattern;
   UChar* pattern_end = (UChar* )apattern_end;
+  UChar* data_pattern = (UChar* )adata_pattern;
+  UChar* data_pattern_end = (UChar* )adata_pattern_end;
 
   EXEC_COUNT++;
   EXEC_COUNT_INTERVAL++;
@@ -357,7 +360,7 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   }
   REGEX_SUCCESS_COUNT++;
 
-  r = search(reg, pattern, pattern_end, options, backward, sl);
+  r = search(reg, data_pattern, data_pattern_end, options, backward, sl);
   if (r == -2) return -2;
 
   if (onigenc_is_valid_mbc_string(enc, str, end) != 0) {
@@ -381,16 +384,20 @@ alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   int sl;
   unsigned char *pattern;
   unsigned char *pattern_end;
+  unsigned char *data_pattern;
+  unsigned char *data_pattern_end;
   unsigned char *str_null_end;
+
+  pattern = (unsigned char *)malloc(pattern_size != 0 ? pattern_size : 1);
+  memcpy(pattern, data, pattern_size);
+  pattern_end = pattern + pattern_size;
+  data_pattern = pattern;
+  data_pattern_end = pattern_end;
 
 #ifdef TEST_PATTERN
   pattern = (unsigned char *)malloc(sizeof(TestPattern));
   memcpy(pattern, TestPattern, sizeof(TestPattern));
   pattern_end = pattern + sizeof(TestPattern);
-#else
-  pattern = (unsigned char *)malloc(pattern_size != 0 ? pattern_size : 1);
-  memcpy(pattern, data, pattern_size);
-  pattern_end = pattern + pattern_size;
 #endif
 
   data += pattern_size;
@@ -428,8 +435,12 @@ alloc_exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
 
   r = exec(enc, options, syntax,
            (char *)pattern, (char *)pattern_end,
+           (char *)data_pattern, (char *)data_pattern_end,
            (char *)str, str_null_end, backward, sl);
 
+#ifdef TEST_PATTERN
+  free(data_pattern);
+#endif
   free(pattern);
   free(str);
   return r;
