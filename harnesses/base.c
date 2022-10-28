@@ -1,6 +1,6 @@
 /*
  * base.c  contributed by Mark Griffin
- * Copyright (c) 2019-2021  K.Kosako
+ * Copyright (c) 2019-2022  K.Kosako
  */
 #include <stdio.h>
 #include <unistd.h>
@@ -247,16 +247,17 @@ search(regex_t* reg, unsigned char* str, unsigned char* end, OnigOptionType opti
   len = (size_t )(end - str);
   retry_limit = calc_retry_limit(sl, len);
 
-#ifdef STANDALONE
-  fprintf(stdout, "retry limit: %u\n", retry_limit);
-#endif
-
   onig_set_retry_limit_in_search(retry_limit);
   onig_set_match_stack_limit_size(MATCH_STACK_LIMIT);
   if (sl >= 2)
     onig_set_subexp_call_limit_in_search(SLOW_SUBEXP_CALL_LIMIT);
   else
     onig_set_subexp_call_limit_in_search(SUBEXP_CALL_LIMIT);
+
+#ifdef STANDALONE
+  fprintf(stdout, "retry limit: %u\n", retry_limit);
+  fprintf(stdout, "end - str: %td\n", end - str);
+#endif
 
   if (backward != 0) {
     start = end;
