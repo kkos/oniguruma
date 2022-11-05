@@ -361,8 +361,11 @@ exec(OnigEncoding enc, OnigOptionType options, OnigSyntaxType* syntax,
   }
   REGEX_SUCCESS_COUNT++;
 
-  r = search(reg, data_pattern, data_pattern_end, options, backward, sl);
-  if (r == -2) return -2;
+  if (data_pattern == pattern ||
+      onigenc_is_valid_mbc_string(enc, data_pattern, data_pattern_end) != 0) {
+    r = search(reg, data_pattern, data_pattern_end, options, backward, sl);
+    if (r == -2) return -2;
+  }
 
   if (onigenc_is_valid_mbc_string(enc, str, end) != 0) {
     VALID_STRING_COUNT++;
