@@ -1644,6 +1644,8 @@ extern int main(int argc, char* argv[])
   e("(?Ii)|(?Ii)", "", ONIGERR_INVALID_GROUP_OPTION);
   x2("a*", "aabcaaa", 0, 2);
   x2("(?L)a*", "aabcaaa", 4, 7);
+  x2("(?L)a{4}|a{3}|b*", "baaaaabbb", 1, 5);
+  x2("(?L)a{3}|a{4}|b*", "baaaaabbb", 1, 5);
   e("x(?L)xxxxx", "", ONIGERR_INVALID_GROUP_OPTION);
   e("(?-L)x", "", ONIGERR_INVALID_GROUP_OPTION);
   x3("(..)\\1", "abab", 0, 2, 1);
