@@ -4412,6 +4412,11 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
 
     CASE_OP(FINISH)
+#ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
+      if (OPTON_FIND_LONGEST(options)) {
+        best_len = ONIG_MISMATCH;
+      }
+#endif
       goto match_at_end;
 
 #ifdef ONIG_DEBUG_STATISTICS
@@ -4446,13 +4451,6 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
 
   STACK_SAVE(msa, is_alloca, alloc_base);
-
-#ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
-  if (OPTON_FIND_LONGEST(options)) {
-    best_len = ONIG_MISMATCH;
-  }
-#endif
-
   return best_len;
 }
 
