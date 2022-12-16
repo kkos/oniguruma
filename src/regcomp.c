@@ -887,7 +887,7 @@ add_op(regex_t* reg, int opcode)
   return 0;
 }
 
-static int compile_length_tree(Node* node, regex_t* reg);
+static int compile_length_tree(Node* node, regex_t* reg, ParseEnv* env);
 static int compile_tree(Node* node, regex_t* reg, ParseEnv* env);
 
 
@@ -1322,12 +1322,12 @@ is_anychar_infinite_greedy(QuantNode* qn)
 #define CKN_ON   (ckn > 0)
 
 static int
-compile_length_quantifier_node(QuantNode* qn, regex_t* reg)
+compile_length_quantifier_node(QuantNode* qn, regex_t* reg, ParseEnv* env)
 {
   int len, mod_tlen;
   int infinite = IS_INFINITE_REPEAT(qn->upper);
   enum BodyEmptyType emptiness = qn->emptiness;
-  int tlen = compile_length_tree(ND_QUANT_BODY(qn), reg);
+  int tlen = compile_length_tree(ND_QUANT_BODY(qn), reg, env);
 
   if (tlen < 0) return tlen;
   if (tlen == 0) return 0;
@@ -1401,7 +1401,7 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ParseEnv* env)
   int i, r, mod_tlen;
   int infinite = IS_INFINITE_REPEAT(qn->upper);
   enum BodyEmptyType emptiness = qn->emptiness;
-  int tlen = compile_length_tree(ND_QUANT_BODY(qn), reg);
+  int tlen = compile_length_tree(ND_QUANT_BODY(qn), reg, env);
 
   if (tlen < 0) return tlen;
   if (tlen == 0) return 0;
@@ -1566,11 +1566,11 @@ compile_quantifier_node(QuantNode* qn, regex_t* reg, ParseEnv* env)
 }
 
 static int
-compile_length_option_node(BagNode* node, regex_t* reg)
+compile_length_option_node(BagNode* node, regex_t* reg, ParseEnv* env)
 {
   int tlen;
 
-  tlen = compile_length_tree(ND_BAG_BODY(node), reg);
+  tlen = compile_length_tree(ND_BAG_BODY(node), reg, env);
 
   return tlen;
 }
@@ -1586,16 +1586,16 @@ compile_option_node(BagNode* node, regex_t* reg, ParseEnv* env)
 }
 
 static int
-compile_length_bag_node(BagNode* node, regex_t* reg)
+compile_length_bag_node(BagNode* node, regex_t* reg, ParseEnv* env)
 {
   int len;
   int tlen;
 
   if (node->type == BAG_OPTION)
-    return compile_length_option_node(node, reg);
+    return compile_length_option_node(node, reg, env);
 
   if (ND_BAG_BODY(node)) {
-    tlen = compile_length_tree(ND_BAG_BODY(node), reg);
+    tlen = compile_length_tree(ND_BAG_BODY(node), reg, env);
     if (tlen < 0) return tlen;
   }
   else
@@ -1644,7 +1644,7 @@ compile_length_bag_node(BagNode* node, regex_t* reg)
       QuantNode* qn;
 
       qn = QUANT_(ND_BAG_BODY(node));
-      tlen = compile_length_tree(ND_QUANT_BODY(qn), reg);
+      tlen = compile_length_tree(ND_QUANT_BODY(qn), reg, env);
       if (tlen < 0) return tlen;
 
       v = onig_positive_int_multiply(qn->lower, tlen);
@@ -1662,12 +1662,12 @@ compile_length_bag_node(BagNode* node, regex_t* reg)
       Node* Then = node->te.Then;
       Node* Else = node->te.Else;
 
-      len = compile_length_tree(cond, reg);
+      len = compile_length_tree(cond, reg, env);
       if (len < 0) return len;
       len += OPSIZE_PUSH + OPSIZE_MARK + OPSIZE_CUT_TO_MARK;
 
       if (IS_NOT_NULL(Then)) {
-        tlen = compile_length_tree(Then, reg);
+        tlen = compile_length_tree(Then, reg, env);
         if (tlen < 0) return tlen;
         len += tlen;
       }
@@ -1675,7 +1675,7 @@ compile_length_bag_node(BagNode* node, regex_t* reg)
       len += OPSIZE_JUMP + OPSIZE_CUT_TO_MARK;
 
       if (IS_NOT_NULL(Else)) {
-        tlen = compile_length_tree(Else, reg);
+        tlen = compile_length_tree(Else, reg, env);
         if (tlen < 0) return tlen;
         len += tlen;
       }
@@ -1712,7 +1712,7 @@ compile_bag_memory_node(BagNode* node, regex_t* reg, ParseEnv* env)
     COP(reg)->call.addr = (int )node->m.called_addr;
 
     if (node->m.regnum == 0) {
-      len = compile_length_tree(ND_BAG_BODY(node), reg);
+      len = compile_length_tree(ND_BAG_BODY(node), reg, env);
       len += OPSIZE_RETURN;
 
       r = add_op(reg, OP_JUMP);
@@ -1726,7 +1726,7 @@ compile_bag_memory_node(BagNode* node, regex_t* reg, ParseEnv* env)
       return r;
     }
     else {
-      len = compile_length_tree(ND_BAG_BODY(node), reg);
+      len = compile_length_tree(ND_BAG_BODY(node), reg, env);
       len += (OPSIZE_MEM_START_PUSH + OPSIZE_RETURN);
       if (MEM_STATUS_AT0(reg->push_mem_end, node->m.regnum))
         len += (ND_IS_RECURSION(node)
@@ -1795,7 +1795,7 @@ compile_bag_node(BagNode* node, regex_t* reg, ParseEnv* env)
       r = compile_tree_n_times(ND_QUANT_BODY(qn), qn->lower, reg, env);
       if (r != 0) return r;
 
-      len = compile_length_tree(ND_QUANT_BODY(qn), reg);
+      len = compile_length_tree(ND_QUANT_BODY(qn), reg, env);
       if (len < 0) return len;
 
       r = add_op(reg, OP_PUSH);
@@ -1844,10 +1844,10 @@ compile_bag_node(BagNode* node, regex_t* reg, ParseEnv* env)
       COP(reg)->mark.id = mid;
       COP(reg)->mark.save_pos = 0;
 
-      cond_len = compile_length_tree(cond, reg);
+      cond_len = compile_length_tree(cond, reg, env);
       if (cond_len < 0) return cond_len;
       if (IS_NOT_NULL(Then)) {
-        then_len = compile_length_tree(Then, reg);
+        then_len = compile_length_tree(Then, reg, env);
         if (then_len < 0) return then_len;
       }
       else
@@ -1872,7 +1872,7 @@ compile_bag_node(BagNode* node, regex_t* reg, ParseEnv* env)
       }
 
       if (IS_NOT_NULL(Else)) {
-        else_len = compile_length_tree(Else, reg);
+        else_len = compile_length_tree(Else, reg, env);
         if (else_len < 0) return else_len;
       }
       else
@@ -1902,13 +1902,13 @@ compile_bag_node(BagNode* node, regex_t* reg, ParseEnv* env)
 }
 
 static int
-compile_length_anchor_node(AnchorNode* node, regex_t* reg)
+compile_length_anchor_node(AnchorNode* node, regex_t* reg, ParseEnv* env)
 {
   int len;
   int tlen = 0;
 
   if (IS_NOT_NULL(ND_ANCHOR_BODY(node))) {
-    tlen = compile_length_tree(ND_ANCHOR_BODY(node), reg);
+    tlen = compile_length_tree(ND_ANCHOR_BODY(node), reg, env);
     if (tlen < 0) return tlen;
   }
 
@@ -1926,7 +1926,7 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
       len = OPSIZE_SAVE_VAL + OPSIZE_UPDATE_VAR + OPSIZE_MARK + OPSIZE_PUSH + OPSIZE_UPDATE_VAR + OPSIZE_FAIL + OPSIZE_JUMP + OPSIZE_STEP_BACK_START + OPSIZE_STEP_BACK_NEXT + tlen + OPSIZE_CHECK_POSITION + OPSIZE_CUT_TO_MARK + OPSIZE_UPDATE_VAR;
 
       if (IS_NOT_NULL(node->lead_node)) {
-        int llen = compile_length_tree(node->lead_node, reg);
+        int llen = compile_length_tree(node->lead_node, reg, env);
         if (llen < 0) return llen;
 
         len += OPSIZE_MOVE + llen;
@@ -1940,7 +1940,7 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg)
       len = OPSIZE_SAVE_VAL + OPSIZE_UPDATE_VAR + OPSIZE_MARK + OPSIZE_PUSH + OPSIZE_STEP_BACK_START + OPSIZE_STEP_BACK_NEXT + tlen + OPSIZE_CHECK_POSITION + OPSIZE_POP_TO_MARK + OPSIZE_UPDATE_VAR + OPSIZE_POP + OPSIZE_FAIL + OPSIZE_UPDATE_VAR + OPSIZE_POP + OPSIZE_POP;
 
       if (IS_NOT_NULL(node->lead_node)) {
-        int llen = compile_length_tree(node->lead_node, reg);
+        int llen = compile_length_tree(node->lead_node, reg, env);
         if (llen < 0) return llen;
 
         len += OPSIZE_MOVE + llen;
@@ -2090,7 +2090,7 @@ compile_anchor_look_behind_not_node(AnchorNode* node, regex_t* reg,
   int r;
   int len;
 
-  len = compile_length_tree(ND_ANCHOR_BODY(node), reg);
+  len = compile_length_tree(ND_ANCHOR_BODY(node), reg, env);
 
   if (node->char_min_len == node->char_max_len) {
     MemNumType mid;
@@ -2149,7 +2149,7 @@ compile_anchor_look_behind_not_node(AnchorNode* node, regex_t* reg,
       int clen;
       MinMaxCharLen ci;
 
-      clen = compile_length_tree(node->lead_node, reg);
+      clen = compile_length_tree(node->lead_node, reg, env);
       COP(reg)->push.addr += OPSIZE_MOVE + clen;
 
       r = node_char_len(node->lead_node, reg, &ci, env);
@@ -2292,7 +2292,7 @@ compile_anchor_node(AnchorNode* node, regex_t* reg, ParseEnv* env)
 
   case ANCR_PREC_READ_NOT:
     {
-      len = compile_length_tree(ND_ANCHOR_BODY(node), reg);
+      len = compile_length_tree(ND_ANCHOR_BODY(node), reg, env);
       if (len < 0) return len;
 
       ID_ENTRY(env, mid);
@@ -2434,7 +2434,7 @@ compile_length_gimmick_node(GimmickNode* node, regex_t* reg)
 }
 
 static int
-compile_length_tree(Node* node, regex_t* reg)
+compile_length_tree(Node* node, regex_t* reg, ParseEnv* env)
 {
   int len, r;
 
@@ -2442,7 +2442,7 @@ compile_length_tree(Node* node, regex_t* reg)
   case ND_LIST:
     len = 0;
     do {
-      r = compile_length_tree(ND_CAR(node), reg);
+      r = compile_length_tree(ND_CAR(node), reg, env);
       if (r < 0) return r;
       len += r;
     } while (IS_NOT_NULL(node = ND_CDR(node)));
@@ -2455,7 +2455,7 @@ compile_length_tree(Node* node, regex_t* reg)
 
       n = r = 0;
       do {
-        r += compile_length_tree(ND_CAR(node), reg);
+        r += compile_length_tree(ND_CAR(node), reg, env);
         n++;
       } while (IS_NOT_NULL(node = ND_CDR(node)));
       r += (OPSIZE_PUSH + OPSIZE_JUMP) * (n - 1);
@@ -2488,15 +2488,15 @@ compile_length_tree(Node* node, regex_t* reg)
 #endif
 
   case ND_QUANT:
-    r = compile_length_quantifier_node(QUANT_(node), reg);
+    r = compile_length_quantifier_node(QUANT_(node), reg, env);
     break;
 
   case ND_BAG:
-    r = compile_length_bag_node(BAG_(node), reg);
+    r = compile_length_bag_node(BAG_(node), reg, env);
     break;
 
   case ND_ANCHOR:
-    r = compile_length_anchor_node(ANCHOR_(node), reg);
+    r = compile_length_anchor_node(ANCHOR_(node), reg, env);
     break;
 
   case ND_GIMMICK:
@@ -2528,7 +2528,7 @@ compile_tree(Node* node, regex_t* reg, ParseEnv* env)
       Node* x = node;
       len = 0;
       do {
-        len += compile_length_tree(ND_CAR(x), reg);
+        len += compile_length_tree(ND_CAR(x), reg, env);
         if (IS_NOT_NULL(ND_CDR(x))) {
           len += OPSIZE_PUSH + OPSIZE_JUMP;
         }
@@ -2536,7 +2536,7 @@ compile_tree(Node* node, regex_t* reg, ParseEnv* env)
       pos = COP_CURR_OFFSET(reg) + 1 + len;  /* goal position */
 
       do {
-        len = compile_length_tree(ND_CAR(node), reg);
+        len = compile_length_tree(ND_CAR(node), reg, env);
         if (IS_NOT_NULL(ND_CDR(node))) {
           enum OpCode push = ND_IS_SUPER(node) ? OP_PUSH_SUPER : OP_PUSH;
           r = add_op(reg, push);
