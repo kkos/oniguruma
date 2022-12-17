@@ -1931,6 +1931,9 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg, ParseEnv* env)
 
         len += OPSIZE_MOVE + llen;
       }
+
+      if ((env->flags & PE_FLAG_HAS_ABSENT_STOPPER) != 0)
+        len += OPSIZE_SAVE_VAL + OPSIZE_UPDATE_VAR;
     }
     break;
   case ANCR_LOOK_BEHIND_NOT:
@@ -1945,6 +1948,9 @@ compile_length_anchor_node(AnchorNode* node, regex_t* reg, ParseEnv* env)
 
         len += OPSIZE_MOVE + llen;
       }
+
+      if ((env->flags & PE_FLAG_HAS_ABSENT_STOPPER) != 0)
+        len += OPSIZE_SAVE_VAL + OPSIZE_UPDATE_VAR;
     }
     break;
 
@@ -1999,7 +2005,7 @@ compile_anchor_look_behind_node(AnchorNode* node, regex_t* reg, ParseEnv* env)
     COP(reg)->cut_to_mark.restore_pos = FALSE;
   }
   else {
-    MemNumType mid1, mid2;
+    MemNumType mid1, mid2, mid3;
     OnigLen diff;
 
     if (IS_NOT_NULL(node->lead_node)) {
@@ -2046,6 +2052,14 @@ compile_anchor_look_behind_node(AnchorNode* node, regex_t* reg, ParseEnv* env)
     r = add_op(reg, OP_FAIL);
     if (r != 0) return r;
 
+    if ((env->flags & PE_FLAG_HAS_ABSENT_STOPPER) != 0) {
+      ID_ENTRY(env, mid3);
+      r = add_op(reg, OP_SAVE_VAL);
+      if (r != 0) return r;
+      COP(reg)->save_val.type = SAVE_RIGHT_RANGE;
+      COP(reg)->save_val.id   = mid3;
+    }
+
     r = add_op(reg, OP_STEP_BACK_START);
     if (r != 0) return r;
 
@@ -2063,6 +2077,14 @@ compile_anchor_look_behind_node(AnchorNode* node, regex_t* reg, ParseEnv* env)
 
     r = compile_tree(ND_ANCHOR_BODY(node), reg, env);
     if (r != 0) return r;
+
+    if ((env->flags & PE_FLAG_HAS_ABSENT_STOPPER) != 0) {
+      r = add_op(reg, OP_UPDATE_VAR);
+      if (r != 0) return r;
+      COP(reg)->update_var.type = UPDATE_VAR_RIGHT_RANGE_FROM_STACK;
+      COP(reg)->update_var.id    = mid3;
+      COP(reg)->update_var.clear = FALSE;
+    }
 
     r = add_op(reg, OP_CHECK_POSITION);
     if (r != 0) return r;
@@ -2122,7 +2144,7 @@ compile_anchor_look_behind_not_node(AnchorNode* node, regex_t* reg,
     r = add_op(reg, OP_POP);
   }
   else {
-    MemNumType mid1, mid2;
+    MemNumType mid1, mid2, mid3;
     OnigLen diff;
 
     ID_ENTRY(env, mid1);
@@ -2143,7 +2165,10 @@ compile_anchor_look_behind_not_node(AnchorNode* node, regex_t* reg,
 
     r = add_op(reg, OP_PUSH);
     if (r != 0) return r;
+
     COP(reg)->push.addr = SIZE_INC + OPSIZE_STEP_BACK_START + OPSIZE_STEP_BACK_NEXT + len + OPSIZE_CHECK_POSITION + OPSIZE_POP_TO_MARK + OPSIZE_UPDATE_VAR + OPSIZE_POP + OPSIZE_FAIL;
+    if ((env->flags & PE_FLAG_HAS_ABSENT_STOPPER) != 0)
+      COP(reg)->push.addr += OPSIZE_SAVE_VAL + OPSIZE_UPDATE_VAR;
 
     if (IS_NOT_NULL(node->lead_node)) {
       int clen;
@@ -2160,6 +2185,14 @@ compile_anchor_look_behind_not_node(AnchorNode* node, regex_t* reg,
 
       r = compile_tree(node->lead_node, reg, env);
       if (r != 0) return r;
+    }
+
+    if ((env->flags & PE_FLAG_HAS_ABSENT_STOPPER) != 0) {
+      ID_ENTRY(env, mid3);
+      r = add_op(reg, OP_SAVE_VAL);
+      if (r != 0) return r;
+      COP(reg)->save_val.type = SAVE_RIGHT_RANGE;
+      COP(reg)->save_val.id   = mid3;
     }
 
     r = add_op(reg, OP_STEP_BACK_START);
@@ -2179,6 +2212,14 @@ compile_anchor_look_behind_not_node(AnchorNode* node, regex_t* reg,
 
     r = compile_tree(ND_ANCHOR_BODY(node), reg, env);
     if (r != 0) return r;
+
+    if ((env->flags & PE_FLAG_HAS_ABSENT_STOPPER) != 0) {
+      r = add_op(reg, OP_UPDATE_VAR);
+      if (r != 0) return r;
+      COP(reg)->update_var.type = UPDATE_VAR_RIGHT_RANGE_FROM_STACK;
+      COP(reg)->update_var.id    = mid3;
+      COP(reg)->update_var.clear = FALSE;
+    }
 
     r = add_op(reg, OP_CHECK_POSITION);
     if (r != 0) return r;
