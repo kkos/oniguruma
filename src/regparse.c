@@ -7810,6 +7810,7 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
             PINC;
             r = make_range_clear(np, env);
             if (r != 0) return r;
+            env->flags |= PE_FLAG_HAS_ABSENT_STOPPER;
             goto end;
           }
         }
@@ -7831,7 +7832,7 @@ prs_bag(Node** np, PToken* tok, int term, UChar** src, UChar* end,
           if (ND_TYPE(top) != ND_ALT || IS_NULL(ND_CDR(top))) {
             expr = NULL_NODE;
             is_range_cutter = 1;
-            /* return ONIGERR_INVALID_ABSENT_GROUP_GENERATOR_PATTERN; */
+            env->flags |= PE_FLAG_HAS_ABSENT_STOPPER;
           }
           else {
             absent = ND_CAR(top);
