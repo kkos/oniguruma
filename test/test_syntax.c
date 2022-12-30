@@ -259,6 +259,30 @@ static int test_python_single_multi()
   return 0;
 }
 
+static int test_BRE_anchors()
+{
+  x2("a\\^b", "a^b", 0, 3);
+  x2("a^b", "a^b", 0, 3);
+  x2("a\\$b", "a$b", 0, 3);
+  x2("a$b", "a$b", 0, 3);
+
+  x2("^ab", "ab", 0, 2);
+  x2("(^ab)", "(^ab)", 0, 5);
+  x2("\\(^ab\\)", "ab", 0, 2);
+  x2("\\\\(^ab\\\\)", "\\(^ab\\)", 0, 7);
+  n("\\\\\\(^ab\\\\\\)", "\\ab\\");
+  x2("^\\\\\\(ab\\\\\\)", "\\ab\\", 0, 4);
+
+  x2("ab$", "ab", 0, 2);
+  x2("(ab$)", "(ab$)", 0, 5);
+  x2("\\(ab$\\)", "ab", 0, 2);
+  x2("\\\\(ab$\\\\)", "\\(ab$\\)", 0, 7);
+  n("\\\\\\(ab$\\\\\\)", "\\ab\\");
+  x2("\\\\\\(ab\\\\\\)$", "\\ab\\", 0, 4);
+
+  return 0;
+}
+
 extern int main(int argc, char* argv[])
 {
   OnigEncoding use_encs[1];
@@ -309,6 +333,13 @@ extern int main(int argc, char* argv[])
   x2("\\U00000041", "A", 0, 1);
   e("\\U0041", "A", ONIGERR_INVALID_CODE_POINT_VALUE);
 
+  Syntax = ONIG_SYNTAX_POSIX_BASIC;
+  test_BRE_anchors();
+
+  Syntax = ONIG_SYNTAX_GREP;
+  test_BRE_anchors();
+  x2("zz\\|^ab", "ab", 0, 2);
+  x2("ab$\\|zz", "ab", 0, 2);
 
   fprintf(stdout,
        "\nRESULT   SUCC: %4d,  FAIL: %d,  ERROR: %d      (by Oniguruma %s)\n",
