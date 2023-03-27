@@ -341,6 +341,15 @@ extern int main(int argc, char* argv[])
   x2("zz\\|^ab", "ab", 0, 2);
   x2("ab$\\|zz", "ab", 0, 2);
 
+  Syntax = ONIG_SYNTAX_PERL_NG;
+
+  x2("(?i)test", "test", 0, 4);
+  x2("(?-i)test", "test", 0, 4);
+  x2("(?i)test", "TEST", 0, 4);
+  n("(?-i)test", "teSt");
+  x2("(?i)te(?-i)st", "TEst", 0, 4);
+  n("(?i)te(?-i)st", "TesT");
+
   fprintf(stdout,
        "\nRESULT   SUCC: %4d,  FAIL: %d,  ERROR: %d      (by Oniguruma %s)\n",
        nsucc, nfail, nerror, onig_version());
