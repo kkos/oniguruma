@@ -6264,6 +6264,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ParseEnv* env)
               }
               break;
             }
+            break;
           }
           else if (c == 'P' &&
                    IS_SYNTAX_OP2(env->syntax, ONIG_SYN_OP2_QMARK_CAPITAL_P_NAME)) {
