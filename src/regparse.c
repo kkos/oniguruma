@@ -2,7 +2,7 @@
   regparse.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2022  K.Kosako
+ * Copyright (c) 2002-2023  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -6218,8 +6218,20 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ParseEnv* env)
 
             case '-':
             case '+':
-              goto lparen_qmark_num;
+              if (! PEND) {
+                PINC;
+                if (! PEND) {
+                  c = PPEEK;
+                  if (ONIGENC_IS_CODE_DIGIT(enc, c)) {
+                    PUNFETCH;
+                    goto lparen_qmark_num;
+                  }
+                }
+              }
+              p = prev;
+              goto lparen_qmark_end2;
               break;
+
             default:
               if (! ONIGENC_IS_CODE_DIGIT(enc, c)) goto lparen_qmark_end;
 
