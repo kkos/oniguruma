@@ -350,6 +350,10 @@ extern int main(int argc, char* argv[])
   x2("(?i)te(?-i)st", "TEst", 0, 4);
   n("(?i)te(?-i)st", "TesT");
 
+  x2("(abc)(?-1)", "abcabc", 0, 6);
+  x2("(?+1)(abc)", "abcabc", 0, 6);
+  x2("(abc)(?1)", "abcabc", 0, 6);
+
   fprintf(stdout,
        "\nRESULT   SUCC: %4d,  FAIL: %d,  ERROR: %d      (by Oniguruma %s)\n",
        nsucc, nfail, nerror, onig_version());
