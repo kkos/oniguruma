@@ -2,7 +2,7 @@
   utf16_le.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2020  K.Kosako
+ * Copyright (c) 2002-2023  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -232,7 +232,7 @@ utf16le_left_adjust_char_head(const UChar* start, const UChar* s)
 {
   if (s <= start) return (UChar* )s;
 
-  if ((s - start) % 2 == 1) {
+  if ((s - start) % 2 != 0) {
     s--;
   }
 
