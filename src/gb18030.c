@@ -2,7 +2,7 @@
   gb18030.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2005-2020  KUBO Takehiro <kubo AT jiubao DOT org>
+ * Copyright (c) 2005-2023  KUBO Takehiro <kubo AT jiubao DOT org>
  *                          K.Kosako
  * All rights reserved.
  *
@@ -180,7 +180,7 @@ gb18030_is_code_ctype(OnigCodePoint code, unsigned int ctype)
 
 enum state {
   S_START = 0,
-  S_one_C2 = 1,
+  S_one_C2,
   S_one_C4,
   S_one_CM,
 

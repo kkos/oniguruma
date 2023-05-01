@@ -4336,7 +4336,7 @@ quantifier_type_num(QuantNode* q)
 
 enum ReduceType {
   RQ_ASIS = 0, /* as is */
-  RQ_DEL  = 1, /* delete parent */
+  RQ_DEL,      /* delete parent */
   RQ_A,        /* to '*'    */
   RQ_P,        /* to '+'    */
   RQ_AQ,       /* to '*?'   */
@@ -4473,7 +4473,7 @@ node_new_general_newline(Node** node, ParseEnv* env)
 
 enum TokenSyms {
   TK_EOT      = 0,   /* end of token */
-  TK_CRUDE_BYTE = 1,
+  TK_CRUDE_BYTE,
   TK_CHAR,
   TK_STRING,
   TK_CODE_POINT,
