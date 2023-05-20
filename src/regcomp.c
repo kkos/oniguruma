@@ -2,7 +2,7 @@
   regcomp.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2022  K.Kosako
+ * Copyright (c) 2002-2023  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -3290,8 +3290,12 @@ get_tree_head_literal(Node* node, int exact, regex_t* reg)
       case BAG_OPTION:
       case BAG_MEMORY:
       case BAG_STOP_BACKTRACK:
-      case BAG_IF_ELSE:
         n = get_tree_head_literal(ND_BODY(node), exact, reg);
+        break;
+
+      case BAG_IF_ELSE:
+        if (IS_NULL(BAG_(node)->te.Else))
+          n = get_tree_head_literal(ND_BODY(node), exact, reg);
         break;
       }
     }
