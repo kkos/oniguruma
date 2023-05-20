@@ -1696,6 +1696,26 @@ extern int main(int argc, char* argv[])
   n("[[:punct:]]", "7");
   x2("\\p{PosixPunct}+", "$¦", 0, 3);
 
+  x2("\\A.*\\R", "\n", 0, 1);
+  x2("\\A\\O*\\R", "\n", 0, 1);
+  x2("\\A\\n*\\R", "\n", 0, 1);
+  x2("\\A\\R*\\R", "\n", 0, 1);
+  x2("\\At*\\R", "\n", 0, 1);
+
+  x2("\\A.{0,99}\\R", "\n", 0, 1);
+  x2("\\A\\O{0,99}\\R", "\n", 0, 1);
+  x2("\\A\\n{0,99}\\R", "\n", 0, 1);
+  x2("\\A\\R{0,99}\\R", "\n", 0, 1);
+  x2("\\At{0,99}\\R", "\n", 0, 1);
+
+  x2("\\A.*\\n", "\n", 0, 1);       //  \n
+  x2("\\A.{0,99}\\n", "\n", 0, 1);
+  x2("\\A.*\\O", "\n", 0, 1);       //  \O
+  x2("\\A.{0,99}\\O", "\n", 0, 1);
+  x2("\\A.*\\s", "\n", 0, 1);       //  \s
+  x2("\\A.{0,99}\\s", "\n", 0, 1);
+
+
   n("a(b|)+d", "abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcd"); /* https://www.haijin-boys.com/discussions/5079 */
   n("   \xfd", ""); /* https://bugs.php.net/bug.php?id=77370 */
   /* can't use \xfc00.. because compiler error: hex escape sequence out of range */
