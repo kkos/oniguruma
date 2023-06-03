@@ -3292,10 +3292,7 @@ get_tree_head_literal(Node* node, int exact, regex_t* reg)
       case BAG_STOP_BACKTRACK:
         n = get_tree_head_literal(ND_BODY(node), exact, reg);
         break;
-
-      case BAG_IF_ELSE:
-        if (IS_NULL(BAG_(node)->te.Else))
-          n = get_tree_head_literal(ND_BODY(node), exact, reg);
+      default:
         break;
       }
     }
