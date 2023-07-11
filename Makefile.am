@@ -35,7 +35,7 @@ oniguruma.pc: $(srcdir)/oniguruma.pc.in Makefile
 
 pkgconfigdir   = $(libdir)/pkgconfig
 pkgconfig_DATA = oniguruma.pc
-
+DISTCLEANFILES = oniguruma.pc
 
 all-test:
 	cd test; make test
