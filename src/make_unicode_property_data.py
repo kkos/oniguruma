@@ -184,7 +184,7 @@ def merge_props(to_dic, from_dic):
   from_keys = from_dic.keys()
   common = list(set(to_keys) & set(from_keys))
   if len(common) != 0:
-    print("merge_dic: collision: %s" % sorted(common), file=sys.stderr)
+    print("merge_props: collision: %s" % sorted(common), file=sys.stderr)
 
   for k in from_keys:
     to_dic[k] = True
