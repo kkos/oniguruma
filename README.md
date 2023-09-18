@@ -1,6 +1,4 @@
-[![Build Status](https://travis-ci.org/kkos/oniguruma.svg?branch=master)](https://travis-ci.org/kkos/oniguruma)
 [![Fuzzing Status](https://oss-fuzz-build-logs.storage.googleapis.com/badges/oniguruma.svg)](https://oss-fuzz-build-logs.storage.googleapis.com/index.html#oniguruma)
-[![TrustInSoft CI](https://ci.trust-in-soft.com/projects/kkos/oniguruma.svg?branch=master)](https://ci.trust-in-soft.com/projects/kkos/oniguruma)
 
 Oniguruma
 =========
