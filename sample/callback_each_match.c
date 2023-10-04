@@ -93,7 +93,7 @@ static int
 match(UChar* pattern, UChar* str, UChar* at, OnigOptionType options, OnigOptionType runtime_options)
 {
   int r;
-  unsigned char *start, *range, *end;
+  unsigned char *end;
   regex_t* reg;
   OnigErrorInfo einfo;
   OnigRegion *region;
@@ -112,8 +112,6 @@ match(UChar* pattern, UChar* str, UChar* at, OnigOptionType options, OnigOptionT
   region = onig_region_new();
 
   end   = str + strlen((char* )str);
-  start = str;
-  range = end;
   mp = onig_new_match_param();
   if (mp == 0) return -2;
 
