@@ -33,7 +33,7 @@ Notice (from 6.9.6)
 When using configure script, if you have the POSIX API enabled in an earlier version (disabled by default in 6.9.5) and you need application binary compatibility with the POSIX API, specify "--enable-binary-compatible-posix-api=yes" instead of "--enable-posix-api=yes". Starting in 6.9.6, "--enable-posix-api=yes" only supports source-level compatibility for 6.9.5 and earlier about POSIX API. (Issue #210)
 
 
-Master branch
+Version 6.9.9
 -------------
 * Update Unicode version 15.1.0
 * NEW API: ONIG_OPTION_MATCH_WHOLE_STRING
@@ -71,24 +71,6 @@ Version 6.9.6
 * Fixed many problems found by Coverity
 * Fixed CVE-2020-26159 (This turned out not to be a problem later. #221)
 * Under cygwin and mingw, generate and install the libonig.def file (Issue #220)
-
-
-Version 6.9.5 revised 1
------------------------
-
-* Fixed Issue #192
-
-
-Version 6.9.5
--------------
-
-* POSIX API disabled by default for Unix (* Enabled by: configure --enable-posix-api=yes)
-* Update Unicode version 13.0.0
-* NEW: Code point sequence notation \x{HHHH HHHH ...}, \o{OOOO OOOO ...}
-* NEW API: retry limit in search functions
-* NEW API: maximum nesting level of subexp call
-* Fixed behavior of isolated options in Perl and Java syntaxes.  /...(?i).../
-
 
 
 License
