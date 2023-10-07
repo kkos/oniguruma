@@ -247,5 +247,7 @@ install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/onig-config
 # Test
 if(BUILD_TEST)
   add_subdirectory(test)
-  add_subdirectory(windows)
+  if (NOT APPLE)
+    add_subdirectory(windows)
+  endif()
 endif(BUILD_TEST)
