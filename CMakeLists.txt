@@ -247,7 +247,7 @@ install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/onig-config
 # Test
 if(BUILD_TEST)
   add_subdirectory(test)
-  if (NOT APPLE)
+  if(CMAKE_COMPILER_IS_GNUCC)
     add_subdirectory(windows)
   endif()
 endif(BUILD_TEST)
