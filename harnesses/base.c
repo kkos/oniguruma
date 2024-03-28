@@ -201,7 +201,7 @@ each_match_callback_func(const UChar* str, const UChar* end,
   return ONIG_NORMAL;
 }
 
-static unsigned int calc_retry_limit(sl, len)
+static unsigned int calc_retry_limit(int sl, int len)
 {
   unsigned int r;
   unsigned int upper;
