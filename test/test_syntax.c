@@ -1,6 +1,6 @@
 /*
  * test_syntax.c
- * Copyright (c) 2019-2021  K.Kosako
+ * Copyright (c) 2019-2024  K.Kosako
  */
 #ifdef ONIG_ESCAPE_UCHAR_COLLISION
 #undef ONIG_ESCAPE_UCHAR_COLLISION
@@ -340,6 +340,9 @@ extern int main(int argc, char* argv[])
   test_BRE_anchors();
   x2("zz\\|^ab", "ab", 0, 2);
   x2("ab$\\|zz", "ab", 0, 2);
+  x2("*", "*", 0, 1);
+  x2("^*", "*", 0, 1);
+  x2("abc\\|?", "?", 0, 1);
 
   Syntax = ONIG_SYNTAX_PERL_NG;
 
