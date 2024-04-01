@@ -2,7 +2,7 @@
   regparse.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2023  K.Kosako
+ * Copyright (c) 2002-2024  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9085,8 +9085,14 @@ prs_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
     if (r == TK_REPEAT || r == TK_INTERVAL) {
       Node* target;
 
-      if (is_invalid_quantifier_target(*tp))
-        return ONIGERR_TARGET_OF_REPEAT_OPERATOR_INVALID;
+      if (is_invalid_quantifier_target(*tp)) {
+        if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_CONTEXT_INDEP_REPEAT_OPS)) {
+          if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_CONTEXT_INVALID_REPEAT_OPS))
+            return ONIGERR_TARGET_OF_REPEAT_OPERATOR_INVALID;
+        }
+
+        return r;
+      }
 
       INC_PARSE_DEPTH(parse_depth);
 
