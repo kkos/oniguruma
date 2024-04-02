@@ -1652,6 +1652,10 @@ extern int main(int argc, char* argv[])
   e("(?C)(..)\\1", "abab", ONIGERR_INVALID_BACKREF);
   e("(?-C)", "", ONIGERR_INVALID_GROUP_OPTION);
   e("(?C)(.)(.)(.)(?<name>.)\\1", "abcdd", ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED);
+  x2("(?L)z|a\\g<0>a", "aazaa", 0, 5);
+  x2("(?Li)z|a\\g<0>a", "aazAA", 0, 5);
+  x2("(?Li:z|a\\g<0>a)", "aazAA", 0, 5);
+  x2("(?L)z|a\\g<0>a", "aazaaaazaaaa", 3, 12);
 
   // Issue #264
   n("(?iI)s", "\xc5\xbf");
