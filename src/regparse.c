@@ -3389,6 +3389,34 @@ onig_node_str_set(Node* node, const UChar* s, const UChar* end, int need_free)
 }
 
 static int
+node_str_remove_char(Node* node, UChar c)
+{
+  UChar* p;
+  int n;
+
+  n = 0;
+  p = STR_(node)->s;
+  while (p < STR_(node)->end) {
+    if (*p == c) {
+      UChar *q, *q1;
+      q = q1 = p;
+      q1++;
+      while (q1 < STR_(node)->end) {
+        *q = *q1;
+        q++; q1++;
+      }
+      n++;
+      STR_(node)->end--;
+    }
+    else {
+      p++;
+    }
+  }
+
+  return n;
+}
+
+static int
 node_str_cat_char(Node* node, UChar c)
 {
   UChar s[1];
@@ -8824,6 +8852,7 @@ prs_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
   tk_byte:
     {
       *np = node_new_str_with_options(tok->backp, *src, env->options);
+    tk_byte2:
       CHECK_NULL_RETURN_MEMERR(*np);
 
       while (1) {
@@ -9040,7 +9069,15 @@ prs_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
       }
     }
     else {
-      goto tk_byte;
+      if (tok->type == TK_INTERVAL &&
+          IS_SYNTAX_OP(env->syntax, ONIG_SYN_OP_ESC_BRACE_INTERVAL)) {
+        *np = node_new_str_with_options(tok->backp, *src, env->options);
+        node_str_remove_char(*np, (UChar )'\\');
+        goto tk_byte2;
+      }
+      else {
+        goto tk_byte;
+      }
     }
     break;
 
