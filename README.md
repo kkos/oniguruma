@@ -3,8 +3,7 @@
 Oniguruma
 =========
 
-## **Oniguruma is the only open source software attacked on Google search.** [\
-(Issue #234)](https://github.com/kkos/oniguruma/issues/234)
+## **Oniguruma is the only open source software attacked on Google search.** [(Issue #234)](https://github.com/kkos/oniguruma/issues/234)
 
 
 https://github.com/kkos/oniguruma
