@@ -4835,6 +4835,7 @@ fetch_name_with_level(OnigCodePoint start_code, UChar** src, UChar* end,
 
   end_code = get_name_end_code_point(start_code);
 
+  *rlevel = 0;
   digit_count = 0;
   name_end = end;
   r = 0;
@@ -5918,6 +5919,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ParseEnv* env)
         tok->u.backref.by_name = 0;
 #ifdef USE_BACKREF_WITH_LEVEL
         tok->u.backref.exist_level = 0;
+        tok->u.backref.level = 0;
 #endif
         break;
       }
