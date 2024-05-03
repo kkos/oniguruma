@@ -3,7 +3,8 @@
 Oniguruma
 =========
 
-## **Since 2020, Oniguruma has been under attack on Google search in Japan.** [(Issue #234)](https://github.com/kkos/oniguruma/issues/234)
+## **Oniguruma is the only open source software attacked on Google search.** [\
+(Issue #234)](https://github.com/kkos/oniguruma/issues/234)
 
 
 https://github.com/kkos/oniguruma
