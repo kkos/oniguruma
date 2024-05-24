@@ -205,6 +205,16 @@ static int test_look_behind()
   x2("(?<=a|b)c", "abc", 2, 3);
   x2("(?<=a|(.))\\1", "abcc", 3, 4);
 
+  // #295
+  n("(?<!RMA)X", "123RMAX");
+  x2("(?<=RMA)X", "123RMAX", 6, 7);
+  n("(?<!RMA)$", "123RMA");
+  x2("(?<=RMA)$", "123RMA", 6, 6);
+  n("(?<!RMA)\\Z", "123RMA");
+  x2("(?<=RMA)\\Z", "123RMA", 6, 6);
+  n("(?<!RMA)\\z", "123RMA");
+  x2("(?<=RMA)\\z", "123RMA", 6, 6);
+
   // following is not match in Perl and Java
   //x2("(?<=a|(.))\\1", "aa", 1, 2);
 
