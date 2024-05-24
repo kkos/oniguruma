@@ -5427,6 +5427,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
                 OnigOptionType option, OnigMatchParam* mp)
 {
   int r;
+  int forward;
   UChar *s;
   MatchArg msa;
   const UChar *orig_start = start;
@@ -5473,6 +5474,8 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
     }\
     else goto finish; /* error */ \
   }
+
+  forward = (range > start);
 
   /* anchor optimize: resume search range */
   if (reg->anchor != 0 && str < end) {
@@ -5595,7 +5598,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
   MATCH_ARG_INIT(msa, reg, option, region, orig_start, mp);
 
   s = (UChar* )start;
-  if (range > start) {   /* forward search */
+  if (forward != 0) {   /* forward search */
     if (reg->optimize != OPTIMIZE_NONE) {
       UChar *sch_range, *low, *high;
 
@@ -5636,7 +5639,7 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
 
         if ((reg->anchor & ANCR_ANYCHAR_INF) != 0 &&
             (reg->anchor & (ANCR_LOOK_BEHIND | ANCR_PREC_READ_NOT)) == 0) {
-          do {
+          while (s < range) {
             UChar* prev;
 
             MATCH_AND_RETURN_CHECK(data_range);
@@ -5647,19 +5650,16 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
               prev = s;
               s += enclen(reg->enc, s);
             }
-          } while (s < range);
+          }
           goto mismatch;
         }
       }
     }
 
-    do {
+    while (1 == 1) {
       MATCH_AND_RETURN_CHECK(data_range);
+      if (s >= range) break;
       s += enclen(reg->enc, s);
-    } while (s < range);
-
-    if (s == range) { /* because empty match with /$/. */
-      MATCH_AND_RETURN_CHECK(data_range);
     }
   }
   else {  /* backward search */
