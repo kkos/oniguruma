@@ -366,6 +366,11 @@ extern int main(int argc, char* argv[])
   x2("\\({1,2}\\)", "{1,2}", 0, 5);
   x2("^\\({1,2}\\)", "{1,2}", 0, 5);
 
+  Syntax = ONIG_SYNTAX_EMACS;
+  x2("\\(abc\\)", "abc", 0, 3);
+  x2("\\(?:abc\\)", "abc", 0, 3);
+  x3("\\(?:abc\\)\\(xyz\\)", "abcxyz", 3, 6, 1);
+
   Syntax = ONIG_SYNTAX_PERL_NG;
 
   x2("(?i)test", "test", 0, 4);
