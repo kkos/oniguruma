@@ -223,6 +223,20 @@ static int test_look_behind()
   return 0;
 }
 
+static int test_char_class()
+{
+  x2("[\\w\\-%]", "a", 0, 1);
+  x2("[\\w\\-%]", "%", 0, 1);
+  x2("[\\w\\-%]", "-", 0, 1);
+
+  //e("[\\w-%]", "-", ONIGERR_UNMATCHED_RANGE_SPECIFIER_IN_CHAR_CLASS);
+  x2("[\\w-%]", "a", 0, 1);
+  x2("[\\w-%]", "%", 0, 1);
+  x2("[\\w-%]", "-", 0, 1);
+
+  return 0;
+}
+
 static int test_python_option_ascii()
 {
   x2("(?a)\\w", "a", 0, 1);
@@ -311,6 +325,7 @@ extern int main(int argc, char* argv[])
   test_isolated_option();
   test_prec_read();
   test_look_behind();
+  test_char_class();
   e("(?<=ab|(.))\\1", "abb", ONIGERR_INVALID_LOOK_BEHIND_PATTERN); // Variable length lookbehind not implemented in Perl 5.26.1
 
   x3("()", "abc", 0, 0, 1);
@@ -325,6 +340,7 @@ extern int main(int argc, char* argv[])
   test_isolated_option();
   test_prec_read();
   test_look_behind();
+  test_char_class();
   x2("(?<=ab|(.))\\1", "abb", 2, 3);
   n("(?<!ab|b)c", "bbc");
   n("(?<!b|ab)c", "bbc");
