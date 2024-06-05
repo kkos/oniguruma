@@ -7092,11 +7092,16 @@ prs_cc(Node** np, PToken* tok, UChar** src, UChar* end, ParseEnv* env)
           goto val_entry;
         }
         else if (r == TK_CC_AND) {
+        range_end_val_with_warning:
           CC_ESC_WARN(env, (UChar* )"-");
           goto range_end_val;
         }
 
         if (curr_type == CV_CPROP) {
+          if (IS_SYNTAX_BV(env->syntax,
+              ONIG_SYN_ALLOW_CHAR_TYPE_FOLLOWED_BY_MINUS_IN_CC)) {
+            goto range_end_val_with_warning;
+          }
           r = ONIGERR_UNMATCHED_RANGE_SPECIFIER_IN_CHAR_CLASS;
           goto err;
         }
@@ -7127,16 +7132,16 @@ prs_cc(Node** np, PToken* tok, UChar** src, UChar* end, ParseEnv* env)
         if (r < 0) goto err;
 
         fetched = 1;
-        if (r == TK_CC_CLOSE)
+        if (r == TK_CC_CLOSE) {
           goto range_end_val; /* allow [a-b-] */
+        }
         else if (r == TK_CC_AND) {
-          CC_ESC_WARN(env, (UChar* )"-");
-          goto range_end_val;
+          goto range_end_val_with_warning;
         }
 
         if (IS_SYNTAX_BV(env->syntax, ONIG_SYN_ALLOW_DOUBLE_RANGE_OP_IN_CC)) {
-          CC_ESC_WARN(env, (UChar* )"-");
-          goto range_end_val;   /* [0-9-a] is allowed as [0-9\-a] */
+          /* [0-9-a] is allowed as [0-9\-a] */
+          goto range_end_val_with_warning;
         }
         r = ONIGERR_UNMATCHED_RANGE_SPECIFIER_IN_CHAR_CLASS;
         goto err;
