@@ -2781,6 +2781,16 @@ node_new_keep(Node** node, ParseEnv* env)
   return ONIG_NORMAL;
 }
 
+#ifdef USE_SKIP_SEARCH
+static int
+node_new_skip_search(Node** node, ParseEnv* env)
+{
+  int r;
+  r = node_new_update_var_gimmick(node, UPDATE_VAR_SKIP_SEARCH, 0, env);
+  return r;
+}
+#endif
+
 #ifdef USE_CALLOUT
 
 extern void
@@ -4526,6 +4536,9 @@ enum TokenSyms {
   TK_QUOTE_OPEN,
   TK_CHAR_PROPERTY,    /* \p{...}, \P{...} */
   TK_KEEP,             /* \K */
+#ifdef USE_SKIP_SEARCH
+  TK_SKIP_SEARCH,      /* \J */
+#endif
   TK_GENERAL_NEWLINE,  /* \R */
   TK_NO_NEWLINE,       /* \N */
   TK_TRUE_ANYCHAR,     /* \O */
@@ -5742,6 +5755,13 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ParseEnv* env)
       if (! IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_CAPITAL_K_KEEP)) break;
       tok->type = TK_KEEP;
       break;
+
+#ifdef USE_SKIP_SEARCH
+    case 'J':
+      if (! IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_CAPITAL_K_KEEP)) break;
+      tok->type = TK_SKIP_SEARCH;
+      break;
+#endif
 
     case 'R':
       if (! IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE)) break;
@@ -9092,6 +9112,13 @@ prs_exp(Node** np, PToken* tok, int term, UChar** src, UChar* end,
     r = node_new_keep(np, env);
     if (r < 0) return r;
     break;
+
+#ifdef USE_SKIP_SEARCH
+  case TK_SKIP_SEARCH:
+    r = node_new_skip_search(np, env);
+    if (r < 0) return r;
+    break;
+#endif
 
   case TK_GENERAL_NEWLINE:
     r = node_new_general_newline(np, env);

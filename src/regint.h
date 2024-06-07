@@ -4,7 +4,7 @@
   regint.h -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2023  K.Kosako
+ * Copyright (c) 2002-2024  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,6 +62,7 @@
 #define USE_REGSET
 #define USE_CALL
 #define USE_CALLOUT
+#define USE_SKIP_SEARCH
 #define USE_BACKREF_WITH_LEVEL        /* \k<name+n>, \k<name-n> */
 #define USE_WHOLE_OPTIONS
 #define USE_RIGID_CHECK_CAPTURES_IN_EMPTY_REPEAT        /* /(?:()|())*\2/ */
@@ -584,6 +585,9 @@ enum UpdateVarType {
   UPDATE_VAR_RIGHT_RANGE_FROM_S_STACK = 3,
   UPDATE_VAR_RIGHT_RANGE_TO_S         = 4,
   UPDATE_VAR_RIGHT_RANGE_INIT         = 5,
+#ifdef USE_SKIP_SEARCH
+  UPDATE_VAR_SKIP_SEARCH              = 6,
+#endif
 };
 
 enum CheckPositionType {
