@@ -752,7 +752,7 @@ extern int main(int argc, char* argv[])
   n("\\A(a|b\\g<1>c)\\k<1+3>\\z", "bbaccb");
   x2("(?i)\\A(a|b\\g<1>c)\\k<1+2>\\z", "bBACcbac", 0, 8);
   x2("(?i)(?<X>aa)|(?<X>bb)\\k<X>", "BBbb", 0, 4);
-  x2("(?:\\k'+1'B|(A)C)*", "ACAB", 0, 4); // relative backref by postitive number
+  x2("(?:\\k'+1'B|(A)C)*", "ACAB", 0, 4); // relative backref by positive number
   x2("\\g<+2>(abc)(ABC){0}", "ABCabc", 0, 6); // relative call by positive number
   x2("A\\g'0'|B()", "AAAAB", 0, 5);
   x3("(A\\g'0')|B", "AAAAB", 0, 5, 1);
