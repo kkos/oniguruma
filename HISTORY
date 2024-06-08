@@ -249,7 +249,7 @@ History
 2018/03/08: allow abbreviated notation for callouts (?(*name)..|..) (?(?{...})..|..)
 2018/03/02: NEW API: move onigenc_strdup() from regenc.h to oniguruma.h
 2018/02/21: remove all USE_COMBINATION_EXPLOSION_CHECK
-2018/02/15: fix #78: badly definition of PV_()
+2018/02/15: fix #78: bad definition of PV_()
 2018/02/14: add configure option --enable-posix-api (for #77)
 2018/02/08: implement callouts of name
 2018/02/01: implement callouts of contents
@@ -1629,7 +1629,7 @@ History
                        should be /a(?:b{2,3}*)/
 2004/02/12: [bug]  (thanks Simon Strandgaard)
                    OP_REPEAT_INC_NG process in match_at() is wrong.
-                   ex. badly match /a.{0,2}?a/ =~ "0aXXXa0"
+                   ex. bad match /a.{0,2}?a/ =~ "0aXXXa0"
 2004/02/12: [bug]  (thanks Simon Strandgaard)
                    wrong fetch after (?x) option.  ex. "(?x)\ta .\n+b"
 2004/02/12: [bug]  (thanks Simon Strandgaard)
@@ -1813,7 +1813,7 @@ History
 2003/09/16: [bug]  (thanks Guy Decoux)
                    remove env->option == option check in parse_effect().
                    change env->option for dynamic option in parse_exp().
-                   (ex. badly match /(?i)(?-i)a/ =~ "A")
+                   (ex. bad match /(?i)(?-i)a/ =~ "A")
 2003/09/12: [spec] rename REG_SYN_ALLOW_RANGE_OP_IN_CC to
                    REG_SYN_ALLOW_DOUBLE_RANGE_OP_IN_CC,
                    REG_SYN_ESCAPE_IN_CC to REG_SYN_BACKSLASH_ESCAPE_IN_CC.
