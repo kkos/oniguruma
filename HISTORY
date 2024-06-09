@@ -2104,7 +2104,7 @@ History
 2003/03/08: [impl] remove check_backref_number().
 2003/03/08: [bug]  called group in 0-repeat should not be eliminated from
                    compile code.  ex. /(?*n)(?<n>){0}/   (thanks akr)
-                   add is_refered member to QualifierNode.
+                   add is_referred member to QualifierNode.
 2003/03/07: [impl] use hash table(st.[ch]) for implementation of name table.
                    (enable on Ruby in default)
 2003/03/07: [new]  add regex_foreach_names().
