@@ -341,6 +341,9 @@ extern int main(int argc, char* argv[])
   test_prec_read();
   test_look_behind();
   test_char_class();
+
+  n("[[:digit:]]", "1");
+  x2("[[:digit:]]", "g", 0, 1);
   x2("(?<=ab|(.))\\1", "abb", 2, 3);
   n("(?<!ab|b)c", "bbc");
   n("(?<!b|ab)c", "bbc");
@@ -351,6 +354,9 @@ extern int main(int argc, char* argv[])
   test_python_option_ascii();
   test_python_z();
   test_python_single_multi();
+
+  n("[[:digit:]]", "1");
+  x2("[[:digit:]]", "g]", 0, 2);
   x2("(?P<name>abc)", "abc", 0, 3);
   x2("(?P<name>abc)(?P=name)", "abcabc", 0, 6);
   x2("(?P<name>abc){0}(?P>name)", "abc", 0, 3);
