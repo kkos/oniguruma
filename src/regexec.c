@@ -2,7 +2,7 @@
   regexec.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2022  K.Kosako
+ * Copyright (c) 2002-2024  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -176,6 +176,9 @@ typedef struct {
 #endif
 #ifdef USE_CALL
   unsigned long  subexp_call_in_search_counter;
+#endif
+#ifdef USE_SKIP_SEARCH
+  UChar* skip_search;
 #endif
 } MatchArg;
 
@@ -1261,6 +1264,7 @@ struct OnigCalloutArgsStruct {
 #endif
 
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
+#ifdef USE_SKIP_SEARCH
 #define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start, mpv) do { \
   (msa).stack_p  = (void* )0;\
   (msa).options  = (arg_option)|(reg)->options;\
@@ -1272,6 +1276,35 @@ struct OnigCalloutArgsStruct {
   (msa).mp = mpv;\
   (msa).best_len = ONIG_MISMATCH;\
   (msa).ptr_num  = PTR_NUM_SIZE(reg);\
+  (msa).skip_search = (UChar* )(arg_start);\
+} while(0)
+#else
+#define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start, mpv) do { \
+  (msa).stack_p  = (void* )0;\
+  (msa).options  = (arg_option)|(reg)->options;\
+  (msa).region   = (arg_region);\
+  (msa).start    = (arg_start);\
+  (msa).match_stack_limit  = (mpv)->match_stack_limit;\
+  RETRY_IN_MATCH_ARG_INIT(msa,mpv)\
+  SUBEXP_CALL_IN_MATCH_ARG_INIT(msa,mpv)\
+  (msa).mp = mpv;\
+  (msa).best_len = ONIG_MISMATCH;\
+  (msa).ptr_num  = PTR_NUM_SIZE(reg);\
+} while(0)
+#endif
+#else
+#ifdef USE_SKIP_SEARCH
+#define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start, mpv) do { \
+  (msa).stack_p  = (void* )0;\
+  (msa).options  = (arg_option)|(reg)->options;\
+  (msa).region   = (arg_region);\
+  (msa).start    = (arg_start);\
+  (msa).match_stack_limit  = (mpv)->match_stack_limit;\
+  RETRY_IN_MATCH_ARG_INIT(msa,mpv)\
+  SUBEXP_CALL_IN_MATCH_ARG_INIT(msa,mpv)\
+  (msa).mp = mpv;\
+  (msa).ptr_num  = PTR_NUM_SIZE(reg);\
+  (msa).skip_search = (UChar* )(arg_start);\
 } while(0)
 #else
 #define MATCH_ARG_INIT(msa, reg, arg_option, arg_region, arg_start, mpv) do { \
@@ -1285,6 +1318,7 @@ struct OnigCalloutArgsStruct {
   (msa).mp = mpv;\
   (msa).ptr_num  = PTR_NUM_SIZE(reg);\
 } while(0)
+#endif
 #endif
 
 #define MATCH_ARG_FREE(msa)  if ((msa).stack_p) xfree((msa).stack_p)
@@ -5629,6 +5663,9 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
           while (s <= high) {
             MATCH_AND_RETURN_CHECK(data_range);
             s += enclen(reg->enc, s);
+#ifdef USE_SKIP_SEARCH
+            if (s < msa.skip_search) s = msa.skip_search;
+#endif
           }
         } while (s < range);
         goto mismatch;
@@ -5646,10 +5683,18 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
             prev = s;
             s += enclen(reg->enc, s);
 
-            while (!ONIGENC_IS_MBC_NEWLINE(reg->enc, prev, end) && s < range) {
-              prev = s;
-              s += enclen(reg->enc, s);
+#ifdef USE_SKIP_SEARCH
+            if (s < msa.skip_search) s = msa.skip_search;
+            else {
+#endif
+              while (!ONIGENC_IS_MBC_NEWLINE(reg->enc, prev, end) &&
+                     s < range) {
+                prev = s;
+                s += enclen(reg->enc, s);
+              }
+#ifdef USE_SKIP_SEARCH
             }
+#endif
           }
           goto mismatch;
         }
@@ -5660,6 +5705,13 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end,
       MATCH_AND_RETURN_CHECK(data_range);
       if (s >= range) break;
       s += enclen(reg->enc, s);
+
+#ifdef USE_SKIP_SEARCH
+      if (s < msa.skip_search) {
+        s = msa.skip_search;
+        if (s > range) break;
+      }
+#endif
     }
   }
   else {  /* backward search */
@@ -6367,6 +6419,17 @@ onig_builtin_error(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
 
   return n;
 }
+
+#ifdef USE_SKIP_SEARCH
+extern int
+onig_builtin_skip(OnigCalloutArgs* args, void* user_data ARG_UNUSED)
+{
+  if (args->current > args->msa->skip_search)
+    args->msa->skip_search = (UChar* )args->current;
+
+  return ONIG_NORMAL;
+}
+#endif
 
 extern int
 onig_builtin_count(OnigCalloutArgs* args, void* user_data)

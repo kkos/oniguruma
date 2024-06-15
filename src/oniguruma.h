@@ -1074,6 +1074,8 @@ int onig_builtin_mismatch P_((OnigCalloutArgs* args, void* user_data));
 ONIG_EXTERN
 int onig_builtin_error P_((OnigCalloutArgs* args, void* user_data));
 ONIG_EXTERN
+int onig_builtin_skip P_((OnigCalloutArgs* args, void* user_data));
+ONIG_EXTERN
 int onig_builtin_count P_((OnigCalloutArgs* args, void* user_data));
 ONIG_EXTERN
 int onig_builtin_total_count P_((OnigCalloutArgs* args, void* user_data));
