@@ -2,7 +2,7 @@
   utf16_le.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2023  K.Kosako
+ * Copyright (c) 2002-2024  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,8 +41,9 @@ init(void)
 
     enc = ONIG_ENCODING_UTF16_LE;
 
-    name = "F\000A\000I\000L\000\000\000";            BC0_P(name, fail);
+    name = "F\000A\000I\000L\000\000\000"; BC0_P(name, fail);
     name = "M\000I\000S\000M\000A\000T\000C\000H\000\000\000"; BC0_P(name, mismatch);
+    name = "S\000K\000I\000P\000\000\000"; BC0_P(name, skip);
 
     name = "M\000A\000X\000\000\000";
     args[0] = ONIG_TYPE_TAG | ONIG_TYPE_LONG;
