@@ -1393,8 +1393,9 @@ static unsigned long RetryLimitInMatch  = DEFAULT_RETRY_LIMIT_IN_MATCH;
 static unsigned long RetryLimitInSearch = DEFAULT_RETRY_LIMIT_IN_SEARCH;
 
 #define CHECK_RETRY_LIMIT_IN_MATCH  do {\
-  if (++retry_in_match_counter > retry_limit_in_match) {\
-    MATCH_AT_ERROR_RETURN(retry_in_match_counter > msa->retry_limit_in_match ? ONIGERR_RETRY_LIMIT_IN_MATCH_OVER : ONIGERR_RETRY_LIMIT_IN_SEARCH_OVER); \
+  if (++retry_in_match_counter >= retry_limit_in_match && \
+      retry_limit_in_match != 0) {\
+    MATCH_AT_ERROR_RETURN((retry_in_match_counter >= msa->retry_limit_in_match && msa->retry_limit_in_match != 0) ? ONIGERR_RETRY_LIMIT_IN_MATCH_OVER : ONIGERR_RETRY_LIMIT_IN_SEARCH_OVER); \
   }\
 } while (0)
 
@@ -3046,7 +3047,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   if (msa->retry_limit_in_search != 0) {
     unsigned long rem = msa->retry_limit_in_search
                       - msa->retry_limit_in_search_counter;
-    if (rem < retry_limit_in_match)
+    if (rem < retry_limit_in_match || retry_limit_in_match == 0)
       retry_limit_in_match = rem;
   }
 #endif
