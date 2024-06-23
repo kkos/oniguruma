@@ -37,6 +37,7 @@
 /* #define ONIG_DEBUG_MATCH_COUNTER */
 /* #define ONIG_DEBUG_CALL */
 /* #define ONIG_DONT_OPTIMIZE */
+/* #define ONIG_DEBUG */
 
 /* for byte-code statistical data. */
 /* #define ONIG_DEBUG_STATISTICS */
@@ -47,8 +48,11 @@
     defined(ONIG_DEBUG_STATISTICS)
 #ifndef ONIG_DEBUG
 #define ONIG_DEBUG
-#define DBGFP   stderr
 #endif
+#endif
+
+#ifdef ONIG_DEBUG
+#define DBGFP   stderr
 #endif
 
 #ifndef ONIG_DISABLE_DIRECT_THREADING

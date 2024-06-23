@@ -4478,6 +4478,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 
  match_at_end:
   if (msa->retry_limit_in_search != 0) {
+#ifdef ONIG_DEBUG
+    if (retry_in_match_counter >
+        ULONG_MAX - msa->retry_limit_in_search_counter) {
+      fprintf(DBGFP, "retry limit counter overflow: %8lu/%8lu\n",
+              retry_in_match_counter, msa->retry_limit_in_search_counter);
+    }
+#endif
     msa->retry_limit_in_search_counter += retry_in_match_counter;
   }
 
