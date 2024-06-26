@@ -1,4 +1,4 @@
-鬼車インターフェース Version 6.9.9   2022/11/16
+鬼車インターフェース Version 6.9.10   2024/05/26
 
 #include <oniguruma.h>
 
@@ -275,6 +275,7 @@
 # int onig_set_retry_limit_in_match_of_match_param(OnigMatchParam* mp, unsigned long limit)
 
   一回のマッチでのリトライ数の制限値をセットする。
+  ０は無制限を意味する。
 
   引数
   1 mp: マッチパラメタオブジェクトアドレス
@@ -987,6 +988,7 @@
 # int onig_set_retry_limit_in_match(unsigned long limit)
 
   一回のマッチング内でのリトライ数の制限値を指定する。
+  ０は無制限を意味する。
 
   正常終了戻り値: ONIG_NORMAL
 
