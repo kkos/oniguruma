@@ -4370,6 +4370,11 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
         case UPDATE_VAR_RIGHT_RANGE_INIT:
           INIT_RIGHT_RANGE;
           break;
+#ifdef USE_SKIP_SEARCH
+        case UPDATE_VAR_SKIP_SEARCH:
+          if (s > msa->skip_search) msa->skip_search = s;
+          break;
+#endif
         }
       }
       INC_OP;
