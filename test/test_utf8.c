@@ -64,7 +64,7 @@ static void xx(char* pattern, char* str, int from, int to, int mem, int not,
   r = onig_search(reg, (UChar* )str, (UChar* )(str + SLEN(str)),
                   (UChar* )str, (UChar* )(str + SLEN(str)),
                   region, ONIG_OPTION_NONE);
-  if (r < ONIG_MISMATCH) {
+  if (r < ONIG_MISMATCH || error_no < ONIG_MISMATCH) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
 
     if (error_no == 0) {
@@ -1648,8 +1648,8 @@ extern int main(int argc, char* argv[])
   e("()(?Ii)", "", ONIGERR_INVALID_GROUP_OPTION);
   e("(?:)(?Ii)", "", ONIGERR_INVALID_GROUP_OPTION);
   e("^(?Ii)", "", ONIGERR_INVALID_GROUP_OPTION);
-  e("(?Ii)$", "", ONIGERR_INVALID_GROUP_OPTION);
-  e("(?Ii)|", "", ONIGERR_INVALID_GROUP_OPTION);
+  x2("(?Ii)$", "", 0, 0);
+  x2("(?Ii)|", "", 0, 0);
   e("(?Ii)|(?Ii)", "", ONIGERR_INVALID_GROUP_OPTION);
   x2("a*", "aabcaaa", 0, 2);
   x2("(?L)a*", "aabcaaa", 4, 7);

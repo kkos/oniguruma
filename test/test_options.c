@@ -1,6 +1,6 @@
 /*
  * test_options.c
- * Copyright (c) 2020-2021  K.Kosako
+ * Copyright (c) 2020-2024  K.Kosako
  */
 #ifdef ONIG_ESCAPE_UCHAR_COLLISION
 #undef ONIG_ESCAPE_UCHAR_COLLISION
@@ -64,7 +64,7 @@ static void xx(OnigOptionType options, char* pattern, char* str,
   r = onig_search(reg, (UChar* )str, (UChar* )(str + SLEN(str)),
                   (UChar* )str, (UChar* )(str + SLEN(str)),
                   region, options);
-  if (r < ONIG_MISMATCH) {
+  if (r < ONIG_MISMATCH || error_no < ONIG_MISMATCH) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
 
     if (error_no == 0) {
