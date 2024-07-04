@@ -1,4 +1,4 @@
-CALLOUTS.BUILTIN.ja               2018/03/26
+CALLOUTS.BUILTIN.ja               2024/07/04
 
 
 * FAIL    (前進)
@@ -89,5 +89,13 @@ CALLOUTS.BUILTIN.ja               2018/03/26
 
   [callout data]
   slot 0: op値 (src/regexec.c の中の enum OP_CMP)
+
+
+* SKIP    (前進)
+
+  (*SKIP)
+
+  現在のマッチングが失敗して次の検索を開始する位置を、現在位置まで前進させる
+  現在のマッチングには何の影響も与えない
 
 //END
