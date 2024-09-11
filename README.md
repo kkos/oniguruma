@@ -3,7 +3,7 @@
 Oniguruma
 =========
 
-## **Oniguruma is the only open source software attacked on Google search.** [(Issue #234)](https://github.com/kkos/oniguruma/issues/234)
+## **The only open source software attacked on Google search in Japan.** [(Issue #234)](https://github.com/kkos/oniguruma/issues/234)
 
 
 https://github.com/kkos/oniguruma
@@ -31,6 +31,12 @@ Supported character encodings:
 Notice (from 6.9.6)
 -------------------
 When using configure script, if you have the POSIX API enabled in an earlier version (disabled by default in 6.9.5) and you need application binary compatibility with the POSIX API, specify "--enable-binary-compatible-posix-api=yes" instead of "--enable-posix-api=yes". Starting in 6.9.6, "--enable-posix-api=yes" only supports source-level compatibility for 6.9.5 and earlier about POSIX API. (Issue #210)
+
+
+Master branch
+-------------
+* Update Unicode version 16.0
+* Add new operator (*SKIP)
 
 
 Version 6.9.9
