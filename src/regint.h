@@ -953,7 +953,7 @@ struct re_pattern_buffer {
 extern void onig_add_end_call(void (*func)(void));
 extern void onig_warning(const char* s);
 extern UChar* onig_error_code_to_format P_((int code));
-extern void ONIG_VARIADIC_FUNC_ATTR ONIG_PRINTFLIKE(6, 7) onig_snprintf_with_pattern PV_((UChar buf[], int bufsize, OnigEncoding enc, UChar* pat, UChar* pat_end, const UChar *fmt, ...));
+extern void ONIG_VARIADIC_FUNC_ATTR ONIG_PRINTFLIKE(6, 7) onig_snprintf_with_pattern PV_((UChar buf[], int bufsize, OnigEncoding enc, UChar* pat, UChar* pat_end, const char *fmt, ...));
 extern int onig_compile P_((regex_t* reg, const UChar* pattern, const UChar* pattern_end, OnigErrorInfo* einfo));
 extern int onig_is_code_in_cc_len P_((int enclen, OnigCodePoint code, void* /* CClassNode* */ cc));
 extern RegexExt* onig_get_regex_ext(regex_t* reg);

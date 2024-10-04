@@ -5090,7 +5090,7 @@ CC_ESC_WARN(ParseEnv* env, UChar *c)
     UChar buf[WARN_BUFSIZE];
     onig_snprintf_with_pattern(buf, WARN_BUFSIZE, env->enc,
                                env->pattern, env->pattern_end,
-                               (UChar* )"character class has '%s' without escape",
+                               "character class has '%s' without escape",
                                c);
     (*onig_warn)((char* )buf);
   }
@@ -5105,7 +5105,7 @@ CLOSE_BRACKET_WITHOUT_ESC_WARN(ParseEnv* env, UChar* c)
     UChar buf[WARN_BUFSIZE];
     onig_snprintf_with_pattern(buf, WARN_BUFSIZE, (env)->enc,
                          (env)->pattern, (env)->pattern_end,
-                         (UChar* )"regular expression has '%s' without escape", c);
+                         "regular expression has '%s' without escape", c);
     (*onig_warn)((char* )buf);
   }
 }
@@ -8553,7 +8553,7 @@ assign_quantifier_body(Node* qnode, Node* target, int group, ParseEnv* env)
           if (onig_verb_warn != onig_null_warn) {
             onig_snprintf_with_pattern(buf, WARN_BUFSIZE, env->enc,
                                   env->pattern, env->pattern_end,
-                                  (UChar* )"redundant nested repeat operator");
+                                  "redundant nested repeat operator");
             (*onig_verb_warn)((char* )buf);
           }
           goto warn_exit;
@@ -8563,7 +8563,7 @@ assign_quantifier_body(Node* qnode, Node* target, int group, ParseEnv* env)
           if (onig_verb_warn != onig_null_warn) {
             onig_snprintf_with_pattern(buf, WARN_BUFSIZE, env->enc,
                                        env->pattern, env->pattern_end,
-            (UChar* )"nested repeat operator %s and %s was replaced with '%s'",
+                   "nested repeat operator %s and %s was replaced with '%s'",
             PopularQStr[targetq_num], PopularQStr[nestq_num],
             ReduceQStr[ReduceTypeTable[targetq_num][nestq_num]]);
             (*onig_verb_warn)((char* )buf);

@@ -352,7 +352,7 @@ onig_error_code_to_str(UChar* s, int code, ...)
 
 void ONIG_VARIADIC_FUNC_ATTR
 onig_snprintf_with_pattern(UChar buf[], int bufsize, OnigEncoding enc,
-                           UChar* pat, UChar* pat_end, const UChar *fmt, ...)
+                           UChar* pat, UChar* pat_end, const char *fmt, ...)
 {
   int n, need, len;
   UChar *p, *s, *bp;
@@ -360,7 +360,7 @@ onig_snprintf_with_pattern(UChar buf[], int bufsize, OnigEncoding enc,
   va_list args;
 
   va_start(args, fmt);
-  n = xvsnprintf((char* )buf, bufsize, (const char* )fmt, args);
+  n = xvsnprintf((char* )buf, bufsize, fmt, args);
   va_end(args);
 
   need = (int )(pat_end - pat) * 4 + 4;
