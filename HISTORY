@@ -1,6 +1,18 @@
 History
 
-2023/10/1X: Version 6.9.9
+2024/XX/XX: Version 6.9.10
+
+2024/09/11: Update to Unicode 16.0
+2024/06/20: fix #290: retry limit in match == 0 means unlimited
+2024/06/15: add new callout (*SKIP) #299
+2024/06/05: add new behavior ONIG_SYN_ALLOW_CHAR_TYPE_FOLLOWED_BY_MINUS_IN_CC (#298)
+2024/05/28: fix #296: ONIG_SYNTAX_EMACS doesn't support 'shy groups'
+2024/05/24: fix #295: Invalid result for empty match with anchors
+2024/04/03: fix #293: Literal escaped braces
+2024/04/02: fix total call with whole options
+2024/04/01: fix #292: ONIG_SYN_CONTEXT_INDEP_REPEAT_OPS not working for ^* pattern
+
+2023/10/14: Version 6.9.9
 
 2023/09/17: Update to Unicode 15.1.0
 2023/07/11: Make sure oniguruma.pc is removed on distclean
