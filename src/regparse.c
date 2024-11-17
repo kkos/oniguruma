@@ -793,8 +793,13 @@ onig_print_names(FILE* fp, regex_t* reg)
 #endif /* ONIG_DEBUG */
 
 static int
-i_free_name_entry(UChar* key, NameEntry* e, void* arg ARG_UNUSED)
+i_free_name_entry(st_data_t akey, st_data_t ae, st_data_t arg ARG_UNUSED)
 {
+  UChar* key;
+  NameEntry* e;
+
+  key = (UChar* )akey;
+  e = (NameEntry* )ae;
   xfree(e->name);
   if (IS_NOT_NULL(e->back_refs)) xfree(e->back_refs);
   xfree(key);
@@ -850,8 +855,14 @@ typedef struct {
 } INamesArg;
 
 static int
-i_names(UChar* key ARG_UNUSED, NameEntry* e, INamesArg* arg)
+i_names(st_data_t key ARG_UNUSED, st_data_t ae, st_data_t aarg)
 {
+  NameEntry* e;
+  INamesArg* arg;
+
+  e = (NameEntry* )ae;
+  arg = (INamesArg* )aarg;
+
   int r = (*(arg->func))(e->name,
                          e->name + e->name_len,
                          e->back_num,
@@ -883,9 +894,14 @@ onig_foreach_name(regex_t* reg,
 }
 
 static int
-i_renumber_name(UChar* key ARG_UNUSED, NameEntry* e, GroupNumMap* map)
+i_renumber_name(st_data_t key ARG_UNUSED, st_data_t ae, st_data_t amap)
 {
   int i;
+  NameEntry* e;
+  GroupNumMap* map;
+
+  e = (NameEntry* )ae;
+  map = (GroupNumMap* )amap;
 
   if (e->back_num > 1) {
     for (i = 0; i < e->back_num; i++) {
@@ -1374,9 +1390,14 @@ static int CalloutNameIDCounter;
 #ifdef USE_ST_LIBRARY
 
 static int
-i_free_callout_name_entry(st_callout_name_key* key, CalloutNameEntry* e,
-                          void* arg ARG_UNUSED)
+i_free_callout_name_entry(st_data_t akey, st_data_t ae, st_data_t arg ARG_UNUSED)
 {
+  st_callout_name_key* key;
+  CalloutNameEntry* e;
+
+  key = (st_callout_name_key* )akey;
+  e = (CalloutNameEntry* )ae;
+
   if (IS_NOT_NULL(e)) {
     xfree(e->name);
   }
@@ -1870,10 +1891,14 @@ typedef intptr_t   CalloutTagVal;
 #define CALLOUT_TAG_LIST_FLAG_TAG_EXIST     (1<<0)
 
 static int
-i_callout_callout_list_set(UChar* key, CalloutTagVal e, void* arg)
+i_callout_callout_list_set(st_data_t key ARG_UNUSED, st_data_t ae, st_data_t arg)
 {
   int num;
-  RegexExt* ext = (RegexExt* )arg;
+  CalloutTagVal e;
+  RegexExt* ext;
+
+  e   = (CalloutTagVal )ae;
+  ext = (RegexExt* )arg;
 
   num = (int )e - 1;
   ext->callout_list[num].flag |= CALLOUT_TAG_LIST_FLAG_TAG_EXIST;
@@ -1926,8 +1951,11 @@ onig_callout_tag_is_exist_at_callout_num(regex_t* reg, int callout_num)
 }
 
 static int
-i_free_callout_tag_entry(UChar* key, CalloutTagVal e, void* arg ARG_UNUSED)
+i_free_callout_tag_entry(st_data_t akey, st_data_t e ARG_UNUSED, st_data_t arg ARG_UNUSED)
 {
+  UChar* key;
+
+  key = (UChar* )akey;
   xfree(key);
   return ST_DELETE;
 }
