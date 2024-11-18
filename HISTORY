@@ -2,6 +2,7 @@ History
 
 2024/XX/XX: Version 6.9.10
 
+2024/11/18: fix #312: Build failure with GCC 15 (C23)
 2024/09/11: Update to Unicode 16.0
 2024/06/20: fix #290: retry limit in match == 0 means unlimited
 2024/06/15: add new callout (*SKIP) #299
