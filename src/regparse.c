@@ -758,10 +758,14 @@ typedef st_data_t HashDataType;   /* 1.6 st.h doesn't define st_data_t type */
 
 #ifdef ONIG_DEBUG
 static int
-i_print_name_entry(UChar* key, NameEntry* e, void* arg)
+i_print_name_entry(st_data_t akey, st_data_t ae, st_data_t arg)
 {
   int i;
-  FILE* fp = (FILE* )arg;
+  FILE* fp;
+  NameEntry* e;
+
+  e = (NameEntry* )ae;
+  fp = (FILE* )arg;
 
   fprintf(fp, "%s: ", e->name);
   if (e->back_num == 0)
