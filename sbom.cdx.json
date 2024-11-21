@@ -1,0 +1,44 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "version": 1,
+  "metadata": {
+    "authors": [
+      {
+        "name": "@VCS_SBOM_AUTHORS@"
+      }
+    ]
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "pkg:github/kkos/oniguruma@@VCS_TAG@",
+      "cpe": "cpe:2.3:a:kkos:oniguruma:@VCS_TAG@:*:*:*:*:*:*:*",
+      "name": "oniguruma",
+      "version": "@VCS_VERSION@",
+      "description": "A modern and flexible regular expressions library",
+      "authors": [
+        {
+          "name": "@VCS_AUTHORS@",
+          "url": "https://raw.githubusercontent.com/kkos/oniguruma/refs/heads/master/AUTHORS"
+        }
+      ],
+      "supplier": {
+        "name": "oniguruma developers"
+      },
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-2-Clause"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/kkos/oniguruma"
+        }
+      ]
+    }
+  ]
+}
