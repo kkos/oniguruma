@@ -1181,6 +1181,19 @@ extern int main(int argc, char* argv[])
   x2("\\p{^Emoji}", "\xEF\xBC\x93", 0, 3);
   x2("\\p{Extended_Pictographic}", "\xE2\x9A\xA1", 0, 3);
   n("\\p{Extended_Pictographic}", "\xE3\x81\x82");
+  x2("\\pC", "\xC2\xAD", 0, 2); // U+00AD: Soft Hyphen
+  x2("\\pL", "U", 0, 1);
+  x2("\\pM", "\xE2\x83\x9D", 0, 3); // U+20DD: Combining Enclosing Circle
+  x2("\\pN+", "3Ⅴ", 0, 4);
+  x2("\\pP+", "†⁂", 0, 6);
+  x2("\\pS+", "€₤", 0, 6);
+  x2("\\pZ+", " ", 0, 1);
+  n("\\pL", "@");
+  x2("\\pL+", "akZtE", 0, 5);
+  x2("\\PL+", "1@=-%", 0, 5);
+  e("\\p", "", ONIGERR_INVALID_CHAR_PROPERTY_NAME);
+  e("\\p(", "", ONIGERR_INVALID_CHAR_PROPERTY_NAME);
+  e("\\pQ", "", ONIGERR_INVALID_CHAR_PROPERTY_NAME);
 
   x2("\\p{Word}", "こ", 0, 3);
   n("\\p{^Word}", "こ");
