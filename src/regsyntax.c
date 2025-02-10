@@ -2,7 +2,7 @@
   regsyntax.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2024  K.Kosako
+ * Copyright (c) 2002-2025  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -190,7 +190,8 @@ OnigSyntaxType OnigSyntaxPerl = {
       ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE |
       ONIG_SYN_OP2_ESC_CAPITAL_N_O_SUPER_DOT )
   , (SYN_GNU_REGEX_BV | ONIG_SYN_ISOLATED_OPTION_CONTINUE_BRANCH |
-     ONIG_SYN_ALLOW_CHAR_TYPE_FOLLOWED_BY_MINUS_IN_CC )
+     ONIG_SYN_ALLOW_CHAR_TYPE_FOLLOWED_BY_MINUS_IN_CC |
+     ONIG_SYN_ESC_P_WITH_ONE_CHAR_PROP )
   , ONIG_OPTION_SINGLELINE
   ,
   {
@@ -231,7 +232,8 @@ OnigSyntaxType OnigSyntaxPerl_NG = {
   , ( SYN_GNU_REGEX_BV | ONIG_SYN_ISOLATED_OPTION_CONTINUE_BRANCH |
       ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP |
       ONIG_SYN_ALLOW_MULTIPLEX_DEFINITION_NAME |
-      ONIG_SYN_ALLOW_CHAR_TYPE_FOLLOWED_BY_MINUS_IN_CC )
+      ONIG_SYN_ALLOW_CHAR_TYPE_FOLLOWED_BY_MINUS_IN_CC |
+      ONIG_SYN_ESC_P_WITH_ONE_CHAR_PROP )
   , ONIG_OPTION_SINGLELINE
   ,
   {

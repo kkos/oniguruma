@@ -2,7 +2,7 @@
   regparse.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2024  K.Kosako
+ * Copyright (c) 2002-2025  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -105,6 +105,7 @@ OnigSyntaxType OnigSyntaxOniguruma = {
 #ifdef USE_WHOLE_OPTIONS
       ONIG_SYN_WHOLE_OPTIONS |
 #endif
+      ONIG_SYN_ESC_P_WITH_ONE_CHAR_PROP |
       ONIG_SYN_WARN_REDUNDANT_NESTED_REPEAT
     )
   , ONIG_OPTION_NONE
@@ -4608,6 +4609,7 @@ typedef struct {
     struct {
       int ctype;
       int not;
+      int braces;
     } prop;
   } u;
 } PToken;
@@ -5370,23 +5372,27 @@ fetch_token_cc(PToken* tok, UChar** src, UChar* end, ParseEnv* env, int state)
 
     case 'p':
     case 'P':
-      if (PEND) break;
+      if (! PEND && PPEEK_IS('{')) {
+        if (IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CHAR_PROPERTY)) {
+          PINC;
+          tok->type = TK_CHAR_PROPERTY;
+          tok->u.prop.not = c == 'P';
+          tok->u.prop.braces = 1;
 
-      c2 = PPEEK;
-      if (c2 == '{' &&
-          IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CHAR_PROPERTY)) {
-        PINC;
+          if (!PEND && IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CIRCUMFLEX_NOT)) {
+            PFETCH(c2);
+            if (c2 == '^') {
+              tok->u.prop.not = tok->u.prop.not == 0;
+            }
+            else
+              PUNFETCH;
+          }
+        }
+      }
+      else if (IS_SYNTAX_BV(syn, ONIG_SYN_ESC_P_WITH_ONE_CHAR_PROP)) {
         tok->type = TK_CHAR_PROPERTY;
         tok->u.prop.not = c == 'P';
-
-        if (!PEND && IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CIRCUMFLEX_NOT)) {
-          PFETCH(c2);
-          if (c2 == '^') {
-            tok->u.prop.not = tok->u.prop.not == 0;
-          }
-          else
-            PUNFETCH;
-        }
+        tok->u.prop.braces = 0;
       }
       break;
 
@@ -6111,21 +6117,28 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ParseEnv* env)
 
     case 'p':
     case 'P':
-      if (!PEND && PPEEK_IS('{') &&
-          IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CHAR_PROPERTY)) {
-        PINC;
+      if (! PEND && PPEEK_IS('{')) {
+        if (IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CHAR_PROPERTY)) {
+          PINC;
+          tok->type = TK_CHAR_PROPERTY;
+          tok->u.prop.not = c == 'P';
+          tok->u.prop.braces = 1;
+
+          if (! PEND &&
+              IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CIRCUMFLEX_NOT)) {
+            PFETCH(c);
+            if (c == '^') {
+              tok->u.prop.not = tok->u.prop.not == 0;
+            }
+            else
+              PUNFETCH;
+          }
+        }
+      }
+      else if (IS_SYNTAX_BV(syn, ONIG_SYN_ESC_P_WITH_ONE_CHAR_PROP)) {
         tok->type = TK_CHAR_PROPERTY;
         tok->u.prop.not = c == 'P';
-
-        if (!PEND &&
-            IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_P_BRACE_CIRCUMFLEX_NOT)) {
-          PFETCH(c);
-          if (c == '^') {
-            tok->u.prop.not = tok->u.prop.not == 0;
-          }
-          else
-            PUNFETCH;
-        }
+        tok->u.prop.braces = 0;
       }
       break;
 
@@ -6751,7 +6764,7 @@ prs_posix_bracket(CClassNode* cc, UChar** src, UChar* end, ParseEnv* env)
 }
 
 static int
-fetch_char_property_to_ctype(UChar** src, UChar* end, ParseEnv* env)
+fetch_char_property_to_ctype(UChar** src, UChar* end, int braces, ParseEnv* env)
 {
   int r;
   OnigCodePoint c;
@@ -6760,10 +6773,25 @@ fetch_char_property_to_ctype(UChar** src, UChar* end, ParseEnv* env)
 
   p = *src;
   enc = env->enc;
-  r = ONIGERR_END_PATTERN_WITH_UNMATCHED_PARENTHESIS;
-  start = prev = p;
+  start = p;
 
-  while (!PEND) {
+  if (braces == 0) {
+    if (PEND) return ONIGERR_INVALID_CHAR_PROPERTY_NAME;
+
+    PFETCH_S(c);
+    r = ONIGENC_PROPERTY_NAME_TO_CTYPE(enc, start, p);
+    if (r >= 0) {
+      *src = p;
+    }
+    else {
+      onig_scan_env_set_error_string(env, r, *src, p);
+    }
+
+    return r;
+  }
+
+  r = ONIGERR_END_PATTERN_WITH_UNMATCHED_PARENTHESIS;
+  while (! PEND) {
     prev = p;
     PFETCH_S(c);
     if (c == '}') {
@@ -6792,7 +6820,7 @@ prs_char_property(Node** np, PToken* tok, UChar** src, UChar* end,
   int r, ctype;
   CClassNode* cc;
 
-  ctype = fetch_char_property_to_ctype(src, end, env);
+  ctype = fetch_char_property_to_ctype(src, end, tok->u.prop.braces, env);
   if (ctype < 0) return ctype;
 
   if (ctype == ONIGENC_CTYPE_WORD) {
@@ -7100,7 +7128,7 @@ prs_cc(Node** np, PToken* tok, UChar** src, UChar* end, ParseEnv* env)
 
     case TK_CHAR_PROPERTY:
       {
-        int ctype = fetch_char_property_to_ctype(&p, end, env);
+        int ctype = fetch_char_property_to_ctype(&p, end, tok->u.prop.braces, env);
         if (ctype < 0) {
           r = ctype;
           goto err;
