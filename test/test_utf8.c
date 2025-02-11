@@ -1194,6 +1194,11 @@ extern int main(int argc, char* argv[])
   e("\\p", "", ONIGERR_INVALID_CHAR_PROPERTY_NAME);
   e("\\p(", "", ONIGERR_INVALID_CHAR_PROPERTY_NAME);
   e("\\pQ", "", ONIGERR_INVALID_CHAR_PROPERTY_NAME);
+  x2("[\\pL]", "s", 0, 1);
+  n("[^\\pL]", "s");
+  x2("[\\PL]+", "-3@", 0, 3);
+  e("[\\p]", "", ONIGERR_INVALID_CHAR_PROPERTY_NAME);
+  e("[\\pU]", "", ONIGERR_INVALID_CHAR_PROPERTY_NAME);
 
   x2("\\p{Word}", "こ", 0, 3);
   n("\\p{^Word}", "こ");
