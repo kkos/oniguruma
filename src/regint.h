@@ -597,6 +597,9 @@ enum UpdateVarType {
   UPDATE_VAR_RIGHT_RANGE_FROM_S_STACK = 3,
   UPDATE_VAR_RIGHT_RANGE_TO_S         = 4,
   UPDATE_VAR_RIGHT_RANGE_INIT         = 5,
+#ifdef USE_SKIP_SEARCH
+  UPDATE_VAR_SKIP_SEARCH              = 6,
+#endif
 };
 
 enum CheckPositionType {
