@@ -26,6 +26,7 @@ Supported character encodings:
 * GB18030: contributed by KUBO Takehiro
 * CP1251:  contributed by Byte
 * doc/SYNTAX.md: contributed by seanofw
+* doc/onig_syn_md.c: tonco-miyazawa
 
 
 Notice (from 6.9.6)
@@ -41,7 +42,7 @@ Master branch
 Version 6.9.10
 --------------
 * Update Unicode version 16.0
-* Add new operator (*SKIP)
+* Add new operator (*SKIP)    (PR#299)
 * Fixed: ONIG_SYN_CONTEXT_INDEP_REPEAT_OPS not working for ^* pattern (Issue #292)
 
 
