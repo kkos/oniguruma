@@ -1,4 +1,4 @@
-Oniguruma Regular Expressions Version 6.9.9    2024/06/10
+Oniguruma Regular Expressions Version 6.9.10    2025/03/20
 
 syntax: ONIG_SYNTAX_ONIGURUMA (default syntax)
 
@@ -114,6 +114,8 @@ syntax: ONIG_SYNTAX_ONIGURUMA (default syntax)
     * \p{property-name}
     * \p{^property-name}    (negative)
     * \P{property-name}     (negative)
+    * \pX   (X = C, L, M, N, P, S, Z)
+    * \PX   (X = C, L, M, N, P, S, Z)  (negative)
 
     property-name:
 
