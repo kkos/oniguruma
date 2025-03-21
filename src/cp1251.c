@@ -2,7 +2,7 @@
   cp1251.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2006-2020  Byte      <byte AT mail DOT kna DOT ru>
+ * Copyright (c) 2006-2025  Byte      <byte AT mail DOT kna DOT ru>
  *                          K.Kosako
  * All rights reserved.
  *
@@ -122,8 +122,12 @@ cp1251_mbc_case_fold(OnigCaseFoldType flag,
 static int
 cp1251_is_code_ctype(OnigCodePoint code, unsigned int ctype)
 {
-  if (code < 256)
-    return ENC_IS_CP1251_CTYPE(code, ctype);
+  if (code < 256) {
+    if (ctype > ONIGENC_MAX_STD_CTYPE)
+      return FALSE;
+    else
+      return ENC_IS_CP1251_CTYPE(code, ctype);
+  }
   else
     return FALSE;
 }

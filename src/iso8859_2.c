@@ -2,7 +2,7 @@
   iso8859_2.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2020  K.Kosako
+ * Copyright (c) 2002-2025  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -191,8 +191,12 @@ get_case_fold_codes_by_str(OnigCaseFoldType flag,
 static int
 is_code_ctype(OnigCodePoint code, unsigned int ctype)
 {
-  if (code < 256)
-    return ENC_IS_ISO_8859_2_CTYPE(code, ctype);
+  if (code < 256) {
+    if (ctype > ONIGENC_MAX_STD_CTYPE)
+      return FALSE;
+    else
+      return ENC_IS_ISO_8859_2_CTYPE(code, ctype);
+  }
   else
     return FALSE;
 }

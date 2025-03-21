@@ -2,7 +2,7 @@
   iso8859_6.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2019  K.Kosako
+ * Copyright (c) 2002-2025  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -70,8 +70,12 @@ static const unsigned short EncISO_8859_6_CtypeTable[256] = {
 static int
 is_code_ctype(OnigCodePoint code, unsigned int ctype)
 {
-  if (code < 256)
-    return ENC_IS_ISO_8859_6_CTYPE(code, ctype);
+  if (code < 256) {
+    if (ctype > ONIGENC_MAX_STD_CTYPE)
+      return FALSE;
+    else
+      return ENC_IS_ISO_8859_6_CTYPE(code, ctype);
+  }
   else
     return FALSE;
 }
