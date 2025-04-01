@@ -5,10 +5,14 @@
 #ifndef ST_INCLUDED
 #define ST_INCLUDED
 
-#if SIZEOF_VOIDP == SIZEOF_LONG
+#if SIZEOF_VOIDP == SIZEOF_INTPTR_T
+typedef intptr_t st_data_t;
+#elif SIZEOF_VOIDP == SIZEOF_LONG
 typedef unsigned long st_data_t;
 #elif SIZEOF_VOIDP == SIZEOF_LONG_LONG
 typedef unsigned long long st_data_t;
+#else
+#error SIZEOF_VOIDP has unexpected value
 #endif
 
 #define ST_DATA_T_DEFINED
