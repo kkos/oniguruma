@@ -5471,9 +5471,7 @@ fetch_token_cc(PToken* tok, UChar** src, UChar* end, ParseEnv* env, int state)
       u_hex_digits:
         r = scan_hexadecimal_number(&p, end, mindigits, maxdigits, enc, &code);
         if (r < 0) return r;
-        if (p == prev) {  /* can't read nothing. */
-          code = 0; /* but, it's not error */
-        }
+
         tok->type = TK_CODE_POINT;
         tok->base_num = 16;
         tok->u.code   = code;
@@ -5911,9 +5909,7 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ParseEnv* env)
     u_hex_digits:
         r = scan_hexadecimal_number(&p, end, mindigits, maxdigits, enc, &code);
         if (r < 0) return r;
-        if (p == prev) {  /* can't read nothing. */
-          code = 0; /* but, it's not error */
-        }
+
         tok->type = TK_CODE_POINT;
         tok->base_num = 16;
         tok->u.code   = code;
