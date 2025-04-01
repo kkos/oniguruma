@@ -1,6 +1,6 @@
 /*
  * test_utf8.c
- * Copyright (c) 2019-2024  K.Kosako
+ * Copyright (c) 2019-2025  K.Kosako
  */
 #ifdef ONIG_ESCAPE_UCHAR_COLLISION
 #undef ONIG_ESCAPE_UCHAR_COLLISION
@@ -1771,6 +1771,7 @@ extern int main(int argc, char* argv[])
   e("\\x{7fffffff}", "", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("[\\x{7fffffff}]", "", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("\\u040", "@", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("\\u", "", ONIGERR_INVALID_CODE_POINT_VALUE);
   e("(?<abc>\\g<abc>)", "zzzz", ONIGERR_NEVER_ENDING_RECURSION);
   e("(*FOO)", "abcdefg", ONIGERR_UNDEFINED_CALLOUT_NAME);
   e("*", "abc", ONIGERR_TARGET_OF_REPEAT_OPERATOR_NOT_SPECIFIED);
