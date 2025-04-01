@@ -5416,10 +5416,8 @@ fetch_token_cc(PToken* tok, UChar** src, UChar* end, ParseEnv* env, int state)
       break;
 
     case 'x':
-      if (PEND) break;
-
       prev = p;
-      if (PPEEK_IS('{') && IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_X_BRACE_HEX8)) {
+      if (! PEND && PPEEK_IS('{') && IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_X_BRACE_HEX8)) {
         PINC;
         r = scan_hexadecimal_number(&p, end, 0, 8, enc, &code);
         if (r < 0) return r;
@@ -5864,10 +5862,8 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ParseEnv* env)
       break;
 
     case 'x':
-      if (PEND) break;
-
       prev = p;
-      if (PPEEK_IS('{') && IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_X_BRACE_HEX8)) {
+      if (! PEND && PPEEK_IS('{') && IS_SYNTAX_OP(syn, ONIG_SYN_OP_ESC_X_BRACE_HEX8)) {
         PINC;
         r = scan_hexadecimal_number(&p, end, 0, 8, enc, &code);
         if (r < 0) return r;
