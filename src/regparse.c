@@ -5465,7 +5465,6 @@ fetch_token_cc(PToken* tok, UChar** src, UChar* end, ParseEnv* env, int state)
       break;
 
     case 'u':
-      if (PEND) break;
       prev = p;
       if (IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_U_HEX4)) {
         mindigits = maxdigits = 4;
@@ -5906,7 +5905,6 @@ fetch_token(PToken* tok, UChar** src, UChar* end, ParseEnv* env)
       break;
 
     case 'u':
-      if (PEND) break;
       prev = p;
       mindigits = maxdigits = 4;
       if (IS_SYNTAX_OP2(syn, ONIG_SYN_OP2_ESC_U_HEX4)) {
