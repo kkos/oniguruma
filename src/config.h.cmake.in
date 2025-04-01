@@ -40,6 +40,9 @@
 /* The size of `int', as computed by sizeof. */
 #cmakedefine SIZEOF_INT  ${SIZEOF_INT}
 
+/* The size of `intptr_t', as computed by sizeof. */
+#cmakedefine SIZEOF_INTPTR_T  ${SIZEOF_INTPTR_T}
+
 /* The size of `long', as computed by sizeof. */
 #cmakedefine SIZEOF_LONG  ${SIZEOF_LONG}
 

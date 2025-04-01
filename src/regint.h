@@ -301,10 +301,14 @@ typedef unsigned __int64 uint64_t;
 #endif
 #endif /* _WIN32 */
 
-#if SIZEOF_VOIDP == SIZEOF_LONG
+#if SIZEOF_VOIDP == SIZEOF_INTPTR_T
+typedef intptr_t hash_data_type;
+#elif SIZEOF_VOIDP == SIZEOF_LONG
 typedef unsigned long hash_data_type;
 #elif SIZEOF_VOIDP == SIZEOF_LONG_LONG
 typedef unsigned long long hash_data_type;
+#else
+#error SIZEOF_VOIDP has unexpected value
 #endif
 
 /* strend hash */
