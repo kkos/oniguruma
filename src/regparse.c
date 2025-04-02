@@ -327,6 +327,18 @@ onig_set_parse_depth_limit(unsigned int depth)
 
 #define DEC_PARSE_DEPTH(d)  (d)--
 
+static OnigCodePoint enc_sb_out(OnigEncoding enc)
+{
+  if (ONIGENC_IS_UNICODE_ENCODING(enc)) {
+    if (ONIGENC_MBC_MINLEN(enc) == 1)
+      return ASCII_LIMIT + 1;
+    else
+      return 0;
+  }
+  else {
+      return 0x100;
+  }
+}
 
 static int
 bbuf_init(BBuf* buf, int size)
@@ -6900,9 +6912,17 @@ cc_char_next(CClassNode* cc, OnigCodePoint *from, OnigCodePoint to,
         else
           return ONIGERR_EMPTY_RANGE_IN_CHAR_CLASS;
       }
-      bitset_set_range(cc->bs, (int )*from, (int )(to < 0xff ? to : 0xff));
-      r = add_code_range(&(cc->mbuf), env, (OnigCodePoint )*from, to);
-      if (r < 0) return r;
+
+      OnigCodePoint sbout = enc_sb_out(env->enc);
+
+      if (*from < sbout)
+        bitset_set_range(cc->bs, (int )*from, (int )(to < sbout ? to : sbout - 1));
+
+      if (to >= sbout) {
+        r = add_code_range(&(cc->mbuf), env,
+                 (OnigCodePoint )(*from > sbout ? *from : sbout), to);
+        if (r < 0) return r;
+      }
     }
   ccs_range_end:
     *state = CS_COMPLETE;
