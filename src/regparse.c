@@ -7070,16 +7070,16 @@ prs_cc(Node** np, PToken* tok, UChar** src, UChar* end, ParseEnv* env)
           fetched = 0;
         }
 
-        if (i == 1) {
+        if (! ONIGENC_IS_VALID_MBC_STRING(env->enc, buf, buf + len)) {
+          r = ONIGERR_INVALID_WIDE_CHAR_VALUE;
+          goto err;
+        }
+
+        if (len == 1) {
           in_code = (OnigCodePoint )buf[0];
           goto crude_single;
         }
         else {
-          if (! ONIGENC_IS_VALID_MBC_STRING(env->enc, buf, buf + len)) {
-            r = ONIGERR_INVALID_WIDE_CHAR_VALUE;
-            goto err;
-          }
-
           in_code = ONIGENC_MBC_TO_CODE(env->enc, buf, bufe);
           in_type = CV_MB;
         }
