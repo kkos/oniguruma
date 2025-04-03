@@ -1362,6 +1362,13 @@ extern int main(int argc, char* argv[])
   x2("\\u4E38", "\xE4\xB8\xB8", 0, 3);
   x2("\\u0040", "@", 0, 1);
 
+  e("\\xF4", "", ONIGERR_TOO_SHORT_MULTI_BYTE_STRING);
+  e("\\xF5", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("\\xFF", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("[\\xF4]", "", ONIGERR_TOO_SHORT_MULTI_BYTE_STRING);
+  e("[\\xF5]", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+  e("[\\x00-\\xFF]", "", ONIGERR_INVALID_CODE_POINT_VALUE);
+
   x2("c.*\\b", "abc", 2, 3);
   x2("\\b.*abc.*\\b", "abc", 0, 3);
   x2("((?()0+)+++(((0\\g<0>)0)|())++++((?(1)(0\\g<0>))++++++0*())++++((?(1)(0\\g<1>)+)++++++++++*())++++((?(1)((0)\\g<0>)+)++())+0++*+++(((0\\g<0>))*())++++((?(1)(0\\g<0>)+)++++++++++*|)++++*+++((?(1)((0)\\g<0>)+)+++++++++())++*|)++++((?()0))|", "abcde", 0, 0); // #139
