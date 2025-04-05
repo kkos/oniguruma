@@ -2,7 +2,7 @@
   regerror.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2022  K.Kosako
+ * Copyright (c) 2002-2025  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,6 +58,8 @@ onig_error_code_to_format(int code)
     p = "retry-limit-in-search over"; break;
   case ONIGERR_SUBEXP_CALL_LIMIT_IN_SEARCH_OVER:
     p = "subexp-call-limit-in-search over"; break;
+  case ONIGERR_TIME_LIMIT_OVER:
+    p = "time limit over"; break;
   case ONIGERR_TYPE_BUG:
     p = "undefined type (bug)"; break;
   case ONIGERR_PARSER_BUG:

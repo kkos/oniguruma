@@ -9,6 +9,9 @@
 /* Define to 1 if you have `alloca', as a function or macro. */
 #cmakedefine HAVE_ALLOCA  ${HAVE_ALLOCA}
 
+/* Define to 1 if you have `clock_gettime', as a function or macro. */
+#cmakedefine HAVE_CLOCK_GETTIME  ${HAVE_CLOCK_GETTIME}
+
 /* Define to 1 if you have <alloca.h> and it should be used (not on Ultrix).
    */
 #cmakedefine HAVE_ALLOCA_H  ${HAVE_ALLOCA_H}
@@ -21,6 +24,9 @@
 
 /* Define to 1 if you have the <sys/time.h> header file. */
 #cmakedefine HAVE_SYS_TIME_H  ${HAVE_SYS_TIME_H}
+
+/* Define to 1 if you have the <time.h> header file. */
+#cmakedefine HAVE_TIME_H  ${HAVE_TIME_H}
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #cmakedefine HAVE_SYS_TYPES_H  ${HAVE_SYS_TYPES_H}
@@ -51,6 +57,9 @@
 
 /* The size of `void*', as computed by sizeof. */
 #cmakedefine SIZEOF_VOIDP  ${SIZEOF_VOIDP}
+
+/* The size of `time_t', as computed by sizeof. */
+#cmakedefine SIZEOF_TIME_T  ${SIZEOF_TIME_T}
 
 /* Define if enable CR+NL as line terminator */
 #cmakedefine USE_CRNL_AS_LINE_TERMINATOR  ${USE_CRNL_AS_LINE_TERMINATOR}

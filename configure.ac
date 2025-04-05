@@ -63,7 +63,7 @@ AC_PROG_MAKE_SET
 dnl Checks for libraries.
 
 dnl Checks for header files.
-AC_CHECK_HEADERS(sys/time.h unistd.h sys/times.h)
+AC_CHECK_HEADERS(sys/time.h unistd.h sys/times.h time.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_SIZEOF([int])
@@ -71,9 +71,12 @@ AC_CHECK_SIZEOF([intptr_t])
 AC_CHECK_SIZEOF([long])
 AC_CHECK_SIZEOF([long long])
 AC_CHECK_SIZEOF([void*])
+AC_CHECK_SIZEOF([time_t])
 
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
+
+AC_SEARCH_LIBS([clock_gettime], [rt], [AC_DEFINE([HAVE_CLOCK_GETTIME], [1], [Define to 1 if you have the 'clock_gettime' function])])
 
 AC_CONFIG_FILES([Makefile src/Makefile test/Makefile sample/Makefile onig-config])
 AC_CONFIG_COMMANDS([default],[chmod +x onig-config],[])

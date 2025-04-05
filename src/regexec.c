@@ -2,7 +2,7 @@
   regexec.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2024  K.Kosako
+ * Copyright (c) 2002-2025  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,6 +66,96 @@ static int forward_search(regex_t* reg, const UChar* str, const UChar* end, UCha
 static int
 search_in_range(regex_t* reg, const UChar* str, const UChar* end, const UChar* start, const UChar* range, /* match range */ const UChar* data_range, /* subject string range */ OnigRegion* region, OnigOptionType option, OnigMatchParam* mp);
 
+#ifdef USE_TIME_LIMIT
+#if defined(_WIN32) && !defined(__GNUC__)
+struct timespec {
+  long tv_sec;
+  long tv_nsec;
+};
+
+static int
+clock_gettime(int, struct timespec *ts)
+{
+  __int64 t;
+
+  GetSystemTimeAsFileTime((FILETIME* )&t);
+  t -=116444736000000000i64;
+  ts->tv_sec  = t / 10000000i64;
+  ts->tv_nsec = t % 10000000i64 *100;
+  return 0;
+}
+
+#define TIME_T_MAX  LONG_MAX
+
+#else /* defined(_WIN32) && !defined(__GNUC__) */
+
+#include <time.h>
+
+#ifndef TIME_T_MAX
+#ifdef SIZEOF_TIME_T
+#if SIZEOF_TIME_T == SIZEOF_LONG_LONG
+#define TIME_T_MAX  LLONG_MAX
+#elif SIZEOF_TIME_T == SIZEOF_LONG
+#define TIME_T_MAX  LONG_MAX
+#elif SIZEOF_TIME_T == SIZEOF_INT
+#define TIME_T_MAX  INT_MAX
+#endif
+#endif
+#endif
+
+#endif /* defined(_WIN32) && !defined(__GNUC__) */
+
+typedef struct timespec TIME_TYPE;
+
+static void
+set_limit_end_time(TIME_TYPE* t, unsigned long limit /* msec. */)
+{
+  time_t limit_sec;
+  long limit_nsec;
+
+  clock_gettime(CLOCK_REALTIME, t);
+
+  limit_sec  = limit / 1000;
+  limit_nsec = (limit % 1000) * 1000000L;
+
+  if (t->tv_nsec > LONG_MAX - limit_nsec)
+    t->tv_nsec = LONG_MAX;
+  else
+    t->tv_nsec += limit_nsec;
+
+  if (t->tv_nsec > 999999999L) {
+    limit_sec += (time_t )1;
+    t->tv_nsec -= 1000000000L;
+  }
+
+#ifdef TIME_T_MAX
+  if (t->tv_sec > TIME_T_MAX - limit_sec)
+    t->tv_sec = TIME_T_MAX;
+  else
+    t->tv_sec += limit_sec;
+#else
+  t->tv_sec += limit_sec;
+#endif
+}
+
+static int
+time_is_running_out(TIME_TYPE* t)
+{
+  TIME_TYPE now;
+  time_t diff;
+
+  clock_gettime(CLOCK_REALTIME, &now);
+
+  diff = now.tv_sec - t->tv_sec;
+  if (diff > 0)
+    return 1;
+  else if (diff == 0)
+    return now.tv_nsec > t->tv_nsec;
+  else
+    return 0;
+}
+#endif /* USE_TIME_LIMIT */
+
 
 #ifdef USE_CALLOUT
 typedef struct {
@@ -82,6 +172,9 @@ struct OnigMatchParamStruct {
 #ifdef USE_RETRY_LIMIT
   unsigned long   retry_limit_in_match;
   unsigned long   retry_limit_in_search;
+#endif
+#ifdef USE_TIME_LIMIT
+  unsigned long time_limit;
 #endif
 
   void*           callout_user_data; /* used in callback each match */
@@ -120,6 +213,18 @@ onig_set_retry_limit_in_search_of_match_param(OnigMatchParam* param,
 {
 #ifdef USE_RETRY_LIMIT
   param->retry_limit_in_search = limit;
+  return ONIG_NORMAL;
+#else
+  return ONIG_NO_SUPPORT_CONFIG;
+#endif
+}
+
+extern int
+onig_set_time_limit_of_match_param(OnigMatchParam* param,
+     unsigned long limit /* msec. */)
+{
+#ifdef USE_TIME_LIMIT
+  param->time_limit = limit;
   return ONIG_NORMAL;
 #else
   return ONIG_NO_SUPPORT_CONFIG;
@@ -169,6 +274,13 @@ typedef struct {
   unsigned long  retry_limit_in_search;
   unsigned long  retry_limit_in_search_counter;
 #endif
+
+#ifdef USE_TIME_LIMIT
+  int           time_counter;
+  unsigned long time_limit;
+  TIME_TYPE     time_end;
+#endif
+
   OnigMatchParam* mp;
 #ifdef USE_FIND_LONGEST_SEARCH_ALL_OF_RANGE
   int    best_len;      /* for ONIG_OPTION_FIND_LONGEST */
@@ -1048,6 +1160,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 }
 
 #ifdef USE_CALLOUT
+#ifdef USE_RETRY_LIMIT
 #define CALLOUT_BODY(func, ain, aname_id, anum, user, args, result) do { \
   args.in            = (ain);\
   args.name_id       = (aname_id);\
@@ -1066,6 +1179,25 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
   args.mem_end_stk   = mem_end_stk;\
   result = (func)(&args, user);\
 } while (0)
+#else
+#define CALLOUT_BODY(func, ain, aname_id, anum, user, args, result) do { \
+  args.in            = (ain);\
+  args.name_id       = (aname_id);\
+  args.num           = anum;\
+  args.regex         = reg;\
+  args.string        = str;\
+  args.string_end    = end;\
+  args.start         = sstart;\
+  args.right_range   = right_range;\
+  args.current       = s;\
+  args.msa           = msa;\
+  args.stk_base      = stk_base;\
+  args.stk           = stk;\
+  args.mem_start_stk = mem_start_stk;\
+  args.mem_end_stk   = mem_end_stk;\
+  result = (func)(&args, user);\
+} while (0)
+#endif
 
 #define RETRACTION_CALLOUT(func, aname_id, anum, user) do {\
   int result;\
@@ -1253,6 +1385,17 @@ struct OnigCalloutArgsStruct {
 #define RETRY_IN_MATCH_ARG_INIT(msa,mpv)
 #endif
 
+#ifdef USE_TIME_LIMIT
+#define TIME_LIMIT_INIT(msa,mpv) \
+  (msa).time_counter = 0;\
+  (msa).time_limit   = (mpv)->time_limit;\
+  if ((msa).time_limit != 0) {\
+    set_limit_end_time(&((msa).time_end), (msa).time_limit);\
+  }
+#else
+#define TIME_LIMIT_INIT(msa,mpv)
+#endif
+
 #if defined(USE_CALL)
 #define SUBEXP_CALL_IN_MATCH_ARG_INIT(msa,mpv) \
   (msa).subexp_call_in_search_counter = 0;
@@ -1272,6 +1415,7 @@ struct OnigCalloutArgsStruct {
   (msa).start    = (arg_start);\
   (msa).match_stack_limit  = (mpv)->match_stack_limit;\
   RETRY_IN_MATCH_ARG_INIT(msa,mpv)\
+  TIME_LIMIT_INIT(msa,mpv)\
   SUBEXP_CALL_IN_MATCH_ARG_INIT(msa,mpv)\
   (msa).mp = mpv;\
   (msa).best_len = ONIG_MISMATCH;\
@@ -1286,6 +1430,7 @@ struct OnigCalloutArgsStruct {
   (msa).start    = (arg_start);\
   (msa).match_stack_limit  = (mpv)->match_stack_limit;\
   RETRY_IN_MATCH_ARG_INIT(msa,mpv)\
+  TIME_LIMIT_INIT(msa,mpv)\
   SUBEXP_CALL_IN_MATCH_ARG_INIT(msa,mpv)\
   (msa).mp = mpv;\
   (msa).best_len = ONIG_MISMATCH;\
@@ -1301,6 +1446,7 @@ struct OnigCalloutArgsStruct {
   (msa).start    = (arg_start);\
   (msa).match_stack_limit  = (mpv)->match_stack_limit;\
   RETRY_IN_MATCH_ARG_INIT(msa,mpv)\
+  TIME_LIMIT_INIT(msa,mpv)\
   SUBEXP_CALL_IN_MATCH_ARG_INIT(msa,mpv)\
   (msa).mp = mpv;\
   (msa).ptr_num  = PTR_NUM_SIZE(reg);\
@@ -1314,6 +1460,7 @@ struct OnigCalloutArgsStruct {
   (msa).start    = (arg_start);\
   (msa).match_stack_limit  = (mpv)->match_stack_limit;\
   RETRY_IN_MATCH_ARG_INIT(msa,mpv)\
+  TIME_LIMIT_INIT(msa,mpv)\
   SUBEXP_CALL_IN_MATCH_ARG_INIT(msa,mpv)\
   (msa).mp = mpv;\
   (msa).ptr_num  = PTR_NUM_SIZE(reg);\
@@ -1405,6 +1552,24 @@ static unsigned long RetryLimitInSearch = DEFAULT_RETRY_LIMIT_IN_SEARCH;
 
 #endif /* USE_RETRY_LIMIT */
 
+#ifdef USE_TIME_LIMIT
+static unsigned long TimeLimit = DEFAULT_TIME_LIMIT_MSEC;
+
+#define TIME_LIMIT_CHECK_COUNT    512
+
+#define CHECK_TIME_LIMIT_IN_MATCH do {\
+  if ((msa->time_limit != 0) && ++msa->time_counter == TIME_LIMIT_CHECK_COUNT) {\
+    msa->time_counter = 0;\
+    if (time_is_running_out(&(msa->time_end))) {\
+      MATCH_AT_ERROR_RETURN(ONIGERR_TIME_LIMIT_OVER);\
+    }\
+  }\
+} while (0)
+
+#else
+#define CHECK_TIME_LIMIT_IN_MATCH
+#endif
+
 extern unsigned long
 onig_get_retry_limit_in_match(void)
 {
@@ -1441,6 +1606,27 @@ onig_set_retry_limit_in_search(unsigned long n)
 {
 #ifdef USE_RETRY_LIMIT
   RetryLimitInSearch = n;
+  return 0;
+#else
+  return ONIG_NO_SUPPORT_CONFIG;
+#endif
+}
+
+extern unsigned long
+onig_get_time_limit(void)
+{
+#ifdef USE_TIME_LIMIT
+  return TimeLimit;
+#else
+  return 0;
+#endif
+}
+
+extern int
+onig_set_time_limit(unsigned long n)
+{
+#ifdef USE_TIME_LIMIT
+  TimeLimit = n;
   return 0;
 #else
   return ONIG_NO_SUPPORT_CONFIG;
@@ -1511,6 +1697,10 @@ onig_initialize_match_param(OnigMatchParam* mp)
 #ifdef USE_RETRY_LIMIT
   mp->retry_limit_in_match  = RetryLimitInMatch;
   mp->retry_limit_in_search = RetryLimitInSearch;
+#endif
+
+#ifdef USE_TIME_LIMIT
+  mp->time_limit = TimeLimit;
 #endif
 
   mp->callout_user_data = 0;
@@ -4469,6 +4659,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
       p = stk->u.state.pcode;
       s = stk->u.state.pstr;
       CHECK_RETRY_LIMIT_IN_MATCH;
+      CHECK_TIME_LIMIT_IN_MATCH;
       JUMP_OUT;
 
     DEFAULT_OP
@@ -4477,6 +4668,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   } BYTECODE_INTERPRETER_END;
 
  match_at_end:
+ #ifdef USE_RETRY_LIMIT
   if (msa->retry_limit_in_search != 0) {
 #ifdef ONIG_DEBUG
     if (retry_in_match_counter >
@@ -4487,6 +4679,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 #endif
     msa->retry_limit_in_search_counter += retry_in_match_counter;
   }
+#endif
 
 #ifdef ONIG_DEBUG_MATCH_COUNTER
   MATCH_COUNTER_OUT("END");
