@@ -68,24 +68,27 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end, const UChar* s
 
 #ifdef USE_TIME_LIMIT
 #if defined(_WIN32) && !defined(__GNUC__)
+
+#include <windows.h>
+
+#define CLOCK_REALTIME   0
+
 struct timespec {
-  long tv_sec;
-  long tv_nsec;
+  time_t tv_sec;
+  long   tv_nsec;
 };
 
 static int
-clock_gettime(int, struct timespec *ts)
+clock_gettime(int unused, struct timespec *ts)
 {
   __int64 t;
 
   GetSystemTimeAsFileTime((FILETIME* )&t);
   t -=116444736000000000i64;
-  ts->tv_sec  = t / 10000000i64;
+  ts->tv_sec  = (time_t )(t / 10000000i64);
   ts->tv_nsec = t % 10000000i64 *100;
   return 0;
 }
-
-#define TIME_T_MAX  LONG_MAX
 
 #else /* defined(_WIN32) && !defined(__GNUC__) */
 
