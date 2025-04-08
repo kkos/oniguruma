@@ -71,23 +71,36 @@ search_in_range(regex_t* reg, const UChar* str, const UChar* end, const UChar* s
 
 #include <windows.h>
 
-#define CLOCK_REALTIME   0
+typedef __int64 TIME_TYPE;
 
-struct timespec {
-  time_t tv_sec;
-  long   tv_nsec;
-};
+static void
+set_limit_end_time(TIME_TYPE* t, unsigned long limit /* msec. */)
+{
+  TIME_TYPE limit_10nsec;
+
+  if ((__int64 )limit < INT64_MAX / 10000) {
+    limit_10nsec = limit * 10000; /* 10 nsec. */
+    GetSystemTimeAsFileTime((FILETIME* )t);
+    if (*t < INT64_MAX - limit_10nsec) {
+      *t += limit_10nsec;
+      return ;
+    }
+  }
+
+  *t = INT64_MAX;
+}
 
 static int
-clock_gettime(int unused, struct timespec *ts)
+time_is_running_out(TIME_TYPE* t)
 {
-  __int64 t;
+  TIME_TYPE now;
 
-  GetSystemTimeAsFileTime((FILETIME* )&t);
-  t -=116444736000000000i64;
-  ts->tv_sec  = (time_t )(t / 10000000i64);
-  ts->tv_nsec = t % 10000000i64 *100;
-  return 0;
+  GetSystemTimeAsFileTime((FILETIME* )&now);
+
+  if (now > *t)
+    return 1;
+  else
+    return 0;
 }
 
 #else /* defined(_WIN32) && !defined(__GNUC__) */
@@ -105,8 +118,6 @@ clock_gettime(int unused, struct timespec *ts)
 #endif
 #endif
 #endif
-
-#endif /* defined(_WIN32) && !defined(__GNUC__) */
 
 typedef struct timespec TIME_TYPE;
 
@@ -157,6 +168,8 @@ time_is_running_out(TIME_TYPE* t)
   else
     return 0;
 }
+
+#endif /* defined(_WIN32) && !defined(__GNUC__) */
 #endif /* USE_TIME_LIMIT */
 
 
