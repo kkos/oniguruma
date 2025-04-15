@@ -1,4 +1,4 @@
-/* ANSI-C code produced by gperf version 3.1 */
+/* ANSI-C code produced by gperf version 3.2.1 */
 /* Command-line: gperf -pt -T -L ANSI-C -N onigenc_euc_jp_lookup_property_name --output-file gperf1.tmp euc_jp_prop.gperf  */
 /* Computed positions: -k'1,3' */
 
@@ -85,6 +85,10 @@ hash (register const char *str, register size_t len)
 struct PropertyNameCtype *
 onigenc_euc_jp_lookup_property_name (register const char *str, register size_t len)
 {
+#if (defined __GNUC__ && __GNUC__ + (__GNUC_MINOR__ >= 6) > 4) || (defined __clang__ && __clang_major__ >= 3)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
   static struct PropertyNameCtype wordlist[] =
     {
       {""}, {""}, {""}, {""},
@@ -134,6 +138,9 @@ onigenc_euc_jp_lookup_property_name (register const char *str, register size_t l
 #line 14 "euc_jp_prop.gperf"
       {"Digit",     4}
     };
+#if (defined __GNUC__ && __GNUC__ + (__GNUC_MINOR__ >= 6) > 4) || (defined __clang__ && __clang_major__ >= 3)
+#pragma GCC diagnostic pop
+#endif
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
     {
@@ -147,5 +154,5 @@ onigenc_euc_jp_lookup_property_name (register const char *str, register size_t l
             return &wordlist[key];
         }
     }
-  return 0;
+  return (struct PropertyNameCtype *) 0;
 }

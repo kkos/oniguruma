@@ -1,4 +1,4 @@
-/* ANSI-C code produced by gperf version 3.1 */
+/* ANSI-C code produced by gperf version 3.2.1 */
 /* Command-line: gperf -T -C -c -t -j1 -L ANSI-C --ignore-case --pic -Q unicode_prop_name_pool -N unicode_lookup_property_name --output-file gperf2.tmp unicode_property_data_posix.gperf  */
 /* Computed positions: -k'1,3' */
 
@@ -5767,7 +5767,7 @@ const CodeRanges[] = {
 
 #ifndef GPERF_DOWNCASE
 #define GPERF_DOWNCASE 1
-static unsigned char gperf_downcase[256] =
+static const unsigned char gperf_downcase[256] =
   {
       0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,
      15,  16,  17,  18,  19,  20,  21,  22,  23,  24,  25,  26,  27,  28,  29,
@@ -5892,6 +5892,10 @@ static const struct unicode_prop_name_pool_t unicode_prop_name_pool_contents =
 static const struct PoolPropertyNameCtype *
 unicode_lookup_property_name (register const char *str, register size_t len)
 {
+#if (defined __GNUC__ && __GNUC__ + (__GNUC_MINOR__ >= 6) > 4) || (defined __clang__ && __clang_major__ >= 3)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
   static const struct PoolPropertyNameCtype wordlist[] =
     {
       {-1}, {-1}, {-1}, {-1}, {-1},
@@ -5926,6 +5930,9 @@ unicode_lookup_property_name (register const char *str, register size_t len)
 
       {pool_offset(19),                                2}
     };
+#if (defined __GNUC__ && __GNUC__ + (__GNUC_MINOR__ >= 6) > 4) || (defined __clang__ && __clang_major__ >= 3)
+#pragma GCC diagnostic pop
+#endif
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
     {
@@ -5943,7 +5950,7 @@ unicode_lookup_property_name (register const char *str, register size_t len)
             }
         }
     }
-  return 0;
+  return (struct PoolPropertyNameCtype *) 0;
 }
 
 

@@ -1,4 +1,4 @@
-/* ANSI-C code produced by gperf version 3.1 */
+/* ANSI-C code produced by gperf version 3.2.1 */
 /* Command-line: gperf -T -C -c -t -j1 -L ANSI-C --ignore-case --pic -Q unicode_prop_name_pool -N unicode_lookup_property_name --output-file gperf1.tmp unicode_property_data.gperf  */
 /* Computed positions: -k'1-3,5-6,12,16,$' */
 
@@ -28260,7 +28260,7 @@ const CodeRanges[] = {
 
 #ifndef GPERF_DOWNCASE
 #define GPERF_DOWNCASE 1
-static unsigned char gperf_downcase[256] =
+static const unsigned char gperf_downcase[256] =
   {
       0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,
      15,  16,  17,  18,  19,  20,  21,  22,  23,  24,  25,  26,  27,  28,  29,
@@ -28348,12 +28348,22 @@ hash (register const char *str, register size_t len)
     {
       default:
         hval += asso_values[(unsigned char)str[15]];
+#if (defined __cplusplus && (__cplusplus >= 201703L || (__cplusplus >= 201103L && defined __clang__ && __clang_major__ + (__clang_minor__ >= 9) > 3))) || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 202000L && ((defined __GNUC__ && __GNUC__ >= 10) || (defined __clang__ && __clang_major__ >= 9)))
+      [[fallthrough]];
+#elif (defined __GNUC__ && __GNUC__ >= 7) || (defined __clang__ && __clang_major__ >= 10)
+      __attribute__ ((__fallthrough__));
+#endif
       /*FALLTHROUGH*/
       case 15:
       case 14:
       case 13:
       case 12:
         hval += asso_values[(unsigned char)str[11]];
+#if (defined __cplusplus && (__cplusplus >= 201703L || (__cplusplus >= 201103L && defined __clang__ && __clang_major__ + (__clang_minor__ >= 9) > 3))) || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 202000L && ((defined __GNUC__ && __GNUC__ >= 10) || (defined __clang__ && __clang_major__ >= 9)))
+      [[fallthrough]];
+#elif (defined __GNUC__ && __GNUC__ >= 7) || (defined __clang__ && __clang_major__ >= 10)
+      __attribute__ ((__fallthrough__));
+#endif
       /*FALLTHROUGH*/
       case 11:
       case 10:
@@ -28362,16 +28372,36 @@ hash (register const char *str, register size_t len)
       case 7:
       case 6:
         hval += asso_values[(unsigned char)str[5]];
+#if (defined __cplusplus && (__cplusplus >= 201703L || (__cplusplus >= 201103L && defined __clang__ && __clang_major__ + (__clang_minor__ >= 9) > 3))) || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 202000L && ((defined __GNUC__ && __GNUC__ >= 10) || (defined __clang__ && __clang_major__ >= 9)))
+      [[fallthrough]];
+#elif (defined __GNUC__ && __GNUC__ >= 7) || (defined __clang__ && __clang_major__ >= 10)
+      __attribute__ ((__fallthrough__));
+#endif
       /*FALLTHROUGH*/
       case 5:
         hval += asso_values[(unsigned char)str[4]];
+#if (defined __cplusplus && (__cplusplus >= 201703L || (__cplusplus >= 201103L && defined __clang__ && __clang_major__ + (__clang_minor__ >= 9) > 3))) || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 202000L && ((defined __GNUC__ && __GNUC__ >= 10) || (defined __clang__ && __clang_major__ >= 9)))
+      [[fallthrough]];
+#elif (defined __GNUC__ && __GNUC__ >= 7) || (defined __clang__ && __clang_major__ >= 10)
+      __attribute__ ((__fallthrough__));
+#endif
       /*FALLTHROUGH*/
       case 4:
       case 3:
         hval += asso_values[(unsigned char)str[2]];
+#if (defined __cplusplus && (__cplusplus >= 201703L || (__cplusplus >= 201103L && defined __clang__ && __clang_major__ + (__clang_minor__ >= 9) > 3))) || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 202000L && ((defined __GNUC__ && __GNUC__ >= 10) || (defined __clang__ && __clang_major__ >= 9)))
+      [[fallthrough]];
+#elif (defined __GNUC__ && __GNUC__ >= 7) || (defined __clang__ && __clang_major__ >= 10)
+      __attribute__ ((__fallthrough__));
+#endif
       /*FALLTHROUGH*/
       case 2:
         hval += asso_values[(unsigned char)str[1]];
+#if (defined __cplusplus && (__cplusplus >= 201703L || (__cplusplus >= 201103L && defined __clang__ && __clang_major__ + (__clang_minor__ >= 9) > 3))) || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 202000L && ((defined __GNUC__ && __GNUC__ >= 10) || (defined __clang__ && __clang_major__ >= 9)))
+      [[fallthrough]];
+#elif (defined __GNUC__ && __GNUC__ >= 7) || (defined __clang__ && __clang_major__ >= 10)
+      __attribute__ ((__fallthrough__));
+#endif
       /*FALLTHROUGH*/
       case 1:
         hval += asso_values[(unsigned char)str[0]+2];
@@ -30162,6 +30192,10 @@ static const struct unicode_prop_name_pool_t unicode_prop_name_pool_contents =
 static const struct PoolPropertyNameCtype *
 unicode_lookup_property_name (register const char *str, register size_t len)
 {
+#if (defined __GNUC__ && __GNUC__ + (__GNUC_MINOR__ >= 6) > 4) || (defined __clang__ && __clang_major__ >= 3)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
   static const struct PoolPropertyNameCtype wordlist[] =
     {
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
@@ -33014,6 +33048,9 @@ unicode_lookup_property_name (register const char *str, register size_t len)
 
       {pool_offset(6900),                             101}
     };
+#if (defined __GNUC__ && __GNUC__ + (__GNUC_MINOR__ >= 6) > 4) || (defined __clang__ && __clang_major__ >= 3)
+#pragma GCC diagnostic pop
+#endif
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
     {
@@ -33031,7 +33068,7 @@ unicode_lookup_property_name (register const char *str, register size_t len)
             }
         }
     }
-  return 0;
+  return (struct PoolPropertyNameCtype *) 0;
 }
 
 

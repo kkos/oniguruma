@@ -1,6 +1,6 @@
 /* This file was converted by gperf_unfold_key_conv.py
       from gperf output file. */
-/* ANSI-C code produced by gperf version 3.1 */
+/* ANSI-C code produced by gperf version 3.2.1 */
 /* Command-line: gperf -n -C -T -c -t -j1 -L ANSI-C -F,-1,0 -N onigenc_unicode_unfold_key unicode_unfold_key.gperf  */
 /* Computed positions: -k'1-3' */
 
@@ -86,6 +86,7 @@ hash(OnigCodePoint codes[])
         46, 1627,   44, 1621,  207, 1443,   13, 1096,   17,  427,
          9
     };
+
   return asso_values[(unsigned char)onig_codes_byte_at(codes, 2)+35] + asso_values[(unsigned char)onig_codes_byte_at(codes, 1)+1] + asso_values[(unsigned char)onig_codes_byte_at(codes, 0)];
 }
 
@@ -3493,5 +3494,5 @@ onigenc_unicode_unfold_key(OnigCodePoint code)
             return &wordlist[key];
         }
     }
-  return 0;
+  return (struct ByUnfoldKey *) 0;
 }

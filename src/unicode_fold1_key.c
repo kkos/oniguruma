@@ -1,6 +1,6 @@
 /* This file was converted by gperf_fold_key_conv.py
       from gperf output file. */
-/* ANSI-C code produced by gperf version 3.1 */
+/* ANSI-C code produced by gperf version 3.2.1 */
 /* Command-line: gperf -n -C -T -c -t -j1 -L ANSI-C -F,-1 -N onigenc_unicode_fold1_key unicode_fold1_key.gperf  */
 /* Computed positions: -k'1-3' */
 
@@ -82,6 +82,7 @@ hash(OnigCodePoint codes[])
        350, 1045,  333, 1359,  812,  354,  270,  407,  801,   99,
        565,  555, 1104,  128, 1097,   31, 1419,  130, 1414
     };
+
   return asso_values[(unsigned char)onig_codes_byte_at(codes, 2)+3] + asso_values[(unsigned char)onig_codes_byte_at(codes, 1)] + asso_values[(unsigned char)onig_codes_byte_at(codes, 0)];
 }
 
