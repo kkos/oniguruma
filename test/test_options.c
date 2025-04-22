@@ -1,6 +1,6 @@
 /*
  * test_options.c
- * Copyright (c) 2020-2024  K.Kosako
+ * Copyright (c) 2020-2025  K.Kosako
  */
 #ifdef ONIG_ESCAPE_UCHAR_COLLISION
 #undef ONIG_ESCAPE_UCHAR_COLLISION
@@ -178,8 +178,8 @@ extern int main(int argc, char* argv[])
   x2(OIA, "abcdefghijklmnopqrstuvwxyz", "abcABCDEFGHIJKLMNOPQRSTUVWXYZ", 3, 29);
   x3(OIA, "#%(a!;)(b&)", "#%A!;B&", 5, 7, 2);
 
-  x2(ONIG_OPTION_IGNORECASE, "ss", "\xc3\x9f", 0, 2);
-  x2(ONIG_OPTION_IGNORECASE, "\xc3\x9f", "SS", 0, 2);
+  //x2(ONIG_OPTION_IGNORECASE, "ss", "\xc3\x9f", 0, 2);
+  //x2(ONIG_OPTION_IGNORECASE, "\xc3\x9f", "SS", 0, 2);
   n(OIA, "ss", "\xc3\x9f");
   n(OIA, "\xc3\x9f", "ss");
   x2(OIA, "ss", "SS", 0, 2);

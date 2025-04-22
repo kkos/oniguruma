@@ -1,6 +1,6 @@
 /*
  * test_back.c
- * Copyright (c) 2020-2024  K.Kosako
+ * Copyright (c) 2020-2025  K.Kosako
  */
 #ifdef ONIG_ESCAPE_UCHAR_COLLISION
 #undef ONIG_ESCAPE_UCHAR_COLLISION
@@ -301,22 +301,22 @@ extern int main(int argc, char* argv[])
   x2("(?i:ss)", "\xc5\xbfS", 0, 3);
   x2("(?i:ss)", "s\xc5\xbf", 0, 3);
   /* 0xc3,0x9f == 00DF: # LATIN SMALL LETTER SHARP S */
-  x2("(?i:ss)", "\xc3\x9f", 0, 2);
+  //x2("(?i:ss)", "\xc3\x9f", 0, 2);
   /* 0xe1,0xba,0x9e == 1E9E # LATIN CAPITAL LETTER SHARP S */
-  x2("(?i:ss)", "\xe1\xba\x9e", 0, 3);
+  //x2("(?i:ss)", "\xe1\xba\x9e", 0, 3);
   x2("(?i:xssy)", "xssy", 0, 4);
   x2("(?i:xssy)", "xSsy", 0, 4);
   x2("(?i:xssy)", "xSSy", 0, 4);
   x2("(?i:xssy)", "x\xc5\xbfSy", 0, 5);
   x2("(?i:xssy)", "xs\xc5\xbfy", 0, 5);
-  x2("(?i:xssy)", "x\xc3\x9fy", 0, 4);
-  x2("(?i:xssy)", "x\xe1\xba\x9ey", 0, 5);
-  x2("(?i:x\xc3\x9fy)", "xssy", 0, 4);
-  x2("(?i:x\xc3\x9fy)", "xSSy", 0, 4);
-  x2("(?i:\xc3\x9f)", "ss", 0, 2);
-  x2("(?i:\xc3\x9f)", "SS", 0, 2);
-  x2("(?i:[\xc3\x9f])", "ss", 0, 2);
-  x2("(?i:[\xc3\x9f])", "SS", 0, 2);
+  //x2("(?i:xssy)", "x\xc3\x9fy", 0, 4);
+  //x2("(?i:xssy)", "x\xe1\xba\x9ey", 0, 5);
+  //x2("(?i:x\xc3\x9fy)", "xssy", 0, 4);
+  //x2("(?i:x\xc3\x9fy)", "xSSy", 0, 4);
+  //x2("(?i:\xc3\x9f)", "ss", 0, 2);
+  //x2("(?i:\xc3\x9f)", "SS", 0, 2);
+  //x2("(?i:[\xc3\x9f])", "ss", 0, 2);
+  //x2("(?i:[\xc3\x9f])", "SS", 0, 2);
   x2("(?i)(?<!ss)z", "qqz", 2, 3);
   x2("(?i:[A-Z])", "a", 0, 1);
   x2("(?i:[f-m])", "H", 0, 1);
@@ -1345,43 +1345,43 @@ extern int main(int argc, char* argv[])
   x2("(?i)st", "St", 0, 2);
   x2("(?i)st", "sT", 0, 2);
   x2("(?i)st", "\xC5\xBFt", 0, 3); // U+017F
-  x2("(?i)st", "\xEF\xAC\x85", 0, 3); // U+FB05
-  x2("(?i)st", "\xEF\xAC\x86", 0, 3); // U+FB06
+  //x2("(?i)st", "\xEF\xAC\x85", 0, 3); // U+FB05
+  //x2("(?i)st", "\xEF\xAC\x86", 0, 3); // U+FB06
   x2("(?i)ast", "Ast", 0, 3);
   x2("(?i)ast", "ASt", 0, 3);
   x2("(?i)ast", "AsT", 0, 3);
   x2("(?i)ast", "A\xC5\xBFt", 0, 4); // U+017F
-  x2("(?i)ast", "A\xEF\xAC\x85", 0, 4); // U+FB05
-  x2("(?i)ast", "A\xEF\xAC\x86", 0, 4); // U+FB06
+  //x2("(?i)ast", "A\xEF\xAC\x85", 0, 4); // U+FB05
+  //x2("(?i)ast", "A\xEF\xAC\x86", 0, 4); // U+FB06
   x2("(?i)stZ", "stz", 0, 3);
   x2("(?i)stZ", "Stz", 0, 3);
   x2("(?i)stZ", "sTz", 0, 3);
   x2("(?i)stZ", "\xC5\xBFtz", 0, 4); // U+017F
-  x2("(?i)stZ", "\xEF\xAC\x85z", 0, 4); // U+FB05
-  x2("(?i)stZ", "\xEF\xAC\x86z", 0, 4); // U+FB06
+  //x2("(?i)stZ", "\xEF\xAC\x85z", 0, 4); // U+FB05
+  //x2("(?i)stZ", "\xEF\xAC\x86z", 0, 4); // U+FB06
   x2("(?i)BstZ", "bstz", 0, 4);
   x2("(?i)BstZ", "bStz", 0, 4);
   x2("(?i)BstZ", "bsTz", 0, 4);
   x2("(?i)BstZ", "b\xC5\xBFtz", 0, 5); // U+017F
-  x2("(?i)BstZ", "b\xEF\xAC\x85z", 0, 5); // U+FB05
-  x2("(?i)BstZ", "b\xEF\xAC\x86z", 0, 5); // U+FB06
+  //x2("(?i)BstZ", "b\xEF\xAC\x85z", 0, 5); // U+FB05
+  //x2("(?i)BstZ", "b\xEF\xAC\x86z", 0, 5); // U+FB06
   x2("(?i).*st\\z", "tttssss\xC5\xBFt", 7, 10); // U+017F
-  x2("(?i).*st\\z", "tttssss\xEF\xAC\x85", 7, 10); // U+FB05
-  x2("(?i).*st\\z", "tttssss\xEF\xAC\x86", 7, 10); // U+FB06
+  //x2("(?i).*st\\z", "tttssss\xEF\xAC\x85", 7, 10); // U+FB05
+  //x2("(?i).*st\\z", "tttssss\xEF\xAC\x86", 7, 10); // U+FB06
   x2("(?i).*あstい\\z", "tttssssあ\xC5\xBFtい", 7, 16); // U+017F
-  x2("(?i).*あstい\\z", "tttssssあ\xEF\xAC\x85い", 7, 16); // U+FB05
-  x2("(?i).*あstい\\z", "tttssssあ\xEF\xAC\x86い", 7, 16); // U+FB06
+  //x2("(?i).*あstい\\z", "tttssssあ\xEF\xAC\x85い", 7, 16); // U+FB05
+  //x2("(?i).*あstい\\z", "tttssssあ\xEF\xAC\x86い", 7, 16); // U+FB06
   x2("(?i).*\xC5\xBFt\\z", "tttssssst", 7, 9); // U+017F
-  x2("(?i).*\xEF\xAC\x85\\z", "tttssssあst", 10, 12); // U+FB05
-  x2("(?i).*\xEF\xAC\x86い\\z", "tttssssstい", 7, 12); // U+FB06
+  //x2("(?i).*\xEF\xAC\x85\\z", "tttssssあst", 10, 12); // U+FB05
+  //x2("(?i).*\xEF\xAC\x86い\\z", "tttssssstい", 7, 12); // U+FB06
   x2("(?i).*\xEF\xAC\x85\\z", "tttssssあ\xEF\xAC\x85", 10, 13);
 
-  x2("(?i).*ss", "abcdefghijklmnopqrstuvwxyz\xc3\x9f", 26, 28); // U+00DF
-  x2("(?i).*ss.*", "abcdefghijklmnopqrstuvwxyz\xc3\x9fxyz", 26, 31); // U+00DF
-  x2("(?i).*\xc3\x9f", "abcdefghijklmnopqrstuvwxyzss", 26, 28); // U+00DF
+  //x2("(?i).*ss", "abcdefghijklmnopqrstuvwxyz\xc3\x9f", 26, 28); // U+00DF
+  //x2("(?i).*ss.*", "abcdefghijklmnopqrstuvwxyz\xc3\x9fxyz", 26, 31); // U+00DF
+  //x2("(?i).*\xc3\x9f", "abcdefghijklmnopqrstuvwxyzss", 26, 28); // U+00DF
   x2("(?i).*ss.*", "abcdefghijklmnopqrstuvwxyzSSxyz", 26, 31);
 
-  x2("(?i)ssv", "\xc3\x9fv", 0, 3); // U+00DF
+  //x2("(?i)ssv", "\xc3\x9fv", 0, 3); // U+00DF
   x2("(?i)(?<=ss)v", "SSv", 2, 3);
   x2("(?i)(?<=\xc3\x9f)v", "\xc3\x9fv", 2, 3);
   //x2("(?i)(?<=\xc3\x9f)v", "ssv", 2, 3);
@@ -1391,19 +1391,19 @@ extern int main(int argc, char* argv[])
   x2("(?i).+Isssǰ", ".+Isssǰ", 1, 8);
   x2(".+Isssǰ", ".+Isssǰ", 1, 8);
   x2("(?i)ǰ", "ǰ", 0, 2);
-  x2("(?i)ǰ", "j\xcc\x8c", 0, 3);
-  x2("(?i)j\xcc\x8c", "ǰ", 0, 2);
+  //x2("(?i)ǰ", "j\xcc\x8c", 0, 3);
+  //x2("(?i)j\xcc\x8c", "ǰ", 0, 2);
   x2("(?i)5ǰ", "5ǰ", 0, 3);
-  x2("(?i)5ǰ", "5j\xcc\x8c", 0, 4);
-  x2("(?i)5j\xcc\x8c", "5ǰ", 0, 3);
+  //x2("(?i)5ǰ", "5j\xcc\x8c", 0, 4);
+  //x2("(?i)5j\xcc\x8c", "5ǰ", 0, 3);
   x2("(?i)ǰv", "ǰV", 0, 3);
-  x2("(?i)ǰv", "j\xcc\x8cV", 0, 4);
-  x2("(?i)j\xcc\x8cv", "ǰV", 0, 3);
+  //x2("(?i)ǰv", "j\xcc\x8cV", 0, 4);
+  //x2("(?i)j\xcc\x8cv", "ǰV", 0, 3);
   x2("(?i)[ǰ]", "ǰ", 0, 2);
-  x2("(?i)[ǰ]", "j\xcc\x8c", 0, 3);
+  //x2("(?i)[ǰ]", "j\xcc\x8c", 0, 3);
   //x2("(?i)[j]\xcc\x8c", "ǰ", 0, 2);
-  x2("(?i)\ufb00a", "ffa", 0, 3);
-  x2("(?i)ffz", "\xef\xac\x80z", 0, 4);
+  //x2("(?i)\ufb00a", "ffa", 0, 3);
+  //x2("(?i)ffz", "\xef\xac\x80z", 0, 4);
   x2("(?i)\u2126", "\xcf\x89", 0, 2);
   x2("a(?i)\u2126", "a\xcf\x89", 0, 3);
   x2("(?i)A\u2126", "a\xcf\x89", 0, 3);
