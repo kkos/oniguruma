@@ -8774,6 +8774,7 @@ i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[], int to_len,
     }
 #endif /* CASE_FOLD_IS_APPLIED_INSIDE_NEGATIVE_CCLASS */
   }
+#ifdef USE_DIFFERENT_CHAR_LENGTH_MATCH_BY_IGNORECASE
   else {
     int r, i, len;
     UChar buf[ONIGENC_CODE_TO_MBC_MAXLEN];
@@ -8844,6 +8845,7 @@ i_apply_case_fold(OnigCodePoint from, OnigCodePoint to[], int to_len,
       iarg->ptail = &(ND_CDR((*(iarg->ptail))));
     }
   }
+#endif /* USE_DIFFERENT_CHAR_LENGTH_MATCH_BY_IGNORECASE */
 
   return 0;
 }

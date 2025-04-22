@@ -4742,20 +4742,6 @@ tune_next(Node* node, Node* next_node, regex_t* reg)
   return 0;
 }
 
-
-static int
-is_all_code_len_1_items(int n, OnigCaseFoldCodeItem items[])
-{
-  int i;
-
-  for (i = 0; i < n; i++) {
-    OnigCaseFoldCodeItem* item = items + i;
-    if (item->code_len != 1) return 0;
-  }
-
-  return 1;
-}
-
 static int
 get_min_max_byte_len_case_fold_items(int n, OnigCaseFoldCodeItem items[],
                                      OnigLen* rmin, OnigLen* rmax)
@@ -4776,6 +4762,20 @@ get_min_max_byte_len_case_fold_items(int n, OnigCaseFoldCodeItem items[],
   *rmin = minlen;
   *rmax = maxlen;
   return 0;
+}
+
+#ifdef USE_DIFFERENT_CHAR_LENGTH_MATCH_BY_IGNORECASE
+static int
+is_all_code_len_1_items(int n, OnigCaseFoldCodeItem items[])
+{
+  int i;
+
+  for (i = 0; i < n; i++) {
+    OnigCaseFoldCodeItem* item = items + i;
+    if (item->code_len != 1) return 0;
+  }
+
+  return 1;
 }
 
 static int
@@ -4808,6 +4808,7 @@ make_code_list_to_string(Node** rnode, OnigEncoding enc,
   onig_node_free(node);
   return r;
 }
+#endif /* USE_DIFFERENT_CHAR_LENGTH_MATCH_BY_IGNORECASE */
 
 static int
 unravel_cf_node_add(Node** rlist, Node* add)
@@ -4864,6 +4865,7 @@ unravel_cf_string_alt_or_cc_add(Node** rlist, int n,
   int r, i;
   Node* node;
 
+#ifdef USE_DIFFERENT_CHAR_LENGTH_MATCH_BY_IGNORECASE
   if (is_all_code_len_1_items(n, items)) {
     OnigCodePoint codes[14];/* least ONIGENC_GET_CASE_FOLD_CODES_MAX_NUM + 1 */
 
@@ -4906,6 +4908,21 @@ unravel_cf_string_alt_or_cc_add(Node** rlist, int n,
       curr = alt;
     }
   }
+#else
+  int cn;
+  OnigCodePoint codes[14];/* least ONIGENC_GET_CASE_FOLD_CODES_MAX_NUM + 1 */
+
+  codes[0] = ONIGENC_MBC_TO_CODE(enc, s, end);
+  cn = 1;
+
+  for (i = 0; i < n; i++) {
+    OnigCaseFoldCodeItem* item = items + i;
+    if (item->code_len != 1) continue;
+    codes[cn++] = item->code[0];
+  }
+  r = onig_new_cclass_with_code_list(&node, enc, cn, codes);
+  if (r != 0) return r;
+#endif /* USE_DIFFERENT_CHAR_LENGTH_MATCH_BY_IGNORECASE */
 
   r = unravel_cf_node_add(rlist, node);
   if (r != 0) onig_node_free(node);
@@ -4984,23 +5001,26 @@ unravel_case_fold_string(Node* node, regex_t* reg, int state)
   list = sn = NULL_NODE;
   p = start;
   while (p < end) {
-    n = ONIGENC_GET_CASE_FOLD_CODES_BY_STR(enc, reg->case_fold_flag, p, end,
-                                           items);
+    one_len = (OnigLen )enclen(enc, p);
+    q = p + one_len;
+#ifdef USE_DIFFERENT_CHAR_LENGTH_MATCH_BY_IGNORECASE
+    n = ONIGENC_GET_CASE_FOLD_CODES_BY_STR(enc, reg->case_fold_flag, p, end, items);
+#else
+    n = ONIGENC_GET_CASE_FOLD_CODES_BY_STR(enc, reg->case_fold_flag, p,   q, items);
+#endif /* USE_DIFFERENT_CHAR_LENGTH_MATCH_BY_IGNORECASE */
+
     if (n < 0) {
       r = n;
       goto err;
     }
 
-    one_len = (OnigLen )enclen(enc, p);
     if (n == 0) {
-      q = p + one_len;
       if (q > end) q = end;
       r = unravel_cf_string_add(&list, &sn, p, q, 0 /* flag */);
       if (r != 0) goto err;
     }
     else {
       if (in_look_behind != 0) {
-        q = p + one_len;
         if (items[0].byte_len != one_len) {
           r = ONIGENC_GET_CASE_FOLD_CODES_BY_STR(enc, reg->case_fold_flag, p, q,
                                                  items);
