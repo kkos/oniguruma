@@ -1,7 +1,6 @@
-[![Fuzzing Status](https://oss-fuzz-build-logs.storage.googleapis.com/badges/oniguruma.svg)](https://oss-fuzz-build-logs.storage.googleapis.com/index.html#oniguruma)
-
 Oniguruma
 =========
+## **This project ended on April 24, 2025.**
 
 ## **The only open source software attacked on Google search in Japan.** [(Issue #234)](https://github.com/kkos/oniguruma/issues/234)
 
